@@ -56,13 +56,13 @@ ADSRESULT ImageComboBox::AddString()
 
 	COMBOBOXEXITEM cbi =
 	{
-		(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
+		(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
 		nItem,
 		sToAdd.LockBuffer(),
 		-1,
 		nImage,
 		nSelectedImage,
-		2,
+		-1,
 		nIndent
 	};
 	int idx = pCtrl->InsertItem( &cbi );
@@ -134,13 +134,13 @@ ADSRESULT ImageComboBox::SetItem()
 
 	COMBOBOXEXITEM cbi =
 	{
-		(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
+		(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
 		nItem,
 		sText.LockBuffer(),
 		-1,
 		nImage,
 		nSelectedImage,
-		2,
+		-1,
 		nIndent
 	};
 	int idx = pCtrl->SetItem( &cbi );

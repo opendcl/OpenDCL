@@ -83,7 +83,12 @@ CString GetControlDisplayName( CLSID clsid )
 
 CString GetControlSimpleName( ControlType type )
 {
-	CString sDisplayName = GetControlDisplayName( type );
+	CStringW sDisplayNameW = CStringW( GetControlDisplayName( type ) );
+	int cchRaw = sDisplayNameW.GetLength();
+	CStringA sDisplayNameA;
+	int cchTrans = WideCharToMultiByte( CP_ACP, 0, sDisplayNameW, cchRaw, sDisplayNameA.GetBuffer( cchRaw + 1 ), cchRaw + 1, NULL, NULL );
+	sDisplayNameA.ReleaseBuffer( cchTrans );
+	CString sDisplayName = CString( sDisplayNameA );
 	CString sSimpleName;
 	int cchDisplayName = sDisplayName.GetLength();
 	for( int idx = 0; idx < cchDisplayName; ++idx )

@@ -20,7 +20,7 @@ TProgressTimeToComplete::TProgressTimeToComplete()
     m_start     = clock();
 
     // create a horizontal fount
-    m_fountHorz.CreatePointFont(90, _T("MS Sans"), NULL);
+    m_fountHorz.CreatePointFont( 80, _T("MS Shell Dlg"), NULL );
 
     // create a vertical fount the same as the horizontal one
     m_fountHorz.GetLogFont(&logFount);

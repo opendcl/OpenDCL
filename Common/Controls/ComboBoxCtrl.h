@@ -33,6 +33,7 @@ public:
 public:
 	virtual DWORD GetComboStyle() const;
 	virtual CComboHandler* GetComboHandler() { return mpHandler; }
+	virtual const CComboHandler* GetComboHandler() const { return mpHandler; }
 
 protected:
 	DECLARE_MESSAGE_MAP();

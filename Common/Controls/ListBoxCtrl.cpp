@@ -312,16 +312,17 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 
-	bool bSuperMessage = false;
+	bool bSuperMessage = true;
+	BOOL bOutside = TRUE;
+	UINT idxItem = ItemFromPoint( point, bOutside );
+	if( idxItem == LB_ERR || bOutside || !IsMultiSelect() || GetSel( idxItem ) <= 0 )
+	{
+		__super::OnLButtonDown( nFlags, point );
+		bSuperMessage = false;
+	}
 	if( IsMultiSelect() )
 	{
 		int ctSel = GetSelCount();
-		bSuperMessage = (ctSel > 0);
-		if( !bSuperMessage )
-		{
-			__super::OnLButtonDown( nFlags, point );
-			ctSel = GetSelCount();
-		}
 		if( ctSel > 0 )
 		{
 			int* rnSel = new int[ctSel];
@@ -333,7 +334,6 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		__super::OnLButtonDown( nFlags, point );
 		int nCurSel = GetCurSel();
 		if( nCurSel >= 0 )
 			setnDragSource.insert( nCurSel );

@@ -61,7 +61,7 @@ CRect CImageComboBoxCtrl::GetWndRect() const
 DWORD CImageComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	const CComboHandler* pHandler = const_cast< CImageComboBoxCtrl* >(this)->GetComboHandler();
+	const CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
 	{
 		if( pHandler->IsOwnerDrawn() )
@@ -121,12 +121,12 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 					CString sItemLabel = prString->at( idx );
 					COMBOBOXEXITEM cbi =
 					{
-						(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
+						(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT),
 						idx,
 						sItemLabel.LockBuffer(),
 						-1,
 						nImage,
-						-1/*nSelectedImage*/,
+						nImage,
 						-1,
 						0
 					};

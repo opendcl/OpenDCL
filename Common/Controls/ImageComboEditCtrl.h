@@ -69,18 +69,18 @@ public:
 					if( idxMatch < 0 && sText == sListText )
 						idxMatch = (int)idx;
 					int nImage = (idx < rImage.size()? rImage.at( idx ) : -1);
-					COMBOBOXEXITEM cbItem = 
+					COMBOBOXEXITEM cbi = 
 					{
-						(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_OVERLAY | CBEIF_INDENT),
+						(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT),
 						idx,
 						sListText.LockBuffer(),
 						sListText.GetLength() + 1,
 						nImage,
 						nImage,
-						2,
+						-1,
 						0,
 					};
-					InsertItem( &cbItem );
+					InsertItem( &cbi );
 				}
 			}
 			if( GetCount() == 0 )

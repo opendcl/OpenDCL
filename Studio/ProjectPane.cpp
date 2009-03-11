@@ -487,6 +487,11 @@ void CProjectPane::CleanupParents()
 		GetTreeCtrl().DeleteItem(mhtiOptionsTabParent);
 		mhtiOptionsTabParent = NULL;
 	}
+	if (GetTreeCtrl().GetChildItem(mhtiPaletteParent) == NULL)
+	{
+		GetTreeCtrl().DeleteItem(mhtiPaletteParent);
+		mhtiPaletteParent = NULL;
+	}
 	if (GetTreeCtrl().GetChildItem(mhtiAxFilesParent) == NULL)
 	{
 		GetTreeCtrl().DeleteItem(mhtiAxFilesParent);

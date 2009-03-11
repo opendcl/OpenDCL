@@ -1099,7 +1099,8 @@ void CStudioDialogObject::OnContextMenu(CWnd* pWnd, CPoint point)
 void CStudioDialogObject::OnToolsSetlispsymbolnames()
 {
 	CFormVarNameUpdate Dlg( mpSourceForm, mpSourceForm->GetKeyName() );
-	Dlg.DoModal();
+	if( IDOK == Dlg.DoModal() )
+		theStudioWorkspace.ActivateDclControl( theStudioWorkspace.GetActiveDclControl() );
 }
 
 void CStudioDialogObject::OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI)
@@ -1110,7 +1111,8 @@ void CStudioDialogObject::OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI)
 void CStudioDialogObject::OnToolsClearlispsymbolnames()
 {
 	CFormVarNameUpdate Dlg( mpSourceForm, NULL );
-	Dlg.DoModal();
+	if( IDOK == Dlg.DoModal() )
+		theStudioWorkspace.ActivateDclControl( theStudioWorkspace.GetActiveDclControl() );
 }
 
 void CStudioDialogObject::OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI)

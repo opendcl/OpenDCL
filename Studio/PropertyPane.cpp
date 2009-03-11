@@ -54,7 +54,8 @@ int CPropertyPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_TabCtrl.InsertItem( 0, theWorkspace.LoadResourceString( IDS_PROPERTIES ) );
 	m_TabCtrl.InsertItem( 1, theWorkspace.LoadResourceString( IDS_EVENTS ) );
 
-	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(80, _T("MS Sans Serif")))
+	if( !m_font.CreateStockObject(DEFAULT_GUI_FONT) &&
+			!m_font.CreatePointFont( 80, _T("MS Shell Dlg"), NULL ) )
 		return -1;
 
 	// Create the properties tab 

@@ -60,32 +60,26 @@ BOOL CImageListContents::OnInitDialog()
 
 	m_pImageListPage->GetImageList()->SetBkColor(RGB(255,255,255));
 
-	int i;
-  for (i=0; i<m_pImageListPage->GetImageList()->GetImageCount(); i++)
+  for( int i = 0; i < m_pImageListPage->GetImageList()->GetImageCount(); ++i )
 	{
-		COMBOBOXEXITEM cbi;
-
-		cbi.mask = CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY |
-		 CBEIF_SELECTEDIMAGE | CBEIF_TEXT;
-
 		CString sValue;
 		sValue.Format( _T("%u"), i );
-		
-		cbi.iItem = i;
-		cbi.pszText = sValue.LockBuffer();
-		cbi.cchTextMax = -1;
-		cbi.iImage = i;
-		cbi.iSelectedImage = i;
-		cbi.iOverlay = 2;
-		cbi.iIndent = 0;
-
-		m_Image.InsertItem(&cbi);
+		COMBOBOXEXITEM cbi = 
+		{
+			CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE,
+			i,
+			sValue.LockBuffer(),
+			-1,
+			i,
+			i,
+		};
+		m_Image.InsertItem( &cbi );
 	}
 	
 	//m_Image.SetCurSel(0);
 
 	
-	for (i=0; i<sStrings.GetSize();i++)
+	for( int i = 0; i < sStrings.GetSize(); ++i )
 	{
 		int n = 0;
 		if (i>=sImages.GetSize())
@@ -115,6 +109,7 @@ void CImageListContents::OnClickThelist(NMHDR* pNMHDR, LRESULT* pResult)
 	Changed(plvdi->item.mask);
 	*pResult = 0;
 }
+
 void CImageListContents::Changed(int nItem) 
 {
 	if (nItem == -1)

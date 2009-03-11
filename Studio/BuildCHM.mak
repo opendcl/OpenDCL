@@ -3,10 +3,10 @@ Content\$(TargetName).chm : Content\$(TargetName).hhc
 Content\$(TargetName).chm : Content\*.css
 Content\$(TargetName).chm : Content\*.js
 Content\$(TargetName).chm : Content\*.htm
-Content\$(TargetName).chm : Content\Intro\*.htm
-Content\$(TargetName).chm : Content\Concepts\*.htm
-Content\$(TargetName).chm : Content\Usage\*.htm
-Content\$(TargetName).chm : Content\Advanced\*.htm
+Content\$(TargetName).chm : Content\Intro\*.*
+Content\$(TargetName).chm : Content\Concepts\*.*
+Content\$(TargetName).chm : Content\Usage\*.*
+Content\$(TargetName).chm : Content\Advanced\*.*
 Content\$(TargetName).chm : Content\Reference\*.htm
 Content\$(TargetName).chm : Content\Reference\images\*.*
 Content\$(TargetName).chm : Content\Reference\Form\*.htm

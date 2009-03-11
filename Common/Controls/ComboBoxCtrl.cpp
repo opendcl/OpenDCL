@@ -55,7 +55,7 @@ DWORD CComboBoxCtrl::GetWndStyle() const
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 	dwStyle |= (CBS_NOINTEGRALHEIGHT);
 	dwStyle |= GetComboStyle();
-	const CComboHandler* pHandler = const_cast< CComboBoxCtrl* >(this)->GetComboHandler();
+	const CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
 	{
 		if( pHandler->IsOwnerDrawn() )

@@ -7,7 +7,6 @@
 #include "PropertyObject.h"
 #include "DclControlObject.h"
 
-class CImageListObject;
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageListPage dialog

@@ -34,7 +34,9 @@ bool CTextBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CTextBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = __super::GetWndStyle();
-	dwStyle |= (ES_WANTRETURN);
+	if( mpTemplate->GetBooleanProperty( Prop::ReturnAsTab ) ||
+			!mpTemplate->GetStringProperty( Prop::EventReturnPressed ).IsEmpty() )
+		dwStyle |= (ES_WANTRETURN);
 	switch( mpTemplate->GetLongProperty( Prop::Justification ) )
 	{
 	case 0:

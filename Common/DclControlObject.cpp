@@ -664,6 +664,13 @@ void CDclControlObject::Serialize(CArchive& ar)
 				case Prop::ImageList:
 					mProperties.erase( iterAt );
 					continue;
+				case Prop::FormEventShow:
+					if( eFormType != FrmOptionsTab )
+					{
+						mProperties.erase( iterAt );
+						continue;
+					}
+					break;
 				}
 				switch( eFormType )
 				{
