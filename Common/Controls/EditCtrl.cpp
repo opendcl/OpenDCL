@@ -51,6 +51,13 @@ void CEditCtrl::GetRawWindowText( CString& sText )
 	int cchResult = __super::WindowProc( WM_GETTEXTLENGTH, 0, 0 );
 	if( cchResult > 0 )
 	{
+	#ifndef _UNICODE
+		//Due to a strange condition that can occur when Unicode and non-Unicode controls
+		//are mixed, the buffer must be sized for a Unicode string or WM_GETTEXT returns
+		//only half the window text under certain conditions. -- 2009-03-11 [ORW]
+		cchResult *= sizeof(wchar_t);
+		++cchResult;
+	#endif
 		cchResult = __super::WindowProc( WM_GETTEXT, (WPARAM)(cchResult + 1), (LPARAM)sText.GetBuffer( cchResult + 1 ) );
 		sText.ReleaseBuffer( cchResult );
 	}

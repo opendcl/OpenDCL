@@ -63,7 +63,7 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case Prop::FilterStyle: //can't currently change style at runtime -- [ORW] 2007-09-10
+	case Prop::FilterStyle: //can't currently change style at runtime -- 2007-09-10 [ORW]
 		break;
 	case Prop::Justification:
 		{

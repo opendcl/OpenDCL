@@ -258,8 +258,8 @@ void CPictureBox::SetPicture( TPicturePtr pPicture )
 		m_cyIcon = mpPicture->GetHeight();
 		AutoSize();
 	}
-	CopyDC();
 	Refresh();
+	CopyDC();
 }
 
 void CPictureBox::SetPicture( UINT nIconResId )
@@ -270,8 +270,8 @@ void CPictureBox::SetPicture( UINT nIconResId )
 	m_cxIcon = mpPicture->GetWidth();
 	m_cyIcon = mpPicture->GetHeight();
 	AutoSize();
-	CopyDC();
 	Refresh();
+	CopyDC();
 }
 
 void CPictureBox::Refresh()
