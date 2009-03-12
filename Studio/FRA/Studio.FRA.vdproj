@@ -13426,8 +13426,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_77F5550BCAFD4A679BE4644CDDECBA92"
             {
-            "SourcePath" = "8:Content\\Reference\\Property\\ButtonToolTips.htm"
-            "TargetName" = "8:ButtonToolTips.htm"
+            "SourcePath" = "8:Content\\Reference\\Property\\ButtonToolTipList.htm"
+            "TargetName" = "8:ButtonToolTipList.htm"
             "Tag" = "8:"
             "Folder" = "8:_E6AC849B982748FC9DDC4AE207395BD5"
             "Condition" = "8:"
