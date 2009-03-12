@@ -22,11 +22,11 @@
 			<param name="Local" value="Intro\Installation.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ressourcen">
+			<param name="Name" value="Weitere Quellen">
 			<param name="Local" value="Intro\Resources.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Begriffserl&auml;uterung">
+			<param name="Name" value="Begriffserl&auml;uterungen">
 			<param name="Local" value="Intro\Glossary.htm">
 			</OBJECT>
 	</UL>
@@ -74,6 +74,10 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Software-Verteilung">
 			<param name="Local" value="Advanced\Deployment.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Migration von einer früheren Version">
+			<param name="Local" value="Advanced\Migration.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Tipps und Technicken">
