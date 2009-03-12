@@ -243,7 +243,9 @@
 
 (defun c:TreeView_Main_Tree_OnEndLabelEdit (NewValue Key /)
   (TreeView_LogEvent (strcat "OnEndLabelEdit (" NewValue ")"))
-  (dcl_Control_SetText TreeView_Main_tbxLabel NewValue)
+  (if (TreeView_IsTracking)
+    (dcl_Control_SetText TreeView_Main_tbxLabel NewValue)
+  )
 )
 
 

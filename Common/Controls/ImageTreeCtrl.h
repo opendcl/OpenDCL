@@ -88,4 +88,5 @@ protected:
 	afx_msg void OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
+	afx_msg UINT OnGetDlgCode();
 };

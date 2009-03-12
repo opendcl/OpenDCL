@@ -18,30 +18,23 @@ public:
 	CGridSpacingDlg();   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CGridSpacingDlg)
 	enum { IDD = IDD_GRIDSPACING };
 	CSliderCtrl	m_Slider;
 	CStatic	m_CurrentSpacing;
-	//}}AFX_DATA
 
 	int m_GridSpacing;
 	void SetDispaySetting();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CGridSpacingDlg)
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
-protected:
-
 	// Generated message map functions
-	//{{AFX_MSG(CGridSpacingDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnReleasedcaptureGridslider(NMHDR* pNMHDR, LRESULT* pResult);
-	virtual void OnOK();
-	//}}AFX_MSG
+protected:
 	DECLARE_MESSAGE_MAP()
+
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

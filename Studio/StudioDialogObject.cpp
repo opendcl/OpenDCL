@@ -328,6 +328,16 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB2 ) );
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB3 ) );
+			TDclFormPtr pTabPage1 = mpSourceForm->AddChildForm( FrmTabPage );
+			pTabPage1->SetTabIndex( 0 );
+			theStudioWorkspace.GetProjectPane()->AddFormToTree( pTabPage1, false );
+			TDclFormPtr pTabPage2 = mpSourceForm->AddChildForm( FrmTabPage );
+			pTabPage2->SetTabIndex( 1 );
+			theStudioWorkspace.GetProjectPane()->AddFormToTree( pTabPage2, false );
+			TDclFormPtr pTabPage3 = mpSourceForm->AddChildForm( FrmTabPage );
+			pTabPage3->SetTabIndex( 2 );
+			theStudioWorkspace.GetProjectPane()->AddFormToTree( pTabPage3, false );
+			theStudioWorkspace.GetProjectPane()->Invalidate();
 		}
 		break;
 	default:

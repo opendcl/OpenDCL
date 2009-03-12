@@ -21512,8 +21512,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EDC80CE375934206B5D9DC05862FD5AD"
             {
-            "SourcePath" = "8:Content\\Reference\\Property\\TabToolTips.htm"
-            "TargetName" = "8:TabToolTips.htm"
+            "SourcePath" = "8:Content\\Reference\\Property\\TabToolTipList.htm"
+            "TargetName" = "8:TabToolTipList.htm"
             "Tag" = "8:"
             "Folder" = "8:_4524E948C4E042A6831CDA74F614D054"
             "Condition" = "8:"

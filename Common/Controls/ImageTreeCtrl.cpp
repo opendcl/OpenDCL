@@ -326,6 +326,7 @@ BEGIN_MESSAGE_MAP(CImageTreeCtrl, CTreeCtrl)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, &CImageTreeCtrl::OnTvnDeleteitem)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, &CImageTreeCtrl::OnTvnGetdispinfo)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_GETDLGCODE()
 END_MESSAGE_MAP()
 
 
@@ -335,6 +336,26 @@ END_MESSAGE_MAP()
 BOOL CImageTreeCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
+	if (pMsg->message == WM_KEYDOWN )
+	{
+		switch( pMsg->wParam )
+		{
+		case VK_RETURN:
+			if( GetFocus() == GetEditControl() )
+			{
+				TreeView_EndEditLabelNow( m_hWnd, FALSE );
+				return TRUE;
+			}
+			break;
+		case VK_ESCAPE:
+			if( GetFocus() == GetEditControl() )
+			{
+				TreeView_EndEditLabelNow( m_hWnd, TRUE );
+				return TRUE;
+			}
+			break;
+		}
+	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
@@ -406,4 +427,14 @@ HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		return NULL;
 	return NULL;
 	//return mColorService.CtlColor( pDC, nCtlColor );
+}
+
+UINT CImageTreeCtrl::OnGetDlgCode()
+{
+	UINT nResult = __super::OnGetDlgCode();
+	if( !mpTemplate->GetStringProperty( Prop::EventReturnPressed ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyDown ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyUp ).IsEmpty() )
+		nResult |= DLGC_WANTALLKEYS;
+	return nResult;
 }

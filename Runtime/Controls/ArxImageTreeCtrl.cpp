@@ -238,18 +238,20 @@ void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 	//__super::OnTvnEndlabeledit( pNMHDR, pResult );
 	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 	HTREEITEM hItem = pTVDispInfo->item.hItem;
+	CString sLabel =
+		pTVDispInfo->item.pszText? pTVDispInfo->item.pszText : GetItemText( hItem );
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
 		InvokeMethodStringString( mpTemplate->GetStringProperty( Prop::EventEndLabelEdit ),
-															GetItemText( hItem ),
+															sLabel,
 															sKey,
 															IsAsyncEvents() );
 	else if( hItem )
 		InvokeMethodStringLong( mpTemplate->GetStringProperty( Prop::EventEndLabelEdit ),
-														GetItemText( hItem ),
+														sLabel,
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
-	*pResult = 0;
+	*pResult = TRUE;
 }
 
 void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)

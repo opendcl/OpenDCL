@@ -26,7 +26,7 @@ void CGridSpacingDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CGridSpacingDlg, CDialog)
-	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_GRIDSLIDER, OnReleasedcaptureGridslider)
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ BOOL CGridSpacingDlg::OnInitDialog()
 {
 	GetDlgItemText( IDC_CURRENTSPACING, sCurrentSettingFmt );
 	ASSERT( !sCurrentSettingFmt.IsEmpty() ); //getting the format string from the dialog resource!
-	CDialog::OnInitDialog();
+	__super::OnInitDialog();
 	m_GridSpacing = theApp.GetGridSpacing();
 	m_Slider.SetRange( 0, 17, TRUE );
 	m_Slider.SetPos( m_GridSpacing > 0? m_GridSpacing - 3 : 0 );
@@ -44,12 +44,6 @@ BOOL CGridSpacingDlg::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
-}
-
-void CGridSpacingDlg::OnReleasedcaptureGridslider(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	SetDispaySetting();
-	*pResult = 0;
 }
 
 void CGridSpacingDlg::SetDispaySetting()
@@ -75,5 +69,11 @@ void CGridSpacingDlg::SetDispaySetting()
 void CGridSpacingDlg::OnOK() 
 {
 	theApp.SetGridSpacing( m_GridSpacing );
-	CDialog::OnOK();
+	__super::OnOK();
+}
+
+void CGridSpacingDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	SetDispaySetting();
+	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }

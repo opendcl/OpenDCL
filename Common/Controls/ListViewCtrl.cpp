@@ -571,7 +571,6 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
-	ON_NOTIFY_REFLECT(LVN_ENDLABELEDIT, OnEndlabeledit)
 	ON_NOTIFY_REFLECT(LVN_BEGINLABELEDIT, OnBeginlabeledit)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_VSCROLL()
@@ -602,15 +601,6 @@ void CListViewCtrl::OnSize(UINT nType, int cx, int cy)
 	CRect rcWorkArea[1];
 	rcWorkArea[0].SetRect( 0, 0, rcThis.Width(), 36000 );
 	SetWorkAreas( 1, rcWorkArea );
-}
-
-void CListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	LV_ITEM		*plvItem = &pDispInfo->item;
-	if (pDispInfo->item.mask > 0)
-		SetItemText(plvItem->iItem, plvItem->iSubItem, plvItem->pszText);
-	*pResult = 0;
 }
 
 void CListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 

@@ -427,6 +427,7 @@ void CProjectPane::AddFormToTree( TDclFormPtr pDcl, bool bForceShow )
 					pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem( FindTabCaption( pDcl ), hItem, hInsertAfter );
 					GetTreeCtrl().SetItemImage( pDcl->m_htiTreeItem, 5, 5 );
 					GetTreeCtrl().SetItemData( pDcl->m_htiTreeItem, pDcl->GetTabIndex() );
+					GetTreeCtrl().Expand( hItem, TVE_EXPAND );
 				}
 			}
 			break;

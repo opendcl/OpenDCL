@@ -799,6 +799,12 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
+			case Prop::TabsCaption:
+			case Prop::TabsImageList:
+			case Prop::TabsTTT:
+				if( (*iterAt)->IsHidden() )
+					(*iterAt)->SetHidden( false );
+				break;
 			case Prop::_Private:
 				if( (*iterAt)->GetType() == PropActiveXProp )
 				{

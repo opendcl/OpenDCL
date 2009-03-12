@@ -188,18 +188,17 @@ void CArxListViewCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	LV_ITEM		*plvItem = &pDispInfo->item;
+	LV_ITEM& lvItem = pDispInfo->item;
 
-	if (pDispInfo->item.iItem >= 0)
+	if( lvItem.iItem >= 0 )
 	{
 		InvokeMethodStringInt(
 			mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
-			plvItem->pszText,
-			plvItem->iItem,
-			IsAsyncEvents());
+			lvItem.pszText? lvItem.pszText : GetItemText( lvItem.iItem, 0 ),
+			lvItem.iItem,
+			IsAsyncEvents() );
 	}
-	__super::OnEndlabeledit( pNMHDR, pResult );
-	*pResult = 0;
+	*pResult = TRUE;
 }
 
 void CArxListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 

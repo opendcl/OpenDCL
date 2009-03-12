@@ -258,11 +258,6 @@ void CInsertControlDlg::OnControlsSelChange()
 	  posControl = POSITION( m_lbControls.GetItemDataPtr( iItem ) );
 	  clsid = m_lControls.GetAt( posControl );
 	  GetClassServerPath( clsid, strServerPath );
-	  BSTR str;
-	  StringFromCLSID(clsid, &str);
-	  CString sId = CString(str);
-	  ::SysFreeString(str);
-
 	  m_staticServerPath.SetWindowText( strServerPath );
 	  m_FileName = strServerPath;
    }

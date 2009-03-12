@@ -430,28 +430,25 @@ void CArxBlockListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxBlockListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	LV_ITEM		*plvItem = &pDispInfo->item;
+	LV_ITEM* plvItem = &pDispInfo->item;
 
-	if (pDispInfo->item.iItem >= 0)
+	if( pDispInfo->item.iItem >= 0 )
 	{
-		InvokeMethodStringIntInt(
+		InvokeMethodStringInt(
 			mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
-			plvItem->pszText,
+			plvItem->pszText? plvItem->pszText : GetItemText( plvItem->iItem, 0 ),
 			plvItem->iItem,
-			plvItem->iSubItem,
 			IsAsyncEvents());
 	}
-	__super::OnEndlabeledit( pNMHDR, pResult );
-	*pResult = 0;
+	*pResult = TRUE;
 }
 
 void CArxBlockListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	InvokeMethodIntInt(		
+	InvokeMethodInt(		
 		mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
 		pDispInfo->item.iItem,
-		GetCurrentSubItem(),
 		IsAsyncEvents());
 	*pResult = 0;
 }

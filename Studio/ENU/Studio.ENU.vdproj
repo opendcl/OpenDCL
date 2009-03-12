@@ -20106,8 +20106,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D875F6606369440EA91E38F5EC88FBF2"
             {
-            "SourcePath" = "8:Content\\Reference\\Property\\TabToolTips.htm"
-            "TargetName" = "8:TabToolTips.htm"
+            "SourcePath" = "8:Content\\Reference\\Property\\TabToolTipList.htm"
+            "TargetName" = "8:TabToolTipList.htm"
             "Tag" = "8:"
             "Folder" = "8:_37D9EAC3B2CE4A1C9C2E93FAD2129980"
             "Condition" = "8:"

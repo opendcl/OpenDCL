@@ -879,9 +879,9 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::TabStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::MultiRow, PropBool, false );
 		//pDclControl->AddLongProperty( Prop::TabJustified, PropEnum, 0 );
-		AddControlHiddenProperty( pDclControl, Prop::TabsCaption, _T(""), PropStringArray );
-		AddControlHiddenProperty( pDclControl, Prop::TabsImageList, _T(""), PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::TabsTTT, _T(""), PropStringArray );
+		pDclControl->AddStringProperty( Prop::TabsCaption, PropStringArray );
+		pDclControl->AddStringProperty( Prop::TabsImageList, PropStringArray );
+		pDclControl->AddStringProperty( Prop::TabsTTT, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, false );
 		AddControlHiddenProperty( pDclControl, Prop::ImageList, _T(""), PropImageList );
