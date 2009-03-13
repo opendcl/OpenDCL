@@ -210,6 +210,10 @@ public:
 
 	virtual bool GetValue( double& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const double& v ) { mValue = v; return true; }
+	virtual bool SetValue( const short& v ) { mValue = v; return true; }
+	virtual bool SetValue( const unsigned short& v ) { mValue = v; return true; }
+	virtual bool SetValue( const long& v ) { mValue = v; return true; }
+	virtual bool SetValue( const unsigned long& v ) { mValue = v; return true; }
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%f"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstof(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstof(v); return true; }

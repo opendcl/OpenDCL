@@ -279,9 +279,6 @@ void CFontPropertyPage::OnDestroy()
 
 BOOL CFontPropertyPage::OnApply() 
 {
-	CWinApp* pApp = AfxGetApp();
-	TProjectPtr pProject = mpDclControl->GetOwnerProject();
-	
 	FontSettings FS;
 
 	CString sFontName;	
