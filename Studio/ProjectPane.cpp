@@ -300,6 +300,8 @@ void CProjectPane::OnActivateProject(TStudioProjectPtr pProject /*= NULL*/)
 	{
 		CString sAppPrefix;
 		GetDocument()->GetDocTemplate()->GetDocString( sAppPrefix, CDocTemplate::windowTitle );
+		if( GetDocument()->IsModified() )
+			sAppPrefix += _T('*');
 		CStudioFrame* pStudioFrame = theStudioWorkspace.GetStudioFrame();
 		pStudioFrame->SetWindowText( sAppPrefix + _T(" - ") + mpProject->GetDocument()->GetTitle() );
 		pStudioFrame->DelayUpdateFrameTitle();

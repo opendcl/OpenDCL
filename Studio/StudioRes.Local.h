@@ -574,6 +574,7 @@
 #define IDS_SELECTPROJECTLISPFILE       20003
 #define IDS_FILETYPE                    20004
 #define IDS_PROJECT                     20017
+#define IDS_PROJECT                     20017
 #define IDS_TOOLBOX                     20018
 #define IDS_ZTABORDER                   20019
 #define IDS_TTTSENDTOBACK               20020
@@ -661,8 +662,8 @@
 #define IDS_AXMETHODMOREINFO            20118
 #define IDS_AXMETHODMSDN                20119
 #define IDS_AXNOTERELEASEOBJECT         20127
-#define IDS_ALTCOLORS                   20134
-#define IDS_ALTCOLOR                    20134
+#define IDS_ALTCOLOR                    20128
+#define IDS_UNDO_SAVEPROJECT            20134
 #define IDS_UNDO_SELECTFORM             20135
 #define IDS_UNDO_ADDFORM                20136
 #define IDS_UNDO_REMOVEFORM             20137

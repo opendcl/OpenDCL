@@ -8,11 +8,14 @@
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 
+class CStudioProject;
+
 
 namespace Undo
 {
 	enum Action
 	{
+		SaveProject,
 		BeginGroup,
 		EndGroup,
 		AddForm,
@@ -46,6 +49,23 @@ public:
 #endif
 };
 
+
+class CSaveProjectUA : public CUndoAction
+{
+	CStudioProject* mpProject;
+public:
+	CSaveProjectUA( CStudioProject* pProject )
+		: CUndoAction( Undo::SaveProject ), mpProject( pProject ) {}
+	virtual ~CSaveProjectUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const { return _T("SaveProject"); }
+#endif
+};
 
 class CBeginGroupUA : public CUndoAction
 {

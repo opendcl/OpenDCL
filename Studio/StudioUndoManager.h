@@ -30,6 +30,7 @@ public:
 	virtual bool AddAction( CUndoAction* pAction );
 	virtual bool Undo( size_t ctActions = 1 );
 	virtual bool GetUndoableActions( CStringArray& rsUndoActions, size_t ctMax = 0 );
+	virtual bool SaveProject();
 	virtual bool BeginGroup( LPCTSTR pszDisplayName );
 	virtual bool EndGroup();
 	virtual bool SelectForm( TDclFormPtr pForm );

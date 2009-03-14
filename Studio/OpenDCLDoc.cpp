@@ -42,6 +42,13 @@ void COpenDCLDoc::SetModifiedFlag(BOOL bModified /*= TRUE*/)
 	{ //save document state
 	}
 	__super::SetModifiedFlag( bModified );
+	CString sAppPrefix;
+	GetDocTemplate()->GetDocString( sAppPrefix, CDocTemplate::windowTitle );
+	if( bModified )
+		sAppPrefix += _T('*');
+	CStudioFrame* pStudioFrame = theStudioWorkspace.GetStudioFrame();
+	pStudioFrame->SetWindowText( sAppPrefix + _T(" - ") + GetTitle() );
+	pStudioFrame->DelayUpdateFrameTitle();
 }
 
 
@@ -120,6 +127,9 @@ BOOL COpenDCLDoc::OnSaveDocument( LPCTSTR lpszPathName )
 	}
 	SetTitle( mpProject->GetKeyName() );
 	theStudioWorkspace.ActivateProject( mpProject, this ); //to update the main fram title
+	CUndoManager* pUndoManager = mpProject->GetUndoManager();
+	if( pUndoManager )
+		pUndoManager->SaveProject();
 	SetModifiedFlag( FALSE );     // back to unmodified
 	((CStudioFrame*)AfxGetApp()->GetMainWnd())->DelayUpdateFrameTitle();
 

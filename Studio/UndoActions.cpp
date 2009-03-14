@@ -12,6 +12,17 @@
 #include "Resource.h"
 
 
+CString CSaveProjectUA::GetDisplayName() const
+{
+	return theWorkspace.LoadResourceString( IDS_UNDO_SAVEPROJECT );
+}
+
+bool CSaveProjectUA::Undo()
+{
+	mpProject->GetDocument()->SetModifiedFlag( FALSE );
+	return true;
+}
+
 CString CSelectFormUA::GetDisplayName() const
 {
 	return theWorkspace.LoadResourceString( IDS_UNDO_SELECTFORM );

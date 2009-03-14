@@ -79,6 +79,16 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 	theStudioWorkspace.OnFlushUndoGroup(); //end any open undo groups
 	assert( /*mctGroups == 0 &&*/ mGroupProps.empty() );
 	bool bFailed = false;
+	if( !mUndoStack.empty() )
+	{
+		CUndoAction* pAction = mUndoStack.back();
+		if( pAction->GetType() == Undo::SaveProject )
+		{
+			if( !pAction->Undo() )
+				bFailed = true;
+			mUndoStack.pop_back();
+		}
+	}
 	size_t ctGroupsActive = 0;
 	while( ctActions > 0 )
 	{
@@ -102,6 +112,15 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 		if( ctGroupsActive == 0 )
 			--ctActions;
 	}
+	if( !mUndoStack.empty() )
+	{
+		CUndoAction* pAction = mUndoStack.back();
+		if( pAction->GetType() == Undo::SaveProject )
+		{
+			if( !pAction->Undo() )
+				bFailed = true;
+		}
+	}
 	setEnabled( bWasEnabled );
 	TraceFmt( _T("< CStudioUndoManager::Undo()\r\n") );
 	return !bFailed;
@@ -110,20 +129,26 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 bool CStudioUndoManager::GetUndoableActions( CStringArray& rsUndoActions, size_t ctMax /*= 0*/ )
 {
 	theStudioWorkspace.OnFlushUndoGroup(); //end any open undo groups
+	if( mUndoStack.empty() )
+		return true;
 	size_t ctGroupsActive = 0;
 	if( ctMax == 0 )
 		ctMax = ~0;
 	std::deque< CUndoAction* >::const_reverse_iterator iter = mUndoStack.rbegin();
+	if( (*iter)->GetType() == Undo::SaveProject )
+		++iter; //ignore 'Save Project' if it's at the top of the stack
 	while( ctMax > 0 && iter != mUndoStack.rend() )
 	{
 		CUndoAction* pAction = (*iter++);
-		if( pAction->GetType() == Undo::EndGroup )
+		switch( pAction->GetType() )
 		{
+		case Undo::EndGroup:
 			++ctGroupsActive;
 			continue;
-		}
-		if( pAction->GetType() == Undo::BeginGroup )
+		case Undo::BeginGroup:
 			--ctGroupsActive;
+			break;
+		}
 		if( ctGroupsActive == 0 )
 		{
 			rsUndoActions.Add( pAction->GetDisplayName() );
@@ -131,6 +156,11 @@ bool CStudioUndoManager::GetUndoableActions( CStringArray& rsUndoActions, size_t
 		}
 	}
 	return true;
+}
+
+bool CStudioUndoManager::SaveProject()
+{
+	return AddAction( new CSaveProjectUA( mpProject ) );
 }
 
 bool CStudioUndoManager::BeginGroup( LPCTSTR pszDisplayName )

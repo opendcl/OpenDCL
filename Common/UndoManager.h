@@ -26,6 +26,7 @@ public:
 
 	virtual bool GetUndoableActions( CStringArray& rsUndoActions, size_t ctMax = 0 ) = 0;
 
+	virtual bool SaveProject() = 0;
 	virtual bool BeginGroup( LPCTSTR pszDisplayName ) = 0;
 	virtual bool EndGroup() = 0;
 	virtual bool SelectForm( TDclFormPtr pForm ) = 0;

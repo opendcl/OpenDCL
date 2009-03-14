@@ -56,7 +56,7 @@ TStudioProjectPtr CStudioWorkspace::GetActiveProject() const
 
 void CStudioWorkspace::SetModified( bool bModified )
 {
-	__super::SetModified();
+	__super::SetModified( bModified );
 }
 
 CDocument* CStudioWorkspace::GetActiveDocument() const
