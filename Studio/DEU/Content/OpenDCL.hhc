@@ -162,11 +162,11 @@
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DWG-Liste">
-				<param name="Local" value="Reference\Control\DWGList.htm">
+				<param name="Local" value="Reference\Control\DwgList.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DWG-Vorschau">
-				<param name="Local" value="Reference\Control\DWGPreview.htm">
+				<param name="Local" value="Reference\Control\DwgPreview.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Hyperlink">
@@ -1714,118 +1714,118 @@
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DWG-Liste">
-				<param name="Local" value="Reference\Method\Index.htm#DWGList">
+				<param name="Local" value="Reference\Method\Index.htm#DwgList">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="DeleteItem">
-					<param name="Local" value="Reference\Method\DWGList/DeleteItem.htm">
+					<param name="Local" value="Reference\Method\DwgList/DeleteItem.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Dir">
-					<param name="Local" value="Reference\Method\DWGList/Dir.htm">
+					<param name="Local" value="Reference\Method\DwgList/Dir.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetAnchorIndex">
-					<param name="Local" value="Reference\Method\DWGList/GetAnchorIndex.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetAnchorIndex.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetCount">
-					<param name="Local" value="Reference\Method\DWGList/GetCount.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetCount.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetCurSel">
-					<param name="Local" value="Reference\Method\DWGList/GetCurSel.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetCurSel.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetDir">
-					<param name="Local" value="Reference\Method\DWGList/GetDir.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetDir.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetFileName">
-					<param name="Local" value="Reference\Method\DWGList/GetFileName.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetFileName.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetFocusIndex">
-					<param name="Local" value="Reference\Method\DWGList/GetFocusIndex.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetFocusIndex.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetSelCount">
-					<param name="Local" value="Reference\Method\DWGList/GetSelCount.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetSelCount.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetSelectedItems">
-					<param name="Local" value="Reference\Method\DWGList/GetSelectedItems.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetSelectedItems.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetSelectedNths">
-					<param name="Local" value="Reference\Method\DWGList/GetSelectedNths.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetSelectedNths.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetText">
-					<param name="Local" value="Reference\Method\DWGList/GetText.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetText.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetTopIndex">
-					<param name="Local" value="Reference\Method\DWGList/GetTopIndex.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetTopIndex.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetType">
-					<param name="Local" value="Reference\Method\DWGList/GetType.htm">
+					<param name="Local" value="Reference\Method\DwgList/GetType.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="IsItemSelected">
-					<param name="Local" value="Reference\Method\DWGList/IsItemSelected.htm">
+					<param name="Local" value="Reference\Method\DwgList/IsItemSelected.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SelectItem">
-					<param name="Local" value="Reference\Method\DWGList/SelectItem.htm">
+					<param name="Local" value="Reference\Method\DwgList/SelectItem.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SelItemRange">
-					<param name="Local" value="Reference\Method\DWGList/SelItemRange.htm">
+					<param name="Local" value="Reference\Method\DwgList/SelItemRange.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetAnchorIndex">
-					<param name="Local" value="Reference\Method\DWGList/SetAnchorIndex.htm">
+					<param name="Local" value="Reference\Method\DwgList/SetAnchorIndex.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetCurSel">
-					<param name="Local" value="Reference\Method\DWGList/SetCurSel.htm">
+					<param name="Local" value="Reference\Method\DwgList/SetCurSel.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetFocusIndex">
-					<param name="Local" value="Reference\Method\DWGList/SetFocusIndex.htm">
+					<param name="Local" value="Reference\Method\DwgList/SetFocusIndex.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetTopIndex">
-					<param name="Local" value="Reference\Method\DWGList/SetTopIndex.htm">
+					<param name="Local" value="Reference\Method\DwgList/SetTopIndex.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DWG-Vorschau">
-				<param name="Local" value="Reference\Method\Index.htm#DWGPreview">
+				<param name="Local" value="Reference\Method\Index.htm#DwgPreview">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\DWGPreview/Clear.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/Clear.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetDwgName">
-					<param name="Local" value="Reference\Method\DWGPreview/GetDwgName.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/GetDwgName.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="LoadDwg">
-					<param name="Local" value="Reference\Method\DWGPreview/LoadDwg.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/LoadDwg.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="RemoveHighlight">
-					<param name="Local" value="Reference\Method\DWGPreview/RemoveHighlight.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/RemoveHighlight.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetHighlight">
-					<param name="Local" value="Reference\Method\DWGPreview/SetHighlight.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/SetHighlight.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">

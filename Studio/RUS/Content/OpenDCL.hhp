@@ -50,7 +50,7 @@ Reference\Control\Calendar.htm
 Reference\Control\CheckBox.htm
 Reference\Control\ComboBox.htm
 Reference\Control\DWGList.htm
-Reference\Control\DWGPreview.htm
+Reference\Control\DwgPreview.htm
 Reference\Control\FileExplorer.htm
 Reference\Control\Frame.htm
 Reference\Control\GraphicButton.htm
@@ -377,11 +377,11 @@ Reference\Method\DWGList\SetAnchorIndex.htm
 Reference\Method\DWGList\SetCurSel.htm
 Reference\Method\DWGList\SetFocusIndex.htm
 Reference\Method\DWGList\SetTopIndex.htm
-Reference\Method\DWGPreview\Clear.htm
-Reference\Method\DWGPreview\GetDwgName.htm
-Reference\Method\DWGPreview\LoadDwg.htm
-Reference\Method\DWGPreview\RemoveHighlight.htm
-Reference\Method\DWGPreview\SetHighlight.htm
+Reference\Method\DwgPreview\Clear.htm
+Reference\Method\DwgPreview\GetDwgName.htm
+Reference\Method\DwgPreview\LoadDwg.htm
+Reference\Method\DwgPreview\RemoveHighlight.htm
+Reference\Method\DwgPreview\SetHighlight.htm
 Reference\Method\FileExplorer\GetFileExt.htm
 Reference\Method\FileExplorer\GetFileName.htm
 Reference\Method\FileExplorer\GetFileNameList.htm

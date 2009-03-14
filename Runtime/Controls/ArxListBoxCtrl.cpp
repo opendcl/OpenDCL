@@ -86,7 +86,6 @@ BEGIN_MESSAGE_MAP(CArxListBoxCtrl, CListBoxCtrl)
 	ON_CONTROL_REFLECT(LBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(LBN_SETFOCUS, OnSetfocus)
 	ON_WM_RBUTTONUP()
-  ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 
@@ -157,19 +156,16 @@ void CArxListBoxCtrl::OnSetfocus()
 
 BOOL CArxListBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	GetToolTipCtrl().RelayEvent(pMsg);
-	return __super::PreTranslateMessage(pMsg);
-}
-
-void CArxListBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
-{
-  if (nChar == VK_RETURN)
+	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
 	{
-			//Change return into a double-click
-			InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
-  }
-	else
-    __super::OnKeyDown(nChar, nRepCnt, nFlags);
+		CString sEvent = mpTemplate->GetStringProperty(Prop::EventDblClicked);
+		if( !sEvent.IsEmpty() )
+		{
+			InvokeMethod( sEvent, IsAsyncEvents() );
+			return TRUE;
+		}
+	}
+	return __super::PreTranslateMessage(pMsg);
 }
 
 void CArxListBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point) 

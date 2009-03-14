@@ -158,7 +158,7 @@
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DWG Preview">
-				<param name="Local" value="Reference\Control\DWGPreview.htm">
+				<param name="Local" value="Reference\Control\DwgPreview.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="File Explorer">
@@ -1524,28 +1524,28 @@
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DWG Preview">
-				<param name="Local" value="Reference\Method\Index.htm#DWGPreview">
+				<param name="Local" value="Reference\Method\Index.htm#DwgPreview">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\DWGPreview/Clear.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/Clear.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetDwgName">
-					<param name="Local" value="Reference\Method\DWGPreview/GetDwgName.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/GetDwgName.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="LoadDwg">
-					<param name="Local" value="Reference\Method\DWGPreview/LoadDwg.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/LoadDwg.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="RemoveHighlight">
-					<param name="Local" value="Reference\Method\DWGPreview/RemoveHighlight.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/RemoveHighlight.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetHighlight">
-					<param name="Local" value="Reference\Method\DWGPreview/SetHighlight.htm">
+					<param name="Local" value="Reference\Method\DwgPreview/SetHighlight.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
