@@ -6332,7 +6332,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_108E78A3B304477ABDFC57CCF4E37E4E"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\DeleteItem.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\DeleteItem.htm"
             "TargetName" = "8:DeleteItem.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -7392,7 +7392,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_22145903EA7549D197589991F6F65996"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetCurSel.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetCurSel.htm"
             "TargetName" = "8:GetCurSel.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -7872,7 +7872,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2A3EECD6671344C4BF0F6279146D4873"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetAnchorIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetAnchorIndex.htm"
             "TargetName" = "8:SetAnchorIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -8472,7 +8472,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_32B5743265554236AD5489DDF135FA50"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\IsItemSelected.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\IsItemSelected.htm"
             "TargetName" = "8:IsItemSelected.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -8592,7 +8592,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_349D05F7D377445AA411B780ECB21BE9"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetCount.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetCount.htm"
             "TargetName" = "8:GetCount.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -9092,7 +9092,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3B4949B0D091426CBDB4F612B25F5167"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\Dir.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\Dir.htm"
             "TargetName" = "8:Dir.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -9312,7 +9312,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3D38CE9685A747398A89234517264A13"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetSelectedNths.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetSelectedNths.htm"
             "TargetName" = "8:GetSelectedNths.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -10632,7 +10632,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4C5575199792466687C313C9100871AE"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetFileName.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetFileName.htm"
             "TargetName" = "8:GetFileName.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -11332,7 +11332,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_55EAD7A936874DE4BEE3EF1BFBAA9461"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetFocusIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetFocusIndex.htm"
             "TargetName" = "8:GetFocusIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -12292,7 +12292,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_67F52F906DD54990AB74E5EF05401052"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetSelCount.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetSelCount.htm"
             "TargetName" = "8:GetSelCount.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -13192,7 +13192,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_739CFC4E345A48B88978E64D0AAD12CE"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetFocusIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetFocusIndex.htm"
             "TargetName" = "8:SetFocusIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -13492,8 +13492,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7916845C6D0540588C85A4FF01EBFFE2"
             {
-            "SourcePath" = "8:Content\\Reference\\Control\\DWGList.htm"
-            "TargetName" = "8:DWGList.htm"
+            "SourcePath" = "8:Content\\Reference\\Control\\DwgList.htm"
+            "TargetName" = "8:DwgList.htm"
             "Tag" = "8:"
             "Folder" = "8:_EEF3112076C1437CA18B8CC319E44B2E"
             "Condition" = "8:"
@@ -14092,7 +14092,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_82334966C2254DF99E42386516D37D74"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetCurSel.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetCurSel.htm"
             "TargetName" = "8:SetCurSel.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -14272,7 +14272,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_849F9D4AC71840118E43B18B1EF7245A"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetDir.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetDir.htm"
             "TargetName" = "8:GetDir.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -15672,7 +15672,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9A802C34CF5A4F608054C73C4FB25EC4"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\LoadDwg.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\LoadDwg.htm"
             "TargetName" = "8:LoadDwg.htm"
             "Tag" = "8:"
             "Folder" = "8:_FCA30173431C48B3BB6D02A874BC2F1F"
@@ -15732,8 +15732,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B2693952523480CB51C6C7B8B4293EF"
             {
-            "SourcePath" = "8:Content\\Reference\\Control\\DWGPreview.htm"
-            "TargetName" = "8:DWGPreview.htm"
+            "SourcePath" = "8:Content\\Reference\\Control\\DwgPreview.htm"
+            "TargetName" = "8:DwgPreview.htm"
             "Tag" = "8:"
             "Folder" = "8:_EEF3112076C1437CA18B8CC319E44B2E"
             "Condition" = "8:"
@@ -15992,7 +15992,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A103051799D6419E977B1A24D005CB2D"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SelItemRange.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SelItemRange.htm"
             "TargetName" = "8:SelItemRange.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -16052,7 +16052,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A1EE1B57195C42C6B889674EBD911AF2"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SelectItem.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SelectItem.htm"
             "TargetName" = "8:SelectItem.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -16512,7 +16512,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A6F209CA1CA9489D94799CE8ACA97163"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetSelectedItems.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetSelectedItems.htm"
             "TargetName" = "8:GetSelectedItems.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -16992,7 +16992,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AFDF194E0E1E48ECAAA07176CFABCCBD"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\Clear.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\Clear.htm"
             "TargetName" = "8:Clear.htm"
             "Tag" = "8:"
             "Folder" = "8:_FCA30173431C48B3BB6D02A874BC2F1F"
@@ -17592,7 +17592,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B721DBC90BB5432DABBF60D971FF6B72"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\SetHighlight.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\SetHighlight.htm"
             "TargetName" = "8:SetHighlight.htm"
             "Tag" = "8:"
             "Folder" = "8:_FCA30173431C48B3BB6D02A874BC2F1F"
@@ -18152,7 +18152,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BD2CC195D0F14F43961A7891CF0E7E29"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetTopIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetTopIndex.htm"
             "TargetName" = "8:SetTopIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -18372,7 +18372,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BFCAEBC5E5C44A9B930F0BA420248B6E"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetText.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetText.htm"
             "TargetName" = "8:GetText.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -19492,7 +19492,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CFDF2A472ABB40E886EE3A791D2970F9"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\GetDwgName.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\GetDwgName.htm"
             "TargetName" = "8:GetDwgName.htm"
             "Tag" = "8:"
             "Folder" = "8:_FCA30173431C48B3BB6D02A874BC2F1F"
@@ -19652,7 +19652,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2A0BDE119EE4D4AAFCC1505FDCD2BA3"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\RemoveHighlight.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\RemoveHighlight.htm"
             "TargetName" = "8:RemoveHighlight.htm"
             "Tag" = "8:"
             "Folder" = "8:_FCA30173431C48B3BB6D02A874BC2F1F"
@@ -20972,7 +20972,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E56D23F06A374987B78BFA01AC7C16AA"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetAnchorIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetAnchorIndex.htm"
             "TargetName" = "8:GetAnchorIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -21912,7 +21912,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3DC3DA6E0BF4A229EFD36FF669A5A69"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetTopIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetTopIndex.htm"
             "TargetName" = "8:GetTopIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -22672,7 +22672,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE99B101624D4C62A7E99E3D01841854"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetType.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetType.htm"
             "TargetName" = "8:GetType.htm"
             "Tag" = "8:"
             "Folder" = "8:_8C8115614A50470FAF5109E6EC925B99"
@@ -23036,7 +23036,7 @@
                                             }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_8C8115614A50470FAF5109E6EC925B99"
                                             {
-                                            "Name" = "8:DWGList"
+                                            "Name" = "8:DwgList"
                                             "AlwaysCreate" = "11:FALSE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
@@ -23168,7 +23168,7 @@
                                             }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_FCA30173431C48B3BB6D02A874BC2F1F"
                                             {
-                                            "Name" = "8:DWGPreview"
+                                            "Name" = "8:DwgPreview"
                                             "AlwaysCreate" = "11:FALSE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
@@ -23277,14 +23277,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{8827BE87-B4DE-4392-BC04-A380549DF3FC}"
-        "PackageCode" = "8:{EA97312F-FBB2-4662-A023-22CAEB6251E6}"
+        "ProductCode" = "8:{E53AD212-9270-4193-AA26-E2877D8FD8F5}"
+        "PackageCode" = "8:{594AFC15-4A1A-4DBC-B779-37134FCCA85B}"
         "UpgradeCode" = "8:{9BE5DB7C-1263-4235-90AC-B4E5E907789D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0202"
+        "ProductVersion" = "8:5.0.0203"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -23708,7 +23708,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A8361C58329D485681B1DB1E164808CC"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Status"
+                    "DisplayName" = "8:Progress"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminProgressDlg.wid"
@@ -23752,7 +23752,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_D763CA0E6877420FB5DD437A591BF447"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Status"
+                    "DisplayName" = "8:Progress"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdProgressDlg.wid"
@@ -23796,7 +23796,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_2FF78800DDBC42CDA568DA58C9F459C5"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:Installationsordner"
+                    "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFolderDlg.wid"
@@ -23831,7 +23831,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EB241A339D9A418E8DEFCB5FFDB17D5D"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:Installation bestätigen"
+                    "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdConfirmDlg.wid"
@@ -23853,7 +23853,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_FA3D7FB08D0A405FA8055751689548EE"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Willkommen"
+                    "DisplayName" = "8:Welcome"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
@@ -23916,7 +23916,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_07146DDAE83247A8808D0EFF67F9776C"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Fertig"
+                    "DisplayName" = "8:Finished"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFinishedDlg.wid"
@@ -23947,7 +23947,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A8D027A8BC69418F858B528268C0117B"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Fertig"
+                    "DisplayName" = "8:Finished"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFinishedDlg.wid"
@@ -23991,7 +23991,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_77848BECC66245E298E61CE34FA02CCE"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:Installation bestätigen"
+                    "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminConfirmDlg.wid"
@@ -24013,7 +24013,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_9B70ECF7A4B343C09E265B2A61A930A2"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:Installationsordner"
+                    "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFolderDlg.wid"
@@ -24035,7 +24035,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EC780BEFD3A94A60858EF2447BE0E0B4"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Willkommen"
+                    "DisplayName" = "8:Welcome"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminWelcomeDlg.wid"
@@ -24090,7 +24090,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6EF0E4A8AFA94935BAB16FE4BA890004"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_487033F9EABD4B2CBE28062474924C4F"
@@ -24146,7 +24146,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EFEAA11A7FB34DABA7378353D9CAA185"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -24199,7 +24199,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FDB2ABC5CC62416389847706827F8059"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -24225,6 +24225,9 @@
                 {
                 }
             }
+        }
+        "VJSharpPlugin"
+        {
         }
     }
 }

@@ -1655,7 +1655,7 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		acedAlert(_T("(dcl_Get_Attr) is not implemented yet!"));
+		theWorkspace.DisplayAlert(_T("(dcl_Get_Attr) is not implemented yet!"));
 
 		return (RSRSLT) ;
 	}

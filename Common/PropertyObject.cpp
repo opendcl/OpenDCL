@@ -550,7 +550,7 @@ public:
 				PropVal::TCStringArray::const_iterator iter = mpValue->begin();
 				while( iter != mpValue->end() )
 				{
-					if( !v.IsEmpty() )
+					if( iter != mpValue->begin() )
 						v += _T('|');
 					v += (*iter++);
 				}
@@ -564,6 +564,10 @@ public:
 				return true;
 			if( !mpValue )
 				mpValue = new PropVal::TCStringArray;
+			else
+				mpValue->clear();
+			if( v[0] == _T('|') )
+				mpValue->push_back( _T("") );
 			int idxToken = 0;
 			int cchVal = v.GetLength();
 			while( idxToken >= 0 && idxToken < cchVal )
@@ -684,7 +688,7 @@ public:
 				PropVal::TIntArray::const_iterator iter = mpValue->begin();
 				while( iter != mpValue->end() )
 				{
-					if( !v.IsEmpty() )
+					if( iter != mpValue->begin() )
 						v += _T('|');
 					CString sFmt;
 					sFmt.Format( _T("%d"), (*iter++) );
@@ -700,6 +704,10 @@ public:
 				return true;
 			if( !mpValue )
 				mpValue = new PropVal::TIntArray;
+			else
+				mpValue->clear();
+			if( v[0] == _T('|') )
+				mpValue->push_back( -1 );
 			int idxToken = 0;
 			int cchVal = v.GetLength();
 			while( idxToken >= 0 && idxToken < cchVal )

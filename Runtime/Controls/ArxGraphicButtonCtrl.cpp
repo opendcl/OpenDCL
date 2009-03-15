@@ -85,7 +85,7 @@ void CArxGraphicButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxGraphicButtonCtrl::OnDoubleclicked() 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDblClicked ), false );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDblClicked ), IsAsyncEvents() );
 }
 
 void CArxGraphicButtonCtrl::OnClicked() 

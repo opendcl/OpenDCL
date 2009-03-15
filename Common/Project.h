@@ -163,8 +163,8 @@ public:
 	TDclFormPtr FindDclForm( LPCTSTR pszDclFormName ) const;
 	TDclFormPtr FindDclFormWithVarName( LPCTSTR pszVarName ) const;
 	TDclControlPtr FindControlWithVarName( LPCTSTR pszVarName ) const;
-	TDclFormPtr FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const;
-	TDclFormPtr FindParentDclForm( LPCTSTR pszParentFormName ) const;
+	TDclFormPtr FindDclTabChildForm( LPCTSTR pszParentUniqueName, size_t nTabIndex ) const;
+	TDclFormPtr FindParentDclForm( LPCTSTR pszParentUniqueName ) const;
 	bool FindChildForms( TDclFormPtr pParentForm, TDclFormList& ChildForms ) const;
 
 public:

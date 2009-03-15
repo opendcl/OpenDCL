@@ -311,21 +311,21 @@ TDclControlPtr CProject::FindControlWithVarName( LPCTSTR pszVarName ) const
   return NULL;
 }
 
-TDclFormPtr CProject::FindParentDclForm( LPCTSTR pszParentFormName ) const
+TDclFormPtr CProject::FindParentDclForm( LPCTSTR pszParentUniqueName ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    if( (*iterForm)->GetUniqueName() == pszParentFormName )
+    if( (*iterForm)->GetUniqueName() == pszParentUniqueName )
       return (*iterForm);
 	}
   return NULL;
 }
 
-TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const
+TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentUniqueName, size_t nTabIndex ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    if ((*iterForm)->GetParentName() == pszParentFormName && (*iterForm)->GetTabIndex() == nTabIndex)
+    if ((*iterForm)->GetParentName() == pszParentUniqueName && (*iterForm)->GetTabIndex() == nTabIndex)
       return (*iterForm);
 	}
   return NULL;

@@ -254,10 +254,15 @@ void CArxBlockViewCtrl::RefreshBlock()
 
 bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 {
+	if( !pszFilename || !*pszFilename )
+		return false;
+
 	CString sPath = theWorkspace.FindFile( pszFilename ); 
 	if( sPath.IsEmpty() )
 	{				
-		acedAlert( theWorkspace.LoadResourceString(IDS_DWGNOTLOADING) + pszFilename );
+		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+		sMsg.Format( pszFilename );
+		theWorkspace.DisplayAlert( sMsg );
 		return false;
 	}
 
@@ -269,7 +274,9 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 	// Try to open the user specified file
 	if (Acad::eOk != mpSourceDb->readDwgFile(sPath,_SH_DENYNO,false))
 	{
-		acedAlert( theWorkspace.LoadResourceString(IDS_DWGNOTLOADING) + pszFilename );
+		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+		sMsg.Format( pszFilename );
+		theWorkspace.DisplayAlert( sMsg );
 		delete mpSourceDb;
 		mpSourceDb = NULL;
 		return false;
@@ -295,27 +302,32 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 																				double dCameraY, 
 																				double dCameraZ)
 {
-	AcDbExtents extents;
+	if( !pszFilename || !*pszFilename )
+		return false;
 
 	CString sPath = theWorkspace.FindFile( pszFilename ); 
 	if( sPath.IsEmpty() )
 	{				
-		acedAlert( theWorkspace.LoadResourceString(IDS_DWGNOTLOADING) + pszFilename );
+		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+		sMsg.Format( pszFilename );
+		theWorkspace.DisplayAlert( sMsg );
 		return false;
 	}
 
 	clearAll();
 	AcDbBlockTableRecord *pRec = NULL;
 	AcDbBlockTable *pTab = NULL;
-	Acad::ErrorStatus es;
+	AcDbExtents extents;
 
 	// This database is used to open the user specified file into if it exists
 	mpSourceDb = new AcDbDatabase(false, true);
-	es = mpSourceDb->readDwgFile(sPath, _SH_DENYNO);
+	Acad::ErrorStatus es = mpSourceDb->readDwgFile(sPath, _SH_DENYNO);
 	// Try to open the user specified file
 	if (es != Acad::eOk)
 	{
-		acedAlert( theWorkspace.LoadResourceString(IDS_DWGNOTLOADING) + pszFilename );
+		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+		sMsg.Format( pszFilename );
+		theWorkspace.DisplayAlert( sMsg );
 		delete mpSourceDb;
 		mpSourceDb = NULL;
 		return false;

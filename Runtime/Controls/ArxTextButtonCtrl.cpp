@@ -85,7 +85,7 @@ void CArxTextButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxTextButtonCtrl::OnDoubleclicked() 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDblClicked ), false );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDblClicked ), IsAsyncEvents() );
 }
 
 void CArxTextButtonCtrl::OnClicked() 

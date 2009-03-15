@@ -25,8 +25,8 @@ Content\$(TargetName).chm : Content\Reference\Method\BlockView\*.htm
 Content\$(TargetName).chm : Content\Reference\Method\Calendar\*.htm
 Content\$(TargetName).chm : Content\Reference\Method\ComboBox\*.htm
 Content\$(TargetName).chm : Content\Reference\Method\Control\*.htm
-Content\$(TargetName).chm : Content\Reference\Method\DWGList\*.htm
-Content\$(TargetName).chm : Content\Reference\Method\DWGPreview\*.htm
+Content\$(TargetName).chm : Content\Reference\Method\DwgList\*.htm
+Content\$(TargetName).chm : Content\Reference\Method\DwgPreview\*.htm
 Content\$(TargetName).chm : Content\Reference\Method\FileExplorer\*.htm
 Content\$(TargetName).chm : Content\Reference\Method\Form\*.htm
 Content\$(TargetName).chm : Content\Reference\Method\Grid\*.htm

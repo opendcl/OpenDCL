@@ -15,6 +15,8 @@
 #include "PictureFolder.h"
 #include "ProjectPasswordDlg.h"
 #include "DclFormView.h"
+#include "ControlManager.h"
+#include "StudioDialogControl.h"
 
 
 static CString StripPathFromFileName(CString sFullPath)
@@ -504,51 +506,31 @@ void CProjectPane::CleanupParents()
 
 void CProjectPane::OnRemoveForm() 
 {
-	// get the project tree
-	CProjectPane *pProjTree = theStudioWorkspace.GetProjectPane();
-	ASSERT(pProjTree != NULL);
-	if (!pProjTree)
-		return;
-	TStudioProjectPtr pProject = pProjTree->GetProject();
-	ASSERT(pProject != NULL);
-	if (!pProject)
+	ASSERT(mpProject != NULL);
+	if( !mpProject )
 		return;
 
 	// get the selected form
-	HTREEITEM hDclForm = pProjTree->GetTreeCtrl().GetSelectedItem();
-	HTREEITEM hParentItem = pProjTree->GetTreeCtrl().GetParentItem(hDclForm);
-
-	if (hParentItem != NULL && pProjTree->GetTreeCtrl().GetParentItem(hParentItem) != NULL)
-	{ //a child form was selected
-		MessageBox( theWorkspace.LoadResourceString(IDS_CANNOTREMOVETABPANE),
-								theWorkspace.GetAppKey(),
-								(MB_OK | MB_ICONEXCLAMATION) );
+	HTREEITEM hDclForm = GetTreeCtrl().GetSelectedItem();
+	if( !hDclForm )
 		return;
-	}
-
-	// if it's not valid exit here
-	if (hDclForm == NULL)
-		return;
-
-	if (pProjTree->GetAutoLispFileTreeItem() == hDclForm ||
-			pProjTree->GetAutoLispFileParentTreeItem() == hDclForm ||
-			pProjTree->GetOptionsTabParentTreeItem() == hDclForm ||
-			pProjTree->GetControlBarParentTreeItem() == hDclForm ||
-			pProjTree->GetModalParentTreeItem() == hDclForm ||
-			pProjTree->GetModelessParentTreeItem() == hDclForm ||
-			pProjTree->GetPasswordTreeItem() == hDclForm ||
-			pProjTree->GetPasswordParentTreeItem() == hDclForm ||
-			pProjTree->GetAxFilesParentTreeItem() == hDclForm)
-	{ //the selected tree item was not a form
-		MessageBox( theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL),
-								theWorkspace.GetAppKey(),
-								(MB_OK | MB_ICONEXCLAMATION) );
-		return;
-	}
 	
-	TDclFormPtr pDclForm = pProject->FindDclForm( pProjTree->GetTreeCtrl().GetItemText( hDclForm ) );
+	TDclFormPtr pDclForm;
+	TDclFormPtr pParentForm;
+	HTREEITEM hParentItem = GetTreeCtrl().GetParentItem( hDclForm );
+	if( hParentItem )
+	{
+		pParentForm = mpProject->FindDclForm( GetTreeCtrl().GetItemText( hParentItem ) );
+		if( pParentForm )
+		{
+			size_t idxTab = GetTreeCtrl().GetItemData( hDclForm );
+			pDclForm = mpProject->FindDclTabChildForm( pParentForm->GetUniqueName(), idxTab );
+		}
+	}
+	else
+		pDclForm = mpProject->FindDclForm( GetTreeCtrl().GetItemText( hDclForm ) );
 	if( !pDclForm )
-	{ //the form was not found for some reason
+	{
 		MessageBox( theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL),
 								theWorkspace.GetAppKey(),
 								(MB_OK | MB_ICONEXCLAMATION) );
@@ -562,16 +544,75 @@ void CProjectPane::OnRemoveForm()
 		return;
 
 	AutoUndoGroup UndoGroup( pDclForm->GetUndoManager(), IDS_UNDO_REMOVEFORM );
-	ASSERT(pDclForm->m_htiTreeItem != NULL);
-	if( pDclForm->m_htiTreeItem ) // if the tab has a tree item (which it should)
-		pProjTree->GetTreeCtrl().DeleteItem( pDclForm->m_htiTreeItem ); // delete the item.
-	pDclForm->GetProject()->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
+	assert(pDclForm->m_htiTreeItem == hDclForm);
+	if( pParentForm )
+	{ //need to delete the reference from the parent
+		switch( pDclForm->GetType() )
+		{
+		case FrmTabPage:
+			{
+				HTREEITEM hSibling = hDclForm;
+				while( (hSibling = GetTreeCtrl().GetNextSiblingItem( hSibling )) != NULL )
+				{
+					size_t idxTab = GetTreeCtrl().GetItemData( hSibling );
+					GetTreeCtrl().SetItemData( hSibling, idxTab - 1 );
+					TDclFormPtr pDclForm = mpProject->FindDclTabChildForm( pParentForm->GetUniqueName(), idxTab );
+					if( pDclForm )
+						pDclForm->SetTabIndex( idxTab - 1 );
+				}
+				TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
+				if( pTabStrip )
+				{
+					TPropertyPtr pCaptions = pTabStrip->GetPropertyObject( Prop::TabsCaption );
+					if( pCaptions )
+					{
+						PropVal::TCStringArray* prCaption = pCaptions->GetStringArrayPtr();
+						PropVal::TCStringArray::iterator iter = prCaption->begin();
+						size_t idxTab = pDclForm->GetTabIndex();
+						while( iter != prCaption->end() && idxTab > 0 ) { ++iter; --idxTab; }
+						if( iter != prCaption->end() )
+							prCaption->erase( iter );
+					}
+					TPropertyPtr pImages = pTabStrip->GetPropertyObject( Prop::TabsImageList );
+					if( pImages )
+					{
+						PropVal::TIntArray* prImage = pImages->GetIntArrayPtr();
+						PropVal::TIntArray::iterator iter = prImage->begin();
+						size_t idxTab = pDclForm->GetTabIndex();
+						while( iter != prImage->end() && idxTab > 0 ) { ++iter; --idxTab; }
+						if( iter != prImage->end() )
+							prImage->erase( iter );
+					}
+					TPropertyPtr pTooltips = pTabStrip->GetPropertyObject( Prop::TabsTTT );
+					if( pTooltips )
+					{
+						PropVal::TCStringArray* prTooltip = pTooltips->GetStringArrayPtr();
+						PropVal::TCStringArray::iterator iter = prTooltip->begin();
+						size_t idxTab = pDclForm->GetTabIndex();
+						while( iter != prTooltip->end() && idxTab > 0 ) { ++iter; --idxTab; }
+						if( iter != prTooltip->end() )
+							prTooltip->erase( iter );
+					}
+					const CDialogControl* pTabStripCtrl = pTabStrip->GetControlInstance();
+					if( pTabStripCtrl )
+					{
+						CStudioDialogControl::UpdateAllProperties( pTabStrip );
+						if( pTabStripCtrl->GetControlManager()->IsSelected() )
+							theStudioWorkspace.ActivateDclControl( pTabStrip );
+					}
+				}
+			}
+			break;
+		}
+	}
+	GetTreeCtrl().DeleteItem( hDclForm ); // delete the item.
+	mpProject->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
 
-	CDocument* pDoc = pProjTree->GetDocument();
+	CDocument* pDoc = GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
 
-	pProjTree->CleanupParents();
+	CleanupParents();
 }
 
 void CProjectPane::OnUpdateRemoveForm(CCmdUI* pCmdUI) 

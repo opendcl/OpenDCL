@@ -280,6 +280,14 @@ TDclFormPtr CDclFormObject::AddChildForm( FormType type )
 	return pDclForm;
 }
 
+void CDclFormObject::SetTabIndex( short nIndex )
+{
+	if( mnTabIndex == nIndex )
+		return;
+	mnTabIndex = nIndex;
+	OnModified();
+}
+
 LPCTSTR CDclFormObject::GetTitleText() const
 {
 	const TDclControlPtr pControl = GetControlProperties();

@@ -164,10 +164,10 @@ bool CArxBlockListCtrl::LoadDwg(CString sFileName)
 	{
 		CString sPath = theWorkspace.FindFile( sFileName ); 
 		if( sPath.IsEmpty() )
-		{				
-			CString sLoadString;
-			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
-			acedAlert(sLoadString + sFileName);
+		{
+			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+			sMsg.Format( (LPCTSTR)sFileName );
+			theWorkspace.DisplayAlert( sMsg );
 			return FALSE;
 		}
 
@@ -203,9 +203,9 @@ bool CArxBlockListCtrl::LoadDwg(CString sFileName)
 		// Try to open the user specified file
 		if (Acad::eOk != (es = m_pLoadedDwg->readDwgFile(sPath,_SH_DENYNO,false)))
 		{
-			CString sLoadString;
-			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
-			acedAlert(sLoadString + sFileName);
+			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+			sMsg.Format( (LPCTSTR)sFileName );
+			theWorkspace.DisplayAlert( sMsg );
 			delete m_pLoadedDwg;					
 			m_pLoadedDwg = NULL;
 			return false;

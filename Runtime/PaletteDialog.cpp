@@ -243,12 +243,12 @@ bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
 
 void CPaletteDialog::OnMouseEnter()
 {
-  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), true );
+  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
 };
 
 void CPaletteDialog::OnMouseLeave()
 {
-  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), true );
+  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
 };
 
 
@@ -287,11 +287,11 @@ int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
 
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), true );	
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );	
 	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
 											mpTemplate->GetLongProperty( Prop::Width ),
 											mpTemplate->GetLongProperty( Prop::Height ),
-											false );	
+											IsAsyncEvents() );	
 
 	return 1;
 }
@@ -317,18 +317,18 @@ void CPaletteDialog::OnSize(UINT nType, int cx, int cy)
 	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
 											mpTemplate->GetLongProperty( Prop::Width ), 
 											mpTemplate->GetLongProperty( Prop::Height ),
-											true );	
+											IsAsyncEvents() );	
 }
 
 BOOL CPaletteDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), true);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
 	return TRUE;
 }
 
 void CPaletteDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), true);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), IsAsyncEvents());	
 
 	//mbHiding = !IsClosing() && !bShow;
 	__super::OnShowWindow(bShow, nStatus);
@@ -344,7 +344,7 @@ bool CPaletteDialog::OnClosing()
 	if( IsClosing() )
 		return true;
 	SetClosing();
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventClose), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventClose), IsAsyncEvents());
 	if( /*!mbHiding && */!IsFloating() )
 		mHostPaletteSet.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

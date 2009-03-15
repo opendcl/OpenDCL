@@ -25,7 +25,6 @@
 #define IDS_ERR_INVALIDARGUMENTTYPE     20004
 #define IDS_AUTOUPDATECHECK             20005
 #define IDS_CLOSEMENU                   20006
-#define IDS_METHODVARNAMEINCORRECT      20007
 #define IDS_BANNER                      20008
 #define IDS_ERR_ARGEXCEPTION            20009
 #define IDS_ERR_TITLE                   20010

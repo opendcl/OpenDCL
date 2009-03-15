@@ -5406,7 +5406,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_01F93976219E43DEAA7D9BE44AA62942"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetDir.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetDir.htm"
             "TargetName" = "8:GetDir.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -6006,7 +6006,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0978545FE6AB44778D8298471271B7D2"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetAnchorIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetAnchorIndex.htm"
             "TargetName" = "8:GetAnchorIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -7006,7 +7006,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_18B1C650442045DAA4A9581E1195B0EB"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetType.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetType.htm"
             "TargetName" = "8:GetType.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -7186,7 +7186,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1A33099F0130470583F67FBDD9300F18"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\SetHighlight.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\SetHighlight.htm"
             "TargetName" = "8:SetHighlight.htm"
             "Tag" = "8:"
             "Folder" = "8:_C883F53E792046E6A753B540787CEEA3"
@@ -7526,7 +7526,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_204F37D7D9C1473E85501BBD1E956AB6"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\Dir.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\Dir.htm"
             "TargetName" = "8:Dir.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -8066,7 +8066,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_286B4DE2B69343AD8BAA96256773C19B"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetCurSel.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetCurSel.htm"
             "TargetName" = "8:GetCurSel.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -8706,7 +8706,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_312CF00FDEBD4C78B178BC79EC07D546"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetText.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetText.htm"
             "TargetName" = "8:GetText.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -8926,7 +8926,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3388C08D46F94C1790092459734B2D33"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\GetDwgName.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\GetDwgName.htm"
             "TargetName" = "8:GetDwgName.htm"
             "Tag" = "8:"
             "Folder" = "8:_C883F53E792046E6A753B540787CEEA3"
@@ -9066,7 +9066,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3640E06A93DB4AFFA346CE21EF202595"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\IsItemSelected.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\IsItemSelected.htm"
             "TargetName" = "8:IsItemSelected.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -10726,7 +10726,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E9AA9A371A34CE5B902A6D879553FF8"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetFileName.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetFileName.htm"
             "TargetName" = "8:GetFileName.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -11666,7 +11666,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5CCBEB2399984F3981BE42952D169EEF"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetSelCount.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetSelCount.htm"
             "TargetName" = "8:GetSelCount.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -11926,7 +11926,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_646A37DC04E54F4E8C71A8C0CEDF52FF"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetCurSel.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetCurSel.htm"
             "TargetName" = "8:SetCurSel.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -12126,7 +12126,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6780CA7069FA4BDBAEECEF16A5FD4D51"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\Clear.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\Clear.htm"
             "TargetName" = "8:Clear.htm"
             "Tag" = "8:"
             "Folder" = "8:_C883F53E792046E6A753B540787CEEA3"
@@ -12886,7 +12886,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_717382CBEED04E5D9364F3022E8E85B7"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetSelectedItems.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetSelectedItems.htm"
             "TargetName" = "8:GetSelectedItems.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -13166,8 +13166,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7753C88491AE464485F79F46C306C6ED"
             {
-            "SourcePath" = "8:Content\\Reference\\Control\\DWGPreview.htm"
-            "TargetName" = "8:DWGPreview.htm"
+            "SourcePath" = "8:Content\\Reference\\Control\\DwgPreview.htm"
+            "TargetName" = "8:DwgPreview.htm"
             "Tag" = "8:"
             "Folder" = "8:_96880041B96B4FCCAB68FA037594506D"
             "Condition" = "8:"
@@ -13846,7 +13846,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81F913479F8D48378FE245EA30FD819C"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SelectItem.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SelectItem.htm"
             "TargetName" = "8:SelectItem.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -15686,7 +15686,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9D4CBEBA7E1E40E290D7DB906D7FA0F0"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetTopIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetTopIndex.htm"
             "TargetName" = "8:SetTopIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -17106,7 +17106,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B0BD6994002B48E2B82DB23590F3CEE8"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\DeleteItem.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\DeleteItem.htm"
             "TargetName" = "8:DeleteItem.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -19326,8 +19326,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF3B02912B4A42FC945534F99E6EB388"
             {
-            "SourcePath" = "8:Content\\Reference\\Property\\TabToolTips.htm"
-            "TargetName" = "8:TabToolTips.htm"
+            "SourcePath" = "8:Content\\Reference\\Property\\TabToolTipList.htm"
+            "TargetName" = "8:TabToolTipList.htm"
             "Tag" = "8:"
             "Folder" = "8:_796C422628FF4194BB1827AE8B07B732"
             "Condition" = "8:"
@@ -19886,8 +19886,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D777B5BC1ED04665B6A8B906C5AA2C74"
             {
-            "SourcePath" = "8:Content\\Reference\\Control\\DWGList.htm"
-            "TargetName" = "8:DWGList.htm"
+            "SourcePath" = "8:Content\\Reference\\Control\\DwgList.htm"
+            "TargetName" = "8:DwgList.htm"
             "Tag" = "8:"
             "Folder" = "8:_96880041B96B4FCCAB68FA037594506D"
             "Condition" = "8:"
@@ -20286,7 +20286,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DCEE7BE1ECF14CFDADF3593C9E2FE953"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetFocusIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetFocusIndex.htm"
             "TargetName" = "8:GetFocusIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -20606,7 +20606,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E1823A37AB684FEFAA672D4900A98D31"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetSelectedNths.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetSelectedNths.htm"
             "TargetName" = "8:GetSelectedNths.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -20966,7 +20966,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E5F06812D3EB4AACB680F2D9AB4B14B4"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetAnchorIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetAnchorIndex.htm"
             "TargetName" = "8:SetAnchorIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -21086,7 +21086,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E77F52262E074306BFD091E478376FE2"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\RemoveHighlight.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\RemoveHighlight.htm"
             "TargetName" = "8:RemoveHighlight.htm"
             "Tag" = "8:"
             "Folder" = "8:_C883F53E792046E6A753B540787CEEA3"
@@ -21226,7 +21226,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E8B8E1151D4F4A4EBB1D5FD41B8E3296"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetCount.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetCount.htm"
             "TargetName" = "8:GetCount.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -21386,7 +21386,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EBBC205912D44DA48B7F8F946B5119B3"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SetFocusIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SetFocusIndex.htm"
             "TargetName" = "8:SetFocusIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -21406,7 +21406,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EBD6002A945242E3845F6D6F0C9FDAA6"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGPreview\\LoadDwg.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgPreview\\LoadDwg.htm"
             "TargetName" = "8:LoadDwg.htm"
             "Tag" = "8:"
             "Folder" = "8:_C883F53E792046E6A753B540787CEEA3"
@@ -21726,7 +21726,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EEF366B8142D4518A045330972127E45"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\GetTopIndex.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\GetTopIndex.htm"
             "TargetName" = "8:GetTopIndex.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -22446,7 +22446,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FD1953262A594ED194FF138DE5924E6C"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\DWGList\\SelItemRange.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\DwgList\\SelItemRange.htm"
             "TargetName" = "8:SelItemRange.htm"
             "Tag" = "8:"
             "Folder" = "8:_9D35DB7997AE4FC189CB4516AF7AD5C4"
@@ -23120,7 +23120,7 @@
                                             }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_9D35DB7997AE4FC189CB4516AF7AD5C4"
                                             {
-                                            "Name" = "8:DWGList"
+                                            "Name" = "8:DwgList"
                                             "AlwaysCreate" = "11:FALSE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
@@ -23153,7 +23153,7 @@
                                             }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_C883F53E792046E6A753B540787CEEA3"
                                             {
-                                            "Name" = "8:DWGPreview"
+                                            "Name" = "8:DwgPreview"
                                             "AlwaysCreate" = "11:FALSE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
@@ -23251,14 +23251,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{AF0541B1-71CD-4C1F-8C24-C4ABA681674E}"
-        "PackageCode" = "8:{A655E3A2-C5D9-410C-B02A-19FE56067002}"
+        "ProductCode" = "8:{E870880E-B05E-40BC-9B7F-5637F1BD8001}"
+        "PackageCode" = "8:{5C95B014-40CE-491E-A2C0-CF0E3F292D68}"
         "UpgradeCode" = "8:{13AE30FE-5152-40D5-B724-3BE317FC4DF2}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0202"
+        "ProductVersion" = "8:5.0.0203"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"

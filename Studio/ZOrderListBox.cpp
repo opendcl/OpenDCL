@@ -562,6 +562,7 @@ void CZOrderListBox::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 	if( menu.LoadMenu( IDR_MAINFRAME ) )
 	{
 		CMenu* pEditMenu = menu.GetSubMenu( 1 );
+		pEditMenu->SetDefaultItem( ID_PROPERTIES );
 		pEditMenu->TrackPopupMenu( TPM_LEFTALIGN, point.x, point.y, AfxGetMainWnd() );
 	}
 }

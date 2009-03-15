@@ -106,7 +106,7 @@ public:
 	void SetParentForm( TDclFormPtr pParentForm );
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
-	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; OnModified(); }
+	void SetTabIndex( short nIndex );
 	LPCTSTR GetTitleText() const;
 	UINT_PTR GetTitleBarIcon();
 	UINT_PTR GetNextId() { if( mnNextId < mDclControls.size() ) mnNextId = mDclControls.size(); return mnNextId++; }

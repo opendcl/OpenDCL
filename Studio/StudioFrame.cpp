@@ -562,6 +562,7 @@ void CStudioFrame::OnUndoButtonDropdown()
 	}
 	CRect rc;
 	m_wndMainToolBar.GetWindowRect(&rc);
+	menu.SetDefaultItem( 1 );
 	UINT ctUndo = menu.TrackPopupMenu(TPM_RETURNCMD | TPM_NONOTIFY | TPM_LEFTALIGN | TPM_LEFTBUTTON, rc.left + 150, rc.bottom, this);
 	if( ctUndo == 0 )
 		return;
@@ -577,5 +578,6 @@ void CStudioFrame::OnAddFormButtonDropdown()
 	
 	CRect rc;
 	m_wndMainToolBar.GetWindowRect(&rc);
+	menu.SetDefaultItem( ID_ADDMODAL );
 	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, rc.left + 194, rc.bottom, this);
 }

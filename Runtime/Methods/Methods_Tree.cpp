@@ -52,6 +52,7 @@ ADSRESULT Tree::AddParent()
 	if( bNestedLists && !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
 
+	bool bMultiple = false;
 	HTREEITEM hItem = NULL;
 	CString sLabel;
 	while( GetStringArgument( pArgs, sLabel, true ) )
@@ -71,6 +72,8 @@ ADSRESULT Tree::AddParent()
 		if( bNestedLists && !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
+		bMultiple = (hItem != NULL);
+
 		hItem = pCtrl->AddParent( sLabel, sKey, nImage, nSelectedImage, nExpandedImage );
 		if( !hItem )
 			return RSRSLT;
@@ -85,7 +88,7 @@ ADSRESULT Tree::AddParent()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	if( bNestedLists )
+	if( bMultiple )
 		acedRetT();
 	else
 		theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
@@ -109,6 +112,7 @@ ADSRESULT Tree::AddChild()
 
 	bool bFailed = false;
 
+	bool bMultiple = false;
 	HTREEITEM hItem = NULL;
 	CString sParentKey;
 	DWORD_PTR dwParentKey = -1;
@@ -134,6 +138,8 @@ ADSRESULT Tree::AddChild()
 		if( bNestedLists && !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
+		bMultiple = (hItem != NULL);
+
 		HTREEITEM hParent = (HTREEITEM)dwParentKey;
 		if( dwParentKey == -1 )
 			hParent = pCtrl->FindItem( sParentKey );
@@ -154,7 +160,7 @@ ADSRESULT Tree::AddChild()
 
 	if( !bFailed )
 	{
-		if( bNestedLists )
+		if( bMultiple )
 			acedRetT();
 		else
 			theArxWorkspace.RetHandle( (DWORD_PTR)hItem );

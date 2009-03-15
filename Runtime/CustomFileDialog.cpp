@@ -430,7 +430,7 @@ void CCustomFileDialog::OnFileNameChange()
 	if (pos == NULL || nSelCount == 0)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), -1, CString(), false);		
+		InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), -1, CString(), IsAsyncEvents());		
 		return;
 	}
 	else
@@ -438,12 +438,12 @@ void CCustomFileDialog::OnFileNameChange()
 		if (nSelCount == 1)
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, GetPathName(), false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, GetPathName(), IsAsyncEvents());			
 		}
 		else 
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), IsAsyncEvents());			
 		}
 	}
 }
@@ -455,18 +455,18 @@ void CCustomFileDialog::OnTypeChange()
 		return;
 	CString sText;
 	GetParent()->GetDlgItem(cmb1)->GetWindowText( sText );
-	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventTypeChanged), sText, false);
+	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventTypeChanged), sText, IsAsyncEvents());
 }
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
 }
 
 void CCustomFileDialog::OnFolderChange()
@@ -474,7 +474,7 @@ void CCustomFileDialog::OnFolderChange()
 	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
 		return;
-	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventFolderChanged), GetFolderPath(), false);
+	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventFolderChanged), GetFolderPath(), IsAsyncEvents());
 }
 
 void CCustomFileDialog::CloseNow() 

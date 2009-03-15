@@ -225,7 +225,8 @@ void CArxGsViewCtrl::DisplayTheBlock(
 		}
 		catch(...)
 		{
-			acedAlert(_T("An error occurred when trying to display the block."));
+			Trace(_T("* CArxGsViewCtrl::DisplayTheBlock() exception caught"));
+			assert(false);
 		}
 	}
 

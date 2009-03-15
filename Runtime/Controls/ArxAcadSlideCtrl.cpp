@@ -7,6 +7,7 @@
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
 #include "InvokeMethod.h"
+#include "Workspace.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"
 
@@ -134,7 +135,7 @@ void CArxAcadSlideCtrl::SetAcadColor(long nColor)
 
 bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {	
-	if (!mSlideCtrl.Load(pszFilename, pszSlide))
+	if( !mSlideCtrl.Load( theWorkspace.FindFile( pszFilename ), pszSlide ) )
 		return false;
 	Invalidate();
 	return true;
@@ -269,7 +270,7 @@ void CArxAcadSlideCtrl::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHe
 	CRect rcCell(nX, nY, nX + nSlideWidth, nY + nSlideHeight);
 	CxAcadSlide tSlide;
 
-	tSlide.Load(pszFilename, pszSlideName);
+	tSlide.Load( theWorkspace.FindFile( pszFilename ), pszSlideName);
 	//tSlide.Load(sFileName, sLibSldName);
 
 	// draw the slide

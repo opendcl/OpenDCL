@@ -1102,6 +1102,7 @@ void CStudioDialogObject::OnContextMenu(CWnd* pWnd, CPoint point)
 		CMenu* pEditMenu = menu.GetSubMenu( 1 );
 		if( !pDlgControl || pDlgControl->GetTemplate()->GetType() != CtlActiveX )
 			pEditMenu->RemoveMenu( ID_AXPROPERTIES, MF_BYCOMMAND ); //remove the ActiveX wizard menu item
+		pEditMenu->SetDefaultItem( ID_CONTROLBROWSER );
 		pEditMenu->TrackPopupMenu( TPM_LEFTALIGN, point.x, point.y, AfxGetMainWnd() );
 	}
 }

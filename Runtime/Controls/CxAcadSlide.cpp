@@ -78,11 +78,11 @@ bool CxAcadSlide::Load( LPCTSTR pszFilename, LPCTSTR pszSlide )
 	// dump the last one
 	FreeData();
 	m_Data = new CMemFile();
-	BYTE IdString[17];
+	CStringA IdString;
 	BYTE Type;
 	WORD Width;
 	WORD Height;
-	DWORD Aspect;
+	double Aspect;
 	WORD Hardware;
 	WORD Test;
 	CFile file;
@@ -136,7 +136,8 @@ bool CxAcadSlide::Load( LPCTSTR pszFilename, LPCTSTR pszSlide )
 	else
 		size = DWORD(file.GetLength()) - 31;
 	// get header info
-	file.Read(&IdString, sizeof(IdString));
+	file.Read(IdString.GetBuffer( 18 ), 17);
+	IdString.ReleaseBuffer( 17 );
 	TRACE("IdString: %s\n", IdString);
 	file.Read(&Type, sizeof(Type));
 	TRACE("Type: %x\n", Type);
@@ -154,9 +155,13 @@ bool CxAcadSlide::Load( LPCTSTR pszFilename, LPCTSTR pszSlide )
 	m_Height = Height;//((sldhead.Height >> 8) & 0xFF) | (sldhead.Height << 8);
 
 	if (Level == 2)
-		file.Read(&Aspect, sizeof(Aspect));
+	{
+		long lAspect;
+		file.Read(&lAspect, sizeof(lAspect));
+		Aspect = lAspect;
+	}
 	else
-		file.Read(&Aspect, 8);
+		file.Read(&Aspect, sizeof(Aspect));
 
 	TRACE(_T("Aspect: %i\n"), Aspect);
 	m_AspectRatio = ((double) Aspect) / 1E7;
@@ -167,6 +172,12 @@ bool CxAcadSlide::Load( LPCTSTR pszFilename, LPCTSTR pszSlide )
 		file.Read(&Test, sizeof(Test));
 	else
 		file.Read(&Test, 1);
+	if( Test != 0x1234 )
+	{
+		delete m_Data;
+		m_Data = NULL;
+		return false;
+	}
 
 	// get body of slide
 	//char *buf = new char [size + 1];
@@ -340,7 +351,6 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 	CBrush brush(rgb);
 	SelectObject(hdc, &pen);
 	SelectObject(hdc, &brush);
-	CPoint polypoints[10];
 
 	m_Data->SeekToBegin();
 	WORD record, fromX, fromY, toX, toY, lastX, lastY, polycount;
@@ -389,16 +399,20 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 			break;
 		// solid fill
 		case 0xFD:
-			m_Data->Read(&polycount, sizeof(polycount));
-			m_Data->Read(buf, 2);
-			for(int i = 0; i < polycount; i++)
 			{
-				m_Data->Read(buf, 6);
-				polypoints[i].x = X(MAKEWORD(buf[2], buf[3]));
-				polypoints[i].y = Y(MAKEWORD(buf[4], buf[5]));
+				m_Data->Read(&polycount, sizeof(polycount));
+				m_Data->Read(buf, 2);
+				CPoint* polypoints = new CPoint[polycount];
+				for(int i = 0; i < polycount; i++)
+				{
+					m_Data->Read(buf, 6);
+					polypoints[i].x = X(MAKEWORD(buf[2], buf[3]));
+					polypoints[i].y = Y(MAKEWORD(buf[4], buf[5]));
+				}
+				polycount--;
+				::Polygon(hdc, polypoints, polycount);
+				delete[] polypoints;
 			}
-			polycount--;
-			::Polygon(hdc, polypoints, polycount);
 			break;
 		// new color
 		case 0xFF:

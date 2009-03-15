@@ -294,6 +294,7 @@ enum Id
 	_MinId = 1,
 	_Private = -1,
 	ActiveXPropPages = 197,
+	AllowResizing = 82,
 	AllowScrolling = 168, //unused
 	AlternatingColor = 233,
 	AlternateOrient = 234,

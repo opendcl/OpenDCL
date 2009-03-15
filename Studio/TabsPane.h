@@ -16,9 +16,9 @@ public:
 	CString msCaption;
 	int mnImageIndex;
 	CString msToolTipTitle;
-	int mnOriginalIndex;
+	size_t mnOriginalIndex;
 	TDclFormPtr mpChildForm;
-	CTabInfo(int nIndex = -1) : mnOriginalIndex( nIndex ), mpChildForm( NULL ) {}
+	CTabInfo(int nIndex = -1) : mnOriginalIndex( nIndex ), mnImageIndex( -1 ), mpChildForm( NULL ) {}
 };
 
 typedef CList<CTabInfo*> CTabInfoList;

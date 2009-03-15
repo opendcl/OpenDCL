@@ -371,7 +371,6 @@ BOOL CTabsPane::OnApply()
 		
 		// call the method to update the control itself
 		CStudioDialogControl::UpdateAllProperties( mpDclControl );
-		CStudioDialogObject* pDlgObject = (CStudioDialogObject*)mpDclControl->GetOwnerForm()->GetFormInstance();
 		theStudioWorkspace.GetProjectPane()->CleanupParents();
 	}
 	catch(...)
