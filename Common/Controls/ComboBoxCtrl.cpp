@@ -14,6 +14,7 @@ CComboBoxCtrl::CComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UIN
 : CDialogControl( pTemplate, pPane, this )
 , CFilteredComboCtrl( pHandler? pHandler->GetInputFilter() : NULL )
 , mpHandler( pHandler )
+, mbIgnoreChange( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -77,6 +78,11 @@ DWORD CComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CComboBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
+{
+	ridFirst.push_back( Prop::Sorted );
+}
+
 bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
@@ -84,29 +90,40 @@ bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
+	case Prop::Sorted:
+		if( pProp->GetBooleanValue() )
+			ModifyStyle( 0, CBS_SORT, 0 );
+		else
+			ModifyStyle( CBS_SORT, 0, 0 );
+		OnListChanged();
+		OnNeedRepaint();
+		break;
 	case Prop::List:
 		if( !GetComboHandler() )
 		{
-			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
+			mbIgnoreChange = true;
 			ResetContent();
+			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
 			if( prString )
 			{
 				for( int idx = 0; (size_t)idx < prString->size(); ++idx )
-					AddString( prString->at( idx ) );
-			}
-			if( IsEnumeratingProperties() )
-			{
-				const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-				if( prInt )
 				{
-					for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
-						SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
+					int idxNewItem = AddString( prString->at( idx ) );
+					if( idxNewItem < 0 )
+						continue;
+					if( IsEnumeratingProperties() )
+					{
+						const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
+						if( prInt )
+							SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
+					}
 				}
 			}
+			mbIgnoreChange = false;
 		}
 		break;
 	case Prop::ItemData:
-		if( !IsEnumeratingProperties() || GetComboHandler() )
+		if( !IsEnumeratingProperties() && !GetComboHandler() )
 		{
 			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
 			if( prInt )
@@ -138,10 +155,41 @@ DWORD CComboBoxCtrl::GetComboStyle() const
 	return CBS_DROPDOWNLIST;
 }
 
+void CComboBoxCtrl::OnListChanged()
+{
+	if( mbIgnoreChange )
+		return;
+	TPropertyPtr pItemList = mpTemplate->GetPropertyObject( Prop::List );
+	TPropertyPtr pItemDataList = mpTemplate->GetPropertyObject( Prop::ItemData );
+	if( !pItemList && !pItemDataList )
+		return;
+	if( pItemList )
+		pItemList->clear();
+	if( pItemDataList )
+		pItemDataList->clear();
+	int ctItems = GetCount();
+	for( int idx = 0; idx < ctItems; ++idx )
+	{
+		if( pItemList )
+		{
+			CString sItem;
+			GetLBText( idx, sItem );
+			pItemList->AddStringItem( sItem );
+		}
+		if( pItemDataList )
+			pItemDataList->GetIntArrayPtr()->push_back( GetItemData( idx ) );
+	}
+}
+
+
 BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboBoxCtrl::OnDropdown)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboBoxCtrl::OnCloseUp)
+	ON_MESSAGE(CB_ADDSTRING, &CComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DELETESTRING, &CComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DIR, &CComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_INSERTSTRING, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CComboBoxCtrl::OnResetContent)
 END_MESSAGE_MAP()
 
@@ -196,11 +244,19 @@ void CComboBoxCtrl::OnCloseUp()
 		pHandler->OnDropdownClose( this );
 }
 
+LRESULT CComboBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM lParam )
+{
+	LRESULT lResult = Default();
+	OnListChanged();
+	return lResult;
+}
+
 LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 {
 	CString sSelection;
 	GetWindowText( sSelection );
 	Default();
+
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
 	{
@@ -212,5 +268,6 @@ LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 				SetCurSel( idx );
 		}
 	}
+	OnListChanged();
 	return (LRESULT)TRUE;
 }

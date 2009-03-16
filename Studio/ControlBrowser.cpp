@@ -17,41 +17,90 @@
 #include "AxInterfaceDescriptor.h"
 #include "AxContainerCtrl.h"
 #include "OpenDCL.h"
+#include "chm_lib.h"
 
 
 static bool IsLocalizedFileReadable( LPCTSTR pszFilename )
 {
-	try
-	{
-		CStdioUnicodeFile File( theWorkspace.GetLanguageSubfolderPath() + pszFilename,
-														CFile::shareDenyWrite | CFile::modeRead | CFile::typeText | CFile::osSequentialScan );
-		CString sLine;
-		if( File.ReadString( sLine ) )
-			return true;
-	}
-	catch( CFileException* e )
-	{
-		e->Delete();
-	}
-	return false;
+	CStringA sHelpFileA( AfxGetApp()->m_pszHelpFilePath );
+	chmFile* pChmFile = chm_open( sHelpFileA );
+	if( !pChmFile )
+		return false;
+	bool bReadable = false;
+	chmUnitInfo chm = {0};
+	CStringA sFilename( pszFilename );
+	sFilename.Replace( '\\', '/' );
+	CStringA sPath;
+	if( sFilename.Left( 1 ) != '/' )
+		sPath += '/';
+	sPath += sFilename;
+	if( CHM_RESOLVE_SUCCESS == chm_resolve_object( pChmFile, (LPCSTR)sPath, &chm ) )
+		bReadable = true;
+	chm_close( pChmFile );
+	//try
+	//{
+	//	CStdioUnicodeFile File( theWorkspace.GetLanguageSubfolderPath() + pszFilename,
+	//													CFile::shareDenyWrite | CFile::modeRead | CFile::typeText | CFile::osSequentialScan );
+	//	CString sLine;
+	//	if( File.ReadString( sLine ) )
+	//		return true;
+	//}
+	//catch( CFileException* e )
+	//{
+	//	e->Delete();
+	//}
+	return bReadable;
 }
 
 
-static bool ReadLocalizedFile( LPCTSTR pszFilename, CString& sContent )
+static bool ReadChmFile( LPCTSTR pszFilename, CString& sContent )
 {
-	try
+	CStringA sHelpFileA( AfxGetApp()->m_pszHelpFilePath );
+	chmFile* pChmFile = chm_open( sHelpFileA );
+	if( !pChmFile )
+		return false;
+	chmUnitInfo chm = {0};
+	CStringA sFilename( pszFilename );
+	sFilename.Replace( '\\', '/' );
+	CStringA sPath;
+	if( sFilename.Left( 1 ) != '/' )
+		sPath += '/';
+	sPath += sFilename;
+	if( CHM_RESOLVE_SUCCESS == chm_resolve_object( pChmFile, (LPCSTR)sPath, &chm ) )
 	{
-		CStdioUnicodeFile File( theWorkspace.GetLanguageSubfolderPath() + pszFilename,
-														CFile::shareDenyWrite | CFile::modeRead | CFile::typeText | CFile::osSequentialScan );
-		CString sLine;
-		while( File.ReadString( sLine ) )
-			sContent += sLine;
+		assert( chm.length + 1 < INT_MAX );
+		if( chm.length + 1 < INT_MAX )
+		{
+			CStringA sContentA;
+			LONGINT64 cchContent =
+				chm_retrieve_object( pChmFile, &chm, (unsigned char*)sContentA.GetBuffer( int(chm.length + 1) ),
+														 0, chm.length );
+			if( cchContent >= 0 && cchContent < INT_MAX )
+			{
+				sContentA.ReleaseBuffer( int(cchContent) );
+				if( (unsigned char)sContentA[0] == 0xff && (unsigned char)sContentA[1] == 0xfe )
+					sContent = sContentA.LockBuffer() + 2;
+				else if( (unsigned char)sContentA[0] == 0xfe && (unsigned char)sContentA[1] == 0xbb && (unsigned char)sContentA[1] == 0xbf )
+					sContent = sContentA.LockBuffer() + 3;
+				else
+					sContent = sContentA;
+			}
+		}
 	}
-	catch( CFileException* e )
-	{
-		e->ReportError();
-		e->Delete();
-	}
+	chm_close( pChmFile );
+	//try
+	//{
+	//	CStdioUnicodeFile File( theWorkspace.GetLanguageSubfolderPath() + pszFilename,
+	//													CFile::shareDenyWrite | CFile::modeRead | CFile::typeText | CFile::osSequentialScan );
+	//	CString sLine;
+	//	while( File.ReadString( sLine ) )
+	//		sContent += sLine;
+	//}
+	//catch( CFileException* e )
+	//{
+	//	e->ReportError();
+	//	e->Delete();
+	//}
 	return (!sContent.IsEmpty());
 }
 
@@ -62,7 +111,7 @@ static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayNam
 	if( pszTypeName && *pszTypeName )
 	{
 		CString sFilename;
-		sFilename.Format( _T("Reference/DataType/%s.htm"), (LPCTSTR)pszTypeName );
+		sFilename.Format( _T("chm://Reference/DataType/%s.htm"), (LPCTSTR)pszTypeName );
 		if( IsLocalizedFileReadable( sFilename ) )
 		{
 			CString sLinkedType;
@@ -130,8 +179,7 @@ public:
 	virtual CString description( std::map< CString, CString >& params ) const
 		{
 			CString sPath;
-			sPath.Format( _T("file://%sReference/Control/%s.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
+			sPath.Format( _T("chm://Reference/Control/%s.htm"),
 										(LPCTSTR)GetControlApiName( mpDclControl ) );
 			return sPath;
 		}
@@ -152,8 +200,7 @@ public:
 	virtual CString description( std::map< CString, CString >& params ) const
 		{
 			CString sPath;
-			sPath.Format( _T("file://%sReference/Form/%s.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
+			sPath.Format( _T("chm://Reference/Form/%s.htm"),
 										(LPCTSTR)GetFormApiName( mpDclForm ) );
 			return sPath;
 		}
@@ -173,10 +220,7 @@ public:
 	virtual int image() const { return 1; }
 	virtual CString description( std::map< CString, CString >& params ) const
 		{
-			CString sPath;
-			sPath.Format( _T("file://%sReference/DataType/Project.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath() );
-			return sPath;
+			return _T("chm://Reference/DataType/Project.htm");
 		}
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent );
 };
@@ -198,8 +242,7 @@ public:
 	virtual CString description( std::map< CString, CString >& params ) const
 		{
 			CString sPath;
-			sPath.Format( _T("file://%sReference/Property/%s.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
+			sPath.Format( _T("chm://Reference/Property/%s.htm"),
 										(LPCTSTR)GetPropertyApiName( mpProp->GetID() ) );
 			return sPath;
 		}
@@ -244,9 +287,7 @@ public:
 	virtual CString description( std::map< CString, CString >& params ) const
 		{
 			CString sPath;
-			sPath.Format( _T("file://%sReference/Method/%s"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
-										(LPCTSTR)msFilename );
+			sPath.Format( _T("chm://Reference/Method/%s"), (LPCTSTR)msFilename );
 			return sPath;
 		}
 };
@@ -271,8 +312,7 @@ public:
 		{
 			params[_T("<CONTROL-NAME>")] = mpProp->GetOwnerControl()->GetVarName();
 			CString sPath;
-			sPath.Format( _T("file://%sReference/Event/%s"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
+			sPath.Format( _T("chm://Reference/Event/%s"),
 										(LPCTSTR)msFilename );
 			return sPath;
 		}
@@ -342,10 +382,7 @@ public:
 			CString sDesc;
 			sDesc.Format( _T("<p>%s</p>%s"), (LPCTSTR)mpIDesc->GetDesc(), (LPCTSTR)propDescExtra() );
 			params[_T("{DESCRIPTION}")] = sDesc;
-			CString sPath;
-			sPath.Format( _T("file://%sReference/Property/@Template.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath() );
-			return sPath;
+			return _T("chm://Reference/Property/@Template.htm");
 		}
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 		{
@@ -516,10 +553,7 @@ public:
 			CString sDesc;
 			sDesc.Format( _T("<p>%s</p>%s"), (LPCTSTR)methodDesc(), (LPCTSTR)methodDescExtra() );
 			params[_T("{DESCRIPTION}")] = sDesc;
-			CString sPath;
-			sPath.Format( _T("file://%sReference/Method/@Template.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath() );
-			return sPath;
+			return _T("chm://Reference/Method/@Template.htm");
 		}
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 		{
@@ -650,10 +684,7 @@ protected:
 			CString sDesc;
 			sDesc.Format( _T("<p>%s</p>"), (LPCTSTR)mpEventDesc->GetDesc() );
 			params[_T("{DESCRIPTION}")] = sDesc;
-			CString sPath;
-			sPath.Format( _T("file://%sReference/Event/@Template.htm"),
-										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath() );
-			return sPath;
+			return _T("chm://Reference/Event/@Template.htm");
 		}
 	virtual CString eventArgList() const
 		{
@@ -795,7 +826,7 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 {
 	if( sMethodsHtml.IsEmpty() )
 	{
-		if( !ReadLocalizedFile( _T("Reference\\Method\\Index.htm"), sMethodsHtml ) )
+		if( !ReadChmFile( _T("/Reference/Method/Index.htm"), sMethodsHtml ) )
 			return false;
 	}
 
@@ -846,11 +877,11 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 	TDclControlPtr pDclControl = pEvent->GetOwnerControl();
 	CString sControlFile;
 	if( pDclControl->GetType() == _CtlForm )
-		sControlFile.Format( _T("Reference\\Form\\%s.htm"), (LPCTSTR)GetFormApiName( pDclControl->GetOwnerForm() ) );
+		sControlFile.Format( _T("/Reference/Form/%s.htm"), (LPCTSTR)GetFormApiName( pDclControl->GetOwnerForm() ) );
 	else
-		sControlFile.Format( _T("Reference\\Control\\%s.htm"), (LPCTSTR)GetControlApiName( pDclControl ) );
+		sControlFile.Format( _T("/Reference/Control/%s.htm"), (LPCTSTR)GetControlApiName( pDclControl ) );
 	CString sControlHtml;
-	if( !ReadLocalizedFile( sControlFile, sControlHtml ) )
+	if( !ReadChmFile( sControlFile, sControlHtml ) )
 		return false;
 
 	CString sTargetEvent = pEvent->GetApiName();
@@ -942,27 +973,6 @@ void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 	mBrowser.OnDocumentLoaded();
 }
 
-void CControlBrowser::NoNavigateBrowser::OnBeforeNavigate2(LPCTSTR lpszURL, DWORD nFlags,
-																													 LPCTSTR lpszTargetFrameName, CByteArray& baPostedData,
-																													 LPCTSTR lpszHeaders, BOOL* pbCancel)
-{
-	__super::OnBeforeNavigate2( lpszURL, nFlags, lpszTargetFrameName, baPostedData, lpszHeaders, pbCancel );
-	assert( pbCancel != NULL );
-	if( !mbEnableNavigate && !*pbCancel && (!lpszTargetFrameName || !*lpszTargetFrameName) )
-	{
-		CString sRelativeUrl( lpszURL );
-		CString sBase = theWorkspace.GetLanguageSubfolderPath();
-		sBase.MakeUpper();
-		int nBase = CString( sRelativeUrl ).MakeUpper().Find( sBase );
-		if( nBase >= 0 )
-		{
-			*pbCancel = TRUE;
-			sRelativeUrl = sRelativeUrl.Mid( nBase + sBase.GetLength() );
-			AfxGetApp()->HtmlHelp( (DWORD_PTR)(LPCTSTR)sRelativeUrl, HH_DISPLAY_TOPIC );
-		}
-	}
-}
-
 void CControlBrowser::NoNavigateBrowser::OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel)
 {
 	mbEnableNavigate = false;
@@ -1022,6 +1032,12 @@ void CControlBrowser::SetDescription( LPCTSTR pszDescription, const std::map< CS
 	mParams = params;
 	if( CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("file://"), 7, pszDescription, 7 ) == CSTR_EQUAL )
 		mDescription.Navigate( pszDescription );
+	else if( CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("chm://"), 6, pszDescription, 6 ) == CSTR_EQUAL )
+	{
+		CString sChmUrl;
+		sChmUrl.Format( _T("mk:@MSITStore:%s::%s"), AfxGetApp()->m_pszHelpFilePath, (LPCTSTR)CString( pszDescription ).Mid( 5 ) );
+		mDescription.Navigate( sChmUrl );
+	}
 	else
 		mDescription.LoadHtmlCode( pszDescription );
 }

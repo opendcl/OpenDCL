@@ -24,13 +24,18 @@ ADSRESULT ListBox::AddString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
+	int idxNewItem = -1;
 	size_t ctArgs = rsToAdd.size();
 	for( size_t idx = 0; idx < ctArgs; ++idx )
-		pItemList->AddStringItem( rsToAdd[idx] );
+	{
+		idxNewItem = pCtrl->AddString( rsToAdd[idx] );
+		if( idxNewItem < 0 )
+			return RSRSLT;
+	}
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
-		acedRetInt( pItemList->size() - 1 );
+	if( idxNewItem >= 0 )
+		acedRetInt( idxNewItem );
 	return RSRSLT;
 }
 
@@ -227,10 +232,9 @@ ADSRESULT ListBox::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	pItemList->clear();
-	if( pDlgControl->OnApplyProperty( pItemList ) )
-		acedRetT();
+	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
+	pCtrl->ResetContent();
+	acedRetT();
 	return RSRSLT;
 }
 
@@ -317,8 +321,7 @@ ADSRESULT ListBox::GetItemData()
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
 	DWORD_PTR dwData = pCtrl->GetItemData( nItem );
-	if( dwData != CB_ERR  )
-		theArxWorkspace.RetHandle( dwData );
+	theArxWorkspace.RetHandle( dwData );
 	return RSRSLT;
 }
 
@@ -337,15 +340,9 @@ ADSRESULT ListBox::DeleteItem()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	if( nIndex < 0 || nIndex >= pItemList->size() )
-		return RSRSLT;
-	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
-	PropVal::TCStringArray::iterator iterAt = pItems->begin();
-	while( nIndex-- > 0 ) iterAt++;
-	pItems->erase( iterAt );
-
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
+	int nResult = pCtrl->DeleteString( nIndex );
+	if( nResult >= 0 )
 		acedRetT();
 	return RSRSLT;
 }
@@ -369,15 +366,9 @@ ADSRESULT ListBox::InsertString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	if( nIndex < 0 || nIndex > pItemList->size() )
-		return RSRSLT;
-	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
-	PropVal::TCStringArray::iterator iterAt = pItems->begin();
-	while( nIndex-- > 0 ) iterAt++;
-	pItems->insert( iterAt, sToAdd );
-
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
+	int idxNewItem = pCtrl->InsertString( nIndex, sToAdd );
+	if( idxNewItem >= 0 )
 		acedRetT();
 	return RSRSLT;
 }

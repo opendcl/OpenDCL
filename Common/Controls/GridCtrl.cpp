@@ -708,6 +708,8 @@ DWORD_PTR CGridCtrl::GetItemData( int nRow ) const
 int CGridCtrl::InsertItem( int nRow, LPCTSTR lpszText, int nImageIndex /*= -1*/ )
 {
 	int nNewItem = __super::InsertItem( nRow, lpszText );
+	if( mRowData.size() >= (size_t)nNewItem )
+		mRowData.insert( mRowData.begin() + (size_t)nNewItem, _RowData() );
 	SetCellImages( nNewItem, 0, nImageIndex );
 	InvalidateCell( nRow, -1 );
 	return nNewItem;

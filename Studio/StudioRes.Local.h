@@ -279,7 +279,6 @@
 #define ID_ADDOPTIONS                   12009
 #define ID_ADDFILEDIALOG                12010
 #define ID_SETAUTOLISPFILENAME          12011
-#define ID_REMOVEFORM                   12012
 #define ID_TOOLS_DEFAULTFONT            12013
 #define ID_TOOLS_GRIDSPACING            12014
 #define ID_TOOLS_EVENTSCOPYTOCLIPBOARD  12015
@@ -322,6 +321,8 @@
 #define ID_AXPICTUREPROPERTYPAGE        12052
 #define ID_AXSTOCKPICTUREPROPERTYPAGE   12053
 #define ID_TOOLTIPPROPERTIES            12054
+#define ID_OPENFORM                     12055
+#define ID_REMOVEFORM                   12056
 #define ID_TOOLBOX_POINTER              13000
 #define ID_TOOLBOX_LABEL                13001
 #define ID_TOOLBOX_TEXTBUTTON           13002

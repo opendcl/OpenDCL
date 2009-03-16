@@ -14,6 +14,7 @@ CImageComboBoxCtrl::CImageComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* 
 : CDialogControl( pTemplate, pPane, this )
 , CFilteredComboExCtrl( pHandler? pHandler->GetInputFilter() : NULL )
 , mpHandler( pHandler )
+, mbIgnoreChange( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -66,17 +67,6 @@ DWORD CImageComboBoxCtrl::GetWndStyle() const
 	{
 		if( pHandler->IsOwnerDrawn() )
 			dwStyle |= (pHandler->GetItemHeight() > 0? CBS_OWNERDRAWFIXED : CBS_OWNERDRAWVARIABLE);
-		if( pHandler->IsAutoSorted() )
-			dwStyle |= CBS_SORT;
-		else
-			dwStyle &= ~(DWORD)CBS_SORT;
-	}
-	else
-	{
-		if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
-			dwStyle |= CBS_SORT;
-		else
-			dwStyle &= ~(DWORD)CBS_SORT;
 	}
 	dwStyle &= ~(DWORD)CBS_DROPDOWNLIST;
 	dwStyle |= GetComboStyle();
@@ -107,10 +97,11 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::List:
 		if( !GetComboHandler() )
 		{
+			mbIgnoreChange = true;
+			ResetContent();
 			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
 			TPropertyPtr pImagesProp = mpTemplate->GetPropertyObject( Prop::ListImages );
 			const PropVal::TIntArray* prImage = pImagesProp? pImagesProp->GetConstIntArrayPtr() : NULL;
-			ResetContent();
 			if( prString )
 			{
 				for( int idx = 0; (size_t)idx < prString->size(); ++idx )
@@ -130,22 +121,22 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 						-1,
 						0
 					};
-					InsertItem( &cbi );
+					int idxNewItem = InsertItem( &cbi );
+					if( idxNewItem < 0 )
+						continue;
+					if( IsEnumeratingProperties() )
+					{
+						const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
+						if( prInt )
+							SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
+					}
 				}
 			}
-			if( IsEnumeratingProperties() )
-			{
-				const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-				if( prInt )
-				{
-					for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
-						SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
-				}
-			}
+			mbIgnoreChange = false;
 		}
 		break;
 	case Prop::ItemData:
-		if( !IsEnumeratingProperties() || GetComboHandler() )
+		if( !IsEnumeratingProperties() && !GetComboHandler() )
 		{
 			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
 			if( prInt )
@@ -195,10 +186,41 @@ DWORD CImageComboBoxCtrl::GetComboStyle() const
 	return CBS_DROPDOWNLIST;
 }
 
+void CImageComboBoxCtrl::OnListChanged()
+{
+	if( mbIgnoreChange )
+		return;
+	TPropertyPtr pItemList = mpTemplate->GetPropertyObject( Prop::List );
+	TPropertyPtr pItemDataList = mpTemplate->GetPropertyObject( Prop::ItemData );
+	if( !pItemList && !pItemDataList )
+		return;
+	if( pItemList )
+		pItemList->clear();
+	if( pItemDataList )
+		pItemDataList->clear();
+	int ctItems = GetCount();
+	for( int idx = 0; idx < ctItems; ++idx )
+	{
+		if( pItemList )
+		{
+			CString sItem;
+			GetLBText( idx, sItem );
+			pItemList->AddStringItem( sItem );
+		}
+		if( pItemDataList )
+			pItemDataList->GetIntArrayPtr()->push_back( GetItemData( idx ) );
+	}
+}
+
+
 BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CImageComboBoxCtrl::OnDropdown)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboBoxCtrl::OnCloseUp)
+	ON_MESSAGE(CB_ADDSTRING, &CImageComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DELETESTRING, &CImageComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DIR, &CImageComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_INSERTSTRING, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CImageComboBoxCtrl::OnResetContent)
 END_MESSAGE_MAP()
 
@@ -247,6 +269,13 @@ void CImageComboBoxCtrl::OnCloseUp()
 		pHandler->OnDropdownClose( this );
 }
 
+LRESULT CImageComboBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM lParam )
+{
+	LRESULT lResult = Default();
+	OnListChanged();
+	return lResult;
+}
+
 LRESULT CImageComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 {
 	CString sSelection;
@@ -263,5 +292,6 @@ LRESULT CImageComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 				SetCurSel( idx );
 		}
 	}
+	OnListChanged();
 	return (LRESULT)TRUE;
 }

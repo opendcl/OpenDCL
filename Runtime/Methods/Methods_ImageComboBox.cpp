@@ -65,9 +65,9 @@ ADSRESULT ImageComboBox::AddString()
 		-1,
 		nIndent
 	};
-	int idx = pCtrl->InsertItem( &cbi );
-	if( idx != CB_ERR )
-		acedRetInt( idx );
+	int idxNewItem = pCtrl->InsertItem( &cbi );
+	if( idxNewItem >= 0 )
+		acedRetInt( idxNewItem );
 	return RSRSLT;
 }
 
@@ -143,9 +143,8 @@ ADSRESULT ImageComboBox::SetItem()
 		-1,
 		nIndent
 	};
-	int idx = pCtrl->SetItem( &cbi );
-	if( idx != CB_ERR )
-		acedRetInt( idx );
+	if( pCtrl->SetItem( &cbi ) )
+		acedRetT();
 	return RSRSLT;
 }
 
@@ -217,8 +216,9 @@ ADSRESULT ImageComboBox::DeleteItem()
 
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
-	pCtrl->DeleteItem( nIndex );
-	acedRetT();
+	int nResult = pCtrl->DeleteItem( nIndex );
+	if( nResult >= 0 )
+		acedRetT();
 	return RSRSLT;
 }
 
@@ -419,8 +419,7 @@ ADSRESULT ImageComboBox::GetItemData()
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
 	DWORD_PTR dwData = pCtrl->GetItemData( nItem );
-	if( dwData != CB_ERR  )
-		theArxWorkspace.RetHandle( dwData );
+	theArxWorkspace.RetHandle( dwData );
 	return RSRSLT;
 }
 

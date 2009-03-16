@@ -16,6 +16,7 @@ class CListBoxCtrl : public CListBox, public CDialogControl
 	CAcadColorService mColorService;
 	std::set< UINT > setnDragSource;
 	CRect mrcDropInsertMark;
+	bool mbIgnoreChange;
 
 // Construction
 public:
@@ -28,6 +29,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyPropertiesEnum();
+	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
@@ -39,10 +41,14 @@ public:
 	bool IsMultiSelect() const { return ((GetStyle() & (LBS_EXTENDEDSEL | LBS_MULTIPLESEL)) != 0); }
 
 protected:
+	virtual void OnListChanged();
+
+protected:
 	DECLARE_MESSAGE_MAP()
 
 	afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 };

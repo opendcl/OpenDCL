@@ -146,16 +146,16 @@ HTREEITEM CFolderTreeCtrl::AddFolder(CFolder* folder, HTREEITEM parent, bool bCu
 	return item;
 }
 
-void CFolderTreeCtrl::AddPath(CString path)
+void CFolderTreeCtrl::AddPath( LPCTSTR pszPath )
 {
 	HTREEITEM item, parent;
 	CStringArray foldersArray, foldersDescArray;
 	CString desc, tmp, str;
 
-	CString dir = path;
+	CString dir = pszPath;
 	
-	int len = path.GetLength();
-	if (len > 0 && path[len-1] != _T('\\'))
+	int len = dir.GetLength();
+	if (len > 0 && dir[len-1] != _T('\\'))
 		dir = dir + _T("\\");
 
 	int n = dir.Find(_T('\\'));

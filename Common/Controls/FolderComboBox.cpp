@@ -42,9 +42,9 @@ BOOL CFolderComboBox::GetDroppedState( )
 	return m_treeCtrl.IsWindowVisible();
 }
 
-void CFolderComboBox::AddPath(CString path)
+void CFolderComboBox::AddPath( LPCTSTR pszPath )
 {
-	m_treeCtrl.AddPath(path);
+	m_treeCtrl.AddPath( pszPath );
 	Invalidate();
 }
 

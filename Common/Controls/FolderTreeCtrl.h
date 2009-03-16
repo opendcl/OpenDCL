@@ -60,7 +60,7 @@ public:
 	HTREEITEM SearchFolder( HTREEITEM hItem, LPCTSTR pszFolderName );
 	HTREEITEM SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath );
 	HTREEITEM AddFolder(CFolder* folder, HTREEITEM parent=TVI_ROOT, bool bCurrentDir = false);
-	void AddPath(CString path);
+	void AddPath( LPCTSTR pszPath );
 	int SelectItem(HTREEITEM item);
 	HTREEITEM GetSelectedItem();
 	void HideAndInform();

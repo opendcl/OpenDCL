@@ -15,6 +15,7 @@
 CListBoxCtrl::CListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mrcDropInsertMark( 0, 0, 0, 0 )
+, mbIgnoreChange( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -75,6 +76,11 @@ bool CListBoxCtrl::ApplyPropertiesEnum()
 	return bSuccess;
 }
 
+void CListBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
+{
+	ridFirst.push_back( Prop::Sorted );
+}
+
 bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
@@ -87,6 +93,7 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 			ModifyStyle( 0, LBS_SORT, 0 );
 		else
 			ModifyStyle( LBS_SORT, 0, 0 );
+		OnListChanged();
 		OnNeedRepaint();
 		break;
 	case Prop::ColumnWidth:
@@ -121,9 +128,32 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::List:
+		mbIgnoreChange = true;
 		ResetContent();
 		for (size_t idx = 0; idx < pProp->size(); idx++)
-			AddString( pProp->GetStringItem( idx ) );
+		{
+			int idxNewItem = AddString( pProp->GetStringItem( idx ) );
+			if( idxNewItem < 0 )
+				continue;
+			if( IsEnumeratingProperties() )
+			{
+				const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
+				if( prInt )
+					SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
+			}
+		}
+		mbIgnoreChange = false;
+		break;
+	case Prop::ItemData:
+		if( !IsEnumeratingProperties() )
+		{
+			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
+			if( prInt )
+			{
+				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
+					SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
+			}
+		}
 		break;
 	}
 	return !bFailed;
@@ -284,9 +314,42 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	return true;
 }
 
+void CListBoxCtrl::OnListChanged()
+{
+	if( mbIgnoreChange )
+		return;
+	TPropertyPtr pItemList = mpTemplate->GetPropertyObject( Prop::List );
+	TPropertyPtr pItemDataList = mpTemplate->GetPropertyObject( Prop::ItemData );
+	if( !pItemList && !pItemDataList )
+		return;
+	if( pItemList )
+		pItemList->clear();
+	if( pItemDataList )
+		pItemDataList->clear();
+	int ctItems = GetCount();
+	for( int idx = 0; idx < ctItems; ++idx )
+	{
+		if( pItemList )
+		{
+			CString sItem;
+			GetText( idx, sItem );
+			pItemList->AddStringItem( sItem );
+		}
+		if( pItemDataList )
+			pItemDataList->GetIntArrayPtr()->push_back( GetItemData( idx ) );
+	}
+}
+
+
 BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_MESSAGE(LB_ADDSTRING, &CListBoxCtrl::OnModifyContent)
+	ON_MESSAGE(LB_DELETESTRING, &CListBoxCtrl::OnModifyContent)
+	ON_MESSAGE(LB_DIR, &CListBoxCtrl::OnModifyContent)
+	ON_MESSAGE(LB_INSERTSTRING, &CListBoxCtrl::OnModifyContent)
+	ON_MESSAGE(LB_RESETCONTENT, &CListBoxCtrl::OnModifyContent)
+	ON_MESSAGE(LB_ADDFILE, &CListBoxCtrl::OnModifyContent)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -370,4 +433,11 @@ HBRUSH CListBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	if( !IsWindowEnabled() )
 		return NULL;
 	return mColorService.CtlColor( pDC, nCtlColor );
+}
+
+LRESULT CListBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM lParam )
+{
+	LRESULT lResult = Default();
+	OnListChanged();
+	return lResult;
 }

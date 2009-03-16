@@ -120,7 +120,7 @@ public:
 	}
 	void RetHandle( DWORD_PTR hdl )
 	{
-		if( hdl <= LONG_MAX )
+		if( hdl == (DWORD_PTR)(long)hdl )
 			RetLong( (long)hdl );
 		else
 			RetPointer( (void*)hdl, odcl::ptrHandle );

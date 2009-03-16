@@ -588,7 +588,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddStringProperty( Prop::ListImages, PropIntArray );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
-		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ComboBoxStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::Text, PropString, pDclControl->GetKeyName() );
 		AddControlTooltipProperties( pDclControl );

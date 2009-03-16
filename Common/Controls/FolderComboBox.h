@@ -35,7 +35,7 @@ public:
 	CString GetSelectedPath();
 	bool SelectPath( LPCTSTR pszPath );
 	bool SelectFolder( LPCTSTR pszFolderName );
-	void AddPath(CString path);
+	void AddPath( LPCTSTR pszPath );
 	
 	// Generated message map functions
 protected:

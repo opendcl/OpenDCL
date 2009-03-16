@@ -98,12 +98,16 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 	#endif
 		if( !hmodLocalRes )
 		{
-			hmodLocalRes = LoadLibrary( sResRoot + _T("ENU\\") + sResModuleFilename );
-			if( hmodLocalRes && !sLanguage.IsEmpty() )
+			hmodLocalRes = LoadLibrary( sResRoot + sResModuleFilename );
+			if( !hmodLocalRes )
 			{
-				CString sMsg;
-				sMsg.Format( _T("Missing language: %s\r\nReverting to US English"), (LPCTSTR)sLanguage );
-				AfxMessageBox( sMsg, MB_OK | MB_ICONEXCLAMATION );
+				hmodLocalRes = LoadLibrary( sResRoot + _T("ENU\\") + sResModuleFilename );
+				if( hmodLocalRes && !sLanguage.IsEmpty() )
+				{
+					CString sMsg;
+					sMsg.Format( _T("Missing language: %s\r\nReverting to US English"), (LPCTSTR)sLanguage );
+					AfxMessageBox( sMsg, MB_OK | MB_ICONEXCLAMATION );
+				}
 			}
 		}
 		if( hmodLocalRes )

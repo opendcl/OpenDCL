@@ -16,6 +16,7 @@ class CComboHandler;
 class CImageComboBoxCtrl : public CFilteredComboExCtrl, public CDialogControl
 {
 	CComboHandler* mpHandler;
+	bool mbIgnoreChange;
 
 public:
 	CImageComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
@@ -37,6 +38,9 @@ public:
 	virtual const CComboHandler* GetComboHandler() const { return mpHandler; }
 
 protected:
+	virtual void OnListChanged();
+
+protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
@@ -46,5 +50,6 @@ protected:
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnDropdown();
 	afx_msg void OnCloseUp();
+	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 };

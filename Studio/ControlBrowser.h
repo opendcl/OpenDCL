@@ -27,9 +27,6 @@ class CControlBrowser : public CResizableDialog
 		NoNavigateBrowser( CControlBrowser& Browser ) : mBrowser( Browser ), mbEnableNavigate( false ) {}
 	protected:
 		virtual void OnDocumentComplete(LPCTSTR lpszURL);
-		virtual void OnBeforeNavigate2(LPCTSTR lpszURL, DWORD nFlags,
-																	 LPCTSTR lpszTargetFrameName, CByteArray& baPostedData,
-																	 LPCTSTR lpszHeaders, BOOL* pbCancel);
 		virtual void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel);
 	public:
 		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,

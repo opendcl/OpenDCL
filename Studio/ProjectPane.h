@@ -59,6 +59,7 @@ public:
 	void AddFormToTree(TDclFormPtr pDcl, bool bForceShow);
 	void RemoveChildren(HTREEITEM hParent);
 	void CleanupParents();
+	void EditSelectedItem();
 
 public:
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
@@ -76,6 +77,8 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnOpenForm();
+	afx_msg void OnUpdateOpenForm(CCmdUI* pCmdUI);
 	afx_msg void OnRemoveForm();
 	afx_msg void OnUpdateRemoveForm(CCmdUI* pCmdUI);
 	afx_msg void OnAddmodal();

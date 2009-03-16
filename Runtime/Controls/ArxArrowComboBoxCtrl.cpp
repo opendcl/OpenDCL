@@ -62,11 +62,6 @@ bool CArxArrowComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::List:
 		break;
 	case Prop::ItemData:
-		{
-			const PropVal::TIntArray& rInt = *pProp->GetIntArrayPtr();
-			for( int idx = 0; (size_t)idx < rInt.size(); ++idx )
-				SetItemData( idx, (DWORD_PTR)rInt.at( idx ) );
-		}
 		break;
 	case Prop::TextLimit:
 		LimitText( pProp->GetLongValue() );

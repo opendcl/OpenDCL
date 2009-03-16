@@ -59,6 +59,8 @@ BEGIN_MESSAGE_MAP(CProjectPane, CCtrlView)
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemexpanding)
 	ON_WM_RBUTTONDOWN()
+	ON_COMMAND(ID_OPENFORM, &CProjectPane::OnOpenForm)
+	ON_UPDATE_COMMAND_UI(ID_OPENFORM, &CProjectPane::OnUpdateOpenForm)
 	ON_COMMAND(ID_REMOVEFORM, &CProjectPane::OnRemoveForm)
 	ON_UPDATE_COMMAND_UI(ID_REMOVEFORM, &CProjectPane::OnUpdateRemoveForm)
 	ON_COMMAND(ID_ADDMODAL, &CProjectPane::OnAddmodal)
@@ -176,60 +178,8 @@ void CProjectPane::OnActivateView(BOOL bActivate, CView* pActivateView, CView* p
 
 void CProjectPane::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	*pResult = 0;
-	
-	HTREEITEM hItem = GetTreeCtrl().GetSelectedItem();
-	if (hItem == NULL)
-		return;// exit out if the user did not double click on a item
-	
-	if (mhtiAutoLispFile == hItem)
-	{
-		// update the project tree's autolisp file name
-		CString sLispFileName = mpProject->GetLispFileName();
-		CFileDialog Dlg( FALSE,
-										 _T(".lsp"), 
-										 sLispFileName, 
-										 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
-										 theWorkspace.LoadResourceString(IDS_FILTERAUTOLISPFILE),
-										 CWnd::GetActiveWindow() );
-		CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
-		Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
-		if( Dlg.DoModal() == IDOK )
-		{
-			sLispFileName = Dlg.GetPathName();
-			mpProject->SetLispFileName( sLispFileName );
-			SetAutoLispFilename( sLispFileName );
-		}
-		*pResult = 1;
-		return;
-	}
-	
-	if (mhtiPassword == hItem)
-	{
-		// update the project's password
-		CString sPassword = mpProject->GetPassword();
-		CProjectPasswordDlg Dlg( sPassword, this );
-		if( Dlg.DoModal() == IDOK )
-		{
-			sPassword = Dlg.GetPassword();
-			mpProject->SetPassword( sPassword );
-  		SetPassword( sPassword );
-		}
-		*pResult = 1;
-		return;
-	}
-
-	assert( mpProject != NULL );
-	const TDclFormList& Forms = mpProject->GetDclFormList();
-	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
-	{
-		if( (*iter)->m_htiTreeItem == hItem )
-		{
-			mpProject->OpenDclFormView( (*iter) );
-			*pResult = 1;
-			return;
-		}
-	}
+	EditSelectedItem();
+	*pResult = 1;
 }
 
 void CProjectPane::RemoveChildren(HTREEITEM hParent)
@@ -465,6 +415,51 @@ HTREEITEM CProjectPane::FindTabParent(TDclFormPtr pDclTab)
 	return pParentForm->m_htiTreeItem;
 }
 
+void CProjectPane::EditSelectedItem()
+{
+	HTREEITEM hItem = GetTreeCtrl().GetSelectedItem();
+	if( !hItem )
+		return;
+	assert( mpProject != NULL );
+	
+	if( mhtiAutoLispFile == hItem )
+	{
+		// update the project tree's autolisp file name
+		CString sLispFileName = mpProject->GetLispFileName();
+		CFileDialog Dlg( FALSE,
+										 _T(".lsp"), 
+										 sLispFileName, 
+										 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
+										 theWorkspace.LoadResourceString(IDS_FILTERAUTOLISPFILE),
+										 CWnd::GetActiveWindow() );
+		CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
+		Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
+		if( Dlg.DoModal() == IDOK )
+		{
+			sLispFileName = Dlg.GetPathName();
+			mpProject->SetLispFileName( sLispFileName );
+			SetAutoLispFilename( sLispFileName );
+		}
+		return;
+	}
+	
+	if( mhtiPassword == hItem )
+	{
+		// update the project's password
+		CString sPassword = mpProject->GetPassword();
+		CProjectPasswordDlg Dlg( sPassword, this );
+		if( Dlg.DoModal() == IDOK )
+		{
+			sPassword = Dlg.GetPassword();
+			mpProject->SetPassword( sPassword );
+  		SetPassword( sPassword );
+		}
+		return;
+	}
+
+	OnOpenForm();
+}
+
 void CProjectPane::CleanupParents()
 {
 	if (GetTreeCtrl().GetChildItem(mhtiFileDialogParent) == NULL)
@@ -502,6 +497,30 @@ void CProjectPane::CleanupParents()
 		GetTreeCtrl().DeleteItem(mhtiAxFilesParent);
 		mhtiAxFilesParent = NULL;
 	}	
+}
+
+void CProjectPane::OnOpenForm() 
+{
+	assert( mpProject != NULL );
+	if( !mpProject )
+		return;
+	HTREEITEM hItem = GetTreeCtrl().GetSelectedItem();
+	if( !hItem )
+		return;
+	const TDclFormList& Forms = mpProject->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
+	{
+		if( (*iter)->m_htiTreeItem == hItem )
+		{
+			mpProject->OpenDclFormView( (*iter) );
+			return;
+		}
+	}
+}
+
+void CProjectPane::OnUpdateOpenForm(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable( IsFormSelected() );
 }
 
 void CProjectPane::OnRemoveForm() 
@@ -763,6 +782,7 @@ void CProjectPane::OnContextMenu(CWnd* pWnd, CPoint point)
 	CMenu* pPopup = menu.GetSubMenu(2);
 	ClientToScreen(&point);
 	ScreenToClient(&point);
+	pPopup->SetDefaultItem( ID_OPENFORM );
 	pPopup->TrackPopupMenu( TPM_LEFTALIGN, point.x, point.y, GetParentFrame() );	
 }
 
@@ -788,8 +808,8 @@ BOOL CProjectPane::PreTranslateMessage(MSG* pMsg)
 	{
 		if (pMsg->wParam==VK_RETURN)
 		{
-			pMsg->wParam = NULL;
-			pMsg->message = NULL;
+			EditSelectedItem();
+			return TRUE;
 		}
 	}		
 		

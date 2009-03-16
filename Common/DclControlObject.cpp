@@ -488,6 +488,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 				case Prop::EventUpdate:
 					mProperties.erase( iterAt );
 					continue;
+				case Prop::Sorted:
+					mProperties.erase( iterAt );
+					continue;
 				}
 				break;
 			case CtlFileExplorer:
