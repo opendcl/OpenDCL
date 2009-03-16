@@ -17,92 +17,7 @@
 #include "AxInterfaceDescriptor.h"
 #include "AxContainerCtrl.h"
 #include "OpenDCL.h"
-#include "chm_lib.h"
-
-
-static bool IsLocalizedFileReadable( LPCTSTR pszFilename )
-{
-	CStringA sHelpFileA( AfxGetApp()->m_pszHelpFilePath );
-	chmFile* pChmFile = chm_open( sHelpFileA );
-	if( !pChmFile )
-		return false;
-	bool bReadable = false;
-	chmUnitInfo chm = {0};
-	CStringA sFilename( pszFilename );
-	sFilename.Replace( '\\', '/' );
-	CStringA sPath;
-	if( sFilename.Left( 1 ) != '/' )
-		sPath += '/';
-	sPath += sFilename;
-	if( CHM_RESOLVE_SUCCESS == chm_resolve_object( pChmFile, (LPCSTR)sPath, &chm ) )
-		bReadable = true;
-	chm_close( pChmFile );
-	//try
-	//{
-	//	CStdioUnicodeFile File( theWorkspace.GetLanguageSubfolderPath() + pszFilename,
-	//													CFile::shareDenyWrite | CFile::modeRead | CFile::typeText | CFile::osSequentialScan );
-	//	CString sLine;
-	//	if( File.ReadString( sLine ) )
-	//		return true;
-	//}
-	//catch( CFileException* e )
-	//{
-	//	e->Delete();
-	//}
-	return bReadable;
-}
-
-
-static bool ReadChmFile( LPCTSTR pszFilename, CString& sContent )
-{
-	CStringA sHelpFileA( AfxGetApp()->m_pszHelpFilePath );
-	chmFile* pChmFile = chm_open( sHelpFileA );
-	if( !pChmFile )
-		return false;
-	chmUnitInfo chm = {0};
-	CStringA sFilename( pszFilename );
-	sFilename.Replace( '\\', '/' );
-	CStringA sPath;
-	if( sFilename.Left( 1 ) != '/' )
-		sPath += '/';
-	sPath += sFilename;
-	if( CHM_RESOLVE_SUCCESS == chm_resolve_object( pChmFile, (LPCSTR)sPath, &chm ) )
-	{
-		assert( chm.length + 1 < INT_MAX );
-		if( chm.length + 1 < INT_MAX )
-		{
-			CStringA sContentA;
-			LONGINT64 cchContent =
-				chm_retrieve_object( pChmFile, &chm, (unsigned char*)sContentA.GetBuffer( int(chm.length + 1) ),
-														 0, chm.length );
-			if( cchContent >= 0 && cchContent < INT_MAX )
-			{
-				sContentA.ReleaseBuffer( int(cchContent) );
-				if( (unsigned char)sContentA[0] == 0xff && (unsigned char)sContentA[1] == 0xfe )
-					sContent = sContentA.LockBuffer() + 2;
-				else if( (unsigned char)sContentA[0] == 0xfe && (unsigned char)sContentA[1] == 0xbb && (unsigned char)sContentA[1] == 0xbf )
-					sContent = sContentA.LockBuffer() + 3;
-				else
-					sContent = sContentA;
-			}
-		}
-	}
-	chm_close( pChmFile );
-	//try
-	//{
-	//	CStdioUnicodeFile File( theWorkspace.GetLanguageSubfolderPath() + pszFilename,
-	//													CFile::shareDenyWrite | CFile::modeRead | CFile::typeText | CFile::osSequentialScan );
-	//	CString sLine;
-	//	while( File.ReadString( sLine ) )
-	//		sContent += sLine;
-	//}
-	//catch( CFileException* e )
-	//{
-	//	e->ReportError();
-	//	e->Delete();
-	//}
-	return (!sContent.IsEmpty());
-}
+#include "ChmLib.h"
 
 
 static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayName = NULL )
@@ -112,7 +27,7 @@ static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayNam
 	{
 		CString sFilename;
 		sFilename.Format( _T("chm://Reference/DataType/%s.htm"), (LPCTSTR)pszTypeName );
-		if( IsLocalizedFileReadable( sFilename ) )
+		if( IsChmFile( sFilename ) )
 		{
 			CString sLinkedType;
 			sLinkedType.Format( _T("<a href=\"../DataType/%s.htm\">%s</a>"), pszTypeName, (pszDisplayName && *pszTypeName)? pszDisplayName : pszTypeName );
