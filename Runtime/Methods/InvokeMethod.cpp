@@ -60,7 +60,7 @@ int acedInvokeNoDocStateSafe(const struct resbuf *args, struct resbuf **result)
 	}
 	catch( ... )
 	{}
-	return RTERROR;
+	return RTNORM;
 }
 
 

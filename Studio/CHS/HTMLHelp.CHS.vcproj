@@ -12,6 +12,8 @@
 			Name="Win32"
 		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -24,7 +26,7 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;$(ProjectDir)..\BuildCHM.mak&quot; TargetName=$(TargetName)"
 				ReBuildCommandLine="nmake /a /f &quot;$(ProjectDir)..\BuildCHM.mak&quot; TargetName=$(TargetName)"
-				CleanCommandLine="CMD /c DEL /Q &amp;quot;$(TargetPath)&amp;quot;"
+				CleanCommandLine="CMD /c DEL /Q &quot;$(TargetPath)&quot;"
 				Output="$(OutDir)\OpenDCL.chm"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
