@@ -59,7 +59,7 @@ void CToolboxPane::UpdateTabStripToolUI()
 	if( mpActiveDlgObject )
 	{
 		TDclFormPtr pForm = mpActiveDlgObject->GetSourceForm();
-		if( !pForm->FindFirstControlOfType( CtlTabStrip ) )
+		if( pForm->GetType() != FrmTabPage && !pForm->FindFirstControlOfType( CtlTabStrip ) )
 			bEnable = TRUE;
 	}
 	if( !bEnable && GetSelectedTool() == CtlTabStrip )
@@ -155,7 +155,7 @@ BEGIN_MESSAGE_MAP(CToolboxPane, CDialog)
 	ON_COMMAND(ID_TOOLBOX_TEXTBUTTON, OnToolboxTextbutton)
 	ON_COMMAND(ID_TOOLBOX_TREE, OnToolboxTree)
 	ON_COMMAND(ID_TOOLBOX_URLLINK, OnToolboxUrllink)
-	ON_COMMAND(ID_TOOLBOX_OPTIONLIST, OnToolboxOptionList) // was going to be a toolbar but now the option list
+	ON_COMMAND(ID_TOOLBOX_OPTIONLIST, OnToolboxOptionList)
 	ON_COMMAND(ID_TOOLBOX_ACTIVEX, OnToolboxActivex)
 	ON_COMMAND(ID_TOOLBOX_DWGLIST, OnToolboxDwglist)
 	ON_COMMAND(ID_TOOLBOX_ANIMATION, OnToolboxAnimate)

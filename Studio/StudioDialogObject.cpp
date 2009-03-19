@@ -322,6 +322,9 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		}
 		break;
 	case CtlTabStrip:
+		assert( mpSourceForm->GetType() != FrmTabPage ); //can't nest tab pages
+		if( mpSourceForm->GetType() == FrmTabPage )
+			return NULL;
 		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( CtlTabStrip ) ), rcControl );
 		if( pDclControl )
 		{

@@ -538,13 +538,11 @@ void CProjectPane::OnRemoveForm()
 	TDclFormPtr pParentForm;
 	HTREEITEM hParentItem = GetTreeCtrl().GetParentItem( hDclForm );
 	if( hParentItem )
-	{
 		pParentForm = mpProject->FindDclForm( GetTreeCtrl().GetItemText( hParentItem ) );
-		if( pParentForm )
-		{
-			size_t idxTab = GetTreeCtrl().GetItemData( hDclForm );
-			pDclForm = mpProject->FindDclTabChildForm( pParentForm->GetUniqueName(), idxTab );
-		}
+	if( pParentForm )
+	{
+		size_t idxTab = GetTreeCtrl().GetItemData( hDclForm );
+		pDclForm = mpProject->FindDclTabChildForm( pParentForm->GetUniqueName(), idxTab );
 	}
 	else
 		pDclForm = mpProject->FindDclForm( GetTreeCtrl().GetItemText( hDclForm ) );
