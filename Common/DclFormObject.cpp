@@ -152,7 +152,12 @@ TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName,
 {
 	CUndoManager* pUndoManager = GetUndoManager();
 	if( pUndoManager )
-		pUndoManager->setEnabled( false );
+	{
+		if( pUndoManager->enabled() )
+			pUndoManager->setEnabled( false );
+		else
+			pUndoManager = NULL;
+	}
 	TDclControlPtr pNewControl = new CDclControlObject( type, this, pszKeyName );
 	AddDefaultProperties( pNewControl, rcControl.Width(), rcControl.Height() );
 	if( pUndoManager )

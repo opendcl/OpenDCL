@@ -1556,6 +1556,7 @@ void CPropertyObject::SetType( PropertyType type )
 {
 	if( mpValue && type == mpValue->GetType() )
 		return; //no-op
+	OnChanging();
 	switch( type )
 	{
 	case PropLong:
@@ -1896,7 +1897,10 @@ CString CPropertyObject::GetName() const
 void CPropertyObject::SetName( LPCTSTR pszName )
 {
 	if( mpValue )
+	{
+		OnChanging(); 
 		mpValue->SetName( pszName );
+	}
 }
 
 CString CPropertyObject::GetDocumentationDesc() const

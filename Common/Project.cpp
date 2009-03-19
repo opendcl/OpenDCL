@@ -166,7 +166,12 @@ void CProject::AddInitializedForm( TDclFormPtr pForm, LPCTSTR pszName /*= NULL*/
 		return;
 	CUndoManager* pUndoManager = GetUndoManager();
 	if( pUndoManager )
-		pUndoManager->setEnabled( false );
+	{
+		if( pUndoManager->enabled() )
+			pUndoManager->setEnabled( false );
+		else
+			pUndoManager = NULL;
+	}
 	mDclForms.push_back( pForm );
 	AddDefaultProperties( pForm->GetControlProperties(), -1, -1 ); //add properties to the new dcl form object
 	if( pszName && *pszName )

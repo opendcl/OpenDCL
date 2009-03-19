@@ -164,14 +164,14 @@ protected:
 	void OnChanging() const;
 public:
 	CUndoManager* GetUndoManager() const;
-	PropertyType GetType() const { return mpValue->GetType(); }
+	PropertyType GetType() const { return (mpValue? mpValue->GetType() : PropInvalid); }
 	void SetType( PropertyType type );
-	DWORD GetFlags() const { return mpValue->GetFlags(); }
-	void SetFlags( DWORD flags ) { mpValue->SetFlags( flags ); }
+	DWORD GetFlags() const { return (mpValue? mpValue->GetFlags() : 0); }
+	void SetFlags( DWORD flags ) { if( mpValue ) { OnChanging(); mpValue->SetFlags( flags ); } }
 	bool IsHidden() const { return mbHidden; }
-	void SetHidden( bool bHidden = true ) { mbHidden = bHidden; }
+	void SetHidden( bool bHidden = true ) { OnChanging(); mbHidden = bHidden; }
 	Prop::Id GetID() const { return mnID; }
-	void SetID( Prop::Id nID ) { mnID = nID; }
+	void SetID( Prop::Id nID ) { OnChanging(); mnID = nID; }
 	bool IsReadOnly() const { return (mpValue? mpValue->IsReadOnly() : false); }
 	TDclControlPtr GetOwnerControl() const;
 
@@ -205,7 +205,7 @@ public:
 
 	//Operations
 public:
-	void clear() { if( mpValue ) mpValue->clear(); }
+	void clear() { if( mpValue ) { OnChanging(); mpValue->clear(); } }
 	size_t size() const;
 	
 	//Implementation

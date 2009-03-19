@@ -87,6 +87,7 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 			if( !pAction->Undo() )
 				bFailed = true;
 			mUndoStack.pop_back();
+			delete pAction;
 		}
 	}
 	size_t ctGroupsActive = 0;
@@ -97,6 +98,7 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 		CUndoAction* pAction = mUndoStack.back();
 		TraceFmt( _T("  CUndoAction::Undo(%s)\r\n"), (LPCTSTR)pAction->toString() );
 		bool bSuccess = pAction->Undo();
+		assert( pAction = mUndoStack.back() ); //Undo() should never add or remove actions!
 		assert( bSuccess == true );
 		if( !bSuccess )
 		{

@@ -562,20 +562,24 @@ void CProjectPane::OnRemoveForm()
 
 	AutoUndoGroup UndoGroup( pDclForm->GetUndoManager(), IDS_UNDO_REMOVEFORM );
 	assert(pDclForm->m_htiTreeItem == hDclForm);
+	FormType type = pDclForm->GetType();
+	size_t idxTab = pDclForm->GetTabIndex();
+	mpProject->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
+	GetTreeCtrl().DeleteItem( hDclForm ); // delete the item.
 	if( pParentForm )
 	{ //need to delete the reference from the parent
-		switch( pDclForm->GetType() )
+		switch( type )
 		{
 		case FrmTabPage:
 			{
 				HTREEITEM hSibling = hDclForm;
 				while( (hSibling = GetTreeCtrl().GetNextSiblingItem( hSibling )) != NULL )
 				{
-					size_t idxTab = GetTreeCtrl().GetItemData( hSibling );
-					GetTreeCtrl().SetItemData( hSibling, idxTab - 1 );
-					TDclFormPtr pDclForm = mpProject->FindDclTabChildForm( pParentForm->GetUniqueName(), idxTab );
-					if( pDclForm )
-						pDclForm->SetTabIndex( idxTab - 1 );
+					size_t idxSiblingTab = GetTreeCtrl().GetItemData( hSibling );
+					GetTreeCtrl().SetItemData( hSibling, idxSiblingTab - 1 );
+					TDclFormPtr pSiblingForm = mpProject->FindDclTabChildForm( pParentForm->GetUniqueName(), idxSiblingTab );
+					if( pSiblingForm )
+						pSiblingForm->SetTabIndex( idxSiblingTab - 1 );
 				}
 				TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
 				if( pTabStrip )
@@ -585,7 +589,6 @@ void CProjectPane::OnRemoveForm()
 					{
 						PropVal::TCStringArray* prCaption = pCaptions->GetStringArrayPtr();
 						PropVal::TCStringArray::iterator iter = prCaption->begin();
-						size_t idxTab = pDclForm->GetTabIndex();
 						while( iter != prCaption->end() && idxTab > 0 ) { ++iter; --idxTab; }
 						if( iter != prCaption->end() )
 							prCaption->erase( iter );
@@ -595,7 +598,6 @@ void CProjectPane::OnRemoveForm()
 					{
 						PropVal::TIntArray* prImage = pImages->GetIntArrayPtr();
 						PropVal::TIntArray::iterator iter = prImage->begin();
-						size_t idxTab = pDclForm->GetTabIndex();
 						while( iter != prImage->end() && idxTab > 0 ) { ++iter; --idxTab; }
 						if( iter != prImage->end() )
 							prImage->erase( iter );
@@ -605,7 +607,6 @@ void CProjectPane::OnRemoveForm()
 					{
 						PropVal::TCStringArray* prTooltip = pTooltips->GetStringArrayPtr();
 						PropVal::TCStringArray::iterator iter = prTooltip->begin();
-						size_t idxTab = pDclForm->GetTabIndex();
 						while( iter != prTooltip->end() && idxTab > 0 ) { ++iter; --idxTab; }
 						if( iter != prTooltip->end() )
 							prTooltip->erase( iter );
@@ -622,8 +623,6 @@ void CProjectPane::OnRemoveForm()
 			break;
 		}
 	}
-	GetTreeCtrl().DeleteItem( hDclForm ); // delete the item.
-	mpProject->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
 
 	CDocument* pDoc = GetDocument();
 	if( pDoc )
