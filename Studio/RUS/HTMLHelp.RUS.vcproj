@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="HTMLHelp.RUS"
 	ProjectGUID="{16A00CD2-853B-4877-BA77-CD5202C25AA2}"
 	RootNamespace="HTMLHelp.RUS"
 	Keyword="MakeFileProj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

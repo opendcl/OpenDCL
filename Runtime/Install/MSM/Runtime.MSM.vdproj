@@ -15,8 +15,8 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_0860124079624F8A9012ED2DF05A66D8"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "MsmKey" = "8:_026ED025BBF34809B085A09A35C27791"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -34,6 +34,12 @@
         "Entry"
         {
         "MsmKey" = "8:_1C500307CDD1488AB15359960B7D2381"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1E65C652981041D4B7581C75F7B73AAF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -58,7 +64,7 @@
         "Entry"
         {
         "MsmKey" = "8:_2F9CF7B94A6B197B1536897F4B60A8C9"
-        "OwnerKey" = "8:_379FA672087A4BBE80311FD5A9519AA3"
+        "OwnerKey" = "8:_026ED025BBF34809B085A09A35C27791"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -75,8 +81,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_33F64C0C1AF348B2A7497048A52CDA8E"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "MsmKey" = "8:_2F9CF7B94A6B197B1536897F4B60A8C9"
+        "OwnerKey" = "8:_379FA672087A4BBE80311FD5A9519AA3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2F9CF7B94A6B197B1536897F4B60A8C9"
+        "OwnerKey" = "8:_1E65C652981041D4B7581C75F7B73AAF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -87,8 +99,14 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_37B74DB8E1B84D93B19E6E1D4B6012EE"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3D947A68ECE3956F2646C4F1E2C7A4B0"
-        "OwnerKey" = "8:_379FA672087A4BBE80311FD5A9519AA3"
+        "OwnerKey" = "8:_026ED025BBF34809B085A09A35C27791"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -105,8 +123,32 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3D947A68ECE3956F2646C4F1E2C7A4B0"
+        "OwnerKey" = "8:_379FA672087A4BBE80311FD5A9519AA3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3D947A68ECE3956F2646C4F1E2C7A4B0"
+        "OwnerKey" = "8:_1E65C652981041D4B7581C75F7B73AAF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3F9E88907322463F8BD444488FA44FA6"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_59A462AF9F3C4836BA0C20EAF68572FA"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_63071E472E074750994F8005FB8895DE"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -118,7 +160,7 @@
         "Entry"
         {
         "MsmKey" = "8:_66D0319D1F46372BF992BBB152E85FA6"
-        "OwnerKey" = "8:_379FA672087A4BBE80311FD5A9519AA3"
+        "OwnerKey" = "8:_026ED025BBF34809B085A09A35C27791"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -131,6 +173,18 @@
         {
         "MsmKey" = "8:_66D0319D1F46372BF992BBB152E85FA6"
         "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_66D0319D1F46372BF992BBB152E85FA6"
+        "OwnerKey" = "8:_379FA672087A4BBE80311FD5A9519AA3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_66D0319D1F46372BF992BBB152E85FA6"
+        "OwnerKey" = "8:_1E65C652981041D4B7581C75F7B73AAF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -183,6 +237,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B2B53733000C46BA8C9E5F3293816BE5"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B3BBF8D1807C7B657AEAAE53A243286C"
         "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
         "MsmSig" = "8:_UNDEFINED"
@@ -219,20 +279,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E6A914FDC43648CCB7CAEF1F38CAA847"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_EE39AFF4C55A45ECBDB74B23F9CF490F"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F63FCD6A8EF0441C91CC9AD01FFD0F61"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -788,7 +836,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0860124079624F8A9012ED2DF05A66D8"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_37B74DB8E1B84D93B19E6E1D4B6012EE"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -799,18 +847,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_33F64C0C1AF348B2A7497048A52CDA8E"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_mfc.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E6A914FDC43648CCB7CAEF1F38CAA847"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_59A462AF9F3C4836BA0C20EAF68572FA"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -821,7 +858,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_F63FCD6A8EF0441C91CC9AD01FFD0F61"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_63071E472E074750994F8005FB8895DE"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -832,11 +869,22 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B2B53733000C46BA8C9E5F3293816BE5"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_mfc.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:5.0.2.4"
+        "Version" = "8:5.1.0.1"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -851,6 +899,62 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_026ED025BBF34809B085A09A35C27791"
+            {
+            "SourcePath" = "8:..\\..\\ARX.x64.18\\Debug\\OpenDCL.x64.18.arx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{0D455168-BC70-41E5-B27E-93FE6E5A742C}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1E65C652981041D4B7581C75F7B73AAF"
+            {
+            "SourcePath" = "8:..\\..\\ARX.18\\Debug\\OpenDCL.18.arx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{E1A77124-24DD-4BE8-AC2D-DA9586FF2746}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_21BB4F976D9F449B8DB906B58769FC4A"
             {
             "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"

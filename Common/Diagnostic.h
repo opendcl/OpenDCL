@@ -6,7 +6,6 @@
 
 #ifdef _DIAGNOSTIC
 
-#include <StrSafe.h>
 #include "FormTypes.h"
 #include "ControlTypes.h"
 #include "PropertyObject.h"
@@ -14,7 +13,13 @@
 #include "PropertyNames.h"
 
 #pragma warning(push)
+#pragma warning(disable:4005)
+#include <StrSafe.h>
+#pragma warning(pop)
+
+#pragma warning(push)
 #pragma warning(disable:4995)
+
 
 #ifdef _UNICODE
 inline const TCHAR* tString( LPCWSTR pszWide ) { return pszWide? pszWide : _T("<null>"); }

@@ -219,11 +219,9 @@ public:
 
 UINT GetRxCommandArray( LPCTSTR*& rpszCommands )
 {
-	static LPCTSTR     _OPENDCL = _T("OPENDCL");
-
 	static LPCTSTR rszCommands[] =
 	{
-		_OPENDCL,
+		_T("OPENDCL"),
 	};
 	rpszCommands = rszCommands;
 	return _elements(rszCommands);
@@ -245,74 +243,6 @@ LPCTSTR GetAppName()
 LPCTSTR GetAppLongName()
 {
 	return GetAppName();
-}
-
-
-bool GetModulePath( HMODULE hmodTarget, LPTSTR pszPath, DWORD& cchPath )
-{
-	cchPath = ::GetModuleFileName( hmodTarget, pszPath, cchPath );
-	return (cchPath != 0);
-}
-
-
-bool GetModuleDirectory( HMODULE hmodTarget, LPTSTR pszPath, DWORD& cchPath )
-{
-	DWORD cchBuf = cchPath;
-	if( !GetModulePath( hmodTarget, pszPath, cchBuf ) )
-		return false;
-	while( cchBuf > 0 )
-	{
-		--cchBuf;
-		if( pszPath[cchBuf] == _T('\\') ||
-				pszPath[cchBuf] == _T(':') ||
-				pszPath[cchBuf] == _T('/') )
-		{
-			pszPath[++cchBuf] = _T('\0');
-			cchPath = cchBuf;
-			return true;
-		}
-	}
-	cchPath = 0;
-	return true;
-}
-
-
-String GetThisModuleDirectory()
-{
-	String sModuleDirectory;
-	DWORD cchModuleDirectory = MAX_PATH;
-	if( !GetModuleDirectory( ghThisModule,
-													 sModuleDirectory.GetBuffer( cchModuleDirectory + 1 ),
-													 cchModuleDirectory ) )
-		return NULL;
-	return sModuleDirectory.ReleaseBuffer();
-}
-
-
-String GetSiblingModulePath( LPCTSTR pszFilename )
-{
-	return (GetThisModuleDirectory() + pszFilename);
-}
-
-
-LPCTSTR GetTargetModulePath( UINT nAcadTarget, LPCTSTR pszModifier = NULL )
-{
-	TCHAR szAcadTarget[32];
-	_ultot_s( nAcadTarget, szAcadTarget, 10 );
-	String sAppFilename = GetAppName();
-	if( sAppFilename.IsEmpty() )
-		sAppFilename = _T("OpenDCL");
-	if( pszModifier )
-	{
-		sAppFilename += _T(".");
-		sAppFilename += pszModifier;
-	}
-	sAppFilename += _T(".");
-	sAppFilename += szAcadTarget;
-	sAppFilename += _T(".arx");
-	static String sPath;
-	sPath = GetSiblingModulePath( sAppFilename );
-	return sPath;
 }
 
 
@@ -358,80 +288,217 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 }
 
 
-void CreateDemandLoadEntry( UINT nAcadTarget, RegKey& rkDemandLoad, LPCTSTR pszModifier = NULL )
+class TargetModule
 {
-	if( !rkDemandLoad )
-		return;
-	if( nAcadTarget >= 16 )
+public:
+	enum Platform { kAutoCAD, kBricscad, };
+	enum MajorVersion { kBRX9 = 9, kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
+											kARX2007 = 17, kARX2010 = 18, };
+	typedef char TByte;
+	TargetModule( Platform platform, MajorVersion majorVer, TByte minorVer )
+		: mPlatform( platform )
+		, mMajorVer( majorVer )
+		, mMinorVer( minorVer )
+			{}
+	TargetModule( unsigned int target )
+		: mPlatform( static_cast< Platform >((TByte)(target >> shftPlatform)) )
+		, mMajorVer( static_cast< MajorVersion >((TByte)(target >> shftMajorVer)) )
+		, mMinorVer( (TByte)target )
+		{}
+	operator unsigned int() const { return ((mPlatform << sizeof(shftPlatform)) | (mMajorVer << sizeof(shftMajorVer)) | mMinorVer); }
+	Platform platform() const { return static_cast< Platform >(mPlatform); }
+	MajorVersion majorVersion() const { return static_cast< MajorVersion >(mMajorVer); }
+	TByte minorVersion() const { return mMinorVer; }
+protected:
+	TByte mPlatform;
+	TByte mMajorVer;
+	TByte mMinorVer;
+	static const int shftPlatform = sizeof(TByte) + sizeof(TByte);
+	static const int shftMajorVer = sizeof(TByte);
+	static bool isHKLMAccessible()
+		{
+			static bool bHKLMAccessible = !!RegKey( _T("SOFTWARE"), HKEY_LOCAL_MACHINE );
+			return bHKLMAccessible;
+		}
+	static String GetModulePath( HMODULE hmodTarget )
+		{
+			String sPath;
+			DWORD cchPath = ::GetModuleFileName( hmodTarget, sPath.GetBuffer( MAX_PATH + 1 ), MAX_PATH );
+			sPath.ReleaseBuffer( cchPath );
+			return sPath;
+		}
+	static String GetModuleDirectory( HMODULE hmodTarget )
+		{
+			String sPath = GetModulePath( hmodTarget );
+			int cchBuf = sPath.Length();
+			while( --cchBuf >= 0 )
+			{
+				if( sPath[cchBuf] == _T('\\') ||
+						sPath[cchBuf] == _T(':') ||
+						sPath[cchBuf] == _T('/') )
+				{
+					sPath.ReleaseBuffer( cchBuf + 1 );
+					break;
+				}
+			}
+			return sPath;
+		}
+	static String GetThisModuleDirectory()
+		{
+			return GetModuleDirectory( ghThisModule );
+		}
+	static String GetSiblingModulePath( LPCTSTR pszFilename )
+		{
+			return (GetThisModuleDirectory() + pszFilename);
+		}
+public:
+	//shortcuts
+	enum Target
 	{
-		rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( nAcadTarget, pszModifier ) );
-		rkDemandLoad.SetValue( REGKEY_DESCRIPTION, GetAppLongName() );
-		if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
-			rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
+		kAutoCAD14 =    ((kAutoCAD << shftPlatform) | (kARX2 << shftMajorVer) | 0),
+		kAutoCAD2000 =  ((kAutoCAD << shftPlatform) | (kARX2000 << shftMajorVer) | 0),
+		kAutoCAD2000i = ((kAutoCAD << shftPlatform) | (kARX2000 << shftMajorVer) | 0),
+		kAutoCAD2002 =  ((kAutoCAD << shftPlatform) | (kARX2000 << shftMajorVer) | 0),
+		kAutoCAD2004 =  ((kAutoCAD << shftPlatform) | (kARX2004 << shftMajorVer) | 0),
+		kAutoCAD2005 =  ((kAutoCAD << shftPlatform) | (kARX2004 << shftMajorVer) | 1),
+		kAutoCAD2006 =  ((kAutoCAD << shftPlatform) | (kARX2004 << shftMajorVer) | 2),
+		kAutoCAD2007 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 0),
+		kAutoCAD2008 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 1),
+		kAutoCAD2009 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 2),
+		kAutoCAD2010 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 0),
+		kBricscad9_3 =  ((kBricscad << shftPlatform) | (kBRX9 << shftMajorVer) | 3),
+	};
+
+	HKEY GetTargetRootRegKey( bool bWantHKLM = true )
 		{
-			RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
-			LPCTSTR* rpszCommands = NULL;
-			for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
-				rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
+			if( platform() == kAutoCAD && majorVersion() < 16 )
+				return (isHKLMAccessible()? HKEY_LOCAL_MACHINE : NULL);
+			if( !bWantHKLM )
+				return HKEY_CURRENT_USER;
+			return (isHKLMAccessible()? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER);
 		}
-	}
-	else
-	{
-		LPCTSTR pszKey = rkDemandLoad.Key();
-		size_t cchHKLM = lstrlen( REGKEY_HKEY_LOCAL_MACHINE );
-		TCHAR* pszRegPath = new TCHAR[cchHKLM + 1 + lstrlen( pszKey ) + 1];
-		lstrcpy( pszRegPath, REGKEY_HKEY_LOCAL_MACHINE );
-		pszRegPath[cchHKLM] = _T('\\');
-		lstrcpy( pszRegPath + cchHKLM + 1, pszKey );
-		rkDemandLoad.SetValue( REGVAL_REGPATH, pszRegPath );
-		delete [] pszRegPath;
-		if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
-			rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
+	String GetTargetAppRegKey() const
 		{
-			RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true, KEY_WRITE );
-			rkLoader.SetValue( _MODULE, GetTargetModulePath( nAcadTarget, pszModifier ) );
+			String sRootKey;
+			switch( platform() )
+			{
+			case kAutoCAD:
+				{
+					sRootKey = _T("SOFTWARE\\Autodesk\\AutoCAD\\R");
+					String sMajor;
+					_ltot_s( majorVersion(), sMajor.GetBuffer( 64 ), 64, 10 );
+					sMajor.ReleaseBuffer();
+					String sMinor;
+					_ltot_s( minorVersion(), sMinor.GetBuffer( 64 ), 64, 10 );
+					sMinor.ReleaseBuffer();
+					sRootKey += sMajor;
+					sRootKey += _T('.');
+					sRootKey += sMinor;
+				}
+				break;
+			case kBricscad:
+				sRootKey = _T("SOFTWARE\\Bricsys\\Bricscad\\");
+				switch( majorVersion() )
+				{
+				case kBRX9:
+					sRootKey += _T("V9");
+					break;
+				}
+				break;
+			}
+			return sRootKey;
 		}
+	String GetTargetModulePath( LPCTSTR pszModifier = NULL )
 		{
-			RegKey rkName( REGKEY_NAME, rkDemandLoad, true, KEY_WRITE );
-			rkName.SetValue( GetAppLongName(), GetAppLongName() );
+			String sVersion;
+			_ltot_s( majorVersion(), sVersion.GetBuffer( 32 ), 32, 10 );
+			sVersion.ReleaseBuffer();
+			String sAppFilename = GetAppName();
+			if( pszModifier )
+			{
+				sAppFilename += _T(".");
+				sAppFilename += pszModifier;
+			}
+			sAppFilename += _T(".");
+			sAppFilename += sVersion;
+			switch( platform() )
+			{
+			case kAutoCAD:
+				sAppFilename += _T(".arx");
+				break;
+			case kBricscad:
+				sAppFilename += _T(".brx");
+				break;
+			}
+			return GetSiblingModulePath( sAppFilename );
 		}
+	void CreateDemandLoadEntry( RegKey& rkDemandLoad, LPCTSTR pszModifier = NULL )
 		{
-			RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
-			LPCTSTR* rpszCommands = NULL;
-			for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
-				rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
+			if( !rkDemandLoad )
+				return;
+			if( platform() == kBricscad ||
+					(platform() == kAutoCAD && majorVersion() >= 16) )
+			{
+				rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( pszModifier ) );
+				rkDemandLoad.SetValue( REGKEY_DESCRIPTION, GetAppLongName() );
+				if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
+					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
+				{
+					RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
+					LPCTSTR* rpszCommands = NULL;
+					int idx = GetRxCommandArray( rpszCommands );
+					while( idx-- > 0 )
+						rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
+				}
+			}
+			else
+			{
+				LPCTSTR pszKey = rkDemandLoad.Key();
+				size_t cchHKLM = lstrlen( REGKEY_HKEY_LOCAL_MACHINE );
+				TCHAR* pszRegPath = new TCHAR[cchHKLM + 1 + lstrlen( pszKey ) + 1];
+				lstrcpy( pszRegPath, REGKEY_HKEY_LOCAL_MACHINE );
+				pszRegPath[cchHKLM] = _T('\\');
+				lstrcpy( pszRegPath + cchHKLM + 1, pszKey );
+				rkDemandLoad.SetValue( REGVAL_REGPATH, pszRegPath );
+				delete [] pszRegPath;
+				if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
+					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
+				{
+					RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true, KEY_WRITE );
+					rkLoader.SetValue( _MODULE, GetTargetModulePath( pszModifier ) );
+				}
+				{
+					RegKey rkName( REGKEY_NAME, rkDemandLoad, true, KEY_WRITE );
+					rkName.SetValue( GetAppLongName(), GetAppLongName() );
+				}
+				{
+					RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
+					LPCTSTR* rpszCommands = NULL;
+					for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
+						rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
+				}
+			}
 		}
-	}
-}
+};
 
 
-HKEY GetRootRegKey( UINT nAcadTarget, bool bHKLM = true )
-{
-	if( nAcadTarget < 16 )
-		return HKEY_LOCAL_MACHINE;
-	static bool bHKLMAccessible = !!RegKey( _T("SOFTWARE"), HKEY_LOCAL_MACHINE );
-	return (bHKLM && bHKLMAccessible)? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-}
-
-
-void RxSelfInstallImp( UINT nAcadTarget, LPCTSTR pszTargetKey, bool bHKLM = true, bool bX64 = false )
+void RxSelfInstallImp( TargetModule Target, LPCTSTR pszTargetKey, bool bWantHKLM = true, bool bX64 = false )
 {
 	RegKey rkRoot( pszTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 	RegKey rkDemandLoad( String( pszTargetKey ) + _T("\\Applications\\") + GetAppLongName(),
-											 GetRootRegKey( nAcadTarget, bHKLM ),
+											 Target.GetTargetRootRegKey( bWantHKLM ),
 											 true,
 											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkDemandLoad )
 		return;
-	CreateDemandLoadEntry( nAcadTarget, rkDemandLoad, (bX64? _T("x64") : NULL) );
+	Target.CreateDemandLoadEntry( rkDemandLoad, (bX64? _T("x64") : NULL) );
 }
 
 
-bool EnumerateRegTargets( UINT nAcadTarget, LPCTSTR pszRegKey, bool bHKLM = true, bool bX64 = false )
+bool EnumerateRegTargets( TargetModule Target, bool bWantHKLM = true, bool bX64 = false )
 {
-	String sAcadRootKey = _T("SOFTWARE\\Autodesk\\AutoCAD\\");
-	sAcadRootKey += pszRegKey;
-	RegKey rkTarget( sAcadRootKey, GetRootRegKey( nAcadTarget, bHKLM ), false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	String sRootKey = Target.GetTargetAppRegKey();
+	RegKey rkTarget( sRootKey, Target.GetTargetRootRegKey( bWantHKLM ), false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkTarget )
 		return false;
 
@@ -441,20 +508,20 @@ bool EnumerateRegTargets( UINT nAcadTarget, LPCTSTR pszRegKey, bool bHKLM = true
 	String sSubkey;
 	DWORD idxSubkey = 0;
 	while( RegEnumKeyEx( rkTarget,
-												idxSubkey,
-												sSubkey.GetBuffer( dwBufSize ),
-												&dwBufSize,
-												NULL,
-												NULL,
-												NULL,
-												NULL ) == ERROR_SUCCESS )
+											 idxSubkey,
+											 sSubkey.GetBuffer( dwBufSize ),
+											 &dwBufSize,
+											 NULL,
+											 NULL,
+											 NULL,
+											 NULL ) == ERROR_SUCCESS )
 	{
 		idxSubkey++;
 		sSubkey.ReleaseBuffer();
-		String sAcadTargetKey( (LPCTSTR)sAcadRootKey );
-		sAcadTargetKey += _T('\\');
-		sAcadTargetKey += sSubkey;
-		RxSelfInstallImp( nAcadTarget, sAcadTargetKey, bHKLM, bX64 );
+		String sTargetKey( (LPCTSTR)sRootKey );
+		sTargetKey += _T('\\');
+		sTargetKey += sSubkey;
+		RxSelfInstallImp( Target, sTargetKey, bWantHKLM, bX64 );
 		dwBufSize = cchMaxSubkey + 1;
 	}
 	return true;
@@ -468,24 +535,25 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	TCHAR szCustomData[64] = _T("");
 	DWORD cchCustomData = sizeof(szCustomData) / sizeof(szCustomData[0]);
 	MsiGetProperty( hInstall, _T("CustomData"), szCustomData, &cchCustomData );
-	bool bHKLM = (lstrcmpi( szCustomData, _T("HKLM") ) == 0);
+	bool bWantHKLM = (lstrcmpi( szCustomData, _T("HKLM") ) == 0);
 #else
-	bool bHKLM = true;
+	bool bWantHKLM = true;
 #endif
-	//EnumerateRegTargets( 14, _T("R14.0"), true );
-	//EnumerateRegTargets( 15, _T("R15.0"), true );
-	EnumerateRegTargets( 16, _T("R16.0"), bHKLM );
-	EnumerateRegTargets( 16, _T("R16.1"), bHKLM );
-	EnumerateRegTargets( 16, _T("R16.2"), bHKLM );
-	EnumerateRegTargets( 17, _T("R17.0"), bHKLM );
-	EnumerateRegTargets( 17, _T("R17.1"), bHKLM );
-	EnumerateRegTargets( 17, _T("R17.2"), bHKLM );
-	EnumerateRegTargets( 17, _T("R18.0"), bHKLM );
+	//EnumerateRegTargets( TargetModule::kAutoCAD14, bWantHKLM );
+	//EnumerateRegTargets( TargetModule::kAutoCAD2000, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2004, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2005, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2006, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2007, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2008, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2009, bWantHKLM );
+	EnumerateRegTargets( TargetModule::kAutoCAD2010, bWantHKLM );
+	//EnumerateRegTargets( TargetModule::kBricscad9_3, bWantHKLM );
 	if( IsWow64() )
 	{
-		EnumerateRegTargets( 17, _T("R17.1"), bHKLM, true );
-		EnumerateRegTargets( 17, _T("R17.2"), bHKLM, true );
-		EnumerateRegTargets( 17, _T("R18.0"), bHKLM, true );
+		EnumerateRegTargets( TargetModule::kAutoCAD2008, bWantHKLM, true );
+		EnumerateRegTargets( TargetModule::kAutoCAD2009, bWantHKLM, true );
+		EnumerateRegTargets( TargetModule::kAutoCAD2010, bWantHKLM, true );
 	}
 	return ERROR_SUCCESS;
 }
@@ -493,9 +561,8 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 
 bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot, bool bX64 = false )
 {
-	TCHAR szAdeskRoot[] = _T("SOFTWARE\\Autodesk");
-	RegKey rkAdesk( szAdeskRoot, hkRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
-	RegKey rkTarget( pszRegKey, rkAdesk, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	RegKey rkSoftware( _T("SOFTWARE"), hkRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	RegKey rkTarget( pszRegKey, rkSoftware, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkTarget )
 		return false;
 
@@ -533,34 +600,36 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	TCHAR szCustomData[64] = _T("");
 	DWORD cchCustomData = sizeof(szCustomData) / sizeof(szCustomData[0]);
 	MsiGetProperty( hInstall, _T("CustomData"), szCustomData, &cchCustomData );
-	bool bHKLM = (lstrcmpi( szCustomData, _T("HKLM") ) == 0);
+	bool bWantHKLM = (lstrcmpi( szCustomData, _T("HKLM") ) == 0);
 #else
-	bool bHKLM = true;
+	bool bWantHKLM = true;
 #endif
-	//RemoveAllRegTargets( _T("AutoCAD\\R14.0"), HKEY_LOCAL_MACHINE );
-	//RemoveAllRegTargets( _T("AutoCAD\\R15.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R16.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R16.0"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("AutoCAD\\R16.1"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R16.1"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("AutoCAD\\R16.2"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R16.2"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("AutoCAD\\R17.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R17.0"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("AutoCAD\\R18.0"), HKEY_CURRENT_USER );
+	//RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R14.0"), HKEY_LOCAL_MACHINE );
+	//RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R15.0"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.0"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.0"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.1"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.1"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.2"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.2"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.0"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.0"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER );
+	//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
+	//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
-		RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("AutoCAD\\R18.0"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }

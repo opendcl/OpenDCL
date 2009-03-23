@@ -18,7 +18,6 @@
 	<Tool
 		Name="VCLinkerTool"
 		AdditionalLibraryDirectories="&quot;$(ARX2008#64)\Lib&quot;;&quot;$(MSVC8)\Lib\AMD64&quot;;&quot;$(MSVC8)\ATLMFC\Lib\AMD64&quot;;&quot;$(MSVC8)\PlatformSDK\Lib\AMD64&quot;"
-		AdditionalDependencies="&quot;$(VCInstallDir)Lib\DelayImp.lib&quot;"
 		OutputFile="$(OutDir)/$(ProjectName).dbx"
 		ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 		ImportLibrary="$(OutDir)/$(ProjectName).lib"

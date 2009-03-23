@@ -1,27 +1,33 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{C8C0FDA1-0A13-41F8-826B-C69F16C4660C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Studio", "Studio", "{CFCBE5A7-5E6D-4386-84EA-0050A0870151}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ENU", "ENU", "{5D5E3904-B40B-42C0-A7C5-D492A90017E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZLib", "ZLib", "{DE3BB699-48AA-4505-A3FB-44AB1651C28B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DEU", "DEU", "{80C19EA0-F824-4A11-8E1D-95079E346B90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RUS", "RUS", "{7DCE444E-726D-4B88-A459-B8575761EE29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ESM", "ESM", "{1BDCE1F1-1392-4990-9D41-BAD3EADAC586}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CHS", "CHS", "{1A768B0F-A528-4F7C-BF22-DEDF162BAFED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FRA", "FRA", "{B41A9CC8-942F-4885-8506-98F096FF6FF5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Localized Resources", "Localized Resources", "{3AB9F943-5940-4B96-86AF-C3078BDB4CA1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.17", "Runtime\ARX.17\ARX.17.vcproj", "{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
 		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio", "Studio\Studio.vcproj", "{5AF84D9B-53AA-4ACB-A44A-B0159A12992E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
 		{5783A6A0-7850-4A77-B36B-BC792E16DEA4} = {5783A6A0-7850-4A77-B36B-BC792E16DEA4}
@@ -29,296 +35,109 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio", "Studio\Studio.vcp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.16", "Runtime\ARX.16\ARX.16.vcproj", "{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
 		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.ENU", "Studio\ENU\Studio.ENU.vdproj", "{9F181F39-9847-4027-BA6A-BB35E5AF412F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{5783A6A0-7850-4A77-B36B-BC792E16DEA4} = {5783A6A0-7850-4A77-B36B-BC792E16DEA4}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RxInstall", "Runtime\RxInstall\RxInstall.vcproj", "{C721C46D-7378-43B2-86ED-19538DF46D05}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Studio", "Studio", "{CFCBE5A7-5E6D-4386-84EA-0050A0870151}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ENU", "ENU", "{5D5E3904-B40B-42C0-A7C5-D492A90017E8}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.x64.17", "Runtime\ARX.x64.17\ARX.x64.17.vcproj", "{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{A459EF20-FC55-44D3-B922-9D872E52A1FD} = {A459EF20-FC55-44D3-B922-9D872E52A1FD}
 		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZLib", "ZLib", "{DE3BB699-48AA-4505-A3FB-44AB1651C28B}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZLib.32", "ZLib\ZLib.32\ZLib.32.vcproj", "{A459EF20-FC54-44D3-B922-9D872E52A1FD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZLib.64", "ZLib\ZLib.64\ZLib.64.vcproj", "{A459EF20-FC55-44D3-B922-9D872E52A1FD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.ENU", "Studio\ENU\Studio.Res\Studio.Res.ENU.vcproj", "{DD1C51A8-EF8C-44CB-93B9-E5E8D194C07F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.ENU", "Runtime\ENU\Runtime.Res\Runtime.Res.ENU.vcproj", "{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.DEU", "Runtime\DEU\Runtime.Res\Runtime.Res.DEU.vcproj", "{92646CC2-82A5-45E2-AB6C-39EA728A25EB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DEU", "DEU", "{80C19EA0-F824-4A11-8E1D-95079E346B90}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.DEU", "Studio\DEU\Studio.Res\Studio.Res.DEU.vcproj", "{464B8A06-126B-4E42-BB9B-1C5E047FA43D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.DEU", "Studio\DEU\Studio.DEU.vdproj", "{795373A7-3148-44D0-87C6-78177818B4EA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{4CE59CDD-D6D7-4CC5-A78B-4E0343E51C25} = {4CE59CDD-D6D7-4CC5-A78B-4E0343E51C25}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RUS", "RUS", "{7DCE444E-726D-4B88-A459-B8575761EE29}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ESM", "ESM", "{1BDCE1F1-1392-4990-9D41-BAD3EADAC586}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.RUS", "Runtime\RUS\Runtime.Res\Runtime.Res.RUS.vcproj", "{B8AE1599-687F-46B6-9019-5B612CBDFE3C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.ESM", "Runtime\ESM\Runtime.Res\Runtime.Res.ESM.vcproj", "{44899681-3A1A-417C-B580-1062BB5A5EE2}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.ESM", "Studio\ESM\Studio.ESM.vdproj", "{C0D40572-7CBC-4368-BA45-55103F71B74F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{0BEB2B3E-4C1C-46B9-B5BE-1EBB1E9F1766} = {0BEB2B3E-4C1C-46B9-B5BE-1EBB1E9F1766}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.ESM", "Studio\ESM\Studio.Res\Studio.Res.ESM.vcproj", "{3B0D9699-A4DF-4595-9612-D8AC4AD2D107}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.RUS", "Studio\RUS\Studio.RUS.vdproj", "{72322308-D5D3-4282-9A09-5C71767FFC34}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{16A00CD2-853B-4877-BA77-CD5202C25AA2} = {16A00CD2-853B-4877-BA77-CD5202C25AA2}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.RUS", "Studio\RUS\Studio.Res\Studio.Res.RUS.vcproj", "{DA08ABD2-86B4-4233-BAFB-751DB70D96F0}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CHS", "CHS", "{1A768B0F-A528-4F7C-BF22-DEDF162BAFED}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.CHS", "Runtime\CHS\Runtime.Res\Runtime.Res.CHS.vcproj", "{6DD50A1A-0BB5-417F-A0A2-84059B780F05}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.CHS", "Studio\CHS\Studio.Res\Studio.Res.CHS.vcproj", "{696B4ACF-C37D-45EE-9804-AE86072F2A74}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.CHS", "Studio\CHS\Studio.CHS.vdproj", "{5304BF24-1990-4555-9162-D46CB0589CF0}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{EFF8B435-E680-4213-90DF-13D132322A6E} = {EFF8B435-E680-4213-90DF-13D132322A6E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.FRA", "Runtime\FRA\Runtime.Res\Runtime.Res.FRA.vcproj", "{44058890-63BA-4A34-BB09-C32261548897}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FRA", "FRA", "{B41A9CC8-942F-4885-8506-98F096FF6FF5}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.FRA", "Studio\FRA\Studio.Res\Studio.Res.FRA.vcproj", "{D1F744CC-8225-49F6-9B96-CA67527A7781}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.FRA", "Studio\FRA\Studio.FRA.vdproj", "{D996F6CF-E2E2-430F-9B5F-DDDF7501C68E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{B6A71E3C-8475-4CE6-930E-436D5E7FE16A} = {B6A71E3C-8475-4CE6-930E-436D5E7FE16A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLHelp.ENU", "Studio\ENU\HTMLHelp.ENU.vcproj", "{5783A6A0-7850-4A77-B36B-BC792E16DEA4}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLHelp.CHS", "Studio\CHS\HTMLHelp.CHS.vcproj", "{EFF8B435-E680-4213-90DF-13D132322A6E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLHelp.DEU", "Studio\DEU\HTMLHelp.DEU.vcproj", "{4CE59CDD-D6D7-4CC5-A78B-4E0343E51C25}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLHelp.ESM", "Studio\ESM\HTMLHelp.ESM.vcproj", "{0BEB2B3E-4C1C-46B9-B5BE-1EBB1E9F1766}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLHelp.FRA", "Studio\FRA\HTMLHelp.FRA.vcproj", "{B6A71E3C-8475-4CE6-930E-436D5E7FE16A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLHelp.RUS", "Studio\RUS\HTMLHelp.RUS.vcproj", "{16A00CD2-853B-4877-BA77-CD5202C25AA2}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BRX.9", "Runtime\BRX.9\BRX.9.vcproj", "{398C9D4E-6EA4-4DF4-9939-DB556045758F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.18", "Runtime\ARX.18\ARX.18.vcproj", "{E1A77124-24DD-4BE8-AC2D-DA9586FF2746}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
-		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.x64.18", "Runtime\ARX.x64.18\ARX.x64.18.vcproj", "{0D455168-BC70-41E5-B27E-93FE6E5A742C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.18", "Runtime\ARX.18\ARX.18.vcproj", "{E1A77124-24DD-4BE8-AC2D-DA9586FF2746}"
 	ProjectSection(ProjectDependencies) = postProject
+		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
 		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.x64.18", "Runtime\ARX.x64.18\ARX.x64.18.vcproj", "{0D455168-BC70-41E5-B27E-93FE6E5A742C}"
+	ProjectSection(ProjectDependencies) = postProject
 		{A459EF20-FC55-44D3-B922-9D872E52A1FD} = {A459EF20-FC55-44D3-B922-9D872E52A1FD}
+		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Runtime.MSM", "Runtime\Install\MSM\Runtime.MSM.vdproj", "{A753D5B5-51D9-42C8-9AF3-08422FC5C211}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Runtime.MSI", "Runtime\Install\Runtime.MSI.vdproj", "{D702FC7F-FCBA-4E8C-9805-AB8AD308F21F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Localized Resources", "Localized Resources", "{3AB9F943-5940-4B96-86AF-C3078BDB4CA1}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -712,34 +531,28 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{3AB9F943-5940-4B96-86AF-C3078BDB4CA1} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{C721C46D-7378-43B2-86ED-19538DF46D05} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{3AB9F943-5940-4B96-86AF-C3078BDB4CA1} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{398C9D4E-6EA4-4DF4-9939-DB556045758F} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{E1A77124-24DD-4BE8-AC2D-DA9586FF2746} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{0D455168-BC70-41E5-B27E-93FE6E5A742C} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{A753D5B5-51D9-42C8-9AF3-08422FC5C211} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{D702FC7F-FCBA-4E8C-9805-AB8AD308F21F} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{5D5E3904-B40B-42C0-A7C5-D492A90017E8} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
-		{5AF84D9B-53AA-4ACB-A44A-B0159A12992E} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{80C19EA0-F824-4A11-8E1D-95079E346B90} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{7DCE444E-726D-4B88-A459-B8575761EE29} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{1BDCE1F1-1392-4990-9D41-BAD3EADAC586} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{1A768B0F-A528-4F7C-BF22-DEDF162BAFED} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{B41A9CC8-942F-4885-8506-98F096FF6FF5} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
+		{5AF84D9B-53AA-4ACB-A44A-B0159A12992E} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{9F181F39-9847-4027-BA6A-BB35E5AF412F} = {5D5E3904-B40B-42C0-A7C5-D492A90017E8}
 		{DD1C51A8-EF8C-44CB-93B9-E5E8D194C07F} = {5D5E3904-B40B-42C0-A7C5-D492A90017E8}
 		{5783A6A0-7850-4A77-B36B-BC792E16DEA4} = {5D5E3904-B40B-42C0-A7C5-D492A90017E8}
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {DE3BB699-48AA-4505-A3FB-44AB1651C28B}
 		{A459EF20-FC55-44D3-B922-9D872E52A1FD} = {DE3BB699-48AA-4505-A3FB-44AB1651C28B}
-		{92646CC2-82A5-45E2-AB6C-39EA728A25EB} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
-		{B8AE1599-687F-46B6-9019-5B612CBDFE3C} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
-		{44899681-3A1A-417C-B580-1062BB5A5EE2} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
-		{6DD50A1A-0BB5-417F-A0A2-84059B780F05} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
-		{44058890-63BA-4A34-BB09-C32261548897} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
-		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
 		{464B8A06-126B-4E42-BB9B-1C5E047FA43D} = {80C19EA0-F824-4A11-8E1D-95079E346B90}
 		{795373A7-3148-44D0-87C6-78177818B4EA} = {80C19EA0-F824-4A11-8E1D-95079E346B90}
 		{4CE59CDD-D6D7-4CC5-A78B-4E0343E51C25} = {80C19EA0-F824-4A11-8E1D-95079E346B90}
@@ -755,5 +568,11 @@ Global
 		{D1F744CC-8225-49F6-9B96-CA67527A7781} = {B41A9CC8-942F-4885-8506-98F096FF6FF5}
 		{D996F6CF-E2E2-430F-9B5F-DDDF7501C68E} = {B41A9CC8-942F-4885-8506-98F096FF6FF5}
 		{B6A71E3C-8475-4CE6-930E-436D5E7FE16A} = {B41A9CC8-942F-4885-8506-98F096FF6FF5}
+		{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
+		{92646CC2-82A5-45E2-AB6C-39EA728A25EB} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
+		{B8AE1599-687F-46B6-9019-5B612CBDFE3C} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
+		{44899681-3A1A-417C-B580-1062BB5A5EE2} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
+		{6DD50A1A-0BB5-417F-A0A2-84059B780F05} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
+		{44058890-63BA-4A34-BB09-C32261548897} = {3AB9F943-5940-4B96-86AF-C3078BDB4CA1}
 	EndGlobalSection
 EndGlobal

@@ -1564,7 +1564,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A2A745A0EE981F5D640F97E952599E75"
             {
-            "SourcePath" = "8:comdlg32.dll"
+            "SourcePath" = "8:COMDLG32.dll"
             "TargetName" = "8:comdlg32.dll"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -2128,19 +2128,20 @@
         "MsiBootstrapper"
         {
         "LangId" = "3:1036"
+        "RequiresElevation" = "11:FALSE"
         }
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{5A027172-1990-4335-8D1C-2AC774CB1695}"
-        "PackageCode" = "8:{27408029-28C2-4407-98EC-137B2B0EAF8E}"
+        "ProductCode" = "8:{AD641E01-BB74-41E8-B3D5-7C0BDD6BE489}"
+        "PackageCode" = "8:{A7228FC5-7266-49DC-AF37-42ECDCB9718C}"
         "UpgradeCode" = "8:{140D3C25-5463-4688-8A52-FEA8E9FA4940}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0204"
+        "ProductVersion" = "8:5.1.0001"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2946,7 +2947,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BC222713505949A9A1649D9BD53DC5B9"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B2F9F08891D54751B4ADB1AACED6A136"
@@ -2974,7 +2975,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D2E30088FE6F44CDA911B5E5558D3661"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3030,7 +3031,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FC2D5545372945918DF1FEDE403FE50B"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3081,9 +3082,6 @@
                 "IsolateTo" = "8:"
                 }
             }
-        }
-        "VJSharpPlugin"
-        {
         }
     }
 }

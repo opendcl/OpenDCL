@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Studio.Res.FRA"
 	ProjectGUID="{D1F744CC-8225-49F6-9B96-CA67527A7781}"
 	RootNamespace="StudioResFRA"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -68,6 +69,8 @@
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				ResourceOnlyDLL="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -87,9 +90,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -150,6 +150,8 @@
 				EnableCOMDATFolding="2"
 				LinkTimeCodeGeneration="0"
 				ResourceOnlyDLL="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -169,9 +171,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -248,11 +247,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\FRA\Res\ArrowHeads.bmp"
+				RelativePath="..\..\..\Common\Res\arrowheads.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\arrowheads.bmp"
+				RelativePath="..\..\..\Common\FRA\Res\ArrowHeads.bmp"
 				>
 			</File>
 			<File
@@ -348,19 +347,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Filter.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\FRA\Res\Filter.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Folder.bmp"
+				RelativePath="..\..\..\Common\Res\Filter.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\FRA\Res\Folder.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -400,15 +399,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Hand.cur"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\FRA\Res\Hand.cur"
 				>
 			</File>
 			<File
 				RelativePath=".\res\Hand.cur"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\Res\Hand.cur"
 				>
 			</File>
 			<File
@@ -432,11 +431,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\Info.ico"
+				RelativePath="..\..\..\Common\FRA\Res\Info.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\FRA\Res\Info.ico"
+				RelativePath=".\res\Info.ico"
 				>
 			</File>
 			<File
@@ -444,11 +443,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\FRA\Res\Label.ico"
+				RelativePath="..\..\..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Label.ico"
+				RelativePath="..\..\..\Common\FRA\Res\Label.ico"
 				>
 			</File>
 			<File
@@ -548,19 +547,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\pick.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\FRA\Res\Pick.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\FRA\Res\PickSmall.ico"
+				RelativePath="..\..\..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\Res\PickSmall.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\FRA\Res\PickSmall.ico"
 				>
 			</File>
 			<File
@@ -608,11 +607,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\SHXFont.ico"
+				RelativePath="..\..\..\Common\FRA\Res\SHXFont.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\FRA\Res\SHXFont.ico"
+				RelativePath="..\..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -664,11 +663,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\FRA\Res\Warn.ico"
+				RelativePath=".\res\Warn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\Warn.ico"
+				RelativePath="..\..\..\Common\FRA\Res\Warn.ico"
 				>
 			</File>
 			<File

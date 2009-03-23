@@ -44,7 +44,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxCheckBoxCtrl message handlers
 
-void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	InvokeMethodIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseMove),
@@ -55,7 +55,7 @@ void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 }
 
-void CArxCheckBoxCtrl::OnClicked() 
+void CArxCheckBoxCtrl::OnClicked()
 {
 	__super::OnClicked();
 	int nValue = GetCheck();
@@ -83,7 +83,7 @@ void CArxCheckBoxCtrl::OnClicked()
 		InvokeMethodInt( sEvent, nValue, IsAsyncEvents());
 }
 
-void CArxCheckBoxCtrl::OnDoubleclicked() 
+void CArxCheckBoxCtrl::OnDoubleclicked()
 {
 	__super::OnDoubleclicked();
 	CString sDblClickEvent = mpTemplate->GetStringProperty( Prop::EventDblClicked );
@@ -91,6 +91,8 @@ void CArxCheckBoxCtrl::OnDoubleclicked()
 	{
 		//just treat it as a second single click unless there's a double-click event handler
 		sDblClickEvent = mpTemplate->GetStringProperty( Prop::EventClicked );
+		InvokeMethodInt( sDblClickEvent, GetCheck(), IsAsyncEvents());
 	}
-	InvokeMethod( sDblClickEvent, IsAsyncEvents() );
+	else
+		InvokeMethod( sDblClickEvent, IsAsyncEvents() );
 }

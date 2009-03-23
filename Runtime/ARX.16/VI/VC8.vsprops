@@ -23,7 +23,6 @@
 	<Tool
 		Name="VCLinkerTool"
 		AdditionalLibraryDirectories="&quot;$(ARX2004)\Lib&quot;;&quot;$(MSVC7)\Lib&quot;;&quot;$(MSVC7)\ATLMFC\Lib&quot;;&quot;$(MSVC7)\PlatformSDK\Lib&quot;"
-		AdditionalDependencies="&quot;$(VCInstallDir)Lib\DelayImp.lib&quot;"
 		OutputFile="$(OutDir)/$(ProjectName).arx"
 		ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 		ImportLibrary="$(OutDir)/$(ProjectName).lib"

@@ -204,19 +204,20 @@
         "MsiBootstrapper"
         {
         "LangId" = "3:0"
+        "RequiresElevation" = "11:FALSE"
         }
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{EF170912-1F71-421E-9A93-5D2015D1C7D5}"
-        "PackageCode" = "8:{9B67F472-8EE8-48DF-B2DE-9CE2C94B644D}"
+        "ProductCode" = "8:{50AE1CE8-F5B6-4910-869C-510C94739D9F}"
+        "PackageCode" = "8:{E7B65A3B-00C6-44F0-9133-EC79FF126B32}"
         "UpgradeCode" = "8:{A3675613-313B-47AC-8DD2-8707F33610AB}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0204"
+        "ProductVersion" = "8:5.1.0001"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -401,9 +402,6 @@
                 "IsolateTo" = "8:"
                 }
             }
-        }
-        "VJSharpPlugin"
-        {
         }
     }
 }
