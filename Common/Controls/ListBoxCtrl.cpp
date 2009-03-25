@@ -78,7 +78,7 @@ bool CListBoxCtrl::ApplyPropertiesEnum()
 
 void CListBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
 {
-	ridFirst.push_back( Prop::Sorted );
+	ridFirst.push_back( Prop::List );
 }
 
 bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
@@ -89,12 +89,16 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Sorted:
-		if( pProp->GetBooleanValue() )
-			ModifyStyle( 0, LBS_SORT, 0 );
-		else
-			ModifyStyle( LBS_SORT, 0, 0 );
-		OnListChanged();
-		OnNeedRepaint();
+		{
+			DWORD dwOldStyle = GetStyle();
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, LBS_SORT, 0 );
+			else
+				ModifyStyle( LBS_SORT, 0, 0 );
+			if( dwOldStyle != GetStyle() )
+				OnListChanged();
+			OnNeedRepaint();
+		}
 		break;
 	case Prop::ColumnWidth:
 		{
@@ -143,6 +147,8 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 			}
 		}
 		mbIgnoreChange = false;
+		if( (GetStyle() & LBS_SORT) )
+			OnListChanged(); //in case the list is sorted, to update the List property
 		break;
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() )

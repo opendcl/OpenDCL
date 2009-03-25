@@ -80,7 +80,7 @@ DWORD CComboBoxCtrl::GetWndStyle() const
 
 void CComboBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
 {
-	ridFirst.push_back( Prop::Sorted );
+	ridFirst.push_back( Prop::List );
 }
 
 bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
@@ -91,12 +91,16 @@ bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Sorted:
-		if( pProp->GetBooleanValue() )
-			ModifyStyle( 0, CBS_SORT, 0 );
-		else
-			ModifyStyle( CBS_SORT, 0, 0 );
-		OnListChanged();
-		OnNeedRepaint();
+		{
+			DWORD dwOldStyle = GetStyle();
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, CBS_SORT, 0 );
+			else
+				ModifyStyle( CBS_SORT, 0, 0 );
+			if( dwOldStyle != GetStyle() )
+				OnListChanged();
+			OnNeedRepaint();
+		}
 		break;
 	case Prop::List:
 		if( !GetComboHandler() )
@@ -120,6 +124,8 @@ bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				}
 			}
 			mbIgnoreChange = false;
+			if( (GetStyle() & CBS_SORT) )
+				OnListChanged(); //in case the list is sorted, to update the List property
 		}
 		break;
 	case Prop::ItemData:
