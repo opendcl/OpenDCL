@@ -317,6 +317,7 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 		SetSel( idxInsert );
 		++idxInsert;
 	}
+	GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), LBN_SELCHANGE), (LPARAM)m_hWnd );
 	return true;
 }
 
@@ -410,6 +411,9 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if( setnDragSource.empty() )
 		return;
 
+	if( !bSuperMessage )
+		GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), LBN_SELCHANGE), (LPARAM)m_hWnd );
+
 	DWORD dwDropEffect = BeginDragDrop( point );
 	if( bSuperMessage && dwDropEffect == DROPEFFECT_NONE )
 		__super::OnLButtonDown( nFlags, point );
@@ -429,6 +433,7 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				DeleteString( *iter );
 			}
+			GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), LBN_SELCHANGE), (LPARAM)m_hWnd );
 		}
 		setnDragSource.clear();
 	}

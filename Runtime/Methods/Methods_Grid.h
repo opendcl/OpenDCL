@@ -44,7 +44,4 @@ ADSRESULT SortTextCells();
 ADSRESULT SortNumericCells();
 ADSRESULT GetRowCells();
 ADSRESULT GetColumnCells();
-ADSRESULT LoadDwg();
-ADSRESULT Reset();
-ADSRESULT GetFileName();
 };

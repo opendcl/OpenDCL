@@ -178,6 +178,20 @@ public:
 			sResult.ReleaseBuffer( cchBuffer );
 			return sResult;
 		}
+	String Mid( int cchStart, int cchLength = -1 ) const
+		{
+			if( !mpszString )
+				return String();
+			int cchThis = lstrlen( mpszString );
+			if( cchStart >= cchThis )
+				return String();
+			if( cchLength < 0 || (cchStart + cchLength > cchThis) )
+				cchLength = cchThis - cchStart;
+			String sResult;
+			lstrcpyn( sResult.GetBuffer( cchLength ), mpszString + cchStart, cchLength + 1 );
+			sResult.ReleaseBuffer( cchLength );
+			return sResult;
+		}
 	String Tokenize( TCHAR chToken, int& idxStart ) const
 		{
 			if( mpszString )
@@ -187,7 +201,7 @@ public:
 				{
 					LPCTSTR pszCursor = mpszString + idxStart;
 					int idxFirst = idxStart;
-					while( idxStart++ < cchThis && *pszCursor == chToken )
+					while( idxStart++ < cchThis && *pszCursor != chToken )
 						++pszCursor;
 					int cchToken = idxStart - idxFirst - 1;
 					if( idxStart >= cchThis )
@@ -253,6 +267,14 @@ public:
 		}
 	operator LPCTSTR() const { return mpszString; }
 	long ToLong() const { return (mpszString? _tstol( mpszString ) : 0); }
+	bool operator==( LPCTSTR pszCompare )
+		{
+			if( !pszCompare || !*pszCompare )
+				return (!mpszString || !*mpszString);
+			if( !mpszString )
+				return false;
+			return (lstrcmp( mpszString, pszCompare ) == 0);
+		}
 };
 
 static UINT GetRxCommandArray( LPCTSTR*& rpszCommands )
@@ -336,7 +358,7 @@ public:
 		, mMajorVer( majorVer )
 		, mMinorVer( minorVer )
 		, msInstallDir( pszInstallDir )
-			{}
+		{}
 	TargetModule( unsigned int target, LPCTSTR pszInstallDir = NULL )
 		: mPlatform( static_cast< Platform >((TByte)(target >> shftPlatform)) )
 		, mMajorVer( static_cast< MajorVersion >((TByte)(target >> shftMajorVer)) )
@@ -348,7 +370,7 @@ public:
 		, mMajorVer( Src.mMajorVer )
 		, mMinorVer( Src.mMinorVer )
 		, msInstallDir( (LPCTSTR)Src.msInstallDir )
-			{}
+		{}
 	operator unsigned int() const { return ((mPlatform << sizeof(shftPlatform)) | (mMajorVer << sizeof(shftMajorVer)) | mMinorVer); }
 	Platform platform() const { return static_cast< Platform >(mPlatform); }
 	MajorVersion majorVersion() const { return static_cast< MajorVersion >(mMajorVer); }
@@ -389,13 +411,18 @@ protected:
 			}
 			return sPath;
 		}
-	static String GetThisModuleDirectory()
+	String GetTargetModuleDirectory() const
 		{
-			return GetModuleDirectory( ghThisModule );
+			String sPath = installDir();
+			if( sPath.IsEmpty() )
+				return GetModuleDirectory( ghThisModule );
+			if( !sPath.Right( 1 ).SpanExcluding( _T("\\/") ).IsEmpty() )
+				sPath += _T('\\');
+			return sPath;
 		}
-	static String GetSiblingModulePath( LPCTSTR pszFilename )
+	String GetSiblingModulePath( LPCTSTR pszFilename ) const
 		{
-			return (GetThisModuleDirectory() + pszFilename);
+			return (GetTargetModuleDirectory() + pszFilename);
 		}
 public:
 	//shortcuts
@@ -470,12 +497,7 @@ public:
 				sAppFilename += _T(".brx");
 				break;
 			}
-			String sPath = installDir();
-			if( sPath.IsEmpty() )
-				return GetSiblingModulePath( sAppFilename );
-			if( !sPath.Right( 1 ).SpanExcluding( _T("\\/") ).IsEmpty() )
-				sPath += _T('\\');
-			return sPath + sAppFilename;
+			return GetSiblingModulePath( sAppFilename );
 		}
 	void CreateDemandLoadEntry( RegKey& rkDemandLoad, LPCTSTR pszModifier = NULL ) const
 		{
