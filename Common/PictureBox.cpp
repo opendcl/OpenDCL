@@ -271,12 +271,12 @@ void CPictureBox::SetPicture( UINT nIconResId )
 	m_cyIcon = mpPicture->GetHeight();
 	AutoSize();
 	Refresh();
-	CopyDC();
 }
 
 void CPictureBox::Refresh()
 {
 	DrawPicture( mpPicture, m_bStretchLoadedPicture );
+	CopyDC();
 }
 
 void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bStretchToFit /*= false*/ )

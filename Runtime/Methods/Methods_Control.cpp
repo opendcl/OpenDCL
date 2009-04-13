@@ -407,7 +407,7 @@ ADSRESULT Control::ZOrder()
 		return RSERR;
 
 	CWnd* pCtrl = pDlgControl->GetControlWnd();
-	if( !pCtrl || !pCtrl->IsWindowVisible() )		
+	if( !pCtrl )		
 		return RSRSLT;
 
 	if( pCtrl->SetWindowPos( (nDirection? &CWnd::wndTop : &CWnd::wndBottom),

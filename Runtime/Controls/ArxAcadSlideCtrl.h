@@ -26,7 +26,6 @@ public:
 	bool				m_bSelectedRect;
 	COLORREF			m_HighlightColor;
 	HBITMAP				m_hbmMem;
-	COLORREF			m_BkColor;
 	bool				m_bHasFocus;
 	COleOdcDropTarget m_DropTarget;
 
@@ -42,6 +41,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
+	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 
 // Implementation
 public:
@@ -50,7 +50,6 @@ public:
 	void SetHighlight(const COLORREF& rgb);
 	void DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName);
 	void RemoveHighlight();
-	void SetAcadColor(long nColor);
 	bool SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Clear();
 	void CopyDC();

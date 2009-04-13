@@ -42,10 +42,6 @@ bool CArxAcadSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	int nColor = mpTemplate->GetLongProperty(Prop::BackgroundColor);
-	mSlideCtrl.SetBackColor( GetRGBColor(nColor) );
-	SetAcadColor( nColor );
-
 	return bSuccess;
 }
 
@@ -53,6 +49,12 @@ DWORD CArxAcadSlideCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = __super::GetWndStyle();
 	return (dwStyle | BS_OWNERDRAW | BS_NOTIFY);
+}
+
+bool CArxAcadSlideCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	mSlideCtrl.SetBackColor( GetRGBColor( pProp->GetLongValue() ) );
+	return true;
 }
 
 
@@ -127,12 +129,6 @@ void CArxAcadSlideCtrl::OnPaint()
 	}
 }
 
-void CArxAcadSlideCtrl::SetAcadColor(long nColor)
-{	
-	m_BkColor = GetRGBColor(nColor);
-	Invalidate();
-}
-
 bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {	
 	if( !mSlideCtrl.Load( theWorkspace.FindFile( pszFilename ), pszSlide ) )
@@ -172,7 +168,7 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 	int nThisHeight = rcCell.Height();
 	
 	CBrush CellBrush;
-	CellBrush.CreateSolidBrush(m_BkColor);
+	CellBrush.CreateSolidBrush(mSlideCtrl.m_BkColor);
 		
 	// draw the Window background for the cell				
 	pdc->FillRect(rcCell, &CellBrush);
@@ -770,10 +766,7 @@ void CArxAcadSlideCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 void CArxAcadSlideCtrl::OnSysColorChange() 
 {
 	__super::OnSysColorChange();
-	
-	m_BkColor = GetRGBColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));	
-	
-	Invalidate();	
+	OnApplyBackgroundColor( mpTemplate->GetPropertyObject( Prop::BackgroundColor ) );
 }
 
 void CArxAcadSlideCtrl::PostNcDestroy() 
