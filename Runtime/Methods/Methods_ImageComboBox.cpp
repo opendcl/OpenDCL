@@ -259,7 +259,7 @@ ADSRESULT ImageComboBox::FindString()
 	if( !GetStringArgument( pArgs, sSearch ) )
 		return RSERR; //invalid input
 
-	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
+	CImageComboBoxCtrl* pCtrl = (CImageComboBoxCtrl*)pDlgControl->GetControlWnd();
 
 	int nStartIndex = -1;
 	GetIntArgument( pArgs, nStartIndex, true );
@@ -284,7 +284,7 @@ ADSRESULT ImageComboBox::FindStringExact()
 	if( !GetStringArgument( pArgs, sSearch ) )
 		return RSERR; //invalid input
 
-	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
+	CImageComboBoxCtrl* pCtrl = (CImageComboBoxCtrl*)pDlgControl->GetControlWnd();
 
 	int nStartIndex = -1;
 	GetIntArgument( pArgs, nStartIndex, true );

@@ -1048,7 +1048,7 @@ ADSRESULT Tree::CancelLabelEdit()
 	CEdit* pEdit = pCtrl->GetEditControl();
 	if( pEdit )
 	{
-		pEdit->ShowWindow( SW_HIDE );
+		pEdit->DestroyWindow();
 		acedRetT();
 	}
 	return RSRSLT;

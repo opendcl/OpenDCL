@@ -360,57 +360,24 @@ DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sour
 }
 
 
-void CListViewCtrl::SetItemImage( int nRow, int nCol, int nImage)  
+void CListViewCtrl::SetItemImage( int nRow, int nCol, int nImage )  
 {
-	CString sText = GetItemText(nRow, nCol);
-	
-	LVITEM lvItem;
-	lvItem.mask = LVIF_TEXT|LVIF_IMAGE;
-	lvItem.iItem = nRow;
-	lvItem.iSubItem = nCol;	
-	lvItem.iImage = nImage;	
-	TCHAR sValue [256];
-	_tcscpy(sValue, sText);		
-	lvItem.pszText = sValue;
-
-	SetItem(&lvItem);
+	LV_ITEM lvi = { LVIF_IMAGE, nRow, nCol, 0, 0, NULL, -1, nImage };
+	SetItem( &lvi );
 }
 
-int CListViewCtrl::GetItemImage( int nRow, int nCol)  
+int CListViewCtrl::GetItemImage( int nRow, int nCol )  
 {
-	LV_ITEM lvitem;
-				
-	lvitem.mask = LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
-	lvitem.iItem = nRow;
-	lvitem.iSubItem = nCol;				
-	lvitem.stateMask = LVIS_CUT | LVIS_DROPHILITED | 
-			LVIS_FOCUSED |  LVIS_SELECTED | 
-			LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK;
-
-	GetItem( &lvitem );
-
-	return lvitem.iImage;
+	LV_ITEM lvi = { LVIF_IMAGE, nRow, nCol, 0, 0, NULL, -1, -1 };
+	GetItem( &lvi );
+	return lvi.iImage;
 }
 
-void CListViewCtrl::SetItemTextImage( int nRow,int nCol, CString sText, int nImage)  
+void CListViewCtrl::SetItemTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage )  
 {
-	sText = GetItemText(nRow, nCol);
-	// we do not update the image item in the first column
-	if (nCol == 0) return;
-
-	LVITEM lvItem;
-	if (nImage == -1)
-		lvItem.mask = LVIF_TEXT|LVIF_IMAGE;
-	else
-		lvItem.mask = LVIF_TEXT|LVIF_IMAGE;
-	lvItem.iItem = nRow;
-	lvItem.iSubItem = nCol;	
-	lvItem.iImage = nImage;	
-	TCHAR sValue [256];
-	_tcscpy(sValue, sText);		
-	lvItem.pszText = sValue;
-
-	SetItem(&lvItem);
+	CString sText = pszText;
+	LV_ITEM lvi = { LVIF_TEXT | LVIF_IMAGE, nRow, nCol, 0, 0, sText.LockBuffer(), -1, nImage };
+	SetItem( &lvi );
 }
 
 CEdit* CListViewCtrl::EditLabel( int nItem )
@@ -469,7 +436,8 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 	if( bAlreadySorted )
 		return true; //nothing to do
 	SetRedraw( FALSE );
-	typedef std::pair< UINT, std::vector< CString > > TRowState;
+	typedef std::pair< int, CString > TItemState;
+	typedef std::pair< UINT, std::vector< TItemState > > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
 	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
@@ -478,14 +446,23 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 		RowState.second.resize( ctColumns );
 		RowState.first = GetItemState( idxRow, ~UINT(0) );
 		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
-			RowState.second[idxCol] = GetItemText( idxRow, idxCol );
+		{
+			LV_ITEM lvi = { LVIF_IMAGE, idxRow, idxCol, 0, 0, NULL, -1, -1 };
+			GetItem( &lvi );
+			TItemState& ItemState = RowState.second[idxCol];
+			ItemState.first = lvi.iImage;
+			ItemState.second = lvi.pszText;
+		}
 	}
 	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
 		size_t idxOldRow = rnSortXForm[idxRow];
 		TRowState& RowState = rGridState[idxOldRow];
 		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
-			SetItemText( idxRow, idxCol, RowState.second[idxCol] );
+		{
+			const TItemState& ItemState = RowState.second[idxCol];
+			SetItemTextImage( idxRow, idxCol, ItemState.second, ItemState.first );
+		}
 		SetItemState( idxRow, RowState.first, ~UINT(0) );
 	}
 	SetRedraw( TRUE );
@@ -543,7 +520,8 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 	if( bAlreadySorted )
 		return true; //nothing to do
 	SetRedraw( FALSE );
-	typedef std::pair< UINT, std::vector< CString > > TRowState;
+	typedef std::pair< int, CString > TItemState;
+	typedef std::pair< UINT, std::vector< TItemState > > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
 	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
@@ -552,14 +530,23 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 		RowState.second.resize( ctColumns );
 		RowState.first = GetItemState( idxRow, ~UINT(0) );
 		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
-			RowState.second[idxCol] = GetItemText( idxRow, idxCol );
+		{
+			LV_ITEM lvi = { LVIF_IMAGE, idxRow, idxCol, 0, 0, NULL, -1, -1 };
+			GetItem( &lvi );
+			TItemState& ItemState = RowState.second[idxCol];
+			ItemState.first = lvi.iImage;
+			ItemState.second = lvi.pszText;
+		}
 	}
 	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
 		size_t idxOldRow = rnSortXForm[idxRow];
 		TRowState& RowState = rGridState[idxOldRow];
 		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
-			SetItemText( idxRow, idxCol, RowState.second[idxCol] );
+		{
+			const TItemState& ItemState = RowState.second[idxCol];
+			SetItemTextImage( idxRow, idxCol, ItemState.second, ItemState.first );
+		}
 		SetItemState( idxRow, RowState.first, ~UINT(0) );
 	}
 	SetRedraw( TRUE );
@@ -680,6 +667,7 @@ HBRUSH CListViewCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	__super::OnLButtonDown(nFlags, point);
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 	{
 		UINT nHTFlags = 0;
@@ -701,13 +689,11 @@ void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			DWORD dwDropEffect = BeginDragDrop( point );
 			if( dwDropEffect == DROPEFFECT_MOVE )
 				DeleteItem( nDragSource );
-			else if( (nFlags & MK_CONTROL) != 0 )
-				PostMessage( WM_SETSELECTEDSTATE, (WPARAM)nDragSource, (LPARAM)bWasSelected );	
+			//else if( (nFlags & MK_CONTROL) != 0 )
+			//	PostMessage( WM_SETSELECTEDSTATE, (WPARAM)nDragSource, (LPARAM)bWasSelected );	
 			PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
 		}
 	}
-
-	__super::OnLButtonDown(nFlags, point);
 }
 
 LRESULT CListViewCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)

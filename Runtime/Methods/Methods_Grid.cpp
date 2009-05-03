@@ -150,20 +150,20 @@ ADSRESULT Grid::AddRow()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
 		return RSERR; //invalid input
 
-	if( !GetListBeginArgument( pArgs ) )
-		return RSERR; //invalid input
-
 	int nImage = -1;
+	CString sItemText;
+	PropVal::TCStringArray rsText;
+
+	bool bListBegin = GetListBeginArgument( pArgs, true ) ;
+
 	GetIntArgument( pArgs, nImage, true );
 
-	CString sItemText;
 	if( !GetStringArgument( pArgs, sItemText ) )
 		return RSERR; //invalid input
 
-	PropVal::TCStringArray rsText;
 	GetStringArrayArgument( pArgs, rsText, true );
 
-	if( !GetListEndArgument( pArgs ) )
+	if( bListBegin && !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )

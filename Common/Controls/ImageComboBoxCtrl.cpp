@@ -186,6 +186,57 @@ DWORD CImageComboBoxCtrl::GetComboStyle() const
 	return CBS_DROPDOWNLIST;
 }
 
+int CImageComboBoxCtrl::FindString(int nIndexStart, LPCTSTR lpszFind) const
+{
+	if( !lpszFind || !*lpszFind )
+		return -1;
+	int ctItems = GetCount();
+	if( nIndexStart < -1 )
+		nIndexStart = -1;
+	++nIndexStart;
+	int cchSearch = lstrlen( lpszFind );
+	for( int idx = nIndexStart; idx < ctItems; ++idx )
+	{
+		CString sItem;
+		GetLBText( idx, sItem );
+		if( sItem.Left( cchSearch ).CompareNoCase( lpszFind ) == 0 )
+			return idx;
+	}
+	for( int idx = 0; idx < nIndexStart; ++idx )
+	{
+		CString sItem;
+		GetLBText( idx, sItem );
+		if( sItem.Left( cchSearch ).CompareNoCase( lpszFind ) == 0 )
+			return idx;
+	}
+	return -1;
+}
+
+int CImageComboBoxCtrl::FindStringExact(int nIndexStart, LPCTSTR lpszFind) const
+{
+	if( !lpszFind || !*lpszFind )
+		return -1;
+	int ctItems = GetCount();
+	if( nIndexStart < -1 )
+		nIndexStart = -1;
+	++nIndexStart;
+	for( int idx = nIndexStart; idx < ctItems; ++idx )
+	{
+		CString sItem;
+		GetLBText( idx, sItem );
+		if( sItem.CompareNoCase( lpszFind ) == 0 )
+			return idx;
+	}
+	for( int idx = 0; idx < nIndexStart; ++idx )
+	{
+		CString sItem;
+		GetLBText( idx, sItem );
+		if( sItem.CompareNoCase( lpszFind ) == 0 )
+			return idx;
+	}
+	return -1;
+}
+
 void CImageComboBoxCtrl::OnListChanged()
 {
 	if( mbIgnoreChange )

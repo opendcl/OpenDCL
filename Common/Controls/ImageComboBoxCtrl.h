@@ -36,6 +36,8 @@ public:
 	virtual DWORD GetComboStyle() const;
 	virtual CComboHandler* GetComboHandler() { return mpHandler; }
 	virtual const CComboHandler* GetComboHandler() const { return mpHandler; }
+	int FindString(int nIndexStart, LPCTSTR lpszFind) const;
+	int FindStringExact(int nIndexStart, LPCTSTR lpszFind) const;
 
 protected:
 	virtual void OnListChanged();

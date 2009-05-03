@@ -11,6 +11,7 @@ CArxImageTreeCtrl::CArxImageTreeCtrl( TDclControlPtr pTemplate, CControlPane* pP
 : CImageTreeCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
 , mDragDropService( this )
+, mbCancelLabelEdit( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -84,6 +85,12 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 		}
 	}
 	return __super::OnDrop( point, pSourceData, dropEffect )  ;
+}
+
+BOOL CArxImageTreeCtrl::SetItemText( HTREEITEM hItem, LPCTSTR lpszItem )
+{
+	mbCancelLabelEdit = true;
+	return __super::SetItemText( hItem, lpszItem );
 }
 
 
@@ -236,6 +243,7 @@ void CArxImageTreeCtrl::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	//__super::OnTvnEndlabeledit( pNMHDR, pResult );
+	mbCancelLabelEdit = false;
 	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 	HTREEITEM hItem = pTVDispInfo->item.hItem;
 	CString sLabel =
@@ -251,7 +259,13 @@ void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 														sLabel,
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
-	*pResult = TRUE;
+	if( mbCancelLabelEdit )
+	{
+		*pResult = FALSE;
+		mbCancelLabelEdit = false;
+	}
+	else
+		*pResult = TRUE;
 }
 
 void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)

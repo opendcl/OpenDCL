@@ -58,6 +58,7 @@ public:
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
 	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+	virtual void OnDragLeave();
 
 // Image Tree interface
 public:
@@ -76,6 +77,7 @@ public:
 protected:
 	CTreeItem* GetTreeItem( HTREEITEM hItem );
 	const CTreeItem* GetTreeItem( HTREEITEM hItem ) const;
+	HTREEITEM CopyTreeItem( HTREEITEM hSource, HTREEITEM hNewParent, HTREEITEM hInsertAfter, bool bCopyKey = false );
 
 	// Generated message map functions
 protected:

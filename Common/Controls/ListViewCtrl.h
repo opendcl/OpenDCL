@@ -66,9 +66,9 @@ public:
 	CEdit* EditLabel( int nItem );
 	bool SortTextItems( int nCol, bool bAscending );
 	bool SortNumericItems( int nCol, bool bAscending );
-	int GetItemImage(int nRow, int nCol);
-	void SetItemImage( int nRow, int nCol, int nImage);
-	void SetItemTextImage(int nRow, int nCol, CString sText, int nImage);
+	int GetItemImage( int nRow, int nCol );
+	void SetItemImage( int nRow, int nCol, int nImage );
+	void SetItemTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage );
 
 	// Generated message map functions
 protected:

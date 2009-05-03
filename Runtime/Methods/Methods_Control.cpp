@@ -449,14 +449,15 @@ ADSRESULT Control::SetPos()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 
-	CRect rcControl = pDlgControl->GetEffectiveWindowRect();
-	long lWidth = rcControl.Width();
-	long lHeight = rcControl.Height();
+	long lLeft = -1;
+	long lTop = -1;
+	long lWidth = -1;
+	long lHeight = -1;
 
-	if( !GetLongArgument( pArgs, rcControl.left ) )
+	if( !GetLongArgument( pArgs, lLeft ) )
 		return RSERR; //invalid input
 
-	if( !GetLongArgument( pArgs, rcControl.top ) )
+	if( !GetLongArgument( pArgs, lTop ) )
 		return RSERR; //invalid input
 
 	GetLongArgument( pArgs, lWidth, true );
@@ -470,18 +471,20 @@ ADSRESULT Control::SetPos()
 	TPropertyPtr pPropLeft = pDclControl->GetPropertyObject( Prop::Left );
 	if( pPropLeft )
 	{
-		pPropLeft->SetLongValue( rcControl.left );
-		pDclControl->SetLongProperty( Prop::Top, rcControl.top );
-		pDclControl->SetLongProperty( Prop::Width, lWidth );
-		pDclControl->SetLongProperty( Prop::Height, lHeight );
-		pDlgControl->ApplyPosition();
+		pPropLeft->SetLongValue( lLeft );
+		pDclControl->SetLongProperty( Prop::Top, lTop );
 	}
 	else
 	{
-		rcControl.right = rcControl.left + lWidth;
-		rcControl.bottom = rcControl.top + lHeight;
+		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
+		rcControl.MoveToXY( lLeft, lTop );
 		pDlgControl->GetControlWnd()->MoveWindow( &rcControl );
 	}
+	if( lWidth >= 0 )
+		pDclControl->SetLongProperty( Prop::Width, lWidth );
+	if( lHeight >= 0 )
+		pDclControl->SetLongProperty( Prop::Height, lHeight );
+	pDlgControl->ApplyPosition();
 	pDlgControl->OnNeedRepaint();
 	acedRetT();
 	return RSRSLT;

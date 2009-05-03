@@ -101,6 +101,10 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 , mnRightBorder( 0 )
 , mnBottomBorder( 0 )
 {
+__if_exists(m_bVistaStyle)
+{
+	m_bVistaStyle = FALSE;
+}
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();

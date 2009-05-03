@@ -123,6 +123,9 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::SelectionStyle:
 		switch( pProp->GetLongValue() )
 		{
+		case 0:
+			ModifyStyle( LBS_MULTIPLESEL | LBS_EXTENDEDSEL, 0, SWP_FRAMECHANGED );
+			break;
 		case 1:
 			ModifyStyle( LBS_MULTIPLESEL, LBS_EXTENDEDSEL, SWP_FRAMECHANGED );
 			break;

@@ -51,7 +51,7 @@ DWORD CImageTreeCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (WS_VSCROLL | WS_HSCROLL);
+	dwStyle |= (WS_VSCROLL | WS_HSCROLL | TVS_DISABLEDRAGDROP);
 
 	if( mpTemplate->GetBooleanProperty( Prop::ShowSelectAlways ) )
 		dwStyle |= TVS_SHOWSELALWAYS;
@@ -161,6 +161,7 @@ DROPEFFECT CImageTreeCtrl::OnDragOver( const CPoint& point, COleDataObject* pSou
 	HTREEITEM	hItem = HitTest( point, &flags );
 	if( hItem && (!mhtiDragSource || mhtiDragSource != hItem || (dwKeyState & MK_CONTROL)) )
 	{
+		//SetInsertMark( hItem, TRUE );
 		SelectDropTarget( hItem );
 		return __super::OnDragOver( point, pSourceData, dwKeyState );
 	}
@@ -173,28 +174,40 @@ bool CImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( !hData )
 		return __super::OnDrop( point, pSourceData, dropEffect )  ;
+	SelectDropTarget( NULL );
 	UINT flags = 0;
 	HTREEITEM	hItem = HitTest( point, &flags );
 	if( !hItem )
 		hItem = TVI_ROOT;
-	CStringA sTextA = (char*)GlobalLock( hData );
-	GlobalUnlock( hData );
-	GlobalFree( hData );
-	HTREEITEM hNewItem = InsertItem( CString( sTextA ), hItem, TVI_FIRST );
-	CTreeItem TreeItem( hNewItem );
-	const CTreeItem* pOriginalTreeItem = GetTreeItem( mhtiDragSource );
-	if( pOriginalTreeItem )
+	HTREEITEM hNewItem = NULL;
+	if( mhtiDragSource )
+		hNewItem = CopyTreeItem( mhtiDragSource, hItem, TVI_FIRST, (dropEffect == DROPEFFECT_MOVE) );
+	else
 	{
-		TreeItem.mnImage = pOriginalTreeItem->mnImage;
-		TreeItem.mnSelImage = pOriginalTreeItem->mnSelImage;
-		TreeItem.mnExpImage = pOriginalTreeItem->mnExpImage;
-		SetItemImage( hNewItem, TreeItem.mnImage, TreeItem.mnSelImage );
-		if( mhtiDragSource && dropEffect == DROPEFFECT_MOVE )
-			TreeItem.msKey = pOriginalTreeItem->msKey;
+		CStringA sTextA = (char*)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+		hNewItem = InsertItem( CString( sTextA ), hItem, TVI_FIRST );
+		CTreeItem TreeItem( hNewItem );
+		const CTreeItem* pOriginalTreeItem = GetTreeItem( mhtiDragSource );
+		if( pOriginalTreeItem )
+		{
+			TreeItem.mnImage = pOriginalTreeItem->mnImage;
+			TreeItem.mnSelImage = pOriginalTreeItem->mnSelImage;
+			TreeItem.mnExpImage = pOriginalTreeItem->mnExpImage;
+			SetItemImage( hNewItem, TreeItem.mnImage, TreeItem.mnSelImage );
+			if( mhtiDragSource && dropEffect == DROPEFFECT_MOVE )
+				TreeItem.msKey = pOriginalTreeItem->msKey;
+		}
+		mTreeItems.push_back( TreeItem );
 	}
-	mTreeItems.push_back( TreeItem );
 	SelectItem( hNewItem );
 	return true;
+}
+
+void CImageTreeCtrl::OnDragLeave()
+{
+	SelectDropTarget( NULL );
 }
 
 CString CImageTreeCtrl::GetItemKey( HTREEITEM hItem ) const
@@ -317,6 +330,48 @@ const CTreeItem* CImageTreeCtrl::GetTreeItem( HTREEITEM hItem ) const
 			return &(*iter);
 	}
 	return NULL;
+}
+
+HTREEITEM CImageTreeCtrl::CopyTreeItem( HTREEITEM hSource, HTREEITEM hNewParent, HTREEITEM hInsertAfter, bool bCopyKey /*= false*/ )
+{
+	TCHAR szItemText[MAX_PATH];
+	TVINSERTSTRUCT tvis = 
+	{
+		hNewParent,
+		hInsertAfter,
+		{ TVIF_HANDLE | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT,
+			hSource,
+			0,
+			0,
+			szItemText,
+			MAX_PATH,
+			-1,
+			-1
+		}
+	};
+	GetItem( &tvis.item );
+	HTREEITEM hNewItem = InsertItem( &tvis );
+	CTreeItem TreeItem( hNewItem );
+	const CTreeItem* pOriginalTreeItem = GetTreeItem( hSource );
+	if( pOriginalTreeItem )
+	{
+		TreeItem.mnImage = pOriginalTreeItem->mnImage;
+		TreeItem.mnSelImage = pOriginalTreeItem->mnSelImage;
+		TreeItem.mnExpImage = pOriginalTreeItem->mnExpImage;
+		SetItemImage( hNewItem, TreeItem.mnImage, TreeItem.mnSelImage );
+		if( bCopyKey )
+			TreeItem.msKey = pOriginalTreeItem->msKey;
+	}
+	mTreeItems.push_back( TreeItem );
+	HTREEITEM hChild = GetNextItem( hSource, TVGN_CHILD );
+	HTREEITEM hAfter = TVI_FIRST;
+	while( hChild )
+	{
+		CopyTreeItem( hChild, hNewItem, hAfter, bCopyKey );
+		hAfter = hChild;
+		hChild = GetNextItem( hChild, TVGN_NEXT );
+	}
+	return hNewItem;
 }
 
 

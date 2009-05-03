@@ -12,6 +12,7 @@ BEGIN_MESSAGE_MAP(CTabPage, CDialog)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
@@ -52,6 +53,21 @@ void CTabPage::ApplyPosition()
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage message handlers
+
+LRESULT CTabPage::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch( message )
+	{
+	case WM_PAINT:
+		if( mbRecalcQueued )
+		{
+			mbRecalcQueued = false;
+			mpControlPane->RecalcLayout();
+		}
+		break;
+	}
+	return __super::WindowProc(message, wParam, lParam);
+}
 
 BOOL CTabPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -103,10 +119,23 @@ void CTabPage::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	__super::OnWindowPosChanging(lpwndpos);
 
 	if( (lpwndpos->flags & SWP_SHOWWINDOW) != 0 && mbRecalcQueued )
+	{
+		mbRecalcQueued = false;
 		mpControlPane->RecalcLayout();
+	}
 }
 
 BOOL CTabPage::PreTranslateMessage(MSG* pMsg)
 {
 	return CWnd::PreTranslateMessage(pMsg); //bypass CDialog
+}
+
+void CTabPage::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	__super::OnShowWindow(bShow, nStatus);
+	if( bShow && mbRecalcQueued )
+	{
+		mbRecalcQueued = false;
+		mpControlPane->RecalcLayout();
+	}
 }

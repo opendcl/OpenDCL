@@ -12,6 +12,12 @@ static const UINT& refWM_MOUSEENTER()
 	return WM_MOUSEENTER;
 }
 
+static const UINT& refWM_FRAMECHANGED()
+{
+	static const UINT WM_FRAMECHANGED = RegisterWindowMessage( _T("OpenDCL.FrameChanged") );
+	return WM_FRAMECHANGED;
+}
+
 static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 {
 	if( !pParent )
@@ -76,6 +82,7 @@ bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID )
 BEGIN_MESSAGE_MAP(CAcadDockBarHost, CAdUiDockControlBar)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_REGISTERED_MESSAGE(refWM_FRAMECHANGED(),OnFrameChanged)
 	ON_REGISTERED_MESSAGE(refWM_MOUSEENTER(),OnMouseEnter)
 	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
 	ON_WM_ENTERMENULOOP()
@@ -101,8 +108,14 @@ bool CAcadDockBarHost::CanFrameworkTakeFocus ()
 void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
-		mpDlgObject->OnFrameChanged();
+		PostMessage( refWM_FRAMECHANGED() );
 	__super::SizeChanged( lpRect, bFloating, flags );
+}
+
+LRESULT CAcadDockBarHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
+{
+	mpDlgObject->OnFrameChanged();
+	return 0;
 }
 
 bool CAcadDockBarHost::OnClosing()

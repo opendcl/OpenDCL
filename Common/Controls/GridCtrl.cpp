@@ -1572,7 +1572,7 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 	SetRedraw( FALSE );
 	std::vector< _RowData > rTempRowData;
 	rTempRowData.swap( mRowData );
-	typedef std::pair< UINT, CString > TCellState;
+	typedef std::pair< UINT, _CellData > TCellState;
 	typedef std::vector< TCellState > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
@@ -1584,7 +1584,7 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 		{
 			TCellState& CellState = RowState[idxCol];
 			CellState.first = GetCellState( idxRow, idxCol );
-			CellState.second = GetCellText( idxRow, idxCol );
+			CellState.second = GetCellDataRef( idxRow, idxCol );
 		}
 	}
 	mRowData.resize( ctRows );
@@ -1596,7 +1596,7 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 		{
 			TCellState& CellState = RowState[idxCol];
 			SetCellState( idxRow, idxCol, CellState.first );
-			SetCellText( idxRow, idxCol, CellState.second );
+			GetCellDataRef( idxRow, idxCol ) = CellState.second;
 		}
 		mRowData[idxRow] = rTempRowData[idxOldRow];
 	}
@@ -1665,7 +1665,7 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 	SetRedraw( FALSE );
 	std::vector< _RowData > rTempRowData;
 	rTempRowData.swap( mRowData );
-	typedef std::pair< UINT, CString > TCellState;
+	typedef std::pair< UINT, _CellData > TCellState;
 	typedef std::vector< TCellState > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
@@ -1677,7 +1677,7 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 		{
 			TCellState& CellState = RowState[idxCol];
 			CellState.first = GetCellState( idxRow, idxCol );
-			CellState.second = GetCellText( idxRow, idxCol );
+			CellState.second = GetCellDataRef( idxRow, idxCol );
 		}
 	}
 	mRowData.resize( ctRows );
@@ -1689,7 +1689,7 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 		{
 			TCellState& CellState = RowState[idxCol];
 			SetCellState( idxRow, idxCol, CellState.first );
-			SetCellText( idxRow, idxCol, CellState.second );
+			GetCellDataRef( idxRow, idxCol ) = CellState.second;
 		}
 		mRowData[idxRow] = rTempRowData[idxOldRow];
 	}

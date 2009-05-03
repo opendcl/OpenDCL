@@ -15,6 +15,7 @@ class CArxImageTreeCtrl : public CImageTreeCtrl
 {
 	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
+	bool mbCancelLabelEdit;
 
 public:
 	CArxImageTreeCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -26,6 +27,8 @@ public:
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+
+	BOOL SetItemText( HTREEITEM hItem, LPCTSTR lpszItem );
 
 protected:
 	DECLARE_MESSAGE_MAP();

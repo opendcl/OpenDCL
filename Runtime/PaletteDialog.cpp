@@ -172,14 +172,17 @@ bool CPaletteDialog::GetEffectiveClientRect( CRect& rcDlg ) const
 void CPaletteDialog::OnFrameChanged()
 {
 	CRect rectWindow;
-	if( IsFloating() && mHostPaletteSet.RolledUp() )
+	CWnd* pTopLevelWnd = GetTopLevelWnd();
+	if( pTopLevelWnd == &mHostPaletteSet && IsFloating() && mHostPaletteSet.RolledUp() )
 		mHostPaletteSet.GetFullRect( rectWindow );
 	else
-		mHostPaletteSet.GetWindowRect( &rectWindow );
+		pTopLevelWnd->GetWindowRect( &rectWindow );
 	CRect rcClient;
 	mHostPaletteSet.GetClientArea( rcClient );
-	SetNCWidth( rectWindow.Width() - rcClient.Width() );
-	SetNCHeight( rectWindow.Height() - rcClient.Height() );
+	long lNCWidth = rectWindow.Width() - rcClient.Width();
+	long lNCHeight = rectWindow.Height() - rcClient.Height();
+	SetNCWidth( lNCWidth );
+	SetNCHeight( lNCHeight );
 	assert( GetNCWidth() >= 0 && GetNCHeight() >= 0 );
 	OnApplyMinMaxSize( NULL );
 	//ApplyPosition();
@@ -192,14 +195,16 @@ void CPaletteDialog::ApplyPosition()
 	if( !IsFloating() )
 		return; //size cannot be changed while docked
 	mbIgnoreSizing = true;
+	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
+	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
 	pTopLevelWnd->SetWindowPos( NULL, 0, 0,
-															mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
-															mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+															lWidth + GetNCWidth(),
+															lHeight + GetNCHeight(),
 															SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	SetWindowPos( NULL, 0, 0,
-								mpTemplate->GetLongProperty(Prop::Width),
-								mpTemplate->GetLongProperty(Prop::Height),
+								lWidth,
+								lHeight,
 								SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
 	mbIgnoreSizing = false;

@@ -722,8 +722,8 @@ bool CDclFormNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 {
 	addPropertyChildItems( Browser, hParent );
 	CString sMethodsHtml;
+	addMethods( Browser, hParent, _T("Control"), sMethodsHtml );
 	addMethods( Browser, hParent, _T("Form"), sMethodsHtml );
-	//addMethods( Browser, hParent, _T("Project"), sMethodsHtml );
 	CDclProjectNode* pItem = new CDclProjectNode( mpDclForm->GetProject() );
 	HTREEITEM hItem = Browser.InsertItem( TVI_ROOT, pItem );
 	assert( hItem != NULL );

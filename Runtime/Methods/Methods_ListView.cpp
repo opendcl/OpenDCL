@@ -117,6 +117,8 @@ ADSRESULT ListView::AddItem()
 
 		if( !GetStringArgument( pArgs, sItemText ) )
 			return RSERR; //invalid input
+
+		GetStringArrayArgument( pArgs, rsText, true );
 	}
 
 	if( !AssertOutOfArgs( pArgs ) )
