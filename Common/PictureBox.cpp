@@ -259,7 +259,6 @@ void CPictureBox::SetPicture( TPicturePtr pPicture )
 		AutoSize();
 	}
 	Refresh();
-	CopyDC();
 }
 
 void CPictureBox::SetPicture( UINT nIconResId )
@@ -844,7 +843,7 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 void CPictureBox::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-	if( !GetParent()->IsWindowVisible() )		
+	if( !IsWindowVisible() )		
 		return;
 
 	
@@ -852,9 +851,6 @@ void CPictureBox::OnPaint()
 		Refresh();
 	else
 	{
-		if (!GetParent()->IsWindowVisible())		
-			return;
-
 	#ifdef USE_MEM_DC
 		CMemDC pdc(&dc);
 	#else

@@ -14,6 +14,10 @@
 
 #define WM_SETSELECTEDSTATE (WM_USER + 45)
 
+#ifndef LVS_EX_LABELTIP
+#define LVS_EX_LABELTIP 0x00004000
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CLVEdit
@@ -69,8 +73,14 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 	}
 
-	if( bSuccess && HasSubItemImages() )
-		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
+	if( bSuccess )
+	{
+		DWORD dwExStyle = GetExtendedStyle();
+		dwExStyle |= LVS_EX_LABELTIP;
+		if( HasSubItemImages() )
+			dwExStyle |= LVS_EX_SUBITEMIMAGES;
+		SetExtendedStyle( dwExStyle );
+	}
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -447,7 +457,8 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 		RowState.first = GetItemState( idxRow, ~UINT(0) );
 		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
 		{
-			LV_ITEM lvi = { LVIF_IMAGE, idxRow, idxCol, 0, 0, NULL, -1, -1 };
+			TCHAR szText[MAX_PATH];
+			LV_ITEM lvi = { LVIF_TEXT | LVIF_IMAGE, idxRow, idxCol, 0, 0, szText, MAX_PATH, -1 };
 			GetItem( &lvi );
 			TItemState& ItemState = RowState.second[idxCol];
 			ItemState.first = lvi.iImage;
@@ -531,7 +542,8 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 		RowState.first = GetItemState( idxRow, ~UINT(0) );
 		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
 		{
-			LV_ITEM lvi = { LVIF_IMAGE, idxRow, idxCol, 0, 0, NULL, -1, -1 };
+			TCHAR szText[MAX_PATH];
+			LV_ITEM lvi = { LVIF_TEXT | LVIF_IMAGE, idxRow, idxCol, 0, 0, szText, MAX_PATH, -1 };
 			GetItem( &lvi );
 			TItemState& ItemState = RowState.second[idxCol];
 			ItemState.first = lvi.iImage;

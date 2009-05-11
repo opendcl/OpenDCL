@@ -32,6 +32,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
+	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 
 public:
 	virtual bool IsAutoSized();

@@ -160,6 +160,14 @@ bool CPictureBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CPictureBoxCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyBackgroundColor( pProp ) )
+		return false;
+	Refresh();
+	return true;
+}
+
 void CPictureBoxCtrl::SetPictureID(int nPictureID)
 {
 	SetPicture( mpTemplate->GetOwnerProject()->FindPicture( nPictureID ) );

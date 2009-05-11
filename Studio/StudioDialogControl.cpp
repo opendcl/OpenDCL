@@ -120,14 +120,20 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 	case CtlAngleSlider: return *new CAngleSlideCtrl( pTemplate, pPane, nID );
 	case CtlAnimation:
 		{	
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_ANIMATE );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+			CPictureBoxCtrl* pControl = new CPictureBoxCtrl( pTemplate, pPane, nID );
+			pControl->SetPicture( IDI_ANIMATE );
+			return *pControl;
+			//CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_ANIMATE );
+			//return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlBlockList: return *new CBlockListCtrl( pTemplate, pPane, nID );
 	case CtlBlockView:
 		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_BLOCKVIEW );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+			CPictureBoxCtrl* pControl = new CPictureBoxCtrl( pTemplate, pPane, nID );
+			pControl->SetPicture( IDI_BLOCKVIEW );
+			return *pControl;
+			//CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_BLOCKVIEW );
+			//return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlCalendar: return *new CMonthCtrl( pTemplate, pPane, nID );
 	case CtlCheckBox: return *new CCheckBoxCtrl( pTemplate, pPane, nID );
@@ -135,8 +141,11 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 	case CtlDwgList: return *new CListBoxCtrl( pTemplate, pPane, nID );
 	case CtlDwgPreview:
 		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_DWGPREVIEW );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+			CPictureBoxCtrl* pControl = new CPictureBoxCtrl( pTemplate, pPane, nID );
+			pControl->SetPicture( IDI_DWGPREVIEW );
+			return *pControl;
+			//CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_DWGPREVIEW );
+			//return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlFileExplorer:
 		{
@@ -150,8 +159,11 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 	case CtlGrid: return *new CGridCtrl( pTemplate, pPane, nID );
 	case CtlHatch:
 		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HATCH );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+			CPictureBoxCtrl* pControl = new CPictureBoxCtrl( pTemplate, pPane, nID );
+			pControl->SetPicture( IDI_HATCH );
+			return *pControl;
+			//CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HATCH );
+			//return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlHtml: return *new CHtmlCtrl( pTemplate, pPane, nID );
 	case CtlImageComboBox: return CreateComboExControl( pTemplate, pPane, nID );
@@ -166,8 +178,11 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 	case CtlScrollBar: return *new CScrollBarCtrl( pTemplate, pPane, nID );
 	case CtlSlideView:
 		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_SLIDEVW );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+			CPictureBoxCtrl* pControl = new CPictureBoxCtrl( pTemplate, pPane, nID );
+			pControl->SetPicture( IDI_SLIDEVW );
+			return *pControl;
+			//CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_SLIDEVW );
+			//return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlSpinButton: return *new CSpinnerCtrl( pTemplate, pPane, nID );
 	case CtlSplitter: return *new CSplitterCtrl( pTemplate, pPane, nID );

@@ -639,14 +639,6 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
-			case CtlBlockView:
-				switch( nID )
-				{
-				case Prop::BackgroundColor:
-					mProperties.erase( iterAt );
-					continue;
-				}
-				break;
 			case CtlDwgList:
 				switch( nID )
 				{

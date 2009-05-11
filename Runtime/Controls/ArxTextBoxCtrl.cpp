@@ -93,7 +93,7 @@ void CArxTextBoxCtrl::OnSetFocus( CWnd* pFocus )
 {
 	__super::OnSetFocus( pFocus );
 	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
-	mbFocusClick = false;
+	mbFocusClick = true;
 }
 
 void CArxTextBoxCtrl::OnKillFocus( CWnd* pFocus )

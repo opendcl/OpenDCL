@@ -42,6 +42,23 @@ bool CArxGsViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+bool CArxGsViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyBackgroundColor( pProp ) )
+		return false;
+	AcGsDevice* pGsDevice = GetGsDevice();
+	if( pGsDevice )
+	{
+		AcGsColor color = pGsDevice->getBackgroundColor();
+		COLORREF aColor = GetRGBColor( pProp->GetLongValue() );
+		color.m_red = GetRValue( aColor );
+		color.m_green = GetGValue( aColor );
+		color.m_blue = GetBValue( aColor );
+		pGsDevice->setBackgroundColor( color );
+	}
+	return true;
+}
+
 void CArxGsViewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
 	mbHighlighted = true;

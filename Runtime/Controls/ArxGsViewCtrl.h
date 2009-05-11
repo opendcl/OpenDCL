@@ -155,6 +155,7 @@ protected:
 			}
 		AcGsView* GetGsView() const { return mpView; }
 		AcGsModel* GetGsModel() const { return mpModel; }
+		AcGsDevice* GetGsDevice() const { return mpDevice; }
 	protected:
 		virtual void gsToBeUnloaded( AcGsClassFactory* pClassFactory )
 			{
@@ -181,10 +182,12 @@ public:
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 
 protected:
 	AcGsView* GetGsView() { return (mpGsReactor? mpGsReactor->GetGsView() : NULL); }
 	AcGsModel* GetGsModel() { return (mpGsReactor? mpGsReactor->GetGsModel() : NULL); }
+	AcGsDevice* GetGsDevice() { return (mpGsReactor? mpGsReactor->GetGsDevice() : NULL); }
 	virtual bool CanShowHighlight() const { return true; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
