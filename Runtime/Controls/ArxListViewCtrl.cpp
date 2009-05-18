@@ -50,6 +50,9 @@ BEGIN_MESSAGE_MAP(CArxListViewCtrl, CListViewCtrl)
 	ON_WM_KEYUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_GETDLGCODE()
+	ON_WM_LBUTTONDBLCLK()
+	ON_WM_MBUTTONDBLCLK()
+	ON_WM_RBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 
@@ -102,6 +105,42 @@ void CArxListViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		IsAsyncEvents());
+}
+
+void CArxListViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		1,
+		nFlags,
+		point.x,
+		point.y,
+		IsAsyncEvents());
+	__super::OnLButtonDblClk(nFlags, point);
+}
+
+void CArxListViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		4,
+		nFlags,
+		point.x,
+		point.y,
+		IsAsyncEvents());
+	__super::OnMButtonDblClk(nFlags, point);
+}
+
+void CArxListViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		2,
+		nFlags,
+		point.x,
+		point.y,
+		IsAsyncEvents());
+	__super::OnRButtonDblClk(nFlags, point);
 }
 
 void CArxListViewCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult) 

@@ -83,7 +83,7 @@ bool CHtmlCtrl::OnApplyProperty( TPropertyPtr pProp )
 }
 
 
-BEGIN_MESSAGE_MAP(CHtmlCtrl, CHtmlView)
+BEGIN_MESSAGE_MAP(CHtmlCtrl, CHtmlBrowser)
 	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 

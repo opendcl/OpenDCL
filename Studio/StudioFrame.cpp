@@ -191,6 +191,8 @@ int CStudioFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	rcWnd.top = pApp->GetProfileInt( theWorkspace.GetAppKey(), _T("TopLeftY"), rcWnd.top );
 	rcWnd.right = rcWnd.left + pApp->GetProfileInt( theWorkspace.GetAppKey(), _T("Width"), rcWnd.Width() );
 	rcWnd.bottom = rcWnd.top + pApp->GetProfileInt( theWorkspace.GetAppKey(), _T("Height"), rcWnd.Height() );
+	if( wp.showCmd == SW_SHOWMINIMIZED )
+		wp.showCmd = SW_SHOWDEFAULT;
 	SetWindowPlacement( &wp );
 	if( wp.showCmd == SW_MAXIMIZE )
 		PostMessage( WM_SYSCOMMAND, SC_MAXIMIZE, 0 );

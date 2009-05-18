@@ -48,7 +48,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	
 	afx_msg void OnDestroy();
-	afx_msg int  OnMouseActivate(CWnd* pDesktopWnd,UINT nHitTest,UINT message);
+	afx_msg int OnMouseActivate(CWnd* pDesktopWnd,UINT nHitTest,UINT message);
 	virtual afx_msg void PostNcDestroy();
 	virtual void PreSubclassWindow();
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);

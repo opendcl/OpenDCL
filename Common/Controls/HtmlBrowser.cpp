@@ -274,11 +274,6 @@ void CHtmlBrowser::OnDestroy()
 	CWnd::OnDestroy(); // bypass CView doc/frame stuff
 }
 
-int CHtmlBrowser::OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT msg)
-{
-	return CWnd::OnMouseActivate( pDesktopWnd, nHitTest, msg ); // bypass CView doc/frame stuff
-}
-
 void CHtmlBrowser::PreSubclassWindow()
 {
 	__super::PreSubclassWindow();
@@ -325,4 +320,9 @@ BOOL CHtmlBrowser::PreTranslateMessage(MSG* pMsg)
 	}
 
 	return CWnd::PreTranslateMessage(pMsg); //skip CView
+}
+
+int CHtmlBrowser::OnMouseActivate(CWnd* pDesktopWnd,UINT nHitTest,UINT message)
+{
+	return CWnd::OnMouseActivate( pDesktopWnd, nHitTest, message );
 }

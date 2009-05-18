@@ -286,15 +286,11 @@ void CProgressBarCtrl::OnPaint()
 
     if ((lStyle & PBS_VERTICAL) == PBS_VERTICAL)
     {
+      // draw the vertical text centered in the control
       dc.SaveDC();
-      CSize  szExt;
-      CPoint ptText;
-
-      // draw the vertical text centred in the control
       dc.SelectObject(&mfontVert);
-      szExt  = dc.GetTextExtent(strRemaining);
-      ptText.x = (rcClient.Width() - szExt.cy) >> 1;
-      ptText.y = rcClient.bottom - ((rcClient.Height() - szExt.cx) >> 1);
+      CSize szExt = dc.GetTextExtent(strRemaining);
+      CPoint ptText( (rcClient.Width() - szExt.cy) >> 1, rcClient.bottom - ((rcClient.Height() - szExt.cx) >> 1) );
 
       dc.SaveDC();
       dc.IntersectClipRect(rcComplete);
@@ -302,17 +298,21 @@ void CProgressBarCtrl::OnPaint()
       dc.ExtTextOut(ptText.x, ptText.y, ETO_CLIPPED, rcClient, strRemaining, NULL);
       dc.RestoreDC(-1);
 
+      dc.SaveDC();
       dc.ExcludeClipRect(rcComplete);
       dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
       dc.ExtTextOut(ptText.x, ptText.y, ETO_CLIPPED, rcClient, strRemaining, NULL);
       dc.RestoreDC(-1);
+
+			dc.RestoreDC(-1);
     }
     else
     {
+      // draw the vertical text centered in the control
       dc.SaveDC();
-
-      // horizontal text is easier
       dc.SelectObject(&mfontHoriz);
+
+      dc.SaveDC();
       dc.IntersectClipRect(rcComplete);
       dc.SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
       dc.DrawText(strRemaining, rcClient, DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER | DT_CENTER);
@@ -323,6 +323,8 @@ void CProgressBarCtrl::OnPaint()
       dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
       dc.DrawText(strRemaining, rcClient, DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER | DT_CENTER);
       dc.RestoreDC(-1);
+
+			dc.RestoreDC(-1);
     }
   }
 }
