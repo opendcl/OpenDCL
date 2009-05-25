@@ -16,6 +16,7 @@
 #include "Project.h"
 #include "StudioWorkspace.h"
 #include "StudioFrame.h"
+#include "StdioUnicodeFile.h"
 #include "ParseFuncHelp.h"
 #include "PropertyNames.h"
 #include "ProjectPane.h"
@@ -402,20 +403,62 @@ void CEventsTabPane::OnAddtolisp()
 
 	try
 	{
-		// here we are going to write out to the lisp file.
-		CStdioFile fout( mpDclControl->GetOwnerProject()->GetLispFileName(),
-										 CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite );
-		fout.SeekToEnd();
-		fout.WriteString( _T("\r\n") );
-		fout.WriteString( sDefunPreview );
-		fout.WriteString( _T("\r\n") );
-		fout.Close();
+		CStdioUnicodeFile File( sLispFileName,
+														CFile::modeCreate | CFile::modeNoTruncate | CFile::modeReadWrite | CFile::shareDenyWrite | CFile::typeText | CFile::osSequentialScan );
+		CString sContent;
+		CString sLine;
+		bool bInserted = false;
+		while( File.ReadString( sLine ) )
+		{
+			if( !bInserted && sLine.Find( _T(";|«Visual LISP© Format Options»") ) >= 0 )
+			{
+				sContent += _T("\r\n");
+				sContent += sDefunPreview;
+				sContent += _T("\r\n");
+				bInserted = true;
+			}
+			sContent += sLine;
+			sContent += _T("\r\n");
+			if( !bInserted && sLine.Find( _T(";|«OpenDCL Event Handlers»") ) >= 0 )
+			{
+				sContent += _T("\r\n");
+				sContent += sDefunPreview;
+				sContent += _T("\r\n");
+				bInserted = true;
+			}
+		}
+		if( !bInserted )
+		{
+			sContent += _T("\r\n");
+			sContent += sDefunPreview;
+			sContent += _T("\r\n");
+		}
+		File.SeekToBegin();
+		File.WriteString( sContent );
+		File.SetLength( File.GetPosition() );
 	}
-	catch( CException* e )
+	catch( CFileException* e )
 	{
 		e->ReportError();
 		e->Delete();
 	}
+
+	//try
+	//{
+	//	// here we are going to write out to the lisp file.
+	//	CStdioUnicodeFile fout( mpDclControl->GetOwnerProject()->GetLispFileName(),
+	//									 CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite );
+	//	fout.SeekToEnd();
+	//	fout.WriteString( _T("\r\n") );
+	//	fout.WriteString( sDefunPreview );
+	//	fout.WriteString( _T("\r\n") );
+	//	fout.Close();
+	//}
+	//catch( CException* e )
+	//{
+	//	e->ReportError();
+	//	e->Delete();
+	//}
 
 	theWorkspace.DisplayAlert( IDS_FUNCADDED );
 }

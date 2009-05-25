@@ -2,19 +2,19 @@
 #include "StdioUnicodeFile.h"
 
 CStdioUnicodeFile::CStdioUnicodeFile(void)
-: mfReadType( Unknown )
+: mfFileType( Unknown )
 {
 }
 
 CStdioUnicodeFile::CStdioUnicodeFile(FILE* pOpenStream)
 : CStdioFile( pOpenStream )
-, mfReadType( Unknown )
+, mfFileType( Unknown )
 {
 }
 
 CStdioUnicodeFile::CStdioUnicodeFile(LPCTSTR lpszFileName, UINT nOpenFlags)
 : CStdioFile( lpszFileName, nOpenFlags | CFile::typeBinary )
-, mfReadType( Unknown )
+, mfFileType( Unknown )
 {
 }
 
@@ -22,9 +22,40 @@ CStdioUnicodeFile::~CStdioUnicodeFile(void)
 {
 }
 
+void CStdioUnicodeFile::WriteString(LPCTSTR lpsz)
+{
+	switch( mfFileType )
+	{
+	case Ansi:
+	#ifdef _UNICODE
+		{
+			CStringA sOut( lpsz );
+			__super::Write( (LPCSTR)sOut, sOut.GetLength() * sizeof(CHAR) );
+		}
+	#else
+		__super::WriteString( lpsz );
+	#endif
+		break;
+	case Unicode:
+	#ifdef _UNICODE
+		__super::WriteString( lpsz );
+	#else
+		{
+			CStringW sOut( lpsz );
+			__super::Write( (LPCWSTR)sOut, sOut.GetLength() * sizeof(WCHAR) );
+		}
+	#endif
+		break;
+	case Unknown:
+		mfFileType = IsUnicode()? Unicode : Ansi;
+		WriteString( lpsz );
+		break;
+	}
+}
+
 BOOL CStdioUnicodeFile::ReadString(CString& rString)
 {
-	switch( mfReadType )
+	switch( mfFileType )
 	{
 	case Ansi:
 	#ifdef _UNICODE
@@ -51,7 +82,7 @@ BOOL CStdioUnicodeFile::ReadString(CString& rString)
 		return TRUE;
 	#endif
 	case Unknown:
-		mfReadType = IsUnicode()? Unicode : Ansi;
+		mfFileType = IsUnicode()? Unicode : Ansi;
 		return ReadString( rString );
 	}
 	return FALSE;

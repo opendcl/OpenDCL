@@ -5,13 +5,14 @@
 class CStdioUnicodeFile :
 	public CStdioFile
 {
-	enum { Unknown, Ansi, Unicode } mfReadType;
+	enum { Unknown, Ansi, Unicode } mfFileType;
 public:
 	CStdioUnicodeFile(void);
 	CStdioUnicodeFile(FILE* pOpenStream);
 	CStdioUnicodeFile(LPCTSTR lpszFileName, UINT nOpenFlags);
 	~CStdioUnicodeFile(void);
 
+	virtual void WriteString(LPCTSTR lpsz);
 	virtual BOOL ReadString(CString& rString);
 
 protected:

@@ -789,6 +789,8 @@ BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg)
 
 BOOL CAxContainerCtrl::DestroyWindow()
 {
+	mpDispatch = NULL;
+	mpTypeLib = NULL;
 	__super::DestroyWindow();
 	delete this;
 	return TRUE;

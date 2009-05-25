@@ -82,7 +82,9 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 		}
 		CPoint ptScreen( point );
 		mpDlgControl->GetControlWnd()->ClientToScreen( &ptScreen );
-		CRect rcDragRegion( ptScreen, CSize( GetSystemMetrics( SM_CXDOUBLECLK ) / 2, GetSystemMetrics( SM_CYDOUBLECLK ) / 2 ) );
+		CSize sizDragRect( GetSystemMetrics( SM_CXDOUBLECLK ), GetSystemMetrics( SM_CYDOUBLECLK ) );
+		ptScreen.Offset( -sizDragRect.cx / 2, -sizDragRect.cy / 2 );
+		CRect rcDragRegion( ptScreen, sizDragRect );
 		dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource );
 	}
 	if( pAcadDropTarget )

@@ -117,6 +117,14 @@ void CArxListViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		point.y,
 		IsAsyncEvents());
 	__super::OnLButtonDblClk(nFlags, point);
+	if( GetCapture() )
+	{
+		InvokeMethodIntInt(
+			mpTemplate->GetStringProperty( Prop::EventDblClicked ),  
+			-1,
+			-1,
+			IsAsyncEvents() );			
+	}
 }
 
 void CArxListViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)

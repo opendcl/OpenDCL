@@ -96,6 +96,7 @@ Reference\DataType\OLEColor.htm
 Reference\DataType\PictureID.htm
 Reference\DataType\Project.htm
 Reference\DataType\String.htm
+Reference\Property\@Template.htm
 Reference\Property\AllowResizing.htm
 Reference\Property\AlternatingColor.htm
 Reference\Property\AltOrientation.htm
@@ -259,6 +260,7 @@ Reference\Property\VarName.htm
 Reference\Property\Visible.htm
 Reference\Property\VScrollBar.htm
 Reference\Property\Width.htm
+Reference\Method\@Template.htm
 Reference\Method\Animation\Close.htm
 Reference\Method\Animation\Load.htm
 Reference\Method\Animation\Play.htm
@@ -648,6 +650,7 @@ Reference\Method\Tree\SetItemImages.htm
 Reference\Method\Tree\SetItemLabel.htm
 Reference\Method\Tree\SortChildren.htm
 Reference\Method\Tree\StartLabelEdit.htm
+Reference\Event\@Template.htm
 Reference\Event\BeginLabelEdit-Item.htm
 Reference\Event\BeginLabelEdit-Key.htm
 Reference\Event\BeginLabelEdit-RowColumn.htm

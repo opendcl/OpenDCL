@@ -246,11 +246,21 @@ void CPictureBox::SetPictureBlank()
 		DeleteObject( m_hbmMem );
 		m_hbmMem = NULL;
 	}
+	if( mColorService.IsBackgroundTransparent() )
+	{
+		CWnd* pParent = GetParent();
+		if( pParent )
+		{
+			CRect rcPicBox;
+			GetWindowRect( &rcPicBox );
+			pParent->ScreenToClient( &rcPicBox );
+			pParent->RedrawWindow( &rcPicBox, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ERASENOW | RDW_UPDATENOW | RDW_ALLCHILDREN );
+		}
+	}
 }
 
 void CPictureBox::SetPicture( TPicturePtr pPicture )
 {
-	SetPictureBlank();
 	mpPicture = pPicture;
 	if( mpPicture )
 	{
@@ -263,7 +273,6 @@ void CPictureBox::SetPicture( TPicturePtr pPicture )
 
 void CPictureBox::SetPicture( UINT nIconResId )
 {
-	SetPictureBlank();
 	mpPicture = new CPictureObject( -1 );
 	mpPicture->LoadResourceIcon( nIconResId );
 	m_cxIcon = mpPicture->GetWidth();
@@ -274,6 +283,7 @@ void CPictureBox::SetPicture( UINT nIconResId )
 
 void CPictureBox::Refresh()
 {
+	SetPictureBlank();
 	DrawPicture( mpPicture, m_bStretchLoadedPicture );
 	CopyDC();
 }
