@@ -238,9 +238,14 @@ CPictureBox::~CPictureBox()
 		DeleteObject( m_hbmMem );
 }
 
-void CPictureBox::SetPictureBlank() 
+void CPictureBox::SetPictureBlank()
 {
 	mpPicture = NULL;
+	Clear();
+}
+
+void CPictureBox::Clear() 
+{
 	if( m_hbmMem )
 	{
 		DeleteObject( m_hbmMem );
@@ -283,7 +288,7 @@ void CPictureBox::SetPicture( UINT nIconResId )
 
 void CPictureBox::Refresh()
 {
-	SetPictureBlank();
+	Clear();
 	DrawPicture( mpPicture, m_bStretchLoadedPicture );
 	CopyDC();
 }
@@ -760,20 +765,12 @@ bool CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
 		return false;
 
 	mpPicture = CPictureObject::CreatePictureObject( -1, pPictureDisp );
-	if( m_hbmMem )
-	{
-		DeleteObject( m_hbmMem );
-		m_hbmMem = NULL;
-	}
-	
 	Refresh();
 	return true;
 }
 
 void CPictureBox::CopyDC() 
 {
-	
-	// delete the bitmap is valid
 	if (m_hbmMem != NULL)
 	{
 		DeleteObject(m_hbmMem);
@@ -800,11 +797,6 @@ void CPictureBox::CopyDC()
 	DeleteObject (hbmOld);
 	DeleteDC (hDCmem);
 	::ReleaseDC (m_hWnd, hDC);
-	
-	// delete the bitmap if valid
-	if (m_hbmMem != NULL)
-		DeleteObject(m_hbmMem);
-	
 	m_hbmMem = hbmMem;
 }
 

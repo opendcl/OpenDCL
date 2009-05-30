@@ -38,6 +38,7 @@ public:
 	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );
 	void SetPictureBlank();
+	void Clear();
 	void Refresh();
 	void DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb);
 	void DrawPoint(int nX, int nY, COLORREF rgb);

@@ -86,9 +86,14 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	case FrmModalDlg: return new CModalDlg( pDclForm, pParent, pParams );
 	case FrmModelessDlg: return new CModelessDlg( pDclForm, pParent, pParams );
 	case FrmOptionsTab: return new COptionsTabPane( pDclForm, pParent, pParams );
-	case FrmControlBar: return new CDockingDialog( pDclForm, pParent, pParams );
 	case FrmFileDlg: return new CCustomFileDialog( pDclForm, pParent, pParams );
-	case FrmPaletteDlg: return new CPaletteDialog( pDclForm, pParent, pParams );
+#if (_BRXTARGET == 9)
+	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
+	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
+#else
+	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
+	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
+#endif
 	}
 	return NULL;
 }

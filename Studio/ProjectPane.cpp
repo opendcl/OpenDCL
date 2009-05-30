@@ -210,8 +210,11 @@ void CProjectPane::SetPassword( LPCTSTR pszPassword )
 	GetTreeCtrl().SetItemText(mhtiPassword, sPassword);
 }
 
-void CProjectPane::OnActivateProject(TStudioProjectPtr pProject /*= NULL*/)
+void CProjectPane::OnActivateProject( TStudioProjectPtr pProject /*= NULL*/ )
 {
+	if( mpProject == pProject )
+		return;
+
 	if( m_hWnd )
 		GetTreeCtrl().DeleteAllItems();
 	mhtiAutoLispFileParent = NULL;
@@ -226,7 +229,7 @@ void CProjectPane::OnActivateProject(TStudioProjectPtr pProject /*= NULL*/)
 	mhtiFileDialogParent = NULL;
 	mhtiPaletteParent = NULL;
 
-	if( mpProject && mpProject != pProject )
+	if( mpProject )
 	{
 		CDocument* pDoc = GetDocument();
 		if( pDoc )
@@ -248,7 +251,7 @@ void CProjectPane::OnActivateProject(TStudioProjectPtr pProject /*= NULL*/)
 	}
 
 	mpProject = pProject;
-	if(mpProject)
+	if( mpProject )
 	{
 		CString sAppPrefix;
 		GetDocument()->GetDocTemplate()->GetDocString( sAppPrefix, CDocTemplate::windowTitle );

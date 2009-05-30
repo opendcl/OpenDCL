@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 
-#include "acutmem.h"
 #include "ArxAxContainerCtrl.h"
 #include "ArxWorkspace.h"
 #include "AxEventDescriptor.h"

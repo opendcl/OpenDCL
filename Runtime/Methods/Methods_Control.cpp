@@ -501,8 +501,8 @@ ADSRESULT Control::Redraw()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	if( pDlgControl->GetControlWnd()->RedrawWindow() )
-		acedRetT();
+	pDlgControl->OnNeedRepaint( true, true );
+	acedRetT();
 	return RSRSLT;
 }
 
