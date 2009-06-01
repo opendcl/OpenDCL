@@ -91,8 +91,8 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
 	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
 #else
-	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
-	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
+	case FrmControlBar: return new CDockingDialog( pDclForm, pParent, pParams );
+	case FrmPaletteDlg: return new CPaletteDialog( pDclForm, pParent, pParams );
 #endif
 	}
 	return NULL;
