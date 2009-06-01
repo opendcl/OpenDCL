@@ -17,6 +17,7 @@ class CArxDragDropService : public CDragDropService
 	COleDropSource* mpDropSource;
 	bool mbMustDeleteDropTarget;
 	COleDropTarget* mpDropTarget;
+	bool mbMustDeleteDropOnAcadTarget;
 	COleDropTarget* mpDropOnAcadTarget;
 	bool mbRegistered;
 

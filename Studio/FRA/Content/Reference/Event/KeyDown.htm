@@ -53,38 +53,40 @@
         </table>
 		<p>This event is triggered when the user presses a key. Character is the 
         key, RepeatCount is the number of times the key is repeated when it is 
-        held down. Flags describes the state of the [Shift] and [Ctrl] keys, and 
-        the mouse buttons.</p>
+        held down. Flags specifies additional information about the keyboard 
+        state.</p>
 	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Flags bit</th>
-            <th nowrap>Value</th>
+            <th nowrap>Flags bit(s)</th>
             <th nowrap>Meaning</th>
           </tr>
           <tr>
-            <td>0</td>
-            <td>1</td>
-            <td>Left mouse button pressed</td>
+            <td>0 - 7</td>
+            <td>Scan code (OEM-dependent value)</td>
           </tr>
           <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>Right mouse button pressed</td>
+            <td>8</td>
+            <td>Extended key (function key, numeric keypad key, etc.)</td>
           </tr>
           <tr>
-            <td>2</td>
-            <td> 4</td>
-            <td> [Shift] key pressed</td>
+            <td>9 - 10</td>
+            <td> Not used</td>
           </tr>
           <tr>
-            <td>3</td>
-            <td> 8</td>
-            <td> [Ctrl] key pressed</td>
+            <td>11 - 12</td>
+            <td> Used internally by Windows</td>
           </tr>
           <tr>
-            <td>4</td>
-            <td> 16</td>
-            <td> Middle mouse button pressed</td>
+            <td>13</td>
+            <td> [Alt] key is down</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td> Set if key is down before event</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td> Set if key is being released</td>
           </tr>
         </table>
 	</div>

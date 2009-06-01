@@ -87,7 +87,7 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 														dwgPt,
 														nViewport,
 														mpDlgControl->IsAsyncEvents() );
-		return DROPEFFECT_NONE;
+		return DROPEFFECT_COPY;
 	}
 	return DROPEFFECT_NONE; //returning DROPEFFECT_NONE will cause OnDrop to be called instead
 }

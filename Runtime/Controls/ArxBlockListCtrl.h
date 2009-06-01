@@ -6,6 +6,7 @@
 #include "BlockListCtrl.h"
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
+#include "AcadBlockInsertDropTarget.h"
 
 class CAcadDocReactor;
 class CAcadBlockReactor;
@@ -18,8 +19,10 @@ class CArxBlockListCtrl : public CBlockListCtrl
 {
 protected:
 	CArxControlServices	mArxServices;
+	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
-  COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
+	bool mbNoRefresh;
+	AcDbDatabase* mpLoadedDwg;
 
 	class CDocReactor : public AcApDocManagerReactor
 	{
@@ -35,6 +38,7 @@ protected:
 		void documentDestroyed(const char* filename)
 			{ mpCtrl->RefreshBlockList(); }
 	} mDocReactor;
+	friend CDocReactor;
 
 	class CEdReactor : public AcEditorReactor 
 	{
@@ -53,9 +57,7 @@ protected:
 		virtual void commandEnded( LPCTSTR cmdStr )
 			{ if( lstrcmp( cmdStr, _T("PURGE") ) == 0 ) mpCtrl->RefreshBlockList(); }
 	} mEdReactor;
-
-public:
-	AcDbDatabase		*m_pLoadedDwg;
+	friend CEdReactor;
 
 // Construction
 public:
@@ -67,10 +69,16 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 
 // Implementation
 public:
-	bool LoadDwg(CString sFileName);
+	bool LoadDwg( LPCTSTR pszFilename );
+	LPCTSTR GetLoadedDwg() const;
+
+protected:
+	AcDbDatabase* sourceDwg() const { return mpLoadedDwg; }
 	void RefreshBlockList();
 	int extractPreview(const AcDbBlockTableRecord* pBTR);
 

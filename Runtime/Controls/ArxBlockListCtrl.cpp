@@ -110,10 +110,12 @@ CArxBlockListCtrl::CArxBlockListCtrl( TDclControlPtr pTemplate, CControlPane* pP
 : CBlockListCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
 , mDragDropService( this )
+, mBlockInsertDropTarget( this )
+, mbNoRefresh( false )
+, mpLoadedDwg( NULL )
 , mDocReactor( this )
 , mEdReactor( this )
 {
-	m_pLoadedDwg = NULL;
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
@@ -132,10 +134,43 @@ bool CArxBlockListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+DROPEFFECT CArxBlockListCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
+	AcDbDatabase* pDb = mpLoadedDwg;
+	if( !pDb )
+		pDb = acdbHostApplicationServices()->workingDatabase();
+	if( !pDb )
+		return dwEffect;
+	UINT nFlags = 0;
+	int idxItem = HitTest( point, &nFlags );
+	if( idxItem < 0 )
+		return dwEffect;
+	CString sText = GetItemText( idxItem, 0 );
+	if( sText.IsEmpty() )
+		return dwEffect;
+	AcDbBlockTable* pBlockTable = NULL;
+	if( Acad::eOk != pDb->getBlockTable( pBlockTable, AcDb::kForRead ) )
+		return dwEffect;
+	AcDbObjectId idBlock;
+	Acad::ErrorStatus es = pBlockTable->getAt( sText, idBlock );
+	pBlockTable->close();
+	if( es != Acad::eOk )
+		return dwEffect;
+	UINT CF_DclBlockRecId = CAcadBlockInsertDropTarget::GetAcadBlockClipboardFormat();
+	HGLOBAL hDclBlockRecIdPtr = GlobalAlloc( GHND, sizeof(AcDbObjectId) );
+	if( !hDclBlockRecIdPtr )
+		return dwEffect;
+	*(AcDbObjectId*)GlobalLock( hDclBlockRecIdPtr ) = idBlock;
+	GlobalUnlock( hDclBlockRecIdPtr );
+	SourceData.CacheGlobalData( CF_DclBlockRecId, hDclBlockRecIdPtr );
+	return DROPEFFECT_COPY;
+}
+
 int CArxBlockListCtrl::extractPreview(const AcDbBlockTableRecord* pBTR)
 {
 	if (!pBTR->hasPreviewIcon())
-		return 0; 
+		return 0;
 
 	int ret = 0;
 
@@ -158,137 +193,145 @@ int CArxBlockListCtrl::extractPreview(const AcDbBlockTableRecord* pBTR)
 	return ret;
 }
 
-bool CArxBlockListCtrl::LoadDwg(CString sFileName)
+bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 {
-	try
+	if( mpLoadedDwg )
 	{
-		CString sPath = theWorkspace.FindFile( sFileName ); 
+		try
+		{
+			delete mpLoadedDwg;
+		}
+		catch( ... ) {}
+		mpLoadedDwg = NULL;
+	}
+
+	if( pszFilename && *pszFilename )
+	{
+		CString sPath = theWorkspace.FindFile( pszFilename ); 
 		if( sPath.IsEmpty() )
 		{
 			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-			sMsg.Format( (LPCTSTR)sFileName );
+			sMsg.Format( pszFilename );
 			theWorkspace.DisplayAlert( sMsg );
-			return FALSE;
-		}
-
-		// delete all the items
-		DeleteAllItems();
-		
-		if (GetHeaderCtrl() != NULL)
-		{
-			// get the column count
-			int nColumnCount = GetHeaderCtrl()->GetItemCount();
-
-			// Delete all of the columns.
-			for (int i=0;i < nColumnCount;i++)
-			{
-			   DeleteColumn(0);
-			}
-		}
-
-		// if a drawing has been previously loaded
-		if (m_pLoadedDwg)
-		{
-			// delete it.
-			delete m_pLoadedDwg;
-			m_pLoadedDwg = NULL;
-		}
-
-		Acad::ErrorStatus es;
-
-
-		// This database is used to open the user specified file into if it exists
-		m_pLoadedDwg = new AcDbDatabase(false, true);
-		
-		// Try to open the user specified file
-		if (Acad::eOk != (es = m_pLoadedDwg->readDwgFile(sPath,_SH_DENYNO,false)))
-		{
-			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-			sMsg.Format( (LPCTSTR)sFileName );
-			theWorkspace.DisplayAlert( sMsg );
-			delete m_pLoadedDwg;					
-			m_pLoadedDwg = NULL;
 			return false;
 		}
-		
-		if (m_pLoadedDwg==NULL)
-			return false;			
-		m_pLoadedDwg->closeInput( true );
-	}
-	catch(...)
-	{
+
+		mpLoadedDwg = new AcDbDatabase( false, true );
+		Acad::ErrorStatus es = mpLoadedDwg->readDwgFile( sPath, _SH_DENYNO, false );
+		if( es != Acad::eOk )
+		{
+			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
+			sMsg.Format( pszFilename );
+			theWorkspace.DisplayAlert( sMsg );
+			try
+			{
+				delete mpLoadedDwg;
+			}
+			catch( ... ) {}
+			mpLoadedDwg = NULL;
+			return false;
+		}
+		mpLoadedDwg->closeInput( true );
 	}
 	
-	// now call the method to display the blocks in this loaded dwg
 	RefreshBlockList();
 	return true;			
 }
 
+LPCTSTR CArxBlockListCtrl::GetLoadedDwg() const
+{
+	if( !mpLoadedDwg )
+		return NULL;
+	const ACHAR* pszFilename;
+	if( Acad::eOk == mpLoadedDwg->getFilename( pszFilename ) )
+		return pszFilename;
+	return NULL;
+}
+
 void CArxBlockListCtrl::RefreshBlockList() 
 {
+	if( mbNoRefresh )
+		return;
 	if( !m_hWnd )
 		return;
 
+	CString sCurSel;
+	POSITION posSel = GetFirstSelectedItemPosition();
+	if( posSel )
+		sCurSel = GetItemText( GetNextSelectedItem( posSel ), 0 );
 	DeleteAllItems();
-	
-	if (acdbHostApplicationServices()->workingDatabase() == NULL)
-		return;
+	GetImageList(LVSIL_SMALL)->SetImageCount( 1 );
+	GetImageList(LVSIL_NORMAL)->SetImageCount( 1 );
+	CHeaderCtrl* pHeader = GetHeaderCtrl();
+	if( pHeader )
+	{
+		for( int ctColumn = pHeader->GetItemCount(); ctColumn > 0 ; --ctColumn )
+			DeleteColumn( 0 );
+	}
 
-	AcDbBlockTable *pBlockTable;
-
-	if (m_pLoadedDwg == NULL)
-		acdbHostApplicationServices()->workingDatabase()->getSymbolTable(pBlockTable, AcDb::kForRead);
+	AcDbBlockTable* pBlockTable = NULL;
+	if( mpLoadedDwg )
+		mpLoadedDwg->getSymbolTable( pBlockTable, AcDb::kForRead );
 	else
-		m_pLoadedDwg->getSymbolTable(pBlockTable, AcDb::kForRead);
+	{
+		AcDbDatabase* pDb = acdbHostApplicationServices()->workingDatabase();
+		if( pDb )
+			pDb->getSymbolTable( pBlockTable, AcDb::kForRead );
+	}
+	if( !pBlockTable )
+		return;
 
 	bool bVisible = (IsWindowVisible() != FALSE);
 	if( bVisible )
-		SetRedraw(FALSE); // turn drawing off regardless of list mode
+		SetRedraw( FALSE ); // turn drawing off regardless of list mode
 
-	// Iterate through the block table and disaply the names in the ListCtrl.
-	const TCHAR *pName;
-	int nRet = -1;
-	AcDbBlockTableIterator *pBTItr;
-	if (pBlockTable->newIterator(pBTItr) == Acad::eOk) 
+	// Iterate through the block table and display the names in the ListCtrl.
+	AcDbBlockTableIterator* pBTItr;
+	Acad::ErrorStatus es = pBlockTable->newIterator( pBTItr );
+	pBlockTable->close();
+	if( es == Acad::eOk ) 
 	{
-		while (!pBTItr->done()) 
+		while( !pBTItr->done() ) 
 		{
-			AcDbBlockTableRecord *pRecord;
-			if (pBTItr->getRecord(pRecord, AcDb::kForRead) == Acad::eOk)
+			AcDbBlockTableRecord* pRecord;
+			if( pBTItr->getRecord( pRecord, AcDb::kForRead ) == Acad::eOk )
 			{
-				pRecord->getName(pName);
-				CString sBlockName = pName;
-				if (sBlockName.Left(1) != _T("*") &&
-					sBlockName.Left(1) != _T("~") &&
-					sBlockName != CString() &&
-					!pRecord->isAnonymous())
-				{		
-					int nCount = GetItemCount();
-					int nPreviewIndex = extractPreview(pRecord);
-					
-					LVITEM lvItem;
-					lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
-					lvItem.iItem = nCount;
-					lvItem.iSubItem = 0;
-					TCHAR sValue[256];
-					_tcscpy(sValue, sBlockName);
-					lvItem.pszText = sValue;
-					lvItem.iImage = nPreviewIndex;
-					lvItem.iIndent = -1;
-
-					nRet = InsertItem(&lvItem);
+				if( !pRecord->isAnonymous() &&
+						!pRecord->isLayout() &&
+						!pRecord->isFromExternalReference() )
+				{
+					const ACHAR* pszName;
+					pRecord->getName( pszName );
+					int nPreviewIndex = extractPreview( pRecord );
+					LVITEM lvItem =
+					{ LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT,
+						GetItemCount(),
+						0,
+						0,
+						0,
+						CString( pszName ).LockBuffer(),
+						-1,
+						nPreviewIndex,
+						0,
+						-1,
+					};
+					int idxItem = InsertItem( &lvItem );
+					if( sCurSel == pszName )
+					{
+						SetItemState( idxItem, LVIS_SELECTED, LVIS_SELECTED );
+						EnsureVisible( idxItem, FALSE );
+					}
 				}
 				pRecord->close();
 			}
 			pBTItr->step();
 		}
+		delete pBTItr;
 	}
-	pBlockTable->close();
 
 	if( bVisible )
-		SetRedraw(TRUE); // turn drawing back on and update the window
-	OnNeedRepaint();
-	UpdateWindow(); 
+		SetRedraw( TRUE ); // turn drawing back on and update the window
+	OnNeedRepaint( true, true );
 }
 
 
@@ -321,7 +364,9 @@ END_MESSAGE_MAP()
 
 void CArxBlockListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
+	mbNoRefresh = true;
 	__super::OnLButtonDown(nFlags, point);
+	mbNoRefresh = false;
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		1,
@@ -329,30 +374,6 @@ void CArxBlockListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		IsAsyncEvents());
-/*
-	bool bDrag = mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin);
-	if (!bDrag) //dragging not allowed
-		return;
-
-	// a -1 will be returned if not found
-	if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
-		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
-	else
-	{
-		CStringArray saBlockNames;
-		saBlockNames.SetSize(1,1);
-		POSITION pos = GetFirstSelectedItemPosition();
-		if (pos)
-		{
-			while (pos)
-				saBlockNames.Add(GetItemText(GetNextSelectedItem(pos), 0));
-			//!CHANGED! 10-5-04 SRM
-			//didnt allow user to drag and drop blocks from external dwgs
-			//if (m_pLoadedDwg == NULL)
-			BeginDragnDropToInsertBlocks(mpTemplate, point, IsAsyncEvents(), saBlockNames);
-		}
-	}
-*/
 }
 
 void CArxBlockListCtrl::OnLButtonUp(UINT nFlags, CPoint point) 

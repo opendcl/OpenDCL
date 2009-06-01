@@ -16,8 +16,9 @@ CArxDragDropService::CArxDragDropService( CDialogControl* pDlgControl )
 : mpDlgControl( pDlgControl )
 , mpDropSource( pDlgControl->GetDropSource() )
 , mpDropTarget( pDlgControl->GetDropTarget() )
-, mpDropOnAcadTarget( NULL )
 , mbMustDeleteDropTarget( false )
+, mpDropOnAcadTarget( pDlgControl->GetDropOnAcadTarget() )
+, mbMustDeleteDropOnAcadTarget( false )
 , mbRegistered( false )
 {
 	if( !mpDropTarget )
@@ -25,7 +26,11 @@ CArxDragDropService::CArxDragDropService( CDialogControl* pDlgControl )
 		mpDropTarget = new CArxControlDropTarget( pDlgControl );
 		mbMustDeleteDropTarget = true;
 	}
-	mpDropOnAcadTarget = new CArxControlAcadDropTarget( pDlgControl );
+	if( !mpDropOnAcadTarget )
+	{
+		mpDropOnAcadTarget = new CArxControlAcadDropTarget( pDlgControl );
+		mbMustDeleteDropOnAcadTarget = true;
+	}
 }
 
 CArxDragDropService::~CArxDragDropService()
@@ -34,7 +39,8 @@ CArxDragDropService::~CArxDragDropService()
 		RevokeControlAsDropTarget();
 	if( mbMustDeleteDropTarget )
 		delete mpDropTarget;
-	delete mpDropOnAcadTarget;
+	if( mbMustDeleteDropOnAcadTarget )
+		delete mpDropOnAcadTarget;
 }
 
 bool CArxDragDropService::RegisterControlAsDropTarget()
@@ -61,7 +67,8 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 		return DROPEFFECT_NONE;
 	if( mpDropOnAcadTarget &&
-			!pDclControl->GetStringProperty( Prop::DragnDropToAutoCAD ).IsEmpty() )
+			(!mbMustDeleteDropOnAcadTarget ||
+			 !pDclControl->GetStringProperty( Prop::DragnDropToAutoCAD ).IsEmpty()) )
 		acedAddDropTarget( mpDropOnAcadTarget );
 	COleDropTarget* pAcadDropTarget = GetCustomAcadDropTarget();
 	if( pAcadDropTarget )

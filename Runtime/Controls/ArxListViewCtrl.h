@@ -18,7 +18,6 @@ class CArxListViewCtrl : public CListViewCtrl
 protected:
 	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
-  //COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
 
 // Construction
 public:

@@ -159,8 +159,9 @@ private:
 	// Drag and Drop Support
 public:
 	virtual CDragDropService* GetDragDropService() { return NULL; }
-	virtual COleDropSource* GetDropSource() const { return NULL; }
-	virtual COleDropTarget* GetDropTarget() const { return NULL; }
+	virtual COleDropSource* GetDropSource() { return NULL; }
+	virtual COleDropTarget* GetDropTarget() { return NULL; }
+	virtual COleDropTarget* GetDropOnAcadTarget() { return NULL; }
 	virtual DROPEFFECT BeginDragDrop( const CPoint& point ); //point in client coordinates
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );

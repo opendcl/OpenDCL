@@ -612,59 +612,41 @@ void CColumnsPage::OnSelchangeStyle()
 	SetModified();
 }
 
-void CColumnsPage::SetColumn(INT_PTR nIndex)
+void CColumnsPage::SetColumn( INT_PTR nIndex )
 {
-	
-	HD_ITEM curItem;
-	CHeaderCtrl* pHdrCtrl= NULL;
-
-	// retrieve embedded header control			
-	pHdrCtrl = m_List.GetHeaderCtrl();
-	if (pHdrCtrl == NULL)
+	CHeaderCtrl* pHdrCtrl = m_List.GetHeaderCtrl();
+	if( !pHdrCtrl )
+		return;
+	if( nIndex >= pHdrCtrl->GetItemCount() )
 		return;
 
-	if (nIndex >= pHdrCtrl->GetItemCount())
-		return;
-
-
-	// add bmaps to each header item
-	if (!pHdrCtrl->GetItem(nIndex, &curItem))
-		return;
-
-	if (m_ColData[m_nIndex].m_Image == -1 || m_ColData[m_nIndex].m_Image >= m_Image.GetCount())
-	{
-		curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
-		curItem.iImage = -1;
-	}
-	else
-	{
-		curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
-		curItem.iImage= m_ColData[m_nIndex].m_Image;
-	}
+	HDITEM hdi = { HDI_TEXT | HDI_IMAGE | HDI_FORMAT };
+	hdi.iImage = m_ColData[m_nIndex].m_Image;
 
 	//force a CString copy here, because calling LockBuffer() on a CArray resident CString corrupts the 
 	//CString reference count mechanism and leads to an eventual crash next time a CString member function 
 	//tries to do anything with the embedded string manager  2007-02-23 [ORW]
 	CString sCaption = (LPCTSTR)m_ColData[m_nIndex].m_Caption;
-	curItem.pszText = sCaption.LockBuffer();
+	hdi.pszText = sCaption.LockBuffer();
+	hdi.cchTextMax = -1;
 
-	switch(m_ColData[m_nIndex].m_Alignment)
+	switch( m_ColData[m_nIndex].m_Alignment )
 	{					
 	case 1:
-		curItem.fmt= HDF_CENTER | HDF_STRING;
+		hdi.fmt = HDF_CENTER | HDF_STRING;
 		break;
 	case 2:
-		curItem.fmt= HDF_RIGHT | HDF_STRING;
+		hdi.fmt = HDF_RIGHT | HDF_STRING;
 		break;				
 	default:
-		curItem.fmt= HDF_LEFT | HDF_STRING;
+		hdi.fmt = HDF_LEFT | HDF_STRING;
 		break;
 	}
 	
-	if (m_ColData[m_nIndex].m_Image >= 0 && m_ColData[m_nIndex].m_Image < m_Image.GetCount())
-		curItem.fmt |= HDF_IMAGE;
+	if( hdi.iImage >= 0 )
+		hdi.fmt |= HDF_IMAGE;
 
-	pHdrCtrl->SetItem(nIndex, &curItem);
+	pHdrCtrl->SetItem( nIndex, &hdi );
 }
 
 
