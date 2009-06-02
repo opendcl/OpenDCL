@@ -23,7 +23,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -51,41 +51,43 @@
             <a href="../Control/Tree.htm">Baumstruktur</a></td>
           </tr>
         </table>
-		<p>Wird ausgel&ouml;st, wenn der Anwender eine Taste gedr&uuml;ckt hat. Bitte beachten Sie, dass in nicht-modalen Dialogen das Event u.U. nicht ausgel&ouml;st wird, wenn die Dialogeigenschaft KeepFocus auf Ja gestellt ist. Mit intRepeatCount wird die Anzahl zur&uuml;ckgegeben, wenn die Taste gedr&uuml;ckt gehalten wird. Das intFlags Argument ist ein Bitcode, der den Status von Steuerung (Strg) und Umschalttaste (Shift) wiedregibt und sich aus folgenden Werten zusammensetzt:</p>
-		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+		<p>Wird ausgel&ouml;st, wenn der Anwender eine Taste gedr&uuml;ckt hat. Bitte beachten Sie, dass in nicht-modalen Dialogen das Event u.U. nicht ausgel&ouml;st wird, wenn die Dialogeigenschaft KeepFocus auf Ja gestellt ist. Mit intRepeatCount wird die Anzahl zur&uuml;ckgegeben, wenn die Taste gedr&uuml;ckt gehalten wird. Das intFlags Argument ist ein Bitcode, der den Status der Tastatur wiedergibt und sich aus folgenden Werten zusammensetzt:</p>
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Bits</th>
-            <th nowrap>Werte</th>
             <th nowrap>Bedeutung</th>
           </tr>
           <tr>
-            <td>0</td>
-            <td>1</td>
-            <td>Linke Taste gedr&uuml;ckt</td>
+            <td>0 - 7</td>
+            <td>Scan-Code (OEM-abh&auml;ngiger Wert)</td>
           </tr>
           <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>Rechte Taste gedr&uuml;ckt</td>
+            <td>8</td>
+            <td>Erweiterte Taste  (Funktionstaste, Taste auf der numerischen Tastatur, etc.)</td>
           </tr>
           <tr>
-            <td>2</td>
-            <td> 4</td>
-            <td> Umschalttaste gedr&uuml;ckt</td>
+            <td>9 - 10</td>
+            <td> Nicht verwendet </td>
           </tr>
           <tr>
-            <td>3</td>
-            <td> 8</td>
-            <td> Strg-Taste gedr&uuml;ckt</td>
+            <td>11 - 12</td>
+            <td> Intern von Windows verwendet </td>
           </tr>
           <tr>
-            <td>4</td>
-            <td> 16</td>
-            <td> Mittlere Taste gedr&uuml;ckt</td>
+            <td>13</td>
+            <td> [Alt]-Taste ist gedr&uuml;ckt </td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td> Wird gesetzt, wenn die Taste gedr&uuml;ckt wurde bevor das Event ausgel&ouml;st wurde</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td> Wird gesetzt, wenn die Taste losgelassen wurde</td>
           </tr>
         </table>
-	</div>
-	<hr />
+</div>
+<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		Alle Rechte vorbehalten.</p>
