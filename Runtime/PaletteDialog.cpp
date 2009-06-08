@@ -24,7 +24,6 @@ CPaletteDialog::CPaletteDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 , mHostPaletteSet( *new CAcadPaletteHost( this, pParent ) )
 , mbKeepFocus( true )
 , mbResizable( true )
-//, mbHiding( false )
 {
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
@@ -349,7 +348,9 @@ bool CPaletteDialog::OnClosing()
 	if( IsClosing() )
 		return true;
 	SetClosing();
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventClose), IsAsyncEvents());
+	CRect rcThis;
+	GetEffectiveWindowRect( rcThis );
+	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventClose ), rcThis.left, rcThis.top, IsAsyncEvents() );	
 	if( /*!mbHiding && */!IsFloating() )
 		mHostPaletteSet.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

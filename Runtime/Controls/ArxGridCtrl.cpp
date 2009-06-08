@@ -181,6 +181,7 @@ public:
 			dwComboStyle |= _Style;
 			if( !Create( dwComboStyle, rcCtrl, &mClippingWnd, 100 ) )
 				return;
+			SetDroppedWidth( 200 );
 			DWORD dwAcUiStyle = ((_AcUiStyle == (DWORD)-1)?
 														(AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS | AC_ES_SHOW_ERRMSG) :
 														_AcUiStyle);

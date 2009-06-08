@@ -226,10 +226,14 @@ IOStatus AxMethodDescriptor::ReadFromTextFile(std::ifstream &sFile)
 IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
 {
   if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
-	if (!readString(sFile, msName)) return statInvalidFormat;
-	CString sUnusedParams;
+	CStringA sName;
+	if (!readString(sFile, sName)) return statInvalidFormat;
+	msName = sName;
+	CStringA sUnusedParams;
   if (!readString(sFile, sUnusedParams)) return statInvalidFormat;
-  if (!readString(sFile, msDesc)) return statInvalidFormat;
+	CStringA sDesc;
+  if (!readString(sFile, sDesc)) return statInvalidFormat;
+	msDesc = sDesc;
   if (!readVARTYPE(sFile, mReturnType)) return statInvalidFormat;
 	int ctArgs;
   if (!readInt(sFile, ctArgs)) return statInvalidFormat;
@@ -238,7 +242,9 @@ IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
   for (int i = 0; i < ctArgs; ++i)
   {
     if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
-    if (!readString(sFile, mrArgs[i].name)) return statInvalidFormat;
+		CStringA sName;
+    if (!readString(sFile, sName)) return statInvalidFormat;
+		mrArgs[i].name = sName;
     if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
   }
   return statOK;

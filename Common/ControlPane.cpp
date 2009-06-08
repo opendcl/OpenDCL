@@ -100,9 +100,9 @@ bool CControlPane::CreateControls(UINT& nId)
 	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		TDclControlPtr pDclControl = (*iter);
-		if (pDclControl->GetType() <= _CtlForm)
+		if( pDclControl->GetType() <= _CtlForm )
 			continue;
-		if (pDclControl->GetType() == CtlFileExplorer)
+		if( pDclControl->GetType() == CtlFileExplorer )
 			continue;
 		UINT idDlg = pDclControl->GetID();
 		if( idDlg <= 2 || pDclControl->GetType() != CtlSplitter )
@@ -214,7 +214,7 @@ bool CControlPane::HasSplitter( int nSplitterId ) const
 
 void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 {
-	if( !pDclControl )
+	if( !pDclControl || !pDclControl->IsZOrderAllowed() )
 		return;
 	CDialogControl* pDlgControl = pDclControl->GetControlInstance();
 	if( !pDlgControl )

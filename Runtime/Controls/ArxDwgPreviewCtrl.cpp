@@ -9,6 +9,91 @@
 #include "Workspace.h"
 
 
+static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtrlHeight)
+{
+	CRect rcCell(0, 0, nCtrlWidth, nCtrlHeight);
+	double dFactor;
+	double dH;
+	double dW;
+
+	dFactor = (double)nPicHeight / (double)nPicWidth;
+	dH = dFactor;
+	dW = 1.0;
+
+	int nDrawWidth = int(dW * nCtrlWidth);
+	int nDrawHeight = int(dH * nDrawWidth);
+	
+	// if the calc height is too large
+	if (nDrawHeight > nCtrlHeight)
+	{
+		dFactor = (double)nPicWidth / (double)nPicHeight;
+		dH = 1.0;
+		dW = dFactor;
+
+		nDrawHeight = int(dH * nCtrlHeight);
+		nDrawWidth = int(dW * nDrawHeight);
+
+		rcCell.left = (nCtrlWidth - nDrawWidth) / 2;
+		rcCell.right = nCtrlWidth - rcCell.left;
+	}
+	else if (nDrawHeight < nCtrlHeight)
+	{
+		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
+		rcCell.bottom = nCtrlHeight - rcCell.top;
+	}
+	
+	// if the calc width is too large
+	if (nDrawWidth > nCtrlWidth)
+	{
+		dFactor = (double)nPicHeight / (double)nPicWidth;
+		dH = dFactor;
+		dW = 1.0;
+
+		nDrawWidth = int(dW * nCtrlWidth);
+		nDrawHeight = int((double)nDrawWidth * dH);
+		
+		rcCell.left = 1;
+		rcCell.right = nCtrlWidth;
+		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
+		rcCell.bottom = nCtrlHeight - rcCell.top;
+	}
+
+	return rcCell;
+}
+
+static void DrawTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int nWidth, int nHeight, COLORREF crTransparent )
+{
+	CDC dcImage, dcTrans;
+
+	// Create two memory dcs for the image and the mask
+	dcImage.CreateCompatibleDC(pDC);
+	dcTrans.CreateCompatibleDC(pDC);
+
+	// Select the image into the appropriate dc
+	CBitmap* pOldBitmapImage = dcImage.SelectObject(pBitmap);
+
+	// Create the mask bitmap
+	CBitmap bitmapTrans;
+	bitmapTrans.CreateBitmap(nWidth, nHeight, 1, 1, NULL);
+
+	// Select the mask bitmap into the appropriate dc
+	CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+
+	// Build mask based on transparent colour
+	dcImage.SetBkColor(crTransparent);
+	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+
+	// Do the work - True Mask method - cool if not actual display
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+
+	// Restore settings
+	dcImage.SelectObject(pOldBitmapImage);
+	dcTrans.SelectObject(pOldBitmapTrans);
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CArxDwgPreviewCtrl
 
@@ -17,9 +102,8 @@ CArxDwgPreviewCtrl::CArxDwgPreviewCtrl( TDclControlPtr pTemplate, CControlPane* 
 : CDialogControl( pTemplate, pPane, this )
 , mArxServices( this )
 , mDragDropService( this )
+, mbDrawSelected( false )
 {
-	m_bSelectedRect = false;
-
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
@@ -64,64 +148,40 @@ bool CArxDwgPreviewCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 void CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
 {
-	CString sPath = theWorkspace.FindFile( pszFilename ); 
-	if( sPath.IsEmpty() )
-	{
-		theWorkspace.DisplayAlert(ErrorFileNotFound);
+	Clear();
+	if( !pszFilename || !*pszFilename )
 		return;
-	}	
-	m_filename = sPath;
-	RedrawWindow();
+
+	msDwgFilename = theWorkspace.FindFile( pszFilename ); 
+	if( msDwgFilename.IsEmpty() )
+	{
+		theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + "\n" + pszFilename);
+		return;
+	}
 }
 
-void CArxDwgPreviewCtrl::PaintCtrl( CDC *pdc ) 
+void CArxDwgPreviewCtrl::Reset()
 {
-	CRect rcCell;
-	CWnd::GetClientRect( &rcCell );
-	
-	// draw the Window background for the cell				
-	pdc->FillSolidRect( rcCell, mColorService.GetBackgroundColor() );
-	
-	if( !m_filename.IsEmpty() )
-	{
-		Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
-		acdbDisplayPreviewFromDwg( m_filename, (void*)m_hWnd, &nBgColor );
-	}
+	msDwgFilename.Empty();
+	mbDrawSelected = false;
+}
 
-	if (m_bSelectedRect)
-	{
-		CRect rcCell;
-		GetClientRect (&rcCell);
-		CSize szValue(1,1);
-		rcCell.DeflateRect(szValue);
-		
-		CPen Pen(PS_SOLID, 1, m_HighlightColor);
-		CPen* pOldPen = pdc->SelectObject(&Pen);
-
-		pdc->MoveTo(1, 1);
-		pdc->LineTo(rcCell.Width(), 1);		
-		pdc->LineTo(rcCell.Width(), rcCell.Height());		
-		pdc->LineTo(1, rcCell.Height());		
-		pdc->LineTo(1, 1);		
-		pdc->SelectObject(pOldPen);
-		Pen.DeleteObject();
-	}
-
-	if (GetFocus() == this)
-		// draw the solid rectangle
-		pdc->DrawFocusRect(m_rcFocus);
+void CArxDwgPreviewCtrl::Clear()
+{
+	Reset();
+	OnNeedRepaint();
 }
 
 void CArxDwgPreviewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
-	m_bSelectedRect = true;
-	m_HighlightColor = clrHighlight;		
+	mbDrawSelected = true;
+	mclrHighlight = clrHighlight;		
 	Invalidate();
 }
 
 void CArxDwgPreviewCtrl::RemoveHighlight()
 {
-	m_bSelectedRect = false;
+	mbDrawSelected = false;
 	Invalidate();
 }
 
@@ -145,9 +205,30 @@ END_MESSAGE_MAP()
 void CArxDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) 
 {
 	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
-	pDC->SetBkMode( TRANSPARENT );
-	pDC->SetBkColor( mColorService.GetBackgroundColor() );
-	PaintCtrl( pDC );
+	int nDCState = pDC->SaveDC();
+	Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
+	acdbDisplayPreviewFromDwg( msDwgFilename, (void*)m_hWnd, &nBgColor );
+	
+	CRect rcCell = lpDrawItemStruct->rcItem;
+
+	if( mbDrawSelected )
+	{
+		rcCell.DeflateRect(1, 1, 1, 1);
+		
+		CPen Pen(PS_SOLID, 1, mclrHighlight);
+		pDC->SelectObject(&Pen);
+
+		pDC->MoveTo(1, 1);
+		pDC->LineTo(rcCell.Width(), 1);		
+		pDC->LineTo(rcCell.Width(), rcCell.Height());		
+		pDC->LineTo(1, rcCell.Height());		
+		pDC->LineTo(1, 1);		
+	}
+
+	if( lpDrawItemStruct->itemState & ODS_FOCUS )
+		pDC->DrawFocusRect( &mrcFocus );
+
+	pDC->RestoreDC( nDCState );
 }
 
 void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -163,20 +244,22 @@ void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy) 
 {
-	if( !m_filename.IsEmpty() )
-	{
-		SetWindowText( m_filename );
-		SetWindowText( _T("") );
-		Adesk::UInt32 Color = RGB(0,0,0);
-		// static frame works the best for this function
-		acdbDisplayPreviewFromDwg(m_filename, (void*)m_hWnd, &Color);
-	}
-	else
-	{
-		CDC *pdc = GetDC();
-		PaintCtrl( pdc );
-		ReleaseDC( pdc );
-	}	
+	__super::OnSize( nType, cx, cy );
+	return;
+	//if( !msDwgFilename.IsEmpty() )
+	//{
+	//	SetWindowText( msDwgFilename );
+	//	SetWindowText( _T("") );
+	//	Adesk::UInt32 Color = RGB(0,0,0);
+	//	// static frame works the best for this function
+	//	acdbDisplayPreviewFromDwg(msDwgFilename, (void*)m_hWnd, &Color);
+	//}
+	//else
+	//{
+	//	CDC *pdc = GetDC();
+	//	PaintCtrl( pdc );
+	//	ReleaseDC( pdc );
+	//}	
 }
 
 void CArxDwgPreviewCtrl::OnClicked() 
@@ -202,14 +285,13 @@ void CArxDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	CRect rcThis;
 	GetClientRect(&rcThis);
 
-	m_rcFocus.left = 2;
-	m_rcFocus.top = 2;
-	m_rcFocus.right = rcThis.Width() - 2,
-	m_rcFocus.bottom = rcThis.Height() - 2;
+	mrcFocus.left = 2;
+	mrcFocus.top = 2;
+	mrcFocus.right = rcThis.Width() - 2,
+	mrcFocus.bottom = rcThis.Height() - 2;
 
 	CDC *pdc = GetDC();
-	// draw the solid rectangle
-	pdc->DrawFocusRect(m_rcFocus);
+	pdc->DrawFocusRect(mrcFocus);
 	ReleaseDC(pdc);
 	
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
@@ -220,8 +302,7 @@ void CArxDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	__super::OnKillFocus(pNewWnd);
 	
 	CDC *pdc = GetDC();
-	// draw the solid rectangle
-	pdc->DrawFocusRect(m_rcFocus);
+	pdc->DrawFocusRect(mrcFocus);
 	ReleaseDC(pdc);
 
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());

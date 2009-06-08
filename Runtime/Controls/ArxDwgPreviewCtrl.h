@@ -17,12 +17,10 @@ class CArxDwgPreviewCtrl : public CButton, public CDialogControl
 	CAcadColorService mColorService;
 	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
-
-private:
-	bool				m_bSelectedRect;
-	COLORREF			m_HighlightColor;
-	CString				m_filename;
-	CRect				m_rcFocus;
+	CString msDwgFilename;
+	bool mbDrawSelected;
+	COLORREF mclrHighlight;
+	CRect mrcFocus;
 
 public:
 	CArxDwgPreviewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -38,13 +36,14 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
+protected:
+	void Reset();
+
 public:
-	void PaintCtrl( CDC *pdc );
-	LPCTSTR GetFilename() const { return (m_filename.IsEmpty()? NULL : (LPCTSTR)m_filename); }
-	void Clear() { m_filename.Empty(); m_bSelectedRect = false; OnNeedRepaint(); }
+	LPCTSTR GetFilename() const { return (msDwgFilename.IsEmpty()? NULL : (LPCTSTR)msDwgFilename); }
+	void Clear();
 	void SetHighlight( const COLORREF& clrHighlight );
 	void RemoveHighlight();
-	void Refresh( CDC *pdc );
 	void LoadDwg( LPCTSTR pszFilename );
 
 	// Generated message map functions

@@ -53,6 +53,21 @@ static CString CreateUniqueName()
 }
 
 
+bool CheckSignature( CFile& File, LPCSTR pszSignature )
+{
+	if( !pszSignature || !*pszSignature )
+		return false;
+	File.SeekToBegin();
+	int cchSig = lstrlenA( pszSignature );
+	char* pszLine1 = new char[cchSig + 1];
+	UINT_PTR cbRead = File.Read( pszLine1, cchSig );
+	pszLine1[cbRead] = '\0';
+	bool bMatch = (lstrcmpA( pszLine1, pszSignature ) == 0);
+	delete[] pszLine1;
+	return bMatch;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CProject
 
@@ -467,13 +482,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 		msProjectFilePath = SrcFile.GetFilePath();
 		msBaseFileName = StripPathFromFileName( msProjectFilePath );
 
-		//Check the first line -- if it is "OpenDCL Project", then it is a text file.
-		char szTextFileSignature[] = "OpenDCL Project";
-		char szLine1[sizeof(szTextFileSignature)];
-		UINT_PTR cbRead = SrcFile.Read(szLine1, sizeof(szLine1) - 1);
-		szLine1[cbRead] = '\0';
-
-		if( lstrcmpA( szTextFileSignature, szLine1 ) == 0 )
+		if( CheckSignature( SrcFile, "ObjectDCL Project" ) ||
+				CheckSignature( SrcFile, "OpenDCL Project" ) )
 		{ //this file is in plain text format
 			SrcFile.Close();
 			IOStatus stat = ReadFromTextFile( pszFilePath );
@@ -801,7 +811,8 @@ IOStatus CProject::ReadFromTextFile( LPCTSTR lpszFilePath )
 	IOStatus stat = statOK;
 	std::ifstream sFile(lpszFilePath, std::ios::in);
 	InitFilerGlobals(); //Init the globals before reading anything from the file.
-	if (readLine(sFile) != "OpenDCL Project")
+	CStringA sSig = readLine(sFile);
+	if (sSig != "OpenDCL Project" && sSig != "ObjectDCL Project")
 		stat = statInvalidFormat;
 	else
 	{
@@ -844,8 +855,12 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 
 	BOOL bHasPassword;
   if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat; //discard
-  if (!readString(sFile, msPassword)) return statInvalidFormat;
-  if (!readString(sFile, msLispFileName)) return statInvalidFormat;
+	CStringA sPassword;
+  if (!readString(sFile, sPassword)) return statInvalidFormat;
+	msPassword = sPassword;
+	CStringA sLispFileName;
+  if (!readString(sFile, sLispFileName)) return statInvalidFormat;
+	msLispFileName = sLispFileName;
   CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
 	if (!msLispFileName.IsEmpty())
 	{
@@ -858,17 +873,18 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 	}
 
   // this is the original project file path; use it to construct the project key
-	CString sKeyName;
-  if (!readString(sFile, sKeyName)) return statInvalidFormat;
-	if (!sKeyName.IsEmpty())
+	CStringA sKeyNameA;
+  if (!readString(sFile, sKeyNameA)) return statInvalidFormat;
+	if (!sKeyNameA.IsEmpty())
 	{
+		CString sKeyName( sKeyNameA );
 		sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
 		sKeyName.Replace( _T(' '), _T('_') );
 		SetKeyName( sKeyName );
 	}
 
   // this is used for a distribution file with multiple projects in it.
-	CString sDistFileName;
+	CStringA sDistFileName;
   if (!readString(sFile, sDistFileName)) return statInvalidFormat; //discard
 
   // get counter for dcl forms
@@ -896,7 +912,7 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   int iCount;
   if (!readInt(sFile, iCount)) return statInvalidFormat;
   for (int i = 0; i < iCount; i++) {
-    CString str;
+    CStringA str;
     if (!readString(sFile, str)) return statInvalidFormat;
   }
 

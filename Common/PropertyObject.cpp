@@ -167,7 +167,10 @@ public:
 	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
-			return readString( sFile, mValue )? statOK : statInvalidFormat;
+			CStringA sValue;
+			if( !readString( sFile, sValue ) ) return statInvalidFormat;
+			mValue = sValue;
+			return statOK;
 		}
 
 	virtual bool GetValue( long& v ) const { v = _tstol(mValue); return true; }
@@ -331,7 +334,10 @@ public:
 	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
-			return readString( sFile, mValue )? statOK : statInvalidFormat;
+			CStringA sValue;
+			if( !readString( sFile, sValue ) ) return statInvalidFormat;
+			mValue = sValue;
+			return statOK;
 		}
 
 	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
@@ -535,9 +541,9 @@ public:
 			if( !mpValue && iCount > 0 )
 				mpValue = new PropVal::TCStringArray;
       for (int i = 0; i < iCount; i++) {
-        CString str;
+        CStringA str;
         if (!readString(sFile, str)) return statInvalidFormat;
-        mpValue->push_back(str);
+        mpValue->push_back(CString(str));
       }
 			return statOK;
 		}
@@ -830,7 +836,9 @@ public:
 		{
 			clear();
 			msDisplayName.Empty();
-			if (!readString(sFile, msDisplayName)) return statInvalidFormat;
+			CStringA sDisplayName;
+			if (!readString(sFile, sDisplayName)) return statInvalidFormat;
+			msDisplayName = sDisplayName;
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			switch( nVersion )
@@ -1101,7 +1109,9 @@ public:
 		{
 			clear();
 			msDisplayName.Empty();
-			if (!readString(sFile, msDisplayName)) return statInvalidFormat;
+			CStringA sDisplayName;
+			if (!readString(sFile, sDisplayName)) return statInvalidFormat;
+			msDisplayName = sDisplayName;
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			switch( nVersion )
@@ -1375,9 +1385,9 @@ public:
         if (!readInt(sFile, iStringCount)) return statInvalidFormat;
         if (iStringCount != -1) {
           for (int j = 0; j < iStringCount; j++) {
-            CString str;
+            CStringA str;
             if (!readString(sFile, str)) return statInvalidFormat;
-            rStr.push_back(str);
+            rStr.push_back(CString(str));
           }
         }
       }
@@ -2040,7 +2050,7 @@ IOStatus CPropertyObject::ReadFromTextFile5(std::ifstream &sFile)
   if (GetType() == PropActiveXRunTime)
     mbHidden = true;
 
-  CString sType = readLine(sFile);
+  CStringA sType = readLine(sFile);
 	return mpValue->FileIn(sFile, 5);
 }
 

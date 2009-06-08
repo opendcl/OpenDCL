@@ -2995,8 +2995,8 @@
 				<param name="Local" value="Reference\Event\Size.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SplitterMove">
-				<param name="Local" value="Reference\Event\SplitterMove.htm">
+				<param name="Name" value="SplitterMoved">
+				<param name="Local" value="Reference\Event\SplitterMoved.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="TypeChanged">

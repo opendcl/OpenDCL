@@ -34,140 +34,140 @@ void SerializeCLSID(CArchive& ar, CLSID &clsid)
 #include "Base64.h"
 
 
-LPCTSTR labelDebugInt = _T(":INT:");
-LPCTSTR labelDebugLong = _T(":LONG:");
-LPCTSTR labelDebugDISPID = _T(":DISPID:");
-LPCTSTR labelDebugULONG = _T(":ULONG:");
-LPCTSTR labelDebugShort = _T(":SHORT:");
-LPCTSTR labelDebugVARTYPE = _T(":VARTYPE:");
-LPCTSTR labelDebugWORD = _T(":WORD:");
-LPCTSTR labelDebugDWORD = _T(":DWORD:");
-LPCTSTR labelDebugBYTE = _T(":BYTE:");
-LPCTSTR labelDebugDouble = _T(":DOUBLE:");
-LPCTSTR labelDebugBool = _T(":BOOL:");
-LPCTSTR labelDebugString = _T(":STRING:");
-LPCTSTR labelDebugBits = _T(":BITS:");
-LPCTSTR labelDebugCLSID = _T(":CLSID:");
-LPCTSTR labelDebugOleVariant = _T(":OLEVARIANT:");
+LPCSTR labelDebugInt = ":INT:";
+LPCSTR labelDebugLong = ":LONG:";
+LPCSTR labelDebugDISPID = ":DISPID:";
+LPCSTR labelDebugULONG = ":ULONG:";
+LPCSTR labelDebugShort = ":SHORT:";
+LPCSTR labelDebugVARTYPE = ":VARTYPE:";
+LPCSTR labelDebugWORD = ":WORD:";
+LPCSTR labelDebugDWORD = ":DWORD:";
+LPCSTR labelDebugBYTE = ":BYTE:";
+LPCSTR labelDebugDouble = ":DOUBLE:";
+LPCSTR labelDebugBool = ":BOOL:";
+LPCSTR labelDebugString = ":STRING:";
+LPCSTR labelDebugBits = ":BITS:";
+LPCSTR labelDebugCLSID = ":CLSID:";
+LPCSTR labelDebugOleVariant = ":OLEVARIANT:";
 
-LPCTSTR labelReleaseBool = _T("B");
-LPCTSTR labelReleaseCLSID = _T("C");
-LPCTSTR labelReleaseDouble = _T("D");
-LPCTSTR labelReleaseShort = _T("H");
-LPCTSTR labelReleaseInt = _T("I");
-LPCTSTR labelReleaseLong = _T("L");
-LPCTSTR labelReleaseOleVariant = _T("O");
-LPCTSTR labelReleaseDWORD = _T("R");
-LPCTSTR labelReleaseString = _T("S");
-LPCTSTR labelReleaseBits = _T("T");
-LPCTSTR labelReleaseULONG = _T("U");
-LPCTSTR labelReleaseVARTYPE = _T("V");
-LPCTSTR labelReleaseWORD = _T("W");
-LPCTSTR labelReleaseDISPID = _T("X");
-LPCTSTR labelReleaseBYTE = _T("Y");
+LPCSTR labelReleaseBool = "B";
+LPCSTR labelReleaseCLSID = "C";
+LPCSTR labelReleaseDouble = "D";
+LPCSTR labelReleaseShort = "H";
+LPCSTR labelReleaseInt = "I";
+LPCSTR labelReleaseLong = "L";
+LPCSTR labelReleaseOleVariant = "O";
+LPCSTR labelReleaseDWORD = "R";
+LPCSTR labelReleaseString = "S";
+LPCSTR labelReleaseBits = "T";
+LPCSTR labelReleaseULONG = "U";
+LPCSTR labelReleaseVARTYPE = "V";
+LPCSTR labelReleaseWORD = "W";
+LPCSTR labelReleaseDISPID = "X";
+LPCSTR labelReleaseBYTE = "Y";
 
 /*#ifdef _DEBUG
-LPCTSTR labelInt = labelDebugInt;
-LPCTSTR labelLong = labelDebugLong;
-LPCTSTR labelDISPID = labelDebugDISPID;
-LPCTSTR labelULONG = labelDebugULONG;
-LPCTSTR labelShort = labelDebugShort;
-LPCTSTR labelVARTYPE = labelDebugVARTYPE;
-LPCTSTR labelWORD = labelDebugWORD;
-LPCTSTR labelDWORD = labelDebugDWORD;
-LPCTSTR labelBYTE = labelDebugBYTE;
-LPCTSTR labelDouble = labelDebugDouble;
-LPCTSTR labelBool = labelDebugBool;
-LPCTSTR labelString = labelDebugString;
-LPCTSTR labelBits = labelDebugBits;
-LPCTSTR labelCLSID = labelDebugCLSID;
-LPCTSTR labelOleVariant = labelDebugOleVariant;
+LPCSTR labelInt = labelDebugInt;
+LPCSTR labelLong = labelDebugLong;
+LPCSTR labelDISPID = labelDebugDISPID;
+LPCSTR labelULONG = labelDebugULONG;
+LPCSTR labelShort = labelDebugShort;
+LPCSTR labelVARTYPE = labelDebugVARTYPE;
+LPCSTR labelWORD = labelDebugWORD;
+LPCSTR labelDWORD = labelDebugDWORD;
+LPCSTR labelBYTE = labelDebugBYTE;
+LPCSTR labelDouble = labelDebugDouble;
+LPCSTR labelBool = labelDebugBool;
+LPCSTR labelString = labelDebugString;
+LPCSTR labelBits = labelDebugBits;
+LPCSTR labelCLSID = labelDebugCLSID;
+LPCSTR labelOleVariant = labelDebugOleVariant;
 #else*/
-LPCTSTR labelBool = labelReleaseBool;
-LPCTSTR labelCLSID = labelReleaseCLSID;
-LPCTSTR labelDouble = labelReleaseDouble;
-LPCTSTR labelShort = labelReleaseShort;
-LPCTSTR labelInt = labelReleaseInt;
-LPCTSTR labelLong = labelReleaseLong;
-LPCTSTR labelOleVariant = labelReleaseOleVariant;
-LPCTSTR labelDWORD = labelReleaseDWORD;
-LPCTSTR labelString = labelReleaseString;
-LPCTSTR labelBits = labelReleaseBits;
-LPCTSTR labelULONG = labelReleaseULONG;
-LPCTSTR labelVARTYPE = labelReleaseVARTYPE;
-LPCTSTR labelWORD = labelReleaseWORD;
-LPCTSTR labelDISPID = labelReleaseDISPID;
-LPCTSTR labelBYTE = labelReleaseBYTE;
+LPCSTR labelBool = labelReleaseBool;
+LPCSTR labelCLSID = labelReleaseCLSID;
+LPCSTR labelDouble = labelReleaseDouble;
+LPCSTR labelShort = labelReleaseShort;
+LPCSTR labelInt = labelReleaseInt;
+LPCSTR labelLong = labelReleaseLong;
+LPCSTR labelOleVariant = labelReleaseOleVariant;
+LPCSTR labelDWORD = labelReleaseDWORD;
+LPCSTR labelString = labelReleaseString;
+LPCSTR labelBits = labelReleaseBits;
+LPCSTR labelULONG = labelReleaseULONG;
+LPCSTR labelVARTYPE = labelReleaseVARTYPE;
+LPCSTR labelWORD = labelReleaseWORD;
+LPCSTR labelDISPID = labelReleaseDISPID;
+LPCSTR labelBYTE = labelReleaseBYTE;
 //#endif
 
 //void writeInt(FILE* pFile, int i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelInt, i);
+//  _ftprintf(pFile, "\n%s%d", labelInt, i);
 //}
 //
 //void writeLong(FILE* pFile, long i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelLong, i);
+//  _ftprintf(pFile, "\n%s%d", labelLong, i);
 //}
 //
 //void writeDISPID(FILE* pFile, DISPID i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelDISPID, i);
+//  _ftprintf(pFile, "\n%s%d", labelDISPID, i);
 //}
 //
 //void writeULONG(FILE* pFile, ULONG i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelULONG, i);
+//  _ftprintf(pFile, "\n%s%d", labelULONG, i);
 //}
 //
 //void writeShort(FILE* pFile, short i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelShort, i);
+//  _ftprintf(pFile, "\n%s%d", labelShort, i);
 //}
 //
 //void writeVARTYPE(FILE* pFile, VARTYPE i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelVARTYPE, i);
+//  _ftprintf(pFile, "\n%s%d", labelVARTYPE, i);
 //}
 //
 //void writeWORD(FILE* pFile, WORD i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelWORD, i);
+//  _ftprintf(pFile, "\n%s%d", labelWORD, i);
 //}
 //
 //void writeDWORD(FILE* pFile, DWORD i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelDWORD, i);
+//  _ftprintf(pFile, "\n%s%d", labelDWORD, i);
 //}
 //
 //void writeBYTE(FILE* pFile, BYTE i)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelBYTE, i);
+//  _ftprintf(pFile, "\n%s%d", labelBYTE, i);
 //}
 //
 //void writeDouble(FILE* pFile, double d) {
-//  _ftprintf(pFile, _T("\n%s%f"), labelDouble, d);
+//  _ftprintf(pFile, "\n%s%f", labelDouble, d);
 //}
 //
 //void writeBool(FILE* pFile, bool b)
 //{
-//	_ftprintf(pFile, _T("\n%s%s"), labelBool, (b? _T("T") : _T("F")));
+//	_ftprintf(pFile, "\n%s%s"), labelBool, (b? _T("T") : _T("F"));
 //}
 //
 //void writeBOOL(FILE* pFile, BOOL b)
 //{
-//  _ftprintf(pFile, _T("\n%s%s"), labelBool, (b? _T("T") : _T("F")));
+//  _ftprintf(pFile, "\n%s%s"), labelBool, (b? _T("T") : _T("F"));
 //}
 //
 //void writeString(FILE* pFile, CString s)
 //{
-//  s.Replace(_T("\n"), _T("\\n"));
-//  _ftprintf(pFile, _T("\n%s%s"), labelString, (LPCTSTR)s);
+//  s.Replace("\n"), _T("\\n");
+//  _ftprintf(pFile, "\n%s%s", labelString, (LPCSTR)s);
 //}
 //
 //void writeBits(FILE* pFile, const BYTE* pBytes, DWORD byteCount)
 //{
-//  _ftprintf(pFile, _T("\n%s%s"), labelBits, base64_encode(pBytes, byteCount, -1).c_str());
+//  _ftprintf(pFile, "\n%s%s", labelBits, base64_encode(pBytes, byteCount, -1).c_str());
 //}
 //
 //void writeCLSID(FILE* pFile, const CLSID &clsid)
@@ -180,7 +180,7 @@ LPCTSTR labelBYTE = labelReleaseBYTE;
 //
 //void writeOleVariant(FILE* pFile, COleVariant var)
 //{
-//  _ftprintf(pFile, _T("\n%s%d"), labelOleVariant, var.vt);
+//  _ftprintf(pFile, "\n%s%d", labelOleVariant, var.vt);
 //  switch(var.vt) {
 //    case VT_EMPTY : 
 //      break;
@@ -188,8 +188,8 @@ LPCTSTR labelBYTE = labelReleaseBYTE;
 //    case VT_I2 : writeInt(pFile, var.intVal); break;
 //    case VT_I4 : writeInt(pFile, var.intVal); break;
 //    default :
-//      MessageBox(NULL, _T("Error: Writing OLE Variant!"), _T("OpenDCL Error"), MB_OK);
-//      _ftprintf(pFile, _T("")); break;
+//      MessageBox(NULL, "Error: Writing OLE Variant!"), _T("OpenDCL Error", MB_OK);
+//      _ftprintf(pFile, ""); break;
 //  }
 //}
 
@@ -247,7 +247,7 @@ void GetImageFromList(const CImageList *lstImages, int nImage, CBitmap* destBitm
 //  image to go with the file. If it does, we have already saved images and the
 //  iCurrentImage value is correct.*/
 //  WIN32_FIND_DATA findData;
-//  HANDLE h = FindFirstFile(imageNameBase + _T("-1.png"), &findData);
+//  HANDLE h = FindFirstFile(imageNameBase + "-1.png", &findData);
 //  if (h == INVALID_HANDLE_VALUE) {
 //    iCurrentImage = 1;    
 //  }
@@ -259,7 +259,7 @@ void GetImageFromList(const CImageList *lstImages, int nImage, CBitmap* destBitm
 //
 //  //Save the image to disk and increment for the next file we save
 //	CString imageName;
-//	imageName.Format(_T("%s-%d.png"), imageNameBase, iCurrentImage);
+//	imageName.Format("%s-%d.png", imageNameBase, iCurrentImage);
 //  img.Save(imageName);
 //  iCurrentImage++;
 //}
@@ -280,33 +280,34 @@ void GetImageFromList(const CImageList *lstImages, int nImage, CBitmap* destBitm
 //Functions to write data to our file.
 #define CHUNKSIZE 1048576
 CHAR currentChunk[CHUNKSIZE];
-CString currentString;
+CStringA currentString;
 int chunkPosition = CHUNKSIZE;
-CString lastLine;
-CString lineType;
-CString lineValue;
+CStringA lastLine;
+CStringA lineType;
+CStringA lineValue;
 
 void consumeLine() {
-  lastLine = _T("");
-  lineType = _T("");
-  lineValue = _T("");
+  lastLine = "";
+  lineType = "";
+  lineValue = "";
 }
 
 void InitFilerGlobals(void)
 {
   //Init the globals before reading anything from the file.
-  currentString = _T("");
+  currentString = "";
   consumeLine();
 }
 
-bool parseLine(CString in, CString& outType, CString& outValue)
+bool parseLine(CStringA in, CStringA& outType, CStringA& outValue)
 {
-  if (in.Left(1) == _T(":")) {
+  if (in.Left(1) == ":") {
     in = in.Mid(1);
-    int iColon = in.Find(_T(':'));
+    int iColon = in.Find(':');
     if (iColon != -1) {
-      outType = _T(":");
-			outType += (in.Left(iColon) + _T(":"));
+      outType = ":";
+			outType += in.Left(iColon);
+			outType += ":";
       if (in.GetLength() > iColon) {
         outValue = in.Mid(iColon + 1);
       } else {
@@ -329,9 +330,9 @@ bool parseLine(CString in, CString& outType, CString& outValue)
   }
 }
 
-CString readLine(std::ifstream &sFile)
+CStringA readLine(std::ifstream &sFile)
 {
-  CString line;
+  CStringA line;
 
   bool readNextLine = true;
   while (readNextLine) {
@@ -341,16 +342,16 @@ CString readLine(std::ifstream &sFile)
       }
       sFile.get(currentChunk, CHUNKSIZE, '\0');
       chunkPosition = 0;
-      currentString = CString(currentChunk);
+      currentString = CStringA(currentChunk);
     } else {
       chunkPosition++;
     }
 
     int startingPosition = chunkPosition;
-    int nextNewLine = currentString.Find(_T('\n'), startingPosition);
+    int nextNewLine = currentString.Find('\n', startingPosition);
     if (nextNewLine == -1) {
       line = line + currentString.Mid(startingPosition);
-      currentString = _T("");
+      currentString = "";
       readNextLine = true;
     } else {
       chunkPosition = nextNewLine;
@@ -372,11 +373,11 @@ CString readLine(std::ifstream &sFile)
     }*/
   }
 
-  line = line.TrimLeft(_T(" "));
+  line = line.TrimLeft(" ");
   return line;
 }
 
-bool readLine(std::ifstream &sFile, CString checkType1, CString checkType2)
+bool readLine(std::ifstream &sFile, CStringA checkType1, CStringA checkType2)
 {
   if (lastLine == "") {
     lastLine = readLine(sFile);
@@ -390,10 +391,10 @@ bool readLine(std::ifstream &sFile, CString checkType1, CString checkType2)
   }
 }
 
-bool readGenericInt(std::ifstream &sFile, CString type1, CString type2, long& i)
+bool readGenericInt(std::ifstream &sFile, CStringA type1, CStringA type2, long& i)
 {
   if (readLine(sFile, type1, type2)) {
-    i = _ttol(lineValue);
+    i = atol(lineValue);
     consumeLine();
     return true;
   } else {
@@ -438,7 +439,11 @@ bool readULONG(std::ifstream &sFile, ULONG& i)
 
 bool readShort(std::ifstream &sFile, short& i)
 {
-  return readGenericInt(sFile, labelDebugShort, labelReleaseShort, (long&)i);
+	long l;
+  if( !readGenericInt(sFile, labelDebugShort, labelReleaseShort, l) )
+		return false;
+	i = (short)l;
+	return true;
 }
 
 bool readVARTYPE(std::ifstream &sFile, VARTYPE& i)
@@ -470,7 +475,7 @@ bool readBYTE(std::ifstream &sFile, BYTE& b)
 bool readDouble(std::ifstream &sFile, double& d)
 {
   if (readLine(sFile, labelDebugDouble, labelReleaseDouble)) {
-    d = _tstof(lineValue);
+    d = atof(lineValue);
     consumeLine();
     return true;
   } else {
@@ -481,7 +486,7 @@ bool readDouble(std::ifstream &sFile, double& d)
 bool readBool(std::ifstream &sFile, bool& b)
 {
   if (readLine(sFile, labelDebugBool, labelReleaseBool)) {
-    b = (lineValue == _T("True") || lineValue == _T("T"));
+    b = (lineValue == "True") || lineValue == _T("T");
     consumeLine();
     return true;
   } else {
@@ -492,7 +497,7 @@ bool readBool(std::ifstream &sFile, bool& b)
 bool readBOOL(std::ifstream &sFile, BOOL& b)
 {
   if (readLine(sFile, labelDebugBool, labelReleaseBool)) {
-    b = (lineValue == _T("True") || lineValue == _T("T"));
+    b = (lineValue == "True") || lineValue == _T("T");
     consumeLine();
     return true;
   } else {
@@ -500,11 +505,11 @@ bool readBOOL(std::ifstream &sFile, BOOL& b)
   }
 }
 
-bool readString(std::ifstream &sFile, CString& s)
+bool readString(std::ifstream &sFile, CStringA& s)
 {
   if (readLine(sFile, labelDebugString, labelReleaseString)) {
     s = lineValue;
-    s.Replace(_T("\\n"), _T("\n"));
+    s.Replace("\\n", "\n");
     consumeLine();
     return true;
   } else {
@@ -556,7 +561,7 @@ bool readOleVariant(std::ifstream &sFile, COleVariant& var)
     case VT_I4 : 
       return readInt(sFile, var.intVal);
     default :
-      MessageBox(NULL, _T("Error: Reading OLE Variant!"), _T("OpenDCL Error"), MB_OK);
+      MessageBoxA(NULL, "Error: Reading OLE Variant!", "OpenDCL Error", MB_OK);
       return false;
   }
   return false;
@@ -569,8 +574,8 @@ bool readOleVariant(std::ifstream &sFile, COleVariant& var)
 //  if (!readInt(sFile, iImageNumber)) return false;
 //
 //  //Get the file name without the extension or dot
-//	CString imageName;
-//	imageName.Format(_T("%s-%d.png"), fileName.Left(fileName.GetLength() - 4), iImageNumber);
+//	CStringA imageName;
+//	imageName.Format("%s-%d.png", fileName.Left(fileName.GetLength() - 4), iImageNumber);
 //  img.Load(imageName);
 //  return true;
 //}

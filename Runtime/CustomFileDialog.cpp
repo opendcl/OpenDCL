@@ -9,6 +9,7 @@
 #include "Workspace.h"
 #include "DialogControl.h"
 #include "InvokeMethod.h"
+#include "ArxWorkspace.h"
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
 #include "ControlTypes.h"
@@ -193,6 +194,8 @@ __if_exists(m_bVistaStyle)
 
 CCustomFileDialog::~CCustomFileDialog()
 {
+	theArxWorkspace.ResetLispSymbol( mpFileDlgCtrl->GetVarName() );
+	mpFileDlgCtrl->SetControlInstance( NULL );
 }
 
 void CCustomFileDialog::CloseDialog(int nStatus)
@@ -270,6 +273,8 @@ void CCustomFileDialog::OnInitializationComplete()
 	//create the control pane and the design time controls
 	UINT nID = 1000;
 	GetControlPane()->CreateControls( nID );
+	mpFileDlgCtrl->SetControlInstance( this );
+	theArxWorkspace.SetLispSymbol( mpFileDlgCtrl->GetVarName(), (const CDclControlObject*)mpFileDlgCtrl, odcl::ptrDclControl );
 	GetControlPane()->RecalcLayout();
 
 	CRect rcDesktop;

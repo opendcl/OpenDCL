@@ -17,7 +17,7 @@ const COLORREF COLOR_USEBACKGROUND = (COLORREF)0;
 class CPictureBox : public CButton
 {
 	CAcadColorService mColorService;
-	RefCountedPtr< CPictureObject > mpPicture;
+	TPicturePtr mpPicture;
 protected:
 	int				m_cxIcon;
 	int				m_cyIcon;

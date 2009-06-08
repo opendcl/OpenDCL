@@ -136,8 +136,12 @@ void AxEventDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion )
 {
   if (!readDISPID(sFile, mDispId)) return statInvalidFormat;
-  if (!readString(sFile, msName)) return statInvalidFormat;
-  if (!readString(sFile, msDesc)) return statInvalidFormat;
+	CStringA sName;
+  if (!readString(sFile, sName)) return statInvalidFormat;
+	msName = sName;
+	CStringA sDesc;
+  if (!readString(sFile, sDesc)) return statInvalidFormat;
+	msDesc = sDesc;
 
 	int ctParams;
   if (!readInt(sFile, ctParams)) return statInvalidFormat;
@@ -150,17 +154,21 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nProper
 		if (i < ctParams) {
 			//Argument should be read into array
 			if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
-			if (!readString(sFile, mrArgs[i].name)) return statInvalidFormat;
+			CStringA sName;
+			if (!readString(sFile, sName)) return statInvalidFormat;
+			mrArgs[i].name = sName;
 			if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
 		} else {
 			//Argument should be ignored
 			AxArg tempArg;
 			if (!readVARTYPE(sFile, tempArg.vt)) return statInvalidFormat;
-			if (!readString(sFile, tempArg.name)) return statInvalidFormat;
+			CStringA sName;
+			if (!readString(sFile, sName)) return statInvalidFormat;
+			tempArg.name = sName;
 			if (!readCLSID(sFile, tempArg.clsid)) return statInvalidFormat;
 		}
 	}
-	CString sUnusedParams;
+	CStringA sUnusedParams;
   if (!readString(sFile, sUnusedParams)) return statInvalidFormat;
 
 	return statOK;

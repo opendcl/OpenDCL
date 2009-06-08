@@ -460,6 +460,8 @@ void CProjectPane::EditSelectedItem()
 		return;
 	}
 
+	GetTreeCtrl().Expand( hItem, GetTreeCtrl().GetParentItem( hItem )? TVE_EXPAND : TVE_TOGGLE );
+
 	OnOpenForm();
 }
 

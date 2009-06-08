@@ -25,7 +25,6 @@ class CPaletteDialog : public CDialog, public CArxDialogObject
 	CAcadPaletteHost& mHostPaletteSet;
 	bool mbKeepFocus;
 	bool mbResizable;
-	//bool mbHiding;
 	CAcadColorService mColorService;
 
 // Construction

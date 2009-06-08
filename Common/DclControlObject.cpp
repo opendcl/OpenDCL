@@ -1214,8 +1214,7 @@ void CDclControlObject::RemoveProperty( Prop::Id nId )
 
 IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
-  CString sObject;
-	CString sClassname = readLine(sFile);
+	CStringA sClassname = readLine(sFile);
   if ( sClassname != "CDclControlObject" && sClassname != "CArxControlObject") return statInvalidFormat;
   int iVersion;
   if (!readInt(sFile, iVersion)) return statInvalidFormat;
@@ -1231,7 +1230,9 @@ IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString
 
 IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CString &fileName)
 {
-  if (!readString(sFile, msAxTypeName)) return statInvalidFormat;
+	CStringA sTypeName;
+  if (!readString(sFile, sTypeName)) return statInvalidFormat;
+	msAxTypeName = sTypeName;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
 	mType = (ControlType)lType;
@@ -1255,8 +1256,10 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   if (mType == CtlActiveX)
   {
     // get the activeX info.
-    if (!readString(sFile, msLicenseKey)) return statInvalidFormat;
-		CString sBaseCode; //ignored
+		CStringA sKey;
+    if (!readString(sFile, sKey)) return statInvalidFormat;
+		msLicenseKey = sKey;
+		CStringA sBaseCode; //ignored
     if (!readString(sFile, sBaseCode)) return statInvalidFormat;
     BOOL bLicenseChecked; //ignored
     if (!readBOOL(sFile, bLicenseChecked)) return statInvalidFormat;

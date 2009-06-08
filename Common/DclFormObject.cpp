@@ -548,7 +548,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 {
 	OnModified();
 	// Get this dcl form's name and type from archive
-	CString sNameDiscard;
+	CStringA sNameDiscard;
   if (!readString(sFile, sNameDiscard)) return statInvalidFormat;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
@@ -556,13 +556,16 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		mType = _FrmInvalid;
 	else
 		mType = (FormType)lType;
-  if (!readString(sFile, msUniqueName)) return statInvalidFormat;
-	CString sParentName;
+	CStringA sUniqueName;
+  if (!readString(sFile, sUniqueName)) return statInvalidFormat;
+	msUniqueName = sUniqueName;
+	CStringA sParentName;
   if (!readString(sFile, sParentName)) return statInvalidFormat;
-	SetParentForm( sParentName );
+	SetParentForm( CString( sParentName ) );
   if (!readShort(sFile, mnTabIndex)) return statInvalidFormat;
-
-  if (!readString(sFile, msUUID)) return statInvalidFormat;
+	CStringA sUUID;
+  if (!readString(sFile, sUUID)) return statInvalidFormat;
+	msUUID = sUUID;
 	BOOL bUsesClientRect;
   if (!readBOOL(sFile, bUsesClientRect)) return statInvalidFormat;
 

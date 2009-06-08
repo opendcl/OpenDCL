@@ -450,8 +450,12 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion )
 {
   if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
-  if (!readString(sFile, msName)) return statInvalidFormat;
-  if (!readString(sFile, msDesc)) return statInvalidFormat;
+	CStringA sName;
+  if (!readString(sFile, sName)) return statInvalidFormat;
+	msName = sName;
+	CStringA sDesc;
+  if (!readString(sFile, sDesc)) return statInvalidFormat;
+	msDesc = sDesc;
 
   if (!readVARTYPE(sFile, mType)) return statInvalidFormat;
 	BOOL bArray;
@@ -473,7 +477,9 @@ IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPro
 	mInvKind = (INVOKEKIND)iKind;
   for (size_t i = 0; i < (size_t)ctEnum; ++i)
   {
-    if (!readString(sFile, mrEnum[i].Name)) return statInvalidFormat;
+		CStringA sName;
+    if (!readString(sFile, sName)) return statInvalidFormat;
+		mrEnum[i].Name = sName;
     COleVariant var;
     if (!readOleVariant(sFile, var)) return statInvalidFormat;
     mrEnum[i].Var = var;
@@ -481,7 +487,9 @@ IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPro
   for (int i = 0; i < ctParams; ++i)
   {
     if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
-    if (!readString(sFile, mrArgs[i].name)) return statInvalidFormat;
+		CStringA sName;
+    if (!readString(sFile, sName)) return statInvalidFormat;
+		mrArgs[i].name = sName;
 		if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
   }
 

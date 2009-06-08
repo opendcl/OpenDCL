@@ -723,7 +723,7 @@ Reference\Event\Select.htm
 Reference\Event\SetFocus.htm
 Reference\Event\Show.htm
 Reference\Event\Size.htm
-Reference\Event\SplitterMove.htm
+Reference\Event\SplitterMoved.htm
 Reference\Event\TypeChanged.htm
 Reference\Event\Update.htm
 Reference\Function\Index.htm

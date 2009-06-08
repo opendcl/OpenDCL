@@ -343,7 +343,9 @@ bool CDockingDialog::OnClosing()
 	if( IsClosing() )
 		return true;
 	SetClosing();
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventClose), IsAsyncEvents());
+	CRect rcThis;
+	GetEffectiveWindowRect( rcThis );
+	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventClose ), rcThis.left, rcThis.top, IsAsyncEvents() );	
 	if( !mbHiding && !IsFloating() )
 		mHostControlBar.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;
