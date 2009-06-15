@@ -25,6 +25,9 @@ bool CFrameCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
+	if( bSuccess )
+		ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+
 	if( mpControlPane->GetThemeHelper() )
 	{
 		TDclFormPtr pParentForm = mpTemplate->GetOwnerForm()->GetParentForm();

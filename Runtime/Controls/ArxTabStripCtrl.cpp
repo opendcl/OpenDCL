@@ -258,7 +258,7 @@ void CArxTabStripCtrl::SetFirstControlFocus( CTabPage* pTabPage )
 }
 
 
-BEGIN_MESSAGE_MAP(CArxTabStripCtrl, CTabCtrl)
+BEGIN_MESSAGE_MAP(CArxTabStripCtrl, CTabStripCtrl)
 	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
 	ON_NOTIFY_REFLECT(TCN_SELCHANGING, OnSelchanging)	
 	ON_WM_KILLFOCUS()

@@ -67,6 +67,9 @@ typedef struct tagNMLVSCROLL
 #endif //(_WIN32_WINNT < 0x501)
 
 
+struct TCellState { CString text; UINT state; _CellData data; };
+
+
 class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCellEditCtrl
 {
 	CStatic mClippingWnd;
@@ -766,6 +769,15 @@ BOOL CGridCtrl::DeleteItem( int nRow )
 		SetCurCell( -1, -1 );
 	if( mRowData.size() > (size_t)nRow )
 		mRowData.erase( mRowData.begin() + (size_t)nRow );
+	return TRUE;
+}
+
+BOOL CGridCtrl::DeleteAllItems()
+{
+	if( !__super::DeleteAllItems() )
+		return FALSE;
+	SetCurCell( -1, -1 );
+	mRowData.clear();
 	return TRUE;
 }
 
@@ -1529,6 +1541,9 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 	if( nCol < 0 || (size_t)nCol >= mcColumns )
 		return false;
 	size_t ctRows = mRowData.size();
+	int ctItems = GetItemCount();
+	if( (int)ctRows > ctItems )
+		ctRows = ctItems;
 	if( ctRows <= 1 )
 		return true;
 	std::vector< UINT > rnSortXForm;
@@ -1572,7 +1587,6 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 	SetRedraw( FALSE );
 	std::vector< _RowData > rTempRowData;
 	rTempRowData.swap( mRowData );
-	typedef std::pair< UINT, _CellData > TCellState;
 	typedef std::vector< TCellState > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
@@ -1583,8 +1597,9 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
 		{
 			TCellState& CellState = RowState[idxCol];
-			CellState.first = GetCellState( idxRow, idxCol );
-			CellState.second = GetCellDataRef( idxRow, idxCol );
+			CellState.text = GetCellText( idxRow, idxCol );
+			CellState.state = GetCellState( idxRow, idxCol );
+			CellState.data = GetCellDataRef( idxRow, idxCol );
 		}
 	}
 	mRowData.resize( ctRows );
@@ -1595,8 +1610,9 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
 		{
 			TCellState& CellState = RowState[idxCol];
-			SetCellState( idxRow, idxCol, CellState.first );
-			GetCellDataRef( idxRow, idxCol ) = CellState.second;
+			SetCellText( idxRow, idxCol, CellState.text );
+			SetCellState( idxRow, idxCol, CellState.state );
+			GetCellDataRef( idxRow, idxCol ) = CellState.data;
 		}
 		mRowData[idxRow] = rTempRowData[idxOldRow];
 	}
@@ -1610,6 +1626,9 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 	if( nCol < 0 || (size_t)nCol >= mcColumns )
 		return false;
 	size_t ctRows = mRowData.size();
+	int ctItems = GetItemCount();
+	if( (int)ctRows > ctItems )
+		ctRows = ctItems;
 	if( ctRows <= 1 )
 		return true;
 	std::vector< size_t > rnSortXForm;
@@ -1665,7 +1684,6 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 	SetRedraw( FALSE );
 	std::vector< _RowData > rTempRowData;
 	rTempRowData.swap( mRowData );
-	typedef std::pair< UINT, _CellData > TCellState;
 	typedef std::vector< TCellState > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
@@ -1676,8 +1694,9 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
 		{
 			TCellState& CellState = RowState[idxCol];
-			CellState.first = GetCellState( idxRow, idxCol );
-			CellState.second = GetCellDataRef( idxRow, idxCol );
+			CellState.text = GetCellText( idxRow, idxCol );
+			CellState.state = GetCellState( idxRow, idxCol );
+			CellState.data = GetCellDataRef( idxRow, idxCol );
 		}
 	}
 	mRowData.resize( ctRows );
@@ -1688,8 +1707,9 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
 		{
 			TCellState& CellState = RowState[idxCol];
-			SetCellState( idxRow, idxCol, CellState.first );
-			GetCellDataRef( idxRow, idxCol ) = CellState.second;
+			SetCellText( idxRow, idxCol, CellState.text );
+			SetCellState( idxRow, idxCol, CellState.state );
+			GetCellDataRef( idxRow, idxCol ) = CellState.data;
 		}
 		mRowData[idxRow] = rTempRowData[idxOldRow];
 	}

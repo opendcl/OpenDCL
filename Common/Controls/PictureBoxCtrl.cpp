@@ -319,7 +319,6 @@ void CPictureBoxCtrl::PostNcDestroy()
 
 BEGIN_MESSAGE_MAP(CPictureBoxCtrl, CPictureBox)
 	ON_WM_NCHITTEST()
-	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 
@@ -338,10 +337,4 @@ __UINT_LRESULT CPictureBoxCtrl::OnNcHitTest(CPoint point)
 		return HTTRANSPARENT;
 
 	return CButton::OnNcHitTest(point);
-}
-
-void CPictureBoxCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
-{
-	//lpwndpos->flags |= SWP_NOZORDER;
-	__super::OnWindowPosChanging(lpwndpos);
 }

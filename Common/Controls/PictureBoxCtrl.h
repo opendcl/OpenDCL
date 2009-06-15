@@ -47,5 +47,4 @@ protected:
 	afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
-	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };

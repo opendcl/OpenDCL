@@ -260,26 +260,30 @@ bool GetControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pCon
 				return false; //invalid argument
 			}
 
-			pArgs = pArgs->rbnext; //move to the next argument
-			if( !pArgs )
+			//pArgs = pArgs->rbnext; //move to the next argument
+			if( !pArgs->rbnext || pArgs->rbnext->restype != RTSTR )
 			{
 				TDclFormPtr pForm = theArxWorkspace.FindForm(pszProjectName, pszFormName);
 				if( !pForm )
 				{
 					if( !bQuiet )
 						HandleArgError( pArgs, odcl::argNoInstance );
-					return false; //not enough arguments
+					return false; //invalid argument
 				}
 				pControl = pForm->GetControlProperties();
 			}
-
-			if( pArgs->restype != RTSTR )
+			else
 			{
-				if( !bQuiet )
-					HandleArgError( pArgs, odcl::argWrongType );
-				return false; //wrong argument type
+				pControl = theArxWorkspace.FindControl(pszProjectName, pszFormName, pArgs->rbnext->resval.rstring);
+				if( pControl )
+					pArgs = pArgs->rbnext;
+				else
+				{
+					TDclFormPtr pForm = theArxWorkspace.FindForm(pszProjectName, pszFormName);
+					if( pForm )
+						pControl = pForm->GetControlProperties();
+				}
 			}
-			pControl = theArxWorkspace.FindControl(pszProjectName, pszFormName, pArgs->resval.rstring);
 			break;
 		}
 	default:

@@ -232,6 +232,7 @@ public:
 	CString GetItemText( int nRow, int nCol ) { return GetCellText( nRow, nCol ); }
 	BOOL SetItemText( int nRow, int nCol, LPCTSTR pszText ) { return SetCellText( nRow, nCol, pszText ); }
 	BOOL DeleteItem( int nRow );
+	BOOL DeleteAllItems();
 	BOOL DeleteColumn( int nCol );
 
 

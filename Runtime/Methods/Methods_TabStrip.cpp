@@ -28,12 +28,16 @@ ADSRESULT TabStrip::SetTabCaption()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::TabsCaption );
+	if( nIndex < 0 || nIndex >= pItemList->size() )
+		return RSRSLT;
+	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
+	PropVal::TCStringArray::iterator iterAt = pItems->begin();
+	while( nIndex-- > 0 ) iterAt++;
+	(*iterAt) = sText;
 
-	TCITEM tcItem = { TCIF_TEXT };
-	tcItem.pszText = sText.LockBuffer();
-	pCtrl->GetTabCtrl().SetItem( nIndex, &tcItem );
-	acedRetT();
+	if( pDlgControl->OnApplyProperty( pItemList ) )
+		acedRetT();
 	return RSRSLT;
 }
 

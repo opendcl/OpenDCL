@@ -15,6 +15,7 @@
 #include "ControlTypes.h"
 #include "Resource.h"
 #include "MultiMon.h"
+#include <set>
 
 
 const UINT WM_FILEDLG_GETFILENAME = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFileName") );
@@ -40,6 +41,66 @@ const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("OpenDCL.File
 //										mpTemplate->GetLongProperty(Prop::Height) );
 //		}
 //};
+
+
+static HHOOK& GetHook()
+{
+	static HHOOK hkCallWnd = NULL;
+	return hkCallWnd;
+}
+
+
+static std::set< CControlPane* >& GetHookedPanes()
+{
+	static std::set< CControlPane* > setHookedPanes;
+	return setHookedPanes;
+}
+
+
+static LRESULT CALLBACK GetMessageHook( int nCode, WPARAM wParam, LPARAM lParam )
+{
+	LPMSG pMSG = (LPMSG)lParam;
+	if( wParam == PM_REMOVE && pMSG->hwnd )
+	{
+		for( std::set< CControlPane* >::const_iterator iter = GetHookedPanes().begin();
+				 iter != GetHookedPanes().end();
+				 ++iter )
+		{
+			TDialogControlPtr pDlgControl = (*iter)->FindControl( pMSG->hwnd );
+			if( pDlgControl )
+			{
+				if( pDlgControl->GetControlWnd()->PreTranslateMessage( pMSG ) )
+				{
+					pMSG->hwnd = NULL;
+					pMSG->message = -1;
+					return 0;
+				}
+				break;
+			}
+		}
+	}
+	return CallNextHookEx( GetHook(), nCode, wParam, lParam );
+}
+
+
+static void SetHook( CControlPane* pControlPane, bool bAddRef = true )
+{
+	if( bAddRef )
+	{
+		GetHookedPanes().insert( pControlPane );
+		if( !GetHook() )
+			GetHook() = SetWindowsHookEx( WH_GETMESSAGE, &GetMessageHook, NULL, GetCurrentThreadId() );
+	}
+	else
+	{
+		GetHookedPanes().erase( pControlPane );
+		if( GetHookedPanes().empty() )
+		{
+			UnhookWindowsHookEx( GetHook() );
+			GetHook() = NULL;
+		}
+	}
+}
 
 
 static bool IsWindows98orLater()
@@ -194,6 +255,7 @@ __if_exists(m_bVistaStyle)
 
 CCustomFileDialog::~CCustomFileDialog()
 {
+	SetHook( mpControlPane, false );
 	theArxWorkspace.ResetLispSymbol( mpFileDlgCtrl->GetVarName() );
 	mpFileDlgCtrl->SetControlInstance( NULL );
 }
@@ -331,6 +393,7 @@ BEGIN_MESSAGE_MAP(CCustomFileDialog, CFileDialog)
 	ON_WM_WINDOWPOSCHANGED()
 END_MESSAGE_MAP()
 
+
 void CCustomFileDialog::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	__super::OnWindowPosChanged(lpwndpos);
@@ -405,6 +468,7 @@ BOOL CCustomFileDialog::OnInitDialog()
 		rectWindow.right += mnRightBorder;
 		rectWindow.bottom += mnBottomBorder;
 		mMainFileDlg.MoveWindow( &rectWindow, TRUE );
+		SetHook( mpControlPane, true );
 
 		//CControlPane* pCtrlPane = GetControlPane();
 		//CArxDialogControl* pCtrlObj = new CArxFileDialogControl( mpFileDlgCtrl, pCtrlPane, NULL );
@@ -417,8 +481,16 @@ BOOL CCustomFileDialog::OnInitDialog()
 
 BOOL CCustomFileDialog::OnFileNameOK()
 {
-	__super::OnFileNameOK();
-	return FALSE;
+	if( __super::OnFileNameOK() )
+		return TRUE;
+	if( IsClosing() ||
+			!(InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), false)) )
+	{
+		SetClosing();
+		return FALSE;
+	}
+	SetClosing( false );
+	return TRUE;
 }
 
 void CCustomFileDialog::OnFileNameChange()

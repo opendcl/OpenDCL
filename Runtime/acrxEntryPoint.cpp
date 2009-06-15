@@ -3328,7 +3328,7 @@ public:
 				prbTail->rbnext = prbProject;
 			else
 				prbProjects = prbProject;
-			prbTail = prbProjects;
+			prbTail = prbProject;
 		}
 		acedRetList( prbProjects );
 		acutRelRb( prbProjects );
