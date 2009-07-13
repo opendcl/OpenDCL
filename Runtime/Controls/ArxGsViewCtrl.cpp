@@ -20,8 +20,8 @@ CArxGsViewCtrl::CArxGsViewCtrl( TDclControlPtr pTemplate,
 , mDragDropService( this )
 , mpGsReactor( NULL )
 , mbHighlighted( false )
-, mbLDblClick( false )
-, mbRDblClick( false )
+, mLBState( up )
+, mRBState( up )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -278,69 +278,6 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	PaintUI();
 }
 
-// get the view port information - see parameter list
-bool CArxGsViewCtrl::GetActiveViewPortInfo (ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &vCameraViewDir, ads_real &viewTwist, bool getViewCenter)
-{
-	// make sure the active view port is uptodate
-	/*
-	try
-	{
-	acedVports2VportTableRecords();
-	}
-	catch(...)
-	{
-	}
-	*/
-	//acedVportTableRecords2Vports();
-	// get the working db
-  AcDbDatabase *pDb = acdbHostApplicationServices()->workingDatabase(); 
-	// if not ok
-  if (pDb == NULL)
-    return false;
-	// open the view port records
-	AcDbViewportTable *pVTable = NULL;
-	Acad::ErrorStatus es = pDb->getViewportTable (pVTable, AcDb::kForRead);
-	// if we opened them ok
-	if (es == Acad::eOk)
-	{
-		AcDbViewportTableRecord *pViewPortRec = NULL;
-		es = pVTable->getAt (_T("*Active"), pViewPortRec, AcDb::kForRead);
-		if (es == Acad::eOk)
-		{
-			// get the height of the view
-			height = pViewPortRec->height ();
-			// get the width
-			width = pViewPortRec->width ();
-			// if the user wants the center of the viewport used
-			if (getViewCenter == true)
-			{
-				struct resbuf rb;
-				memset (&rb, 0, sizeof (struct resbuf));
-				// get the system var VIEWCTR
-				acedGetVar (_T("VIEWCTR"), &rb);
-				// set that as the target
-				target = AcGePoint3d (rb.resval.rpoint[X], rb.resval.rpoint[Y], rb.resval.rpoint[Z]);
-			}
-			// we want the viewports camera target setting
-			else
-			{
-				// get the target of the view
-				target = pViewPortRec->target ();
-			}		
-
-			// get the view direction
-			vCameraViewDir = pViewPortRec->viewDirection ();
-			// get the view twist of the viewport
-			viewTwist = pViewPortRec->viewTwist ();
-		}
-		// close after use
-		pVTable->close ();
-		pViewPortRec->close();	
-	}	
-	
-	return (true);
-}
-
 
 BEGIN_MESSAGE_MAP(CArxGsViewCtrl, CStatic)
 	ON_WM_ERASEBKGND()
@@ -423,6 +360,7 @@ void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy)
 
 void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
+	mLBState = down;
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		1,
@@ -447,13 +385,11 @@ void CArxGsViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonUp( nFlags, point );
 
-	if( mbLDblClick)
-	{
+	if( mLBState == dblclk )
 		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
-		mbLDblClick = false;
-	}
-	else
+	else if( mLBState == down )
 		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
+	mLBState = up;
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseUp),
@@ -515,7 +451,7 @@ void CArxGsViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDblClk(nFlags, point);
 
-	mbLDblClick = true;
+	mLBState = dblclk;
 
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
@@ -530,7 +466,7 @@ void CArxGsViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
 	__super::OnRButtonDblClk(nFlags, point);
 
-	mbRDblClick = true;
+	mRBState = dblclk;
 
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
@@ -543,13 +479,11 @@ void CArxGsViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 
 void CArxGsViewCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	if( mbRDblClick )
-	{
+	if( mRBState == dblclk )
 		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRightDblClick), IsAsyncEvents());	
-		mbRDblClick = false;
-	}
-	else
+	else if( mLBState == down )
 		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRightClick), IsAsyncEvents());	
+	mRBState = up;
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseUp),
@@ -602,6 +536,7 @@ void CArxGsViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 
 void CArxGsViewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
+	mRBState = down;
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		2,
@@ -609,6 +544,5 @@ void CArxGsViewCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		IsAsyncEvents());
-	
 	__super::OnRButtonDown(nFlags, point);
 }

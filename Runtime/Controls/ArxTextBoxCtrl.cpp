@@ -4,6 +4,12 @@
 #include "ControlPane.h"
 #include "InvokeMethod.h"
 
+static const UINT& refWM_FOCUSCLICK()
+{
+	static const UINT WM_FOCUSCLICK = RegisterWindowMessage( _T("OpenDCL.FocusClick") );
+	return WM_FOCUSCLICK;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxTextBoxCtrl
@@ -43,8 +49,9 @@ BEGIN_MESSAGE_MAP(CArxTextBoxCtrl, CTextBoxCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYUP()
 	ON_WM_KEYDOWN()
-	ON_WM_LBUTTONUP()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_REGISTERED_MESSAGE(refWM_FOCUSCLICK(),OnFocusClick)
 END_MESSAGE_MAP()
 
 
@@ -92,8 +99,13 @@ void CArxTextBoxCtrl::OnUpdate()
 void CArxTextBoxCtrl::OnSetFocus( CWnd* pFocus )
 {
 	__super::OnSetFocus( pFocus );
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
-	mbFocusClick = true;
+	if( !mbFocusClick )
+		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
+	else
+	{
+		mbFocusClick = false;
+		PostMessage( refWM_FOCUSCLICK() );
+	}
 }
 
 void CArxTextBoxCtrl::OnKillFocus( CWnd* pFocus )
@@ -146,12 +158,21 @@ void CArxTextBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
+void CArxTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	if( GetFocus() != this )
+		mbFocusClick = true;
+	__super::OnLButtonDown(nFlags, point);
+}
+
 void CArxTextBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	mbFocusClick = false;
 	__super::OnLButtonUp(nFlags, point);
-	if( !mbFocusClick )
-	{
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
-		mbFocusClick = true;
-	}
+}
+
+LRESULT CArxTextBoxCtrl::OnFocusClick(WPARAM wParam, LPARAM lParam)
+{
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
+	return 0;
 }

@@ -7,7 +7,7 @@
 
 extern bool IsOnlyModalForm();
 
-CString EscapeLispStringArgument( LPCTSTR pszString )
+static CString EscapeLispStringArgument( LPCTSTR pszString )
 {
 	CString sResult = pszString;
 	sResult.Replace( _T("\\"), _T("\\\\") );
@@ -112,6 +112,51 @@ bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc)
 
 	return false;
 }
+
+bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
+											bool bAsync, AcApDocument* pDoc /*= NULL*/ )
+{
+	if( !pDclControl )
+		return true;
+	if( !pDclControl->GetControlInstance() )
+		return true;
+	CString sEventHandler = pDclControl->GetStringProperty( id );
+	if( sEventHandler.IsEmpty() )
+		return false;
+	InvokeMethod( sEventHandler, bAsync, pDoc );
+	return (pDclControl->GetControlInstance() == NULL); //return true to abort if the event handler destroyed the control
+}
+
+bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
+											int nArg1, int nArg2, int nArg3,
+											bool bAsync, AcApDocument* pDoc /*= NULL*/ )
+{
+	if( !pDclControl )
+		return true;
+	if( !pDclControl->GetControlInstance() )
+		return true;
+	CString sEventHandler = pDclControl->GetStringProperty( id );
+	if( sEventHandler.IsEmpty() )
+		return false;
+	InvokeMethodIntIntInt( sEventHandler, nArg1, nArg2, nArg3, bAsync/*, pDoc*/ );
+	return (pDclControl->GetControlInstance() == NULL); //return true to abort if the event handler destroyed the control
+}
+
+bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
+											int nArg1, int nArg2, int nArg3, int nArg4,
+											bool bAsync, AcApDocument* pDoc /*= NULL*/ )
+{
+	if( !pDclControl )
+		return true;
+	if( !pDclControl->GetControlInstance() )
+		return true;
+	CString sEventHandler = pDclControl->GetStringProperty( id );
+	if( sEventHandler.IsEmpty() )
+		return false;
+	InvokeMethodIntIntIntInt( sEventHandler, nArg1, nArg2, nArg3, nArg4, bAsync/*, pDoc*/ );
+	return (pDclControl->GetControlInstance() == NULL); //return true to abort if the event handler destroyed the control
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // InvokeMethod
@@ -500,6 +545,50 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 
 
 
+void InvokeMethodBoolean(CString sLispFunction, bool b1, bool UseSendString)
+{
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	if (sLispFunction.GetLength() > 0)
+	{
+		if (UseSendString)
+		{
+			CString sBool = (b1? _T("T") : _T("NIL"));
+			sLispFunction = FireCancel(sLispFunction);
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sBool + _T(") ");
+			
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
+				sCommand = sLispFunction + _T(" ");
+
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
+		}
+		else
+		{
+			// this code is for all other dialogs
+			int stat;
+			struct resbuf *result = NULL, *list;    
+
+			if( b1 )
+				list = acutBuildList(
+					RTSTR, FireCancel(sLispFunction), 
+					RTT,
+					RTNONE);
+			else
+				list = acutBuildList(
+					RTSTR, FireCancel(sLispFunction),
+					RTNIL,
+					RTNONE);
+
+			if (list != NULL) { 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
+			    acutRelRb(list); 
+			    if(result != NULL) acutRelRb(result); 
+			} 
+		}
+	}
+}
+
+
+
 void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 {
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
@@ -537,6 +626,8 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 		}
 	}
 }
+
+
 void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSendString)
 {
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );

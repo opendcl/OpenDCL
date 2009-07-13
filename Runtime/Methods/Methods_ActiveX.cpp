@@ -515,7 +515,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, const AxMethodDescri
 	switch (varGet.vt)
 	{
 		case VT_UI1:
-			if (varGet.bVal == 1)
+			if (varGet.bVal != VARIANT_FALSE)
 				acedRetT();
 			else
 				acedRetNil();
@@ -626,7 +626,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, const AxMethodDescri
 			break;
 		case VT_BOOL:			
 			{
-				if (varGet.boolVal == 1)
+				if (varGet.boolVal != VARIANT_FALSE)
 					acedRetT();
 				else
 					acedRetNil();
@@ -644,7 +644,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, const AxMethodDescri
 			break;
 		case VT_UI1|VT_BYREF:
 			{
-				if (*varGet.pbVal == 1)
+				if (*varGet.pbVal != VARIANT_FALSE)
 					acedRetT();
 				else
 					acedRetNil();
@@ -696,7 +696,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, const AxMethodDescri
 			break;
 		case VT_BOOL|VT_BYREF:
 			{
-				if (*varGet.pboolVal == VARIANT_TRUE)
+				if (*varGet.pboolVal != VARIANT_FALSE)
 					acedRetT();
 				else
 					acedRetNil();

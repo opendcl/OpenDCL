@@ -139,8 +139,9 @@ void CEditCtrl::OnKillFocus( CWnd* pNewWnd )
 		GetRawWindowText( sText );
 		if( !pFilter->OnValidateInput( sText ) )
 		{
+			bool bAllSelected = (nSelStart == 0 && nSelEnd == (sText.GetLength() - 1));
 			sText = pFilter->GetLastValidInput();
-			nSelStart = -1;
+			nSelStart = bAllSelected? 0 : -1;
 			nSelEnd = -1;
 		}
 		SetWindowText( sText ); //validate and set the input

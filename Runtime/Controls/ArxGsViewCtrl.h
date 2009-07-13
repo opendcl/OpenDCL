@@ -78,16 +78,10 @@ protected:
 					mpModel = mpManager->createAutoCADModel(); //a model with open/close protocol
 
 					//another model without open/close for the orbit gadget
-					mpGhostModel = mpFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
+					mpGhostModel = mpFactory->createModel( AcGsModel::kDirect, 0, 0, 0 );
 					mpCtrl->AddUIDrawable( mpGhostModel, mpView );
-					mpDevice->add(mpView);
-
-					// get the view port information - see parameter list
-					ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
-					AcGePoint3d targetView;
-					AcGeVector3d viewDir;
-					mpCtrl->GetActiveViewPortInfo( height, width, targetView, viewDir, viewTwist, true );
-					mpView->setView( targetView + viewDir, targetView, AcGeVector3d( 0.0, 1.0, 0.0 ), 1.0, 1.0 );
+					mpDevice->add( mpView );
+					mpView->setView( AcGePoint3d(), AcGePoint3d( 0, 0, -1 ), AcGeVector3d( 0, 1, 0 ), 1.0, 1.0 );
 				}
 			}
 		~GsViewReactor()
@@ -166,8 +160,9 @@ protected:
 	GsViewReactor* mpGsReactor;
 
 private:
-	bool mbLDblClick;
-	bool mbRDblClick;
+	enum btnstate { up = 0, down = 1, dblclk = 2, };
+	btnstate mLBState;
+	btnstate mRBState;
 	COLORREF mclrHighlight;
 	bool mbHighlighted;
 
@@ -192,7 +187,6 @@ protected:
 	virtual void PaintUI( CDC* pdc = NULL ) {}
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
 	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }
-	bool GetActiveViewPortInfo( ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter );
 	void clearAll();
 	bool UpdateModel( AcGiDrawable* pDrawable );
 

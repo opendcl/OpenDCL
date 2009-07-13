@@ -131,14 +131,14 @@ ADSRESULT ComboBox::AddString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
 	int idxNewItem = -1;
-	size_t ctArgs = rsToAdd.size();
-	for( size_t idx = 0; idx < ctArgs; ++idx )
+	TPropertyPtr pListProp = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( pListProp )
 	{
-		idxNewItem = pCtrl->AddString( rsToAdd[idx] );
-		if( idxNewItem < 0 )
-			return RSRSLT;
+		PropVal::TCStringArray* prsList = pListProp->GetStringArrayPtr();
+		prsList->insert( prsList->end(), rsToAdd.begin(), rsToAdd.end() );
+		if( pDlgControl->OnApplyProperty( pListProp ) )
+			idxNewItem = prsList->size();
 	}
 
 	if( idxNewItem >= 0 )

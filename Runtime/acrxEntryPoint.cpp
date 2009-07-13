@@ -2930,9 +2930,10 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		CDC dc;
-		theArxWorkspace.RetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
-		dc.DeleteDC();
+		HDC hdc = ::GetDC( NULL );
+		int nX = GetDeviceCaps( hdc, LOGPIXELSX );
+		::ReleaseDC( NULL, hdc );
+		theArxWorkspace.RetLong( MulDiv( nX, twips, 1440 ) );
 
 		return (RSRSLT) ;
 	}
@@ -2949,9 +2950,10 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		CDC dc;
-		theArxWorkspace.RetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSY), twips, 1440));
-		dc.DeleteDC();
+		HDC hdc = ::GetDC( NULL );
+		int nY = GetDeviceCaps( hdc, LOGPIXELSY );
+		::ReleaseDC( NULL, hdc );
+		theArxWorkspace.RetLong( MulDiv( nY, twips, 1440 ) );
 
 		return (RSRSLT) ;
 	}
@@ -2968,9 +2970,10 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		CDC dc;
-		theArxWorkspace.RetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSX)));
-		dc.DeleteDC();
+		HDC hdc = ::GetDC( NULL );
+		int nX = GetDeviceCaps( hdc, LOGPIXELSX );
+		::ReleaseDC( NULL, hdc );
+		theArxWorkspace.RetLong( MulDiv( pixels, 1440, nX ) );
 
 		return (RSRSLT) ;
 	}
@@ -2987,9 +2990,10 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		CDC dc;
-		theArxWorkspace.RetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSY)));
-		dc.DeleteDC();
+		HDC hdc = ::GetDC( NULL );
+		int nY = GetDeviceCaps( hdc, LOGPIXELSY );
+		::ReleaseDC( NULL, hdc );
+		theArxWorkspace.RetLong( MulDiv( pixels, 1440, nY ) );
 
 		return (RSRSLT) ;
 	}

@@ -103,6 +103,7 @@
 #include <shlwapi.h>
 #include <atlbase.h>
 #include <comutil.h>
+#include <comdef.h>
 
 //-----------------------------------------------------------------------------
 //- Include ObjectDBX/ObjectARX headers

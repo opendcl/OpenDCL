@@ -687,7 +687,7 @@ bool GetLongArgument( /*in-out*/ resbuf*& pArgs, /*out*/ long& nArg, /*in*/ bool
 	case RTANG:
 	case RTORINT:
 		if( pArgs->resval.rreal < LONG_MIN ||
-				pArgs->resval.rreal < LONG_MAX ||
+				pArgs->resval.rreal > LONG_MAX ||
 				fabs( pArgs->resval.rreal - (ads_real)(long)pArgs->resval.rreal ) > 0.00000001 )
 		{
 			if( !bQuiet )

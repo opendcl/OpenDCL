@@ -243,7 +243,8 @@ ADSRESULT TextBox::SetSel()
 	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
 
 	pCtrl->SetSel( nStart, nEnd, bNoScroll? TRUE : FALSE );
-	pCtrl->SetFocus();
+	if( GetFocus() != pCtrl->m_hWnd )
+		pCtrl->SetFocus();
 	acedRetT();
 	return RSRSLT;
 }

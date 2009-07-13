@@ -113,20 +113,7 @@ void CArxAcadSlideCtrl::OnPaint()
 	}
 	PaintControl(&dc);
 	if (m_hbmMem == NULL)
-	{
-		CWnd *pFocusWnd = CWnd::GetFocus();
-		// if the CWnd that has focus is not this CWnd
-		// then send a 0 to indicate this control does not 
-		// have focus. Otherwise send a 1 to indicate that
-		// it does have focus.
-
-		if (pFocusWnd != this)
-			// call methods to invoke the event
-			InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventPaint), 0, IsAsyncEvents());
-		else
-			// call methods to invoke the event
-			InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventPaint), 1, IsAsyncEvents());
-	}
+		InvokeMethodBoolean( mpTemplate->GetStringProperty( Prop::EventPaint ), (GetFocus() == this), IsAsyncEvents() );
 }
 
 bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
@@ -250,13 +237,9 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 		
 		pdc->SelectObject(pOldPen);
 	}
-	
 
 	if (GetFocus() == this)
-		// draw the solid rectangle
 		pdc->DrawFocusRect(m_rcFocus);
-
-	
 }
 
 void CArxAcadSlideCtrl::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName)

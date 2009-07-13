@@ -1031,7 +1031,7 @@ ADSRESULT ListView::SetCurSel()
 	if( nRow > -1 )
 	{
 		pCtrl->SetSelectionMark( nRow );
-		pCtrl->SetItem( nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0 );		
+		pCtrl->SetItem( nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED, 0 );		
 		pCtrl->EnsureVisible( nRow, TRUE );
 	}
 	else

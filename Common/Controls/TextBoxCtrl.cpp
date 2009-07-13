@@ -203,6 +203,7 @@ bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 
 BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
 	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnChange)
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 

@@ -238,7 +238,7 @@ void CDialogControl::OnFrameChanged()
 void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUpdateNow /*= false*/ ) const
 {
 	if( bRepaintBackground &&
-			(mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT) )
+			((mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT) || !mpControlWnd->IsWindowVisible()) )
 	{ //force the control's background to be redrawn if it has a transparent background
 		CWnd* pHostDlg = mpControlPane->GetHostDialog();
 		if( pHostDlg )

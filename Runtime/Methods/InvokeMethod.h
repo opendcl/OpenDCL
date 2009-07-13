@@ -4,12 +4,22 @@
 #pragma once
 
 
+bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
+											bool bAsync, AcApDocument* pDoc = NULL ); //returns true to abort
+bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
+											int nArg1, int nArg2, int nArg3,
+											bool bAsync, AcApDocument* pDoc = NULL ); //returns true to abort
+bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
+											int nArg1, int nArg2, int nArg3, int nArg4,
+											bool bAsync, AcApDocument* pDoc = NULL ); //returns true to abort
+
 CString FireCancel( LPCTSTR pszLispFunction );
 int acedInvokeNoDocStateSafe( const struct resbuf *args, struct resbuf **result );
 bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc);
 void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc = NULL);
 void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, bool UseSendString);
 void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bool UseSendString);
+void InvokeMethodBoolean(CString sLispFunction, bool b1, bool UseSendString);
 void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString);
 void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSendString);
 void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, bool UseSendString);
