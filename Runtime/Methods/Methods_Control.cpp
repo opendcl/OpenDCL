@@ -467,23 +467,32 @@ ADSRESULT Control::SetPos()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TDclControlPtr pDclControl = pDlgControl->GetTemplate();
-	TPropertyPtr pPropLeft = pDclControl->GetPropertyObject( Prop::Left );
-	if( pPropLeft )
+	if( pDlgControl->GetControlType() == _CtlForm )
 	{
-		pPropLeft->SetLongValue( lLeft );
-		pDclControl->SetLongProperty( Prop::Top, lTop );
+		CDialogObject* pDlg = (CDialogObject*)pDlgControl;
+		if( !pDlg->MoveDialog( lLeft, lTop ) )
+			return RSRSLT;
+		if( lWidth >= 0 || lHeight >= 0 )
+		{
+			CRect rcDlg = pDlg->GetEffectiveWindowRect();
+			if( lWidth < 0 )
+				lWidth = rcDlg.Width();
+			if( lHeight < 0 )
+				lHeight = rcDlg.Height();
+			pDlg->GetTopLevelWnd()->SetWindowPos( NULL, 0, 0, lWidth, lHeight,
+																						SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+		}
 	}
 	else
 	{
-		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
-		rcControl.MoveToXY( lLeft, lTop );
-		pDlgControl->GetControlWnd()->MoveWindow( &rcControl );
+		TDclControlPtr pDclControl = pDlgControl->GetTemplate();
+		pDclControl->SetLongProperty( Prop::Left, lLeft );
+		pDclControl->SetLongProperty( Prop::Top, lTop );
+		if( lWidth >= 0 )
+			pDclControl->SetLongProperty( Prop::Width, lWidth );
+		if( lHeight >= 0 )
+			pDclControl->SetLongProperty( Prop::Height, lHeight );
 	}
-	if( lWidth >= 0 )
-		pDclControl->SetLongProperty( Prop::Width, lWidth );
-	if( lHeight >= 0 )
-		pDclControl->SetLongProperty( Prop::Height, lHeight );
 	pDlgControl->ApplyPosition();
 	pDlgControl->OnNeedRepaint();
 	acedRetT();

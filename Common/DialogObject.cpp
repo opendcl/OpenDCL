@@ -55,10 +55,14 @@ bool CDialogObject::CenterDialog()
 	CRect rcDlg = GetEffectiveWindowRect();
 	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - rcDlg.Width()) / 2,
 						 (::GetSystemMetrics(SM_CYSCREEN) - rcDlg.Height()) / 2 );
-	bool bSuccess =
-		(GetTopLevelWnd()->SetWindowPos( NULL, pt.x, pt.y, 0, 0,
+	return MoveDialog( pt.x, pt.y );
+}
+
+bool CDialogObject::MoveDialog( long nNewLeft, long nNewTop )
+{
+	return
+		(GetTopLevelWnd()->SetWindowPos( NULL, nNewLeft, nNewTop, 0, 0,
 																		 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER ) != FALSE);
-	return true;
 }
 
 bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
@@ -78,9 +82,7 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	mbIgnoreSizing = true;
 	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - nNewHeight) / 2,
 						 (::GetSystemMetrics(SM_CYSCREEN) - nNewWidth) / 2 );
-	bool bSuccess =
-		(GetTopLevelWnd()->SetWindowPos( NULL, pt.x, pt.y, nNewWidth, nNewHeight,
-																		 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER ) != FALSE);
+	bool bSuccess = MoveDialog( pt.x, pt.y );
 	GetControlPane()->RecalcLayout();
 	mbIgnoreSizing = false;
 	return bSuccess;
@@ -217,9 +219,9 @@ bool CDialogObject::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbIgnoreSizing = true;
 	if( pProp->GetBooleanValue() )
-		mpControlWnd->ModifyStyle( 0, WS_THICKFRAME, SWP_FRAMECHANGED );
+		GetTopLevelWnd()->ModifyStyle( 0, WS_THICKFRAME, SWP_FRAMECHANGED );
 	else
-		mpControlWnd->ModifyStyle( WS_THICKFRAME, 0, SWP_FRAMECHANGED );
+		GetTopLevelWnd()->ModifyStyle( WS_THICKFRAME, 0, SWP_FRAMECHANGED );
 	mbIgnoreSizing = false;
 	OnFrameChanged();
 	return true;

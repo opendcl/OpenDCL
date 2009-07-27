@@ -140,6 +140,13 @@ bool CPaletteDialog::CenterDialog()
 	return __super::CenterDialog();
 }
 
+bool CPaletteDialog::MoveDialog( long nNewLeft, long nNewTop )
+{
+	if( !IsFloating() )
+		return false;
+	return __super::MoveDialog( nNewLeft, nNewTop );
+}
+
 bool CPaletteDialog::ResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
@@ -154,30 +161,30 @@ bool CPaletteDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	return __super::ResizeDialog( nNewWidth, nNewHeight );
 }
 
-bool CPaletteDialog::GetEffectiveWindowRect( CRect& rcDlg ) const
+CRect CPaletteDialog::GetEffectiveWindowRect() const
 {
 	if (!IsFloating())
-		return GetEffectiveClientRect( rcDlg );
-	const_cast< CPaletteDialog* >( this )->mHostPaletteSet.GetFullRect( rcDlg );
-	return true;
+		return GetEffectiveClientRect();
+	CRect rectWindow;
+	CWnd* pTopLevelWnd = const_cast< CPaletteDialog* >( this )->GetTopLevelWnd();
+	if( pTopLevelWnd == &mHostPaletteSet && mHostPaletteSet.RolledUp() )
+		mHostPaletteSet.GetFullRect( rectWindow );
+	else
+		pTopLevelWnd->GetWindowRect( &rectWindow );
+	return rectWindow;
 }
 
-bool CPaletteDialog::GetEffectiveClientRect( CRect& rcDlg ) const
+CRect CPaletteDialog::GetEffectiveClientRect() const
 {
+	CRect rcDlg;
 	const_cast< CPaletteDialog* >( this )->mHostPaletteSet.GetClientArea( rcDlg );
-	return true;
+	return rcDlg;
 }
 
 void CPaletteDialog::OnFrameChanged()
 {
-	CRect rectWindow;
-	CWnd* pTopLevelWnd = GetTopLevelWnd();
-	if( pTopLevelWnd == &mHostPaletteSet && IsFloating() && mHostPaletteSet.RolledUp() )
-		mHostPaletteSet.GetFullRect( rectWindow );
-	else
-		pTopLevelWnd->GetWindowRect( &rectWindow );
-	CRect rcClient;
-	mHostPaletteSet.GetClientArea( rcClient );
+	CRect rectWindow = GetEffectiveWindowRect();
+	CRect rcClient = GetEffectiveClientRect();
 	long lNCWidth = rectWindow.Width() - rcClient.Width();
 	long lNCHeight = rectWindow.Height() - rcClient.Height();
 	SetNCWidth( lNCWidth );
@@ -193,7 +200,6 @@ void CPaletteDialog::ApplyPosition()
 		return;
 	if( !IsFloating() )
 		return; //size cannot be changed while docked
-	mbIgnoreSizing = true;
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
@@ -201,12 +207,10 @@ void CPaletteDialog::ApplyPosition()
 															lWidth + GetNCWidth(),
 															lHeight + GetNCHeight(),
 															SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
-	SetWindowPos( NULL, 0, 0,
-								lWidth,
-								lHeight,
-								SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	CRect rcClient = GetEffectiveClientRect();
+	SetWindowPos( NULL, rcClient.left, rcClient.top, lWidth, lHeight,
+								SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
-	mbIgnoreSizing = false;
 }
 
 bool CPaletteDialog::OnApplyProperty( TPropertyPtr pProp )
@@ -233,7 +237,7 @@ bool CPaletteDialog::OnApplyCaption( TPropertyPtr pProp )
 bool CPaletteDialog::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
-	return true; //skip base class
+	return __super::OnApplyResizable( pProp );
 }
 
 bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
@@ -274,16 +278,17 @@ int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	CRect rectWindow;
-	GetEffectiveWindowRect( rectWindow );
-	CRect rcClient;
-	GetEffectiveClientRect( rcClient );
-	SetNCWidth( rectWindow.Width() - rcClient.Width() );
-	SetNCHeight( rectWindow.Height() - rcClient.Height() );
-	SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
-								SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
-	mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
-	mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
+	CRect rcWindow = GetEffectiveWindowRect();
+	CRect rcClient = GetEffectiveClientRect();
+	SetNCWidth( rcWindow.Width() - rcClient.Width() );
+	SetNCHeight( rcWindow.Height() - rcClient.Height() );
+	if( IsResizable() )
+	{
+		SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
+									SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+		mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
+		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
+	}
 
 	ApplyPropertiesEnum();
 	mbIgnoreSizing = false;
@@ -313,7 +318,7 @@ void CPaletteDialog::PostNcDestroy()
 void CPaletteDialog::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	if( mbIgnoreSizing )
+	if( mbIgnoreSizing || !IsResizable() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
@@ -348,8 +353,7 @@ bool CPaletteDialog::OnClosing()
 	if( IsClosing() )
 		return true;
 	SetClosing();
-	CRect rcThis;
-	GetEffectiveWindowRect( rcThis );
+	CRect rcThis = GetEffectiveWindowRect();
 	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventClose ), rcThis.left, rcThis.top, IsAsyncEvents() );	
 	if( /*!mbHiding && */!IsFloating() )
 		mHostPaletteSet.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here

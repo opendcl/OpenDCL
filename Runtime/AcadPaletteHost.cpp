@@ -12,6 +12,12 @@ static const UINT& refWM_MOUSEENTER()
 	return WM_MOUSEENTER;
 }
 
+static const UINT& refWM_FRAMECHANGED()
+{
+	static const UINT WM_FRAMECHANGED = RegisterWindowMessage( _T("OpenDCL.FrameChanged") );
+	return WM_FRAMECHANGED;
+}
+
 static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 {
 	if( !pParent )
@@ -76,6 +82,7 @@ bool CAcadPaletteHost::Create( LPCTSTR lpszTitle, CRect rect )
 BEGIN_MESSAGE_MAP(CAcadPaletteHost, CAdUiPaletteSet)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_REGISTERED_MESSAGE(refWM_FRAMECHANGED(),OnFrameChanged)
 	ON_REGISTERED_MESSAGE(refWM_MOUSEENTER(),OnMouseEnter)
 	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
 	ON_WM_ENTERMENULOOP()
@@ -111,9 +118,18 @@ bool CAcadPaletteHost::CanFrameworkTakeFocus ()
 
 void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
 {
-	__super::SizeChanged( lpRect, bFloating, flags );
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
-		mpDlgObject->OnFrameChanged();
+		PostMessage( refWM_FRAMECHANGED() );
+	__super::SizeChanged( lpRect, bFloating, flags );
+}
+
+LRESULT CAcadPaletteHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
+{
+	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
+	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
+	mpDlgObject->OnApplyResizable( pResizableProp );
+	mpDlgObject->OnFrameChanged();
+	return 0;
 }
 
 bool CAcadPaletteHost::OnClosing()
@@ -203,8 +219,9 @@ void CAcadPaletteHost::TitleBarLocationUpdated( AdUiTitleBarLocation newLoc )
 void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
-	CRect rcClient;
-	GetClientArea( rcClient );
+	if( !mpDlgObject->GetControlWnd()->m_hWnd )
+		return;
+	CRect rcClient = mpDlgObject->GetEffectiveClientRect();
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
 														 rcClient.Width(), rcClient.Height(),
 														 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );

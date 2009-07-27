@@ -137,14 +137,14 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 			mpTemplate->GetStringProperty(Prop::FormEventSize), 
 			mpTemplate->GetLongProperty(Prop::Width),
 			mpTemplate->GetLongProperty(Prop::Height),
-			false);	
+			IsAsyncEvents());	
 	}	
 }
 
 void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	__super::OnShowWindow(bShow, nStatus);
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), false);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), IsAsyncEvents());	
 }
 
 void CModelessDlg::OnDestroy() 
@@ -158,7 +158,7 @@ void CModelessDlg::OnOK()
 	if (IsClosing() ||
 			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), false))	
 	{
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnOk), true);
+    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnOk), IsAsyncEvents());
 		__super::OnOK();
 		CloseDialog(IDOK);
 	}
@@ -169,7 +169,7 @@ void CModelessDlg::OnCancel()
 	if (IsClosing() ||
 			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), true))	
 	{
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnCancel), true);
+    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnCancel), IsAsyncEvents());
 		__super::OnCancel();
 		CloseDialog(IDCANCEL);
 	}
@@ -247,7 +247,7 @@ LRESULT CModelessDlg::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 	}
 	if( mbMouseLeft )
 	{
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), true );
+		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
 		mbMouseLeft = false;
 	}
 	return 0;
@@ -274,7 +274,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	}
 	mbMouseLeft = (GetCapture() != this);
 	if( mbMouseLeft )
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), true );
+		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
 	return 0;
 }
 

@@ -96,6 +96,7 @@ public:
 	virtual INT_PTR DoModal() { return -1; }
 	virtual bool Show(bool bShow = true);
 	virtual bool CenterDialog();
+	virtual bool MoveDialog( long nNewLeft, long nNewTop );
 	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
 	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
 	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates

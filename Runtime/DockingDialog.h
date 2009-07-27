@@ -49,10 +49,11 @@ public:
 	virtual bool CreateModeless( UINT nID );
 	virtual void CloseDialog(int nStatus);
 	virtual bool CenterDialog();
+	virtual bool MoveDialog( long nNewLeft, long nNewTop );
 	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
 	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
-	virtual bool GetEffectiveWindowRect( CRect& rcDlg ) const;
-	virtual bool GetEffectiveClientRect( CRect& rcDlg ) const;
+	virtual CRect GetEffectiveWindowRect() const;
+	virtual CRect GetEffectiveClientRect() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 protected:
 	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing

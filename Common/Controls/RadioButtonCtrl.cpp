@@ -139,5 +139,5 @@ void CRadioButtonCtrl::PostNcDestroy()
 void CRadioButtonCtrl::OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	*pResult = 0;
-	OnNeedRepaint();
+	//OnNeedRepaint();
 }

@@ -109,6 +109,7 @@ bool CDockingDialog::CreateModeless( UINT nID )
 		mHostControlBar.SetToolID( &uuid );
 	}			
 	mHostControlBar.EnableDocking( dwDockableSides );
+
 	mHostControlBar.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
 	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostControlBar, TRUE, TRUE );
 
@@ -139,6 +140,13 @@ bool CDockingDialog::CenterDialog()
 	return __super::CenterDialog();
 }
 
+bool CDockingDialog::MoveDialog( long nNewLeft, long nNewTop )
+{
+	if( !IsFloating() )
+		return false;
+	return __super::MoveDialog( nNewLeft, nNewTop );
+}
+
 bool CDockingDialog::ResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
@@ -153,18 +161,24 @@ bool CDockingDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	return __super::ResizeDialog( nNewWidth, nNewHeight );
 }
 
-bool CDockingDialog::GetEffectiveWindowRect( CRect& rcDlg ) const
+CRect CDockingDialog::GetEffectiveWindowRect() const
 {
 	if (!IsFloating())
-		return GetEffectiveClientRect( rcDlg );
-	const_cast< CDockingDialog* >( this )->mHostControlBar.GetFloatingRect( &rcDlg );
-	return true;
+		return GetEffectiveClientRect();
+	CWnd* pTop = const_cast< CDockingDialog* >( this )->GetTopLevelWnd();
+	CRect rcWnd;
+	pTop->GetWindowRect( &rcWnd );
+	return rcWnd;
+	//CRect rcDlg;
+	//const_cast< CDockingDialog* >( this )->mHostControlBar.GetFloatingRect( &rcDlg );
+	//return rcDlg;
 }
 
-bool CDockingDialog::GetEffectiveClientRect( CRect& rcDlg ) const
+CRect CDockingDialog::GetEffectiveClientRect() const
 {
+	CRect rcDlg;
 	const_cast< CDockingDialog* >( this )->mHostControlBar.GetClientArea( rcDlg );
-	return true;
+	return rcDlg;
 }
 
 void CDockingDialog::GetClientArea( CRect& rect )
@@ -191,7 +205,7 @@ void CDockingDialog::OnFrameChanged()
 	SetNCHeight( lNCHeight );
 	assert( GetNCWidth() >= 0 && GetNCHeight() >= 0 );
 	OnApplyMinMaxSize( NULL );
-	ApplyPosition();
+	//ApplyPosition();
 }
 
 void CDockingDialog::ApplyPosition()
@@ -200,7 +214,6 @@ void CDockingDialog::ApplyPosition()
 		return;
 	if( !IsFloating() )
 		return; //size cannot be changed while docked
-	mbIgnoreSizing = true;
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
@@ -213,7 +226,6 @@ void CDockingDialog::ApplyPosition()
 								lHeight,
 								SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
-	mbIgnoreSizing = false;
 }
 
 bool CDockingDialog::OnApplyProperty( TPropertyPtr pProp )
@@ -233,7 +245,7 @@ bool CDockingDialog::OnApplyProperty( TPropertyPtr pProp )
 bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
-	return true; //skip base class
+	return __super::OnApplyResizable( pProp );
 }
 
 void CDockingDialog::OnMouseEnter()
@@ -268,17 +280,17 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// set the window text
 	mHostControlBar.SetWindowText(mpTemplate->GetStringProperty(Prop::TitleBarText));
 	
-	CWnd* pTopLevelWnd = GetTopLevelWnd();
-	CRect rectWindow;
-	pTopLevelWnd->GetWindowRect( &rectWindow );
-	CRect rcClient;
-	GetClientArea( rcClient );
-	SetNCWidth( rectWindow.Width() - rcClient.Width() );
-	SetNCHeight( rectWindow.Height() - rcClient.Height() );
-	SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
-								SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
-	mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
-	mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
+	CRect rcWindow = GetEffectiveWindowRect();
+	CRect rcClient = GetEffectiveClientRect();
+	SetNCWidth( rcWindow.Width() - rcClient.Width() );
+	SetNCHeight( rcWindow.Height() - rcClient.Height() );
+	if( IsResizable() )
+	{
+		SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
+									SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+		mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
+		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
+	}
 
 	ApplyPropertiesEnum();
 	mbIgnoreSizing = false;
@@ -298,7 +310,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CDockingDialog::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	if( mbIgnoreSizing )
+	if( mbIgnoreSizing || !IsResizable() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
@@ -343,8 +355,7 @@ bool CDockingDialog::OnClosing()
 	if( IsClosing() )
 		return true;
 	SetClosing();
-	CRect rcThis;
-	GetEffectiveWindowRect( rcThis );
+	CRect rcThis = GetEffectiveWindowRect();
 	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventClose ), rcThis.left, rcThis.top, IsAsyncEvents() );	
 	if( !mbHiding && !IsFloating() )
 		mHostControlBar.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here

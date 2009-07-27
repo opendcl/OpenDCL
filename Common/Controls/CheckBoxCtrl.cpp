@@ -156,5 +156,5 @@ void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CCheckBoxCtrl::OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	*pResult = 0;
-	OnNeedRepaint();
+	//OnNeedRepaint();
 }

@@ -114,6 +114,9 @@ void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 
 LRESULT CAcadDockBarHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 {
+	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
+	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
+	mpDlgObject->OnApplyResizable( pResizableProp );
 	mpDlgObject->OnFrameChanged();
 	return 0;
 }
@@ -215,6 +218,8 @@ void CAcadDockBarHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
+	if( !mpDlgObject->GetControlWnd()->m_hWnd )
+		return;
 	CRect rcClient;
 	mpDlgObject->GetClientArea( rcClient );
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
