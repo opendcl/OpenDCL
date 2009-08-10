@@ -60,6 +60,7 @@ bool CTextButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CTextButtonCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_NCPAINT()
 END_MESSAGE_MAP()
@@ -83,6 +84,12 @@ void CTextButtonCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+void CTextButtonCtrl::OnSetFocus(CWnd* pOldWnd)
+{
+	ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
+	__super::OnSetFocus(pOldWnd);
 }
 
 void CTextButtonCtrl::OnKillFocus(CWnd* pNewWnd) 

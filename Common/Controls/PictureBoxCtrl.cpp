@@ -15,6 +15,11 @@
 const int nClientBorderSize = 4;
 const int nStaticBorderSize = 2;
 
+#ifndef WM_UPDATEUISTATE
+#define WM_UPDATEUISTATE                0x0128 //from WinUser.h
+#endif
+
+
 
 static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtrlHeight)
 {
@@ -311,12 +316,6 @@ void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled,
 
 } // End of DrawTheIcon
 
-void CPictureBoxCtrl::PostNcDestroy() 
-{
-	__super::PostNcDestroy();
-	delete this;
-}
-
 BEGIN_MESSAGE_MAP(CPictureBoxCtrl, CPictureBox)
 	ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
@@ -325,10 +324,26 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPictureBoxCtrl message handlers
 
+void CPictureBoxCtrl::PostNcDestroy() 
+{
+	__super::PostNcDestroy();
+	delete this;
+}
+
 BOOL CPictureBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent( pMsg );
 	return __super::PreTranslateMessage( pMsg );
+}
+
+LRESULT CPictureBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == BM_SETSTYLE && (wParam & BS_DEFPUSHBUTTON) )
+		return 0;
+	if( message == WM_UPDATEUISTATE )
+		return 0;
+
+	return __super::WindowProc(message, wParam, lParam);
 }
 
 __UINT_LRESULT CPictureBoxCtrl::OnNcHitTest(CPoint point)

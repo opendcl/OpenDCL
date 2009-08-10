@@ -2,6 +2,13 @@
 #include "AcadBlockInsertDropTarget.h"
 #include "AutoDocLock.h"
 
+#if (_BRXTARGET <= 9)
+AcDbDatabase* AcApGetDatabase(CView *pView)
+{
+	return NULL;
+}
+#endif
+
 
 CAcadBlockInsertDropTarget::CAcadBlockInsertDropTarget( CDialogControl* pDlgControl )
 : CArxControlAcadDropTarget( pDlgControl )

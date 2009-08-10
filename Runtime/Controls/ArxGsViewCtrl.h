@@ -55,6 +55,9 @@ protected:
 					if( !mpManager )
 						return;
 					mpFactory = mpManager->getGSClassFactory();
+					assert( mpFactory != NULL );
+					if( !mpFactory )
+						return;
 					mpFactory->addReactor( this );
 					//a device with standard autocad color palette
 					mpDevice = mpManager->createAutoCADDevice( mpCtrl->m_hWnd );

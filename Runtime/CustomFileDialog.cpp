@@ -271,7 +271,7 @@ void CCustomFileDialog::CloseDialog(int nStatus)
 
 INT_PTR CCustomFileDialog::DoModal()
 {
-	mbIgnoreSizing = true;
+	IgnoreSizing();
 	INT_PTR nResult = CFileDialog::DoModal();
 	if( nResult == IDOK && mpParams )
 	{
@@ -375,7 +375,7 @@ void CCustomFileDialog::OnInitializationComplete()
 	
 	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );
 	mMainFileDlg.MoveWindow( &rectWindow, FALSE );
-	mbIgnoreSizing = false;
+	IgnoreSizing( false );
 }
 
 

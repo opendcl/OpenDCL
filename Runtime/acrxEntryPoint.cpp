@@ -3043,8 +3043,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_dcl_files_dir symbol (do not rename)
-	static int ads_dcl_files_dir(void)
+	// ----- ads_dcl_dirfiles symbol (do not rename)
+	static int ads_dcl_dirfiles(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -3078,7 +3078,7 @@ public:
 			}
 			else
 			{
-				prbTail = acutNewRb( RTSTR );
+				prbTail->rbnext = acutNewRb( RTSTR );
 				prbTail = prbTail->rbnext;
 			}
 			acutNewString( finder.GetFileName(), prbTail->resval.rstring );
@@ -3559,7 +3559,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xpixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ypixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getolecolorvalue, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_registeractivexctrl, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_files_dir, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_dirfiles, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_load, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_unload, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_saveas, true)

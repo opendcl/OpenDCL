@@ -183,14 +183,14 @@ void CArxPictureBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CArxPictureBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	char sChar = nChar;
+	TCHAR sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxPictureBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	char sChar = nChar;
+	TCHAR sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }

@@ -93,7 +93,7 @@ bool CDockingDialog::CreateModeless( UINT nID )
 		break;
 	}
 
-	mbIgnoreSizing = true;
+	IgnoreSizing();
   if( !mHostControlBar.Create( GetWndCaption(), GetWndRect(), nID ) )
 		return false;
 
@@ -163,8 +163,6 @@ bool CDockingDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 
 CRect CDockingDialog::GetEffectiveWindowRect() const
 {
-	if (!IsFloating())
-		return GetEffectiveClientRect();
 	CWnd* pTop = const_cast< CDockingDialog* >( this )->GetTopLevelWnd();
 	CRect rcWnd;
 	pTop->GetWindowRect( &rcWnd );
@@ -183,13 +181,7 @@ CRect CDockingDialog::GetEffectiveClientRect() const
 
 void CDockingDialog::GetClientArea( CRect& rect )
 {
-	if( !IsFloating() )
-	{
-		mHostControlBar.GetClientArea( rect );
-		rect.top += 5;
-	}
-	else
-		mHostControlBar.GetClientRect( &rect );
+	rect = GetEffectiveClientRect();
 }
 
 void CDockingDialog::OnFrameChanged()
@@ -210,10 +202,8 @@ void CDockingDialog::OnFrameChanged()
 
 void CDockingDialog::ApplyPosition()
 {
-	if( mbIgnoreSizing )
+	if( IsIgnoreSizing() )
 		return;
-	if( !IsFloating() )
-		return; //size cannot be changed while docked
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
@@ -245,7 +235,14 @@ bool CDockingDialog::OnApplyProperty( TPropertyPtr pProp )
 bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
-	return __super::OnApplyResizable( pProp );
+	bool bIgnoreSizing = IgnoreSizing();
+	if( mbResizable && IsFloating() )
+		GetTopLevelWnd()->ModifyStyle( 0, WS_THICKFRAME, SWP_FRAMECHANGED );
+	else
+		GetTopLevelWnd()->ModifyStyle( WS_THICKFRAME, 0, SWP_FRAMECHANGED );
+	IgnoreSizing( bIgnoreSizing );
+	OnFrameChanged();
+	return true;
 }
 
 void CDockingDialog::OnMouseEnter()
@@ -291,9 +288,11 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
 		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
 	}
+	else
+		IgnoreSizing( false );
 
 	ApplyPropertiesEnum();
-	mbIgnoreSizing = false;
+	IgnoreSizing( false );
 	UINT nID = 1000;
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
@@ -310,7 +309,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CDockingDialog::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	if( mbIgnoreSizing || !IsResizable() )
+	if( IsIgnoreSizing() || !IsResizable() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );

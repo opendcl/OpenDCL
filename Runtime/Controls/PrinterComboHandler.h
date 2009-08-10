@@ -65,6 +65,8 @@ public:
 			CWaitCursor WaitCursor;
 			CAutoDocReadLock CurDocLock;
 			AcDbPlotSettingsValidator* pPlotSettingsValidator = acdbHostApplicationServices()->plotSettingsValidator();
+			if( !pPlotSettingsValidator )
+				return false;
 			assert( pPlotSettingsValidator != NULL );
 			AcArray< const TCHAR* > rsDevices;
 			pPlotSettingsValidator->plotDeviceList( rsDevices );

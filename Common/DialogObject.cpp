@@ -79,12 +79,12 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	mpTemplate->SetLongProperty( Prop::Height, nNewHeight );
 	nNewWidth += GetNCWidth();
 	nNewHeight += GetNCHeight();
-	mbIgnoreSizing = true;
+	bool bIgnoreSizing = IgnoreSizing();
 	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - nNewHeight) / 2,
 						 (::GetSystemMetrics(SM_CYSCREEN) - nNewWidth) / 2 );
 	bool bSuccess = MoveDialog( pt.x, pt.y );
 	GetControlPane()->RecalcLayout();
-	mbIgnoreSizing = false;
+	IgnoreSizing( bIgnoreSizing );
 	return bSuccess;
 }
 
@@ -174,13 +174,13 @@ void CDialogObject::OnFrameChanged()
 
 void CDialogObject::ApplyPosition()
 {
-	mbIgnoreSizing = true;
+	bool bIgnoreSizing = IgnoreSizing();
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
 																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
 																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
 																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
-	mbIgnoreSizing = false;
+	IgnoreSizing( bIgnoreSizing );
 }
 
 bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )
@@ -217,12 +217,12 @@ bool CDialogObject::OnApplyBackgroundColor( TPropertyPtr pProp )
 
 bool CDialogObject::OnApplyResizable( TPropertyPtr pProp )
 {
-	mbIgnoreSizing = true;
+	bool bIgnoreSizing = IgnoreSizing();
 	if( pProp->GetBooleanValue() )
 		GetTopLevelWnd()->ModifyStyle( 0, WS_THICKFRAME, SWP_FRAMECHANGED );
 	else
 		GetTopLevelWnd()->ModifyStyle( WS_THICKFRAME, 0, SWP_FRAMECHANGED );
-	mbIgnoreSizing = false;
+	IgnoreSizing( bIgnoreSizing );
 	OnFrameChanged();
 	return true;
 }
@@ -278,7 +278,7 @@ bool CDialogObject::OnApplyIcon( TPropertyPtr pProp )
 
 bool CDialogObject::OnApplyTitleBar( TPropertyPtr pProp )
 {
-	mbIgnoreSizing = true;
+	bool bIgnoreSizing = IgnoreSizing();
 	if( pProp->GetBooleanValue() )
 	{
 		mpControlWnd->ModifyStyle( 0, WS_CAPTION, SWP_FRAMECHANGED );
@@ -286,7 +286,7 @@ bool CDialogObject::OnApplyTitleBar( TPropertyPtr pProp )
 	}
 	else
 		mpControlWnd->ModifyStyle( WS_CAPTION, 0, SWP_FRAMECHANGED );
-	mbIgnoreSizing = false;
+	IgnoreSizing( bIgnoreSizing );
 	OnFrameChanged();
 	return true;
 }

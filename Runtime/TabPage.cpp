@@ -21,11 +21,11 @@ CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane,
 , mControlPane( pSourceForm, this )
 , mbRecalcQueued( false )
 {
-	mbIgnoreSizing = true;
+	IgnoreSizing();
 	CDialog::Create( CTabPage::IDD, pTabCtrl );
 	ShowWindow( SW_HIDE );
 	MoveWindow( &rectPane) ;
-	mbIgnoreSizing = false;
+	IgnoreSizing( false );
 	mpTemplate->SetLongProperty( Prop::Width, rectPane.Width() );
 	mpTemplate->SetLongProperty( Prop::Height, rectPane.Height() );
 	ApplyPropertiesEnum();
@@ -39,7 +39,7 @@ CTabPage::~CTabPage()
 
 void CTabPage::ApplyPosition()
 {
-	mbIgnoreSizing = true;
+	bool bIgnoreSizing = IgnoreSizing();
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
 																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
 																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
@@ -48,7 +48,7 @@ void CTabPage::ApplyPosition()
 		mpControlPane->RecalcLayout();
 	else
 		mbRecalcQueued = true;
-	mbIgnoreSizing = false;
+	IgnoreSizing( bIgnoreSizing );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ BOOL CTabPage::OnCommand(WPARAM wParam, LPARAM lParam)
 void CTabPage::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
-	if( mbIgnoreSizing )
+	if( IsIgnoreSizing() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );

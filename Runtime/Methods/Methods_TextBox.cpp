@@ -129,7 +129,7 @@ ADSRESULT TextBox::GetLine()
 
 	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
 
-	int cchLine = pCtrl->LineLength( pCtrl->LineIndex( nLine ) );
+	int cchLine = pCtrl->LineLength( pCtrl->LineIndex( nLine ) ) + 1;
 	CString sText;
 	sText.ReleaseBuffer( pCtrl->GetLine( nLine, sText.GetBuffer( cchLine ), cchLine ) ); 
 	acedRetStr( sText );

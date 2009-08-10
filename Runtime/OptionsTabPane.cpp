@@ -140,7 +140,7 @@ void COptionsTabPane::OnDestroy()
 void COptionsTabPane::OnSize(UINT nType, int cx, int cy)
 {
 	//__super::OnSize(nType, cx, cy);
-	if( mbIgnoreSizing )
+	if( IsIgnoreSizing() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );

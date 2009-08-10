@@ -58,6 +58,8 @@ CAcadDockBarHost::~CAcadDockBarHost()
 void CAcadDockBarHost::GetClientArea( CRect& rect )
 {
 	GetUsedRect( rect );
+	if( !mpDlgObject->IsFloating() )
+		rect.top += 5;
 }
 
 bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
@@ -117,7 +119,6 @@ LRESULT CAcadDockBarHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mpDlgObject->OnApplyResizable( pResizableProp );
-	mpDlgObject->OnFrameChanged();
 	return 0;
 }
 
@@ -221,10 +222,13 @@ void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 	if( !mpDlgObject->GetControlWnd()->m_hWnd )
 		return;
 	CRect rcClient;
-	mpDlgObject->GetClientArea( rcClient );
+	GetClientArea( rcClient );
+	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER);
+	if( !mpDlgObject->IsResizable() )
+		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
 														 rcClient.Width(), rcClient.Height(),
-														 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+														 nFlags );
 }
 
 BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg) 

@@ -24,7 +24,7 @@ CBaseDlg::CBaseDlg(TDclFormPtr pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, D
 {
 	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
 	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
-	mbIgnoreSizing = true;
+	IgnoreSizing();
 }
 
 CBaseDlg::~CBaseDlg()
@@ -144,7 +144,7 @@ BOOL CBaseDlg::OnInitDialog()
 	mpTemplate->SetLongProperty( Prop::Width, rectWindow.Width() - GetNCWidth() );
 	mpTemplate->SetLongProperty( Prop::Height, rectWindow.Height() - GetNCHeight() );
 	ApplyPropertiesEnum();
-	mbIgnoreSizing = false;
+	IgnoreSizing( false );
 
 	UINT nID = 1000;
 	GetControlPane()->CreateControls( nID );
@@ -238,7 +238,7 @@ void CBaseDlg::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	UpdateGripPos();
-	if( mbIgnoreSizing )
+	if( IsIgnoreSizing() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
@@ -272,7 +272,7 @@ __UINT_LRESULT CBaseDlg::OnNcHitTest(CPoint point)
 void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	__super::OnWindowPosChanged(lpwndpos);
-	if( mbIgnoreSizing )
+	if( IsIgnoreSizing() )
 		return;
 	if( (lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE) != (SWP_NOSIZE | SWP_NOMOVE)) )
 		SavePosition();

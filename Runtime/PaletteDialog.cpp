@@ -93,7 +93,7 @@ bool CPaletteDialog::CreateModeless( UINT nID )
 		break;
 	}
 
-	mbIgnoreSizing = true;
+	IgnoreSizing();
 	if( !mHostPaletteSet.Create( GetWndCaption(), GetWndRect() ) )
 		return false;
 
@@ -163,8 +163,6 @@ bool CPaletteDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 
 CRect CPaletteDialog::GetEffectiveWindowRect() const
 {
-	if (!IsFloating())
-		return GetEffectiveClientRect();
 	CRect rectWindow;
 	CWnd* pTopLevelWnd = const_cast< CPaletteDialog* >( this )->GetTopLevelWnd();
 	if( pTopLevelWnd == &mHostPaletteSet && mHostPaletteSet.RolledUp() )
@@ -196,10 +194,8 @@ void CPaletteDialog::OnFrameChanged()
 
 void CPaletteDialog::ApplyPosition()
 {
-	if( mbIgnoreSizing )
+	if( IsIgnoreSizing() )
 		return;
-	if( !IsFloating() )
-		return; //size cannot be changed while docked
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
@@ -237,7 +233,14 @@ bool CPaletteDialog::OnApplyCaption( TPropertyPtr pProp )
 bool CPaletteDialog::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
-	return __super::OnApplyResizable( pProp );
+	bool bIgnoreSizing = IgnoreSizing();
+	if( mbResizable && IsFloating() )
+		GetTopLevelWnd()->ModifyStyle( 0, WS_THICKFRAME, SWP_FRAMECHANGED );
+	else
+		GetTopLevelWnd()->ModifyStyle( WS_THICKFRAME, 0, SWP_FRAMECHANGED );
+	IgnoreSizing( bIgnoreSizing );
+	OnFrameChanged();
+	return true;
 }
 
 bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
@@ -289,9 +292,11 @@ int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
 		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
 	}
+	else
+		IgnoreSizing( false );
 
 	ApplyPropertiesEnum();
-	mbIgnoreSizing = false;
+	IgnoreSizing( false );
 	UINT nID = 1000;
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
@@ -318,7 +323,7 @@ void CPaletteDialog::PostNcDestroy()
 void CPaletteDialog::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	if( mbIgnoreSizing || !IsResizable() )
+	if( IsIgnoreSizing() || !IsResizable() )
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );

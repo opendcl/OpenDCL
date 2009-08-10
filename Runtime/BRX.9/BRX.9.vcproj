@@ -208,10 +208,42 @@
 			<File
 				RelativePath="..\AcadDockBarHost.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\AcadPaletteHost.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\acrxEntryPoint.cpp"
@@ -284,6 +316,22 @@
 			<File
 				RelativePath="..\DockingDialog.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\ErrorLexicon.cpp"
@@ -320,6 +368,22 @@
 			<File
 				RelativePath="..\PaletteDialog.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\SADirRead.cpp"
@@ -2000,6 +2064,61 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="AcUiImp"
+			>
+			<File
+				RelativePath=".\CAcUiAngleComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiArrowHeadComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiColorComboBox.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\CAcUiComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiLineTypeComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiMRUComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiPlotStyleNamesComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiPlotStyleTablesComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiStringComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAcUiSymbolComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAdUiComboBox.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

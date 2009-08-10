@@ -8,6 +8,25 @@
 #include "DialogControl.h"
 #include "InvokeMethod.h"
 
+#if (_BRXTARGET <= 9)
+BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget)
+{
+	return FALSE;
+}
+BOOL acedEndOverrideDropTarget(COleDropTarget* pTarget)
+{
+	return FALSE;
+}
+BOOL acedAddDropTarget(COleDropTarget* pTarget)
+{
+	return FALSE;
+}
+BOOL acedRemoveDropTarget(COleDropTarget* pTarget)
+{
+	return FALSE;
+}
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxDragDropService

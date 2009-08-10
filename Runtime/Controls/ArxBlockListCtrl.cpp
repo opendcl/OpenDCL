@@ -303,13 +303,14 @@ void CArxBlockListCtrl::RefreshBlockList()
 					const ACHAR* pszName;
 					pRecord->getName( pszName );
 					int nPreviewIndex = extractPreview( pRecord );
+					CString sName( pszName );
 					LVITEM lvItem =
 					{ LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT,
 						GetItemCount(),
 						0,
 						0,
 						0,
-						CString( pszName ).LockBuffer(),
+						sName.LockBuffer(),
 						-1,
 						nPreviewIndex,
 						0,

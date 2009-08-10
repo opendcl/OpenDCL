@@ -169,10 +169,10 @@ DWORD CStudioDialogObject::GetWndStyle() const
 
 bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
 {
-	mbIgnoreSizing = true;
+	bool bIgnoreSizing = IgnoreSizing();
 	bool bSuccess = (CreateDlg( MAKEINTRESOURCE(nID), pParentWnd ) != FALSE);
 	SetControlManager( new CFormControlManager( this ) );
-	mbIgnoreSizing = false;
+	IgnoreSizing( bIgnoreSizing );
 
 	if( bSuccess )
 		SetWindowText( GetWndCaption() );
@@ -622,7 +622,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 	rectWindow.MoveToX( 0 );
 	rectWindow.MoveToY( 0 );
 	MoveWindow( &rectWindow, FALSE );
-	mbIgnoreSizing = false;
+	IgnoreSizing( false );
 
 	//create the control pane and the design time controls
 	CUndoManager* pUndoManager = mpSourceForm->GetUndoManager();
@@ -1157,7 +1157,7 @@ void CStudioDialogObject::OnUpdateSendtoback(CCmdUI *pCmdUI)
 void CStudioDialogObject::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize( nType, cx, cy );
-	if( !mbIgnoreSizing )
+	if( !IsIgnoreSizing() )
 	{
 		ASSERT( mpSourceForm != NULL );
 		CRect rcForm;

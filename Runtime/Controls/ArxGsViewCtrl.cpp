@@ -200,7 +200,10 @@ void CArxGsViewCtrl::DisplayTheBlock(
 
 	//**********************************************
 	// setup the view
-	AcGsView *pView = GetGsView();	
+	AcGsView* pView = GetGsView();	
+	assert( pView != NULL );
+	if( !pView )
+		return;
 	AcGePoint3d eye = boxCenter + vCameraViewDir;
 
 	if (yMax == 0.0)

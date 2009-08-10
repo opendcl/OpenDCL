@@ -57,7 +57,19 @@ CAcadPaletteHost::~CAcadPaletteHost()
 
 void CAcadPaletteHost::GetClientArea( CRect& rect )
 {
-	GetAdjustedClientRect( rect );
+	if( !mpDlgObject->IsFloating() )
+	{
+		GetAdjustedClientRect( rect );
+		rect.top += 5;
+	}
+	else
+	{
+		GetClientRect( &rect );
+		CRect rcWnd;
+		GetFullRect( rcWnd );
+		ScreenToClient( &rcWnd.TopLeft() );
+		rect.MoveToY( -rcWnd.top );
+	}
 }
 
 bool CAcadPaletteHost::Create( LPCTSTR lpszTitle, CRect rect ) 
@@ -128,7 +140,6 @@ LRESULT CAcadPaletteHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mpDlgObject->OnApplyResizable( pResizableProp );
-	mpDlgObject->OnFrameChanged();
 	return 0;
 }
 
@@ -221,10 +232,14 @@ void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if( !mpDlgObject->GetControlWnd()->m_hWnd )
 		return;
-	CRect rcClient = mpDlgObject->GetEffectiveClientRect();
+	CRect rcClient;
+	GetClientArea( rcClient );
+	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER);
+	if( !mpDlgObject->IsResizable() )
+		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
 														 rcClient.Width(), rcClient.Height(),
-														 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+														 nFlags );
 }
 
 BOOL CAcadPaletteHost::PreTranslateMessage(MSG* pMsg) 

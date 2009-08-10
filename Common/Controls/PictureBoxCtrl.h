@@ -46,5 +46,6 @@ protected:
 
 	afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 };

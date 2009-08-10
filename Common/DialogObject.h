@@ -47,6 +47,8 @@ class CDialogObject : public CDialogControl
 protected:
 	TDclFormPtr mpSourceForm;
 	TProjectPtr mpProject;
+
+private:
 	bool mbIgnoreSizing;
 
 public:
@@ -69,6 +71,9 @@ public:
 // Implementation
 protected:
 	static UINT GetNextDialogId() { return mnNextFormId++; }
+	bool IsIgnoreSizing() const { return mbIgnoreSizing; }
+	bool IgnoreSizing( bool bIgnore = true )
+		{ bool bOld = mbIgnoreSizing; mbIgnoreSizing = bIgnore; return bOld; }
 	virtual void SetNCWidth( int nWidth ) { mnNCWidth = nWidth; }
 	virtual void SetNCHeight( int nHeight ) { mnNCHeight = nHeight; }
 	virtual int GetNCWidth() const { return mnNCWidth; }
