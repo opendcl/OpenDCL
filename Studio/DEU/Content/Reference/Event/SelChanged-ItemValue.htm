@@ -33,15 +33,15 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnSelChanged 
-            (<font color="red">intItemIndex [als <a href="../DataType/Long.htm">Long</a>] strValue [als <a href="../DataType/String.htm">String</a>] </font>/)<br />
+            (<font color="red">intItemIndexOrCount [als <a href="../DataType/Long.htm">Long</a>] strValue [als <a href="../DataType/String.htm">String</a>] </font>/)<br />
             )</code></td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>R&uml;ckgabewert</th>
             <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgel&ouml;st durch</th>
             <td bgcolor="#CCFF99">
       <a href="../Control/ComboBox.htm">Kombinationsfeld</a>,
       <a href="../Control/ImageComboBox.htm">Kombinationsfeld mit Bildern</a>,
@@ -49,7 +49,7 @@
       <a href="../Control/OptionList.htm">Optionsliste</a></td>
           </tr>
         </table>
-		<p>Dieses Ereignis wird ausgel&ouml;st, nachdem der Anwender die aktuelle Auswahl in diesem Steuerelement ge&auml;ndert hat. intItemIndex ist den Index des gew&auml;hlten Eintrags; strValue ist der bezeichnende Text des Eintrags.</p>
+		<p>Dieses Ereignis wird ausgel&ouml;st, nachdem der Anwender die aktuelle Auswahl in diesem Steuerelement ge&auml;ndert hat. In einem Listenfeld, in der nur ein Eintrag gew&auml;hlt werden kann, gibt intItemIndexOrCount den Index und strValue die Bezeichnung des zuletzt markierten Eintrags zur&uuml;ck. In einem Listenfeld mit Mehrfachauswahl beinhaltet intItemIndexOrCount die Anzahl der gew&auml;hlten Eintr&auml;ge. strValue ist dann ein Leerstring. Bitte beachten Sie, dass OnSelChanged lediglich ausgel&ouml;st wird, wenn die Auswahl durch die Nutzereingabe erfolgte, nicht jedoch bei &Auml;nderungen der Auswahl durch das Programm selbst.</p>
 	</div>
 	<hr />
 	<div id="footer">
