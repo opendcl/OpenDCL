@@ -2,7 +2,7 @@
 #include "AcadBlockInsertDropTarget.h"
 #include "AutoDocLock.h"
 
-#if (_BRXTARGET <= 9)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 9)
 AcDbDatabase* AcApGetDatabase(CView *pView)
 {
 	return NULL;

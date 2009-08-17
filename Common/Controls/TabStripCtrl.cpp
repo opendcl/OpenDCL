@@ -275,8 +275,13 @@ void CTabStripCtrl::OnUsedAreaChanged()
 		TDclFormPtr pChildForm = pProject->FindDclTabChildForm( pOwnerForm->GetUniqueName(), idxTab - 1 );
 		if( !pChildForm )
 			continue;
-		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
+		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
+		if( !pDlgObject )
+			continue;
+		pDlgObject->GetControlWnd()->SetWindowPos( NULL, rcControlArea.left, rcControlArea.top, 0, 0,
+																							 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
 		bool bChanged = false;
+		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
 		if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
 		{
 			bChanged = true;
@@ -288,9 +293,6 @@ void CTabStripCtrl::OnUsedAreaChanged()
 			pFormProps->SetLongProperty( Prop::Height, lNewHeight );
 		}
 		if( !bChanged )
-			continue;
-		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
-		if( !pDlgObject )
 			continue;
 		pDlgObject->ApplyPosition();
 	}

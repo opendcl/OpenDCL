@@ -8,7 +8,7 @@
 #include "DialogControl.h"
 #include "InvokeMethod.h"
 
-#if (_BRXTARGET <= 9)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 9)
 BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget)
 {
 	return FALSE;
