@@ -15,6 +15,7 @@
 
 CArxControlAcadDropTarget::CArxControlAcadDropTarget( CDialogControl* pDlgControl )
 : mpDlgControl( pDlgControl )
+, mbDropExCalled( false )
 {
 }
 
@@ -56,6 +57,8 @@ DROPEFFECT CArxControlAcadDropTarget::OnDragOver( CWnd* pWnd, COleDataObject* pD
 BOOL CArxControlAcadDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject, 
 																				DROPEFFECT dropEffect, CPoint point )
 {
+	if( mbDropExCalled )
+		return FALSE;
 	CString sDropOnAcadWndPointEvent =
 		mpDlgControl->GetTemplate()->GetStringProperty( Prop::DragnDropToAutoCAD );
 	if( !sDropOnAcadWndPointEvent.IsEmpty() )
@@ -87,6 +90,7 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 														dwgPt,
 														nViewport,
 														mpDlgControl->IsAsyncEvents() );
+		mbDropExCalled = true;
 		return DROPEFFECT_COPY;
 	}
 	return DROPEFFECT_NONE; //returning DROPEFFECT_NONE will cause OnDrop to be called instead

@@ -257,9 +257,12 @@ void CPictureBox::Clear()
 		if( pParent )
 		{
 			CRect rcPicBox;
-			GetWindowRect( &rcPicBox );
+			GetClientRect( &rcPicBox );
+			ClientToScreen( &rcPicBox );
 			pParent->ScreenToClient( &rcPicBox );
+			SetRedraw( FALSE );
 			pParent->RedrawWindow( &rcPicBox, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ERASENOW | RDW_UPDATENOW | RDW_ALLCHILDREN );
+			SetRedraw( TRUE );
 		}
 	}
 }

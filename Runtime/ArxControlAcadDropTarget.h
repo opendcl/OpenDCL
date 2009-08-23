@@ -12,6 +12,7 @@ class CDialogControl;
 class CArxControlAcadDropTarget : public COleDropTarget
 {
 	CDialogControl* mpDlgControl;
+	bool mbDropExCalled;
 
 public:
 	CArxControlAcadDropTarget( CDialogControl* pDlgControl );
