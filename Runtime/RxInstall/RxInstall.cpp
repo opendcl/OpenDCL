@@ -267,13 +267,24 @@ public:
 		}
 	operator LPCTSTR() const { return mpszString; }
 	long ToLong() const { return (mpszString? _tstol( mpszString ) : 0); }
-	bool operator==( LPCTSTR pszCompare )
+	bool operator==( LPCTSTR pszCompare ) const
 		{
 			if( !pszCompare || !*pszCompare )
 				return (!mpszString || !*mpszString);
 			if( !mpszString )
 				return false;
 			return (lstrcmp( mpszString, pszCompare ) == 0);
+		}
+	TCHAR operator[]( int idxCh ) const
+		{
+			if( idxCh < 0 )
+				return NULL;
+			if( !mpszString )
+				return NULL;
+			int cchThis = lstrlen( mpszString );
+			if( idxCh >= cchThis )
+				return NULL;
+			return mpszString[idxCh];
 		}
 };
 
@@ -551,8 +562,23 @@ public:
 
 void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true, bool bX64 = false )
 {
-	RegKey rkRoot( pszTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
-	RegKey rkDemandLoad( String( pszTargetKey ) + _T("\\Applications\\") + GetAppLongName(),
+	String sTargetKey = pszTargetKey;
+	if( Target.platform() == TargetModule::kBricscad )
+	{
+		RegKey rkRoot( pszTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+		LPCTSTR pszLanguage = rkRoot.GetString( _T("Language") );
+		if( !pszLanguage || !*pszLanguage )
+			return;
+		int idx = sTargetKey.Length();
+		while( idx )
+		{
+			TCHAR ch = sTargetKey[--idx];
+			if( ch == _T('\\') || ch == _T('/') || ch == _T(':') )
+				break;
+		}
+		sTargetKey = sTargetKey.Left( idx + 1 ) + pszLanguage;
+	}
+	RegKey rkDemandLoad( sTargetKey + _T("\\Applications\\") + GetAppLongName(),
 											 Target.GetTargetRootRegKey( bWantHKLM ),
 											 true,
 											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
@@ -610,7 +636,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	int nToken = sCustomData.Find( _T('>') );
 	if( nToken >= 0 )
 	{
-		bWantHKLM = (lstrcmpi( &sCustomData[nToken + 1], _T("1") ) == 0);
+		bWantHKLM = (sCustomData[nToken + 1] == _T('1'));
 		sCustomData = sCustomData.Left( nToken );
 	}
 	sInstallDir = sCustomData;
@@ -626,7 +652,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM );
-	//EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
 	if( IsWow64() )
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM, true );
@@ -690,8 +716,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER );
-	//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
-	//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
