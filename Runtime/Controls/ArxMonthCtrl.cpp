@@ -40,11 +40,7 @@ END_MESSAGE_MAP()
 
 void CArxMonthCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove( nFlags, point );
 }
 
@@ -62,11 +58,9 @@ void CArxMonthCtrl::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult)
 		rbStartDate.resval.rpoint[X] = dt.GetYear();
 		rbStartDate.resval.rpoint[Y] = dt.GetMonth();
 		rbStartDate.resval.rpoint[Z] = dt.GetDay();
-		resbuf rbEventName = { &rbStartDate, RTSTR };
-		rbEventName.resval.rstring = sGetDayStateEvent.LockBuffer();
 		resbuf* prbResult = NULL;
-		int nResult = acedInvokeNoDocStateSafe( &rbEventName, &prbResult );
-		if( nResult == RTNORM && prbResult )
+		GetArxServices()->HandleEvent( sGetDayStateEvent, prbResult, &rbStartDate );
+		if( prbResult )
 		{
 			switch( prbResult->restype )
 			{
@@ -129,12 +123,12 @@ void CArxMonthCtrl::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CArxMonthCtrl::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSelChanged ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSelChanged );
 	*pResult = 0;
 }
 
 void CArxMonthCtrl::OnSelect(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSelect ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSelect );
 	*pResult = 0;
 }

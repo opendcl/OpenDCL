@@ -35,10 +35,6 @@ END_MESSAGE_MAP()
 
 void CArxHyperlinkCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove( nFlags, point );
 }

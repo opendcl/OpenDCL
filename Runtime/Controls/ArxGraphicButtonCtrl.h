@@ -6,7 +6,7 @@
 
 #include "GraphicButtonCtrl.h"
 #include "ArxControlServices.h"
-#include "OleOdcDropTarget.h"
+#include "ArxDragDropService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 class CArxGraphicButtonCtrl : public CGraphicButtonCtrl
 {
 	CArxControlServices	mArxServices;
-	COleOdcDropTarget mDropTarget;	
+	CArxDragDropService mDragDropService;
 
 public:
 	CArxGraphicButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -24,11 +24,8 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
-
-public:
-	void SetDragnDrop(BOOL bRegister);
 
 protected:
 	afx_msg void OnClicked();	

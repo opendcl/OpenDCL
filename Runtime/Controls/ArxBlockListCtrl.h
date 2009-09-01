@@ -72,6 +72,9 @@ public:
 	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 
+// ListBoxCtrl Interface
+	virtual LPCTSTR GetDragTextPrefix() const { return GetLoadedDwg(); }
+
 // Implementation
 public:
 	bool LoadDwg( LPCTSTR pszFilename );

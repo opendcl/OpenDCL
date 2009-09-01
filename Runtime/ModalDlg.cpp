@@ -94,27 +94,24 @@ void CModalDlg::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if (IsWindowVisible())
 	{	
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty(Prop::FormEventSize), 
-			mpTemplate->GetLongProperty(Prop::Width),
-			mpTemplate->GetLongProperty(Prop::Height),
-			false);	
+		GetArxServices()->HandleEvent( Prop::FormEventSize, false,
+																	 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																						mpTemplate->GetLongProperty( Prop::Height ) ) );
 	}	
 }
 
 void CModalDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	__super::OnShowWindow(bShow, nStatus);
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), false);	
+	GetArxServices()->HandleEvent( Prop::FormEventShow, false );	
 }
 
 void CModalDlg::OnOK()
 {
-	if (IsClosing() ||
-			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), false))	
+	if( IsClosing() || IsCloseAllowed( false ) )
 	{
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnOk), false);
+    if( GetArxServices()->HandleEvent( Prop::FormEventOnOk, false ) )
+			return;
 		__super::OnOK();
 		CloseDialog(IDOK);
 	}
@@ -122,10 +119,10 @@ void CModalDlg::OnOK()
 
 void CModalDlg::OnCancel()
 {
-	if (IsClosing() ||
-			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), true))	
+	if( IsClosing() || IsCloseAllowed( true ) )
 	{
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnCancel), false);
+    if( GetArxServices()->HandleEvent( Prop::FormEventOnCancel, false ) )
+			return;
 		__super::OnCancel();
 		CloseDialog(IDCANCEL);
 	}

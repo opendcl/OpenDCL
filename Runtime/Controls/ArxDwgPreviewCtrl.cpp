@@ -233,12 +233,7 @@ void CArxDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	CWnd::OnMouseMove(nFlags, point);
 }
 
@@ -264,12 +259,12 @@ void CArxDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy)
 
 void CArxDwgPreviewCtrl::OnClicked() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventClicked );
 }
 
 void CArxDwgPreviewCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );	
 }	
 
 void CArxDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -277,7 +272,7 @@ void CArxDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if( nChar != _T('\r') && nChar != _T('\n') )
 		CButton::OnChar(nChar, nRepCnt, nFlags);
 	else
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
+		GetArxServices()->HandleEvent( Prop::EventClicked );
 }
 
 void CArxDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd) 
@@ -294,7 +289,7 @@ void CArxDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	pdc->DrawFocusRect(mrcFocus);
 	ReleaseDC(pdc);
 	
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd) 
@@ -305,7 +300,7 @@ void CArxDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	pdc->DrawFocusRect(mrcFocus);
 	ReleaseDC(pdc);
 
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 

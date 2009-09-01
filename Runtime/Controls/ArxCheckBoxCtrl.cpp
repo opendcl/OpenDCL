@@ -46,12 +46,7 @@ END_MESSAGE_MAP()
 
 void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -80,7 +75,7 @@ void CArxCheckBoxCtrl::OnClicked()
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethodInt( sEvent, nValue, IsAsyncEvents());
+		GetArxServices()->HandleEvent( sEvent, args_N( nValue ) );
 }
 
 void CArxCheckBoxCtrl::OnDoubleclicked()
@@ -89,10 +84,9 @@ void CArxCheckBoxCtrl::OnDoubleclicked()
 	CString sDblClickEvent = mpTemplate->GetStringProperty( Prop::EventDblClicked );
 	if( sDblClickEvent.IsEmpty() )
 	{
-		//just treat it as a second single click unless there's a double-click event handler
-		sDblClickEvent = mpTemplate->GetStringProperty( Prop::EventClicked );
-		InvokeMethodInt( sDblClickEvent, GetCheck(), IsAsyncEvents());
+		//treat it as a second single click when there's no double-click event handler
+		GetArxServices()->HandleEvent( Prop::EventClicked, args_N( GetCheck() ) );
 	}
 	else
-		InvokeMethod( sDblClickEvent, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sDblClickEvent );
 }

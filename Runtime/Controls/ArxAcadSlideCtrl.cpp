@@ -19,6 +19,7 @@ CArxAcadSlideCtrl::CArxAcadSlideCtrl( CControlPane& Pane, TDclControlPtr pTempla
 																			UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, &Pane, this )
 , mArxServices( this )
+, mDragDropService( this )
 , mbTrackingMouse( false )
 {
 	m_bHasFocus = false;
@@ -113,7 +114,7 @@ void CArxAcadSlideCtrl::OnPaint()
 	}
 	PaintControl(&dc);
 	if (m_hbmMem == NULL)
-		InvokeMethodBoolean( mpTemplate->GetStringProperty( Prop::EventPaint ), (GetFocus() == this), IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventPaint, args_B( (GetFocus() == this) ) );
 }
 
 bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
@@ -265,60 +266,25 @@ void CArxAcadSlideCtrl::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHe
 
 void CArxAcadSlideCtrl::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
-	 InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethod(
-		mpTemplate->GetStringProperty(Prop::EventRightDblClick),
-		IsAsyncEvents());
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventRightDblClick );
 	CWnd::OnRButtonDblClk(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethod(
-		mpTemplate->GetStringProperty(Prop::EventRightClick),
-		IsAsyncEvents());	
-	
-
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventRMouse),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventRightClick );	
+	GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) );
 	CWnd::OnRButtonUp(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	if( nChar != _T('\n') && nChar != _T('\r') )
-	{
 		__super::OnChar(nChar, nRepCnt, nFlags);
-	}
 	else
-	{
-		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
-	}
-	
+		GetArxServices()->HandleEvent( Prop::EventClicked );
 }
 
 void CArxAcadSlideCtrl::OnClicked() 
@@ -337,15 +303,12 @@ void CArxAcadSlideCtrl::OnClicked()
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethod( sEvent, IsAsyncEvents() );	
+		GetArxServices()->HandleEvent( sEvent );	
 }
 
 void CArxAcadSlideCtrl::OnDoubleclicked() 
 {
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
-	
-	
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );	
 }
 
 void CArxAcadSlideCtrl::OnDestroy() 
@@ -378,10 +341,7 @@ void CArxAcadSlideCtrl::OnSetFocus(CWnd* pOldWnd)
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
 	ReleaseDC(pdc);
-	
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
-	
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );	
 }
 
 void CArxAcadSlideCtrl::OnKillFocus(CWnd* pNewWnd) 
@@ -393,8 +353,7 @@ void CArxAcadSlideCtrl::OnKillFocus(CWnd* pNewWnd)
 	pdc->DrawFocusRect(m_rcFocus);
 	ReleaseDC(pdc);
 	m_bHasFocus = false;
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxAcadSlideCtrl::SetHighlight(const COLORREF& rgb)
@@ -513,132 +472,46 @@ void CArxAcadSlideCtrl::OnSize(UINT nType, int cx, int cy)
 		
 }
 
-void CArxAcadSlideCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if (bRegister == TRUE)
-	{
-		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpTemplate;
-		m_DropTarget.m_pParent = this;
-    }
-	else
-		m_DropTarget.Revoke();
-}
-
-
 
 void CArxAcadSlideCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
 	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
 	{
-		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
-		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
+		BeginDragDrop( point );
+		GetArxServices()->HandleEvent( Prop::EventClicked );	
 		return;
 	}
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventLMouse),
-		0,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonDown(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventLMouse),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());	
-
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonUp(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMMouse),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-			
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMMouse),
-		0,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-		
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMMouse),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
@@ -648,101 +521,50 @@ void CArxAcadSlideCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 	if( !mbTrackingMouse )
 	{
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_hWnd, 0 };
 		if( _TrackMouseEvent( &tm ) )
 			mbTrackingMouse = true;
 	}
-
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
 BOOL CArxAcadSlideCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseWheel),
-		nFlags,
-		zDelta,
-		pt.x,
-		pt.y,
-		IsAsyncEvents());
-	
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseWheel, args_NNNN( nFlags, zDelta, pt.x, pt.y ) );
 	return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CArxAcadSlideCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventRMouse),
-		0,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
-
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
-	
+	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxAcadSlideCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
-	
-	
+	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-
 LRESULT CArxAcadSlideCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 	mbTrackingMouse = false;        
 	return FALSE;
 }
 
 void CArxAcadSlideCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventLMouse),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonDblClk(nFlags, point);
 }
 

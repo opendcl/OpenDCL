@@ -473,7 +473,7 @@ bool CArxWorkspace::ExportProject( TArxProjectPtr pProject, CFile& dest )
 {
 	try
 	{
-		CArchiveEx ar( &dest, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
+		CArchiveEx ar( &dest, CArchive::store, NULL, _T("ObjectDCL"), TRUE);
 		pProject->Serialize( ar );
 	}
 	catch( ... )

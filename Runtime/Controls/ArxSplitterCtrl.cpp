@@ -36,22 +36,6 @@ bool CArxSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxSplitterCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	//switch( pProp->GetID() )
-	//{
-	//case Prop::DragnDropAllowDrop:
-	//	{
-	//		SetDragnDrop( pProp->GetBooleanValue() );
-	//		break;
-	//	}
-	//}
-	return !bFailed;
-}
-
 void CArxSplitterCtrl::SavePosition() const
 {
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpTemplate->GetKeyPath(); 
@@ -103,16 +87,13 @@ void CArxSplitterCtrl::OnMove(int x, int y)
 	__super::OnMove(x, y);
 	SavePosition();
 	CRect rcWnd = GetEffectiveWindowRect();
-	InvokeMethodIntIntIntInt( mpTemplate->GetStringProperty( Prop::EventSplitterMoved ),
-														rcWnd.left,
-														rcWnd.top,
-														rcWnd.Width(),
-														rcWnd.Height(),
-														IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSplitterMoved,
+																 args_NNNN( rcWnd.left, rcWnd.top, rcWnd.Width(), rcWnd.Height() ) );
 }
 
 void CArxSplitterCtrl::OnNcLButtonDown(UINT nHitTest, CPoint point)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
+	if( GetArxServices()->HandleEvent( Prop::EventClicked ) )
+		return;
 	__super::OnNcLButtonDown( nHitTest, point );
 }

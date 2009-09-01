@@ -38,22 +38,35 @@ BOOL CAcadBlockInsertDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	HGLOBAL hData = pDataObject->GetGlobalData( CF_TEXT );
 	if( !hData )
 		return bHandled;
+	AcDbDatabase* pTempDb = NULL;
 	CString sBlockName( (char*)GlobalLock( hData ) );
 	GlobalUnlock( hData );
 	GlobalFree( hData );
 	UINT CF_DclBlockRecId = CAcadBlockInsertDropTarget::GetAcadBlockClipboardFormat();
 	hData = pDataObject->GetGlobalData( CF_DclBlockRecId );
-	if( !hData )
-		return bHandled;
-	AcDbObjectId idBlock = *(AcDbObjectId*)GlobalLock( hData );
-	GlobalUnlock( hData );
-	GlobalFree( hData );
-	AcDbDatabase* pSourceDb = idBlock.database();
-	if( !pSourceDb )
-		return bHandled;
-	AcDbDatabase* pTempDb;
-	if( Acad::eOk != pSourceDb->wblock( pTempDb, idBlock ) )
-		return bHandled;
+	if( hData )
+	{
+		AcDbObjectId idBlock = *(AcDbObjectId*)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+		AcDbDatabase* pSourceDb = idBlock.database();
+		if( !pSourceDb )
+			return bHandled;
+		CAutoDocWriteLock DocLock( pSourceDb );
+		if( Acad::eOk != pSourceDb->wblock( pTempDb, idBlock ) )
+			return bHandled;
+	}
+	else
+	{
+		pTempDb = new AcDbDatabase( false );
+		CAutoDocWriteLock DocLock( pTempDb );
+		if( Acad::eOk != pTempDb->readDwgFile( sBlockName ) )
+		{
+			delete pTempDb;
+			return bHandled;
+		}
+		pTempDb->closeInput( true );
+	}
 	CAutoDocWriteLock DocLock( pDb );
 	AcDbObjectId idNewBlock;
 	Acad::ErrorStatus es = pDb->insert( idNewBlock, sBlockName, pTempDb, false );
@@ -98,22 +111,35 @@ DROPEFFECT CAcadBlockInsertDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDat
 	HGLOBAL hData = pDataObject->GetGlobalData( CF_TEXT );
 	if( !hData )
 		return dwEffect;
+	AcDbDatabase* pTempDb = NULL;
 	CString sBlockName( (char*)GlobalLock( hData ) );
 	GlobalUnlock( hData );
 	GlobalFree( hData );
 	UINT CF_DclBlockRecId = CAcadBlockInsertDropTarget::GetAcadBlockClipboardFormat();
 	hData = pDataObject->GetGlobalData( CF_DclBlockRecId );
-	if( !hData )
-		return dwEffect;
-	AcDbObjectId idBlock = *(AcDbObjectId*)GlobalLock( hData );
-	GlobalUnlock( hData );
-	GlobalFree( hData );
-	AcDbDatabase* pSourceDb = idBlock.database();
-	if( !pSourceDb )
-		return dwEffect;
-	AcDbDatabase* pTempDb;
-	if( Acad::eOk != pSourceDb->wblock( pTempDb, idBlock ) )
-		return dwEffect;
+	if( hData )
+	{
+		AcDbObjectId idBlock = *(AcDbObjectId*)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+		AcDbDatabase* pSourceDb = idBlock.database();
+		if( !pSourceDb )
+			return dwEffect;
+		CAutoDocWriteLock DocLock( pSourceDb );
+		if( Acad::eOk != pSourceDb->wblock( pTempDb, idBlock ) )
+			return dwEffect;
+	}
+	else
+	{
+		pTempDb = new AcDbDatabase( false );
+		CAutoDocWriteLock DocLock( pTempDb );
+		if( Acad::eOk != pTempDb->readDwgFile( sBlockName ) )
+		{
+			delete pTempDb;
+			return dwEffect;
+		}
+		pTempDb->closeInput( true );
+	}
 	CAutoDocWriteLock DocLock( pDb );
 	AcDbObjectId idNewBlock;
 	Acad::ErrorStatus es = pDb->insert( idNewBlock, sBlockName, pTempDb, false );

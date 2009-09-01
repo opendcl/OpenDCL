@@ -104,23 +104,18 @@ void CArxPlotStyleNameComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
 	SetEditSel( 0 , -1 );	//combobox is gaining focus, highlight text in edit control
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxPlotStyleNameComboBoxCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	__super::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxPlotStyleNameComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntInt(
-			mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-			nFlags,
-			point.x,
-			point.y,
-			IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -129,15 +124,12 @@ void CArxPlotStyleNameComboBoxCtrl::OnSelchange()
 	int nCurSel = GetCurSel();
 	CString sText;
 	GetLBText( nCurSel, sText );
-	InvokeMethodIntString( mpTemplate->GetStringProperty( Prop::EventSelChanged ),
-												 nCurSel,
-												 sText,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nCurSel, sText ) );
 	mpTemplate->SetStringProperty( Prop::Text, sText );
 }
 
 void CArxPlotStyleNameComboBoxCtrl::OnDropdown()
 {
 	__super::OnDropDown();
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDropDown ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventDropDown );
 }

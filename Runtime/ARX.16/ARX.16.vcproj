@@ -312,10 +312,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\OleOdcDropTarget.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\OptionsTabPane.cpp"
 				>
 			</File>
@@ -425,6 +421,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\EventArgs.h"
+				>
+			</File>
+			<File
 				RelativePath="..\LinetypeDlg.h"
 				>
 			</File>
@@ -442,10 +442,6 @@
 			</File>
 			<File
 				RelativePath="..\ModelessDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="..\OleOdcDropTarget.h"
 				>
 			</File>
 			<File

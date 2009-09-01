@@ -39,11 +39,7 @@ END_MESSAGE_MAP()
 
 void CArxLabelCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove( nFlags, point );
 }
 
@@ -51,7 +47,7 @@ void CArxLabelCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown( nFlags, point );
 
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventClicked );
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
 		BeginDragDrop( point );
 }

@@ -44,18 +44,13 @@ void CArxSpinnerCtrl::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	__super::OnDeltapos( pNMHDR, pResult );
 	NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::EventChanged ),
-											mpTemplate->GetLongProperty( Prop::Value ),
-											pNMUpDown->iDelta,
-											IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventChanged,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Value ),
+																					pNMUpDown->iDelta ) );
 }
 
 void CArxSpinnerCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove( nFlags, point );
 }

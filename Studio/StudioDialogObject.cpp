@@ -169,10 +169,9 @@ DWORD CStudioDialogObject::GetWndStyle() const
 
 bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bIgnoreSizing = IgnoreSizing();
+	IgnoreSizing();
 	bool bSuccess = (CreateDlg( MAKEINTRESOURCE(nID), pParentWnd ) != FALSE);
 	SetControlManager( new CFormControlManager( this ) );
-	IgnoreSizing( bIgnoreSizing );
 
 	if( bSuccess )
 		SetWindowText( GetWndCaption() );

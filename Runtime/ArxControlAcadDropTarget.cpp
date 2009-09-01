@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxControlAcadDropTarget.h"
+#include "ArxControlServices.h"
 #include "DragDropService.h"
 #include "DialogControl.h"
 #include "DclFormObject.h"
@@ -61,15 +62,13 @@ BOOL CArxControlAcadDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 		return FALSE;
 	CString sDropOnAcadWndPointEvent =
 		mpDlgControl->GetTemplate()->GetStringProperty( Prop::DragnDropToAutoCAD );
-	if( !sDropOnAcadWndPointEvent.IsEmpty() )
+	const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
+	if( pArxServices && !sDropOnAcadWndPointEvent.IsEmpty() )
 	{
 		acedDwgPoint dwgPt;
 		int nViewport = acedGetWinNum( point.x, point.y );
 		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
-		InvokeMethodPoint3DInt( sDropOnAcadWndPointEvent,
-														dwgPt,
-														nViewport,
-														mpDlgControl->IsAsyncEvents() );
+		pArxServices->HandleEvent( sDropOnAcadWndPointEvent, args_P3N( dwgPt, nViewport ) );
 		return TRUE;
 	}
 	return FALSE;
@@ -81,15 +80,13 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 {
 	CString sDropOnAcadWndPointEvent =
 		mpDlgControl->GetTemplate()->GetStringProperty( Prop::DragnDropToAutoCAD );
-	if( !sDropOnAcadWndPointEvent.IsEmpty() )
+	const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
+	if( pArxServices && !sDropOnAcadWndPointEvent.IsEmpty() )
 	{
 		acedDwgPoint dwgPt;
 		int nViewport = acedGetWinNum( point.x, point.y );
 		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
-		InvokeMethodPoint3DInt( sDropOnAcadWndPointEvent,
-														dwgPt,
-														nViewport,
-														mpDlgControl->IsAsyncEvents() );
+		pArxServices->HandleEvent( sDropOnAcadWndPointEvent, args_P3N( dwgPt, nViewport ) );
 		mbDropExCalled = true;
 		return DROPEFFECT_COPY;
 	}

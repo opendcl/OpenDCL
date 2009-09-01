@@ -247,12 +247,12 @@ bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
 
 void CDockingDialog::OnMouseEnter()
 {
-  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
+  GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 };
 
 void CDockingDialog::OnMouseLeave()
 {
-  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
+  GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 };
 
 
@@ -297,11 +297,10 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
 
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );	
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
-											mpTemplate->GetLongProperty( Prop::Width ),
-											mpTemplate->GetLongProperty( Prop::Height ),
-											IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
+	GetArxServices()->HandleEvent( Prop::FormEventSize,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 
 	return 1;
 }
@@ -314,21 +313,20 @@ void CDockingDialog::OnSize(UINT nType, int cx, int cy)
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
 	mpControlPane->RecalcLayout();
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
-											mpTemplate->GetLongProperty( Prop::Width ), 
-											mpTemplate->GetLongProperty( Prop::Height ),
-											IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::FormEventSize,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 }
 
 BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventHelp );
 	return TRUE;
 }
 
 void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::FormEventShow );	
 
 	mbHiding = !IsClosing() && !bShow;
 	__super::OnShowWindow(bShow, nStatus);
@@ -355,7 +353,7 @@ bool CDockingDialog::OnClosing()
 		return true;
 	SetClosing();
 	CRect rcThis = GetEffectiveWindowRect();
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventClose ), rcThis.left, rcThis.top, IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
 	if( !mbHiding && !IsFloating() )
 		mHostControlBar.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

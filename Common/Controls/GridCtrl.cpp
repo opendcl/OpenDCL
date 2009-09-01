@@ -1413,12 +1413,17 @@ void CGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CStr
 	else if( !sText.IsEmpty() )					
 	{
 		int idxComma = sText.Find( _T(",") );
-		CString sRed = sText.Left( idxComma );
-		CString sGreen = sText.Mid( idxComma + 1 );
-		idxComma = sGreen.Find( _T(",") );
-		CString sBlue = sGreen.Mid( idxComma + 1 );
-		sGreen = sGreen.Left( idxComma );
-		crFill = RGB(_tstol( sRed ), _tstol( sGreen ), _tstol( sBlue ) );	
+		if( idxComma < 0 )
+			crFill = GetRGBColor( _tstol( sText ) );
+		else
+		{
+			CString sRed = sText.Left( idxComma );
+			CString sGreen = sText.Mid( idxComma + 1 );
+			idxComma = sGreen.Find( _T(",") );
+			CString sBlue = sGreen.Mid( idxComma + 1 );
+			sGreen = sGreen.Left( idxComma );
+			crFill = RGB(_tstol( sRed ), _tstol( sGreen ), _tstol( sBlue ) );
+		}
 	}
 	cdc.Rectangle( &rcIcon );
 	CRect rcFill = rcIcon;

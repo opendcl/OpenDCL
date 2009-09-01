@@ -55,21 +55,14 @@ bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 			CString sControl;
 			if( pSourceDclControl->GetType() != _CtlForm )
 				sControl = pSourceDclControl->GetKeyName();
-			InvokeMethod3StringsPoint( sDropControlEvent,
-																 sProject,
-																 sForm,
-																 sControl,
-																 point,
-																 IsAsyncEvents() );
+			GetArxServices()->HandleEvent( sDropControlEvent, args_SSSP( sProject, sForm, sControl, point ) );
 			return TRUE;
 		}
 
 		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromOther );
 		if( !sDropAcadWndPointEvent.IsEmpty() )
 		{
-			InvokeMethodPoint( sDropAcadWndPointEvent,
-												 point,
-												 IsAsyncEvents() );
+			GetArxServices()->HandleEvent( sDropAcadWndPointEvent, args_P( point ) );
 			return TRUE;
 		}
 	}
@@ -94,11 +87,7 @@ END_MESSAGE_MAP()
 
 void CArxListBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -127,31 +116,31 @@ void CArxListBoxCtrl::OnSelchange()
 	else
 	{	
 		if (nSelCount > -1)
-			InvokeMethodIntString(sEvent, nSelCount, CString(), IsAsyncEvents());
+			GetArxServices()->HandleEvent( sEvent, args_NS( nSelCount, _T("") ) );
 		else if (nSelCount == -1)
 		{
 			CString sSelText;
 			int nCurSel = GetCurSel();
 			if (nCurSel > -1)
 				GetText( nCurSel, sSelText );
-			InvokeMethodIntString(sEvent, nCurSel, sSelText, IsAsyncEvents());
+			GetArxServices()->HandleEvent( sEvent, args_NS( nCurSel, sSelText ) );
 		}
 	}	   
 }
 
 void CArxListBoxCtrl::OnDblclk() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );
 }
 
 void CArxListBoxCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxListBoxCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );	
 }
 
 BOOL CArxListBoxCtrl::PreTranslateMessage(MSG* pMsg) 
@@ -161,7 +150,7 @@ BOOL CArxListBoxCtrl::PreTranslateMessage(MSG* pMsg)
 		CString sEvent = mpTemplate->GetStringProperty(Prop::EventDblClicked);
 		if( !sEvent.IsEmpty() )
 		{
-			InvokeMethod( sEvent, IsAsyncEvents() );
+			GetArxServices()->HandleEvent( sEvent );
 			return TRUE;
 		}
 	}
@@ -183,7 +172,7 @@ void CArxListBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 			__super::SetCurSel( i );
 			break;
 		}
-		InvokeMethod( sEventName, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sEventName );
 	}
 	__super::OnRButtonUp( nFlags, point );
 }

@@ -25,5 +25,5 @@ CDelayedInvoke::CDelayedInvoke( LPCTSTR pszCallbackName, UINT cMsDelay )
 CDelayedInvoke::~CDelayedInvoke()
 {
 	AfxGetMainWnd()->KillTimer( mnTimerId );
-	InvokeMethod( msCallback, true );
+	InvokeEventHandler( msCallback, args_null(), true );
 }

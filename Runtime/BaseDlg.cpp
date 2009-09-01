@@ -150,26 +150,24 @@ BOOL CBaseDlg::OnInitDialog()
 	GetControlPane()->CreateControls( nID );
 	GetControlPane()->RecalcLayout();
 
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ),
-											mpTemplate->GetLongProperty( Prop::Width ),
-											mpTemplate->GetLongProperty( Prop::Height ),
-											false );	
+	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
+	GetArxServices()->HandleEvent( Prop::FormEventSize, false,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), false);
+	GetArxServices()->HandleEvent( Prop::EventHelp, false );
 	return TRUE;
 }
 
 void CBaseDlg::OnClose() 
 {
 	bool bCancelling = (this->m_nModalResult == IDCANCEL || this->m_nModalResult == -1);
-	if (IsClosing() ||
-			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), bCancelling))
+	if( IsClosing() || IsCloseAllowed( bCancelling ) )
 	{
 		SetClosing();
 		__super::OnClose();
@@ -185,7 +183,7 @@ void CBaseDlg::OnDestroy()
 	SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	InvokeMethodIntInt(mpTemplate->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
+	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
 	DestroyIcon( SetIcon(NULL, FALSE) );
 	GetControlPane()->CleanUpControls();	
 	__super::OnDestroy();

@@ -873,6 +873,7 @@ CControlBrowser::~CControlBrowser()
 
 void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 {
+	bool bClickedLink = !mbEnableNavigate;
 	mbEnableNavigate = false;
 	__super::OnDocumentComplete( lpszURL );
 
@@ -885,7 +886,7 @@ void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 		sProjectKey += _T("\"");
 		ReplaceText( _T("<PROJECT>"), sProjectKey );
 	}
-	mBrowser.OnDocumentLoaded();
+	mBrowser.OnDocumentLoaded( bClickedLink );
 }
 
 void CControlBrowser::NoNavigateBrowser::OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel)
@@ -957,8 +958,10 @@ void CControlBrowser::SetDescription( LPCTSTR pszDescription, const std::map< CS
 		mDescription.LoadHtmlCode( pszDescription );
 }
 
-void CControlBrowser::OnDocumentLoaded()
+void CControlBrowser::OnDocumentLoaded( bool bClickedLink )
 {
+	if( bClickedLink )
+		mObjectTree.SelectItem( NULL );
 	for( std::map< CString, CString >::const_iterator iter = mParams.begin();
 			 iter != mParams.end();
 			 ++iter )

@@ -43,7 +43,7 @@ void CArxScrollBarCtrl::OnScroll(UINT nSBCode, UINT nPos)
 	}
 	int nNewPos = mpTemplate->GetLongProperty( Prop::Value );
 	if( bDoneScrolling )
-		InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScrolled ), nNewPos, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventScrolled, args_N( nNewPos ) );
 	else
-		InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScroll ), nNewPos, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventScroll, args_N( nNewPos ) );
 }

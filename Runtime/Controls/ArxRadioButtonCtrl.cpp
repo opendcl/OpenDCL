@@ -46,12 +46,7 @@ END_MESSAGE_MAP()
 
 void CArxRadioButtonCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -80,10 +75,10 @@ void CArxRadioButtonCtrl::OnClicked()
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethodInt( sEvent, nValue, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sEvent, args_N( nValue ) );
 }
 
 void CArxRadioButtonCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );
 }

@@ -25,6 +25,7 @@ public:
 // Overrides
 public:
 	virtual void SetModifiedFlag(BOOL bModified = TRUE);
+	virtual BOOL SaveModified(); // return TRUE if ok to continue
 	virtual BOOL OnNewDocument();
 	virtual void OnCloseDocument();
 	afx_msg BOOL OnOpenDocument(LPCTSTR lpszPathName);

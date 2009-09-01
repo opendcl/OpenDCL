@@ -6,7 +6,7 @@
 #include "ArxControlDropTarget.h"
 #include "ArxControlAcadDropTarget.h"
 #include "DialogControl.h"
-#include "InvokeMethod.h"
+#include "ArxControlServices.h"
 
 #if defined(_BRXTARGET) && (_BRXTARGET <= 9)
 BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget)
@@ -100,12 +100,9 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 	DWORD dwSupportedDropEffects = mpDlgControl->OnBeginDrag( point, SourceData );
 	if( dwSupportedDropEffects != DROPEFFECT_NONE )
 	{
-		CString sDragBeginEvent = pDclControl->GetStringProperty( Prop::DragnDropBegin );
-		if( !sDragBeginEvent.IsEmpty() )
-		{
-			InvokeMethod( sDragBeginEvent, mpDlgControl->IsAsyncEvents() );
-			dwSupportedDropEffects &= ~DROPEFFECT_MOVE;
-		}
+		const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
+		if( pArxServices )
+			pArxServices->HandleEvent( Prop::DragnDropBegin );
 		CPoint ptScreen( point );
 		mpDlgControl->GetControlWnd()->ClientToScreen( &ptScreen );
 		CSize sizDragRect( GetSystemMetrics( SM_CXDOUBLECLK ), GetSystemMetrics( SM_CYDOUBLECLK ) );

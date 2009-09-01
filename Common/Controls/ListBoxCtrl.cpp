@@ -172,6 +172,7 @@ DROPEFFECT CListBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sourc
 {
 	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
 	CString sDragText;
+	CString sDragTextPrefix = GetDragTextPrefix();
 	if( IsMultiSelect() )
 	{
 		int ctSel = GetSelCount();
@@ -185,6 +186,8 @@ DROPEFFECT CListBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sourc
 			GetText( rnSel[idx], sText );
 			if( !sDragText.IsEmpty() )
 				sDragText += _T('\n');
+			if( !sDragTextPrefix.IsEmpty() )
+				sText = sDragTextPrefix + sText;
 			sDragText += sText;
 		}
 		delete[] rnSel;
@@ -195,6 +198,8 @@ DROPEFFECT CListBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sourc
 		if( nCurSel < 0 )
 			return dwEffect;
 		GetText( nCurSel, sDragText );
+		if( !sDragTextPrefix.IsEmpty() )
+			sDragText = sDragTextPrefix + sDragText;
 	}
 	CStringA sTextA( sDragText );
 	SIZE_T cchText = sTextA.GetLength() + 1;

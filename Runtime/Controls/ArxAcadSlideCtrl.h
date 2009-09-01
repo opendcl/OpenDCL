@@ -5,9 +5,9 @@
 
 #include "DialogControl.h"
 #include "CxAcadSlide.h"
-#include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
 #include "ArxControlServices.h"
+#include "ArxDragDropService.h"
 
 class CControlPane;
 
@@ -18,6 +18,7 @@ class CControlPane;
 class CArxAcadSlideCtrl : public CButton, public CDialogControl
 {
 	CArxControlServices	mArxServices;
+	CArxDragDropService mDragDropService;
 	CxAcadSlide mSlideCtrl;
 	bool mbTrackingMouse;
 
@@ -27,7 +28,6 @@ public:
 	COLORREF			m_HighlightColor;
 	HBITMAP				m_hbmMem;
 	bool				m_bHasFocus;
-	COleOdcDropTarget m_DropTarget;
 
 // Construction
 public:
@@ -37,6 +37,7 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
@@ -53,7 +54,6 @@ public:
 	bool SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Clear();
 	void CopyDC();
-	void SetDragnDrop(BOOL bRegister);
 private:
 	void PaintControl(CDC *pdc);
 

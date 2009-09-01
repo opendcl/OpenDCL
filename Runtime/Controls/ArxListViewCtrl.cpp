@@ -61,93 +61,33 @@ END_MESSAGE_MAP()
 
 void CArxListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonDown(nFlags, point);
-/*
-	bool bDrag = mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin);
-	if (!bDrag) //dragging not allowed
-		return;
-
-	// a -1 will be returned if not found
-	if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
-		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
-	else
-	{
-		CStringArray saBlockNames;
-		saBlockNames.SetSize(1,1);
-		POSITION pos = GetFirstSelectedItemPosition();
-		if (pos)
-		{
-			while (pos)
-				saBlockNames.Add(GetItemText(GetNextSelectedItem(pos), 0));
-			//!CHANGED! 10-5-04 SRM
-			//didnt allow user to drag and drop blocks from external dwgs
-			//if (m_pLoadedDwg == NULL)
-			BeginDragnDropToInsertBlocks(mpTemplate, point, IsAsyncEvents(), saBlockNames);
-		}
-	}
-*/
 }
 
 void CArxListViewCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	__super::OnLButtonUp(nFlags, point);
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 }
 
 void CArxListViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonDblClk(nFlags, point);
 	if( GetCapture() )
-	{
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventDblClicked ),  
-			-1,
-			-1,
-			IsAsyncEvents() );			
-	}
+		GetArxServices()->HandleEvent( Prop::EventDblClicked, args_NN( -1, -1 ) );
 }
 
 void CArxListViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxListViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDblClk(nFlags, point);
 }
 
@@ -166,13 +106,7 @@ void CArxListViewCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 	}
 	if( nRow >= 0 && nRow < GetItemCount() )
-	{
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventClicked ),  
-			nRow,
-			nCol,
-			IsAsyncEvents() );			
-	}
+		GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( nRow, nCol ) );
 	*pResult = 0;
 }
 
@@ -191,19 +125,13 @@ void CArxListViewCtrl::OnDblClick(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 	}
 	if( nRow >= 0 && nRow < GetItemCount() )
-	{
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventDblClicked ),  
-			nRow,
-			nCol,
-			IsAsyncEvents() );			
-	}
+		GetArxServices()->HandleEvent( Prop::EventDblClicked, args_NN( nRow, nCol ) );
 	*pResult = 0;
 }
 
 void CArxListViewCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 	*pResult = 0;
 }
 
@@ -222,13 +150,7 @@ void CArxListViewCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 	}
 	if( nRow >= 0 && nRow < GetItemCount() )
-	{
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventRightClick ),  
-			nRow,
-			nCol,
-			IsAsyncEvents() );			
-	}
+		GetArxServices()->HandleEvent( Prop::EventRightClick, args_NN( nRow, nCol ) );
 	*pResult = 0;
 }
 
@@ -247,25 +169,19 @@ void CArxListViewCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 	}
 	if( nRow >= 0 && nRow < GetItemCount() )
-	{
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventRightDblClick ),  
-			nRow,
-			nCol,
-			IsAsyncEvents() );			
-	}
+		GetArxServices()->HandleEvent( Prop::EventRightDblClick, args_NN( nRow, nCol ) );
 	*pResult = 0;
 }
 
 void CArxListViewCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventReturnPressed), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventReturnPressed );
 	*pResult = 0;
 }
 
 void CArxListViewCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 	*pResult = 0;
 }
 
@@ -276,11 +192,8 @@ void CArxListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if( lvItem.iItem >= 0 )
 	{
-		InvokeMethodStringInt(
-			mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
-			lvItem.pszText? lvItem.pszText : GetItemText( lvItem.iItem, 0 ),
-			lvItem.iItem,
-			IsAsyncEvents() );
+		CString sLabel = lvItem.pszText? lvItem.pszText : GetItemText( lvItem.iItem, 0 );
+		GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_SN( sLabel, lvItem.iItem ) );
 	}
 	*pResult = TRUE;
 }
@@ -288,10 +201,7 @@ void CArxListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	InvokeMethodInt(		
-		mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
-		pDispInfo->item.iItem,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_N( pDispInfo->item.iItem ) );
 	__super::OnBeginlabeledit( pNMHDR, pResult );
 	*pResult = 0;
 }
@@ -299,80 +209,49 @@ void CArxListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxListViewCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventColumnClick, args_N( pNMListView->iSubItem ) );
 	*pResult = 0;
 }
 
 void CArxListViewCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxListViewCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
 void CArxListViewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxListViewCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
 void CArxListViewCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	TCHAR sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxListViewCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	TCHAR sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CArxListViewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 

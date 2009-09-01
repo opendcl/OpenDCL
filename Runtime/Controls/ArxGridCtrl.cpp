@@ -315,7 +315,9 @@ public:
 		{
 			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
 			int nCurLayerColor = GetCurrentLayerColor();
-			if( nCellImage < 0 || nCellImage > 256 )
+			if( nCellImage < 0 )
+				nCellImage = _tstol( pGridCtrl->GetCellText( nRow, nCol ) );
+			else if( nCellImage > 256 )
 				nCellImage = 256;
 			if( acedSetColorDialog( nCellImage, Adesk::kTrue, nCurLayerColor ) )
 				pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( nCellImage ), nCellImage );
@@ -332,9 +334,13 @@ public:
 		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		{
 			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
+		#if defined(_BRXTARGET)
+			resbuf rbT = { NULL, RTT };
+		#else
 			resbuf rbCurColor = { NULL, RTSHORT };
 			rbCurColor.resval.rint = GetCurrentLayerColor();
 			resbuf rbT = { &rbCurColor, RTT };
+		#endif
 			resbuf rbColor = { &rbT };
 			resbuf rbFuncName = { &rbColor, RTSTR };
 			rbFuncName.resval.rstring = _T("acad_truecolordlg");
@@ -431,21 +437,15 @@ void CArxGridCtrl::OnEditCurCell()
 	__super::OnEditCurCell();
 	if( !IsEditing() )
 		return;
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
-											mCurrentCell.row(),
-											mCurrentCell.col(),
-											IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnEndEditCurCell()
 {
 	__super::OnEndEditCurCell();
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
-											mCurrentCell.row(),
-											mCurrentCell.col(),
-											IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 	if( GetFocus() != this )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+		GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 
@@ -606,54 +606,27 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 	case Grid::DirectoryCell: return DoFileDlg( Grid::DirectoryCell );
 	case Grid::DwgFilesCell: return DoFileDlg( Grid::DwgFilesCell );
 	}
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventBtnClicked),
-											mCurrentCell.row(),
-											mCurrentCell.col(),
-											IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventBtnClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt( mpTemplate->GetStringProperty(Prop::EventMouseDown),
-														1,
-														nFlags,
-														point.x,
-														point.y,
-														IsAsyncEvents());
-
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonDown(nFlags, point);
-
-
 	if( !mCurrentCell )
 		return;
-
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventClicked),
-											mCurrentCell.row(),
-											mCurrentCell.col(),
-											IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
@@ -662,26 +635,20 @@ void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	if( !mCurrentCell )
 		return;
 
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventDblClicked),
-											mCurrentCell.row(),
-											mCurrentCell.col(),
-											IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventDblClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if (mpTemplate)		
-		InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), CString() + (char)nChar,  (int)nRepCnt,  (int)nFlags, IsAsyncEvents());
+	if( mpTemplate )		
+		GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if (mpTemplate)
-	{
-		TCHAR sChar = nChar;
-		InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), CString( (TCHAR)sChar ),  (int)nRepCnt, (int)nFlags, IsAsyncEvents());
-	}
+	if( mpTemplate )		
+		GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 
 	switch (nChar) 
 	{
@@ -716,66 +683,37 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		2,
-		MK_RBUTTON,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, MK_RBUTTON, point.x, point.y ) );
 	__super::OnContextMenu(pTarget, point);
 }
 
 void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
 void CArxGridCtrl::OnSelectionChanged() 
 {
-	InvokeMethodIntInt(mpTemplate->GetStringProperty(Prop::EventSelChanged), mCurrentCell.row(), mCurrentCell.col(), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -794,7 +732,7 @@ void CArxGridCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventColumnClick, args_N( pNMListView->iSubItem ) );
 	*pResult = 0;
 }
 
@@ -807,5 +745,5 @@ void CArxGridCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	CGridCtrl::OnKillFocus(pNewWnd);
 	if( !pNewWnd || pNewWnd->GetParent() != this )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+		GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }

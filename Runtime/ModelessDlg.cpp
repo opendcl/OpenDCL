@@ -133,18 +133,16 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if (IsWindowVisible())
 	{	
-		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty(Prop::FormEventSize), 
-			mpTemplate->GetLongProperty(Prop::Width),
-			mpTemplate->GetLongProperty(Prop::Height),
-			IsAsyncEvents());	
+		GetArxServices()->HandleEvent( Prop::FormEventSize,
+																	 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																						mpTemplate->GetLongProperty( Prop::Height ) ) );
 	}	
 }
 
 void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	__super::OnShowWindow(bShow, nStatus);
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::FormEventShow );	
 }
 
 void CModelessDlg::OnDestroy() 
@@ -155,10 +153,10 @@ void CModelessDlg::OnDestroy()
 
 void CModelessDlg::OnOK()
 {
-	if (IsClosing() ||
-			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), false))	
+	if( IsClosing() || IsCloseAllowed( false ) )
 	{
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnOk), IsAsyncEvents());
+    if( GetArxServices()->HandleEvent( Prop::FormEventOnOk ) )
+			return;
 		__super::OnOK();
 		CloseDialog(IDOK);
 	}
@@ -166,10 +164,10 @@ void CModelessDlg::OnOK()
 
 void CModelessDlg::OnCancel()
 {
-	if (IsClosing() ||
-			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), true))	
+	if( IsClosing() || IsCloseAllowed( true ) )
 	{
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnCancel), IsAsyncEvents());
+    if( GetArxServices()->HandleEvent( Prop::FormEventOnCancel ) )
+			return;
 		__super::OnCancel();
 		CloseDialog(IDCANCEL);
 	}
@@ -247,7 +245,7 @@ LRESULT CModelessDlg::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 	}
 	if( mbMouseLeft )
 	{
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 		mbMouseLeft = false;
 	}
 	return 0;
@@ -274,7 +272,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	}
 	mbMouseLeft = (GetCapture() != this);
 	if( mbMouseLeft )
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 	return 0;
 }
 

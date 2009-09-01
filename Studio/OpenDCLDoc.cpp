@@ -51,9 +51,15 @@ void COpenDCLDoc::SetModifiedFlag(BOOL bModified /*= TRUE*/)
 	pStudioFrame->DelayUpdateFrameTitle();
 }
 
+BOOL COpenDCLDoc::SaveModified()
+{
+	theStudioWorkspace.OnFlushUndoGroup();
+	return __super::SaveModified();
+}
 
 BOOL COpenDCLDoc::OnNewDocument()
 {
+	theStudioWorkspace.OnFlushUndoGroup();
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
@@ -105,7 +111,7 @@ BOOL COpenDCLDoc::OnOpenDocument( LPCTSTR lpszPathName )
 
 BOOL COpenDCLDoc::OnSaveDocument( LPCTSTR lpszPathName ) 
 {
-  //Get and open text file with basic information
+	theStudioWorkspace.OnFlushUndoGroup();
 	CString sFileName = lpszPathName;
 	if( sFileName.IsEmpty() )
 	{
@@ -126,7 +132,7 @@ BOOL COpenDCLDoc::OnSaveDocument( LPCTSTR lpszPathName )
 		return FALSE;
 	}
 	SetTitle( mpProject->GetKeyName() );
-	theStudioWorkspace.ActivateProject( mpProject, this ); //to update the main fram title
+	theStudioWorkspace.ActivateProject( mpProject, this ); //to update the main frame title
 	CUndoManager* pUndoManager = mpProject->GetUndoManager();
 	if( pUndoManager )
 		pUndoManager->SaveProject();

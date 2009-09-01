@@ -4,10 +4,12 @@
 #pragma once
 
 #include "ListBoxCtrl.h"
-#include "OleOdcDropTarget.h"
 #include "ArxControlServices.h"
+#include "ArxDragDropService.h"
+#include "AcadBlockInsertDropTarget.h"
 
 class CArxFolderComboCtrl;
+
 
 class ThumbnailFile : public CObject
 {
@@ -16,16 +18,24 @@ public:
 	HGLOBAL m_hDIB;
 	HBITMAP m_hBitmap;
 	bool m_bLoaded;
-	CString *m_pPath;
+	CString m_sPath;
 	int nIndex;
 	int nBmpHeight;
 	int nBmpWidth;
 
 public:
-	ThumbnailFile(CString *pPath = NULL, CString sFileName = _T(""))
+	ThumbnailFile()
 	{
-		m_sFileName = sFileName;
-		m_pPath = pPath;
+		m_hDIB = NULL;
+		m_hBitmap = NULL;
+		m_bLoaded = false;
+		nBmpHeight = 0;
+		nBmpWidth = 0;
+	}
+	ThumbnailFile( const CString& sPath, LPCTSTR pszFilename = NULL )
+	{
+		m_sFileName = pszFilename;
+		m_sPath = sPath;
 		m_hDIB = NULL;
 		m_hBitmap = NULL;
 		m_bLoaded = false;
@@ -65,17 +75,17 @@ typedef CList<ThumbnailFile*> CThumbnailFileList;
 class CArxDwgListCtrl : public CListBoxCtrl
 {
 	CArxControlServices	mArxServices;
+	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
+	CArxDragDropService mDragDropService;
 	int mnRowHeight;
+	HBITMAP mhR14LogoLarge;
+	HBITMAP mhR14LogoSmall;
+	CString msPath;
 
-	COleOdcDropTarget m_DropTarget;
 	CThumbnailFileList	m_ThumbnailFileList;
-	short				m_CurSel;
 	CImageList			m_imageList;
-	HBITMAP				m_hR14LogoLarge;
-	HBITMAP				m_hR14LogoSmall;
 
 public:
-	CString				m_sPath;
 	CArxFolderComboCtrl* m_pDirComboBox;
 
 // Construction
@@ -86,14 +96,18 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
+// ListBoxCtrl Interface
+	virtual LPCTSTR GetDragTextPrefix() const;
+
 // Operations
 public:
 	int HitTest(CPoint point);
-	void SetDragnDrop(BOOL bRegister);
 	void CreateImageList();
 	void Dir(CString sDir);
 	void ClearThumbnailList();
@@ -110,7 +124,6 @@ protected:
 protected:
 	afx_msg void OnDblclk();
 	afx_msg void OnDestroy();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);

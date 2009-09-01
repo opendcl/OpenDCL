@@ -12,7 +12,6 @@
 
 class COptionsTabPane : public CAcUiTabChildDialog, public CArxDialogObject
 {
-
 	enum { IDD = IDD_CFGTAB };
 
 	// Construction

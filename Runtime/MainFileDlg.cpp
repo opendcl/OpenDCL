@@ -41,14 +41,13 @@ END_MESSAGE_MAP()
 
 BOOL CMainFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpDlgObject->GetTemplate()->GetStringProperty(Prop::EventHelp), false);
+	mpDlgObject->GetArxServices()->HandleEvent( Prop::EventHelp, false );
 	return TRUE;
 }
 
 void CMainFileDlg::OnOK() 
 {
-	if( mpDlgObject->IsClosing() ||
-			!(InvokeCancelMethod(mpDlgObject->GetTemplate()->GetStringProperty(Prop::FormEventCancelClose), false)) )
+	if( mpDlgObject->IsClosing() || mpDlgObject->IsCloseAllowed( false ) )
 	{
 		mpDlgObject->SetClosing();
 		__super::OnOK();
@@ -59,8 +58,7 @@ void CMainFileDlg::OnOK()
 
 void CMainFileDlg::OnCancel() 
 {
-	if( mpDlgObject->IsClosing() ||
-			!(InvokeCancelMethod(mpDlgObject->GetTemplate()->GetStringProperty(Prop::FormEventCancelClose), true)) )
+	if( mpDlgObject->IsClosing() || mpDlgObject->IsCloseAllowed( true ) )
 	{
 		mpDlgObject->SetClosing();
 		__super::OnCancel();
@@ -71,8 +69,7 @@ void CMainFileDlg::OnCancel()
 
 void CMainFileDlg::OnClose() 
 {
-	if( mpDlgObject->IsClosing() ||
-			!(InvokeCancelMethod(mpDlgObject->GetTemplate()->GetStringProperty(Prop::FormEventCancelClose), true)) )
+	if( mpDlgObject->IsClosing() || mpDlgObject->IsCloseAllowed( true ) )
 	{
 		mpDlgObject->SetClosing();
 		__super::OnClose();
@@ -86,7 +83,7 @@ void CMainFileDlg::OnDestroy()
 	mpDlgObject->SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	InvokeMethodIntInt(mpDlgObject->GetTemplate()->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
+	mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventClose, false, args_NN( rcThis.left, rcThis.top ) );
 	__super::OnDestroy();
 }
 
@@ -148,8 +145,7 @@ void CMainFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 		mpDlgObject->GetTemplate()->SetLongProperty( Prop::Width, nNewWidth );
 		mpDlgObject->GetTemplate()->SetLongProperty( Prop::Height, nNewHeight );
 		mpDlgObject->GetControlPane()->RecalcLayout();
-		InvokeMethodIntInt( mpDlgObject->GetTemplate()->GetStringProperty( Prop::FormEventSize ),
-												nNewWidth, nNewHeight, false );	
+		mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventSize, false, args_NN( nNewWidth, nNewHeight ) );
 		mpDlgObject->SavePosition();
 	}
 }

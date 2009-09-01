@@ -12,6 +12,7 @@ CArxImageComboBoxCtrl::CArxImageComboBoxCtrl( TDclControlPtr pTemplate, CControl
 																							CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CImageComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
 , mArxServices( this )
+, mDragDropService( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -27,34 +28,6 @@ bool CArxImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 		__super::Create( pParentWnd, nID );
 
 	return bSuccess;
-}
-
-bool CArxImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	switch( pProp->GetID() )
-	{
-	case Prop::DragnDropAllowDrop:
-		{
-			SetDragnDrop( pProp->GetBooleanValue() );
-			break;
-		}
-	}
-	return !bFailed;
-}
-
-void CArxImageComboBoxCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if (bRegister == TRUE)
-	{
-		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpTemplate;
-		m_DropTarget.m_pParent = this;
-	}
-	else
-		m_DropTarget.Revoke();
 }
 
 BEGIN_MESSAGE_MAP(CArxImageComboBoxCtrl, CImageComboBoxCtrl)
@@ -119,22 +92,22 @@ void CArxImageComboBoxCtrl::OnSelchange()
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethodIntString( sEvent, GetCurSel(), sText, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sEvent, args_NS( nCurSel, sText ) );
 }
 
 void CArxImageComboBoxCtrl::OnDropdown() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::EventDropDown );	
 }
 
 void CArxImageComboBoxCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxImageComboBoxCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxImageComboBoxCtrl::OnEditchange()
@@ -143,16 +116,11 @@ void CArxImageComboBoxCtrl::OnEditchange()
 	CEdit* pEditCtrl = GetEditCtrl();
 	if( pEditCtrl )
 		pEditCtrl->GetWindowText( sText );
-	InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventEditChanged), sText, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( sText ) );
 }
 
 void CArxImageComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	CComboBox::OnMouseMove(nFlags, point);
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }

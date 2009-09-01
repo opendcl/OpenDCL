@@ -73,12 +73,10 @@ BOOL COptionsTabPane::OnInitDialog()
 	SetWindowPos( NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(),
 								SWP_NOZORDER | SWP_NOACTIVATE );
 	
-	// call methods to invoke the event
-	InvokeMethod( mpTemplate->GetStringProperty(Prop::FormEventInitialize), false );	
+	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
 	GetClientRect( &rectWindow );
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::FormEventSize),
-											rectWindow.Width(), rectWindow.Height(), false );	
-
+	GetArxServices()->HandleEvent( Prop::FormEventSize,
+																 args_NN( rectWindow.Width(), rectWindow.Height() ) );
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
@@ -86,26 +84,26 @@ BOOL COptionsTabPane::OnInitDialog()
 void COptionsTabPane::OnMainDialogOK()
 // This function is called when the main dialog OK button is pressed.
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOptionsOK), false);	
+	GetArxServices()->HandleEvent( Prop::EventOptionsOK, false );	
 }
 
 void COptionsTabPane::OnMainDialogAPPLY()
 // This function is called when the main dialog Apply button is pressed.
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOptionsApply), false);	
+	GetArxServices()->HandleEvent( Prop::EventOptionsApply, false );	
 }
 
 void COptionsTabPane::OnMainDialogCancel()
 // This function is called when the main dialog CANCEL button is pressed.
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOptionsCancel), false);	
+	GetArxServices()->HandleEvent( Prop::EventOptionsCancel, false );	
 }
 
 BOOL COptionsTabPane::OnMainDialogHelp()
 // This function is called when the main dialog HELP button is pressed
 // and this is the active tab.
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOptionsHelp), false);	
+	GetArxServices()->HandleEvent( Prop::EventOptionsHelp, false );	
   return TRUE;
 }
 
@@ -118,17 +116,8 @@ void COptionsTabPane::PostNcDestroy()
 void COptionsTabPane::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
-	CString sShowEvent = mpTemplate->GetStringProperty( Prop::FormEventShow );
-	if( !sShowEvent.IsEmpty() )
-	{
-		resbuf rbShow = { NULL, bShow? RTT : RTNIL };
-		resbuf rbEventName = { &rbShow, RTSTR };
-		rbEventName.resval.rstring = sShowEvent.LockBuffer();
-		resbuf* prbResult = NULL;
-		int nResult = acedInvokeNoDocStateSafe( &rbEventName, &prbResult );
-		if( nResult == RTNORM && prbResult )
-			acutRelRb( prbResult );
-	}
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_B( (bShow != FALSE) ) ) )
+		return;
 }
 
 void COptionsTabPane::OnDestroy() 
@@ -145,5 +134,5 @@ void COptionsTabPane::OnSize(UINT nType, int cx, int cy)
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
 	mpControlPane->RecalcLayout();
-	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::FormEventSize), cx, cy, false );	
+	GetArxServices()->HandleEvent( Prop::FormEventSize, false, args_NN( cx, cy ) );
 }

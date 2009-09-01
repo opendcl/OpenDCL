@@ -61,7 +61,10 @@ END_MESSAGE_MAP()
 BOOL CArxTextBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventReturnPressed), IsAsyncEvents());
+	{
+		if( GetArxServices()->HandleEvent( Prop::EventReturnPressed ) )
+			return TRUE;
+	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
@@ -71,28 +74,24 @@ void CArxTextBoxCtrl::OnChange()
 	__super::OnChange();
 	CString sNewValue = mpTemplate->GetStringProperty( Prop::Text );
 	if( sNewValue != sOldValue )
-		InvokeMethodString( mpTemplate->GetStringProperty( Prop::EventEditChanged ),
-												sNewValue,
-												IsAsyncEvents());
+		GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( sNewValue ) );
 }
 
 void CArxTextBoxCtrl::OnErrspace() 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventOutOfMemory ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventOutOfMemory );
 }
 
 void CArxTextBoxCtrl::OnMaxtext() 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMaxText ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMaxText );
 }
 
 void CArxTextBoxCtrl::OnUpdate() 
 {
 	if( IsWindowVisible() )
 	{
-		InvokeMethodString( mpTemplate->GetStringProperty( Prop::EventUpdate ),
-												mpTemplate->GetStringProperty( Prop::Text ),
-												IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( mpTemplate->GetStringProperty( Prop::Text ) ) );
 	}
 }
 
@@ -100,7 +99,7 @@ void CArxTextBoxCtrl::OnSetFocus( CWnd* pFocus )
 {
 	__super::OnSetFocus( pFocus );
 	if( !mbFocusClick )
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventSetFocus );
 	else
 	{
 		mbFocusClick = false;
@@ -130,31 +129,25 @@ void CArxTextBoxCtrl::OnKillFocus( CWnd* pFocus )
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethod( sEvent, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sEvent );
 }
 
 void CArxTextBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
 
 void CArxTextBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	InvokeMethodStringIntInt( mpTemplate->GetStringProperty( Prop::EventKeyUp ),
-														CString( (TCHAR)nChar ), (int)nRepCnt, (int)nFlags, IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CArxTextBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	InvokeMethodStringIntInt( mpTemplate->GetStringProperty( Prop::EventKeyDown ),
-														CString( (TCHAR)nChar ), (int)nRepCnt, (int)nFlags, IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
@@ -173,6 +166,6 @@ void CArxTextBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 LRESULT CArxTextBoxCtrl::OnFocusClick(WPARAM wParam, LPARAM lParam)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 	return 0;
 }

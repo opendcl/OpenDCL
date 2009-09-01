@@ -29,10 +29,7 @@ CArxHtmlCtrl::~CArxHtmlCtrl()
 
 void CArxHtmlCtrl::OnNavigateComplete2( LPCTSTR strURL ) 
 {
-	// call methods to invoke the event
-	InvokeMethodString( mpTemplate->GetStringProperty( Prop::EventNavigateComplete ),
-											strURL,
-											IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventNavigateComplete, args_S( strURL ) );
 	__super::OnNavigateComplete2( strURL );
 }
  
@@ -52,11 +49,7 @@ END_MESSAGE_MAP()
 
 void CArxHtmlCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove( nFlags, point );
 }
 

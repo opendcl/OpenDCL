@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include "PtrTypes.h"
+#include "EventArgs.h"
+
 class CDialogControl;
 
 
@@ -22,4 +25,11 @@ public:
 public:
 	const CString& GetLispSymbolName() const { return msLispSymbolName; }
 	virtual void SetLispSymbol( bool bResetToNil = false ) const;
+	bool HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const resbuf* prbArgs ) const;
+	bool HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const arg_b& args = args_null() ) const;
+	bool HandleEvent( LPCTSTR pszHandlerName, bool bAsync, const arg_b& args = args_null(), AcApDocument* pDoc = NULL ) const;
+	bool HandleEvent( LPCTSTR pszHandlerName, const arg_b& args = args_null() ) const;
+	bool HandleEvent( Prop::Id id, resbuf*& prbResult, const arg_b& args = args_null() ) const;
+	bool HandleEvent( Prop::Id id, bool bAsync, const arg_b& args = args_null() ) const;
+	bool HandleEvent( Prop::Id id, const arg_b& args = args_null() ) const;
 };

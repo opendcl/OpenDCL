@@ -358,10 +358,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\OleOdcDropTarget.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\OptionsTabPane.cpp"
 				>
 			</File>
@@ -503,6 +499,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\EventArgs.h"
+				>
+			</File>
+			<File
 				RelativePath="..\LinetypeDlg.h"
 				>
 			</File>
@@ -520,10 +520,6 @@
 			</File>
 			<File
 				RelativePath="..\ModelessDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="..\OleOdcDropTarget.h"
 				>
 			</File>
 			<File
@@ -2079,13 +2075,6 @@
 			<File
 				RelativePath=".\CAcUiColorComboBox.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAcUiComboBox.cpp"

@@ -3,56 +3,11 @@
 
 #pragma once
 
+#include "EventArgs.h"
 
-bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
-											bool bAsync, AcApDocument* pDoc = NULL ); //returns true to abort
-bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
-											int nArg1, int nArg2, int nArg3,
-											bool bAsync, AcApDocument* pDoc = NULL ); //returns true to abort
-bool HandleCtrlEvent( TDclControlPtr pDclControl, Prop::Id id,
-											int nArg1, int nArg2, int nArg3, int nArg4,
-											bool bAsync, AcApDocument* pDoc = NULL ); //returns true to abort
 
 CString FireCancel( LPCTSTR pszLispFunction );
-int acedInvokeNoDocStateSafe( const struct resbuf *args, struct resbuf **result );
-bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc);
-void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc = NULL);
-void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, bool UseSendString);
-void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bool UseSendString);
-void InvokeMethodBoolean(CString sLispFunction, bool b1, bool UseSendString);
-void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString);
-void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSendString);
-void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, bool UseSendString);
-void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, int nInt4, bool UseSendString);
-void InvokeMethodLong(CString sLispFunction, DWORD_PTR lLong, bool UseSendString);
-void InvokeMethodStringLong(CString sLispFunction, CString sString, DWORD_PTR lLong, bool UseSendString);
-void InvokeMethodStringString(CString sLispFunction, CString sString1, CString sString2, bool UseSendString);
-void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendString);
-void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, bool UseSendString);
-void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1, int nInt2, bool UseSendString);
-void InvokeMethod3StringsPoint(
-					CString sLispFunction, 
-					CString sString1, 
-					CString sString2, 
-					CString sString3, 
-					CPoint	ptPoint,
-					bool UseSendString);
-void InvokeMethod3StringsLong(
-					CString sLispFunction, 
-					CString sString1, 
-					CString sString2, 
-					CString sString3, 
-					DWORD_PTR	lValue,
-					bool UseSendString);
-void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sString2, CString sString3, CString sString4, bool UseSendString);
-void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sString2, CString sString3, CString sString4, bool UseSendString);
 
-void InvokeMethodPoint(
-					CString sLispFunction, 
-					CPoint	ptPoint,
-					bool UseSendString);
-void InvokeMethodPoint3DInt(
-					CString sLispFunction, 
-					acedDwgPoint ptPoint,
-					int nViewport,
-					bool UseSendString);
+bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction, const arg_b& args, bool bAsync, AcApDocument* pDoc = NULL );
+bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction, const resbuf* prbArgs, resbuf*& prbResult, AcApDocument* pDoc = NULL );
+bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction, const arg_b& args, resbuf*& prbResult, AcApDocument* pDoc = NULL );

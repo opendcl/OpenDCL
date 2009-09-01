@@ -54,19 +54,9 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 			if( pSourceDclControl->GetType() != _CtlForm )
 				sControl = pSourceDclControl->GetKeyName();
 			if( !sKey.IsEmpty() )
-				InvokeMethod4Strings( sDropControlEvent,
-															sProject,
-															sForm,
-															sControl,
-															sKey,
-															IsAsyncEvents() );
+				GetArxServices()->HandleEvent( sDropControlEvent, args_SSSS( sProject, sForm, sControl, sKey ) );
 			else
-				InvokeMethod3StringsLong( sDropControlEvent,
-																	sProject,
-																	sForm,
-																	sControl,
-																	(DWORD_PTR)hItem,
-																	IsAsyncEvents() );
+				GetArxServices()->HandleEvent( sDropControlEvent, args_SSSH( sProject, sForm, sControl, (DWORD_PTR)hItem ) );
 			return true;
 		}
 
@@ -74,13 +64,9 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 		if( !sDropAcadWndPointEvent.IsEmpty() )
 		{
 			if( !sKey.IsEmpty() )
-				InvokeMethodString( sDropAcadWndPointEvent,
-														sKey,
-														IsAsyncEvents() );
+				GetArxServices()->HandleEvent( sDropAcadWndPointEvent, args_S( sKey ) );
 			else
-				InvokeMethodLong( sDropAcadWndPointEvent,
-													(DWORD_PTR)hItem,
-													IsAsyncEvents() );
+				GetArxServices()->HandleEvent( sDropAcadWndPointEvent, args_H( (DWORD_PTR)hItem ) );
 			return true;
 		}
 	}
@@ -121,21 +107,13 @@ END_MESSAGE_MAP()
 
 void CArxImageTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	InvokeMethodStringIntInt( mpTemplate->GetStringProperty( Prop::EventKeyDown ),
-														CString( (TCHAR)nChar ),
-														nRepCnt,
-														nFlags,
-														IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxImageTreeCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	InvokeMethodStringIntInt( mpTemplate->GetStringProperty( Prop::EventKeyUp ),
-														CString( (TCHAR)nChar ),
-														nRepCnt,
-														nFlags,
-														IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
@@ -148,59 +126,55 @@ void CArxImageTreeCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CArxImageTreeCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRightClick ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventRightClick );
 	__super::OnRButtonUp(nFlags, point);
 }
 
 void CArxImageTreeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
 void CArxImageTreeCtrl::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventClicked );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDblClicked ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRightClick ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventRightClick );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMRdblclk(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRightDblClick ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventRightDblClick );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMReturn(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventReturnPressed ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventReturnPressed );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMKillfocus(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMSetfocus(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 	*pResult = 0;
 }
 
@@ -210,15 +184,9 @@ void CArxImageTreeCtrl::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem = pNMTreeView->itemOld.hItem;
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
-		InvokeMethodStringString( mpTemplate->GetStringProperty( Prop::EventDeleteItem ),
-															GetItemText( hItem ),
-															sKey,
-															IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventDeleteItem, args_SS( GetItemText( hItem ), sKey ) );
 	else if( hItem )
-		InvokeMethodStringLong( mpTemplate->GetStringProperty( Prop::EventDeleteItem ),
-														GetItemText( hItem ),
-														(DWORD_PTR)hItem,
-														IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventDeleteItem, args_SH( GetItemText( hItem ), (DWORD_PTR)hItem ) );
 	__super::OnTvnDeleteitem( pNMHDR, pResult );
 	*pResult = 0;
 }
@@ -230,13 +198,9 @@ void CArxImageTreeCtrl::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem = pTVDispInfo->item.hItem;
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
-		InvokeMethodString( mpTemplate->GetStringProperty( Prop::EventBeginLabelEdit ),
-												sKey,
-												IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_S( sKey ) );
 	else if( hItem )
-		InvokeMethodLong( mpTemplate->GetStringProperty( Prop::EventBeginLabelEdit ),
-											(DWORD_PTR)hItem,
-											IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_H( (DWORD_PTR)hItem ) );
 	*pResult = 0;
 }
 
@@ -250,15 +214,9 @@ void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 		pTVDispInfo->item.pszText? pTVDispInfo->item.pszText : GetItemText( hItem );
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
-		InvokeMethodStringString( mpTemplate->GetStringProperty( Prop::EventEndLabelEdit ),
-															sLabel,
-															sKey,
-															IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_SS( sLabel, sKey ) );
 	else if( hItem )
-		InvokeMethodStringLong( mpTemplate->GetStringProperty( Prop::EventEndLabelEdit ),
-														sLabel,
-														(DWORD_PTR)hItem,
-														IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_SH( sLabel, (DWORD_PTR)hItem ) );
 	if( mbCancelLabelEdit )
 	{
 		*pResult = FALSE;
@@ -275,15 +233,9 @@ void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
-		InvokeMethodStringString( mpTemplate->GetStringProperty( Prop::EventItemExpanding ),
-															GetItemText( hItem ),
-															sKey,
-															IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventItemExpanding, args_SS( GetItemText( hItem ), sKey ) );
 	else if( hItem )
-		InvokeMethodStringLong( mpTemplate->GetStringProperty( Prop::EventItemExpanding ),
-														GetItemText( hItem ),
-														(DWORD_PTR)hItem,
-														IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventItemExpanding, args_SH( GetItemText( hItem ), (DWORD_PTR)hItem ) );
 	*pResult = 0;
 }
 
@@ -294,15 +246,9 @@ void CArxImageTreeCtrl::OnTvnItemexpanded(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
-		InvokeMethodStringString( mpTemplate->GetStringProperty( Prop::EventItemExpanded ),
-															GetItemText( hItem ),
-															sKey,
-															IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventItemExpanded, args_SS( GetItemText( hItem ), sKey ) );
 	else if( hItem )
-		InvokeMethodStringLong( mpTemplate->GetStringProperty( Prop::EventItemExpanded ),
-														GetItemText( hItem ),
-														(DWORD_PTR)hItem,
-														IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventItemExpanded, args_SH( GetItemText( hItem ), (DWORD_PTR)hItem ) );
 	*pResult = 0;
 }
 
@@ -313,15 +259,9 @@ void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );
 	if( !sKey.IsEmpty() )
-		InvokeMethodStringString( mpTemplate->GetStringProperty( Prop::EventSelChanged ),
-															GetItemText( hItem ),
-															sKey,
-															IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_SS( GetItemText( hItem ), sKey ) );
 	else if( hItem )
-		InvokeMethodStringLong( mpTemplate->GetStringProperty( Prop::EventSelChanged ),
-														GetItemText( hItem ),
-														(DWORD_PTR)hItem,
-														IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_SH( GetItemText( hItem ), (DWORD_PTR)hItem ) );
 	SelectDropTarget( hItem );
 	OnNeedRepaint();
 	*pResult = 0;

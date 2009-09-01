@@ -109,7 +109,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, const CPropertyObject* pProp,
 			{				
 				// just call InvokeMethod
 				delete [] dispparams.rgvarg;
-				InvokeMethod(pProp->GetStringValue(), IsAsyncEvents());
+				GetArxServices()->HandleEvent( pProp->GetStringValue() );
 				return;
 			}
 			// this code is used if the programmer want to call the defun using the default option

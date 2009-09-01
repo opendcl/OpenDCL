@@ -71,7 +71,7 @@ public:
 	TDclControlPtr GetMainControl() const { return mpDclControl; }
 	void SetDescription( LPCTSTR pszDescription, const std::map< CString, CString >& params );
 
-	virtual void OnDocumentLoaded();
+	virtual void OnDocumentLoaded( bool bClickedLink );
 
 protected:
 	//bool OnBeginClipboardCopy();

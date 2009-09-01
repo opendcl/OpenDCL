@@ -65,7 +65,9 @@ ADSRESULT DwgList::GetDir()
 		return RSERR;
 
 	CArxDwgListCtrl* pCtrl = (CArxDwgListCtrl*)pDlgControl->GetControlWnd();
-	acedRetStr( pCtrl->m_sPath );
+	CString sPath = pCtrl->GetDragTextPrefix();
+	sPath.TrimRight( _T("\\/") );
+	acedRetStr( sPath );
 	return RSRSLT;
 }
 
@@ -86,7 +88,7 @@ ADSRESULT DwgList::GetFileName()
 	{
 		CString sFilename;
 		pCtrl->GetText( nCurSel, sFilename );
-		acedRetStr( pCtrl->m_sPath + _T('\\') + sFilename );
+		acedRetStr( pCtrl->GetDragTextPrefix() + sFilename );
 	}
 	return RSRSLT;
 }

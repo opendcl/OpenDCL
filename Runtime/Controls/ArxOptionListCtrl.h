@@ -5,7 +5,7 @@
 
 #include "OptionListCtrl.h"
 #include "ArxControlServices.h"
-#include "OleOdcDropTarget.h"
+#include "ArxDragDropService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,8 +14,7 @@
 class CArxOptionListCtrl : public COptionListCtrl
 {
 	CArxControlServices	mArxServices;
-
-	COleOdcDropTarget m_DropTarget;
+	CArxDragDropService mDragDropService;
 
 // Construction
 public:
@@ -25,6 +24,7 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
 protected:

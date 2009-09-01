@@ -254,12 +254,12 @@ bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
 
 void CPaletteDialog::OnMouseEnter()
 {
-  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
+  GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 };
 
 void CPaletteDialog::OnMouseLeave()
 {
-  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
+  GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 };
 
 
@@ -301,11 +301,10 @@ int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
 
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );	
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
-											mpTemplate->GetLongProperty( Prop::Width ),
-											mpTemplate->GetLongProperty( Prop::Height ),
-											IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
+	GetArxServices()->HandleEvent( Prop::FormEventSize,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 
 	return 1;
 }
@@ -328,21 +327,21 @@ void CPaletteDialog::OnSize(UINT nType, int cx, int cy)
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
 	mpControlPane->RecalcLayout();
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
-											mpTemplate->GetLongProperty( Prop::Width ), 
-											mpTemplate->GetLongProperty( Prop::Height ),
-											IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::FormEventSize,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 }
 
 BOOL CPaletteDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventHelp );
 	return TRUE;
 }
 
 void CPaletteDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), IsAsyncEvents());	
+	if( GetArxServices()->HandleEvent( Prop::FormEventShow ) )
+		return;
 
 	//mbHiding = !IsClosing() && !bShow;
 	__super::OnShowWindow(bShow, nStatus);
@@ -359,7 +358,7 @@ bool CPaletteDialog::OnClosing()
 		return true;
 	SetClosing();
 	CRect rcThis = GetEffectiveWindowRect();
-	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventClose ), rcThis.left, rcThis.top, IsAsyncEvents() );	
+	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
 	if( /*!mbHiding && */!IsFloating() )
 		mHostPaletteSet.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

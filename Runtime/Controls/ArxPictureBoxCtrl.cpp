@@ -64,9 +64,9 @@ void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		if( dwDropEffect != DROPEFFECT_NONE )
 			return;
 	}
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDown, 1, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventLMouse, 1, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnLButtonDown( nFlags, point );
 }
@@ -74,49 +74,49 @@ void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 void CArxPictureBoxCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
-	if( HandleCtrlEvent( mpTemplate, Prop::EventKillFocus, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventKillFocus ) )
 		return;
 }
 
 void CArxPictureBoxCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus(pOldWnd);
-	if( HandleCtrlEvent( mpTemplate, Prop::EventSetFocus, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventSetFocus ) )
 		return;
 }
 
 void CArxPictureBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseUp, 1, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventLMouse, 1, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnLButtonUp(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDblClick, 4, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMMouse, 4, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDown, 4, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMMouse, 4, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseUp, 4, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMMouse, 4, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnMButtonUp(nFlags, point);
 }
@@ -128,9 +128,10 @@ void CArxPictureBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_hWnd, 0 };
 		if( _TrackMouseEvent( &tm ) )
 			mbTrackingMouse = true;
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
+		if( GetArxServices()->HandleEvent( Prop::EventMouseEntered ) )
+			return;
 	}
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseMove, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnMouseMove(nFlags, point);
 }
@@ -138,77 +139,75 @@ void CArxPictureBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 LRESULT CArxPictureBoxCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
 	mbTrackingMouse = false;        
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseMovedOff, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseMovedOff ) )
 		return FALSE;
 	return FALSE;
 }
 
 BOOL CArxPictureBoxCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDblClick, nFlags, zDelta, pt.x, pt.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( nFlags, zDelta, pt.x, pt.y ) ) )
 		return FALSE;
 	return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CArxPictureBoxCtrl::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDblClick, 2, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventRightDblClick, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRightDblClick ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventRMouse, 2, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnRButtonDblClk(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDown, 2, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventRMouse, 2, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseUp, 2, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventRightClick, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRightClick ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventRMouse, 2, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnRButtonUp(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	TCHAR sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxPictureBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	TCHAR sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventMouseDblClick, 1, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventDblClicked, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventDblClicked ) )
 		return;
-	if( HandleCtrlEvent( mpTemplate, Prop::EventLMouse, 1, nFlags, point.x, point.y, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnLButtonDblClk(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnClicked() 
 {
-	if( HandleCtrlEvent( mpTemplate, Prop::EventClicked, IsAsyncEvents() ) )
+	if( GetArxServices()->HandleEvent( Prop::EventClicked ) )
 		return;
 }
 
@@ -216,7 +215,7 @@ void CArxPictureBoxCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == 13 || nChar == 10 )
 	{
-		if( HandleCtrlEvent( mpTemplate, Prop::EventClicked, IsAsyncEvents() ) )
+		if( GetArxServices()->HandleEvent( Prop::EventClicked, IsAsyncEvents() ) )
 			return;
 	}
 }
@@ -224,5 +223,6 @@ void CArxPictureBoxCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CArxPictureBoxCtrl::OnPaint()
 {
 	__super::OnPaint();
-	InvokeMethodBoolean( mpTemplate->GetStringProperty( Prop::EventPaint ), (GetFocus() == this), IsAsyncEvents() );
+	if( GetArxServices()->HandleEvent( Prop::EventClicked, args_B( (GetFocus() == this) ) ) )
+		return;
 }

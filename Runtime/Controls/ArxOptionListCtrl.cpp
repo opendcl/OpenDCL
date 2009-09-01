@@ -16,6 +16,7 @@
 CArxOptionListCtrl::CArxOptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : COptionListCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
+, mDragDropService( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -53,39 +54,36 @@ void CArxOptionListCtrl::OnLbnSelchange()
 	int nCurSel = GetCurSel();
 	CString sString;
 	GetText(nCurSel, sString);
-	InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sString, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nCurSel, sString ) );
 }
 
 void CArxOptionListCtrl::OnDblclk() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );
 }
 
 void CArxOptionListCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxOptionListCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove(nFlags, point);
-
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
 void CArxOptionListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-  if (nChar == VK_RETURN)
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
+  if( nChar == VK_RETURN )
+	{
+    if( GetArxServices()->HandleEvent( Prop::EventDblClicked ) )
+			return;
+	}
 	__super::OnKeyDown(nChar,nRepCnt,nFlags);
 }

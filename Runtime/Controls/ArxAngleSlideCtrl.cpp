@@ -40,7 +40,7 @@ void CArxAngleSlideCtrl::PostMessageToParent(const int nTBCode) const
 	if( nNewPos != mnLastReportedPosition )
 	{
 		const_cast< CArxAngleSlideCtrl* >(this)->mnLastReportedPosition = nNewPos;
-		InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScroll ), nNewPos, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventScroll, args_N( nNewPos ) );
 	}
 }
 
@@ -56,22 +56,18 @@ END_MESSAGE_MAP()
 
 void CArxAngleSlideCtrl::OnOutofmemory(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventOutOfMemory ), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventOutOfMemory );
 	*pResult = 0;
 }
 
 void CArxAngleSlideCtrl::OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventReleasedCapture ), GetPos(), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventReleasedCapture, args_N( GetPos() ) );
 	*pResult = 0;
 }
 
 void CArxAngleSlideCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove(nFlags, point);
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }

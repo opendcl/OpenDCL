@@ -10,7 +10,7 @@
 #include "DockingDialog.h"
 #include "CustomFileDialog.h"
 #include "PaletteDialog.h"
-#include "InvokeMethod.h"
+#include "EventArgs.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ CArxDialogObject::CDocReactor::~CDocReactor()
 void CArxDialogObject::CDocReactor::documentActivated(AcApDocument* pActivatedDoc)
 {
 	if( pActivatedDoc )
-		InvokeMethod( msDocActivatedEvent, true, pActivatedDoc );
+		mpDialogobject->GetArxServices()->HandleEvent( msDocActivatedEvent, true, args_null(), pActivatedDoc );
 }
 
 void CArxDialogObject::CDocReactor::documentToBeDestroyed(AcApDocument* pDocToDestroy)
@@ -47,7 +47,7 @@ void CArxDialogObject::CDocReactor::documentToBeDestroyed(AcApDocument* pDocToDe
 	if( acDocManager->documentCount() == 1 )
 	{
 		mpDialogobject->OnEnteringNoDocState();
-		InvokeMethod( msEnteringNoDocStateEvent, false, pDocToDestroy );
+		mpDialogobject->GetArxServices()->HandleEvent( msEnteringNoDocStateEvent, false, args_null(), pDocToDestroy );
 	}
 }
 
@@ -55,6 +55,7 @@ void CArxDialogObject::CDocReactor::documentToBeDestroyed(AcApDocument* pDocToDe
 CArxDialogObject::CArxDialogObject( TDclFormPtr pSourceForm, CWnd* pHostDlg )
 : CDialogObject( pSourceForm, &mControlPane, pHostDlg )
 , mControlPane( pSourceForm, pHostDlg )
+, mArxServices( this )
 , mbEnteringNoDocState( false )
 , mDocReactor( this )
 {
@@ -74,6 +75,17 @@ CArxDialogObject::~CArxDialogObject()
 void CArxDialogObject::OnEnteringNoDocState()
 {
 	mbEnteringNoDocState = true;
+}
+
+bool CArxDialogObject::IsCloseAllowed( bool bCancelling ) const
+{
+	resbuf* prbResult = NULL;
+	GetArxServices()->HandleEvent( Prop::FormEventCancelClose, prbResult, args_B( bCancelling ) );
+	if( !prbResult )
+		return true;
+	bool bDisallow = (prbResult->restype != RTNIL);
+	acutRelRb( prbResult );
+	return !bDisallow;
 }
 
 //static

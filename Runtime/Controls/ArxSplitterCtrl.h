@@ -33,7 +33,6 @@ protected:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 protected:
 	DECLARE_MESSAGE_MAP();

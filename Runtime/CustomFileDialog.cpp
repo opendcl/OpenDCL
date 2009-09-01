@@ -373,7 +373,7 @@ void CCustomFileDialog::OnInitializationComplete()
 	if( mMainFileDlg.GetStyle() & WS_CHILD )
 		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );
 	
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );
+	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
 	mMainFileDlg.MoveWindow( &rectWindow, FALSE );
 	IgnoreSizing( false );
 }
@@ -483,8 +483,7 @@ BOOL CCustomFileDialog::OnFileNameOK()
 {
 	if( __super::OnFileNameOK() )
 		return TRUE;
-	if( IsClosing() ||
-			!(InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), false)) )
+	if( IsClosing() || IsCloseAllowed( false ) )
 	{
 		SetClosing();
 		return FALSE;
@@ -509,24 +508,11 @@ void CCustomFileDialog::OnFileNameChange()
 	
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
 	if (pos == NULL || nSelCount == 0)
-	{
-		// call methods to invoke the event
-		InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), -1, CString(), IsAsyncEvents());		
-		return;
-	}
-	else
-	{
-		if (nSelCount == 1)
-		{
-			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, GetPathName(), IsAsyncEvents());			
-		}
-		else 
-		{
-			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), IsAsyncEvents());			
-		}
-	}
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( -1, _T("") ) );		
+	else if (nSelCount == 1)
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nSelCount, GetPathName() ) );			
+	else 
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nSelCount, _T("") ) );			
 }
 
 void CCustomFileDialog::OnTypeChange()
@@ -536,18 +522,18 @@ void CCustomFileDialog::OnTypeChange()
 		return;
 	CString sText;
 	GetParent()->GetDlgItem(cmb1)->GetWindowText( sText );
-	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventTypeChanged), sText, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventTypeChanged, args_S( sText ) );
 }
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventHelp );
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventHelp );
 }
 
 void CCustomFileDialog::OnFolderChange()
@@ -555,7 +541,7 @@ void CCustomFileDialog::OnFolderChange()
 	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
 		return;
-	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventFolderChanged), GetFolderPath(), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventFolderChanged, args_S( GetFolderPath() ) );
 }
 
 void CCustomFileDialog::CloseNow() 

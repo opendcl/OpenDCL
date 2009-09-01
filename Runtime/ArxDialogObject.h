@@ -2,11 +2,13 @@
 
 #include "DialogObject.h"
 #include "ArxControlPane.h"
+#include "ArxControlServices.h"
 
 
 class CArxDialogObject : public CDialogObject
 {
 	CArxControlPane mControlPane;
+	CArxControlServices	mArxServices;
 	bool mbEnteringNoDocState;
 	class CDocReactor : public AcApDocManagerReactor
 	{
@@ -27,9 +29,11 @@ public:
 public:
 	virtual const CControlPane* GetControlPane() const { return &mControlPane; }
 	virtual CControlPane* GetControlPane() { return &mControlPane; }
+	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 
 public:
 	bool IsEnteringNoDocState() const { return mbEnteringNoDocState; }
+	bool IsCloseAllowed( bool bCancelling ) const;
 
 protected:
 	friend CDocReactor;

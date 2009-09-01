@@ -563,21 +563,6 @@ public:
 void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true, bool bX64 = false )
 {
 	String sTargetKey = pszTargetKey;
-	if( Target.platform() == TargetModule::kBricscad )
-	{
-		RegKey rkRoot( pszTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
-		LPCTSTR pszLanguage = rkRoot.GetString( _T("Language") );
-		if( !pszLanguage || !*pszLanguage )
-			return;
-		int idx = sTargetKey.Length();
-		while( idx )
-		{
-			TCHAR ch = sTargetKey[--idx];
-			if( ch == _T('\\') || ch == _T('/') || ch == _T(':') )
-				break;
-		}
-		sTargetKey = sTargetKey.Left( idx + 1 ) + pszLanguage;
-	}
 	RegKey rkDemandLoad( sTargetKey + _T("\\Applications\\") + GetAppLongName(),
 											 Target.GetTargetRootRegKey( bWantHKLM ),
 											 true,
@@ -591,7 +576,8 @@ void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bW
 bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, bool bX64 = false )
 {
 	String sRootKey = Target.GetTargetAppRegKey();
-	RegKey rkTarget( sRootKey, Target.GetTargetRootRegKey( bWantHKLM ), false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	HKEY hkTargetRoot = Target.GetTargetRootRegKey( bWantHKLM );
+	RegKey rkTarget( sRootKey, hkTargetRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkTarget )
 		return false;
 
@@ -610,12 +596,27 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, boo
 											 NULL ) == ERROR_SUCCESS )
 	{
 		idxSubkey++;
+		dwBufSize = cchMaxSubkey;
 		sSubkey.ReleaseBuffer();
 		String sTargetKey( (LPCTSTR)sRootKey );
 		sTargetKey += _T('\\');
 		sTargetKey += sSubkey;
+		if( bWantHKLM && Target.platform() == TargetModule::kBricscad )
+		{
+			RegKey rkRoot( sTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+			LPCTSTR pszLanguage = rkRoot.GetString( _T("Language") );
+			if( pszLanguage && *pszLanguage )
+			{
+				sTargetKey = (LPCTSTR)sRootKey;
+				sTargetKey += _T('\\');
+				sTargetKey += pszLanguage;
+				if( RegKey( sTargetKey, hkTargetRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) ) )
+					continue; //already exists, so no need to create it
+				RegKey rkLang( sTargetKey, hkTargetRoot, true, KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
+				RegKey rkApps( _T("Applications"), rkLang, true, KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
+			}
+		}
 		RxSelfInstallImp( Target, sTargetKey, bWantHKLM, bX64 );
-		dwBufSize = cchMaxSubkey;
 	}
 	return true;
 }

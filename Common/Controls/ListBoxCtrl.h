@@ -38,7 +38,8 @@ public:
 	virtual void OnDragLeave();
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
-	bool IsMultiSelect() const { return ((GetStyle() & (LBS_EXTENDEDSEL | LBS_MULTIPLESEL)) != 0); }
+	virtual bool IsMultiSelect() const { return ((GetStyle() & (LBS_EXTENDEDSEL | LBS_MULTIPLESEL)) != 0); }
+	virtual LPCTSTR GetDragTextPrefix() const { return NULL; }
 
 protected:
 	virtual void OnListChanged();

@@ -249,7 +249,7 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	OnNeedRepaint();
 
 	if (bFireEvent)
-		InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventChanged), GetCurTabPage(), IsAsyncEvents() );
+		GetArxServices()->HandleEvent( Prop::EventChanged, args_N( GetCurTabPage() ) );
 }
 
 void CArxTabStripCtrl::SetFirstControlFocus( CTabPage* pTabPage )
@@ -284,11 +284,9 @@ void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult )
 	{
 		resbuf rbCurrentPage = { NULL, RTSHORT };
 		rbCurrentPage.resval.rint = GetCurTabPage();
-		resbuf rbEventName = { &rbCurrentPage, RTSTR };
-		rbEventName.resval.rstring = sSelChangingEvent.LockBuffer();
 		resbuf* prbResult = NULL;
-		int nResult = acedInvokeNoDocStateSafe( &rbEventName, &prbResult );
-		if( nResult == RTNORM && prbResult )
+		GetArxServices()->HandleEvent( sSelChangingEvent, prbResult, &rbCurrentPage );
+		if( prbResult )
 		{
 			if( !prbResult->rbnext && prbResult->restype == RTT )
 				*pResult = TRUE; //prevent change
@@ -300,11 +298,11 @@ void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult )
 void CArxTabStripCtrl::OnKillFocus( CWnd* pNewWnd ) 
 {
 	__super::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxTabStripCtrl::OnSetFocus( CWnd* pOldWnd ) 
 {
 	__super::OnSetFocus( pOldWnd );
-	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents() );
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }

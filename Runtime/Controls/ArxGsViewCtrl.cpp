@@ -364,14 +364,7 @@ void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	mLBState = down;
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
 	if( !GetGsView() )
 		return;
 	
@@ -389,53 +382,29 @@ void CArxGsViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	__super::OnLButtonUp( nFlags, point );
 
 	if( mLBState == dblclk )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
+		GetArxServices()->HandleEvent( Prop::EventDblClicked );	
 	else if( mLBState == down )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
+		GetArxServices()->HandleEvent( Prop::EventClicked );	
 	mLBState = up;
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 }
 
 void CArxGsViewCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
 	__super::OnMButtonDown( nFlags, point );
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
 }
 
 void CArxGsViewCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	__super::OnMButtonUp( nFlags, point );
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
 }
 
 void CArxGsViewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove( nFlags, point );
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
 __UINT_LRESULT CArxGsViewCtrl::OnNcHitTest(CPoint point) 
@@ -447,55 +416,31 @@ void CArxGsViewCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
 	Invalidate();
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxGsViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	__super::OnLButtonDblClk(nFlags, point);
-
 	mLBState = dblclk;
-
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) );
 }
 
 void CArxGsViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
 	__super::OnRButtonDblClk(nFlags, point);
-
 	mRBState = dblclk;
-
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) );
 }
 
 void CArxGsViewCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	if( mRBState == dblclk )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRightDblClick), IsAsyncEvents());	
+		GetArxServices()->HandleEvent( Prop::EventRightDblClick );	
 	else if( mLBState == down )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRightClick), IsAsyncEvents());	
+		GetArxServices()->HandleEvent( Prop::EventRightClick );	
 	mRBState = up;
-	
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseUp),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
@@ -509,7 +454,7 @@ void CArxGsViewCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	__super::OnKillFocus(pNewWnd);
 	Invalidate();
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxGsViewCtrl::PostNcDestroy() 
@@ -526,26 +471,13 @@ BOOL CArxGsViewCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CArxGsViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
-		4,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxGsViewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	mRBState = down;
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
-		2,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDown(nFlags, point);
 }

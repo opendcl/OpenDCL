@@ -115,32 +115,27 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 		GetParent()->EnableWindow( TRUE );
 	}
 	else if( !sEvent.IsEmpty() )
-		InvokeMethodIntString( sEvent, GetCurSel(), sPath, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sEvent, args_NS( GetCurSel(), sPath ) );
 	return 0;
 }
 
 void CArxFolderComboCtrl::OnDropdown() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::EventDropDown );	
 }
 
 void CArxFolderComboCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove(nFlags, point);
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
 void CArxFolderComboCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxFolderComboCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }

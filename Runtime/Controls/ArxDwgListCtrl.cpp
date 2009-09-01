@@ -22,11 +22,8 @@ BOOL ThumbnailFile::LoadDwgThumbnail()
 		return FALSE;
 
 	// reset old values
-	CString sFileName;
-	if (m_pPath->Right(1) == _T("\\"))
-		sFileName = CString(*m_pPath) + m_sFileName;
-	else
-		sFileName = CString(*m_pPath) + _T("\\") + m_sFileName;
+	m_sPath.TrimRight( _T("\\/") );
+	CString sFileName = m_sPath + _T("\\") + m_sFileName;
 	BOOL m_IsValid = FALSE;
 	long m_nCount  = 0;
 	CString m_szTitle = CString();
@@ -416,6 +413,8 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 CArxDwgListCtrl::CArxDwgListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CListBoxCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
+, mDragDropService( this )
+, mBlockInsertDropTarget( this )
 , mnRowHeight( -1 )
 {
 	//m_RowHeight = 120;
@@ -428,14 +427,23 @@ CArxDwgListCtrl::~CArxDwgListCtrl()
 {
 }
 
+LPCTSTR CArxDwgListCtrl::GetDragTextPrefix() const
+{
+	static CString sDragPrefix;
+	sDragPrefix = msPath;
+	sDragPrefix.TrimRight( _T("\\/") );
+	sDragPrefix += _T('\\');
+	return sDragPrefix;
+}
+
 bool CArxDwgListCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
 
 	CreateImageList();
-	m_hR14LogoLarge = (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_R14LARGE), IMAGE_BITMAP, 0, 0, 0);
-	m_hR14LogoSmall = (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_R14SMALL), IMAGE_BITMAP, 0, 0, 0);
+	mhR14LogoLarge = (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_R14LARGE), IMAGE_BITMAP, 0, 0, 0);
+	mhR14LogoSmall = (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_R14SMALL), IMAGE_BITMAP, 0, 0, 0);
 
 	return bSuccess;
 }
@@ -455,16 +463,11 @@ bool CArxDwgListCtrl::OnApplyProperty( TPropertyPtr pProp )
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case Prop::DragnDropAllowDrop:
-		{
-			SetDragnDrop( pProp->GetBooleanValue() );
-			break;
-		}
 	case Prop::RowHeight:
 		{
 			mnRowHeight = pProp->GetLongValue();
 			int nCurSel = GetCurSel();
-			Dir(m_sPath);
+			Dir( msPath );
 			SetCurSel( nCurSel );
 			OnNeedRepaint();
 			break;
@@ -510,8 +513,8 @@ void CArxDwgListCtrl::Dir(CString sDir)
 	saFolderNames.RemoveAll();
 	saFolderNames.SetSize(0,1);
 
-	sDir = sDir.TrimRight( _T('\\') );
-	m_sPath = sDir;
+	sDir = sDir.TrimRight( _T("\\/") );
+	msPath = sDir;
 	dr.ClearDirs();         // start clean
 	if (!dr.GetDirs(sDir, true)) // get all folders 
 		return; // exit if nothing found
@@ -602,7 +605,7 @@ void CArxDwgListCtrl::Dir(CString sDir)
 				{
 					int nIndex = InsertString(j, sFileName);
 					SetItemData(nIndex, 1);
-					ThumbnailFile *BlankBitmap = new ThumbnailFile(&m_sPath, sFileName);
+					ThumbnailFile *BlankBitmap = new ThumbnailFile( msPath, sFileName );
 					BlankBitmap->nIndex = nIndex;
 					m_ThumbnailFileList.AddTail(BlankBitmap);
 					BlankBitmap->LoadDwgThumbnail();
@@ -624,7 +627,7 @@ void CArxDwgListCtrl::Dir(CString sDir)
 		{
 			int nIndex = AddString(sFileName);
 			SetItemData(nIndex, 1);
-			ThumbnailFile *BlankBitmap = new ThumbnailFile(&m_sPath, sFileName);
+			ThumbnailFile *BlankBitmap = new ThumbnailFile( msPath, sFileName );
 			BlankBitmap->nIndex = nIndex;
 			m_ThumbnailFileList.AddTail(BlankBitmap);
 			BlankBitmap->LoadDwgThumbnail();
@@ -649,7 +652,6 @@ BEGIN_MESSAGE_MAP(CArxDwgListCtrl, CListBoxCtrl)
 	ON_CONTROL_REFLECT(LBN_DBLCLK, OnDblclk)
 	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnSelchange)
 	ON_WM_DESTROY()
-	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_SETFOCUS()
@@ -788,7 +790,7 @@ void CArxDwgListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			ThumbnailFile *pTFile = m_ThumbnailFileList.GetNext(pos);
 			if (pTFile->m_sFileName == strCurFont)
 			{
-				pTFile->DrawBitmap(pDC, pt, rc.Width(), mnRowHeight > 0? mnRowHeight : 100, m_hR14LogoLarge, m_hR14LogoSmall);
+				pTFile->DrawBitmap(pDC, pt, rc.Width(), mnRowHeight > 0? mnRowHeight : 100, mhR14LogoLarge, mhR14LogoSmall);
 				break;
 			}
 
@@ -815,43 +817,25 @@ void CArxDwgListCtrl::OnDblclk()
 	int nSel = GetCurSel();
 	GetText(nSel, sSelText);
 	if (GetItemData(nSel) == 0)
-	{	
-		if (m_sPath.Right(1) == _T("\\"))
-			m_sPath	+= sSelText;
-		else
-		{
-			m_sPath	+= _T("\\");
-			m_sPath += sSelText;
-		}
-		Dir(m_sPath);
+	{
+		msPath.TrimRight( _T("\\/") );
+		msPath	+= _T("\\");
+		msPath += sSelText;
+		Dir(msPath);
 		if (m_pDirComboBox != NULL)
 		{
-			m_pDirComboBox->AddPath(m_sPath);
+			m_pDirComboBox->AddPath(msPath);
 		}	
-		InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventFolderChanged), m_sPath, false);		
+		GetArxServices()->HandleEvent( Prop::EventFolderChanged, false, args_S( msPath ) );
 	}
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventDblClicked );
 }
 
 
 void CArxDwgListCtrl::OnDestroy() 
 {
-	m_DropTarget.Revoke();
 	__super::OnDestroy();
 	ClearThumbnailList();
-}
-
-
-void CArxDwgListCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if (bRegister == TRUE)
-	{
-		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpTemplate;
-		m_DropTarget.m_pParent = this;
-    }
-	else
-		m_DropTarget.Revoke();
 }
 
 int CArxDwgListCtrl::HitTest(CPoint point) 
@@ -870,85 +854,17 @@ int CArxDwgListCtrl::HitTest(CPoint point)
 }
 
 
-void CArxDwgListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
-{	
-	//__super::OnLButtonDown(nFlags, point);
-	int nIndex = HitTest(point);
-	SetCurSel(nIndex);
-	OnSelchange();
-
-	OnNeedRepaint();    
-
-	// Get the currently selected Item
-    if(GetCurSel() == LB_ERR)
-        return;
-    
-	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE)
-	{
-		int nCount = GetSelCount();
-		int nIndex = -1;
-		
-		CStringArray saBlockNames;
-		saBlockNames.SetSize(0,1);
-		// add the path
-		saBlockNames.Add(m_sPath);
-		
-		CString sText;
-		
-		if (nCount == -1)
-		{
-			GetText(GetCurSel(), sText);
-			
-			saBlockNames.Add(sText);
-		}
-		else
-		{
-			CArray<int,int> aryListBoxSel;
-
-			// get an array of all the selected line numbers
-			aryListBoxSel.SetSize(nCount);
-			GetSelItems(nCount, aryListBoxSel.GetData());
-
-			for (int i=0; i<nCount; i++)
-			{
-				// get the text name of the selected line number
-				CString sTextItem;
-				GetText(aryListBoxSel[i], sTextItem);
-				saBlockNames.Add(sTextItem);
-			}
-		}
-
-		DWORD dwDropEffect = BeginDragnDropToInsertBlocks(mpTemplate, point, IsAsyncEvents(), saBlockNames);
-		OnSelchange();
-
-		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
-		// will "follow" the mouse (like when you hold the left mouse down and 
-		// scroll through a regular listbox). WM_LBUTTONUP was sent to window that 
-		// recieved the drag/drop, not the one that initiated it, so we simulate
-		// an WM_LBUTTONUP to the initiating window.
-		if( dwDropEffect != DROPEFFECT_NONE )
-			SendMessage(WM_LBUTTONUP,0,MAKELPARAM(point.x,point.y));	
-	}	
-}
-
-
 void CArxDwgListCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus(pOldWnd);
 	
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 
 void CArxDwgListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -956,8 +872,7 @@ void CArxDwgListCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	__super::OnKillFocus(pNewWnd);
 	
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxDwgListCtrl::OnSelchange() 
@@ -965,16 +880,13 @@ void CArxDwgListCtrl::OnSelchange()
 	int nSelCount = GetSelCount();
 	
 	if (nSelCount > -1)
-	{
-		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, _T(""), IsAsyncEvents());
-	}   
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nSelCount, _T("") ) );
 	else
 	{
 		CString sText;
 		int nCurSel = GetCurSel();
 		if( nCurSel >= 0 )
 			GetText( nCurSel, sText );
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), 1, sText, IsAsyncEvents());
+		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( 1, sText ) );
 	}   	
 }

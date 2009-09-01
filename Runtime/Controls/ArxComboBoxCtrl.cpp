@@ -12,6 +12,7 @@ CArxComboBoxCtrl::CArxComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPan
 																		CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
 , mArxServices( this )
+, mDragDropService( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -27,34 +28,6 @@ bool CArxComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 		__super::Create( pParentWnd, nID );
 
 	return bSuccess;
-}
-
-bool CArxComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	switch( pProp->GetID() )
-	{
-	case Prop::DragnDropAllowDrop:
-		{
-			SetDragnDrop( pProp->GetBooleanValue() );
-			break;
-		}
-	}
-	return !bFailed;
-}
-
-void CArxComboBoxCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if (bRegister == TRUE)
-	{
-		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpTemplate;
-		m_DropTarget.m_pParent = this;
-	}
-	else
-		m_DropTarget.Revoke();
 }
 
 BEGIN_MESSAGE_MAP(CArxComboBoxCtrl, CComboBoxCtrl)
@@ -95,39 +68,34 @@ void CArxComboBoxCtrl::OnSelchange()
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethodIntString( sEvent, nCurSel, sText, IsAsyncEvents() );
+		GetArxServices()->HandleEvent( sEvent, args_NS( nCurSel, sText ) );
 }
 
 void CArxComboBoxCtrl::OnDropdown() 
 {
 	__super::OnDropdown();
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
+	GetArxServices()->HandleEvent( Prop::EventDropDown );	
 }
 
 void CArxComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove(nFlags, point);
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
 void CArxComboBoxCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxComboBoxCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxComboBoxCtrl::OnEditchange()
 {
 	CString sText;
 	GetWindowText( sText );
-	InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventEditChanged), sText, IsAsyncEvents());
+	GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( sText ) );
 }
