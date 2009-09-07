@@ -228,13 +228,6 @@ void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
 	mbDeferWindowPos = false;
 	ApplyPosition( TDialogControlLockedPtr( pDlgControl ) );
-
-	//if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
-	//		((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
-	//	rcControl.bottom += pDclControl->GetLongProperty( Prop::DropDownHeight );
-	
-	//if (pDclControl->GetType() == CtlCalendar)
-	//	((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
 }
 
 void CControlPane::CleanUpControls() 

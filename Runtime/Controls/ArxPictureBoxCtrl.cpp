@@ -223,6 +223,6 @@ void CArxPictureBoxCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CArxPictureBoxCtrl::OnPaint()
 {
 	__super::OnPaint();
-	if( GetArxServices()->HandleEvent( Prop::EventClicked, args_B( (GetFocus() == this) ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventPaint, args_B( (GetFocus() == this) ) ) )
 		return;
 }

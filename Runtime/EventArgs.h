@@ -153,14 +153,15 @@ public:
 		}
 	virtual CString asString() const
 		{
+			CString sArg( _arg );
+			sArg.Replace( _T("\\"), _T("\\\\") );
+			sArg.Replace( _T("\""), _T("\\\"") );
+			sArg.Replace( _T("\r"), _T("\\r") );
+			sArg.Replace( _T("\n"), _T("\\n") );
+			sArg.Replace( _T("\t"), _T("\\t") );
 			CString sResult = _T(" \"");
-			sResult += _arg;
+			sResult += sArg;
 			sResult += _T("\"");
-			sResult.Replace( _T("\\"), _T("\\\\") );
-			sResult.Replace( _T("\""), _T("\\\"") );
-			sResult.Replace( _T("\r"), _T("\\r") );
-			sResult.Replace( _T("\n"), _T("\\n") );
-			sResult.Replace( _T("\t"), _T("\\t") );
 			return sResult;
 		}
 };

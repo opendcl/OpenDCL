@@ -55,7 +55,6 @@
 #include "Methods_TextBox.h"
 #include "Methods_Tree.h"
 #include "DialogObject.h"
-#include "ErrorLexicon.h"
 #include "LayeredWindowHelperST.h"
 #include "ControlTypes.h"
 #include "ArchiveEx.h"
@@ -1991,7 +1990,6 @@ public:
 			CString sPath = theWorkspace.FindFile(sFilename);
 			if (sPath.IsEmpty())
 			{
-				theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + "\n" + sFilename);
 				acedRetInt(-1);
 				return RSRSLT;
 			}
@@ -2007,12 +2005,12 @@ public:
 			CString sPath = theWorkspace.FindFile(sFilename);
 			if (sPath.IsEmpty())
 			{
-				theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + "\n" + sFilename);
 				acedRetInt(-1);
 				return RSRSLT;
 			}
 			((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, sLibName);
 		}
+		acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -3195,11 +3193,18 @@ public:
 
 		CString sRawDataIn;
 		PropVal::TCStringArray rsRawData;
-		if( !GetStringArrayArgument( pArgs, rsRawData ) )
-			return RSERR; //wrong argument type
-
-		for( size_t idx = 0; idx < rsRawData.size(); ++idx )
-			sRawDataIn += rsRawData[idx];
+		if( pArgs->restype == RTLB )
+		{ //we expect a list of strings
+			if( !GetStringArrayArgument( pArgs, rsRawData ) )
+				return RSERR; //wrong argument type
+			for( size_t idx = 0; idx < rsRawData.size(); ++idx )
+				sRawDataIn += rsRawData[idx];
+		}
+		else
+		{ //otherwise it must be a single string
+			if( !GetStringArgument( pArgs, sRawDataIn ) )
+				return RSERR; //wrong argument type
+		}
 
 		//optional arguments
 		CString sPassword;

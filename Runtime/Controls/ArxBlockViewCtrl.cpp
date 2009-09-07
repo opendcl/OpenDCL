@@ -260,8 +260,8 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 	CString sPath = theWorkspace.FindFile( pszFilename ); 
 	if( sPath.IsEmpty() )
 	{				
-		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-		sMsg.Format( pszFilename );
+		CString sMsg;
+		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 		theWorkspace.DisplayAlert( sMsg );
 		return false;
 	}
@@ -274,8 +274,8 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 	// Try to open the user specified file
 	if (Acad::eOk != mpSourceDb->readDwgFile(sPath,_SH_DENYNO,false))
 	{
-		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-		sMsg.Format( pszFilename );
+		CString sMsg;
+		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 		theWorkspace.DisplayAlert( sMsg );
 		delete mpSourceDb;
 		mpSourceDb = NULL;
@@ -308,8 +308,8 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 	CString sPath = theWorkspace.FindFile( pszFilename ); 
 	if( sPath.IsEmpty() )
 	{				
-		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-		sMsg.Format( pszFilename );
+		CString sMsg;
+		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 		theWorkspace.DisplayAlert( sMsg );
 		return false;
 	}
@@ -325,8 +325,8 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 	// Try to open the user specified file
 	if (es != Acad::eOk)
 	{
-		CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-		sMsg.Format( pszFilename );
+		CString sMsg;
+		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 		theWorkspace.DisplayAlert( sMsg );
 		delete mpSourceDb;
 		mpSourceDb = NULL;

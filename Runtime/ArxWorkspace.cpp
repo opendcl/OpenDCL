@@ -8,7 +8,6 @@
 #include "ArchiveEx.h"
 #include "ArxDialogObject.h"
 #include "DclFormObject.h"
-#include "ErrorLexicon.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "InvokeMethod.h"

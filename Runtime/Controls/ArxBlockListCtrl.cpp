@@ -210,8 +210,8 @@ bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 		CString sPath = theWorkspace.FindFile( pszFilename ); 
 		if( sPath.IsEmpty() )
 		{
-			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-			sMsg.Format( pszFilename );
+			CString sMsg;
+			sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 			theWorkspace.DisplayAlert( sMsg );
 			return false;
 		}
@@ -220,8 +220,8 @@ bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 		Acad::ErrorStatus es = mpLoadedDwg->readDwgFile( sPath, _SH_DENYNO, false );
 		if( es != Acad::eOk )
 		{
-			CString sMsg = theWorkspace.LoadResourceString( IDS_DWGNOTLOADING );
-			sMsg.Format( pszFilename );
+			CString sMsg;
+			sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 			theWorkspace.DisplayAlert( sMsg );
 			try
 			{

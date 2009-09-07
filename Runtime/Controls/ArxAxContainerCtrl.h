@@ -22,8 +22,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
 protected:
-	void TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent);
-	void FireAxEvent(UINT idCtrl, const CPropertyObject* pProp, AFX_EVENT* pEvent);
+	void HandleAxEvent( AFX_EVENT* pEvent );
 
 protected:
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);

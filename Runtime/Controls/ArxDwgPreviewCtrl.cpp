@@ -5,7 +5,6 @@
 #include "ArxDwgPreviewCtrl.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
-#include "ErrorLexicon.h"
 #include "Workspace.h"
 
 
@@ -146,18 +145,16 @@ bool CArxDwgPreviewCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-void CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
+bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
 {
 	Clear();
 	if( !pszFilename || !*pszFilename )
-		return;
+		return true;
 
 	msDwgFilename = theWorkspace.FindFile( pszFilename ); 
 	if( msDwgFilename.IsEmpty() )
-	{
-		theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + "\n" + pszFilename);
-		return;
-	}
+		return false;
+	return true;
 }
 
 void CArxDwgPreviewCtrl::Reset()

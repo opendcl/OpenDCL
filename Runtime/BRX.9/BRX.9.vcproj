@@ -334,10 +334,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\ErrorLexicon.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\LinetypeDlg.cpp"
 				>
 			</File>
@@ -492,10 +488,6 @@
 			</File>
 			<File
 				RelativePath="..\DockingDialog.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ErrorLexicon.h"
 				>
 			</File>
 			<File

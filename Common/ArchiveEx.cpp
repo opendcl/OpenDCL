@@ -59,11 +59,8 @@ CArchiveEx::CArchiveEx(CFile* pFile, UINT nMode, void* lpBuf, CString sKey, BOOL
 
 CArchiveEx::~CArchiveEx()
 {
-	if (mpCompressedDataFile != NULL )
-	{
-		delete m_pFile;
-		m_pFile = mpCompressedDataFile;
-	}
+	if(mpCompressedDataFile)
+		Close();
 }
 
 void CArchiveEx::Abort()

@@ -13,9 +13,12 @@
 
 CArxControlServices::CArxControlServices( CDialogControl* pDlgControl )
 : mpDlgControl( pDlgControl )
-, msLispSymbolName( pDlgControl->GetTemplate()->GetVarName() )
 {
-	SetLispSymbol();
+	if( pDlgControl->GetControlType() != _CtlForm )
+	{
+		msLispSymbolName = pDlgControl->GetTemplate()->GetVarName();
+		SetLispSymbol();
+	}
 }
 
 CArxControlServices::~CArxControlServices()

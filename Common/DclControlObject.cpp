@@ -367,9 +367,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 				else
 					ar >> bHasStream;
 
+				mpStream = NULL;
 				if( bHasStream )
 				{
-					mpStream = NULL;
 					HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &mpStream );
 					if( FAILED( hResult ) )
 						return;
@@ -385,9 +385,8 @@ void CDclControlObject::Serialize(CArchive& ar)
 						cbStream -= nBytesToRead;
 					}
 
-					LARGE_INTEGER nDisplacement;
-					nDisplacement.QuadPart = 0;
-					mpStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );						
+					LARGE_INTEGER nZeroDisp = { 0, 0 };
+					mpStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
 				}
 			}	
 		}

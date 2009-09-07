@@ -44,7 +44,7 @@ public:
 	void Clear();
 	void SetHighlight( const COLORREF& clrHighlight );
 	void RemoveHighlight();
-	void LoadDwg( LPCTSTR pszFilename );
+	bool LoadDwg( LPCTSTR pszFilename );
 
 	// Generated message map functions
 protected:

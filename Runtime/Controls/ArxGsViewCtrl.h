@@ -84,7 +84,7 @@ protected:
 					mpGhostModel = mpFactory->createModel( AcGsModel::kDirect, 0, 0, 0 );
 					mpCtrl->AddUIDrawable( mpGhostModel, mpView );
 					mpDevice->add( mpView );
-					mpView->setView( AcGePoint3d(), AcGePoint3d( 0, 0, -1 ), AcGeVector3d( 0, 1, 0 ), 1.0, 1.0 );
+					mpView->setView( AcGePoint3d(), AcGePoint3d( 0, 0, -1 ), AcGeVector3d( 0, 1, 0 ), 0.01, 0.01 );
 				}
 			}
 		~GsViewReactor()

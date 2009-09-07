@@ -294,7 +294,11 @@ bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 	COleStreamFile* pOleStreamFile = NULL;
 	const CComPtr< IStream >& pStream = GetTemplate()->GetIStream();
 	if( pStream )
+	{
+		LARGE_INTEGER nZeroDisp = { 0, 0 };
+		pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
 		pOleStreamFile = new COleStreamFile( pStream );
+	}
 
 	bool bSuccess = false;
 	try
@@ -303,6 +307,13 @@ bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 		//Create the control, passing the OleStream and license key.
 		bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
 																				pOleStreamFile, FALSE, bstrLicenseKey ));
+		if (!bSuccess && pOleStreamFile)
+		{
+			//Creation failed.
+			//Try again, this as storage.
+			bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
+																					pOleStreamFile, TRUE, bstrLicenseKey ));
+		}
 		if (!bSuccess && pOleStreamFile)
 		{
 			//Creation failed.
@@ -441,7 +452,6 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 	UINT ctFuncs = pTypeAttr->cFuncs;
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
-	//Add a new property for each Get/Put function
 	for( UINT idxFunc = 0; idxFunc < ctFuncs; ++idxFunc )
 	{
 		FUNCDESC* pFuncDesc = NULL;
@@ -456,7 +466,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 		if( !sEventName.IsEmpty() )
 		{
 			TPropertyList& Props = pControl->GetPropertyList();
-			bool bFoundIt = false;
+			TPropertyPtr pProp;
 			for( TPropertyList::iterator iter = Props.begin(); iter != Props.end(); ++iter )
 			{
 				if( (*iter)->GetType() == PropActiveXEvent )
@@ -464,19 +474,19 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 					const AxEventDescriptor* pAxEvent = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent();
 					if( pAxEvent->GetName() == sEventName )
 					{
-						bFoundIt = true; //event already exists
+						pProp = (*iter); //event already exists
 						break;
 					}
 				}
 			}
-			if( !bFoundIt ) //event must be added to property list
+			if( !pProp ) //event must be added to property list
 			{
-				TPropertyPtr pProp = new CPropertyObject( pControl, PropActiveXEvent );
+				pProp = new CPropertyObject( pControl, PropActiveXEvent );
 				pProp->SetHidden();
 				Props.push_back( pProp );
 				++ctEvents;
-				pProp->GetAxInterfaceDescriptorPtr()->SetEvent( pAxEventDesc.release() );
 			}
+			pProp->GetAxInterfaceDescriptorPtr()->SetEvent( pAxEventDesc.release() );
 		}
 		pTypeInfo->ReleaseFuncDesc( pFuncDesc );
 	}
@@ -726,27 +736,31 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	if( FAILED(hr) )
 		return hr;
 
-	CComPtr< IPersist > pPersist;
-	hr = pOleObject->QueryInterface( &pPersist );
-	if( FAILED(hr) )
-	{
-	  // Some control implementers forget that the IPersist* interfaces aren't all
-	  // derived from IPersist.  If they forget to allow a QI for IPersist, let
-	  // them know the error of their ways, and just go for IPersistStorage to
-	  // get the IPersist interface.
-	  hr = pOleObject->QueryInterface( IID_IPersistStorage, (void**)&pPersist );
-	  if( FAILED(hr) )
-			return hr;
-	}
+	//CComPtr< IPersist > pPersist;
+	//hr = pOleObject->QueryInterface( &pPersist );
+	//if( FAILED(hr) )
+	//{
+	//  // Some control implementers forget that the IPersist* interfaces aren't all
+	//  // derived from IPersist.  If they forget to allow a QI for IPersist, let
+	//  // them know the error of their ways, and just go for IPersistStorage to
+	//  // get the IPersist interface.
+	//  hr = pOleObject->QueryInterface( IID_IPersistStorage, (void**)&pPersist );
+	//  if( FAILED(hr) )
+	//		return hr;
+	//}
 
 	CComPtr< IStream >& pStream = GetTemplate()->GetIStream();
-
-	CLSID clsid;
-	hr = pPersist->GetClassID( &clsid );
-  if( SUCCEEDED(hr) )
-		hr = WriteClassStm( pStream, clsid );
+	LARGE_INTEGER nZeroDisp = { 0, 0 };
+	hr = pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
   if( FAILED(hr) )
 		return hr;
+
+	//CLSID clsid;
+	//hr = pPersist->GetClassID( &clsid );
+	//if( SUCCEEDED(hr) )
+	//	hr = WriteClassStm( pStream, clsid );
+	//if( FAILED(hr) )
+	//	return hr;
 
 	CComPtr< IPersistStream > pPersistStream;
 	hr = pOleObject->QueryInterface( &pPersistStream );
@@ -761,6 +775,14 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	  hr = pPersistStreamInit->Save( pStream, TRUE );
 	}
 	if( FAILED(hr) )
+		return hr;
+
+	ULARGE_INTEGER nCurSize;
+	hr = pStream->Seek( nZeroDisp, STREAM_SEEK_CUR, &nCurSize );
+  if( FAILED(hr) )
+		return hr;
+	hr = pStream->SetSize( nCurSize );
+  if( FAILED(hr) )
 		return hr;
 
 	theWorkspace.SetModified(true);

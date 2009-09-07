@@ -31,10 +31,18 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 			return Acad::eStringTooLong;
 	}
 	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, sCmd, false, true, bShowCommand );
-	if( es == Acad::eNoDocument && !acDocManager->isApplicationContext() )
+	switch( es )
 	{
-		if( RTNORM == ads_queueexpr( sCmd.LockBuffer() ) )
-			es = Acad::eOk;
+	case Acad::eNoDocument:
+	case Acad::eBufferTooSmall:
+		{
+			if( !acDocManager->isApplicationContext() )
+			{
+				if( RTNORM == ads_queueexpr( sCmd.LockBuffer() ) )
+					es = Acad::eOk;
+			}
+		}
+		break;
 	}
 	return es;
 }
@@ -76,13 +84,14 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 	if( !pszHandlerLispFunction || !*pszHandlerLispFunction )
 		return true;
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	TraceFmt( _T("![%s] %s (%s )\r\n"), bAsync? _T("Async") : _T("Sync"), pszHandlerLispFunction, (LPCTSTR)args.asString() );
 	CString sHandlerLispFunction = FireCancel( pszHandlerLispFunction );
 	if( sHandlerLispFunction.IsEmpty() )
 		return true;
 	if( bAsync )
 	{
 		CString sCommand;
-		sCommand.Format( _T("(%s%s) "), (LPCTSTR)sHandlerLispFunction, (LPCTSTR)args.asString() );
+		sCommand.Format( _T("(%s%s)\n"), (LPCTSTR)sHandlerLispFunction, (LPCTSTR)args.asString() );
 		Acad::ErrorStatus es = ExecuteCommand( sCommand, false, pDoc );
 		assert (es == Acad::eOk );
 		if( es != Acad::eOk )
@@ -120,6 +129,7 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if( pDoc )
 		acDocManager->activateDocument( pDoc );
+	TraceFmt( _T("![Sync-Result] %s (%s )\r\n"), pszHandlerLispFunction, _T("<resbuf>") );
 	CString sHandlerLispFunction = FireCancel( pszHandlerLispFunction );
 	if( sHandlerLispFunction.IsEmpty() )
 		return true;
@@ -138,6 +148,7 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 												 resbuf*& prbResult,
 												 AcApDocument* pDoc /*= NULL*/ )
 {
+	TraceFmt( _T("![Sync-Result] %s (%s )\r\n"), pszHandlerLispFunction, (LPCTSTR)args.asString() );
 	resbuf* prbArgs = args.asResbuf();
 	bool bStat = InvokeEventHandler( pszHandlerLispFunction, prbArgs, prbResult, pDoc );
 	if( prbArgs )

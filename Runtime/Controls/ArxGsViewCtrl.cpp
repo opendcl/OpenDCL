@@ -114,48 +114,36 @@ void CArxGsViewCtrl::DisplayTheBlock(
 		delete mpGsReactor;
 		mpGsReactor = new GsViewReactor( this, pDb );
 	}
-	AcDbExtents extents;
-	AcGePoint3d extMax;
-	AcGePoint3d extMin;
-
-	// now create a way of looping through the entities in the block using iterators
-	AcDbBlockTableRecordIterator *pBlockIterator;
-
-	// loop thru them
-	for (pRec->newIterator (pBlockIterator); !pBlockIterator->done(); pBlockIterator->step())
+	AcDbExtents extBTR;
+	AcDbBlockTableRecordIterator* pBlockIterator = NULL;
+	if( Acad::eOk != pRec->newIterator( pBlockIterator ) )
+		return;
+	for( ; !pBlockIterator->done(); pBlockIterator->step() )
 	{
-		AcDbEntity *pEntity = NULL;  
-		// open the entity for read
-		if (pBlockIterator->getEntity (pEntity, AcDb::kForRead) != Acad::eOk)
+		AcDbEntity* pEntity = NULL;  
+		if( Acad::eOk != pBlockIterator->getEntity( pEntity, AcDb::kForRead ) )
 			continue;
-
-		AcDbExtents temp;
-		// get the extents of the entity
-		pEntity->getGeomExtents (temp);
+		AcDbExtents extEnt;
+		pEntity->getGeomExtents( extEnt ); //get the extents of the entity
 		
-		// sometimes mtext objects can be pressent and empty
-		// if they are the wreck the extents calculation
+		// sometimes mtext objects can be present and empty
+		// if they are they wreck the extents calculation
 		// so we must ignore empty MText entities.
-		if (pEntity->isA() == AcDbMText::desc())
+		if( pEntity->isA() == AcDbMText::desc() )
 		{
-			AcDbMText *pMText = (AcDbMText*)pEntity;
-			CString sContents = pMText->contents();
-
+			ACHAR* pszMText = ((AcDbMText*)pEntity)->contents();
 			// if the Mext is empty, don't include it's extents.
-			if( sContents.IsEmpty() )
+			if( !pszMText || !*pszMText )
 				continue;
 		}
-
-		// add this entity to the total extents
-		extents.addExt (temp);
-
-		// of course we must close it
+		extBTR.addExt( extEnt ); //add this entity to the total extents
 		pEntity->close();
 	}
+	delete pBlockIterator;
 
 	// Calculate the extents in WCS
-	extMax = extents.maxPoint ();  
-	extMin = extents.minPoint ();   
+	AcGePoint3d extMax = extBTR.maxPoint();
+	AcGePoint3d extMin = extBTR.minPoint();
 
 	// get the view port information - see parameter list
 	ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
@@ -188,15 +176,13 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	viewMat = AcGeMatrix3d::alignCoordSys (boxCenter, AcGeVector3d::kXAxis, AcGeVector3d::kYAxis, AcGeVector3d::kZAxis,  
 												boxCenter, viewXDir, viewYDir, vCameraViewDir).inverse();
 
-	//AcDbExtents wcsExtents(extMin, extMax);
-	// now we have the view Extents
-	AcDbExtents viewExtents = extents;
+	AcDbExtents extView = extBTR;
 	// transforms the extents in WCS->view space
-	viewExtents.transformBy (viewMat);
+	extView.transformBy (viewMat);
 	//**********************************************
 	// get the extents of the AutoCAD view
-	double xMax = fabs(viewExtents.maxPoint ().x - viewExtents.minPoint ().x);
-	double yMax = fabs(viewExtents.maxPoint ().y - viewExtents.minPoint ().y);
+	double xMax = fabs(extView.maxPoint ().x - extView.minPoint ().x);
+	double yMax = fabs(extView.maxPoint ().y - extView.minPoint ().y);
 
 	//**********************************************
 	// setup the view
@@ -223,22 +209,23 @@ void CArxGsViewCtrl::DisplayTheBlock(
 		acedGetVar(_T("CVPORT"), &rb);
 		int nVPNum = rb.resval.rint;
 		acedGetVar(_T("TILEMODE"), &rb);
-		// SHADEMODE is not available in non mspace layout viewports
-		//
 		AcGsView::RenderMode eMode;
-
 		try
 		{		
 			if ((rb.resval.rint==0) && (nVPNum == 1))
 			{
+				// SHADEMODE is not available in non mspace layout viewports
 				eMode = AcGsView::k2DOptimized;
 			}
 			else
 			{
 				AcGsView * pCurView  = acgsGetGsView (nVPNum, false);
-				//eMode  = (pCurView)? pCurView->mode(): AcGsView::k2DOptimized;
-				eMode = AcGsView::kFlatShaded;
-				pCurView->setMode(eMode);
+				if( pCurView )
+				{
+					//eMode  = (pCurView)? pCurView->mode(): AcGsView::k2DOptimized;
+					eMode = AcGsView::kFlatShaded;
+					pCurView->setMode(eMode);
+				}
 			}
 			pView->setMode(eMode);
 			pView->setView(eye, boxCenter, viewYDir, xMax , yMax );

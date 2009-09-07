@@ -547,17 +547,13 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 			if( cbData == 0 )
 				return statWriteFailed;
 			BYTE* pbData = Data.Detach();
-			CString sRawData( base64_encode( pbData, cbData ).c_str() );
+			CStringA sRawData( base64_encode( pbData, cbData ).c_str() );
 			Data.Attach( pbData, cbData );
 			Data.Close();
-			sRawData.Replace( _T("\r\n"), _T("\"\r\n\"") );
-			CString sFormattedData;
-			sFormattedData.Format( _T("'(\"%s\")"), (LPCTSTR)sRawData );
-		#ifdef _UNICODE
-			static const WORD wUnicodeSentinel = 0xfeff;
-			DestFile.Write( &wUnicodeSentinel, sizeof(wUnicodeSentinel) );
-		#endif //_UNICODE
-			DestFile.Write( (LPCTSTR)sFormattedData, sFormattedData.GetLength() * sizeof(TCHAR) );
+			sRawData.Replace( "\r\n", "\"\r\n\"" );
+			CStringA sFormattedData;
+			sFormattedData.Format( "'(\"%s\")", (LPCSTR)sRawData );
+			DestFile.Write( (LPCSTR)sFormattedData, sFormattedData.GetLength() );
 			DestFile.Flush();
 		}
 		else

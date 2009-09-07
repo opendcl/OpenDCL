@@ -90,9 +90,7 @@ void CArxTextBoxCtrl::OnMaxtext()
 void CArxTextBoxCtrl::OnUpdate() 
 {
 	if( IsWindowVisible() )
-	{
-		GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( mpTemplate->GetStringProperty( Prop::Text ) ) );
-	}
+		GetArxServices()->HandleEvent( Prop::EventUpdate, args_S( mpTemplate->GetStringProperty( Prop::Text ) ) );
 }
 
 void CArxTextBoxCtrl::OnSetFocus( CWnd* pFocus )

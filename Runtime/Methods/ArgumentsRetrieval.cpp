@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "ArgumentsRetrieval.h"
 #include "Resource.h"
-#include "ErrorLexicon.h"
 #include "AcadColorTable.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
@@ -122,13 +121,13 @@ bool GetProjectArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TArxProjectPtr& pPro
 			HandleArgError( pArgs, odcl::argWrongType );
 		return false; //wrong argument type
 	}
-	pArgs = pArgs->rbnext; //move to the next argument
 	if( !pProject )
 	{
 		if( !bQuiet )
 			HandleArgError( pArgs, odcl::argNoInstance );
 		return false;
 	}
+	pArgs = pArgs->rbnext; //move to the next argument
 	return true;
 }
 
@@ -193,13 +192,13 @@ bool GetFormArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm, /*i
 			HandleArgError( pArgs, odcl::argWrongType );
 		return false; //wrong argument type
 	}
-	pArgs = pArgs->rbnext; //move to the next argument
 	if( !pForm )
 	{
 		if( !bQuiet )
 			HandleArgError( pArgs, odcl::argNoInstance );
 		return false;
 	}
+	pArgs = pArgs->rbnext; //move to the next argument
 	return true;
 }
 
@@ -291,13 +290,13 @@ bool GetControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pCon
 			HandleArgError( pArgs, odcl::argWrongType );
 		return false; //wrong argument type
 	}
-	pArgs = pArgs->rbnext; //move to the next argument
 	if( !pControl )
 	{
 		if( !bQuiet )
 			HandleArgError( pArgs, odcl::argNoInstance );
 		return false;
 	}
+	pArgs = pArgs->rbnext; //move to the next argument
 	return true;
 }
 
@@ -311,7 +310,7 @@ bool GetDialogArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDial
 	if( !pDialog )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgsC, odcl::argNoInstance );
+			HandleArgError( pArgsC, odcl::argNoInstance, NULL, true );
 		return false;
 	}
 	return true;
@@ -326,14 +325,14 @@ bool GetDlgControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogControl*& 
 	if( !pControl || (type != _CtlInvalid && pControl->GetType() != type) )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgsC, odcl::argWrongType );
+			HandleArgError( pArgsC, odcl::argWrongType, NULL, true );
 		return false;
 	}
 	pDlgControl = pControl->GetControlInstance();
 	if( !pDlgControl )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgsC, odcl::argNoInstance );
+			HandleArgError( pArgsC, odcl::argNoInstance, NULL, true );
 		return false;
 	}
 	return true;
@@ -830,7 +829,6 @@ bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*
 		nYear = pArgs->resval.rpoint[X];
 		nMonth = pArgs->resval.rpoint[Y];
 		nDay = pArgs->resval.rpoint[Z];
-		pArgs = pArgs->rbnext;
 		break;
 	case RTLB:
 		{
@@ -861,6 +859,7 @@ bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*
 			HandleArgError( pArgs, odcl::argInvalid );
 		return false;
 	}
+	pArgs = pArgs->rbnext;
 	return true;
 }
 
@@ -876,17 +875,16 @@ bool GetImageListArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TImageListPtr& pIm
 				return false; 
 			}
 			pImageList = *(TImageListPtrIUnknown*)pArgs->resval.rlname[0];
-			pArgs = pArgs->rbnext;
 			break;
 		case RTNIL:
 			pImageList = NULL;
-			pArgs = pArgs->rbnext;
 			break;
 		default:
 			if( !bQuiet )
 				HandleArgError( pArgs, odcl::argWrongType );
 			return false; 
 	}
+	pArgs = pArgs->rbnext;
 	return true; 
 }
 
@@ -902,17 +900,16 @@ bool GetBinFileArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CBinFile*& pFile, /*
 				return false; 
 			}
 			pFile = (CBinFile*)pArgs->resval.rlname[0];
-			pArgs = pArgs->rbnext;
 			break;
 		case RTNIL:
 			pFile = NULL;
-			pArgs = pArgs->rbnext;
 			break;
 		default:
 			if( !bQuiet )
 				HandleArgError( pArgs, odcl::argWrongType );
 			return false; 
 	}
+	pArgs = pArgs->rbnext;
 	return true; 
 }
 
@@ -928,17 +925,16 @@ bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*
 				return false; 
 			}
 			pUnk = (IUnknown*)pArgs->resval.rlname[0];
-			pArgs = pArgs->rbnext;
 			break;
 		case RTNIL:
 			pUnk = NULL;
-			pArgs = pArgs->rbnext;
 			break;
 		default:
 			if( !bQuiet )
 				HandleArgError( pArgs, odcl::argWrongType );
 			return false; 
 	}
+	pArgs = pArgs->rbnext;
 	return true; 
 }
 
@@ -959,6 +955,7 @@ bool GetIDispatchArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IDispatch*& pDisp,
 			return false; 
 		}
 	}
+	pArgs = pArgs->rbnext;
 	return true; 
 }
 
@@ -972,21 +969,18 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 			{
 				varArg.vt = VT_R8;
 				varArg.dblVal = pArgs->resval.rreal;
-				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTSHORT:
 			{
 				varArg.vt = VT_I2;
 				varArg.iVal = pArgs->resval.rint;
-				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTLONG:
 			{
 				varArg.vt = VT_I4;
 				varArg.lVal = pArgs->resval.rlong;
-				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTENAME:
@@ -995,7 +989,6 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 				{
 					varArg.vt = VT_UNKNOWN;
 					varArg.punkVal = (IUnknown*)pArgs->resval.rlname[0];
-					pArgs = pArgs->rbnext;
 				}
 				else
 				{
@@ -1008,14 +1001,12 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 		case RTSTR:
 			{
 				varArg = pArgs->resval.rstring;				
-				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTT:
 			{
 				varArg.vt = VT_BOOL;
 				varArg.boolVal = VARIANT_TRUE;				
-				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTNIL:
@@ -1030,7 +1021,6 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 					varArg.vt = VT_BOOL;
 					varArg.boolVal = VARIANT_FALSE;				
 				}
-				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RT3DPOINT:
@@ -1047,14 +1037,12 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 							pArgs->resval.rpoint[2]);
 						varArg.vt = VT_DATE;
 						varArg.date = Date;
-						pArgs = pArgs->rbnext;
 						break;
 					}
 				case VT_UI4:
 					{
 						varArg.vt = VT_UI4;
 						varArg.ulVal = RGB(pArgs->resval.rpoint[0], pArgs->resval.rpoint[1], pArgs->resval.rpoint[2]);
-						pArgs = pArgs->rbnext;
 						break;
 					}
 				}
@@ -1078,6 +1066,7 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 		return false;
 	}
 
+	pArgs = pArgs->rbnext;
 	return true; 
 }
 
@@ -1103,7 +1092,6 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				return false;
 			}
 			color = RGB(red, green, blue);
-			pArgs = pArgs->rbnext;
 		}
 		break;
 	case 210:
@@ -1127,7 +1115,6 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				return false;
 			}
 			color = RGB(red, green, blue);
-			pArgs = pArgs->rbnext;
 		}
 		break;
 	case RTLB:
@@ -1180,6 +1167,7 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 		}
 		break;
 	}
+	pArgs = pArgs->rbnext;
 	return true;
 }
 

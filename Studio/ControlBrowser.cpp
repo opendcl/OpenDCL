@@ -23,14 +23,14 @@
 static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayName = NULL )
 {
 	CString sTypeNameHtml( pszTypeName );
-	if( pszTypeName && *pszTypeName )
+	if( !sTypeNameHtml.IsEmpty() )
 	{
 		CString sFilename;
-		sFilename.Format( _T("chm://Reference/DataType/%s.htm"), (LPCTSTR)pszTypeName );
+		sFilename.Format( _T("/Reference/DataType/%s.htm"), (LPCTSTR)pszTypeName );
 		if( IsChmFile( sFilename ) )
 		{
 			CString sLinkedType;
-			sLinkedType.Format( _T("<a href=\"../DataType/%s.htm\">%s</a>"), pszTypeName, (pszDisplayName && *pszTypeName)? pszDisplayName : pszTypeName );
+			sLinkedType.Format( _T("<a href=\"/Reference/DataType/%s.htm\">%s</a>"), pszTypeName, pszDisplayName? pszDisplayName : pszTypeName );
 			sTypeNameHtml = sLinkedType;
 		}
 	}
@@ -746,6 +746,7 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 	}
 
 	int nControlMethods = sMethodsHtml.Find( CString( _T("<a name=\"") ) + pszControlType + _T("\"") );
+	assert( nControlMethods >= 0 || !IsChmFolder( CString( _T("/Reference/Method/") ) + pszControlType ) );
 	if( nControlMethods >= 0 )
 	{
 		int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );
@@ -850,7 +851,7 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 CControlBrowser::CControlBrowser( TDclControlPtr pDclControl, CWnd* pParent /*=NULL*/ )
 	: CResizableDialog( CControlBrowser::IDD, pParent )
 	, mpDclControl( pDclControl )
-	, mnInitialProp( Prop::_Private )
+	, mhtiInitialProp( NULL )
 	, mDescription( *this )
 	, mbClosing( false )
 	, mszPrevious( -1, -1 )
@@ -860,7 +861,8 @@ CControlBrowser::CControlBrowser( TDclControlPtr pDclControl, CWnd* pParent /*=N
 CControlBrowser::CControlBrowser( TPropertyPtr pProp, CWnd* pParent /*=NULL*/ )
 	: CResizableDialog( CControlBrowser::IDD, pParent )
 	, mpDclControl( pProp->GetOwnerControl() )
-	, mnInitialProp( pProp->GetID() )
+	, mpInitialProp( pProp )
+	, mhtiInitialProp( NULL )
 	, mDescription( *this )
 	, mbClosing( false )
 	, mszPrevious( -1, -1 )
@@ -929,6 +931,19 @@ HTREEITEM CControlBrowser::InsertItem( HTREEITEM hParent, CTreeNode* pItem )
 	{
 		delete pItem; //caller relinquished ownership
 		return NULL;
+	}
+	if( mpInitialProp )
+	{
+		int nInitialPropImage = 4;
+		switch( mpInitialProp->GetType() )
+		{
+		case PropEvent:
+		case PropActiveXEvent:
+			nInitialPropImage = 2;
+			break;
+		};
+		if( nInitialPropImage == nImage && sName == mpInitialProp->GetName() )
+			mhtiInitialProp = hItem;
 	}
 	mObjectTree.SetItemData( hItem, (DWORD_PTR)pItem );
 	pItem->addChildItems( *this, hItem );
@@ -1031,26 +1046,8 @@ BOOL CControlBrowser::OnInitDialog()
 		pMain = new CDclControlNode( mpDclControl );
 	HTREEITEM htiControl = InsertItem( TVI_ROOT, pMain );
 	mObjectTree.Expand( htiControl, TVE_EXPAND );
-	if( mnInitialProp != Prop::_Private )
-	{
-		CString sPropName = GetPropertyName( mnInitialProp );
-		HTREEITEM hCursor = NULL;
-		for( hCursor = mObjectTree.GetChildItem( htiControl );
-				 hCursor;
-				 hCursor = mObjectTree.GetNextSiblingItem( hCursor ) )
-		{
-			int nImage = -1;
-			int nSelImage = -1;
-			mObjectTree.GetItemImage( hCursor, nImage, nSelImage );
-			if( (nImage == 4 || nImage == 2) && sPropName == mObjectTree.GetItemText( hCursor ) )
-			{
-				mObjectTree.SelectItem( hCursor );
-				break;
-			}
-		}
-		if( !hCursor )
-			mObjectTree.SelectItem( htiControl );
-	}
+	if( mhtiInitialProp )
+		mObjectTree.SelectItem( mhtiInitialProp );
 	else
 		mObjectTree.SelectItem( htiControl );
 

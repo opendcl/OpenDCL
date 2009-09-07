@@ -13,7 +13,8 @@ class CTreeNode;
 class CControlBrowser : public CResizableDialog
 {
 	TDclControlPtr mpDclControl;
-	Prop::Id mnInitialProp;
+	TPropertyPtr mpInitialProp;
+	HTREEITEM mhtiInitialProp;
 	CImageList mImageList;
 	CTreeCtrl mObjectTree;
 	bool mbClosing;

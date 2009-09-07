@@ -27,8 +27,8 @@ ADSRESULT DwgPreview::LoadDwg()
 
 	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
 
-	pCtrl->LoadDwg( sFileName );
-	acedRetT();
+	if( pCtrl->LoadDwg( sFileName ) )
+		acedRetT();
 	return RSRSLT;
 }
 
