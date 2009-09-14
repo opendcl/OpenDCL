@@ -1235,14 +1235,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\AutoRichEditCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\AutoRichEditCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\AxArg.h"
 				>
 			</File>

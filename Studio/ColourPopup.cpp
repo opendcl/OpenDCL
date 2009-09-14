@@ -35,6 +35,7 @@
 #include <math.h>
 #include "ColourPopup.h"
 #include "WinColorDlg.h"
+#include "TrueColorDialog.h"
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "ControlManager.h"
@@ -778,7 +779,7 @@ void CColourPopup::EndSelection(int nMessage)
     {
         m_bChildWindowVisible = TRUE;
 
-        CColorDialog dlg(m_crInitialColour, CC_FULLOPEN | CC_ANYCOLOR, GetParent());
+        CTrueColorDialog dlg(m_crInitialColour, CC_FULLOPEN | CC_ANYCOLOR, GetParent());
 
         if (dlg.DoModal() == IDOK)
             m_crColour = dlg.GetColor();

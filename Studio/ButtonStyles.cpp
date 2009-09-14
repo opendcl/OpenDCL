@@ -107,24 +107,14 @@ void CButtonStyles::OnSelchangePiclist()
 	int nSel = m_PicList.GetCurSel();
 	if (nSel == 1)
 	{
-		CString sFilter;
-
-		sFilter = theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER);
-	
 		// create the open dialog box
 		CPreviewFileDlg BrowseWnd(
 			TRUE, 
 			NULL,
 			NULL, 
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-			sFilter,
-			CWnd::GetActiveWindow());
-
-		// proceed to setup the file buffer size
-		BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-		TCHAR* pc = new TCHAR[MAX_PATH];
-		BrowseWnd.m_ofn.lpstrFile = pc;
-		BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
+			theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER),
+			this );
 
 		// call method to invoke the file dialog box
 		if (BrowseWnd.DoModal() == IDOK)
@@ -139,7 +129,6 @@ void CButtonStyles::OnSelchangePiclist()
 			m_PicList.SetCurSel(n);
 			m_SelectedPic = m_nHighestId;
 		}
-		delete[] pc;
 	}
 	else if (nSel == 0)
 		m_SelectedPic = 0;

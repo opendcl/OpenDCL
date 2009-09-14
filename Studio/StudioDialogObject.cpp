@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CStudioDialogObject, CDialog)
 	ON_WM_CONTEXTMENU()
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZING()
+	ON_WM_NCPAINT()
 	ON_WM_NCHITTEST()
 	ON_WM_NCLBUTTONDOWN()
 	ON_WM_NCRBUTTONUP()
@@ -172,6 +173,10 @@ bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
 	IgnoreSizing();
 	bool bSuccess = (CreateDlg( MAKEINTRESOURCE(nID), pParentWnd ) != FALSE);
 	SetControlManager( new CFormControlManager( this ) );
+
+	//CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
+	//if( pThemeHelper && pThemeHelper->IsThemeActive() )
+	//	pThemeHelper->SetWindowTheme( m_hWnd, L"", L"" );
 
 	if( bSuccess )
 		SetWindowText( GetWndCaption() );
@@ -557,6 +562,7 @@ UINT CStudioDialogObject::HitTest( const CPoint& point ) const
 	case HTTOP:
 	case HTTOPLEFT:
 	case HTLEFT:
+	case HTCLOSE:
 		return HTBORDER;
 	case HTTOPRIGHT:
 		return HTRIGHT;
@@ -1172,6 +1178,13 @@ void CStudioDialogObject::OnSize(UINT nType, int cx, int cy)
 		GetClientRect( &rcForm );
 		pManager->MoveWindow( &rcForm, FALSE );
 	}
+}
+
+void CStudioDialogObject::OnNcPaint()
+{
+	__super::OnNcPaint();
+	// TODO: Add your message handler code here
+	// Do not call __super::OnNcPaint() for painting messages
 }
 
 BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)

@@ -42,9 +42,10 @@ public:
 	void LoadResourceIcon( UINT nIconResId, HMODULE hResMod = NULL );
 
 	//Copied from non-member utility function in Editor
-	void Update( LPPICTUREDISP NewPicture );
-	void LoadFile( LPCTSTR szFile, bool bApplyMask = false );
+	void Update( LPPICTURE pPicture );
+	bool LoadFile( LPCTSTR pszFile, bool bApplyMask = false );
 	static CPictureObject* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
+	static CPictureObject* CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask = false );
 
 	void Clear();
 	void Render( CDC* pDC, const CRect& rcDest ) const;

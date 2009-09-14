@@ -18,6 +18,7 @@ CArxGsViewCtrl::CArxGsViewCtrl( TDclControlPtr pTemplate,
 , mColorService( long(-19), long(-22) )
 , mArxServices( this )
 , mDragDropService( this )
+, mBlockInsertDropTarget( this )
 , mpGsReactor( NULL )
 , mbHighlighted( false )
 , mLBState( up )
@@ -358,6 +359,7 @@ void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if( (nFlags & MK_LBUTTON) != 0 && mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 	{
 		DROPEFFECT dwDropEffect = BeginDragDrop( point );
+		PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
 		if( dwDropEffect != DROPEFFECT_NONE )
 			return;
 	}

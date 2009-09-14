@@ -32,7 +32,6 @@ public:
 	RefCountedPtr< CImageList >& GetImageList() { return mpImageList; }
 
 protected:
-	LPPICTURE LoadPictureFile( LPCTSTR szFile );
 	BOOL ImageListAddPicture( LPPICTUREDISP iPic );
 	BOOL ImageListReplacePicture( int idxPic, LPPICTUREDISP iPic );
 

@@ -101,6 +101,7 @@ CArxDwgPreviewCtrl::CArxDwgPreviewCtrl( TDclControlPtr pTemplate, CControlPane* 
 : CDialogControl( pTemplate, pPane, this )
 , mArxServices( this )
 , mDragDropService( this )
+, mBlockInsertDropTarget( this )
 , mbDrawSelected( false )
 {
 	if( bCreate )
@@ -143,6 +144,22 @@ bool CArxDwgPreviewCtrl::OnApplyProperty( TPropertyPtr pProp )
 	//	break;
 	//}
 	return !bFailed;
+}
+
+DROPEFFECT CArxDwgPreviewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	DROPEFFECT dwDropEffect = __super::OnBeginDrag( point, SourceData );
+	if( msDwgFilename.IsEmpty() )
+		return dwDropEffect;
+	CStringA sTextA( msDwgFilename );
+	SIZE_T cchText = sTextA.GetLength() + 1;
+	HGLOBAL hData = GlobalAlloc( GHND, cchText );
+	if( !hData )
+		return dwDropEffect;
+	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
+	GlobalUnlock( hData );
+	SourceData.CacheGlobalData( CF_TEXT, hData );
+	return DROPEFFECT_COPY;
 }
 
 bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
@@ -306,6 +323,7 @@ void CArxDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
 	{
 		DROPEFFECT dwDropEffect = BeginDragDrop( point );
+		PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
 		if( dwDropEffect != DROPEFFECT_NONE )
 			return;
 	}

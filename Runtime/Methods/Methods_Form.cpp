@@ -156,21 +156,27 @@ ADSRESULT Form::GetControls()
 	if( !pDclForm )
 		return RSRSLT; //form not found
 
+	TDclFormList Forms;
+	pDclForm->GetProject()->FindChildForms( pDclForm, Forms );
+	Forms.push_front( pDclForm );
 	resbuf* prbControls = NULL;
 	resbuf* prbTail = NULL;
-	const TDclControlList& Controls = pDclForm->GetControlList();
-	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	for( TDclFormList::const_iterator iterForm = Forms.begin(); iterForm != Forms.end(); ++iterForm )
 	{
-		if( (*iter)->GetType() == _CtlForm )
-			continue;
-		resbuf* prbControl = acutNewRb( RTENAME );
-		prbControl->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter);
-		prbControl->resval.rlname[1] = odcl::ptrDclControl;
-		if( prbTail )
-			prbTail->rbnext = prbControl;
-		else
-			prbControls = prbControl;
-		prbTail = prbControl;
+		const TDclControlList& Controls = (*iterForm)->GetControlList();
+		for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+		{
+			if( (*iter)->GetType() == _CtlForm )
+				continue;
+			resbuf* prbControl = acutNewRb( RTENAME );
+			prbControl->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter);
+			prbControl->resval.rlname[1] = odcl::ptrDclControl;
+			if( prbTail )
+				prbTail->rbnext = prbControl;
+			else
+				prbControls = prbControl;
+			prbTail = prbControl;
+		}
 	}
 	acedRetList( prbControls );
 	acutRelRb( prbControls );

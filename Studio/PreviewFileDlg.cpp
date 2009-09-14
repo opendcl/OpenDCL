@@ -25,22 +25,26 @@ IMPLEMENT_DYNAMIC(CPreviewFileDlg, CFileDialog)
 
 CPreviewFileDlg::CPreviewFileDlg(BOOL bOpenFileDialog, LPCTSTR lpszDefExt, LPCTSTR lpszFileName,
 		DWORD dwFlags, LPCTSTR lpszFilter, CWnd* pParentWnd) :
+	__if_exists(m_bVistaStyle)
+	{
+		CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd, 0, FALSE)
+	}
+	__if_not_exists(m_bVistaStyle)
+	{
 		CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
+	}
 {
 	m_ofn.Flags |= (OFN_EXPLORER | OFN_ENABLETEMPLATE);
 	m_ofn.lpTemplateName = MAKEINTRESOURCE(IDD_FILEOPENPREVIEW);
-
 	m_bPreview = TRUE;
 }
 
 
 BEGIN_MESSAGE_MAP(CPreviewFileDlg, CFileDialog)
-	//{{AFX_MSG_MAP(CPreviewFileDlg)
 	ON_BN_CLICKED(IDC_PREVIEW, OnPreview)
 	ON_WM_QUERYNEWPALETTE()
 	ON_WM_PALETTECHANGED()
 	ON_WM_SETFOCUS()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -48,7 +52,7 @@ BOOL CPreviewFileDlg::OnInitDialog()
 {
 	CFileDialog::OnInitDialog();
 
-	m_DIBStaticCtrl.SubclassDlgItem(IDC_IMAGE, this);
+	m_Preview.SubclassDlgItem(IDC_IMAGE, this);
 // if exception problem still exists whan selecting picture files change this next line to get the CWnd and modify that way
 	GetDlgItem(IDC_PREVIEW)->SendMessage(BM_SETCHECK, (m_bPreview) ? 1 : 0);
 	
@@ -59,41 +63,41 @@ BOOL CPreviewFileDlg::OnInitDialog()
 void CPreviewFileDlg::OnFileNameChange() 
 {
 	CFileDialog::OnFileNameChange();
-	if (m_bPreview)
-		m_DIBStaticCtrl.LoadDib(GetPathName()); // the control will handle errors
+	if( m_bPreview && m_Preview.m_hWnd )
+		m_Preview.LoadPictureFile( GetPathName(), true );
 }
 
 void CPreviewFileDlg::OnFolderChange() 
 {
 	CFileDialog::OnFolderChange();
-	m_DIBStaticCtrl.RemoveDib();
+	m_Preview.Clear();
 }
 
 void CPreviewFileDlg::OnPreview() 
 {
 	m_bPreview = !m_bPreview;
-	if (!m_bPreview)
-		m_DIBStaticCtrl.RemoveDib(); // no preview
-	else
-		m_DIBStaticCtrl.LoadDib(GetPathName()); // the control will handle errors
+	if( !m_bPreview )
+		m_Preview.Clear(); // no preview
+	else if( m_Preview.m_hWnd )
+		m_Preview.LoadPictureFile( GetPathName(), true );
 }
 
 BOOL CPreviewFileDlg::OnQueryNewPalette() 
 {
-	m_DIBStaticCtrl.SendMessage(WM_QUERYNEWPALETTE);	// redo the palette if necessary
+	m_Preview.SendMessage(WM_QUERYNEWPALETTE);	// redo the palette if necessary
 	return CFileDialog::OnQueryNewPalette();
 }
 
 void CPreviewFileDlg::OnPaletteChanged(CWnd* pFocusWnd) 
 {
 	CFileDialog::OnPaletteChanged(pFocusWnd);
-	m_DIBStaticCtrl.SendMessage(WM_PALETTECHANGED, (WPARAM)pFocusWnd->GetSafeHwnd());	// redo the palette if necessary
+	m_Preview.SendMessage(WM_PALETTECHANGED, (WPARAM)pFocusWnd->GetSafeHwnd());	// redo the palette if necessary
 }
 
 void CPreviewFileDlg::OnSetFocus(CWnd* pOldWnd) 
 {
 	CFileDialog::OnSetFocus(pOldWnd);
-	m_DIBStaticCtrl.SendMessage(WM_QUERYNEWPALETTE);	// redo the palette if necessary
+	m_Preview.SendMessage(WM_QUERYNEWPALETTE);	// redo the palette if necessary
 }
 
 #ifdef _DEBUG

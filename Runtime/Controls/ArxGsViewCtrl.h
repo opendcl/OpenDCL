@@ -8,6 +8,7 @@
 #include "AcadColorService.h"
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
+#include "AcadBlockInsertDropTarget.h"
 
 
 #if (_MFC_VER < 0x0800)
@@ -25,6 +26,7 @@ class CArxGsViewCtrl : public CStatic, public CDialogControl
 protected:
 	CAcadColorService mColorService;
 	CArxControlServices	mArxServices;
+	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 
 	class GsViewReactor : public AcGsReactor
@@ -177,6 +179,7 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );

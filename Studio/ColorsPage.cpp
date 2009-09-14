@@ -9,6 +9,7 @@
 #include "AcadColorTable.h"
 #include "IntegerFilter.h"
 #include "DclFormView.h"
+#include "TrueColorDialog.h"
 
 
 static UINT GetDialogResourceId( Prop::Id idProp )
@@ -202,13 +203,13 @@ void CColorsPage::OnKillfocusEdit()
 void CColorsPage::OnTruebtn() 
 {
 	
-	CColorDialog colorDlg;
+	CTrueColorDialog colorDlg;
 	if (colorDlg.DoModal() == IDOK) // The user selected the "OK" button
 	{
 		  COLORREF crColor = colorDlg.GetColor(); 
-		  TCHAR value[80];
-		  _ltot(crColor, value, 10);
-		  m_Edit.SetWindowText(value);
+		  CString sColor;
+			sColor.Format( _T("%d"), crColor );
+		  m_Edit.SetWindowText( sColor );
 	}
 	DisplayColor();
 }

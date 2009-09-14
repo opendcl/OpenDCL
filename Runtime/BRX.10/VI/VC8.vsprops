@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<VisualStudioPropertySheet 
+	ProjectType="Visual C++" 
+	Version="8.00" 
+	Name="BRX 10"
+	OutputDirectory="$(ConfigurationName)"
+	IntermediateDirectory="$(ConfigurationName)">
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories=".\;..\;&quot;$(BRX10)\VI&quot;;&quot;$(BRX10)\Inc&quot;;&quot;$(MSVC8)\Include&quot;;&quot;$(MSVC8)\ATLMFC\Include&quot;;&quot;$(MSVC8)\PlatformSDK\Include&quot;"
+		PreprocessorDefinitions="_ACADTARGET=17;_BRXTARGET=10"
+		UsePrecompiledHeader="2"
+	/>
+	<Tool
+		Name="VCResourceCompilerTool"
+		PreprocessorDefinitions="_ACADTARGET=17;_BRXTARGET=10"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalLibraryDirectories="&quot;$(BRX10)\Lib&quot;;&quot;$(MSVC8)\Lib&quot;;&quot;$(MSVC8)\ATLMFC\Lib&quot;;&quot;$(MSVC8)\PlatformSDK\Lib&quot;"
+		OutputFile="$(OutDir)/$(ProjectName).arx"
+		ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+		ImportLibrary="$(OutDir)/$(ProjectName).lib"
+	/>
+	<Tool
+		Name="VCMIDLTool"
+		PreprocessorDefinitions="_ACADTARGET=17;_BRXTARGET=10"
+		AdditionalIncludeDirectories="&quot;$(BRX10)\Inc&quot;;&quot;$(MSVC8)\Include&quot;"
+		GenerateStublessProxies="true"
+		HeaderFileName="$(InputName).h"
+		InterfaceIdentifierFileName="$(InputName)_i.c"
+		ProxyFileName="$(InputName)_p.c"
+	/>
+</VisualStudioPropertySheet>

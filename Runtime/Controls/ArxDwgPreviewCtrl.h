@@ -7,6 +7,7 @@
 #include "AcadColorService.h"
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
+#include "AcadBlockInsertDropTarget.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,6 +17,7 @@ class CArxDwgPreviewCtrl : public CButton, public CDialogControl
 {
 	CAcadColorService mColorService;
 	CArxControlServices	mArxServices;
+	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 	CString msDwgFilename;
 	bool mbDrawSelected;
@@ -30,6 +32,8 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );

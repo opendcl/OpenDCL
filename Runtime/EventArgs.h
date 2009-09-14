@@ -78,8 +78,8 @@ public:
 			//sArg.Format( _T(" %u"), _arg );
 			//return sArg;
 			ads_real rArg = _arg;
-			TCHAR szArg[256]; 
-			if( RTNORM == acdbRToS( rArg, 2, 0, szArg ) )
+			TCHAR szArg[256] = _T(" "); 
+			if( RTNORM == acdbRToS( rArg, 2, 0, szArg + 1 ) )
 				return szArg;
 			return _T(" 0");
 		}
@@ -187,14 +187,15 @@ public:
 		}
 	virtual CString asString() const
 		{
+			CString sArg( _arg );
+			sArg.Replace( _T("\\"), _T("\\\\") );
+			sArg.Replace( _T("\""), _T("\\\"") );
+			sArg.Replace( _T("\r"), _T("\\r") );
+			sArg.Replace( _T("\n"), _T("\\n") );
+			sArg.Replace( _T("\t"), _T("\\t") );
 			CString sResult = _T(" \"");
 			sResult += _arg;
 			sResult += _T("\"");
-			sResult.Replace( _T("\\"), _T("\\\\") );
-			sResult.Replace( _T("\""), _T("\\\"") );
-			sResult.Replace( _T("\r"), _T("\\r") );
-			sResult.Replace( _T("\n"), _T("\\n") );
-			sResult.Replace( _T("\t"), _T("\\t") );
 			return sResult;
 		}
 };
@@ -252,7 +253,8 @@ public:
 					prbArg1->rbnext = prbArg2;
 					prbArg2->rbnext = prbArg3;
 				}
-				prbArg1->rbnext = prbArg3;
+				else
+					prbArg1->rbnext = prbArg3;
 				return prbArg1;
 			}
 			if( prbArg2 )

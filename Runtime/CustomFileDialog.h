@@ -54,9 +54,7 @@ public:
 	CMainFileDlg& GetMainDialog() { return mMainFileDlg; }
 
 // Implementation
-public:
-	void GetResults();	
-	void CloseNow();
+protected:
 	void CtrlModifyStyle(int nCtrl);
 
 protected:

@@ -640,21 +640,27 @@ void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if( mpTemplate )		
-		GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
+	if( mpTemplate )
+	{
+		if( GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) ) )
+			return;
+	}
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if( mpTemplate )		
-		GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
+	if( mpTemplate )
+	{
+		if( GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) ) )
+			return;
+	}
 
 	switch (nChar) 
 	{
 		case VK_ESCAPE: 
 			break;
-		case VK_RETURN: 
+		case VK_SPACE: 
 			OnEditCurCell();
 			return;
 		case VK_UP: 

@@ -151,6 +151,7 @@ protected:
 	afx_msg void OnSendtoback();
 	afx_msg void OnUpdateSendtoback(CCmdUI *pCmdUI);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnNcPaint();
 	afx_msg void OnDestroy();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);

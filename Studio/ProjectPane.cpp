@@ -434,7 +434,7 @@ void CProjectPane::EditSelectedItem()
 										 sLispFileName, 
 										 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
 										 theWorkspace.LoadResourceString(IDS_FILTERAUTOLISPFILE),
-										 CWnd::GetActiveWindow() );
+										 this );
 		CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
 		Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
 		if( Dlg.DoModal() == IDOK )
@@ -729,7 +729,7 @@ void CProjectPane::OnSetautolispfilename()
 									 sLispFileName, 
 									 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
 									 theWorkspace.LoadResourceString(IDS_FILTERAUTOLISPFILE),
-									 CWnd::GetActiveWindow() );
+									 this );
 	CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
 	Dlg.m_pOFN->lpstrTitle = sTitle;
 	if( Dlg.DoModal() == IDOK )

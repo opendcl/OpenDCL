@@ -326,14 +326,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DIB.H"
-				>
-			</File>
-			<File
-				RelativePath=".\DIBStatic.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DropListContents.h"
 				>
 			</File>
@@ -542,6 +534,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TrueColorDialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\UndoActions.h"
 				>
 			</File>
@@ -640,14 +636,6 @@
 			</File>
 			<File
 				RelativePath=".\DclFormView.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DIB.CPP"
-				>
-			</File>
-			<File
-				RelativePath=".\DIBStatic.cpp"
 				>
 			</File>
 			<File
@@ -859,6 +847,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TrueColorDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\UndoActions.cpp"
 				>
 			</File>
@@ -901,35 +893,6 @@
 			<File
 				RelativePath="..\Common\ArchiveEx.h"
 				>
-			</File>
-			<File
-				RelativePath="..\Common\AutoRichEditCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\AutoRichEditCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\AutoRichEditCtrl.htm"
-				DeploymentContent="true"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\Common\AxArg.h"

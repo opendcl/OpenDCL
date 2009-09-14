@@ -36,6 +36,8 @@
             <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>&nbsp;<font color="#FF0000">SiblingItem [as
             <a href="../../DataType/Handle.htm">Handle</a> or
             <a href="../../DataType/String.htm">String</a>]</font>
+            <font color="#FF0000">{InsertBefore [as
+            <a href="../../DataType/Boolean.htm">Boolean</a>]}</font>
             <font color="#FF0000">Label [as <a href="../../DataType/String.htm">
             String</a>]</font> <font color="#FF0000">{Key [as
             <a href="../../DataType/String.htm">String</a>]}</font>
@@ -56,8 +58,9 @@
       <a href="../../Control/Tree.htm">Tree</a></td>
           </tr>
         </table>
-		<p>This method adds a new item after (and at the same level) as the  item 
-        specified by SiblingItem. Label is the label text for the new  item. If Key is 
+		<p>This method adds a new item after (and at the same level as) the  item 
+        specified by SiblingItem. If InsertBefore is T, the new item is inserted 
+        before the specified item. Label is the label text for the new  item. If Key is 
         specified, it must be a unique (to the tree control instance) string key 
         to be used for identifying the new  item. The three optional ImageIndex arguments are images from the control's image list that 
         display when the item is in the normal, selected, or expanded states, 

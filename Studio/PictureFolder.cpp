@@ -11,9 +11,6 @@
 #include "PropertyIds.h"
 
 
-static const TCHAR sPictureFilter[] = _T("Picture Files|*.bmp;*.wmf;*.jpg;*.ico;*.dib|Bitmaps (*.bmp,*.dib)|*.bmp;*.dib|JPEG Files (*.jpg)|*.jpg|Icon Files (*.ico)|*.ico|Wmf FIle (*.wmf)|*.wmf|");
-
-
 static void HIMETRICtoDP(HDC hdc, LPSIZE lpSize)
 {
 	// map against logical inch for non-constrained mapping modes
@@ -153,14 +150,12 @@ void CPictureFolder::MultiFileDialog()
 		NULL,
 		NULL, 
 		OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		sPictureFilter,
-		CWnd::GetActiveWindow());
+		theWorkspace.LoadResourceString( IDS_IMAGEFILEFILTER ),
+		this);
 
-	// proceed to setup the file buffer size
-	TCHAR szFileBuf[8192];
+	TCHAR szFileBuf[8192] = _T("");
 	BrowseWnd.m_ofn.nMaxFile = _elements(szFileBuf);
 	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
-	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
 	if( BrowseWnd.DoModal() == IDOK )   
 	{
@@ -206,14 +201,8 @@ void CPictureFolder::UpdateSingleFileDialog()
 		NULL,
 		NULL, 
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		sPictureFilter,
-		CWnd::GetActiveWindow());
-
-	// proceed to setup the file buffer size
-	TCHAR szFileBuf[MAX_PATH];
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
-	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
+		theWorkspace.LoadResourceString( IDS_IMAGEFILEFILTER ),
+		this );
 
 	if( BrowseWnd.DoModal() == IDOK )
 	{

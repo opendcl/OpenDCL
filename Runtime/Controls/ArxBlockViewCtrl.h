@@ -129,6 +129,7 @@ public:
 public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 
 protected:
 	void StartUIDrag();

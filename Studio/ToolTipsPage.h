@@ -8,7 +8,6 @@
 #include "PPToolTip.h"
 #include "ButtonST.h"
 #include "ColourPicker.h"
-#include "AutoRichEditCtrl.h"
 
 class CPropertyObject;
 
@@ -20,13 +19,7 @@ class CToolTipsPage : public CPropertyPage
 {
 	TDclControlPtr mpDclControl;
 
-// Construction
-public:
-	CToolTipsPage( TDclControlPtr pDclControl );
-	~CToolTipsPage();
-
 // Dialog Data
-	//{{AFX_DATA(CToolTipsPage)
 	enum { IDD = IDD_TOOLTIPS };
 	CButtonST	m_Color2;
 	CButtonST	m_UnderLine;
@@ -39,7 +32,6 @@ public:
 	CButton	m_Line;
 	CColourPicker	m_Color;
 	CButton m_Balloon;
-	//}}AFX_DATA
 
 	CPPToolTip m_tooltip;
 	int m_SelectedPic;
@@ -53,6 +45,12 @@ public:
 	TPropertyPtr m_pToolTipAvi;	
 	TPropertyPtr m_pToolTipTitleColor;
 
+// Construction
+public:
+	CToolTipsPage( TDclControlPtr pDclControl );
+	~CToolTipsPage();
+
+protected:
 	void Commit();
 	void ModifySelection( LPCTSTR pszPrefix, LPCTSTR pszSuffix );
 

@@ -34,7 +34,7 @@ public:
 	virtual void AutoSize() {}
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual void OnMouseEntered() {}
-	void DrawPicture( TPicturePtr, bool bStretchToFit = false );
+	void DrawPicture( TPicturePtr, bool bShrinkToFit = false );
 	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );
 	void SetPictureBlank();
@@ -52,7 +52,7 @@ public:
 	void DrawFocusRect(int sX, int sY, int eX, int eY);
 	void DrawRect(int sX, int sY, int eX, int eY, COLORREF rgb);
 	void GetTextExtent(LPCTSTR pszText, CSize& ext);
-	bool LoadPictureFile(LPCTSTR szFile, bool bStretch = false);
+	bool LoadPictureFile(LPCTSTR pszFile, bool bStretch = false);
 	void CopyDC();
 
 protected:

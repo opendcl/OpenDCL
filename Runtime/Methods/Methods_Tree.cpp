@@ -186,6 +186,9 @@ ADSRESULT Tree::AddSibling()
 			return RSERR; //invalid input
 	}
 
+	bool bInsertBefore = false;
+	GetBoolArgument( pArgs, bInsertBefore, true );
+
 	CString sLabel;
 	if( !GetStringArgument( pArgs, sLabel ) )
 		return RSERR;
@@ -207,10 +210,18 @@ ADSRESULT Tree::AddSibling()
 
 	HTREEITEM hItem = NULL;
 	HTREEITEM hAddAfter = (HTREEITEM)dwRefKey;
+	HTREEITEM hParent = NULL;
 	if( dwRefKey == -1 )
 		hAddAfter = pCtrl->FindItem( sRefKey );
+	if( hAddAfter && bInsertBefore )
+	{
+		hParent = pCtrl->GetParentItem( hAddAfter );
+		hAddAfter = pCtrl->GetPrevSiblingItem( hAddAfter );
+		if( !hAddAfter )
+			hAddAfter = TVI_FIRST;
+	}
 	if( hAddAfter )
-		hItem = pCtrl->AddChild( NULL, sLabel, sKey, nImage, nSelectedImage, nExpandedImage, hAddAfter );
+		hItem = pCtrl->AddChild( hParent, sLabel, sKey, nImage, nSelectedImage, nExpandedImage, hAddAfter );
 
 	if( hItem )
 		theArxWorkspace.RetHandle( (DWORD_PTR)hItem );

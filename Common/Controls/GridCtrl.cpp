@@ -1732,6 +1732,7 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_VSCROLL_REFLECT()
 	ON_NOTIFY_REFLECT(LVN_BEGINSCROLL, &CGridCtrl::OnLvnBeginScroll)
 	ON_REGISTERED_MESSAGE(refWM_CHECKFOCUS(), &CGridCtrl::OnCheckFocus)
+	ON_WM_GETDLGCODE()
 END_MESSAGE_MAP()
 
 
@@ -1874,4 +1875,14 @@ LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 		}
 	}
 	return 0;
+}
+
+UINT CGridCtrl::OnGetDlgCode()
+{
+	UINT nResult = __super::OnGetDlgCode();
+	if( !mpTemplate->GetStringProperty( Prop::EventReturnPressed ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyDown ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyUp ).IsEmpty() )
+		nResult |= DLGC_WANTALLKEYS;
+	return nResult;
 }

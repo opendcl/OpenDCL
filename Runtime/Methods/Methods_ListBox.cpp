@@ -83,9 +83,13 @@ ADSRESULT ListBox::GetSelectedItems()
 
 	if( nCount == -1 )
 	{ //only a single selection
-		CString sSel;
-		pCtrl->GetText( pCtrl->GetCurSel(), sSel );
-		acedRetStr( sSel );
+		int nCurSel = pCtrl->GetCurSel();
+		if( nCurSel >= 0 )
+		{
+			CString sSel;
+			pCtrl->GetText( nCurSel, sSel );
+			acedRetStr( sSel );
+		}
 		return RSRSLT;
 	}
 

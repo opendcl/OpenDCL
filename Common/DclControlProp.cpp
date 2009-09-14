@@ -524,6 +524,9 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlHiddenProperty( pDclControl, Prop::ColumnListImages, _T(""), PropIntArrayList );
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventBtnClicked );
+		AddControlEvent( pDclControl, Prop::EventDblClicked );
+		AddControlEvent( pDclControl, Prop::EventKeyDown );
+		AddControlEvent( pDclControl, Prop::EventKeyUp );
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
@@ -609,6 +612,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		AddControlFontProperties( pDclControl, FS );
+		AddControlTooltipProperties( pDclControl );
 		pDclControl->AddLongProperty( Prop::Justification, PropEnum, 0 );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );

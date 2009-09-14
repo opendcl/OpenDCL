@@ -12,6 +12,8 @@ class CDialogControl;
 class CArxControlAcadDropTarget : public COleDropTarget
 {
 	CDialogControl* mpDlgControl;
+
+protected:
 	bool mbDropExCalled;
 
 public:

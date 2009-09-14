@@ -361,7 +361,8 @@ class TargetModule
 {
 public:
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, };
-	enum MajorVersion { kBRX9 = 9, kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
+	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kARX1 = 13,
+											kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, };
 	typedef char TByte;
 	TargetModule( Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
@@ -451,6 +452,7 @@ public:
 		kAutoCAD2009 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 2),
 		kAutoCAD2010 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 0),
 		kBricscad9_3 =  ((kBricscad << shftPlatform) | (kBRX9 << shftMajorVer) | 3),
+		kBricscad10_0 =  ((kBricscad << shftPlatform) | (kBRX10 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -482,6 +484,9 @@ public:
 				{
 				case kBRX9:
 					sRootKey += _T("V9");
+					break;
+				case kBRX10:
+					sRootKey += _T("V10");
 					break;
 				}
 				break;
@@ -601,7 +606,9 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, boo
 		String sTargetKey( (LPCTSTR)sRootKey );
 		sTargetKey += _T('\\');
 		sTargetKey += sSubkey;
-		if( bWantHKLM && Target.platform() == TargetModule::kBricscad )
+		if( bWantHKLM &&
+				Target.platform() == TargetModule::kBricscad &&
+				Target.majorVersion() == TargetModule::kBRX9 )
 		{
 			RegKey rkRoot( sTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 			LPCTSTR pszLanguage = rkRoot.GetString( _T("Language") );
@@ -654,6 +661,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10_0, sInstallDir ), bWantHKLM );
 	if( IsWow64() )
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM, true );
@@ -719,6 +727,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );

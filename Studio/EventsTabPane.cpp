@@ -384,9 +384,9 @@ void CEventsTabPane::OnAddtolisp()
 										 sLispFileName, 
 										 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
 										 theWorkspace.LoadResourceString( IDS_FILTERAUTOLISPFILE ),
-										 CWnd::GetActiveWindow() );
+										 this );
 		CString sTitle = theWorkspace.LoadResourceString( IDS_SELECTPROJECTLISPFILE );
-		Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
+		Dlg.m_pOFN->lpstrTitle = sTitle;
 		if( Dlg.DoModal() != IDOK )
 			return; //user cancelled
 		sLispFileName = Dlg.GetPathName();

@@ -8,7 +8,7 @@
 #include "DialogControl.h"
 #include "ArxControlServices.h"
 
-#if defined(_BRXTARGET) && (_BRXTARGET <= 9)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
 BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget)
 {
 	return FALSE;

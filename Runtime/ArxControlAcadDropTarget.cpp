@@ -78,6 +78,7 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 																								DROPEFFECT dropDefault, DROPEFFECT dropList,
 																								CPoint point )
 {
+	mbDropExCalled = true;
 	CString sDropOnAcadWndPointEvent =
 		mpDlgControl->GetTemplate()->GetStringProperty( Prop::DragnDropToAutoCAD );
 	const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
@@ -87,7 +88,6 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 		int nViewport = acedGetWinNum( point.x, point.y );
 		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
 		pArxServices->HandleEvent( sDropOnAcadWndPointEvent, args_P3N( dwgPt, nViewport ) );
-		mbDropExCalled = true;
 		return DROPEFFECT_COPY;
 	}
 	return DROPEFFECT_NONE; //returning DROPEFFECT_NONE will cause OnDrop to be called instead

@@ -5,6 +5,7 @@
 #include "Filing.h"
 #include "Workspace.h"
 #include "SafeImageListWrite.h"
+#include <IImgCtx.h>
 
 //#include <AtlImage.h> //for CImage
 
@@ -290,6 +291,14 @@ CPictureObject* CPictureObject::CreatePictureObject( short nID, LPPICTUREDISP pP
 	return pPicture;
 }
 
+//static
+CPictureObject* CPictureObject::CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask /*= false*/ )
+{
+	CPictureObject* pPicture = new CPictureObject( nID, pszFile, bApplyMask );
+	pPicture->CalcLogicalSize();
+	return pPicture;
+}
+
 void CPictureObject::Clear()
 {
 	if( m_hPicture.m_pPict )
@@ -337,7 +346,7 @@ HICON CPictureObject::CloneIcon() const
 			HBITMAP hbmpClone = CloneBitmap();
 			if (hbmpClone != NULL)
 			{
-				// add the bitmap to a image list for extraction
+				// add the bitmap to an image list for extraction
 				CImageList ImageList;
 				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1);
 				ImageList.Add(CBitmap::FromHandle(hbmpClone), rgbLightGrey);
@@ -370,9 +379,10 @@ short CPictureObject::GetPicType() const
 	return const_cast<CPictureObject*>(this)->m_hPicture.GetType();
 }
 
-void CPictureObject::Update(LPPICTUREDISP NewPicture) 
+void CPictureObject::Update( LPPICTURE pPicture ) 
 {
-	m_hPicture.SetPictureDispatch(NewPicture);
+	CComQIPtr< IPictureDisp > pPictureDisp = pPicture;
+	m_hPicture.SetPictureDispatch( pPictureDisp );
 	CalcLogicalSize();
 }
 
@@ -388,15 +398,13 @@ void CPictureObject::LoadResourceIcon( UINT nIconResId, HMODULE hResMod /*= NULL
 	CalcLogicalSize();
 }
 
-void CPictureObject::LoadFile( LPCTSTR szFile, bool bApplyMask /*= false*/ )
+bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 {
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	CPictureHolder	phPicture;
-	
+	Clear();
 	// open file
-	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
+	HANDLE hFile = CreateFile(pszFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+	if( INVALID_HANDLE_VALUE == hFile )
+		return false;
 
 	// get file size
 	DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -423,26 +431,79 @@ void CPictureObject::LoadFile( LPCTSTR szFile, bool bApplyMask /*= false*/ )
 	_ASSERTE(SUCCEEDED(hr) && pstm);
 	
 	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
+	LPPICTURE lpPicture = NULL;
 	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
+	pstm->Release();
+	if( FAILED(hr) )
+	{ //try plan B
+		CComPtr< IImgCtx > pImgCtx;
+		hr = CoCreateInstance( CLSID_IImgCtx, NULL, CLSCTX_INPROC_SERVER, IID_IImgCtx, (LPVOID*)&pImgCtx );
+		if( SUCCEEDED(hr) )
+		{
+			CStringW sFilename( pszFile );
+			sFilename.Replace( L'\\', L'/' );
+			CStringW sUrl = L"file://";
+			sUrl += sFilename;
+			hr = pImgCtx->Load( sUrl, 0 );
+			if( SUCCEEDED(hr) )
+			{
+				SIZE sizeImg = { 0, 0 };
+				ULONG ulState = 0;
+				ULONG ctLoop = 0;
+				do
+				{
+					if( FAILED( pImgCtx->GetStateInfo( &ulState, &sizeImg, FALSE ) ) )
+						break;
+					Sleep( 10 );
+				}
+				while( (ulState & IMGLOAD_LOADING) && ++ctLoop <= 1000 );
+				if( (ulState & IMGLOAD_COMPLETE) )
+				{
+					HPALETTE hPal = NULL;
+					pImgCtx->GetPalette( &hPal );
+					CRect rcImg( CPoint( 0, 0 ), sizeImg );
+					HDC hScrDC = CreateDC( _T("DISPLAY"), NULL, NULL, NULL );
+					HDC hdc = CreateCompatibleDC( hScrDC );
+					HBITMAP hbmp = CreateCompatibleBitmap( hScrDC, sizeImg.cx, sizeImg.cy );
+					DeleteDC( hScrDC );
+					HGDIOBJ hOldBmp = SelectObject( hdc, hbmp );
+					HGDIOBJ hOldPal = NULL;
+					if( hPal )
+					{
+						hOldPal = SelectPalette( hdc, hPal, TRUE );
+						RealizePalette( hdc );
+					}
+					SetBkColor( hdc, RGB(192,192,192) );
+					SetBkMode( hdc, OPAQUE );
+					SetMapMode( hdc, MM_TEXT );
+					ExtTextOut( hdc, 0, 0, ETO_OPAQUE, &rcImg, NULL, 0, NULL );
+					hr = pImgCtx->Draw( hdc, &rcImg );
+					SelectObject( hdc, hOldBmp );
+					if( hPal )
+						SelectObject( hdc, hOldPal );
+					DeleteDC( hdc );
+					PICTDESC pd = { sizeof( PICTDESC ), PICTYPE_BITMAP };
+					pd.bmp.hbitmap = hbmp;
+					pd.bmp.hpal = hPal;
+					hr = OleCreatePictureIndirect( &pd, IID_IPicture, TRUE, (LPVOID*)&lpPicture );
+				}
+			}
+		}
+	}
+	_ASSERTE(SUCCEEDED(hr) && lpPicture);
+	if( !lpPicture )
+		return false;
 
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-
+	Update( lpPicture );
 	if( bApplyMask )
 	{
 		CImageList imglTemp;
 		CSize sizeImage( 0, 0 );
-		if( ImageListAddPicture( &phPicture, imglTemp, sizeImage, true ) )
-			phPicture.CreateFromIcon( imglTemp.ExtractIcon(0), TRUE );
+		if( ImageListAddPicture( &m_hPicture, imglTemp, sizeImage, true ) )
+			m_hPicture.CreateFromIcon( imglTemp.ExtractIcon(0), TRUE );
 	}
 
-	Update(phPicture.GetPictureDispatch());
-	phPicture.m_pPict = ipOld;
-	pstm->Release();
-	CalcLogicalSize();
+	return true;
 }
 
 //IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) const

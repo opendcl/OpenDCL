@@ -96,6 +96,43 @@ bool CArxBlockViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+DROPEFFECT CArxBlockViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	DROPEFFECT dwDropEffect = __super::OnBeginDrag( point, SourceData );
+	AcDbDatabase* pDb = mpSourceDb;
+	if( !pDb )
+		pDb = acdbHostApplicationServices()->workingDatabase();
+	if( !pDb )
+		return dwDropEffect;
+	CString sBlockName = mpTemplate->GetStringProperty( Prop::BlockName );
+	if( sBlockName.IsEmpty() )
+		return dwDropEffect;
+	CStringA sTextA( sBlockName );
+	SIZE_T cchText = sTextA.GetLength() + 1;
+	HGLOBAL hData = GlobalAlloc( GHND, cchText );
+	if( !hData )
+		return dwDropEffect;
+	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
+	GlobalUnlock( hData );
+	SourceData.CacheGlobalData( CF_TEXT, hData );
+	AcDbBlockTable* pBlockTable = NULL;
+	if( Acad::eOk != pDb->getBlockTable( pBlockTable, AcDb::kForRead ) )
+		return dwDropEffect;
+	AcDbObjectId idBlock;
+	Acad::ErrorStatus es = pBlockTable->getAt( sBlockName, idBlock );
+	pBlockTable->close();
+	if( es != Acad::eOk )
+		return dwDropEffect;
+	UINT CF_DclBlockRecId = CAcadBlockInsertDropTarget::GetAcadBlockClipboardFormat();
+	HGLOBAL hDclBlockRecIdPtr = GlobalAlloc( GHND, sizeof(AcDbObjectId) );
+	if( !hDclBlockRecIdPtr )
+		return dwDropEffect;
+	*(AcDbObjectId*)GlobalLock( hDclBlockRecIdPtr ) = idBlock;
+	GlobalUnlock( hDclBlockRecIdPtr );
+	SourceData.CacheGlobalData( CF_DclBlockRecId, hDclBlockRecIdPtr );
+	return DROPEFFECT_COPY;
+}
+
 void CArxBlockViewCtrl::Clear()
 {
 	clearAll();

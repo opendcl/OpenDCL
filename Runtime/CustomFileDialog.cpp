@@ -153,7 +153,14 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 // CCustomFileDialog
 
 CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+__if_exists(m_bVistaStyle)
+{
+: CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent, 0, FALSE )
+}
+__if_not_exists(m_bVistaStyle)
+{
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
+}
 , CArxDialogObject( pSourceForm, this )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
 , mnInitialX( pParams? pParams->position.x : -1 )
@@ -163,10 +170,6 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 , mnRightBorder( 0 )
 , mnBottomBorder( 0 )
 {
-__if_exists(m_bVistaStyle)
-{
-	m_bVistaStyle = FALSE;
-}
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();
@@ -503,9 +506,7 @@ void CCustomFileDialog::OnFileNameChange()
 	
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
 	
-	TDclControlPtr pProps = mpTemplate;
 	int nSelCount = wndLst1->GetSelectedCount();
-	
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
 	if (pos == NULL || nSelCount == 0)
 		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( -1, _T("") ) );		
@@ -542,11 +543,6 @@ void CCustomFileDialog::OnFolderChange()
 	if( !mpFileDlgCtrl )
 		return;
 	GetArxServices()->HandleEvent( Prop::EventFolderChanged, args_S( GetFolderPath() ) );
-}
-
-void CCustomFileDialog::CloseNow() 
-{
-	CloseDialog( IDOK );
 }
 
 LRESULT CCustomFileDialog::OnGetFileName( WPARAM wParam, LPARAM lParam )

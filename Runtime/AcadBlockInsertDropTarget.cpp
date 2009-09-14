@@ -2,7 +2,7 @@
 #include "AcadBlockInsertDropTarget.h"
 #include "AutoDocLock.h"
 
-#if defined(_BRXTARGET) && (_BRXTARGET <= 9)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
 AcDbDatabase* AcApGetDatabase(CView *pView)
 {
 	return NULL;
@@ -29,6 +29,8 @@ UINT CAcadBlockInsertDropTarget::GetAcadBlockClipboardFormat()
 
 BOOL CAcadBlockInsertDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point)
 {
+	if( mbDropExCalled )
+		return FALSE;
 	BOOL bHandled = __super::OnDrop( pWnd, pDataObject, dropEffect, point );
 	if( bHandled )
 		return bHandled;

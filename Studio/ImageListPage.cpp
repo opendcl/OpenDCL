@@ -68,11 +68,11 @@ void CImageListPage::OnAddimage()
 		NULL, 
 		OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
 		theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER),
-		CWnd::GetActiveWindow() );
-	TCHAR szFileBuf[8192];
+		this );
+
+	TCHAR szFileBuf[8192] = _T("");
 	BrowseWnd.m_ofn.nMaxFile = _elements(szFileBuf);
 	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
-	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
 	if( IDOK == BrowseWnd.DoModal() )   
 	{
@@ -80,58 +80,12 @@ void CImageListPage::OnAddimage()
 		while( pos )
 		{
 			CString sPathName = BrowseWnd.GetNextPathName( pos );
-			LPPICTURE lpPicture = LoadPictureFile( sPathName );
-			if( lpPicture )
-			{
-				CPictureHolder phPicture;
-				phPicture.m_pPict = lpPicture;
-				ImageListAddPicture( phPicture.GetPictureDispatch() );
-			}
+			CPictureObject pic( -1, sPathName );
+			ImageListAddPicture( pic.GetPictureDisp() );
 		}
 	}
 	SetModified();
 	OnSelchange();
-}
-
-LPPICTURE CImageListPage::LoadPictureFile(LPCTSTR szFile)
-{
-	LPPICTURE lpPicture = NULL;
-	
-	// open file
-	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(-1 != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
-	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-	pstm->Release();
-	return lpPicture;
 }
 
 BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
@@ -424,23 +378,19 @@ void CImageListPage::OnChangeimage()
 		NULL, 
 		OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
 		theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER),
-		CWnd::GetActiveWindow() );
-	TCHAR szFileBuf[8192];
+		this );
+
+
+	TCHAR szFileBuf[8192] = _T("");
 	BrowseWnd.m_ofn.nMaxFile = _elements(szFileBuf);
 	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
-	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
 	if( IDOK == BrowseWnd.DoModal() )   
 	{
 		POSITION pos = BrowseWnd.GetStartPosition();
 		CString sPathName = BrowseWnd.GetNextPathName( pos );
-		LPPICTURE lpPicture = LoadPictureFile( sPathName );
-		if( lpPicture )
-		{
-			CPictureHolder phPicture;
-			phPicture.m_pPict = lpPicture;
-			ImageListReplacePicture( nItem, phPicture.GetPictureDispatch() );
-		}
+		CPictureObject pic( -1, sPathName );
+		ImageListReplacePicture( nItem, pic.GetPictureDisp() );
 	}
 
 	m_PicList.EnsureVisible(nItem, TRUE);

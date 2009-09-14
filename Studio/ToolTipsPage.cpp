@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ToolTipsPage.h"
 #include "ToolTips.h"
+#include "TrueColorDialog.h"
 #include "AcadColorTable.h"
 #include "StudioWorkspace.h"
 #include "StudioDialogControl.h"
@@ -88,9 +89,7 @@ BOOL CToolTipsPage::OnInitDialog()
 
 	//m_MainText.SetBackgroundColor(FALSE, ::GetSysColor(COLOR_INFOBK));
 
-	CString sNone;
-	sNone = theWorkspace.LoadResourceString(IDS_NONE);
-	m_Pictures.AddString(sNone);
+	m_Pictures.AddString( theWorkspace.LoadResourceString(IDS_NONE) );
 	//CString sAdd;
 	//sAdd = theWorkspace.LoadResourceString(IDS_ADD);
 	//m_Pictures.AddString(sAdd);
@@ -149,16 +148,6 @@ BOOL CToolTipsPage::PreTranslateMessage(MSG* pMsg)
 }
 
 
-HBITMAP	GetBitmapFromProject(UINT nID, CSize &sz)
-{
-	return activeProject->CloneBitmap( nID, sz );
-}
-
-HICON GetIconFromProject(UINT nID)
-{
-	return activeProject->CloneIcon( nID );
-}
-
 void CToolTipsPage::OnPreview() 
 {
 	CString sTitle;
@@ -178,28 +167,27 @@ void CToolTipsPage::OnPreview()
 	m_tooltip.SetDefaultSizes( (m_Balloon.GetCheck() != 0) );
 	CString sPic;
 	if (m_Pictures.GetCurSel() != -1)
-		m_Pictures.GetText(m_Pictures.GetCurSel(), sPic);
+		m_Pictures.GetText( m_Pictures.GetCurSel(), sPic );
 	if (sPic == _T("< ? >"))
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_HELP);
+		m_tooltip.ShowHelpTooltip( &pt, sTooltipText, IDI_HELP );
 	else if (sPic == _T("<  i  >"))
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_INFO);
+		m_tooltip.ShowHelpTooltip( &pt, sTooltipText, IDI_INFO );
 	else if (sPic == _T("<  !  >"))
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_WARN);
+		m_tooltip.ShowHelpTooltip( &pt, sTooltipText, IDI_WARN );
 	else if (sPic == _T("< X >"))
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_ERR);
+		m_tooltip.ShowHelpTooltip( &pt, sTooltipText, IDI_ERR );
 	else if (sPic.Left(1) == _T("<"))	
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
+		m_tooltip.ShowHelpTooltip( &pt, sTooltipText );
 	else if (sPic.GetLength() > 0)
 	{
-		int nId = _tstol(sPic);
-		HICON hIcon = GetIconFromProject(nId);
-		if (hIcon != NULL)
-			m_tooltip.ShowHelpTooltip(&pt, sTooltipText, hIcon);
+		HICON hIcon = mpDclControl->GetOwnerProject()->CloneIcon( _tstol( sPic ) );
+		if( hIcon )
+			m_tooltip.ShowHelpTooltip( &pt, sTooltipText, hIcon );
 		else
-			m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
+			m_tooltip.ShowHelpTooltip( &pt, sTooltipText );
 	}
 	else
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
+		m_tooltip.ShowHelpTooltip( &pt, sTooltipText );
 }
 
 void CToolTipsPage::OnBold() 
@@ -222,7 +210,7 @@ void CToolTipsPage::OnUnderline()
 
 void CToolTipsPage::OnColor2() 
 {
-	CColorDialog dlg;
+	CTrueColorDialog dlg;
 	// Get a color from the common color dialog.
 	if( dlg.DoModal() != IDOK )
 		return;

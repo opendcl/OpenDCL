@@ -127,7 +127,7 @@ DWORD CDialogObject::GetWndStyle() const
 
 	assert(mpTemplate != NULL);
 	if( mpTemplate->GetBooleanProperty(Prop::TitleBar) )
-		dwStyle |= WS_CAPTION;
+		dwStyle |= (WS_CAPTION | WS_SYSMENU);
 	if( mpTemplate->GetBooleanProperty(Prop::AllowResizing) )
 		dwStyle |= WS_THICKFRAME;
 
@@ -281,11 +281,15 @@ bool CDialogObject::OnApplyTitleBar( TPropertyPtr pProp )
 	bool bIgnoreSizing = IgnoreSizing();
 	if( pProp->GetBooleanValue() )
 	{
-		mpControlWnd->ModifyStyle( 0, WS_CAPTION, SWP_FRAMECHANGED );
-		mpControlWnd->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_UPDATENOW );
+		mpControlWnd->ModifyStyle( 0, WS_CAPTION | DS_MODALFRAME | DS_3DLOOK, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyleEx( 0, WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE, SWP_FRAMECHANGED );
 	}
 	else
-		mpControlWnd->ModifyStyle( WS_CAPTION, 0, SWP_FRAMECHANGED );
+	{
+		mpControlWnd->ModifyStyle( WS_CAPTION | DS_MODALFRAME | DS_3DLOOK, 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyleEx( WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE, 0, SWP_FRAMECHANGED );
+	}
+	mpControlWnd->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW );
 	IgnoreSizing( bIgnoreSizing );
 	OnFrameChanged();
 	return true;

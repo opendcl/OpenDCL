@@ -16,7 +16,7 @@
 #pragma once
 
 //#include "DIB.h"
-#include "DIBStatic.h"
+#include "PictureBox.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -37,16 +37,14 @@ public:
 // Attributes
 public:
   BOOL m_bPreview;
-  CDIBStatic m_DIBStaticCtrl;
+  CPictureBox m_Preview;
 
 protected:
-	//{{AFX_MSG(CPreviewFileDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPreview();
 	afx_msg BOOL OnQueryNewPalette();
 	afx_msg void OnPaletteChanged(CWnd* pFocusWnd);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	//}}AFX_MSG
 	virtual void OnFileNameChange();
 	virtual void OnFolderChange();
 

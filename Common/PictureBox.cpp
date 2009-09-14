@@ -6,6 +6,9 @@
 #include "Workspace.h"
 #include "PictureObject.h"
 
+#include "MemDC.h"
+#define USE_MEM_DC // Remove this, if you don't want to use CMemDC
+
 
 #define HIMETRIC_INCH	2540
 
@@ -24,50 +27,24 @@ const TCHAR sC[] = _T("C");
 static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtrlHeight)
 {
 	CRect rcCell(0, 0, nCtrlWidth, nCtrlHeight);
-	double dFactor;
-	double dH;
-	double dW;
+	double dblScale = 1.0;
+	if( nPicHeight > nCtrlHeight )
+		dblScale = (double)nCtrlHeight / (double)nPicHeight;
+	if( dblScale * nPicWidth > nCtrlWidth )
+		dblScale = (double)nCtrlWidth / (double)nPicWidth;
 
-	dFactor = (double)nPicHeight / (double)nPicWidth;
-	dH = dFactor;
-	dW = 1.0;
-
-	int nDrawWidth = int(dW * nCtrlWidth);
-	int nDrawHeight = int(dH * nDrawWidth);
+	int nDrawWidth = int(dblScale * nPicWidth);
+	int nDrawHeight = int(dblScale * nPicHeight);
 	
-	// if the calc height is too large
-	if (nDrawHeight > nCtrlHeight)
+	if( nDrawHeight < nCtrlHeight )
 	{
-		dFactor = (double)nPicWidth / (double)nPicHeight;
-		dH = 1.0;
-		dW = dFactor;
-
-		nDrawHeight = int(dH * nCtrlHeight);
-		nDrawWidth = int(dW * nDrawHeight);
-
+		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
+		rcCell.bottom = rcCell.top + nDrawHeight;
+	}
+	if( nDrawWidth < nCtrlWidth )
+	{
 		rcCell.left = (nCtrlWidth - nDrawWidth) / 2;
-		rcCell.right = nCtrlWidth - rcCell.left;
-	}
-	else if (nDrawHeight < nCtrlHeight)
-	{
-		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
-		rcCell.bottom = nCtrlHeight - rcCell.top;
-	}
-	
-	// if the calc width is too large
-	if (nDrawWidth > nCtrlWidth)
-	{
-		dFactor = (double)nPicHeight / (double)nPicWidth;
-		dH = dFactor;
-		dW = 1.0;
-
-		nDrawWidth = int(dW * nCtrlWidth);
-		nDrawHeight = int((double)nDrawWidth * dH);
-		
-		rcCell.left = 1;
-		rcCell.right = nCtrlWidth;
-		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
-		rcCell.bottom = nCtrlHeight - rcCell.top;
+		rcCell.right = rcCell.left + nDrawWidth;
 	}
 
 	return rcCell;
@@ -172,7 +149,7 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 		dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
 
 		// BitBlt the black bits in the monochrome bitmap into COLOR_3DHILIGHT bits in the destination DC
-		// The magic ROP comes from the Charles Petzold's book
+		// The magic ROP comes from Charles Petzold's book
 		CBrush brush;
 		brush.CreateSolidBrush(GetSysColor(COLOR_3DHILIGHT));
 		CBrush* pOldBrush = dcBW.SelectObject(&brush);
@@ -296,7 +273,7 @@ void CPictureBox::Refresh()
 	CopyDC();
 }
 
-void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bStretchToFit /*= false*/ )
+void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false*/ )
 {	
 	CDC *pdc = GetDC();
 	CRect rcCell;	
@@ -313,7 +290,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bStretchToFit /*= fals
 		long nPicLeft = 0;
 		long nPicTop = 0;
 		CRect rcPic = rcCell;
-		if( bStretchToFit )
+		if( bShrinkToFit )
 			rcPic = CalcFitRect( nPicWidth, nPicHeight, rcCell.Width(), rcCell.Height() );
 		else
 		{
@@ -321,7 +298,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bStretchToFit /*= fals
 			nPicLeft = ( (rcCell.Width() - nPicWidth) / 2 ); // Center the icon horizontally
 			rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
 		}
-		if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bStretchToFit )
+		if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bShrinkToFit )
 		{			
 			if( IsWindowEnabled() )
 				DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
@@ -714,60 +691,18 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 }
 
 // This function loads a file into an IStream.
-bool CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
+bool CPictureBox::LoadPictureFile(LPCTSTR pszFile, bool bStretch)
 {
 	m_bStretchLoadedPicture = bStretch;
-	CString sPicFile = theWorkspace.FindFile( szFile );
+	if( !pszFile || !*pszFile )
+	{
+		Clear();
+		return true;
+	}
+	CString sPicFile = theWorkspace.FindFile( pszFile );
 	if( sPicFile.IsEmpty() )
-		sPicFile = szFile;
-
-	// open file
-	HANDLE hFile = CreateFile( sPicFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-	if( hFile == INVALID_HANDLE_VALUE )
-		return false;
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(-1 != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	if( !pstm )
-		return false;
-	
-	// Create IPicture from image file
-	CComPtr< IPicture > pPicture;
-	hr = ::OleLoadPicture( pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID*)&pPicture );
-	_ASSERTE(SUCCEEDED(hr) && pPicture);	
-	pstm->Release();
-	if( !pPicture )
-		return false;
-
-	CComPtr< IPictureDisp > pPictureDisp;
-	hr = pPicture->QueryInterface( &pPictureDisp );
-	_ASSERTE(SUCCEEDED(hr) && pPictureDisp);	
-	if( !pPictureDisp )
-		return false;
-
-	mpPicture = CPictureObject::CreatePictureObject( -1, pPictureDisp );
+		sPicFile = pszFile;
+	mpPicture = CPictureObject::CreatePictureObject( -1, pszFile );
 	Refresh();
 	return true;
 }
@@ -857,7 +792,8 @@ void CPictureBox::OnPaint()
 	else
 	{
 	#ifdef USE_MEM_DC
-		CMemDC pdc(&dc);
+		CMemDC DC(&dc);
+		CDC* pdc = &DC;
 	#else
 		CDC* pdc = &dc;
 	#endif

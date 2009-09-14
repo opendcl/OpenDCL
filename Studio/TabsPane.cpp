@@ -118,7 +118,7 @@ void CTabsPane::Setup()
 	m_pTabImages = mpDclControl->GetPropertyObject(Prop::TabsImageList);	
 
 	// create a pointer to pass to the list to insert
-	TStudioProjectPtr pProject = activeProject;
+	TProjectPtr pProject = mpDclControl->GetOwnerProject();
 	
 	for (size_t i = 0; i < m_pTabCaptions->size(); i++ )
 	{
