@@ -35,7 +35,7 @@
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_Tree_AddSibling <i>
             <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>&nbsp;<font color="#FF0000">u</font><font color="#FF0000">SiblingItem [als <a href="../../DataType/Handle.htm">Handle</a> oder
 <a href="../../DataType/String.htm">String</a>]</font>
-            <font color="#FF0000">{InsertBefore [als
+            <font color="#FF0000">{doInsertBefore [als
             <a href="../../../../../ENU/Content/Reference/DataType/Boolean.htm">Boolean</a>]}</font>
             <font color="#FF0000">strLabel [als <a href="../../DataType/String.htm">
             String</a>]</font> <font color="#FF0000">{strKey [als <a href="../../DataType/String.htm">String</a>]}</font>
@@ -53,7 +53,7 @@
       <a href="../../Control/Tree.htm">Tree</a></td>
           </tr>
         </table>
-		<p>Diese Methode f&uuml;gt einen neuen Eintrag nach dem angegebenen Eintrag auf der gleichen Ebene ein. Das Argument strLabel definiert die Bezeichnung des Eintrags. Wird ein Schl&uuml;ssel mit strKey angegeben, muss dieser eindeutig innerhalb dieser Instanz der Baumstruktur sein, um einen Eintrag eindeutig zu identifizieren. Die drei optionalen Argumente intImageIndex, intSelectedImageIndex und intExpandedImageIndex sind Bilder entsprechend der <a href="../../DataType/ImageList.htm">Bildliste</a> des Steuerelements und visualisieren den normalen Zustand, den ausgew&auml;hlten und aufgeklappten Zustand. Der R&uuml;ckgabewert ist der eindeutige Zeiger des neuen Eintrags, ansonsten NIL.</p>
+		<p>Diese Methode f&uuml;gt einen neuen Eintrag nach (bzw. vor) dem angegebenen Eintrag auf der gleichen Ebene ein. Hat das Argument doInsertBefore den Wert nil oder wird das Argument doInsertBefore ausgelassen, wird der einzuf&uuml;gende Eintrag nach dem angegebenen Eintrag eingef&uuml;gt; hat das Argument doInsertBefore den Wert T, wird es vor dem angegebenen Eintrag eingef&uuml;gt. Das Argument strLabel definiert die Bezeichnung des neuen Eintrags. Wird ein Schl&uuml;ssel mit strKey angegeben, muss dieser eindeutig innerhalb dieser Instanz der Baumstruktur sein, um einen Eintrag eindeutig zu identifizieren. Die drei optionalen Argumente intImageIndex, intSelectedImageIndex und intExpandedImageIndex sind Bilder entsprechend der <a href="../../DataType/ImageList.htm">Bildliste</a> des Steuerelements und visualisieren den normalen Zustand, den ausgew&auml;hlten und aufgeklappten Zustand. Der R&uuml;ckgabewert ist der eindeutige Zeiger des neuen Eintrags, ansonsten NIL.</p>
 </div>
 	<hr />
 	<div id="footer">
