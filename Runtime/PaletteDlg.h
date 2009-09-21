@@ -1,4 +1,4 @@
-// PaletteDialog.h : header file
+// PaletteDlg.h : header file
 //
 
 #pragma once
@@ -17,9 +17,9 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CPaletteDialog dialog
+// CPaletteDlg dialog
 
-class CPaletteDialog : public CDialog, public CArxDialogObject
+class CPaletteDlg : public CDialog, public CArxDialogObject
 {
 	CWnd* mpParent;
 	CAcadPaletteHost& mHostPaletteSet;
@@ -29,8 +29,8 @@ class CPaletteDialog : public CDialog, public CArxDialogObject
 
 // Construction
 public:
-	CPaletteDialog( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
-	virtual ~CPaletteDialog();
+	CPaletteDlg( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	virtual ~CPaletteDlg();
 
 // Atributes
 public:

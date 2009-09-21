@@ -5,7 +5,7 @@
 
 #include "AdUiPaletteSet.h"
 
-class CPaletteDialog;
+class CPaletteDlg;
 
 
 #if (_MFC_VER < 0x0800)
@@ -20,7 +20,7 @@ class CPaletteDialog;
 
 class CAcadPaletteHost : public CAdUiPaletteSet
 {
-	CPaletteDialog* mpDlgObject;
+	CPaletteDlg* mpDlgObject;
 	CWnd* mpParent;
 	bool mbTrackingMouse;
 	bool mbMouseLeft;
@@ -29,7 +29,7 @@ class CAcadPaletteHost : public CAdUiPaletteSet
 
 // Construction
 public:
-	CAcadPaletteHost( CPaletteDialog* pDlgObject, CWnd *pParent = NULL );
+	CAcadPaletteHost( CPaletteDlg* pDlgObject, CWnd *pParent = NULL );
 	virtual ~CAcadPaletteHost();
 
 public:
@@ -65,4 +65,5 @@ protected:
 	afx_msg void PostNcDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

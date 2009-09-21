@@ -929,7 +929,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	case CtlTextButton:
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
-		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, false );
 		AddControlFontProperties( pDclControl, FS );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		AddControlTooltipProperties( pDclControl );

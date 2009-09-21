@@ -245,7 +245,7 @@ ADSRESULT DisplayDwgImp( bool bToScale )
 
 	if( !pArgs )
 	{
-		if( pCtrl->LoadPreviewDwg( sFileName ) )
+		if( pCtrl->DisplayDwg( sFileName ) )
 			acedRetT();
 		return RSRSLT;
 	}
@@ -266,34 +266,34 @@ ADSRESULT DisplayDwgImp( bool bToScale )
 		switch( nPresetView )
 		{
 		case 0: // top
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d::kZAxis );
 			break;
 		case 1: // bottom
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, -AcGeVector3d::kZAxis );
 			break;
 		case 2: // right
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d::kXAxis );
 			break;
 		case 3: // left
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, -AcGeVector3d::kXAxis );
 			break;
 		case 4: // front
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, -AcGeVector3d::kYAxis );
 			break;
 		case 5: // back
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d::kYAxis );
 			break;
 		case 6: // SW
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, -1.0, 1.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( -1.0, -1.0, 1.0 ) );
 			break;
 		case 7: // SE
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, -1.0, 1.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( 1.0, -1.0, 1.0 ) );
 			break;
 		case 8: // NW
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 1.0, 1.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( -1.0, 1.0, 1.0 ) );
 			break;
 		case 9: // NE
-			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 );
+			bSuccess = pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( 1.0, 1.0, 1.0 ) );
 			break;
 		default:
 			HandleArgValueError( pArgs );
@@ -326,8 +326,8 @@ ADSRESULT DisplayDwgImp( bool bToScale )
 	if( bZoomExtents )
 		dblZoom = 1.0;
 	int nScaleType = (bToScale? 1 : 0);
-	if( pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType,
-														 0.0, 1.0, 0.0, dblCameraX, dblCameraY, dblCameraZ ) )
+	if( pCtrl->DisplayDwg( sFileName, dblZoom, bZoomExtents, nScaleType,
+												 AcGeVector3d( dblCameraX, dblCameraY, dblCameraZ ) ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -379,34 +379,34 @@ ADSRESULT DisplayBlockImp( bool bToScale )
 		switch( nPresetView )
 		{
 		case 0: // top
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d::kZAxis );
 			break;
 		case 1: // bottom
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, -AcGeVector3d::kZAxis );
 			break;
 		case 2: // right
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d::kXAxis );
 			break;
 		case 3: // left
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, -AcGeVector3d::kXAxis );
 			break;
 		case 4: // front
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, -AcGeVector3d::kYAxis );
 			break;
 		case 5: // back
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d::kYAxis );
 			break;
 		case 6: // SW
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, -1.0, 1.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( -1.0, -1.0, 1.0 ) );
 			break;
 		case 7: // SE
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, -1.0, 1.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( 1.0, -1.0, 1.0 ) );
 			break;
 		case 8: // NW
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 1.0, 1.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( -1.0, 1.0, 1.0 ) );
 			break;
 		case 9: // NE
-			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 );
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, AcGeVector3d( 1.0, 1.0, 1.0 ) );
 			break;
 		default:
 			HandleArgValueError( pArgs );
@@ -440,7 +440,7 @@ ADSRESULT DisplayBlockImp( bool bToScale )
 		dblZoom = 1.0;
 	int nScaleType = (bToScale? 1 : 0);
 	if( pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType,
-													 0.0, 1.0, 0.0, dblCameraX, dblCameraY, dblCameraZ ) )
+													 AcGeVector3d( dblCameraX, dblCameraY, dblCameraZ ) ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -467,7 +467,7 @@ ADSRESULT BlockView::DisplayPaperSpace()
 		return RSERR;
 
 	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
-	if( pCtrl->DisplayBlock( ACDB_PAPER_SPACE, 1.0, false, 0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ) )
+	if( pCtrl->DisplayBlock( ACDB_PAPER_SPACE, 1.0, false, 0, AcGeVector3d::kZAxis ) )
 		acedRetT();
 	return RSRSLT;
 }

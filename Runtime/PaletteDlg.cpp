@@ -1,8 +1,8 @@
-// PaletteDialog.cpp : implementation file
+// PaletteDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "PaletteDialog.h"
+#include "PaletteDlg.h"
 #include "DclFormObject.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
@@ -15,9 +15,9 @@ extern bool AcadIsQuitting(void);
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CPaletteDialog dialog
+// CPaletteDlg dialog
 
-CPaletteDialog::CPaletteDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CPaletteDlg::CPaletteDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CDialog()
 , CArxDialogObject( pSourceForm, this )
 , mpParent( pParent )
@@ -31,16 +31,16 @@ CPaletteDialog::CPaletteDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 }
 
 
-CPaletteDialog::~CPaletteDialog()
+CPaletteDlg::~CPaletteDlg()
 {
 }
 
-bool CPaletteDialog::IsFloating() const
+bool CPaletteDlg::IsFloating() const
 {
 	return (const_cast< CAcadPaletteHost* >( &mHostPaletteSet )->IsFloating() != FALSE);
 }
 
-CWnd* CPaletteDialog::GetTopLevelWnd()
+CWnd* CPaletteDlg::GetTopLevelWnd()
 {
 	HWND hwndPaletteSet = mHostPaletteSet.m_hWnd;
 	if( !hwndPaletteSet )
@@ -54,7 +54,7 @@ CWnd* CPaletteDialog::GetTopLevelWnd()
 	return &mHostPaletteSet;
 }
 
-bool CPaletteDialog::CreateModeless( UINT nID )
+bool CPaletteDlg::CreateModeless( UINT nID )
 {
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
@@ -122,7 +122,7 @@ bool CPaletteDialog::CreateModeless( UINT nID )
 	return true;
 }
 
-void CPaletteDialog::CloseDialog(int nStatus)
+void CPaletteDlg::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return;
@@ -133,38 +133,38 @@ void CPaletteDialog::CloseDialog(int nStatus)
 		::SendMessage( hwndTopLevel, WM_CLOSE, 0, 0 );
 }
 
-bool CPaletteDialog::CenterDialog()
+bool CPaletteDlg::CenterDialog()
 {
 	if( !IsFloating() )
 		return false;
 	return __super::CenterDialog();
 }
 
-bool CPaletteDialog::MoveDialog( long nNewLeft, long nNewTop )
+bool CPaletteDlg::MoveDialog( long nNewLeft, long nNewTop )
 {
 	if( !IsFloating() )
 		return false;
 	return __super::MoveDialog( nNewLeft, nNewTop );
 }
 
-bool CPaletteDialog::ResizeDialog( long nNewWidth, long nNewHeight )
+bool CPaletteDlg::ResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
 		return false;
 	return __super::ResizeDialog( nNewWidth, nNewHeight );
 }
 
-bool CPaletteDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
+bool CPaletteDlg::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
 		return false;
 	return __super::ResizeDialog( nNewWidth, nNewHeight );
 }
 
-CRect CPaletteDialog::GetEffectiveWindowRect() const
+CRect CPaletteDlg::GetEffectiveWindowRect() const
 {
 	CRect rectWindow;
-	CWnd* pTopLevelWnd = const_cast< CPaletteDialog* >( this )->GetTopLevelWnd();
+	CWnd* pTopLevelWnd = const_cast< CPaletteDlg* >( this )->GetTopLevelWnd();
 	if( pTopLevelWnd == &mHostPaletteSet && mHostPaletteSet.RolledUp() )
 		mHostPaletteSet.GetFullRect( rectWindow );
 	else
@@ -172,14 +172,14 @@ CRect CPaletteDialog::GetEffectiveWindowRect() const
 	return rectWindow;
 }
 
-CRect CPaletteDialog::GetEffectiveClientRect() const
+CRect CPaletteDlg::GetEffectiveClientRect() const
 {
 	CRect rcDlg;
-	const_cast< CPaletteDialog* >( this )->mHostPaletteSet.GetClientArea( rcDlg );
+	const_cast< CPaletteDlg* >( this )->mHostPaletteSet.GetClientArea( rcDlg );
 	return rcDlg;
 }
 
-void CPaletteDialog::OnFrameChanged()
+void CPaletteDlg::OnFrameChanged()
 {
 	CRect rectWindow = GetEffectiveWindowRect();
 	CRect rcClient = GetEffectiveClientRect();
@@ -192,7 +192,7 @@ void CPaletteDialog::OnFrameChanged()
 	//ApplyPosition();
 }
 
-void CPaletteDialog::ApplyPosition()
+void CPaletteDlg::ApplyPosition()
 {
 	if( IsIgnoreSizing() )
 		return;
@@ -209,7 +209,7 @@ void CPaletteDialog::ApplyPosition()
 	mpControlPane->RecalcLayout();
 }
 
-bool CPaletteDialog::OnApplyProperty( TPropertyPtr pProp )
+bool CPaletteDlg::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
@@ -223,14 +223,14 @@ bool CPaletteDialog::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-bool CPaletteDialog::OnApplyCaption( TPropertyPtr pProp )
+bool CPaletteDlg::OnApplyCaption( TPropertyPtr pProp )
 {
 	mHostPaletteSet.SetWindowText( pProp->GetStringValue() );
 	OnNeedRepaint();
 	return true;
 }
 
-bool CPaletteDialog::OnApplyResizable( TPropertyPtr pProp )
+bool CPaletteDlg::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
 	bool bIgnoreSizing = IgnoreSizing();
@@ -243,7 +243,7 @@ bool CPaletteDialog::OnApplyResizable( TPropertyPtr pProp )
 	return true;
 }
 
-bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
+bool CPaletteDlg::OnApplyIcon( TPropertyPtr pProp )
 {
 	DestroyIcon( mHostPaletteSet.SetIcon( NULL, FALSE ) );
 	TPicturePtr pPicture = mpSourceForm->GetProject()->FindPicture( pProp->GetLongValue() );
@@ -252,18 +252,18 @@ bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
 	return true;
 }
 
-void CPaletteDialog::OnMouseEnter()
+void CPaletteDlg::OnMouseEnter()
 {
   GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 };
 
-void CPaletteDialog::OnMouseLeave()
+void CPaletteDlg::OnMouseLeave()
 {
   GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 };
 
 
-BEGIN_MESSAGE_MAP(CPaletteDialog, CDialog)
+BEGIN_MESSAGE_MAP(CPaletteDlg, CDialog)
 	ON_WM_HELPINFO()
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
@@ -274,9 +274,9 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CPaletteDialog message handlers
+// CPaletteDlg message handlers
 
-int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -309,7 +309,7 @@ int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 1;
 }
 
-void CPaletteDialog::PostNcDestroy() 
+void CPaletteDlg::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	CAcadPaletteHost* pHostToDelete = NULL;
@@ -319,7 +319,7 @@ void CPaletteDialog::PostNcDestroy()
 	delete pHostToDelete;
 }
 
-void CPaletteDialog::OnSize(UINT nType, int cx, int cy) 
+void CPaletteDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() || !IsResizable() )
@@ -332,13 +332,13 @@ void CPaletteDialog::OnSize(UINT nType, int cx, int cy)
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 }
 
-BOOL CPaletteDialog::OnHelpInfo(HELPINFO* pHelpInfo)
+BOOL CPaletteDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
 	GetArxServices()->HandleEvent( Prop::EventHelp );
 	return TRUE;
 }
 
-void CPaletteDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
+void CPaletteDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	if( GetArxServices()->HandleEvent( Prop::FormEventShow ) )
 		return;
@@ -347,12 +347,12 @@ void CPaletteDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	__super::OnShowWindow(bShow, nStatus);
 }
 
-BOOL CPaletteDialog::PreTranslateMessage(MSG* pMsg) 
+BOOL CPaletteDlg::PreTranslateMessage(MSG* pMsg) 
 {
 	return CWnd::PreTranslateMessage(pMsg);
 }
 
-bool CPaletteDialog::OnClosing()
+bool CPaletteDlg::OnClosing()
 {
 	if( IsClosing() )
 		return true;
@@ -364,14 +364,14 @@ bool CPaletteDialog::OnClosing()
 	return true;
 }
 
-void CPaletteDialog::OnDestroy() 
+void CPaletteDlg::OnDestroy() 
 {
 	OnClosing();
 	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
 }
 
-BOOL CPaletteDialog::OnEraseBkgnd(CDC* pDC)
+BOOL CPaletteDlg::OnEraseBkgnd(CDC* pDC)
 {
 	if( !mColorService.IsBackgroundTransparent() )
 	{

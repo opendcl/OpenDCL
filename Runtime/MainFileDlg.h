@@ -5,7 +5,7 @@
 
 #include "DialogObject.h"
 
-class CCustomFileDialog;
+class CCustomFileDlg;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,12 +13,12 @@ class CCustomFileDialog;
 
 class CMainFileDlg : public CCommonDialog
 {
-	CCustomFileDialog* mpDlgObject;
+	CCustomFileDlg* mpDlgObject;
 	bool mbInitialized;
 
 // Construction
 public:
-	CMainFileDlg( CCustomFileDialog* pDlgObject, CWnd* pParent = NULL );
+	CMainFileDlg( CCustomFileDlg* pDlgObject, CWnd* pParent = NULL );
 	virtual ~CMainFileDlg();
 
 protected:

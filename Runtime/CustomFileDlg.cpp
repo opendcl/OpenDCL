@@ -1,8 +1,8 @@
-// CustomFileDialog.cpp : implementation file
+// CustomFileDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "CustomFileDialog.h"
+#include "CustomFileDlg.h"
 #include "DialogObject.h"
 #include "FormTypes.h"
 #include "PropertyIds.h"
@@ -150,9 +150,9 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CCustomFileDialog
+// CCustomFileDlg
 
-CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 __if_exists(m_bVistaStyle)
 {
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent, 0, FALSE )
@@ -256,14 +256,14 @@ __if_not_exists(m_bVistaStyle)
 }
 
 
-CCustomFileDialog::~CCustomFileDialog()
+CCustomFileDlg::~CCustomFileDlg()
 {
 	SetHook( mpControlPane, false );
 	theArxWorkspace.ResetLispSymbol( mpFileDlgCtrl->GetVarName() );
 	mpFileDlgCtrl->SetControlInstance( NULL );
 }
 
-void CCustomFileDialog::CloseDialog(int nStatus)
+void CCustomFileDlg::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return; //already in the process of closing
@@ -272,7 +272,7 @@ void CCustomFileDialog::CloseDialog(int nStatus)
 	GetMainDialog().SendMessage( WM_CLOSE, 0, 0 );
 }
 
-INT_PTR CCustomFileDialog::DoModal()
+INT_PTR CCustomFileDlg::DoModal()
 {
 	IgnoreSizing();
 	INT_PTR nResult = CFileDialog::DoModal();
@@ -288,13 +288,13 @@ INT_PTR CCustomFileDialog::DoModal()
 	return nResult;
 }
 
-bool CCustomFileDialog::OnApplyResizable( TPropertyPtr pProp )
+bool CCustomFileDlg::OnApplyResizable( TPropertyPtr pProp )
 {
 	GetOFN().Flags |= OFN_ENABLESIZING;
 	return true;
 }
 
-void CCustomFileDialog::SavePosition()
+void CCustomFileDlg::SavePosition()
 {
 	if( !IsWindow( m_hWnd ) )
 		return;
@@ -308,7 +308,7 @@ void CCustomFileDialog::SavePosition()
 	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcThis.top );
 }
 
-CRect CCustomFileDialog::ReadPosition() const
+CRect CCustomFileDlg::ReadPosition() const
 {	
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
@@ -320,7 +320,7 @@ CRect CCustomFileDialog::ReadPosition() const
 	return rcRet;
 }
 
-void CCustomFileDialog::OnInitializationComplete()
+void CCustomFileDlg::OnInitializationComplete()
 {
 	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
 
@@ -382,7 +382,7 @@ void CCustomFileDialog::OnInitializationComplete()
 }
 
 
-BEGIN_MESSAGE_MAP(CCustomFileDialog, CFileDialog)
+BEGIN_MESSAGE_MAP(CCustomFileDlg, CFileDialog)
 	ON_WM_HELPINFO()
 	ON_MESSAGE(WM_FILEDLG_GETFILENAME, OnGetFileName)
 	ON_MESSAGE(WM_FILEDLG_GETFILETITLE, OnGetFileTitle)
@@ -397,7 +397,7 @@ BEGIN_MESSAGE_MAP(CCustomFileDialog, CFileDialog)
 END_MESSAGE_MAP()
 
 
-void CCustomFileDialog::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+void CCustomFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	__super::OnWindowPosChanged(lpwndpos);
 	if( ((lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE)) != (SWP_NOSIZE | SWP_NOMOVE)) )
@@ -411,7 +411,7 @@ void CCustomFileDialog::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 }
 
 
-void CCustomFileDialog::CtrlModifyStyle(int nCtrl) 
+void CCustomFileDlg::CtrlModifyStyle(int nCtrl) 
 {	
 	CWnd *pCtrl = GetParent()->GetDlgItem(nCtrl);
 	if( pCtrl )
@@ -419,7 +419,7 @@ void CCustomFileDialog::CtrlModifyStyle(int nCtrl)
 }
 
 
-BOOL CCustomFileDialog::OnInitDialog() 
+BOOL CCustomFileDlg::OnInitDialog() 
 {
 	__super::OnInitDialog();
 	mMainFileDlg.SubclassWindow( ::GetParent( m_hWnd ) );
@@ -482,7 +482,7 @@ BOOL CCustomFileDialog::OnInitDialog()
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-BOOL CCustomFileDialog::OnFileNameOK()
+BOOL CCustomFileDlg::OnFileNameOK()
 {
 	if( __super::OnFileNameOK() )
 		return TRUE;
@@ -495,7 +495,7 @@ BOOL CCustomFileDialog::OnFileNameOK()
 	return TRUE;
 }
 
-void CCustomFileDialog::OnFileNameChange()
+void CCustomFileDlg::OnFileNameChange()
 {
 	__super::OnFileNameChange();
 	CWnd* pWnd = GetParent()->GetDlgItem(lst2);
@@ -516,7 +516,7 @@ void CCustomFileDialog::OnFileNameChange()
 		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nSelCount, _T("") ) );			
 }
 
-void CCustomFileDialog::OnTypeChange()
+void CCustomFileDlg::OnTypeChange()
 {
 	__super::OnTypeChange();
 	if( !mpFileDlgCtrl )
@@ -526,18 +526,18 @@ void CCustomFileDialog::OnTypeChange()
 	GetArxServices()->HandleEvent( Prop::EventTypeChanged, args_S( sText ) );
 }
 
-BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
+BOOL CCustomFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
 	GetArxServices()->HandleEvent( Prop::EventHelp );
 	return TRUE; 
 }
 
-void CCustomFileDialog::OnHelp()
+void CCustomFileDlg::OnHelp()
 {
 	GetArxServices()->HandleEvent( Prop::EventHelp );
 }
 
-void CCustomFileDialog::OnFolderChange()
+void CCustomFileDlg::OnFolderChange()
 {
 	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
@@ -545,7 +545,7 @@ void CCustomFileDialog::OnFolderChange()
 	GetArxServices()->HandleEvent( Prop::EventFolderChanged, args_S( GetFolderPath() ) );
 }
 
-LRESULT CCustomFileDialog::OnGetFileName( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetFileName( WPARAM wParam, LPARAM lParam )
 {
 	CString sFileName = GetFileName();
 	UINT_PTR cchFileName = sFileName.GetLength();
@@ -555,7 +555,7 @@ LRESULT CCustomFileDialog::OnGetFileName( WPARAM wParam, LPARAM lParam )
 	return (LRESULT)cchFileName;
 }
 
-LRESULT CCustomFileDialog::OnGetFileTitle( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetFileTitle( WPARAM wParam, LPARAM lParam )
 {
 	CString sFileTitle = GetFileTitle();
 	UINT_PTR cchFileTitle = sFileTitle.GetLength();
@@ -565,7 +565,7 @@ LRESULT CCustomFileDialog::OnGetFileTitle( WPARAM wParam, LPARAM lParam )
 	return (LRESULT)cchFileTitle;
 }
 
-LRESULT CCustomFileDialog::OnGetFileExt( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetFileExt( WPARAM wParam, LPARAM lParam )
 {
 	CString sFileExt = GetFileExt();
 	UINT_PTR cchFileExt = sFileExt.GetLength();
@@ -575,7 +575,7 @@ LRESULT CCustomFileDialog::OnGetFileExt( WPARAM wParam, LPARAM lParam )
 	return (LRESULT)cchFileExt;
 }
 
-LRESULT CCustomFileDialog::OnGetFilePath( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetFilePath( WPARAM wParam, LPARAM lParam )
 {
 	CString sFilePath = GetPathName();
 	UINT_PTR cchFilePath = sFilePath.GetLength();
@@ -585,7 +585,7 @@ LRESULT CCustomFileDialog::OnGetFilePath( WPARAM wParam, LPARAM lParam )
 	return (LRESULT)cchFilePath;
 }
 
-LRESULT CCustomFileDialog::OnGetFolderPath( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetFolderPath( WPARAM wParam, LPARAM lParam )
 {
 	CString sFolderPath = GetFolderPath();
 	UINT_PTR cchFolderPath = sFolderPath.GetLength();
@@ -595,7 +595,7 @@ LRESULT CCustomFileDialog::OnGetFolderPath( WPARAM wParam, LPARAM lParam )
 	return (LRESULT)cchFolderPath;
 }
 
-LRESULT CCustomFileDialog::OnGetFolderName( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetFolderName( WPARAM wParam, LPARAM lParam )
 {
 	CString sFolderName = GetFolderPath().MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse();
 	UINT_PTR cchFolderName = sFolderName.GetLength();
@@ -605,7 +605,7 @@ LRESULT CCustomFileDialog::OnGetFolderName( WPARAM wParam, LPARAM lParam )
 	return (LRESULT)cchFolderName;
 }
 
-LRESULT CCustomFileDialog::OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam )
 {
 	UINT cFiles = 0;
 	for( POSITION pos = GetStartPosition(); pos; GetNextPathName( pos ) )
@@ -613,7 +613,7 @@ LRESULT CCustomFileDialog::OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam 
 	return (LRESULT)cFiles;
 }
 
-LRESULT CCustomFileDialog::OnGetSelectedFiles( WPARAM wParam, LPARAM lParam )
+LRESULT CCustomFileDlg::OnGetSelectedFiles( WPARAM wParam, LPARAM lParam )
 {
 	LPTSTR pszCursor = (LPTSTR)lParam;
 	POSITION pos = GetStartPosition();

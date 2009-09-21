@@ -1,4 +1,4 @@
-// TabPage.h : header file
+// TabPageDlg.h : header file
 //
 
 #pragma once
@@ -9,13 +9,13 @@
 
 class CDclFormObject;
 
-typedef RefCountedPtr< class CTabPage > TTabPagePtr;
+typedef RefCountedPtr< class CTabPageDlg > TTabPagePtr;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CTabPage dialog
+// CTabPageDlg dialog
 
-class CTabPage : public CDialog, public CDialogObject
+class CTabPageDlg : public CDialog, public CDialogObject
 {
 	CArxControlPane mControlPane;
 	bool mbRecalcQueued;
@@ -25,8 +25,8 @@ protected:
 
 // Construction
 public:
-	CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
-	~CTabPage();
+	CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
+	~CTabPageDlg();
 
 	//Attributes
 	const CControlPane* GetControlPane() const { return &mControlPane; }

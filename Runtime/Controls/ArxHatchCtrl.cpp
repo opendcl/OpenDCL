@@ -22,14 +22,14 @@ CArxHatchCtrl::CArxHatchCtrl( TDclControlPtr pTemplate,
 
 CArxHatchCtrl::~CArxHatchCtrl()
 {
+	delete mpHatchDb;
 }
 
-void CArxHatchCtrl::Clear() 
+void CArxHatchCtrl::Clear()
 {
 	msHatchPattern.Empty();
 	if( mpHatchDb )
 	{
-		delete mpHatchDb;
 		mpHatchDb = NULL;
 	}
 	midHatch.setNull();
@@ -193,7 +193,7 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 
 	AcGePoint3d extMax = pWorkingDb->extmax();
 
-	DisplayTheBlock( pModelSpace, 1.0, false, 1, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+	DisplayBTR( pModelSpace, 1.0, false, 1, AcGeVector3d::kZAxis );
 
 	pModelSpace->close();
 

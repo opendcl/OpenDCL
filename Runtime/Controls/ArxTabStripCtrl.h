@@ -5,7 +5,7 @@
 
 #include "TabStripCtrl.h"
 #include "PPToolTip.h"
-#include "TabPage.h"
+#include "TabPageDlg.h"
 #include "ArxControlServices.h"
 
 class CDclFormObject;
@@ -57,7 +57,7 @@ protected:
 	bool CreateTabPages( UINT& nId );
 	void DestroyTabPages();
 	void ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent = false );
-	void SetFirstControlFocus( CTabPage* pActualTabPage );
+	void SetFirstControlFocus( CTabPageDlg* pActualTabPage );
 
 protected:
 	DECLARE_MESSAGE_MAP()

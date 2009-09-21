@@ -43,21 +43,17 @@ CArxBlockViewCtrl::~CArxBlockViewCtrl()
 {
 	if( mhSavedCursor )
 		DeleteObject( mhSavedCursor );
-
 	if( mhArrowCursor )
 		DeleteObject( mhArrowCursor );		
-	
 	if( mhZoomCursor )
 		DeleteObject( mhZoomCursor );
-	
 	if( mhPanCursor )
 		DeleteObject( mhPanCursor );
-	
 	if( mhCrossCursor )
 		DeleteObject( mhCrossCursor );
-	
 	if( mhOrbitCursor )
 		DeleteObject( mhOrbitCursor );
+	delete mpSourceDb;
 }
 
 bool CArxBlockViewCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -163,11 +159,7 @@ void CArxBlockViewCtrl::DrawOrbitCircles(CDC* pDC /*= NULL*/ )
 	if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) != 1 )
 		return;
 
-	CDC* pdc;
-	if (pDC == NULL)
-		pdc = GetDC();
-	else
-		pdc = pDC;
+	CDC* pdc = pDC? pDC : GetDC();
 		
 	CRect rcThis;
 	GetWindowRect(&rcThis);
@@ -267,7 +259,6 @@ void CArxBlockViewCtrl::RefreshBlock()
 	AcGeVector3d upVector = pView->upVector();
 	double fieldHeight = pView->fieldHeight();
 	double fieldWidth = pView->fieldWidth();
-	//kParallel
 
 	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
 	if( !pDb )
@@ -286,11 +277,11 @@ void CArxBlockViewCtrl::RefreshBlock()
 	pRec->close();
 
 	Invalidate();
-	PaintUI();
 }
 
 bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 {
+	clearAll();
 	if( !pszFilename || !*pszFilename )
 		return false;
 
@@ -302,14 +293,10 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 		theWorkspace.DisplayAlert( sMsg );
 		return false;
 	}
-
-	clearAll();
-
-	// This database is used to open the user specified file into if it exists
 	mpSourceDb = new AcDbDatabase(false, true);
-	
-	// Try to open the user specified file
-	if (Acad::eOk != mpSourceDb->readDwgFile(sPath,_SH_DENYNO,false))
+	Acad::ErrorStatus es = mpSourceDb->readDwgFile( sPath, _SH_DENYNO, false );
+	mpSourceDb->closeInput( true );
+	if( es != Acad::eOk )
 	{
 		CString sMsg;
 		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
@@ -318,27 +305,18 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 		mpSourceDb = NULL;
 		return false;
 	}
-	mpSourceDb->closeInput( true );
 	return true;			
-		
 }
 
-bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename )
+bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename )
 {
-	return LoadPreviewDwg( pszFilename, 1.0, true, 1, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+	return DisplayDwg( pszFilename, 1.0, true, 1, AcGeVector3d::kZAxis );
 }
 
-bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename, 
-																				double dZoomFactor, 
-																				bool   bZoomExtents,
-																				int	   nScaleType,
-																				double dVectorX, 
-																				double dVectorY, 
-																				double dVectorZ,
-																				double dCameraX, 
-																				double dCameraY, 
-																				double dCameraZ)
+bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, bool bZoomExtents,
+																		int nScaleType, const AcGeVector3d& vecViewDir )
 {
+	clearAll();
 	if( !pszFilename || !*pszFilename )
 		return false;
 
@@ -351,16 +329,10 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 		return false;
 	}
 
-	clearAll();
-	AcDbBlockTableRecord *pRec = NULL;
-	AcDbBlockTable *pTab = NULL;
-	AcDbExtents extents;
-
-	// This database is used to open the user specified file into if it exists
 	mpSourceDb = new AcDbDatabase(false, true);
-	Acad::ErrorStatus es = mpSourceDb->readDwgFile(sPath, _SH_DENYNO);
-	// Try to open the user specified file
-	if (es != Acad::eOk)
+	Acad::ErrorStatus es = mpSourceDb->readDwgFile( sPath, _SH_DENYNO, false );
+	mpSourceDb->closeInput( true );
+	if( es != Acad::eOk )
 	{
 		CString sMsg;
 		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
@@ -369,17 +341,19 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 		mpSourceDb = NULL;
 		return false;
 	}
-	mpSourceDb->closeInput( true );
 			
-	if ((es = mpSourceDb->getBlockTable(pTab,AcDb::kForRead))!=Acad::eOk)    
+	AcDbBlockTable* pBlockTable = NULL;
+	es = mpSourceDb->getBlockTable( pBlockTable, AcDb::kForRead );
+	if( es != Acad::eOk )    
 	{
 		delete mpSourceDb;
 		mpSourceDb = NULL;
 		return false;
 	}
 
-	es = pTab->getAt( ACDB_MODEL_SPACE, pRec, AcDb::kForRead );
-	pTab->close();
+	AcDbBlockTableRecord* pModelSpace = NULL;
+	es = pBlockTable->getAt( ACDB_MODEL_SPACE, pModelSpace, AcDb::kForRead );
+	pBlockTable->close();
 	if( es != Acad::eOk )
 	{
 		delete mpSourceDb;
@@ -388,37 +362,19 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 	}
 			
 	mpTemplate->SetStringProperty( Prop::BlockName, ACDB_MODEL_SPACE );
-	DisplayTheBlock(
-		pRec,		
-		dZoomFactor, 
-		bZoomExtents,
-		nScaleType,
-		dVectorX, 
-		dVectorY, 
-		dVectorZ,
-		dCameraX, 
-		dCameraY, 
-		dCameraZ);
-	pRec->close();
+	DisplayBTR( pModelSpace, dZoomFactor, bZoomExtents, nScaleType, vecViewDir );
+	pModelSpace->close();
 
 	return true; 
 }
 
 bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName )
 {
-	return DisplayBlock( pszBlockName, 1.0, true, 1, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+	return DisplayBlock( pszBlockName, 1.0, true, 1, AcGeVector3d::kZAxis );
 }
 
-bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName, 
-																			double dZoomFactor, 
-																			bool   bZoomExtents,
-																			int	   nScaleType,
-																			double dVectorX, 
-																			double dVectorY, 
-																			double dVectorZ,
-																			double dCameraX, 
-																			double dCameraY, 
-																			double dCameraZ)
+bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName, double dZoomFactor, bool bZoomExtents,
+																			int nScaleType, const AcGeVector3d& vecViewDir )
 {
 	if( !pszBlockName || !*pszBlockName )
 	{
@@ -429,75 +385,29 @@ bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName,
 	if( !pDb )
 		return false;
     
-  AcDbBlockTable* pTab = NULL;
-	Acad::ErrorStatus es = pDb->getBlockTable( pTab, AcDb::kForRead );
+	AcDbBlockTable* pBlockTable = NULL;
+	Acad::ErrorStatus es = pDb->getBlockTable( pBlockTable, AcDb::kForRead );
+	if( es != Acad::eOk )    
+	{
+		delete mpSourceDb;
+		mpSourceDb = NULL;
+		return false;
+	}
+
+	AcDbBlockTableRecord* pBTR = NULL;
+	es = pBlockTable->getAt( pszBlockName, pBTR, AcDb::kForRead );
+	pBlockTable->close();
 	if( es != Acad::eOk )
-		return false;
-  AcDbBlockTableRecord* pRec = NULL;
-	es = pTab->getAt( pszBlockName, pRec, AcDb::kForRead );
-  pTab->close();	
-  if( es != Acad::eOk )
-		return false;
+	{
+		delete mpSourceDb;
+		mpSourceDb = NULL;
+    return false;
+	}
 
 	mpTemplate->SetStringProperty( Prop::BlockName, pszBlockName );
-	DisplayTheBlock(
-		pRec,		
-		dZoomFactor, 
-		bZoomExtents,
-		nScaleType,
-		dVectorX, 
-		dVectorY, 
-		dVectorZ,
-		dCameraX, 
-		dCameraY, 
-		dCameraZ);
-	pRec->close();
-	return true;
-}
+	DisplayBTR( pBTR, dZoomFactor, bZoomExtents, nScaleType, vecViewDir );
+	pBTR->close();
 
-bool CArxBlockViewCtrl::DisplayExternalBlock( LPCTSTR pszBlockName, 
-																							double dZoomFactor, 
-																							bool   bZoomExtents,
-																							int	   nScaleType,
-																							double dVectorX, 
-																							double dVectorY, 
-																							double dVectorZ,
-																							double dCameraX, 
-																							double dCameraY, 
-																							double dCameraZ)
-{
-	clearAll();
-	if( !pszBlockName || !*pszBlockName )
-		return false;
-
-	AcDbBlockTableRecord *pRec;
-	AcDbBlockTable *pTab;
-	Acad::ErrorStatus es;
-
-	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
-	if( !pDb )
-		return false;
-    
-	if( pDb->getBlockTable( pTab, AcDb::kForRead) != Acad::eOk )    
-		return false;
-	es = pTab->getAt( pszBlockName, pRec, AcDb::kForRead );
-  pTab->close();	
-  if( es !=Acad::eOk )
-		return false;
-
-	mpTemplate->SetStringProperty( Prop::BlockName, pszBlockName );
-	DisplayTheBlock(
-		pRec,		
-		dZoomFactor, 
-		bZoomExtents,
-		nScaleType,
-		dVectorX, 
-		dVectorY, 
-		dVectorZ,
-		dCameraX, 
-		dCameraY, 
-		dCameraZ);
-	pRec->close();
 	return true;
 }
 

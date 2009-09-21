@@ -1,8 +1,8 @@
-// DockingDialog.cpp : implementation file
+// ControlBarDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "DockingDialog.h"
+#include "ControlBarDlg.h"
 #include "DclFormObject.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
@@ -14,9 +14,9 @@ extern bool AcadIsQuitting(void);
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CDockingDialog dialog
+// CControlBarDlg dialog
 
-CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CControlBarDlg::CControlBarDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CDialog( IDD_DOCKINGDLGHOST, &mHostControlBar )
 , CArxDialogObject( pSourceForm, this )
 , mpParent( pParent )
@@ -31,16 +31,16 @@ CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 }
 
 
-CDockingDialog::~CDockingDialog()
+CControlBarDlg::~CControlBarDlg()
 {
 }
 
-bool CDockingDialog::IsFloating() const
+bool CControlBarDlg::IsFloating() const
 {
 	return (const_cast< CAcadDockBarHost* >( &mHostControlBar )->IsFloating() != FALSE);
 }
 
-CWnd* CDockingDialog::GetTopLevelWnd()
+CWnd* CControlBarDlg::GetTopLevelWnd()
 {
 	HWND hwndControlBar = mHostControlBar.m_hWnd;
 	if( !hwndControlBar )
@@ -54,7 +54,7 @@ CWnd* CDockingDialog::GetTopLevelWnd()
 	return &mHostControlBar;
 }
 
-bool CDockingDialog::CreateModeless( UINT nID )
+bool CControlBarDlg::CreateModeless( UINT nID )
 {
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
@@ -119,7 +119,7 @@ bool CDockingDialog::CreateModeless( UINT nID )
 	return true;
 }
 
-void CDockingDialog::CloseDialog(int nStatus)
+void CControlBarDlg::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return;
@@ -133,58 +133,58 @@ void CDockingDialog::CloseDialog(int nStatus)
 	//	::DestroyWindow( hwndOwner );
 }
 
-bool CDockingDialog::CenterDialog()
+bool CControlBarDlg::CenterDialog()
 {
 	if( !IsFloating() )
 		return false;
 	return __super::CenterDialog();
 }
 
-bool CDockingDialog::MoveDialog( long nNewLeft, long nNewTop )
+bool CControlBarDlg::MoveDialog( long nNewLeft, long nNewTop )
 {
 	if( !IsFloating() )
 		return false;
 	return __super::MoveDialog( nNewLeft, nNewTop );
 }
 
-bool CDockingDialog::ResizeDialog( long nNewWidth, long nNewHeight )
+bool CControlBarDlg::ResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
 		return false;
 	return __super::ResizeDialog( nNewWidth, nNewHeight );
 }
 
-bool CDockingDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
+bool CControlBarDlg::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
 		return false;
 	return __super::ResizeDialog( nNewWidth, nNewHeight );
 }
 
-CRect CDockingDialog::GetEffectiveWindowRect() const
+CRect CControlBarDlg::GetEffectiveWindowRect() const
 {
-	CWnd* pTop = const_cast< CDockingDialog* >( this )->GetTopLevelWnd();
+	CWnd* pTop = const_cast< CControlBarDlg* >( this )->GetTopLevelWnd();
 	CRect rcWnd;
 	pTop->GetWindowRect( &rcWnd );
 	return rcWnd;
 	//CRect rcDlg;
-	//const_cast< CDockingDialog* >( this )->mHostControlBar.GetFloatingRect( &rcDlg );
+	//const_cast< CControlBarDlg* >( this )->mHostControlBar.GetFloatingRect( &rcDlg );
 	//return rcDlg;
 }
 
-CRect CDockingDialog::GetEffectiveClientRect() const
+CRect CControlBarDlg::GetEffectiveClientRect() const
 {
 	CRect rcDlg;
-	const_cast< CDockingDialog* >( this )->mHostControlBar.GetClientArea( rcDlg );
+	const_cast< CControlBarDlg* >( this )->mHostControlBar.GetClientArea( rcDlg );
 	return rcDlg;
 }
 
-void CDockingDialog::GetClientArea( CRect& rect )
+void CControlBarDlg::GetClientArea( CRect& rect )
 {
 	rect = GetEffectiveClientRect();
 }
 
-void CDockingDialog::OnFrameChanged()
+void CControlBarDlg::OnFrameChanged()
 {
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
 	CRect rectWindow;
@@ -200,7 +200,7 @@ void CDockingDialog::OnFrameChanged()
 	//ApplyPosition();
 }
 
-void CDockingDialog::ApplyPosition()
+void CControlBarDlg::ApplyPosition()
 {
 	if( IsIgnoreSizing() )
 		return;
@@ -218,7 +218,7 @@ void CDockingDialog::ApplyPosition()
 	mpControlPane->RecalcLayout();
 }
 
-bool CDockingDialog::OnApplyProperty( TPropertyPtr pProp )
+bool CControlBarDlg::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
@@ -232,7 +232,7 @@ bool CDockingDialog::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
+bool CControlBarDlg::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
 	bool bIgnoreSizing = IgnoreSizing();
@@ -245,18 +245,18 @@ bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
 	return true;
 }
 
-void CDockingDialog::OnMouseEnter()
+void CControlBarDlg::OnMouseEnter()
 {
   GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 };
 
-void CDockingDialog::OnMouseLeave()
+void CControlBarDlg::OnMouseLeave()
 {
   GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 };
 
 
-BEGIN_MESSAGE_MAP(CDockingDialog, CDialog)
+BEGIN_MESSAGE_MAP(CControlBarDlg, CDialog)
 	ON_WM_HELPINFO()
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
@@ -267,9 +267,9 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CDockingDialog message handlers
+// CControlBarDlg message handlers
 
-int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -305,7 +305,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 1;
 }
 
-void CDockingDialog::OnSize(UINT nType, int cx, int cy) 
+void CControlBarDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() || !IsResizable() )
@@ -318,13 +318,13 @@ void CDockingDialog::OnSize(UINT nType, int cx, int cy)
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 }
 
-BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
+BOOL CControlBarDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
 	GetArxServices()->HandleEvent( Prop::EventHelp );
 	return TRUE;
 }
 
-void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
+void CControlBarDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	GetArxServices()->HandleEvent( Prop::FormEventShow );	
 
@@ -332,7 +332,7 @@ void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	__super::OnShowWindow(bShow, nStatus);
 }
 
-void CDockingDialog::PostNcDestroy() 
+void CControlBarDlg::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	CAcadDockBarHost* pHostToDelete = NULL;
@@ -342,12 +342,12 @@ void CDockingDialog::PostNcDestroy()
 	delete pHostToDelete;
 }
 
-BOOL CDockingDialog::PreTranslateMessage(MSG* pMsg) 
+BOOL CControlBarDlg::PreTranslateMessage(MSG* pMsg) 
 {
 	return CWnd::PreTranslateMessage(pMsg);
 }
 
-bool CDockingDialog::OnClosing()
+bool CControlBarDlg::OnClosing()
 {
 	if( IsClosing() )
 		return true;
@@ -359,14 +359,14 @@ bool CDockingDialog::OnClosing()
 	return true;
 }
 
-void CDockingDialog::OnDestroy() 
+void CControlBarDlg::OnDestroy() 
 {
 	OnClosing();
 	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
 }
 
-BOOL CDockingDialog::OnEraseBkgnd(CDC* pDC)
+BOOL CControlBarDlg::OnEraseBkgnd(CDC* pDC)
 {
 	if( !mColorService.IsBackgroundTransparent() )
 	{

@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////
-// DirDialog.cpp: implementation of the CDirDialog class.
+// FolderBrowseDlg.cpp: implementation of the CFolderBrowseDlg class.
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "DirDialog.h"
+#include "FolderBrowseDlg.h"
 #include "shlobj.h"
 
 
 // Callback function called by SHBrowseForFolder's browse control
 // after initialization and when selection changes
-int __stdcall CDirDialog::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+int __stdcall CFolderBrowseDlg::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
-  CDirDialog* pDirDialogObj = (CDirDialog*)lpData;
+  CFolderBrowseDlg* pDirDialogObj = (CFolderBrowseDlg*)lpData;
   if (uMsg == BFFM_INITIALIZED )
   {
 		::SetForegroundWindow(hwnd);
@@ -37,7 +37,7 @@ int __stdcall CDirDialog::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDirDialog::CDirDialog( LPCTSTR pszCaption,
+CFolderBrowseDlg::CFolderBrowseDlg( LPCTSTR pszCaption,
 												LPCTSTR pszInitialFolder /*= NULL*/,
 												LPCTSTR pszRootFolder /*= NULL*/,
 												DWORD dwFlags /*= BIF_RETURNONLYFSDIRS*/ )
@@ -48,12 +48,12 @@ CDirDialog::CDirDialog( LPCTSTR pszCaption,
 {
 }
 
-CDirDialog::~CDirDialog()
+CFolderBrowseDlg::~CFolderBrowseDlg()
 {
 }
 
 
-BOOL CDirDialog::DoBrowse(CWnd *pwndParent)
+BOOL CFolderBrowseDlg::DoBrowse(CWnd *pwndParent)
 {
 
 	if( !msInitialFolder.IsEmpty() )

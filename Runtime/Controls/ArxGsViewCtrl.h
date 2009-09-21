@@ -66,9 +66,8 @@ protected:
 					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
 					if( pAcadColor )
 					{
-						AcGsColor color = mpDevice->getBackgroundColor();
 						COLORREF aColor = GetRGBColor( pAcadColor->GetLongValue() );
-						//AcGsColor color;
+						AcGsColor color = mpDevice->getBackgroundColor();
 						color.m_red = GetRValue( aColor );
 						color.m_green = GetGValue( aColor );
 						color.m_blue = GetBValue( aColor );
@@ -169,7 +168,6 @@ private:
 	btnstate mLBState;
 	btnstate mRBState;
 	COLORREF mclrHighlight;
-	bool mbHighlighted;
 
 public:
 	CArxGsViewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -199,17 +197,10 @@ protected:
 public:
 	void SetHighlight( const COLORREF& clrHighlight );
 	void RemoveHighlight();	
-	void DisplayTheBlock( AcDbBlockTableRecord *pRec,
-												double dZoomFactor, 
-												bool   bZoomExtents,
-												int	   nScaleType,		
-												double dVectorX, 
-												double dVectorY, 
-												double dVectorZ,
-												double dCameraX, 
-												double dCameraY, 
-												double dCameraZ );
-	void Zoom( double dZfactor );
+	void DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
+									 bool bZoomExtents, int nScaleType,
+									 const AcGeVector3d& vecViewDir );
+	void Zoom( double dZoomFactor );
 
 	// Generated message map functions
 protected:

@@ -86,7 +86,7 @@ protected: //for use by parent form only
 
 protected: //for use by control instance only
 	friend class CDialogControl;
-	friend class CCustomFileDialog;
+	friend class CCustomFileDlg;
 	void SetControlInstance( CDialogControl* pDlgControl );
 
 // Operations

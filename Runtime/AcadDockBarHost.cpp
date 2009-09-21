@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AcadDockBarHost.h"
-#include "DockingDialog.h"
+#include "ControlBarDlg.h"
 
 
 static const UINT& refWM_MOUSEENTER()
@@ -38,7 +38,7 @@ static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 /////////////////////////////////////////////////////////////////////////////
 // CAcadDockBarHost dialog
 
-CAcadDockBarHost::CAcadDockBarHost( CDockingDialog* pDlgObject, CWnd *pParent /*= NULL*/ )
+CAcadDockBarHost::CAcadDockBarHost( CControlBarDlg* pDlgObject, CWnd *pParent /*= NULL*/ )
 : CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
 , mpDlgObject( pDlgObject )
 , mpParent( pParent )
@@ -93,6 +93,7 @@ BEGIN_MESSAGE_MAP(CAcadDockBarHost, CAdUiDockControlBar)
 	ON_WM_NCHITTEST()
 	ON_WM_SETCURSOR()
 	ON_WM_CAPTURECHANGED()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -207,7 +208,12 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	if( !mpDlgObject->IsResizable() )
 		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
 									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
-	return __super::CalcFixedLayout( bStretch, bHorz );
+	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
+	if( bHorz )
+		sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight();
+	else
+		sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth();
+	return sizeDefault;
 }
 
 void CAcadDockBarHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
@@ -397,4 +403,16 @@ void CAcadDockBarHost::OnCaptureChanged(CWnd *pWnd)
 {
 	OnTimer( WM_MOUSELEAVE );
 	__super::OnCaptureChanged(pWnd);
+}
+
+BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
+{
+	if( !mpDlgObject->GetColorService()->IsBackgroundTransparent() )
+	{
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		pDC->FillSolidRect( &rcClient, mpDlgObject->GetColorService()->GetBackgroundColor() );
+		return TRUE;
+	}
+	return __super::OnEraseBkgnd(pDC);
 }

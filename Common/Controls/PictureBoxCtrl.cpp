@@ -211,7 +211,7 @@ void CPictureBoxCtrl::Clear()
 	// set the picture ID to a value that indicates it's blank
 	mpTemplate->SetLongProperty(Prop::Picture, 0);
 	SetPictureBlank();
-	OnNeedRepaint( true, true );
+	OnNeedRepaint( true );
 }
 
 void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask)

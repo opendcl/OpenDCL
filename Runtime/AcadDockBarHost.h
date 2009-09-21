@@ -5,7 +5,7 @@
 
 #include "AcUiDock.h"
 
-class CDockingDialog;
+class CControlBarDlg;
 
 
 #if (_MFC_VER < 0x0800)
@@ -20,7 +20,7 @@ class CDockingDialog;
 
 class CAcadDockBarHost : public CAdUiDockControlBar
 {
-	CDockingDialog* mpDlgObject;
+	CControlBarDlg* mpDlgObject;
 	CWnd* mpParent;
 	bool mbTrackingMouse;
 	bool mbMouseLeft;
@@ -29,7 +29,7 @@ class CAcadDockBarHost : public CAdUiDockControlBar
 
 // Construction
 public:
-	CAcadDockBarHost( CDockingDialog* pDlgObject, CWnd *pParent = NULL );
+	CAcadDockBarHost( CControlBarDlg* pDlgObject, CWnd *pParent = NULL );
 	virtual ~CAcadDockBarHost();
 
 public:
@@ -63,4 +63,5 @@ protected:
 	afx_msg LRESULT OnFrameChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

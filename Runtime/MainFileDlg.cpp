@@ -3,14 +3,14 @@
 
 #include "stdafx.h"
 #include "MainFileDlg.h"
-#include "CustomFileDialog.h"
+#include "CustomFileDlg.h"
 #include "InvokeMethod.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFileDlg dialog
 
-CMainFileDlg::CMainFileDlg( CCustomFileDialog* pDlgObject, CWnd* pParent /*=NULL*/ )
+CMainFileDlg::CMainFileDlg( CCustomFileDlg* pDlgObject, CWnd* pParent /*=NULL*/ )
 : CCommonDialog( pParent )
 , mpDlgObject( pDlgObject )
 , mbInitialized( false )

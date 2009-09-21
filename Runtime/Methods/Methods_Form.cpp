@@ -6,7 +6,7 @@
 #include "Methods_Form.h"
 #include "ArxWorkspace.h"
 #include "ArxDialogControl.h"
-#include "CustomFileDialog.h"
+#include "CustomFileDlg.h"
 
 
 

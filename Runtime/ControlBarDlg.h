@@ -1,4 +1,4 @@
-// DockingDialog.h : header file
+// ControlBarDlg.h : header file
 //
 
 #pragma once
@@ -17,9 +17,9 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CDockingDialog dialog
+// CControlBarDlg dialog
 
-class CDockingDialog : public CDialog, public CArxDialogObject
+class CControlBarDlg : public CDialog, public CArxDialogObject
 {
 	CWnd* mpParent;
 	CAcadDockBarHost& mHostControlBar;
@@ -30,8 +30,8 @@ class CDockingDialog : public CDialog, public CArxDialogObject
 
 // Construction
 public:
-	CDockingDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
-	virtual ~CDockingDialog();
+	CControlBarDlg( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
+	virtual ~CControlBarDlg();
 
 // Atributes
 public:

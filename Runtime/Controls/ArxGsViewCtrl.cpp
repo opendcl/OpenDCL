@@ -20,7 +20,7 @@ CArxGsViewCtrl::CArxGsViewCtrl( TDclControlPtr pTemplate,
 , mDragDropService( this )
 , mBlockInsertDropTarget( this )
 , mpGsReactor( NULL )
-, mbHighlighted( false )
+, mclrHighlight( CAcadColorService::GetTransparentColor() )
 , mLBState( up )
 , mRBState( up )
 {
@@ -62,14 +62,13 @@ bool CArxGsViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 
 void CArxGsViewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
-	mbHighlighted = true;
 	mclrHighlight = clrHighlight;		
 	Invalidate();
 }
 
 void CArxGsViewCtrl::RemoveHighlight()
 {
-	mbHighlighted = false;
+	mclrHighlight = CAcadColorService::GetTransparentColor();
 	Invalidate();
 }
 
@@ -77,7 +76,7 @@ void CArxGsViewCtrl::clearAll()
 {
 	delete mpGsReactor;
 	mpGsReactor = NULL;
-	mbHighlighted = false;
+	RemoveHighlight();
 }
 
 bool CArxGsViewCtrl::UpdateModel( AcGiDrawable* pDrawable )
@@ -88,26 +87,18 @@ bool CArxGsViewCtrl::UpdateModel( AcGiDrawable* pDrawable )
 	return true;
 }
 
-void CArxGsViewCtrl::Zoom( double dZfactor )
+void CArxGsViewCtrl::Zoom( double dZoomFactor )
 {
 	if( mpGsReactor )
-		mpGsReactor->zoom( dZfactor );
+		mpGsReactor->zoom( dZoomFactor );
 	Invalidate();
 }
 
-void CArxGsViewCtrl::DisplayTheBlock(
-		AcDbBlockTableRecord *pRec,
-		double dZoomFactor, 
-		bool   bZoomExtents,
-		int	   nScaleType,		
-		double dVectorX, 
-		double dVectorY, 
-		double dVectorZ,
-		double dCameraX, 
-		double dCameraY, 
-		double dCameraZ)
+void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor, 
+																 bool bZoomExtents, int nScaleType,
+																 const AcGeVector3d& vecViewDir )
 {
-	AcDbDatabase* pDb = pRec->database();
+	AcDbDatabase* pDb = pBTR->database();
 	if( !pDb )
 		pDb = acdbCurDwg();
 	if( !mpGsReactor || mpGsReactor->database() != pDb )
@@ -117,7 +108,7 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	}
 	AcDbExtents extBTR;
 	AcDbBlockTableRecordIterator* pBlockIterator = NULL;
-	if( Acad::eOk != pRec->newIterator( pBlockIterator ) )
+	if( Acad::eOk != pBTR->newIterator( pBlockIterator ) )
 		return;
 	for( ; !pBlockIterator->done(); pBlockIterator->step() )
 	{
@@ -149,23 +140,22 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	// get the view port information - see parameter list
 	ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
 	AcGePoint3d targetView(0,0,0);
-	AcGeVector3d vCameraViewDir(dCameraX,dCameraY,dCameraZ);
 	
 	// we are only interested in the directions of the view, not the sizes, so we normalise. 
-	vCameraViewDir = vCameraViewDir.normal();
+	AcGeVector3d vecView = vecViewDir.normal();
 	//**********************************************
 	// Our view coordinate space consists of z direction 
 	// get a perp vector off the z direction
 	// Make sure its normalised
-	AcGeVector3d viewXDir = vCameraViewDir.perpVector ().normal();
+	AcGeVector3d viewXDir = vecView.perpVector().normal();
 	
 	// correct the x angle by applying the twist
-	viewXDir = viewXDir.rotateBy (viewTwist, -vCameraViewDir);
+	viewXDir = viewXDir.rotateBy (viewTwist, -vecView);
 	
 	
 	// now we can work out y, this is of course perp to the x and z directions. No need to normalise this, 
 	// as we know that x and z are of unit length, and perpendicular, so their cross product must be on unit length
-	AcGeVector3d viewYDir = vCameraViewDir.crossProduct (viewXDir);
+	AcGeVector3d viewYDir = vecView.crossProduct (viewXDir);
 
 	AcGeLineSeg3d calcLine(extMax, extMin);
 	AcGePoint3d boxCenter = calcLine.midPoint();
@@ -175,7 +165,7 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	// we are keeping the fixed point as the center of the box for convenience )
 	AcGeMatrix3d viewMat;
 	viewMat = AcGeMatrix3d::alignCoordSys (boxCenter, AcGeVector3d::kXAxis, AcGeVector3d::kYAxis, AcGeVector3d::kZAxis,  
-												boxCenter, viewXDir, viewYDir, vCameraViewDir).inverse();
+												boxCenter, viewXDir, viewYDir, vecView).inverse();
 
 	AcDbExtents extView = extBTR;
 	// transforms the extents in WCS->view space
@@ -191,7 +181,7 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	assert( pView != NULL );
 	if( !pView )
 		return;
-	AcGePoint3d eye = boxCenter + vCameraViewDir;
+	AcGePoint3d eye = boxCenter + vecView;
 
 	if (yMax == 0.0)
 		yMax = 0.00000000002;
@@ -233,7 +223,7 @@ void CArxGsViewCtrl::DisplayTheBlock(
 		}
 		catch(...)
 		{
-			Trace(_T("* CArxGsViewCtrl::DisplayTheBlock() exception caught"));
+			Trace(_T("* CArxGsViewCtrl::DisplayBlock() exception caught"));
 			assert(false);
 		}
 	}
@@ -263,10 +253,9 @@ void CArxGsViewCtrl::DisplayTheBlock(
 	pView->setMode( GetRenderMode() );
 
 	if( mpGsReactor )
-		mpGsReactor->setDrawable( pRec );
+		mpGsReactor->setDrawable( pBTR );
 
 	Invalidate();
-	PaintUI();
 }
 
 
@@ -317,22 +306,25 @@ void CArxGsViewCtrl::OnPaint()
 		pView->update();
 	}
 	PaintUI( &dc );
-	if( mbHighlighted && CanShowHighlight() )
+	if( CanShowHighlight() )
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
 		rcClient.DeflateRect( 2, 2 );
-		
-		CPen Pen( PS_SOLID, 1, mclrHighlight );
-		CPen* pOldPen = dc.SelectObject( &Pen );
+		if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
+		{
 
-		dc.MoveTo( 1, 1 );
-		dc.LineTo( rcClient.Width(), 1 );		
-		dc.LineTo( rcClient.Width(), rcClient.Height() );		
-		dc.LineTo( 1, rcClient.Height() );		
-		dc.LineTo( 1, 1 );		
+			CPen Pen( PS_SOLID, 1, mclrHighlight );
+			CPen* pOldPen = dc.SelectObject( &Pen );
 
-		dc.SelectObject( pOldPen );			
+			dc.MoveTo( 1, 1 );
+			dc.LineTo( rcClient.Width(), 1 );
+			dc.LineTo( rcClient.Width(), rcClient.Height() );
+			dc.LineTo( 1, rcClient.Height() );
+			dc.LineTo( 1, 1 );
+
+			dc.SelectObject( pOldPen );			
+		}
 		if( GetFocus() == this )
 			dc.DrawFocusRect( rcClient );
 	}
@@ -344,7 +336,7 @@ void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy)
 	if( mpGsReactor ) 
 	{
 		CRect rect;
-		GetClientRect( &rect);
+		GetClientRect( &rect );
 		mpGsReactor->onSize( rect.Width(), rect.Height() );
 	}
 }

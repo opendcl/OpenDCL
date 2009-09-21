@@ -1,8 +1,8 @@
-// OptionsTabPane.cpp : implementation file
+// COptionsTabDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "OptionsTabPane.h"
+#include "OptionsTabDlg.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
 #include "DclFormObject.h"
@@ -12,19 +12,19 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// COptionsTabPane dialog
+// COptionsTabDlg dialog
 
-COptionsTabPane::COptionsTabPane( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+COptionsTabDlg::COptionsTabDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAcUiTabChildDialog( pParent, pParams? (HINSTANCE)pParams->lpData : NULL ) 
 , CArxDialogObject( pSourceForm, this )
 {
 }
 
-COptionsTabPane::~COptionsTabPane()
+COptionsTabDlg::~COptionsTabDlg()
 {
 }
 
-void COptionsTabPane::CloseDialog(int nStatus)
+void COptionsTabDlg::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return;
@@ -33,27 +33,27 @@ void COptionsTabPane::CloseDialog(int nStatus)
 }
 
 
-BEGIN_MESSAGE_MAP(COptionsTabPane, CAcUiTabChildDialog)
+BEGIN_MESSAGE_MAP(COptionsTabDlg, CAcUiTabChildDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// COptionsTabPane message handlers
+// COptionsTabDlg message handlers
 
-void COptionsTabPane::OnTabActivation (BOOL bActivate) 
+void COptionsTabDlg::OnTabActivation (BOOL bActivate) 
 {
 	//----- TODO: Add your code here
 }
 
-BOOL COptionsTabPane::OnTabChanging () {
+BOOL COptionsTabDlg::OnTabChanging () {
 	//----- TODO: Add your code here
 
 	return (TRUE) ;
 }
 
-BOOL COptionsTabPane::OnInitDialog() 
+BOOL COptionsTabDlg::OnInitDialog() 
 {
 	CAcUiTabExtension::OnInitDialog();
 	ApplyPropertiesEnum();
@@ -81,25 +81,25 @@ BOOL COptionsTabPane::OnInitDialog()
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-void COptionsTabPane::OnMainDialogOK()
+void COptionsTabDlg::OnMainDialogOK()
 // This function is called when the main dialog OK button is pressed.
 {
 	GetArxServices()->HandleEvent( Prop::EventOptionsOK, false );	
 }
 
-void COptionsTabPane::OnMainDialogAPPLY()
+void COptionsTabDlg::OnMainDialogAPPLY()
 // This function is called when the main dialog Apply button is pressed.
 {
 	GetArxServices()->HandleEvent( Prop::EventOptionsApply, false );	
 }
 
-void COptionsTabPane::OnMainDialogCancel()
+void COptionsTabDlg::OnMainDialogCancel()
 // This function is called when the main dialog CANCEL button is pressed.
 {
 	GetArxServices()->HandleEvent( Prop::EventOptionsCancel, false );	
 }
 
-BOOL COptionsTabPane::OnMainDialogHelp()
+BOOL COptionsTabDlg::OnMainDialogHelp()
 // This function is called when the main dialog HELP button is pressed
 // and this is the active tab.
 {
@@ -107,26 +107,26 @@ BOOL COptionsTabPane::OnMainDialogHelp()
   return TRUE;
 }
 
-void COptionsTabPane::PostNcDestroy() 
+void COptionsTabDlg::PostNcDestroy() 
 {
 	CAcUiTabExtension::PostNcDestroy();
 	delete this;
 }
 
-void COptionsTabPane::OnShowWindow(BOOL bShow, UINT nStatus) 
+void COptionsTabDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
 	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_B( (bShow != FALSE) ) ) )
 		return;
 }
 
-void COptionsTabPane::OnDestroy() 
+void COptionsTabDlg::OnDestroy() 
 {
 	GetControlPane()->CleanUpControls();
 	CAcUiTabExtension::OnDestroy();
 }
 
-void COptionsTabPane::OnSize(UINT nType, int cx, int cy)
+void COptionsTabDlg::OnSize(UINT nType, int cx, int cy)
 {
 	//__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() )

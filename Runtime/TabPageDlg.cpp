@@ -1,28 +1,28 @@
-// TabPage.cpp : implementation file
+// TabPageDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "TabPage.h"
+#include "TabPageDlg.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CTabPage dialog
+// CTabPageDlg dialog
 
-BEGIN_MESSAGE_MAP(CTabPage, CDialog)
+BEGIN_MESSAGE_MAP(CTabPageDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
-CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
-: CDialog(CTabPage::IDD, pTabCtrl)
+CTabPageDlg::CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
+: CDialog(CTabPageDlg::IDD, pTabCtrl)
 , CDialogObject( pSourceForm, &mControlPane, this )
 , mControlPane( pSourceForm, this )
 , mbRecalcQueued( false )
 {
 	IgnoreSizing();
-	CDialog::Create( CTabPage::IDD, pTabCtrl );
+	CDialog::Create( CTabPageDlg::IDD, pTabCtrl );
 	ShowWindow( SW_HIDE );
 	MoveWindow( &rectPane) ;
 	IgnoreSizing( false );
@@ -33,11 +33,11 @@ CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane,
 	mControlPane.RecalcLayout();
 }
 
-CTabPage::~CTabPage()
+CTabPageDlg::~CTabPageDlg()
 {
 }
 
-void CTabPage::ApplyPosition()
+void CTabPageDlg::ApplyPosition()
 {
 	bool bIgnoreSizing = IgnoreSizing();
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
@@ -52,9 +52,9 @@ void CTabPage::ApplyPosition()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CTabPage message handlers
+// CTabPageDlg message handlers
 
-LRESULT CTabPage::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CTabPageDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch( message )
 	{
@@ -69,7 +69,7 @@ LRESULT CTabPage::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return __super::WindowProc(message, wParam, lParam);
 }
 
-BOOL CTabPage::OnCommand(WPARAM wParam, LPARAM lParam)
+BOOL CTabPageDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	switch( LOWORD(wParam) )
 	{
@@ -80,7 +80,7 @@ BOOL CTabPage::OnCommand(WPARAM wParam, LPARAM lParam)
 	return __super::OnCommand( wParam, lParam );
 }
 
-void CTabPage::OnSize(UINT nType, int cx, int cy)
+void CTabPageDlg::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() )
@@ -93,7 +93,7 @@ void CTabPage::OnSize(UINT nType, int cx, int cy)
 		mbRecalcQueued = true;
 }
 
-BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
+BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 {
 	if( mpControlPane->GetThemeHelper() )
 	{
@@ -114,7 +114,7 @@ BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
 	return __super::OnEraseBkgnd(pDC);
 }
 
-void CTabPage::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+void CTabPageDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 {
 	__super::OnWindowPosChanging(lpwndpos);
 
@@ -125,12 +125,12 @@ void CTabPage::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	}
 }
 
-BOOL CTabPage::PreTranslateMessage(MSG* pMsg)
+BOOL CTabPageDlg::PreTranslateMessage(MSG* pMsg)
 {
 	return CWnd::PreTranslateMessage(pMsg); //bypass CDialog
 }
 
-void CTabPage::OnShowWindow(BOOL bShow, UINT nStatus)
+void CTabPageDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	__super::OnShowWindow(bShow, nStatus);
 	if( bShow && mbRecalcQueued )

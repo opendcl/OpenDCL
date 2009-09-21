@@ -268,7 +268,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\CustomFileDialog.cpp"
+				RelativePath="..\CustomFileDlg.cpp"
 				>
 			</File>
 			<File
@@ -276,7 +276,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DirDialog.cpp"
+				RelativePath="..\FolderBrowseDlg.cpp"
 				>
 			</File>
 			<File
@@ -284,7 +284,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DockingDialog.cpp"
+				RelativePath="..\ControlBarDlg.cpp"
 				>
 			</File>
 			<File
@@ -308,11 +308,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\OptionsTabPane.cpp"
+				RelativePath="..\OptionsTabDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\PaletteDialog.cpp"
+				RelativePath="..\PaletteDlg.cpp"
 				>
 			</File>
 			<File
@@ -344,7 +344,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\TabPage.cpp"
+				RelativePath="..\TabPageDlg.cpp"
 				>
 			</File>
 			<File
@@ -413,7 +413,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\CustomFileDialog.h"
+				RelativePath="..\CustomFileDlg.h"
 				>
 			</File>
 			<File
@@ -421,7 +421,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DirDialog.h"
+				RelativePath="..\FolderBrowseDlg.h"
 				>
 			</File>
 			<File
@@ -429,7 +429,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DockingDialog.h"
+				RelativePath="..\ControlBarDlg.h"
 				>
 			</File>
 			<File
@@ -461,11 +461,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\OptionsTabPane.h"
+				RelativePath="..\OptionsTabDlg.h"
 				>
 			</File>
 			<File
-				RelativePath="..\PaletteDialog.h"
+				RelativePath="..\PaletteDlg.h"
 				>
 			</File>
 			<File
@@ -497,7 +497,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\TabPage.h"
+				RelativePath="..\TabPageDlg.h"
 				>
 			</File>
 			<File

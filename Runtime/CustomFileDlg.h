@@ -1,4 +1,4 @@
-// CustomFileDialog.h : header file
+// CustomFileDlg.h : header file
 //
 
 #pragma once
@@ -28,9 +28,9 @@ struct FileDialogParams
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CCustomFileDialog dialog
+// CCustomFileDlg dialog
 
-class CCustomFileDialog : public CFileDialog, public CArxDialogObject
+class CCustomFileDlg : public CFileDialog, public CArxDialogObject
 {
 	CString msTitle;
 	CString msFilterList;
@@ -46,8 +46,8 @@ class CCustomFileDialog : public CFileDialog, public CArxDialogObject
 	int mnBottomBorder;
 
 public:
-	CCustomFileDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
-	~CCustomFileDialog();
+	CCustomFileDlg( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
+	~CCustomFileDlg();
 
 // Attributes
 public:

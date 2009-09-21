@@ -62,7 +62,7 @@
 #include "DelayedInvoke.h"
 #include "ArxDialogControl.h"
 #include "StringCompare.h"
-#include "DirDialog.h"
+#include "FolderBrowseDlg.h"
 #include "PictureObject.h"
 #include "ArxAcadSlideCtrl.h"
 #include "AcadColorTable.h"
@@ -2378,7 +2378,7 @@ public:
 		if( sCaption.IsEmpty() )
 			return RSERR; //invalid argument
 
-		CDirDialog dlg( sCaption, sInitialFolder, sRootFolder, nFlags );
+		CFolderBrowseDlg dlg( sCaption, sInitialFolder, sRootFolder, nFlags );
 		if (dlg.DoBrowse(CWnd::FromHandle(theArxWorkspace.GetTopmostModalForm())))
 			acedRetStr(dlg.GetSelectedFolder());
 
@@ -2780,9 +2780,18 @@ public:
 		{
 			for( size_t idx = 0; idx < rsFilters.size(); ++idx )
 			{
-				sFilterList += rsFilters[idx];
-				if( !sFilterList.IsEmpty() && sFilterList.Right( 1 ) != _T("|") )
-					sFilterList += _T('|');
+				CString sFilter = rsFilters[idx];
+				if( !sFilter.IsEmpty() )
+				{
+					if( sFilter.Right( 1 ) != _T("|") )
+						sFilter += _T('|');
+					int nFirstSeparator = sFilter.Find( _T('|') );
+					if( nFirstSeparator == sFilter.GetLength() - 1 )
+						sFilter += sFilter; //only one element was provided, so just use the same text for both
+					else if( sFilter.Find( _T('|'), nFirstSeparator + 1 ) != sFilter.GetLength() - 1 )
+						sFilter = sFilter.Left( sFilter.Find( _T('|'), nFirstSeparator + 1 ) + 1 ); //too many elements, so chop off the extras
+				}
+				sFilterList += sFilter;
 			}
 			if( GetStringArgument( pArgs, sCaption, true ) )
 				GetStringArgument( pArgs, sPath, true );
@@ -2797,14 +2806,12 @@ public:
 		DWORD dwFlags = OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING |
 										OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 		// create the open dialog box
-		CFileDialog BrowseWnd(TRUE, NULL, NULL, dwFlags, sFilterList, pParent);
-		BrowseWnd.m_ofn.lpstrInitialDir = sPath.LockBuffer();
+		CFileDialog BrowseWnd(TRUE, NULL, sPath, dwFlags, sFilterList, pParent);
 		BrowseWnd.m_ofn.lpstrTitle = sCaption.LockBuffer();
-		CString sResults;
+		CString sResults = sPath;
 		// proceed to setup the file buffer size
 		BrowseWnd.m_ofn.nMaxFile = 8192;
 		BrowseWnd.m_ofn.lpstrFile = sResults.GetBuffer(8192);
-		BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 		int nStat = BrowseWnd.DoModal();
 		if (nStat == IDOK)  	
 		{		

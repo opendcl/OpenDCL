@@ -79,7 +79,12 @@ void CArxGraphicButtonCtrl::OnClicked()
 void CArxGraphicButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	__super::OnLButtonDown( nFlags, point );
-
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
-		BeginDragDrop( point );
+	{
+		DROPEFFECT dwDropEffect = BeginDragDrop( point );
+		SendMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
+		if( dwDropEffect != DROPEFFECT_NONE )
+			return;
+		GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM( GetControlId(), BN_CLICKED ), (LPARAM)m_hWnd );
+	}
 }

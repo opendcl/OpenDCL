@@ -6,10 +6,10 @@
 #include "DclFormObject.h"
 #include "ModalDlg.h"
 #include "ModelessDlg.h"
-#include "OptionsTabPane.h"
-#include "DockingDialog.h"
-#include "CustomFileDialog.h"
-#include "PaletteDialog.h"
+#include "OptionsTabDlg.h"
+#include "ControlBarDlg.h"
+#include "CustomFileDlg.h"
+#include "PaletteDlg.h"
 #include "EventArgs.h"
 
 
@@ -97,14 +97,14 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	{
 	case FrmModalDlg: return new CModalDlg( pDclForm, pParent, pParams );
 	case FrmModelessDlg: return new CModelessDlg( pDclForm, pParent, pParams );
-	case FrmOptionsTab: return new COptionsTabPane( pDclForm, pParent, pParams );
-	case FrmFileDlg: return new CCustomFileDialog( pDclForm, pParent, pParams );
-#if (_BRXTARGET <= 10)
+	case FrmOptionsTab: return new COptionsTabDlg( pDclForm, pParent, pParams );
+	case FrmFileDlg: return new CCustomFileDlg( pDclForm, pParent, pParams );
+#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
 	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
 	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
 #else
-	case FrmControlBar: return new CDockingDialog( pDclForm, pParent, pParams );
-	case FrmPaletteDlg: return new CPaletteDialog( pDclForm, pParent, pParams );
+	case FrmControlBar: return new CControlBarDlg( pDclForm, pParent, pParams );
+	case FrmPaletteDlg: return new CPaletteDlg( pDclForm, pParent, pParams );
 #endif
 	}
 	return NULL;

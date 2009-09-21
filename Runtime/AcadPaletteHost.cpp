@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AcadPaletteHost.h"
-#include "PaletteDialog.h"
+#include "PaletteDlg.h"
 
 
 static const UINT& refWM_MOUSEENTER()
@@ -38,7 +38,7 @@ static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 /////////////////////////////////////////////////////////////////////////////
 // CAcadPaletteHost dialog
 
-CAcadPaletteHost::CAcadPaletteHost( CPaletteDialog* pDlgObject, CWnd *pParent /*= NULL*/ )
+CAcadPaletteHost::CAcadPaletteHost( CPaletteDlg* pDlgObject, CWnd *pParent /*= NULL*/ )
 : CAdUiPaletteSet( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
 , mpDlgObject( pDlgObject )
 , mpParent( pParent? pParent : acedGetAcadFrame() )
@@ -103,6 +103,7 @@ BEGIN_MESSAGE_MAP(CAcadPaletteHost, CAdUiPaletteSet)
 	ON_WM_NCHITTEST()
 	ON_WM_SETCURSOR()
 	ON_WM_CAPTURECHANGED()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -408,4 +409,16 @@ void CAcadPaletteHost::OnCaptureChanged(CWnd *pWnd)
 {
 	OnTimer( WM_MOUSELEAVE );
 	__super::OnCaptureChanged(pWnd);
+}
+
+BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
+{
+	if( !mpDlgObject->GetColorService()->IsBackgroundTransparent() )
+	{
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		pDC->FillSolidRect( &rcClient, mpDlgObject->GetColorService()->GetBackgroundColor() );
+		return TRUE;
+	}
+	return __super::OnEraseBkgnd(pDC);
 }

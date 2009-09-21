@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////
-// DirDialog.h: interface for the CDirDialog class.
+// FolderBrowseDlg.h: interface for the CFolderBrowseDlg class.
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 
-class CDirDialog
+class CFolderBrowseDlg
 {
 	CString msCaption;
 	CString msInitialFolder;
@@ -14,14 +14,14 @@ class CDirDialog
 	CString msSelectedFolder;
 
 public:
-	CDirDialog( LPCTSTR pszCaption, LPCTSTR pszInitialFolder = NULL, LPCTSTR pszRootFolder = NULL,
+	CFolderBrowseDlg( LPCTSTR pszCaption, LPCTSTR pszInitialFolder = NULL, LPCTSTR pszRootFolder = NULL,
 							DWORD dwFlags = BIF_RETURNONLYFSDIRS );
-	virtual ~CDirDialog();
+	virtual ~CFolderBrowseDlg();
 
 	BOOL DoBrowse(CWnd *pwndParent = NULL);
 	const CString& GetSelectedFolder() const { return msSelectedFolder; }
 
 private:
 	virtual BOOL SelChanged(LPCTSTR pszSelection, CString& csStatusText) { return TRUE; };
-	static int __stdcall CDirDialog::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
+	static int __stdcall CFolderBrowseDlg::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 };

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Methods_FileExplorer.h"
 #include "ArgumentsRetrieval.h"
-#include "CustomFileDialog.h"
+#include "CustomFileDlg.h"
 
 
 ADSRESULT FileExplorer::GetFileName()
@@ -18,7 +18,7 @@ ADSRESULT FileExplorer::GetFileName()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	acedRetStr( pCtrl->GetFileName() );
 	return RSRSLT;
@@ -35,7 +35,7 @@ ADSRESULT FileExplorer::GetFileTitle()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	acedRetStr( pCtrl->GetFileTitle() );
 	return RSRSLT;
@@ -52,7 +52,7 @@ ADSRESULT FileExplorer::GetFileExt()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	acedRetStr( pCtrl->GetFileExt() );
 	return RSRSLT;
@@ -69,7 +69,7 @@ ADSRESULT FileExplorer::GetPathName()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	acedRetStr( pCtrl->GetPathName() );
 	return RSRSLT;
@@ -86,7 +86,7 @@ ADSRESULT FileExplorer::GetFolderPath()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	acedRetStr( pCtrl->GetFolderPath() );
 	return RSRSLT;
@@ -103,7 +103,7 @@ ADSRESULT FileExplorer::GetFolderName()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	acedRetStr( pCtrl->GetFolderPath().MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse() );
 	return RSRSLT;
@@ -120,7 +120,7 @@ ADSRESULT FileExplorer::GetSelCount()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	CWnd* pMainWnd = pCtrl->GetParent()->GetDlgItem(lst2);
 	if( pMainWnd )
@@ -142,7 +142,7 @@ ADSRESULT FileExplorer::GetFileNameList()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	CWnd* pMainWnd = pCtrl->GetParent()->GetDlgItem(lst2);
 	if( pMainWnd )
@@ -188,7 +188,7 @@ ADSRESULT FileExplorer::SetOkButtonText()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+	CCustomFileDlg* pCtrl = (CCustomFileDlg*)pDlgControl->GetControlWnd();
 
 	CWnd* pOkButton = pCtrl->GetParent()->GetDlgItem( IDOK );
 	if( pOkButton )

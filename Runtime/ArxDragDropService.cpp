@@ -102,7 +102,10 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 	{
 		const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
 		if( pArxServices )
-			pArxServices->HandleEvent( Prop::DragnDropBegin );
+		{
+			if( pArxServices->HandleEvent( Prop::DragnDropBegin ) )
+				return dwEffect;
+		}
 		CPoint ptScreen( point );
 		mpDlgControl->GetControlWnd()->ClientToScreen( &ptScreen );
 		CSize sizDragRect( GetSystemMetrics( SM_CXDOUBLECLK ), GetSystemMetrics( SM_CYDOUBLECLK ) );

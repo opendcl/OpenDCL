@@ -5,7 +5,11 @@
 #include "LineWeightDlg.h"
 
 
+#ifdef _WIN64
+static const char gpszaAcedLineWeightDialog_FN[] = "?acedLineWeightDialog@@YA_NW4LineWeight@AcDb@@_NAEAW412@@Z";
+#else
 static const char gpszaAcedLineWeightDialog_FN[] = "?acedLineWeightDialog@@YA_NW4LineWeight@AcDb@@_NAAW412@@Z";
+#endif
 
 typedef bool (*FT_acedLineWeightDialog)( AcDb::LineWeight, bool, AcDb::LineWeight& );
 
@@ -15,7 +19,14 @@ static FT_acedLineWeightDialog GetProc(void)
 	static FT_acedLineWeightDialog pfProc = NULL;
 	if( pfProc )
 		return pfProc;
-	pfProc = (FT_acedLineWeightDialog)GetProcAddress(GetModuleHandle(NULL), gpszaAcedLineWeightDialog_FN);
+#if (_BRXTARGET == 10)
+	HMODULE hmodApi = GetModuleHandle( _T("brx10.dll") );
+#elif (_BRXTARGET == 9)
+	HMODULE hmodApi = GetModuleHandle( _T("brx.dll") );
+#else
+	HMODULE hmodApi = GetModuleHandle( NULL );
+#endif
+	pfProc = (FT_acedLineWeightDialog)GetProcAddress( hmodApi, gpszaAcedLineWeightDialog_FN );
 	assert(pfProc != NULL);
 	return pfProc;
 }

@@ -9,7 +9,7 @@
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
-#include "TabPage.h"
+#include "TabPageDlg.h"
 #include "DclFormObject.h"
 #include "Project.h"
 
@@ -177,7 +177,7 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 {
 	bool bFailed = false;
 
-	std::vector< CTabPage* > rTabPages;
+	std::vector< CTabPageDlg* > rTabPages;
 
 	CRect rectPage = GetUsedArea();
 	const TDclFormList& Forms = mpTemplate->GetOwnerProject()->GetDclFormList();
@@ -185,20 +185,20 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 	{
 		if( (*iter)->GetParentForm() == mpTemplate->GetOwnerForm() )
 		{
-			CTabPage* pNewPage = new CTabPage( (*iter), this, rectPage, nId );
+			CTabPageDlg* pNewPage = new CTabPageDlg( (*iter), this, rectPage, nId );
 			short nTabIndex = (*iter)->GetTabIndex();
 			if( rTabPages.size() <= nTabIndex )
 				rTabPages.resize( nTabIndex + 1 );
-			CTabPage*& pPage = rTabPages[nTabIndex];
+			CTabPageDlg*& pPage = rTabPages[nTabIndex];
 			assert( pPage == NULL ); //duplicate tab index!
 			pPage = pNewPage;
 		}
 	}
-	for( std::vector< CTabPage* >::const_iterator iter = rTabPages.begin();
+	for( std::vector< CTabPageDlg* >::const_iterator iter = rTabPages.begin();
 			 iter != rTabPages.end();
 			 ++iter )
 	{
-		CTabPage* pPage = *iter;
+		CTabPageDlg* pPage = *iter;
 		if( !pPage )
 			continue;
 		mTabPages.push_back( pPage );
@@ -252,7 +252,7 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 		GetArxServices()->HandleEvent( Prop::EventChanged, args_N( GetCurTabPage() ) );
 }
 
-void CArxTabStripCtrl::SetFirstControlFocus( CTabPage* pTabPage )
+void CArxTabStripCtrl::SetFirstControlFocus( CTabPageDlg* pTabPage )
 {
 	pTabPage->GetControlPane()->SetFirstControlFocus();
 }

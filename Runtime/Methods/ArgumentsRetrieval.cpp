@@ -1147,10 +1147,10 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 		break;
 	default:
 		{
+			resbuf* pArgC = pArgs;
 			int red = 0;
 			if( !GetIntArgument( pArgs, red, bQuiet ) )
 				return false;
-			resbuf* pArgC = pArgs;
 			int green = 0;
 			int blue = 0;
 			if( red >= 0 && red <= 255 &&

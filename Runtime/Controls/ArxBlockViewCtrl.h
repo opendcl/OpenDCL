@@ -146,37 +146,11 @@ public:
 	bool GetDwgSize( AcDbExtents& ext );
 	void RefreshBlock();
 	bool DisplayBlock( LPCTSTR pszBlockName );
-	bool DisplayBlock( LPCTSTR pszBlockName, 
-										 double dZoomFactor,
-										 bool   bZoomExtents,
-										 int	  nScaleType,
-										 double dVectorX, 
-										 double dVectorY, 
-										 double dVectorZ,
-										 double dCameraX,
-										 double dCameraY,
-										 double dCameraZ);
-	bool DisplayExternalBlock( LPCTSTR pszBlockName, 
-														 double dZoomFactor, 
-														 bool   bZoomExtents,
-														 int	  nScaleType,
-														 double dVectorX, 
-														 double dVectorY, 
-														 double dVectorZ,
-														 double dCameraX, 
-														 double dCameraY, 
-														 double dCameraZ);
-	bool LoadPreviewDwg( LPCTSTR pszFilename );
-	bool LoadPreviewDwg( LPCTSTR pszFilename, 
-											 double dZoomFactor, 
-											 bool   bZoomExtents,
-											 int	  nScaleType,
-											 double dVectorX, 
-											 double dVectorY, 
-											 double dVectorZ,
-											 double dCameraX, 
-											 double dCameraY, 
-											 double dCameraZ);
+	bool DisplayBlock( LPCTSTR pszBlockName, double dZoomFactor, bool bZoomExtents,
+										 int nScaleType, const AcGeVector3d& vecViewDir );
+	bool DisplayDwg( LPCTSTR pszFilename );
+	bool DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, bool bZoomExtents,
+									 int nScaleType, const AcGeVector3d& vecViewDir );
 	void DrawOrbitCircles( CDC* pDC = NULL );
 	void DrawOrbitQuadCircle( CDC *pdc, int nX, int nY );
 	bool PreLoadDwg( LPCTSTR pszFilename );

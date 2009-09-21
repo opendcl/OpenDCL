@@ -34,7 +34,7 @@
 #include "PrinterComboHandler.h"
 #include "TextStyleComboHandler.h"
 #include "R2006AcUiMRUComboBoxFixup.h"
-#include "DirDialog.h"
+#include "FolderBrowseDlg.h"
 #include "Workspace.h"
 #include "AcadColorTable.h"
 #include "Resource.h"
@@ -455,7 +455,7 @@ void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle )
 	{
 		case Grid::DirectoryCell:
 		{			
-			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
+			CFolderBrowseDlg dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
 			if (dlg.DoBrowse(this) == TRUE)
 				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), dlg.GetSelectedFolder(), -1 );
 			break;

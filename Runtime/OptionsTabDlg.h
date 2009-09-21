@@ -1,4 +1,4 @@
-// OptionsTabPane.h : header file
+// OptionsTabDlg.h : header file
 //
 
 #pragma once
@@ -8,16 +8,16 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// COptionsTabPane dialog
+// COptionsTabDlg dialog
 
-class COptionsTabPane : public CAcUiTabChildDialog, public CArxDialogObject
+class COptionsTabDlg : public CAcUiTabChildDialog, public CArxDialogObject
 {
 	enum { IDD = IDD_CFGTAB };
 
 	// Construction
 public:
-	COptionsTabPane(TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL) ;
-	virtual ~COptionsTabPane();
+	COptionsTabDlg(TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL) ;
+	virtual ~COptionsTabDlg();
 
 // CDialogObject overrides
 public:

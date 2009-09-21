@@ -86,7 +86,7 @@ CBrush* CAcadColorService::GetBackgroundCBrush() const
 
 bool CAcadColorService::IsBackgroundTransparent() const
 {
-	return ((mclrBackground & 0x80000000) != 0);
+	return IsTransparentColor( mclrBackground );
 }
 
 CBrush& CAcadColorService::GetTransparentBrush()
