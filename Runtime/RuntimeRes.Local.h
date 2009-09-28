@@ -16,8 +16,8 @@
 #define IDI_PLOTTER                     12005
 #define IDI_PRINTER                     12006
 #define IDD_CFGTAB                      15000
-#define IDD_MODALDIALOG                 15001
-#define IDD_RESIZEABLE                  15002
+#define IDD_BASEDLG                     15001
+#define IDD_BASERESIZABLEDLG            15002
 #define IDD_TABPAGE                     15003
 #define IDD_CUSTOM_FILE_DIALOG          15004
 #define IDS_OLDERSLD                    20001

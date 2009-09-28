@@ -9,6 +9,7 @@
 #include "ArxProject.h"
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
+#include "Resource.h"
 
 extern bool AcadIsQuitting(void);
 
@@ -94,6 +95,7 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 	}
 
 	IgnoreSizing();
+	OnApplyMinMaxSize( NULL );
   if( !mHostControlBar.Create( GetWndCaption(), GetWndRect(), nID ) )
 		return false;
 

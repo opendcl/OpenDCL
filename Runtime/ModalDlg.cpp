@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ModalDlg.h"
+#include "Resource.h"
 #include "DialogControl.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
@@ -18,8 +19,8 @@ static UINT GetDialogTemplateIdFromForm( TDclFormPtr pSourceForm )
 {
 	TDclControlPtr pDclProperties = pSourceForm->GetControlProperties();
 	if (pDclProperties->GetBooleanProperty(Prop::AllowResizing))
-		return IDD_RESIZEABLE;
-	return IDD_MODALDIALOG;
+		return IDD_BASERESIZABLEDLG;
+	return IDD_BASEDLG;
 }
 
 /////////////////////////////////////////////////////////////////////////////

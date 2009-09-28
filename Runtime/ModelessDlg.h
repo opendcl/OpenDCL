@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "Resource.h"
 #include "BaseDlg.h"
 
 #if (_MFC_VER < 0x0800)
@@ -33,8 +32,6 @@ class CModelessDlg : public CBaseDlg
 	bool mbMouseLeft;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
-	
-	enum { IDD = IDD_RESIZEABLE };
 
 // Construction	
 public:

@@ -21,9 +21,9 @@ CBaseDlg::CBaseDlg(TDclFormPtr pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, D
 , mnInitialY( pParams? pParams->position.y : -1 )
 , mbHasTitleBar( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::TitleBar ) )
 , mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::AllowResizing ) )
+, msizeGrip( GetSystemMetrics( SM_CXVSCROLL ), GetSystemMetrics( SM_CYHSCROLL ) )
+, mrectGrip( 0, 0, 0, 0 )
 {
-	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
 	IgnoreSizing();
 }
 
@@ -65,10 +65,10 @@ CRect CBaseDlg::ReadPosition() const
 void CBaseDlg::UpdateGripPos()
 {
 	// size-grip goes bottom right in the client area
-	InvalidateRect( &m_rcGripRect );
-	GetClientRect( &m_rcGripRect );
-	m_rcGripRect.left = m_rcGripRect.right - m_szGripSize.cx;
-	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
+	InvalidateRect( &mrectGrip );
+	GetClientRect( &mrectGrip );
+	mrectGrip.left = mrectGrip.right - msizeGrip.cx;
+	mrectGrip.top = mrectGrip.bottom - msizeGrip.cy;
 }
 
 bool CBaseDlg::OnApplyResizable( TPropertyPtr pProp )
@@ -248,14 +248,14 @@ void CBaseDlg::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	if (mbResizable)
-		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+		dc.DrawFrameControl(&mrectGrip, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
 }
 
 __UINT_LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
 {
 	CPoint pt = point;
 	ScreenToClient(&pt);
-	if (mbResizable && m_rcGripRect.PtInRect(pt) && pt.x >= 0 && pt.y >= 0) // if in size grip and in client area
+	if (mbResizable && mrectGrip.PtInRect(pt) && pt.x >= 0 && pt.y >= 0) // if in size grip and in client area
 		return HTBOTTOMRIGHT;
 
 	if( !mbHasTitleBar ) //if no title bar, return HTCAPTION for any uninhabited area of the dialog

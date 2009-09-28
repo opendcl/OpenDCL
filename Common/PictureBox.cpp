@@ -231,7 +231,7 @@ void CPictureBox::Clear()
 	if( mColorService.IsBackgroundTransparent() )
 	{
 		CWnd* pParent = GetParent();
-		if( pParent )
+		if( pParent && pParent->IsWindowVisible() )
 		{
 			CRect rcPicBox;
 			GetClientRect( &rcPicBox );
@@ -269,6 +269,8 @@ void CPictureBox::SetPicture( UINT nIconResId )
 void CPictureBox::Refresh()
 {
 	Clear();
+	if( !IsWindowVisible() )
+		return;
 	DrawPicture( mpPicture, m_bStretchLoadedPicture );
 	CopyDC();
 }
@@ -782,10 +784,9 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 
 void CPictureBox::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
 	if( !IsWindowVisible() )		
 		return;
-
+	CPaintDC dc(this); // device context for painting
 	
 	if( !m_hbmMem )
 		Refresh();

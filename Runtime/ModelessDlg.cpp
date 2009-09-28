@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ModelessDlg.h"
+#include "Resource.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
 #include "ArxDialogControl.h"
@@ -12,6 +13,7 @@
 #include "PictureObject.h"
 #include "DialogControl.h"
 #include "ControlTypes.h"
+
 
 static const UINT& refWM_MOUSEENTER()
 {
@@ -40,7 +42,7 @@ static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 // CModelessDlg dialog
 
 CModelessDlg::CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
-: CBaseDlg( pSourceForm, CModelessDlg::IDD, pParent, pParams )
+: CBaseDlg( pSourceForm, IDD_BASERESIZABLEDLG, pParent, pParams )
 , mpParent( pParent )
 , mbKeepFocus( true )
 , mbTrackingMouse( false )
@@ -58,7 +60,7 @@ CModelessDlg::~CModelessDlg()
 
 bool CModelessDlg::CreateModeless( UINT nID )
 {
-	if( CDialog::Create( (IsResizable()? IDD_RESIZEABLE : IDD_MODALDIALOG), mpParent ) == FALSE )
+	if( CDialog::Create( (IsResizable()? IDD_BASERESIZABLEDLG : IDD_BASEDLG), mpParent ) == FALSE )
 		return false;
 	if( mpParent && !mpParent->IsWindowEnabled() )
 		EnableWindow( FALSE );

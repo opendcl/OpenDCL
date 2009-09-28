@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "TabPageDlg.h"
+#include "Resource.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -15,14 +16,15 @@ BEGIN_MESSAGE_MAP(CTabPageDlg, CDialog)
 	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
+
 CTabPageDlg::CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
-: CDialog(CTabPageDlg::IDD, pTabCtrl)
+: CDialog( IDD_TABPAGE, pTabCtrl )
 , CDialogObject( pSourceForm, &mControlPane, this )
 , mControlPane( pSourceForm, this )
 , mbRecalcQueued( false )
 {
 	IgnoreSizing();
-	CDialog::Create( CTabPageDlg::IDD, pTabCtrl );
+	CDialog::Create( IDD_TABPAGE, pTabCtrl );
 	ShowWindow( SW_HIDE );
 	MoveWindow( &rectPane) ;
 	IgnoreSizing( false );

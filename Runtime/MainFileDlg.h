@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "DialogObject.h"
-
 class CCustomFileDlg;
 
 
@@ -24,7 +22,6 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	// Generated message map functions
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);

@@ -50,7 +50,6 @@ protected:
 	afx_msg void OnSelchangeSystemcolorlist();
 	afx_msg void OnSelchangeColorcombo();
 	afx_msg void OnChangeEdit();
-	afx_msg void OnKillfocusEdit();
 	afx_msg void OnTruebtn();
 	afx_msg void OnPaint();
 };

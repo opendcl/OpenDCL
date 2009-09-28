@@ -6,8 +6,6 @@
 #include "ArxDialogObject.h"
 #include "MainFileDlg.h"
 
-class CFontCollection;
-
 
 struct FileDialogParams
 {

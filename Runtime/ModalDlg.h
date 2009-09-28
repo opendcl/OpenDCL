@@ -16,8 +16,6 @@ class CDclFormObject;
 class CModalDlg : public CBaseDlg
 {
 
-	enum { IDD = IDD_MODALDIALOG };
-
 // Construction
 public:
 	CModalDlg(TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL);

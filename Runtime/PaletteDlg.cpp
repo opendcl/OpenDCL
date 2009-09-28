@@ -10,6 +10,7 @@
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
 #include "PictureObject.h"
+#include "Resource.h"
 
 extern bool AcadIsQuitting(void);
 
@@ -94,6 +95,7 @@ bool CPaletteDlg::CreateModeless( UINT nID )
 	}
 
 	IgnoreSizing();
+	OnApplyMinMaxSize( NULL );
 	if( !mHostPaletteSet.Create( GetWndCaption(), GetWndRect() ) )
 		return false;
 

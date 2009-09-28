@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
-				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2004"
+				AdditionalUsingDirectories="C:\Program Files (x86)\AutoCAD 2004"
 				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="false"
 				MinimalRebuild="true"
@@ -134,7 +134,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
-				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2004"
+				AdditionalUsingDirectories="C:\Program Files (x86)\AutoCAD 2004"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -268,6 +268,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ControlBarDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\CustomFileDlg.cpp"
 				>
 			</File>
@@ -276,15 +280,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FolderBrowseDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\DocData.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\ControlBarDlg.cpp"
+				RelativePath="..\FolderBrowseDlg.cpp"
 				>
 			</File>
 			<File
@@ -393,6 +393,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ControlBarDlg.h"
+				>
+			</File>
+			<File
 				RelativePath="..\CustomFileDlg.h"
 				>
 			</File>
@@ -401,19 +405,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FolderBrowseDlg.h"
-				>
-			</File>
-			<File
 				RelativePath="..\DocData.h"
 				>
 			</File>
 			<File
-				RelativePath="..\ControlBarDlg.h"
+				RelativePath="..\EventArgs.h"
 				>
 			</File>
 			<File
-				RelativePath="..\EventArgs.h"
+				RelativePath="..\FolderBrowseDlg.h"
 				>
 			</File>
 			<File

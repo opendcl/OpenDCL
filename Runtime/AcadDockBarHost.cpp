@@ -209,10 +209,18 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
 									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
 	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
-	if( bHorz )
-		sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight();
-	else
-		sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth();
+	CSize szMin( 0, 0 );
+	CSize szMax( 0, 0 );
+	mpDlgObject->GetMinMaxSize( szMin, szMax );
+
+	if( szMin.cx > 0 && sizeDefault.cx < szMin.cx )
+		sizeDefault.cx = szMin.cx;
+	else if( szMax.cx > 0 && sizeDefault.cx > szMax.cx )
+		sizeDefault.cx = szMax.cx;
+	if( szMin.cy > 0 && sizeDefault.cy < szMin.cy )
+		sizeDefault.cy = szMin.cy;
+	else if( szMax.cy > 0 && sizeDefault.cy > szMax.cy )
+		sizeDefault.cy = szMax.cy;
 	return sizeDefault;
 }
 

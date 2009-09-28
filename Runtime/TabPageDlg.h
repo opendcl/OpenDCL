@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "Resource.h"
 #include "DialogObject.h"
 #include "ArxControlPane.h"
 
@@ -19,9 +18,6 @@ class CTabPageDlg : public CDialog, public CDialogObject
 {
 	CArxControlPane mControlPane;
 	bool mbRecalcQueued;
-
-protected:
-	enum { IDD = IDD_TABPAGE };
 
 // Construction
 public:

@@ -9,7 +9,6 @@
 #include "ArxDialogObject.h"
 #include "AcadColorService.h"
 
-class CFontCollection;
 
 #if (_MFC_VER < 0x0800)
 #define __UINT_LRESULT UINT
@@ -28,9 +27,8 @@ class CBaseDlg : public CDialog, public CArxDialogObject
 	int mnInitialY;
 	bool mbHasTitleBar;
 	bool mbResizable;
-
-	CSize				m_szGripSize;
-	CRect				m_rcGripRect;
+	CSize msizeGrip;
+	CRect mrectGrip;
 
 // Construction
 public:

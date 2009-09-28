@@ -6,7 +6,6 @@
 #include "ArxDialogObject.h"
 #include "AcadPaletteHost.h"
 #include "AcadColorService.h"
-#include "Resource.h"
 
 
 #if (_MFC_VER < 0x0800)
