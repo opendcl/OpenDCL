@@ -706,10 +706,13 @@ void CProject::Serialize(CArchive& ar)
       TDclFormPtr pDclForm = new CDclFormObject( this );
       pDclForm->Serialize(ar);
 
-			//Some projects for whatever reason have parentless tab page forms. This code removes those 
-			//forms so they don't confuse the project list in the editor. [ORW]
-			if( pDclForm->GetType() == FrmTabPage && !pDclForm->GetParentForm() )
-				continue;
+			if( pDclForm->GetType() == FrmTabPage )
+			{
+				//Some projects for whatever reason have parentless tab page forms. This code removes
+				//those forms so they don't confuse the project list in the editor. [ORW]
+				if( !pDclForm->GetParentForm() )
+					continue;
+			}
 
 			mDclForms.push_back(pDclForm);
 		#ifdef _DEBUG

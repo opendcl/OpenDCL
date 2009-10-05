@@ -29,9 +29,20 @@ class CAcUiMRUComboBox_DrawItem_fixup
 	FARPROC mpfOriginal;
 	BYTE mrbSaved[5];
 	DWORD mdwOldProtect;
+	static HMODULE GetBrxApiModule()
+		{
+		#if (_BRXTARGET == 10)
+			return GetModuleHandle( _T("brx10.dll") );
+		#elif (_BRXTARGET == 9)
+			return GetModuleHandle( _T("brx.dll") );
+		#else
+			#error Unknown BRX target!
+			return GetModuleHandle( NULL );
+		#endif
+		}
 public:
 	CAcUiMRUComboBox_DrawItem_fixup()
-		: mpfOriginal( GetProcAddress( GetModuleHandle( _T("brx.dll") ), "?DrawItem@CAcUiMRUComboBox@@UAEXPAUtagDRAWITEMSTRUCT@@@Z" ) )
+		: mpfOriginal( GetProcAddress( GetBrxApiModule(), "?DrawItem@CAcUiMRUComboBox@@UAEXPAUtagDRAWITEMSTRUCT@@@Z" ) )
 		{
 			if( mpfOriginal )
 			{
