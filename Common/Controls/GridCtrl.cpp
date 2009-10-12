@@ -319,6 +319,8 @@ void CGridCtrl::SetCurCell( int nRow, int nCol )
 {
 	HideEditControls();
 	InvalidateRect( &GetCurCellRect() );
+	if( mbHasRowHeader && nCol == 0 )
+		nCol = -1;
 	if( mCurrentCell.row() != nRow || mCurrentCell.col() != nCol )
 	{
 		mCurrentCell.set( nRow, nCol );
@@ -587,7 +589,7 @@ bool CGridCtrl::SetCellListData( int nRow, int nCol, const CArray<int, int>& rnI
 	for( INT_PTR idx = 0; idx < rsList.GetCount(); ++idx )
 	{
 		CString sText = rsList.GetAt( idx );
-		switch( CellData.mType )
+		switch( GetCellStyle( nRow, nCol ) )
 		{
 		case Grid::UpperCase:
 		case Grid::UpperCase_Combo:
