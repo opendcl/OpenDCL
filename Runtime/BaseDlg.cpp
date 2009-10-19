@@ -84,7 +84,6 @@ BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_SIZING()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_SIZE()
-	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_WM_ERASEBKGND()
@@ -244,19 +243,17 @@ void CBaseDlg::OnSize(UINT nType, int cx, int cy)
 	//RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
-void CBaseDlg::OnPaint() 
-{
-	CPaintDC dc(this); // device context for painting
-	if (mbResizable)
-		dc.DrawFrameControl(&mrectGrip, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-}
-
 __UINT_LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
 {
 	CPoint pt = point;
-	ScreenToClient(&pt);
-	if (mbResizable && mrectGrip.PtInRect(pt) && pt.x >= 0 && pt.y >= 0) // if in size grip and in client area
-		return HTBOTTOMRIGHT;
+	ScreenToClient( &pt );
+	if( mbResizable &&
+			pt.x >= 0 && pt.y >= 0 &&
+			pt.x <= mrectGrip.right && pt.y <= mrectGrip.bottom )
+	{ // if in client area
+		if( (mrectGrip.right - pt.x) + (mrectGrip.bottom - pt.y) <= mrectGrip.Width() )
+			return HTBOTTOMRIGHT; // and in size grip
+	}
 
 	if( !mbHasTitleBar ) //if no title bar, return HTCAPTION for any uninhabited area of the dialog
 	{
@@ -278,14 +275,29 @@ void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 
 BOOL CBaseDlg::OnEraseBkgnd(CDC* pDC)
 {
+	BOOL bResult = TRUE;
 	if( !mColorService.IsBackgroundTransparent() )
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
 		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
-		return TRUE;
 	}
-	return __super::OnEraseBkgnd(pDC);
+	else
+		bResult = __super::OnEraseBkgnd(pDC);
+	if( mbResizable && !IsZoomed() )
+	{
+		int nBlock = mrectGrip.Width() / 8;
+		for( int nRow = 2; nRow >= 0; --nRow )
+		{
+			for( int nCol = (2 - nRow); nCol >= 0; --nCol )
+			{
+				CPoint ptLR( mrectGrip.BottomRight() - CSize( (nCol * 2 + 1) * nBlock, (nRow * 2 + 1) * nBlock ) );
+				CRect rcBlock( ptLR - CSize( nBlock, nBlock ), ptLR );
+				pDC->FillSolidRect( &rcBlock, GetSysColor( COLOR_BTNSHADOW ) );
+			}
+		}
+	}
+	return bResult;
 }
 
 void CBaseDlg::PostNcDestroy() 

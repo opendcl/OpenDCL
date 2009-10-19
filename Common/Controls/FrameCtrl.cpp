@@ -49,7 +49,7 @@ DWORD CFrameCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_GROUPBOX);
+	dwStyle |= (WS_CLIPSIBLINGS | BS_GROUPBOX);
 	return dwStyle;
 }
 

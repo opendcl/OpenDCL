@@ -10,6 +10,12 @@
 #include "DclControlObject.h"
 #include "ArxProject.h"
 
+static const UINT& refWM_RECALCLAYOUT()
+{
+	static const UINT WM_RECALCLAYOUT = RegisterWindowMessage( _T("OpenDCL.RecalcLayout") );
+	return WM_RECALCLAYOUT;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // COptionsTabDlg dialog
@@ -37,6 +43,7 @@ BEGIN_MESSAGE_MAP(COptionsTabDlg, CAcUiTabChildDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_REGISTERED_MESSAGE(refWM_RECALCLAYOUT(),OnRecalcLayout)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -44,7 +51,8 @@ END_MESSAGE_MAP()
 
 void COptionsTabDlg::OnTabActivation (BOOL bActivate) 
 {
-	//----- TODO: Add your code here
+	if( bActivate )
+		GetControlPane()->RecalcLayout();
 }
 
 BOOL COptionsTabDlg::OnTabChanging () {
@@ -57,26 +65,17 @@ BOOL COptionsTabDlg::OnInitDialog()
 {
 	CAcUiTabExtension::OnInitDialog();
 	ApplyPropertiesEnum();
+	IgnoreSizing( false );
 
 	// call method to create the controls
 	UINT nID = 1000;
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
-
-	// get the left and top values to center the form on the screen	
-	CRect rectWindow;
-	GetWindowRect( &rectWindow );
-	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Width()) / 2,
-						 (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Height()) / 2 );
-	
-	// call method to set the start width and position of the form
-	SetWindowPos( NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(),
-								SWP_NOZORDER | SWP_NOACTIVATE );
 	
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
-	GetClientRect( &rectWindow );
-	GetArxServices()->HandleEvent( Prop::FormEventSize,
-																 args_NN( rectWindow.Width(), rectWindow.Height() ) );
+	GetArxServices()->HandleEvent( Prop::FormEventSize, false,
+																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
+																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
@@ -116,7 +115,7 @@ void COptionsTabDlg::PostNcDestroy()
 void COptionsTabDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_B( (bShow != FALSE) ) ) )
+	if( GetArxServices()->HandleEvent( Prop::FormEventShow, args_B( (bShow != FALSE) ) ) )
 		return;
 }
 
@@ -133,6 +132,13 @@ void COptionsTabDlg::OnSize(UINT nType, int cx, int cy)
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
-	mpControlPane->RecalcLayout();
 	GetArxServices()->HandleEvent( Prop::FormEventSize, false, args_NN( cx, cy ) );
+	// needs to be posted so it happens after the deferred window positioning is completed
+	PostMessage( refWM_RECALCLAYOUT() );
+}
+
+LRESULT COptionsTabDlg::OnRecalcLayout(WPARAM wParam, LPARAM lParam)
+{
+	mpControlPane->RecalcLayout();
+	return 0;
 }

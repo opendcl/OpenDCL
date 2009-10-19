@@ -50,4 +50,5 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	LRESULT OnRecalcLayout(WPARAM wParam, LPARAM lParam);
 };

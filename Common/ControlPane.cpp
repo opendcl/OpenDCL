@@ -139,6 +139,10 @@ void CControlPane::RecalcLayout()
 	DisableUndoManager DisableUndo( mpSourceForm->GetUndoManager() ); //no need to record undo during recalc
 
 	mbRecalcInProgress = true;
+	TraceFmt( _T("CControlPane(%s)::RecalcLayout() [%d x %d]\r\n"),
+						(LPCTSTR)mpSourceForm->GetKeyPath(),
+						mpSourceForm->GetFormSize().cx,
+						mpSourceForm->GetFormSize().cy );
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 
 	// first lets calc all the control positions for any splitter controls.

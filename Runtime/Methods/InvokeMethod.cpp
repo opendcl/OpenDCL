@@ -125,7 +125,7 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 {
 	assert( pszHandlerLispFunction != NULL );
 	assert( *pszHandlerLispFunction != NULL );
-	assert( prbResult != NULL );
+	assert( prbResult == NULL );
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if( pDoc )
 		acDocManager->activateDocument( pDoc );

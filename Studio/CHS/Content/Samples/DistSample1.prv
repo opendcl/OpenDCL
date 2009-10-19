@@ -1,4 +1,4 @@
-;;; Visual LISP make file [V1.0] DistSample saved to:[I:/APLANT/MP-Dev/OpenDCL] at:[6/18/07] 
+;;; Visual LISP make file [V1.0] DistSample saved to:[C:/OpenDCL] at:[6/18/07] 
 (PRV-DEF (:target . "DistSample1.vlx")
 	 (:active-x . T)
 	 (:separate-namespace)

@@ -60,7 +60,6 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnPaint();
   afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);

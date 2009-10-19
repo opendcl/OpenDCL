@@ -515,14 +515,6 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
-			case CtlLabel:
-				switch( nID )
-				{
-				case Prop::ToolTipTitle:
-					mProperties.erase( iterAt );
-					continue;
-				}
-				break;
 			case CtlListBox:
 				switch( nID )
 				{

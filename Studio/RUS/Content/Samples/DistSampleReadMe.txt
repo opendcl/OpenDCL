@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------
 
-DistSamples.zip    
+AutoLISP Application Code Deployment Samples
 
 --------------------------------------------------------------------------------
 
 Overview
 
-    DistSamples.zip contains the lisp source code and OpenDCL files to
+    The DistSample*.* files are lisp source code and OpenDCL files to
     demonstrate how to embed an OpenDCL project (saved as a .odcl.lsp
     file) into a vlx file, and then how to use said resource as one 
     might normally use a regular OpenDCL project file.
@@ -15,7 +15,7 @@ Overview
     data can be embedded directly into the lisp source code as an
     inline text stream. Generally speaking, this would be the most
     frequent (easier/faster) used method of the two. Having said that
-    it's nice to have to have the options. =)
+    it's nice to have the options. =)
 
     Why would you want to do this? The primary reason is one of
     simplified distribution, though some developers might want to use
@@ -36,7 +36,7 @@ Requirements
 
 --------------------------------------------------------------------------------
 
-Contents of DistSamples.zip
+Contents
 
     DistSamplesReadMe.txt - This file.
 

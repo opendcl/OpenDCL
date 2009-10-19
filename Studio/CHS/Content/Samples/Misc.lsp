@@ -1,35 +1,38 @@
-(IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"Misc\" to run the sample.\n")
+;;;
+;;; Miscellaneous Sample
+;;;
+;;; This sample demonstrates miscellaneous controls.
+;;;
+
+;; Main program
+(defun c:Misc (/ cmdecho)
+
+    ;; Ensure OpenDCL Runtime is (quietly) loaded
+    (setq cmdecho (getvar "CMDECHO"))
+    (setvar "CMDECHO" 0)
+    (command "_OPENDCL")
+    (setvar "CMDECHO" cmdecho)
+
+    ;; Load the project
+    (dcl_Project_Load (*ODCL:Samples:FindFile "Misc.odcl"))
+
+    ;; Show the main form
+    (dcl_Form_Show Misc_DemoModal)
+
+    ;; This is a modal form, so (dcl_Form_Show) does not return until
+    ;; the modal form is closed. In the meantime, the event handlers
+    ;; manage the form.
+
+    (princ)
 )
 
-;; this function loads the project & shows the form
-(DEFUN c:Misc (/  *error*)
-    (DEFUN *error* (msg)
-        (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
-        ;; do error stuff
-        (PRINC (STRCAT "\nApplication Error: " (GETVAR "errno") " :- " msg))
-        (PRINC)
-    )
-
-  (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
-  (LoadRunTime)
-  (LoadODCLProj "Misc.odcl")
-  ;; Show the modal dialog .. (dcl_Form_IsActive test is not required anymore
-  (dcl_FORM_SHOW Misc_DemoModal)
-  ;; The Event handlers manage the form here.
-  (PRINC)
-)
-
-
+;|<<OpenDCL Event Handlers>>|;
 
 ;; this function gets fired when a tab gets changed
 (DEFUN c:DemoModal_TabControl1_Changed (nSelIndex / nCount)
     (COND
-       
         ;; cond tab 1
-        ((= nSelIndex 1)
-	  (AddBlocksToListBox)
-	)
+        ((= nSelIndex 1) (AddBlocksToListBox))
         ;; cond tab 2
         ((= nSelIndex 2)
          (SETQ nCount (dcl_TREE_COUNTITEMS Misc_DemoModal_TreeControl1))
@@ -37,46 +40,54 @@
              (PROGN
                  (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide1" "t1")
                  (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1
-                                      "slide library"
-                                      "t2"
+                                     "slide library"
+                                     "t2"
                  )
                  (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide3" "t3")
                  (dcl_TREE_ADDCHILD Misc_DemoModal_TreeControl1
-                                     '(("t2" "Child1" "C1")
-                                       ("t2" "Child2" "C2")
-                                       ("t2" "Child3" "C3")
-                                      )
+                                    '(("t2" "Child1" "C1")
+                                      ("t2" "Child2" "C2")
+                                      ("t2" "Child3" "C3")
+                                     )
                  )
                  (dcl_TREE_SELECTITEM Misc_DemoModal_TreeControl1 "t1")
              )
          )
         )
         ;; cond tab 3
-        ((= nSelIndex 3)
-         (dcl_COMBOBOX_ADDCOLOR Misc_DemoModal_ComboBox4 156)
-        )
+        ((= nSelIndex 3) (dcl_COMBOBOX_ADDCOLOR Misc_DemoModal_ComboBox4 156))
         ((= nSelIndex 4)
          (IF (ZEROP (dcl_ImageComboBox_GetCount Misc_DemoModal_ImageCombo1))
-             (PROGN
-                 (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1 "Test 1" 0 0)
-                 (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1 "Test 2" 1 1)
-                 (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1 "Test 3" 2 2)
+             (PROGN (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1
+                                                 "Test 1"
+                                                 0
+                                                 0
+                    )
+                    (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1
+                                                 "Test 2"
+                                                 1
+                                                 1
+                    )
+                    (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1
+                                                 "Test 3"
+                                                 2
+                                                 2
+                    )
              )
          )
         )
-        
     )
 )
 
 
-(defun c:Misc_DemoModal_cmdRun_OnClicked ( / cnt wait)
-  (setq cnt 0)
-  (while (< cnt 100)
-    (setq wait 10000)
-    (while (> (setq wait (1- wait)) 0))
-    (dcl_Control_SetValue Misc_DemoModal_ProgressBar1 (setq cnt (1+ cnt)))
-  )
-  (princ)
+(defun c:Misc_DemoModal_cmdRun_OnClicked (/ cnt wait)
+    (setq cnt 0)
+    (while (< cnt 100)
+        (setq wait 10000)
+        (while (> (setq wait (1- wait)) 0))
+        (dcl_Control_SetValue Misc_DemoModal_ProgressBar1 (setq cnt (1+ cnt)))
+    )
+    (princ)
 )
 
 
@@ -91,23 +102,29 @@
        (sSelText sSelKey / sParent FileName Path)
     ;; get the parent info
     (SETQ sParent (dcl_TREE_GETPARENT Misc_DemoModal_TreeControl1 sSelKey))
-    (or
-        (setq Path (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-        (setq Path (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-        (setq Path (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
-        (setq Path (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
-    )
-    (setq FileName
-        (strcat Path
-            (IF (NULL sParent)
-                (strcat sSelText ".sld")
-                ;; else
-                (strcat (dcl_TREE_GETITEMTEXT Misc_DemoModal_TreeControl1 sParent) ".slb")
-            )
-        )
+    (setq
+        FileName (strcat
+                     *ODCL:Prefix
+                     (IF (NULL sParent)
+                         (strcat sSelText ".sld")
+                         ;; else
+                         (strcat
+                             (dcl_TREE_GETITEMTEXT Misc_DemoModal_TreeControl1
+                                                   sParent
+                             )
+                             ".slb"
+                         )
+                     )
+                 )
     )
     (IF (FINDFILE FileName)
-        (dcl_SLIDEVIEW_LOAD Misc_DemoModal_SlideView1 FileName (IF (NULL sParent) "" sSelText))
+        (dcl_SLIDEVIEW_LOAD Misc_DemoModal_SlideView1
+                            FileName
+                            (IF (NULL sParent)
+                                ""
+                                sSelText
+                            )
+        )
         ;; else
         (dcl_SLIDEVIEW_CLEAR Misc_DemoModal_SlideView1)
     )
@@ -115,7 +132,12 @@
 
 
 (DEFUN c:DemoModal_BrowseFolders_Clicked (/ path)
-    (IF (SETQ path (dcl_BROWSEFOLDER "Pick a Directory:" "c:\\Program Files" nil 81))
+    (IF (SETQ path (dcl_BROWSEFOLDER "Pick a Directory:"
+                                     "c:\\Program Files"
+                                     nil
+                                     81
+                   )
+        )
         (ALERT path)
     )
 )
@@ -144,11 +166,11 @@
     )
     (dcl_LISTBOX_ADDLIST Misc_DemoModal_BlockNameList BlkLst)
     ;;
-    ;;_ alternate method adding one string at a time to the BlockList 
+    ;;_ alternate method adding one string at a time to the BlockList
 ;;;   ; get the first block in the block table record
 ;;;   (setq BlockInfo (tblnext "BLOCK" T))
 ;;;   ; add the first item to the BlockName ListBox with Add String
-;;;   (if BlockInfo 
+;;;   (if BlockInfo
 ;;;      (dcl_ListBox_AddString Misc_DemoModal_BlockNameList (cdr (assoc 2 BlockInfo)))
 ;;;   );_ if
 ;;;   ; do loop until all the blocks have been added
@@ -162,5 +184,76 @@
     (PRINC)
 )
 
+(princ)
 
-(PRINC)
+;|<<OpenDCL Samples Epilog>>|;
+
+;;;######################################################################
+;;;######################################################################
+;;; The following section of code is designed to locate OpenDCL Studio
+;;; sample files in the samples folder by prefixing the filename with
+;;; the path prefix that was saved in the registry by the installer.
+;;; The global *ODCL:Prefix and function *ODCL:Samples:FindFile
+;;; are used throughout the samples.
+;;;
+(or *ODCL:Samples:FindFile
+    (defun *ODCL:Samples:FindFile (file)
+        (setq *ODCL:Prefix
+             (cond
+                 (   *ODCL:Prefix
+                 ) ;_ already defined
+                 (   (vl-registry-read
+                         "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+                         "SamplesFolder"
+                     )
+                 ) ;_ 32-bit location
+                 (   (vl-registry-read
+                         "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+                         "SamplesFolder"
+                     )
+                 ) ;_ 32-bit location
+                 (   (vl-registry-read
+                         "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+                         "SamplesFolder"
+                     )
+                 ) ;_ 64-bit location
+                 (   (vl-registry-read
+                         "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+                         "SamplesFolder"
+                     )
+                 ) ;_ 64-bit location
+             )
+        )
+        (cond
+            ((findfile file)) ; check the support path first
+            (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+            (file)
+        )
+    )
+)
+
+;; If master demo is active, run the main function immediately; otherwise
+;; display a banner. The extra gymnastics allow the sample name to be
+;; specified in only one place, thus making it easier to reuse this code.
+(   (lambda (demoname)
+        (if *ODCL:MasterDemo
+            (progn
+                (princ (strcat "'" demoname "\n"))
+                (apply (read (strcat "C:" demoname)) nil)
+            )
+            (progn
+                (princ (strcat "\n" demoname " OpenDCL sample loaded"))
+                (princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
+            )
+        )
+    )
+    "Misc"
+)
+(princ)
+
+;;;######################################################################
+;;;######################################################################
+
+;|«Visual LISP© Format Options»
+(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
+;*** DO NOT add text below the comment! ***|;

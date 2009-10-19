@@ -73,7 +73,7 @@ BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
-	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -84,7 +84,7 @@ END_MESSAGE_MAP()
 
 BOOL CResizableDialog::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
+	__super::OnInitDialog();
 
 	UpdateGripPos();
 
@@ -102,21 +102,29 @@ BOOL CResizableDialog::OnInitDialog()
 
 void CResizableDialog::OnDestroy() 
 {
-	CDialog::OnDestroy();
+	__super::OnDestroy();
 	
 	if (m_bEnableSaveRestore)
 		SaveWindowRect();
 }
 
-void CResizableDialog::OnPaint() 
+BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 {
-	CPaintDC dc(this); // device context for painting
-	
-	if (m_bShowGrip && !IsZoomed())
+	BOOL bResult = __super::OnEraseBkgnd(pDC);
+	if( m_bShowGrip && !IsZoomed() )
 	{
-		// draw size-grip
-		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+		int nBlock = m_rcGripRect.Width() / 8;
+		for( int nRow = 2; nRow >= 0; --nRow )
+		{
+			for( int nCol = (2 - nRow); nCol >= 0; --nCol )
+			{
+				CPoint ptLR( m_rcGripRect.BottomRight() - CSize( (nCol * 2 + 1) * nBlock, (nRow * 2 + 1) * nBlock ) );
+				CRect rcBlock( ptLR - CSize( nBlock, nBlock ), ptLR );
+				pDC->FillSolidRect( &rcBlock, GetSysColor( COLOR_BTNSHADOW ) );
+			}
+		}
 	}
+	return bResult;
 }
 
 void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
@@ -135,14 +143,15 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 __UINT_LRESULT CResizableDialog::OnNcHitTest(CPoint point) 
 {
 	CPoint pt = point;
-	ScreenToClient(&pt);
-
-	// if in size grip and in client area
-	if (m_bShowGrip && m_rcGripRect.PtInRect(pt) &&
-		pt.x >= 0 && pt.y >= 0)
-		return HTBOTTOMRIGHT;
+	ScreenToClient( &pt );
+	if( pt.x >= 0 && pt.y >= 0 &&
+			pt.x <= m_rcGripRect.right && pt.y <= m_rcGripRect.bottom )
+	{ // if in client area
+		if( (m_rcGripRect.right - pt.x) + (m_rcGripRect.bottom - pt.y) <= m_rcGripRect.Width() )
+			return HTBOTTOMRIGHT; // and in size grip
+	}
 	
-	return CDialog::OnNcHitTest(point);
+	return __super::OnNcHitTest(point);
 }
 
 void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 

@@ -19,28 +19,34 @@
     ;;                   Modified _Load_ODCL_Runtime to use demand loading
     ;;                   path etc. (MP)
     ;;
+    ;;  1.3 2009/10/18 - Replaced runtime load logic with OPENDCL command
+    ;;                   for Bricscad compatibility; added function to search
+    ;;                   for dependent files in OpenDCL Studio samples folder;
+    ;;                   renamed some functions for consistency with other
+    ;;                   OpenDCl Studio samples. (OW)
+    ;;
     ;;--------------------------------------------------------------------------
     ;;
     ;;  Dependencies:
     ;;
-    ;;  1.  AutoCAD 2004+, OpenDCL 4.0, beta 18+.
+    ;;  1.  AutoCAD 2004+, OpenDCL 5.0 or newer.
     ;;
     ;;  2.  DistSample.odcl | .lsp. With a form varnamed DistSample_MainForm
-    ;;      with a child button varnamed DistSample_MainForm_OkButtonOkButton
+    ;;      with a child button varnamed DistSample_MainForm_OkButton
     ;;      with the event OnClick enabled. The project is not passworded.
     ;;
-    ;;  3.  If run as a .lsp file expects to find DistSample.odcl as described
-    ;;      above in the support path.
+    ;;  3.  If run as a .lsp file expects to find DistSample.odcl in the
+    ;;      support path or in the OpenDCL Studio samples folder.
     ;;
     ;;  4.  If run as a .vlx expects to find DistSample.odcl.lsp as described
     ;;      above embedded as a text file resource in the the vlx.
     ;;
     ;;--------------------------------------------------------------------------
     ;;
-    ;;  Noteable:
+    ;;  Notable:
     ;;
-    ;;  1.  See function _Load_ODCL_Embedded_Project which attempts to load 
-    ;;      the OpenDCL project data from the vlx text resources.    
+    ;;  1.  See function _Load_ODCL_Embedded_Project which attempts to load
+    ;;      the OpenDCL project data from the vlx text resources.
     ;;
     ;;==========================================================================
 
@@ -51,197 +57,72 @@
         c:DistSample_MainForm_OkButton_OnClicked
         _Load_ODCL_Runtime
         _Load_ODCL_Embedded_Project
+        _Load_ODCL_File_Project
         _Main
 
     ) ;;------------------------------------------------------------------------
 
-    (defun _Load_ODCL_Runtime ( / loaderp proc_arch arxname arxpath errmsg )
-    
-        ;;  The loading attempt order (if not already loaded):
-        ;;
-        ;;  1.  If OpenDCL has been installed on this machine via the
-        ;;      installer use the path to the runtime as specified in 
-        ;;      the registry for demand loading -- but load via arxload
-        ;;      regardles the demand load setting.
-        ;;
-        ;;  2.  If the OpenDCL runtime is found in the support path use 
-        ;;      arxload to load said runtime.
-        ;;
-        ;;  3.  If OpenDCL has been installed on this machine via the
-        ;;      installer *AND* demand loading is enabled force the load-
-        ;;      ing of the runtime via invoking the OpenDCL command.
-        ;;
-        ;;  Verbosely / gratuitously annotated, which makes this function 
-        ;;  appear far more ambitious than it actually is.
+    (defun _Load_ODCL_Runtime ( / )
 
         (or
 
             ;;  Already loaded, vacate now (return t to caller).
 
             dcl_getversionex
-            
-            ;;  SECTION 1. Attempt to load the runtime via arxload using 
-            ;;  the path associated with the opendcl demand loader (the 
-            ;;  intent: Use said path but do not use the OpenDCL command 
-            ;;  to induce loading the arx). In other words don't use 
-            ;;  command / vl-cmdf.
-            
-            (and 
-            
-                ;;  Is demand loading is specified for OpenDCL?
-            
-                (setq arxpath
-                    (vl-registry-read
-                        (strcat
-                            "HKEY_LOCAL_MACHINE\\"
-                            (vlax-product-key)
-                            "\\Applications\\OpenDCL"
-                        )
-                        "Loader"
-                    )                
-                )
-                
-                ;;  We'll use the following variable in SECTION 3.
-                
-                (setq loaderp t) 
-                
-                ;;  Is she an arx file?
-                
-                (wcmatch (strcase arxpath) "*`.ARX")          
-                
-                ;;  Was the load attempt successful?
-                
-                (arxload arxpath nil)
-                
-                ;;  Is core OpenDCL functionality now defined?
-                
-                dcl_getversionex
-            )                    
 
-            ;;  SECTION 2. Attempt to arxload the runtime explicitly by 
-            ;;  finding it in the support path.
-            
-            (and
-
-                ;;  Determine the appropriate arx module for the pro-
-                ;;  cessor and the AutoCAD version.
-
-                (setq arxname
-                    (strcat "OpenDCL"
-                        (if
-                            (and
-                                (setq proc_arch
-                                    (getenv "PROCESSOR_ARCHITECTURE")
-                                )
-                                (< 1 (strlen proc_arch))
-                                (eq "64"
-                                    (substr
-                                        proc_arch
-                                        (1- (strlen proc_arch))
-                                    )
-                                )
-                            )
-                            ".x64."
-                            "."
-                        )
-                        (substr (getvar "acadver") 1 2)
-                        ".arx"
-                    )
-                )
-                
-                ;;  Is the arxfile in the support path somewhere?
-                
-                (setq arxpath (findfile arxname))
-                
-                ;;  Was the load attempt successful?                
-                
-                (arxload arxpath nil)
-                
-                ;;  Is core OpenDCL functionality now defined?
-                
-                dcl_getversionex                
-            )
-            
-            ;;  SECTION 3. If demand loading is enabled use the OpenDCL 
-            ;;  command to induce the loading of the OpenDCL runtime. 
-            ;;  If we got here it possibly means the runtime is no lon-
-            ;;  ger an arx file (maybe an exe) or the arxload attempt in
-            ;;  SECTION 1 failed for some reason. Regardless, it appears
-            ;;  a demand loader is still present, so let's try to use it 
-            ;;  to load the OpenDCL runtime.
+            ;;  If demand loading is enabled, use the OPENDCL command
+            ;;  to induce the loading of the OpenDCL Runtime. If demand
+            ;;  loading is disabled, assume it was disabled intentionally
+            ;;  and honor the intent by not loading anything.
 
             (and
-                
-                ;;  The following variable 'loaderp' is initialized from 
-                ;;  the first attempt to load the runtime in SECTION 1. 
-                ;;  If null it means no OpenDCL loader is present on this 
-                ;;  machine so there's no point in invoking the OpenDCL 
-                ;;  command.
-                
-                loaderp 
 
-                ;;  A loader is defined but let's ensure demand loading 
-                ;;  is enabled, lest the invocation of the OpenDCL com-
-                ;;  mand be pointless.
+                ;;  Let's ensure demand loading is enabled, lest the
+                ;;  invocation of the OpenDCL command be pointless.
 
                 (= 2 (boole 1 (getvar "DEMANDLOAD") 2))
-                
+
                 ;;  We're good, invoke the OpenDCL command ...
-                                                
-                (vl-catch-all-apply 'vl-cmdf '("opendcl"))
-                
+
+                (vl-catch-all-apply 'vl-cmdf '("OPENDCL"))
+
                 ;;  Is core OpenDCL functionality now defined?
-                
+
                 dcl_getversionex
             )
-            
-            ;;  If we got here the opendcl runtime was not loaded.
 
-            (progn
-            
-                ;;  Inform the user of the sad news.
-            
-                (princ 
-                    (strcat
-                        "Error: "
-                        (if arxpath 
-                            (strcat arxpath " <failed to load>")
-                            "OpenDCL runtime <not found>"
-                        )
-                        ".\n" 
-                    )
-                )
-                
-                nil
-            )
+            ;;  If we got here the opendcl runtime was not loaded.
+            ;;  Inform the user of the sad news.
+
+            (princ "Error: OpenDCL Runtime could not be loaded.\n")
         )
-        
+
         dcl_getversion
 
     ) ;;------------------------------------------------------------------------
 
     (defun _Load_ODCL_Embedded_Project ( projname password alias / bytes rtype )
 
-        ;;  Attempt to retrieve an embedded ODCL project (lisp) from 
+        ;;  Attempt to retrieve an embedded ODCL project (lisp) from
         ;;  the text resources in the current vlx file. If successful
         ;;  attempt to import via odcl_project_import, returning it's
         ;;  result to the caller, otherwise nil.
 
         (cond
-        
-            ;;  At this point OpenDCL runtimes should have already 
-            ;;  been loaded by initializing code, so either the 
-            ;;  initialization failed (and this function is being 
-            ;;  inappropriately called) or older OpenDCL runtimes 
+
+            ;;  At this point the OpenDCL Runtime should already
+            ;;  have been loaded; if not, then either the
+            ;;  initialization failed (and this function is being
+            ;;  inappropriately called) or older OpenDCL runtimes
             ;;  have been loaded. Either way alert and bail.
 
             (   (null dcl_project_import)
 
-                (princ "OpenDCL version 4.0, beta 18 or newer is required.\n")
+                (princ "OpenDCL version 5.0 or newer is required.\n")
 
                 nil
             )
-            
+
             ;;  Trap unsuccesful retrieval of project from the vlx
             ;;  text resources; alert and bail.
 
@@ -263,21 +144,74 @@
 
             )
 
-            ;;  We've got data, call odcl_project_import and
-            ;;  return result the result to the caller ...
+            ;;  Call dcl_project_import and return the result to the
+            ;;  caller if successful ...
 
-            ;;  Caller provided credentials, possibly an alias.
+            (   (dcl_project_import bytes password alias)  )
+        )
 
-            (   (eq 'str (type password))
-                (if (eq 'str (type alias))
-                    (dcl_project_import bytes password alias)
-                    (dcl_project_import bytes password)
-                )
+    ) ;;------------------------------------------------------------------------
+
+    (defun _Load_ODCL_File_Project ( projname reload password alias / samples )
+
+        ;;  Attempt to load an ODCL project file by trying to load
+        ;;  it from the support path; if that fails, try to load it
+        ;;  from the OpenDCL Studio samples folder.
+
+        (cond
+
+            ;;  At this point the OpenDCL Runtime should already
+            ;;  have been loaded; if not, then either the
+            ;;  initialization failed (and this function is being
+            ;;  inappropriately called) or older OpenDCL runtimes
+            ;;  have been loaded. Either way alert and bail.
+
+            (   (null dcl_project_load)
+
+                (princ "OpenDCL version 5 or later is required.\n")
+
+                nil
             )
 
-            ;;  Ahhh, trusting soul (no password).
+            ;;  Call dcl_project_load and return the result to the
+            ;;  caller if successful ...
 
-            (   (dcl_project_import bytes)  )
+            (   (dcl_project_load projname reload password alias)  )
+
+            ;;  Since this file is installed along with the other
+            ;;  OpenDCL samples, and since the samples folder is not
+            ;;  in the support path, try loading from there...
+
+            ;;  Unless you're writing an OpenDCL sample,
+            ;;  don't leave this part in your own code!
+
+            (   (setq samples
+                    (cond
+                        (   (vl-registry-read
+                                "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+                                "SamplesFolder"
+                            )
+                        ) ;_ 32-bit location
+                        (   (vl-registry-read
+                                "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+                                "SamplesFolder"
+                            )
+                        ) ;_ 32-bit location
+                        (   (vl-registry-read
+                                "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+                                "SamplesFolder"
+                            )
+                        ) ;_ 64-bit location
+                        (   (vl-registry-read
+                                "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+                                "SamplesFolder"
+                            )
+                        ) ;_ 64-bit location
+                    )
+                )
+
+                (dcl_project_load (strcat samples projname) reload password alias)
+            )
         )
 
     ) ;;------------------------------------------------------------------------
@@ -309,24 +243,21 @@
 
                     (_Load_ODCL_Embedded_Project odclProjName nil nil)
 
-                    ;;  ODCL project retrieved from .odcl file for
-                    ;;  example, during the .lsp development (you may
-                    ;;  wish to remove the following if your product is
-                    ;;  ready for final delivery to customers / clients).
+                    ;;  If it couldn't be loaded from resources, try
+                    ;;  loading from a separate file (this could be
+                    ;;  useful during development, but you may wish
+                    ;;  to remove this option before shipping).
 
-                    (dcl_project_load odclProjName t)
+                    (_Load_ODCL_File_Project odclProjName t)
                 )
             )
 
             (if
                 (null
-                    (or
-                        (dcl_Form_IsActive DistSample_MainForm)
-                        (dcl_Form_Show DistSample_MainForm)
-                    )
+                    (dcl_Form_Show DistSample_MainForm)
                 )
 
-                (princ "Failed to show form: DistSample_MainForm")
+                (princ "Failed to show form: DistSample_MainForm\n")
             )
         )
 
@@ -344,6 +275,6 @@
 
 )
 
-(princ "DistSample1 (ver 1.2) loaded, type DistSample1 to execute.")
+(princ "OpenDCL DistSample1 (ver 1.3) loaded. Enter \"DistSample1\" to execute.\n")
 
 (princ)
