@@ -750,6 +750,12 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	//}
 
 	CComPtr< IStream >& pStream = GetTemplate()->GetIStream();
+	if( !pStream )
+	{
+		hr = CreateStreamOnHGlobal( NULL, TRUE, &pStream );
+		if( FAILED( hr ) )
+			return hr;
+	}
 	LARGE_INTEGER nZeroDisp = { 0, 0 };
 	hr = pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
   if( FAILED(hr) )

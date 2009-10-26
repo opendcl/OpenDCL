@@ -81,6 +81,11 @@ bool CFolderComboCtrl::OnApplyProperty( TPropertyPtr pProp )
 }
 
 
+BEGIN_MESSAGE_MAP(CFolderComboCtrl, CFolderComboBox)
+	ON_WM_ERASEBKGND()
+END_MESSAGE_MAP()
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CFolderComboCtrl message handlers
 
@@ -88,6 +93,13 @@ BOOL CFolderComboCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
+}
+
+BOOL CFolderComboCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CFolderComboCtrl::PostNcDestroy() 

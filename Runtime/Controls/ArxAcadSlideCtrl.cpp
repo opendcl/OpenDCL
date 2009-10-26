@@ -121,7 +121,7 @@ bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {	
 	if( !mSlideCtrl.Load( theWorkspace.FindFile( pszFilename ), pszSlide ) )
 		return false;
-	Invalidate();
+	OnNeedRepaint( false );
 	return true;
 }
 
@@ -360,13 +360,13 @@ void CArxAcadSlideCtrl::SetHighlight(const COLORREF& rgb)
 {
 	m_bSelectedRect = true;
 	m_HighlightColor = rgb;		
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 void CArxAcadSlideCtrl::RemoveHighlight()
 {
 	m_bSelectedRect = false;
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 BOOL CArxAcadSlideCtrl::PreTranslateMessage(MSG* pMsg) 

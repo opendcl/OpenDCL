@@ -126,6 +126,7 @@ BEGIN_MESSAGE_MAP(CSplitterCtrl, CStatic)
 	ON_WM_NCLBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -142,7 +143,14 @@ HBRUSH CSplitterCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CSplitterCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CSplitterCtrl::PostNcDestroy() 
@@ -258,9 +266,9 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			return;
 		mpTemplate->SetLongProperty( Prop::Top, rcNew.top );
 	}
-	mbIgnoreMove = true;
+	//mbIgnoreMove = true;
 	ApplyPosition();
-	mbIgnoreMove = false;
+	//mbIgnoreMove = false;
 }
 
 void CSplitterCtrl::OnLButtonUp(UINT nFlags, CPoint point)

@@ -8,6 +8,10 @@
 
 #include "FormTypes.h"
 #include "ControlTypes.h"
+#include "DclControlObject.h"
+#include "DclFormObject.h"
+#include "DialogControl.h"
+#include "ControlPane.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "PropertyNames.h"
@@ -145,6 +149,59 @@ const TCHAR* asString( const double& dbl )
 	static TCHAR buf[1024];
 	_sntprintf( buf, _elements(buf), _T("%G"), dbl );
 	return buf;
+}
+
+inline
+const TCHAR* asString( const HDC hdc )
+{
+	if( !hdc )
+		return _T("<null>");
+	RECT rc;
+	GetClipBox( hdc, &rc );
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("[%d,%d]-[%d,%d]"), rc.left,rc.top, rc.right, rc.bottom );
+	return buf;
+}
+
+inline
+const TCHAR* asString( const CDC* pDC )
+{
+	return asString( pDC->GetSafeHdc() );
+}
+
+inline
+const TCHAR* asString( TDclControlPtr pDclControl )
+{
+	if( !pDclControl )
+		return _T("<null>");
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("%s"),
+							(LPCTSTR)pDclControl->GetKeyPath() );
+	return buf;
+}
+
+inline
+const TCHAR* asString( TDclFormPtr pDclForm )
+{
+	if( !pDclForm )
+		return _T("<null>");
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("%s[%d]"),
+							(LPCTSTR)pDclForm->GetKeyPath(),
+							pDclForm->GetParentForm()? pDclForm->GetTabIndex() : -1 );
+	return buf;
+}
+
+inline
+const TCHAR* asString( const CDialogControl* pDlgControl )
+{
+	return asString( pDlgControl->GetTemplate() );
+}
+
+inline
+const TCHAR* asString( const CControlPane* pPane )
+{
+	return asString( pPane->GetSourceForm() );
 }
 
 #ifdef _ACRXAPP

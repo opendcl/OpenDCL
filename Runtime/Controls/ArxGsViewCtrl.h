@@ -128,7 +128,7 @@ protected:
 					}
 				}
 				mpDb = NULL;
-				mpCtrl->Invalidate();
+				mpCtrl->OnNeedRepaint( false );
 			}
 	public:
 		AcDbDatabase* database() const { return mpDb; }

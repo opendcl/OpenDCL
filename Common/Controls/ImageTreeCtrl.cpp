@@ -382,6 +382,7 @@ BEGIN_MESSAGE_MAP(CImageTreeCtrl, CTreeCtrl)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, &CImageTreeCtrl::OnTvnGetdispinfo)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_GETDLGCODE()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -481,7 +482,14 @@ HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	if( !IsWindowEnabled() )
 		return NULL;
 	return NULL;
-	//return mColorService.CtlColor( pDC, nCtlColor );
+	//return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CImageTreeCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 UINT CImageTreeCtrl::OnGetDlgCode()

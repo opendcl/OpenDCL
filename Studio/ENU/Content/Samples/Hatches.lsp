@@ -28,13 +28,17 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
+(defun c:Hatches_Hatch_OnInitialize (/ scale idx)
+    (setq scale (rtos (dcl_Control_GetHatchScale Hatches_Hatch_Hatch1) 2 0))
+    (setq idx (dcl_ComboBox_FindString Hatches_Hatch_ComboBox2 scale))
+    (if (< idx 0) (setq idx 0))
+    (dcl_ComboBox_SetCurSel Hatches_Hatch_ComboBox2 idx)
+)
+
 (defun c:Hatches_Hatch_ComboBox1_OnSelChanged (nSelection sSelText /)
     (dcl_hatch_setpattern Hatches_Hatch_Hatch1 sSelText)
     (dcl_hatch_setpattern Hatches_Hatch_Hatch2 sSelText)
 )
-
-;;-----------------------------------------------------------------------------
-
 
 (defun c:Hatches_Hatch_ComboBox2_OnSelChanged (nSelection sSelText / hatpat)
     ;; set the selected scale for each hatch display tile

@@ -537,7 +537,8 @@ ADSRESULT ImageComboBox::GetLBText()
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
 	CString sText;
-	pCtrl->GetLBText( nItem, sText );
+	if( nItem >= 0 && nItem < pCtrl->GetCount() )
+		pCtrl->GetLBText( nItem, sText );
 	acedRetStr( sText );
 	return RSRSLT;
 }
@@ -560,7 +561,11 @@ ADSRESULT ImageComboBox::GetEBText()
 	if( pEditCtrl )
 		pEditCtrl->GetWindowText( sText );
 	else
-		pCtrl->GetLBText( pCtrl->GetCurSel(), sText );
+	{
+		int nItem = pCtrl->GetCurSel();
+		if( nItem >= 0 && nItem < pCtrl->GetCount() )
+			pCtrl->GetLBText( nItem, sText );
+	}
 	acedRetStr( sText );
 	return RSRSLT;
 }

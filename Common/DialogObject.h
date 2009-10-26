@@ -109,6 +109,11 @@ public:
 protected:
 	virtual void GetMinMaxSize( CSize& szMin, CSize& szMax ); //returns min/max size in window coordinates
 
+	// Windows painting helpers
+protected:
+	HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
+	BOOL HandleEraseBkgnd( CDC* pDC );
+
 	// Creation & Property Application
 public:
 	virtual CRect GetWndRect() const; //get window position from properties

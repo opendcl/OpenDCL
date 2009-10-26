@@ -78,6 +78,7 @@ bool CListBoxCtrl::ApplyPropertiesEnum()
 
 void CListBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
 {
+	__super::ApplyPropertiesOrder( ridFirst, ridLast );
 	ridFirst.push_back( Prop::List );
 }
 
@@ -365,6 +366,7 @@ BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_MESSAGE(LB_INSERTSTRING, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_RESETCONTENT, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_ADDFILE, &CListBoxCtrl::OnModifyContent)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -451,7 +453,14 @@ HBRUSH CListBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CListBoxCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 LRESULT CListBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM lParam )

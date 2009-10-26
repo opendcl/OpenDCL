@@ -83,6 +83,7 @@ bool CMonthCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 
 BEGIN_MESSAGE_MAP(CMonthCtrl, CMonthCalCtrl)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -99,4 +100,11 @@ BOOL CMonthCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
+}
+
+BOOL CMonthCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

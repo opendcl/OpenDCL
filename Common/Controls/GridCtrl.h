@@ -275,4 +275,5 @@ protected:
 	afx_msg void OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg LRESULT OnCheckFocus( WPARAM wParam, LPARAM lParam );
 	afx_msg UINT OnGetDlgCode();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

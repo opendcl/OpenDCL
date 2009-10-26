@@ -28,7 +28,12 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
+	// Generated message map functions
+protected:
+	DECLARE_MESSAGE_MAP()
+
 protected:
 	virtual afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

@@ -196,6 +196,8 @@ void CPaletteDlg::OnFrameChanged()
 
 void CPaletteDlg::ApplyPosition()
 {
+	if( IsEnumeratingProperties() )
+		return; //defer
 	if( IsIgnoreSizing() )
 		return;
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
@@ -375,12 +377,7 @@ void CPaletteDlg::OnDestroy()
 
 BOOL CPaletteDlg::OnEraseBkgnd(CDC* pDC)
 {
-	if( !mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
+	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
-	}
 	return __super::OnEraseBkgnd(pDC);
 }

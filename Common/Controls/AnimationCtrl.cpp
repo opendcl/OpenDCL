@@ -41,6 +41,7 @@ DWORD CAnimationCtrl::GetWndStyle() const
 
 BEGIN_MESSAGE_MAP(CAnimationCtrl, CAnimateCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -55,9 +56,16 @@ BOOL CAnimationCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CAnimationCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	return NULL;
 	//return mColorService.GetTransparentBrush();
+}
+
+BOOL CAnimationCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CAnimationCtrl::PostNcDestroy() 

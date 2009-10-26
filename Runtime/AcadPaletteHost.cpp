@@ -76,7 +76,7 @@ bool CAcadPaletteHost::Create( LPCTSTR lpszTitle, CRect rect )
 {
 	bool bDisabled = (mpParent && !mpParent->IsWindowEnabled());
 	if( !__super::Create( lpszTitle,
-												WS_OVERLAPPED/* | WS_DLGFRAME*/ | WS_VISIBLE | (bDisabled? WS_DISABLED : 0) /*| WS_CLIPCHILDREN*/,
+												WS_OVERLAPPED/* | WS_DLGFRAME*/ | WS_VISIBLE | (bDisabled? WS_DISABLED : 0) | WS_CLIPCHILDREN,
 												rect, mpParent,
 												PSS_AUTO_ROLLUP | PSS_PROPERTIES_MENU | PSS_CLOSE_BUTTON | PSS_SNAP | PSS_USE_SINGLE_PALETTE_TAB_NAME ) )
 		return false;
@@ -428,9 +428,9 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 {
 	if( !mpDlgObject->GetColorService()->IsBackgroundTransparent() )
 	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mpDlgObject->GetColorService()->GetBackgroundColor() );
+		CRect rcPaint;
+		pDC->GetClipBox( &rcPaint );
+		pDC->FillSolidRect( &rcPaint, mpDlgObject->GetColorService()->GetBackgroundColor() );
 		return TRUE;
 	}
 	return __super::OnEraseBkgnd(pDC);

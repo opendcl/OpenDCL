@@ -94,7 +94,7 @@ void CPictureFolder::OnDelete()
 
 void CPictureFolder::OnOK() 
 {
-	m_PictureBox.SetPictureBlank();
+	m_PictureBox.ClearPicture();
 
 	for( std::list< TPicturePtr >::const_iterator iterNewPic = mlistPicsToAdd.begin();
 			 iterNewPic != mlistPicsToAdd.end();
@@ -122,7 +122,7 @@ void CPictureFolder::OnOK()
 
 void CPictureFolder::OnCancel() 
 {
-	m_PictureBox.SetPictureBlank();
+	m_PictureBox.ClearPicture();
 	CDialog::OnCancel();
 }
 

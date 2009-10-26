@@ -1735,6 +1735,7 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_BEGINSCROLL, &CGridCtrl::OnLvnBeginScroll)
 	ON_REGISTERED_MESSAGE(refWM_CHECKFOCUS(), &CGridCtrl::OnCheckFocus)
 	ON_WM_GETDLGCODE()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -1877,6 +1878,13 @@ LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 		}
 	}
 	return 0;
+}
+
+BOOL CGridCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 UINT CGridCtrl::OnGetDlgCode()

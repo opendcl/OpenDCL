@@ -43,20 +43,8 @@ CRect CDateTimeEditCtrl::CalcRect( const CRect& rcCell )
 
 
 BEGIN_MESSAGE_MAP(CDateTimeEditCtrl, CDateTimeCtrl)
-	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CDateTimeEditCtrl message handlers
-
-HBRUSH CDateTimeEditCtrl::CtlColor( CDC* pDC, UINT nCtlColor ) 
-{
-	if( !IsWindowEnabled() )
-		return NULL;
-
-	CAcadColorService* pColorService = GetColorService();
-	if( !pColorService )
-		return NULL;
-	return pColorService->CtlColor( pDC, nCtlColor );
-}

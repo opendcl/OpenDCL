@@ -153,6 +153,7 @@ void CButtonCtrl::SetResourceIcon(UINT idIcon)
 
 BEGIN_MESSAGE_MAP(CButtonCtrl, CXPStyleButtonST)
 	ON_WM_KILLFOCUS()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -170,6 +171,13 @@ void CButtonCtrl::OnKillFocus(CWnd * pNewWnd)
 	m_bIsDefault = FALSE;
 	OnNeedRepaint();
 	__super::OnKillFocus( pNewWnd );
+}
+
+BOOL CButtonCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CButtonCtrl::PostNcDestroy() 

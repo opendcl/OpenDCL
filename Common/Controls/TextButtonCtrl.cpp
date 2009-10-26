@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CTextButtonCtrl, CButton)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_NCPAINT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -77,7 +78,14 @@ BOOL CTextButtonCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CTextButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor, this );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CTextButtonCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CTextButtonCtrl::PostNcDestroy() 

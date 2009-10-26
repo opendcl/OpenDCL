@@ -94,32 +94,3 @@ CBrush& CAcadColorService::GetTransparentBrush()
 	static CBrush& brTransparent = CreateTransparentBrush();
 	return brTransparent;
 }
-
-HBRUSH CAcadColorService::CtlColor( CDC* pDC, UINT nCtlColor, CWnd* pWnd /*= NULL*/ )
-{
-	pDC->SetTextColor( mclrForeground );
-	if( IsBackgroundTransparent() )
-	{
-		if( pWnd )
-		{
-			CRect rcCtrl;
-			pWnd->GetWindowRect( &rcCtrl );
-			CWnd* pParentWnd = pWnd->GetParent();
-			pParentWnd->ScreenToClient( &rcCtrl );
-			CDC* pParentDC = pParentWnd->GetDC();
-			pDC->BitBlt( 0, 0, rcCtrl.Width(), rcCtrl.Height(), pParentDC, rcCtrl.left, rcCtrl.top, SRCCOPY );
-			pParentWnd->ReleaseDC( pParentDC );
-		}
-		pDC->SetBkMode( TRANSPARENT );
-		return GetTransparentBrush();
-	}
-	pDC->SetBkColor( GetBackgroundColor() );
-	if( pWnd )
-	{
-		pDC->SetBkMode( TRANSPARENT );
-		CRect rcClient;
-		pWnd->GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, GetBackgroundColor() );
-	}
-	return mbrushBackground;
-}

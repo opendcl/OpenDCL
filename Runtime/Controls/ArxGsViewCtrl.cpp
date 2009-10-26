@@ -63,13 +63,13 @@ bool CArxGsViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 void CArxGsViewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
 	mclrHighlight = clrHighlight;		
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 void CArxGsViewCtrl::RemoveHighlight()
 {
 	mclrHighlight = CAcadColorService::GetTransparentColor();
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 void CArxGsViewCtrl::clearAll()
@@ -91,7 +91,7 @@ void CArxGsViewCtrl::Zoom( double dZoomFactor )
 {
 	if( mpGsReactor )
 		mpGsReactor->zoom( dZoomFactor );
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor, 
@@ -255,7 +255,7 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 	if( mpGsReactor )
 		mpGsReactor->setDrawable( pBTR );
 
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 
@@ -285,13 +285,7 @@ END_MESSAGE_MAP()
 
 BOOL CArxGsViewCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	if( !mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
-	}
-	return TRUE;
+	return HandleEraseBkgnd( pDC );
 }
 
 void CArxGsViewCtrl::OnPaint() 
@@ -396,7 +390,7 @@ __UINT_LRESULT CArxGsViewCtrl::OnNcHitTest(CPoint point)
 void CArxGsViewCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus( pOldWnd );
-	Invalidate();
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
@@ -434,7 +428,7 @@ void CArxGsViewCtrl::OnDestroy()
 void CArxGsViewCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
-	Invalidate();
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 

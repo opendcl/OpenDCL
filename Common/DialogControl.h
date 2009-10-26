@@ -156,6 +156,11 @@ public:
 private:
 	void CreateTooltip() { if( !mToolTip.m_hWnd ) mToolTip.Create( mpControlWnd ); }
 
+	// Windows painting helpers
+protected:
+	HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
+	BOOL HandleEraseBkgnd( CDC* pDC );
+
 	// Drag and Drop Support
 public:
 	virtual CDragDropService* GetDragDropService() { return NULL; }
@@ -175,7 +180,7 @@ public:
 	virtual DWORD GetWndStyle() const; //get window style from properties
 	virtual CString GetWndCaption() const; //get window caption from properties
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size
-	virtual void OnNeedRepaint( bool bRepaintBackground = true, bool bUpdateNow = false ) const; //called when a property change requires a repaint
+	virtual void OnNeedRepaint( bool bRepaintBackground = false, bool bUpdateNow = false ) const; //called when a property change requires a repaint
 	virtual CRect ValidatePosition( const CRect& rcProposed ) const; //validate proposed position
 	virtual void ApplyPosition(); //move control window to new position
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) = 0;

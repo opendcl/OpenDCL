@@ -57,7 +57,7 @@ public:
 	bool CreateControls( UINT& nId );
 	void AddControl( TDialogControlPtr pDlgControl );
 	void RemoveControl( CDialogControl* pDlgControl );
-	void ResetControlsPos( TDclControlPtr pControl );
+	void RecalcControlPos( TDclControlPtr pControl );
 	void SetFirstControlFocus() const;
 
 protected:

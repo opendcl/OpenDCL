@@ -56,7 +56,8 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
 		Create( _T(""), WS_CHILD | WS_DISABLED, rcControl, pTopLevelWnd->GetParent() );
 		ModifyStyle( WS_CLIPCHILDREN, WS_CLIPSIBLINGS, 0 );
-		ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
+		if( mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT )
+			ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
 		rcControl.MoveToXY( 0, 0 );
 		mGripper.Create( _T(""), WS_CHILD, rcControl, this );
 		mGripper.ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );

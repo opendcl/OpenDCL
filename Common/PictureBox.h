@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "AcadColorService.h"
 #include "RefCountedPtr.h"
 #include "PictureObject.h"
 
@@ -16,7 +15,6 @@ const COLORREF COLOR_USEBACKGROUND = (COLORREF)0;
 
 class CPictureBox : public CButton
 {
-	CAcadColorService mColorService;
 	TPicturePtr mpPicture;
 protected:
 	int				m_cxIcon;
@@ -32,12 +30,11 @@ public:
 public:
 	virtual bool IsAutoSized() { return false; }
 	virtual void AutoSize() {}
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual void OnMouseEntered() {}
 	void DrawPicture( TPicturePtr, bool bShrinkToFit = false );
 	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );
-	void SetPictureBlank();
+	void ClearPicture();
 	void Clear();
 	void Refresh();
 	void DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb);
@@ -63,5 +60,5 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

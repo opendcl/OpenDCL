@@ -91,6 +91,7 @@ bool CSpinnerCtrl::OnApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CSpinnerCtrl, CSpinButtonCtrl)
 	ON_NOTIFY_REFLECT(UDN_DELTAPOS, OnDeltapos)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -141,5 +142,12 @@ BOOL CSpinnerCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CSpinnerCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor, this );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CSpinnerCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

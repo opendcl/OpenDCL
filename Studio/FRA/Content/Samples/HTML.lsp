@@ -113,11 +113,6 @@
     (princ (strcat "\nNavigation completed, URL: " sUrl))
 )
 
-;; triger when mouse pointer is moving over the html control
-;;;(defun c:HTML_Dcl1_Html_OnMouseMove ()
-;;;(dcl_MessageBox "Mouse move over HTML control" "Info" 0 2)
-;;;)
-
 (defun c:HTML_Dcl1_TB_Close_OnClicked ()
     (dcl_Form_Close HTML_Dcl1)                    ; close the form now
 )

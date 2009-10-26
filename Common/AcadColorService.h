@@ -38,7 +38,4 @@ public:
 	static CBrush& GetTransparentBrush();
 	static COLORREF GetTransparentColor() { return (COLORREF)-1; }
 	static bool IsTransparentColor( COLORREF color ) { return ((color & 0x80000000) != 0); }
-
-// Control painting helpers
-	HBRUSH CtlColor( CDC* pDC, UINT nCtlColor, CWnd* pWnd = NULL );
 };

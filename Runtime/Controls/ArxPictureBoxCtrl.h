@@ -31,6 +31,8 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg UINT OnGetDlgCode();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);

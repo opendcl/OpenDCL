@@ -25,6 +25,7 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual void ApplyPosition(); //move control window to new position
 
 protected:
 	DECLARE_MESSAGE_MAP()

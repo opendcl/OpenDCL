@@ -276,7 +276,7 @@ void CArxBlockViewCtrl::RefreshBlock()
 	UpdateModel( pRec );
 	pRec->close();
 
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
@@ -502,7 +502,7 @@ void CArxBlockViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	mbZooming = false;
 	mbPanning = false;
 		
-	Invalidate();
+	OnNeedRepaint( false );
 	EndUIDrag();
 	__super::OnLButtonUp( nFlags, point );
 }

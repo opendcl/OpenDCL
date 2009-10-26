@@ -911,34 +911,48 @@ ADSRESULT PictureBox::PaintPicture()
 	if( GetListEndArgument( pArgs, true ) )
 		return RSRSLT;
 
-	if( !GetListBeginArgument( pArgs ) )
+	// check for a point in case three ints are passed as a point
+	bool bAsPt = false;
+	AcGePoint3d pt;
+	if( Get3dPointArgument( pArgs, pt, true ) )
+		bAsPt = true;
+	else if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
 
 	do
 	{
 		int nStartX;
-		if( !GetIntArgument( pArgs, nStartX ) )
+		if( bAsPt )
+			nStartX = pt.x;
+		else if( !GetIntArgument( pArgs, nStartX ) )
 			return RSERR; //invalid input
 
 		int nStartY;
-		if( !GetIntArgument( pArgs, nStartY ) )
+		if( bAsPt )
+			nStartY = pt.y;
+		else if( !GetIntArgument( pArgs, nStartY ) )
 			return RSERR; //invalid input
 
 		int nPicID;
-		if( !GetIntArgument( pArgs, nPicID ) )
+		if( bAsPt )
+			nPicID = pt.z;
+		else if( !GetIntArgument( pArgs, nPicID ) )
 			return RSERR; //invalid input
 
 		bool bEnabled = true;
 		bool bMasked = false;
-		if( GetBoolArgument( pArgs, bEnabled, true ) )
-			GetBoolArgument( pArgs, bMasked, true );
+		if( !bAsPt )
+		{
+			if( GetBoolArgument( pArgs, bEnabled, true ) )
+				GetBoolArgument( pArgs, bMasked, true );
 
-		if( !GetListEndArgument( pArgs ) )
-			return RSERR; //invalid input
+			if( !GetListEndArgument( pArgs ) )
+				return RSERR; //invalid input
+		}
 
 		pCtrl->PaintPicture( nStartX, nStartY, nPicID, (bEnabled? 1 : 0), (bMasked? 1 : 0) );
 		
-	} while( GetListBeginArgument( pArgs, true ) );
+	} while( GetListBeginArgument( pArgs, true ) || (bAsPt = Get3dPointArgument( pArgs, pt, true )) );
 
 	if( !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input

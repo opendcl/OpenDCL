@@ -561,7 +561,8 @@ ADSRESULT ComboBox::GetLBText()
 	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
 
 	CString sText;
-	pCtrl->GetLBText( nItem, sText );
+	if( nItem >= 0 && nItem < pCtrl->GetCount() )
+		pCtrl->GetLBText( nItem, sText );
 	acedRetStr( sText );
 	return RSRSLT;
 }

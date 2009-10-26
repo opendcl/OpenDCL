@@ -209,9 +209,9 @@ void CPictureBoxCtrl::AutoSize()
 void CPictureBoxCtrl::Clear()
 {
 	// set the picture ID to a value that indicates it's blank
-	mpTemplate->SetLongProperty(Prop::Picture, 0);
-	SetPictureBlank();
-	OnNeedRepaint( true );
+	mpTemplate->SetLongProperty(Prop::Picture, -1);
+	ClearPicture();
+	OnNeedRepaint( true, true );
 }
 
 void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask)
@@ -318,6 +318,8 @@ void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled,
 
 BEGIN_MESSAGE_MAP(CPictureBoxCtrl, CPictureBox)
 	ON_WM_NCHITTEST()
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -352,4 +354,18 @@ __UINT_LRESULT CPictureBoxCtrl::OnNcHitTest(CPoint point)
 		return HTTRANSPARENT;
 
 	return CButton::OnNcHitTest(point);
+}
+
+HBRUSH CPictureBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+{
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CPictureBoxCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( __super::OnEraseBkgnd( NULL ) )
+		return TRUE;
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

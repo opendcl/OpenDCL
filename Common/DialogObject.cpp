@@ -123,12 +123,13 @@ CRect CDialogObject::GetWndRect() const
 
 DWORD CDialogObject::GetWndStyle() const
 {
-	DWORD dwStyle = WS_CHILD | WS_VISIBLE/* | WS_CLIPSIBLINGS*/;
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN/* | WS_CLIPSIBLINGS*/;
 
 	assert(mpTemplate != NULL);
-	if( mpTemplate->GetBooleanProperty(Prop::TitleBar) )
+	if( mpTemplate->GetBooleanProperty( Prop::TitleBar ) ||
+			!mpTemplate->GetPropertyObject( Prop::TitleBar ) )
 		dwStyle |= (WS_CAPTION | WS_SYSMENU);
-	if( mpTemplate->GetBooleanProperty(Prop::AllowResizing) )
+	if( mpTemplate->GetBooleanProperty( Prop::AllowResizing ) )
 		dwStyle |= WS_THICKFRAME;
 
 	return dwStyle;
@@ -174,13 +175,46 @@ void CDialogObject::OnFrameChanged()
 
 void CDialogObject::ApplyPosition()
 {
+	if( IsEnumeratingProperties() )
+		return; //defer
 	bool bIgnoreSizing = IgnoreSizing();
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
 																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
 																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
-																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
+																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
 	IgnoreSizing( bIgnoreSizing );
+}
+
+HBRUSH CDialogObject::HandleCtlColor( CDC* pDC, UINT nCtlColor )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return NULL;
+	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	if( pColorService->IsBackgroundTransparent() )
+		return NULL;
+	pDC->SetBkColor( pColorService->GetBackgroundColor() );
+	return pColorService->GetBackgroundBrush();
+}
+
+BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
+{
+	TraceFmt( _T("# CDialogObject(%s)::HandleEraseBkgnd(%s)\r\n"),
+						asString( this ),
+						asString( pDC ) );
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return FALSE;
+	if( pColorService->IsBackgroundTransparent() )
+		return FALSE;
+	CRect rcClip;
+	pDC->GetClipBox( &rcClip );
+	CRect rcClient;
+	mpControlWnd->GetClientRect( &rcClient );
+	rcClip.IntersectRect( &rcClip, &rcClient );
+	pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
+	return TRUE;
 }
 
 bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )

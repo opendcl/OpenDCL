@@ -1606,7 +1606,7 @@ public:
 					{
 						CArxAcadSlideCtrl *pSlide = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
 						pSlide->m_bSelectedRect = !pSlide->m_bSelectedRect;
-						pSlide->Invalidate();
+						pSlide->OnNeedRepaint( false );
 					}
 					break;
 				}

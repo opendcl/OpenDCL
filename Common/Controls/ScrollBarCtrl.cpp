@@ -148,10 +148,11 @@ void CScrollBarCtrl::OnScroll(UINT nSBCode, UINT nPos)
 
 BEGIN_MESSAGE_MAP(CScrollBarCtrl, CScrollBar)
 	ON_WM_HSCROLL_REFLECT()	
-	ON_WM_SETFOCUS()
 	ON_WM_VSCROLL_REFLECT()
+	ON_WM_SETFOCUS()
 	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -191,5 +192,12 @@ BOOL CScrollBarCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CScrollBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CScrollBarCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

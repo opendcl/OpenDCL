@@ -80,6 +80,7 @@ DWORD CComboBoxCtrl::GetWndStyle() const
 
 void CComboBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
 {
+	__super::ApplyPropertiesOrder( ridFirst, ridLast );
 	ridFirst.push_back( Prop::List );
 }
 
@@ -197,6 +198,7 @@ BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_MESSAGE(CB_DIR, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_INSERTSTRING, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CComboBoxCtrl::OnResetContent)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -276,4 +278,11 @@ LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 	}
 	OnListChanged();
 	return (LRESULT)TRUE;
+}
+
+BOOL CComboBoxCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

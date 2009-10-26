@@ -25,6 +25,7 @@
 BEGIN_MESSAGE_MAP(CLVEdit, CEdit)
 	ON_WM_WINDOWPOSCHANGING()
 	ON_CONTROL_REFLECT(EN_SETFOCUS, OnSetfocus)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 void CLVEdit::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
@@ -674,7 +675,14 @@ BOOL CListViewCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CListViewCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CListViewCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)

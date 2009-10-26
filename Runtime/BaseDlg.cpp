@@ -19,7 +19,8 @@ CBaseDlg::CBaseDlg(TDclFormPtr pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, D
 , CArxDialogObject( pSourceForm, this )
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
-, mbHasTitleBar( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::TitleBar ) )
+, mbHasTitleBar( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::TitleBar ) ||
+								 !pSourceForm->GetControlProperties()->GetPropertyObject( Prop::TitleBar ) )
 , mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::AllowResizing ) )
 , msizeGrip( GetSystemMetrics( SM_CXVSCROLL ), GetSystemMetrics( SM_CYHSCROLL ) )
 , mrectGrip( 0, 0, 0, 0 )
@@ -275,14 +276,8 @@ void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 
 BOOL CBaseDlg::OnEraseBkgnd(CDC* pDC)
 {
-	BOOL bResult = TRUE;
-	if( !mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
-	}
-	else
+	BOOL bResult = HandleEraseBkgnd( pDC );
+	if( !bResult )
 		bResult = __super::OnEraseBkgnd(pDC);
 	if( mbResizable && !IsZoomed() )
 	{

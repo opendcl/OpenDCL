@@ -53,7 +53,7 @@
 )
 
 (defun c:EventHandling_Main_txtPassword_OnEditChanged (sText /)
-    (if (= sText "ton")
+    (if (= (strcase sText) "TON")
         (dcl_Form_Close EventHandling_Main 10) ; return 10 to signal a correct answer
     )
     (princ)

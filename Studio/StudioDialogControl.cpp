@@ -97,8 +97,8 @@ TDialogControlPtr CStudioDialogControl::Create( TDclControlPtr pTemplate, CContr
 			pDlgControl->GetControlWnd()->DestroyWindow();
 			return NULL; //no window created for some reason
 		}
-		pDlgControl->GetControlWnd()->ModifyStyle( WS_CLIPSIBLINGS, 0 ); //can't have WS_CLIPSIBLINGS while editing in studio!
-		pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+		//pDlgControl->GetControlWnd()->ModifyStyle( WS_CLIPSIBLINGS, 0 ); //can't have WS_CLIPSIBLINGS while editing in studio!
+		//pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
 		CControlManager* pManager = new CControlManager( pDlgControl );
 		pManager->OnControlPositionChanged();
 		if( pTemplate->GetType() == CtlActiveX )

@@ -51,6 +51,109 @@ ControlType CDialogControl::GetControlType() const
 	return _CtlInvalid;
 }
 
+HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return NULL;
+	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	if( pColorService->IsBackgroundTransparent() )
+	{
+		//if( mpControlWnd )
+		//{
+		//	CRect rcCtrl;
+		//	mpControlWnd->GetWindowRect( &rcCtrl );
+		//	CWnd* pParentWnd = mpControlWnd->GetParent();
+		//	pParentWnd->ScreenToClient( &rcCtrl );
+		//	CDC* pParentDC = pParentWnd->GetDC();
+		//	pDC->BitBlt( 0, 0, rcCtrl.Width(), rcCtrl.Height(), pParentDC, rcCtrl.left, rcCtrl.top, SRCCOPY );
+		//	pParentWnd->ReleaseDC( pParentDC );
+		//}
+		pDC->SetBkMode( TRANSPARENT );
+	}
+	else
+	{
+		pDC->SetBkColor( pColorService->GetBackgroundColor() );
+		pDC->SetBkMode( TRANSPARENT );
+	}
+	//if( mpControlWnd )
+	//{
+	//	pDC->SetBkMode( TRANSPARENT );
+	//	CRect rcClient;
+	//	mpControlWnd->GetClientRect( &rcClient );
+	//	pDC->FillSolidRect( &rcClient, GetBackgroundColor() );
+	//}
+	return pColorService->GetBackgroundBrush();
+}
+
+BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
+{
+	TraceFmt( _T("# CDialogControl(%s)::HandleEraseBkgnd(%s)\r\n"),
+						asString( this ),
+						asString( pDC ) );
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return FALSE;
+	if( !mpTemplate->GetPropertyObject( Prop::BackgroundColor ) )
+		return FALSE;
+	CRect rcClip;
+	pDC->GetClipBox( &rcClip );
+	CRect rcClient;
+	mpControlWnd->GetClientRect( &rcClient );
+	rcClip.IntersectRect( &rcClip, &rcClient );
+	if( pColorService->IsBackgroundTransparent() )
+	{
+		//CWnd* pParentWnd = mpControlWnd->GetParent();
+		//while( (pParentWnd->GetStyle() & WS_CHILD) && (pParentWnd->GetExStyle() & WS_EX_TRANSPARENT) )
+		//	pParentWnd = pParentWnd->GetParent();
+		//if( pParentWnd->GetStyle() & WS_CLIPCHILDREN )
+		//{
+		//	static std::set< HWND > setRedrawing;
+		//	HWND hwndTarget = mpControlWnd->m_hWnd;
+		//	if( setRedrawing.find( hwndTarget ) != setRedrawing.end() )
+		//	{
+		//		assert( false );
+		//		return FALSE;
+		//	}
+		//	setRedrawing.insert( hwndTarget );
+		//	mpControlWnd->ClientToScreen( &rcClip );
+		//	pParentWnd->ScreenToClient( &rcClip );
+		//	pParentWnd->RedrawWindow( &rcClip, NULL, RDW_INVALIDATE | RDW_INTERNALPAINT | RDW_NOCHILDREN | RDW_UPDATENOW );
+		//	setRedrawing.erase( hwndTarget );
+		//}
+		return TRUE;
+	}
+	else if( mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT )
+		return TRUE;
+	else
+	{
+		/*
+		if( !(mpControlWnd->GetStyle() & WS_CLIPCHILDREN) )
+		{
+			for( CWnd* pChild = mpControlWnd->GetWindow( GW_CHILD );
+					 pChild;
+					 pChild = pChild->GetWindow( GW_HWNDNEXT ) )
+			{
+				CRect rcChild;
+				pChild->GetWindowRect( &rcChild );
+				mpControlWnd->ScreenToClient( &rcChild );
+				pDC->ExcludeClipRect( &rcChild );
+			}
+		}
+		*/
+		CWnd* pParent = mpControlWnd->GetParent();
+		if( pParent )
+		{
+			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORSTATIC, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
+			if( !hbrBackground )
+				return FALSE;
+		}
+		pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
+		return TRUE;
+	}
+	return FALSE;
+}
+
 DROPEFFECT CDialogControl::BeginDragDrop( const CPoint& point )
 {
 	CDragDropService* pDragDropService = GetDragDropService();
@@ -235,8 +338,14 @@ void CDialogControl::OnFrameChanged()
 	OnNeedRepaint();
 }
 
-void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUpdateNow /*= false*/ ) const
+void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= false*/, bool bUpdateNow /*= false*/ ) const
 {
+	if( !mpControlWnd->m_hWnd )
+		return;
+	mpControlWnd->Invalidate( bRepaintBackground? TRUE : FALSE );
+	if( bUpdateNow )
+		mpControlWnd->UpdateWindow();
+	return;
 	if( bRepaintBackground &&
 			((mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT) || !mpControlWnd->IsWindowVisible()) )
 	{ //force the control's background to be redrawn if it has a transparent background
@@ -291,6 +400,14 @@ CRect CDialogControl::ValidatePosition( const CRect& rcProposed ) const
 
 void CDialogControl::ApplyPosition()
 {
+	TraceFmt( _T("CDialogControl(%s)::ApplyPosition() [%d, %d] @ [%d x %d]\r\n"),
+						asString( this ),
+						mpTemplate->GetLongProperty( Prop::Left ),
+						mpTemplate->GetLongProperty( Prop::Top ),
+						mpTemplate->GetLongProperty( Prop::Width ),
+						mpTemplate->GetLongProperty( Prop::Height ) );
+	if( mbEnumProps )
+		return; //defer
 	mpControlPane->ApplyPosition( TDialogControlLockedPtr( this ) );
 }
 
@@ -305,10 +422,6 @@ bool CDialogControl::ApplyPropertiesEnum()
 			 iter != ridFirst.end();
 			 ++iter )
 		OnApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseLeftFromRight ) );
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseRightFromRight ) );
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseTopFromBottom ) );
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseBottomFromBottom ) );
 	const TPropertyList& Props = mpTemplate->GetPropertyList();
 	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
@@ -324,7 +437,7 @@ bool CDialogControl::ApplyPropertiesEnum()
 			 ++iter )
 		OnApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	mbEnumProps = false;
-	OnNeedRepaint();
+	ApplyPosition();
 	return bSuccess;
 }
 
@@ -400,16 +513,26 @@ bool CDialogControl::OnApplyForegroundColor( TPropertyPtr pProp )
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
 		pColorService->SetForegroundColor( pProp->GetLongValue() );
-	OnNeedRepaint();
+	OnNeedRepaint( false );
 	return true;
 }
 
 bool CDialogControl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
 	if( pProp->GetLongValue() == -24 ) //-24 = transparent background
+	{
 		mpControlWnd->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+		CWnd* pTop = GetTopLevelWnd();
+		if( pTop != mpControlWnd )
+			pTop->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+	}
 	else
+	{
 		mpControlWnd->ModifyStyleEx( WS_EX_TRANSPARENT, 0 );
+		CWnd* pTop = GetTopLevelWnd();
+		if( pTop != mpControlWnd )
+			pTop->ModifyStyleEx( WS_EX_TRANSPARENT, 0 );
+	}
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
 		pColorService->SetBackgroundColor( pProp->GetLongValue() );

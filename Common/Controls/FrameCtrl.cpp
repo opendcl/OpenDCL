@@ -56,6 +56,7 @@ DWORD CFrameCtrl::GetWndStyle() const
 
 BEGIN_MESSAGE_MAP(CFrameCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
@@ -71,13 +72,20 @@ BOOL CFrameCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	//return NULL;
 	if( (LOBYTE(LOWORD(GetVersion())) < 6) &&
 			!(GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle )) )
 		return NULL; //must use class brush in XP when themes are inactive (else XP paints text same color as background)
 	return hbrBackground;
 	//return mColorService.GetTransparentBrush();
+}
+
+BOOL CFrameCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return TRUE;
 }
 
 void CFrameCtrl::PostNcDestroy() 

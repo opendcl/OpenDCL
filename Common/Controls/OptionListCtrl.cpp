@@ -281,28 +281,20 @@ void COptionListCtrl::OnLbnSelchange()
 
 HBRUSH COptionListCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL COptionListCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void COptionListCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	OnNeedRepaint();
 	__super::OnKillFocus(pNewWnd);
-}
-
-BOOL COptionListCtrl::OnEraseBkgnd(CDC* pDC)
-{
-	if( mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClip;
-		pDC->GetClipBox( &rcClip );
-		ClientToScreen( &rcClip );
-		CWnd* pParentWnd = GetParent();
-		pParentWnd->ScreenToClient( &rcClip );
-		pParentWnd->RedrawWindow( &rcClip, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_NOCHILDREN | RDW_UPDATENOW );
-		return TRUE;
-	}
-	return __super::OnEraseBkgnd(pDC);
 }
 
 void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)

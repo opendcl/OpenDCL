@@ -36,4 +36,5 @@ protected:
 	virtual BOOL PreTranslateMessage( MSG* pMsg );	
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

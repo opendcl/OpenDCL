@@ -6,9 +6,6 @@
 #include "Workspace.h"
 #include "PictureObject.h"
 
-#include "MemDC.h"
-#define USE_MEM_DC // Remove this, if you don't want to use CMemDC
-
 
 #define HIMETRIC_INCH	2540
 
@@ -188,10 +185,6 @@ CPictureBox::CPictureBox()
 	m_bStretchLoadedPicture = false;
 	m_cxIcon = 16;
 	m_cyIcon = 16;
-
-	CAcadColorService* pColorService = GetColorService();
-	if( pColorService )
-		pColorService->SetBackgroundColor( RGB(255,255,255) );
 }
 
 CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT nIconResId /*= -1*/ )
@@ -202,9 +195,6 @@ CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT n
 	m_cxIcon = 16;
 	m_cyIcon = 16;
 
-	CAcadColorService* pColorService = GetColorService();
-	if( pColorService )
-		pColorService->SetBackgroundColor( RGB(255,255,255) );
 	Create( _T(""), (WS_CHILD | WS_VISIBLE), rcWnd, pParentWnd, nID );
 	SetPicture( nIconResId );
 }
@@ -215,12 +205,6 @@ CPictureBox::~CPictureBox()
 		DeleteObject( m_hbmMem );
 }
 
-void CPictureBox::SetPictureBlank()
-{
-	mpPicture = NULL;
-	Clear();
-}
-
 void CPictureBox::Clear() 
 {
 	if( m_hbmMem )
@@ -228,20 +212,14 @@ void CPictureBox::Clear()
 		DeleteObject( m_hbmMem );
 		m_hbmMem = NULL;
 	}
-	if( mColorService.IsBackgroundTransparent() )
-	{
-		CWnd* pParent = GetParent();
-		if( pParent && pParent->IsWindowVisible() )
-		{
-			CRect rcPicBox;
-			GetClientRect( &rcPicBox );
-			ClientToScreen( &rcPicBox );
-			pParent->ScreenToClient( &rcPicBox );
-			SetRedraw( FALSE );
-			pParent->RedrawWindow( &rcPicBox, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ERASENOW | RDW_UPDATENOW | RDW_ALLCHILDREN );
-			SetRedraw( TRUE );
-		}
-	}
+	if( m_hWnd )
+		Invalidate();
+}
+
+void CPictureBox::ClearPicture()
+{
+	mpPicture = NULL;
+	Refresh();
 }
 
 void CPictureBox::SetPicture( TPicturePtr pPicture )
@@ -271,19 +249,16 @@ void CPictureBox::Refresh()
 	Clear();
 	if( !IsWindowVisible() )
 		return;
-	DrawPicture( mpPicture, m_bStretchLoadedPicture );
-	CopyDC();
+	UpdateWindow();
 }
 
 void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false*/ )
 {	
 	CDC *pdc = GetDC();
-	CRect rcCell;	
-	GetClientRect(&rcCell);
-	if( !mColorService.IsBackgroundTransparent() )
-		pdc->FillSolidRect(rcCell, mColorService.GetBackgroundColor());
 	if( pPicture )
 	{
+		CRect rcCell;	
+		GetClientRect(&rcCell);
 		pdc->IntersectClipRect( &rcCell );
 
 		// get width and height of picture
@@ -445,13 +420,7 @@ void CPictureBox::DrawText(int sX, int sY, COLORREF crFore, COLORREF crBack, CSt
 
 	// check if we are to use the preset background color
 	if (crBack == COLOR_USEBACKGROUND)
-	{
-		CAcadColorService* pColorService = GetColorService();
-		if( pColorService )
-			SetBkColor(hdc, pColorService->GetBackgroundColor());
-		else
-			SetBkColor(hdc, crBack);	
-	}
+		SetBkColor(hdc, RGB(255,255,255) );
 	else // or else use the one the user has assigned for this opertation
 		SetBkColor(hdc, crBack);	
 
@@ -525,15 +494,9 @@ int CPictureBox::DrawWrappedText(int sX, int sY, int eX, COLORREF crFore, COLORR
 
 	// check if we are to use the preset background color
 	if (crBack == COLOR_USEBACKGROUND)
-	{
-		CAcadColorService* pColorService = GetColorService();
-		if( pColorService )
-			SetBkColor(hdc, pColorService->GetBackgroundColor());
-		else
-			SetBkColor(hdc, crBack);	
-	}
+		SetBkColor( hdc, RGB(255,255,255) );
 	else // or else use the one the user has assigned for this opertation
-		SetBkColor(hdc, crBack);	
+		SetBkColor( hdc, crBack );	
 
 	if (crBack == COLOR_TRANSPARENT)
 		SetBkMode(hdc, TRANSPARENT);
@@ -721,8 +684,10 @@ void CPictureBox::CopyDC()
 	
 	HDC hDC = ::GetDC(m_hWnd);
 	HDC hDCmem = CreateCompatibleDC (hDC) ; 
-	int nSourceX = GetDeviceCaps(hDC, HORZRES);
-	int nSourceY = GetDeviceCaps(hDC, VERTRES); 
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	int nSourceX = rcClient.Width();
+	int nSourceY = rcClient.Height(); 
 
 	// Create a compatible bitmap for hdcSource.  
 	HBITMAP hbmMem = CreateCompatibleBitmap(hDC, nSourceX, nSourceY); 
@@ -747,7 +712,7 @@ BEGIN_MESSAGE_MAP(CPictureBox, CButton)
 	ON_WM_SIZE()
 	ON_WM_PAINT()
 	ON_WM_CHAR()
-	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -757,13 +722,7 @@ END_MESSAGE_MAP()
 void CPictureBox::OnEnable(BOOL bEnable) 
 {
 	__super::OnEnable(bEnable);
-	
-	if (m_hbmMem != NULL)
-	{
-		DeleteObject(m_hbmMem);
-		m_hbmMem = NULL;
-	}
-	Invalidate();
+	Refresh();
 }
 
 void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point) 
@@ -774,44 +733,29 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CPictureBox::OnSize(UINT nType, int cx, int cy) 
 {
-	if (m_hbmMem != NULL)
-	{
-		DeleteObject(m_hbmMem);
-		m_hbmMem = NULL;
-	}
 	__super::OnSize(nType, cx, cy);
+	Refresh();
 }
 
 void CPictureBox::OnPaint() 
 {
-	if( !IsWindowVisible() )		
-		return;
 	CPaintDC dc(this); // device context for painting
-	
 	if( !m_hbmMem )
-		Refresh();
-	else
 	{
-	#ifdef USE_MEM_DC
-		CMemDC DC(&dc);
-		CDC* pdc = &DC;
-	#else
-		CDC* pdc = &dc;
-	#endif
-		CDC memdc;
-    // Create a compatible memory DC
-    memdc.CreateCompatibleDC( pdc );
-    // Select the bitmap into the DC
-    CBitmap *poldbmp = memdc.SelectObject( CBitmap::FromHandle(m_hbmMem) );
-
-    // Copy (BitBlt) bitmap from memory DC to screen DC
-    pdc->BitBlt( 0, 0,
-			GetDeviceCaps(pdc->m_hDC, HORZRES), 
-			GetDeviceCaps(pdc->m_hDC, VERTRES),                 
-			&memdc, 0, 0, SRCCOPY );
-
-    memdc.SelectObject( poldbmp );
+		if( !mpPicture )
+			return;
+		DrawPicture( mpPicture, m_bStretchLoadedPicture );
+		CopyDC();
 	}
+	CDC memdc;
+  memdc.CreateCompatibleDC( &dc );
+  CBitmap* pBmpSave = memdc.SelectObject( CBitmap::FromHandle( m_hbmMem ) );
+
+  // Copy (BitBlt) bitmap from memory DC to screen DC
+	CRect rcClient;
+	GetClientRect( &rcClient );
+  dc.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &memdc, 0, 0, SRCCOPY );
+  memdc.SelectObject( pBmpSave );
 }
 
 void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -821,7 +765,17 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	__super::OnChar(nChar, nRepCnt, nFlags);
 }
 
-HBRUSH CPictureBox::CtlColor(CDC* pDC, UINT nCtlColor) 
+BOOL CPictureBox::OnEraseBkgnd(CDC* pDC)
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	if( m_hbmMem )
+		return TRUE;
+	if( !pDC ) //derived classes can pass NULL to check whether the buffered bitmap exists
+		return FALSE;
+	CRect rcClip;
+	pDC->GetClipBox( &rcClip );
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	rcClip.IntersectRect( &rcClip, &rcClient );
+	pDC->FillSolidRect( &rcClip, RGB(255,255,255) );
+	return TRUE;
 }

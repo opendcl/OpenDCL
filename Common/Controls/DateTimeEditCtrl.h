@@ -28,5 +28,4 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
 };

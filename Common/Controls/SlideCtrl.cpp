@@ -145,13 +145,12 @@ BOOL CSlideCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CSlideCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
+	return HandleCtlColor( pDC, nCtlColor );
 }
 
 BOOL CSlideCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	if( mColorService.IsBackgroundTransparent() )
+	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
-
 	return __super::OnEraseBkgnd(pDC);
 }

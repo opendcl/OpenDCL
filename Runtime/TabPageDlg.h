@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "DialogObject.h"
-#include "ArxControlPane.h"
+#include "ArxDialogObject.h"
+#include "AcadColorService.h"
 
 class CDclFormObject;
 
@@ -14,19 +14,15 @@ typedef RefCountedPtr< class CTabPageDlg > TTabPagePtr;
 /////////////////////////////////////////////////////////////////////////////
 // CTabPageDlg dialog
 
-class CTabPageDlg : public CDialog, public CDialogObject
+class CTabPageDlg : public CDialog, public CArxDialogObject
 {
-	CArxControlPane mControlPane;
+	CAcadColorService mColorService;
 	bool mbRecalcQueued;
 
 // Construction
 public:
 	CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
 	~CTabPageDlg();
-
-	//Attributes
-	const CControlPane* GetControlPane() const { return &mControlPane; }
-	CControlPane* GetControlPane() { return &mControlPane; }
 
 // CDialogObject overrides
 public:
@@ -35,6 +31,7 @@ public:
 	virtual bool IsDockable() const { return false; }
 	virtual bool IsResizable() const { return false; }
 	virtual void CloseDialog(int nStatus) {}
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 	virtual void ApplyPosition(); //move control window to new position
 

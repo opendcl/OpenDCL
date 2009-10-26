@@ -62,6 +62,7 @@ bool CAngleSlideCtrl::OnApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CAngleSlideCtrl, CRoundSliderCtrl)
 	ON_WM_HSCROLL_REFLECT()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
@@ -87,7 +88,14 @@ BOOL CAngleSlideCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CAngleSlideCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CAngleSlideCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CAngleSlideCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)

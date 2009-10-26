@@ -84,7 +84,7 @@ void CArxDialogObject::OnEnteringNoDocState()
 bool CArxDialogObject::IsCloseAllowed( bool bCancelling ) const
 {
 	resbuf* prbResult = NULL;
-	GetArxServices()->HandleEvent( Prop::FormEventCancelClose, prbResult, args_B( bCancelling ) );
+	GetArxServices()->HandleEvent( Prop::FormEventCancelClose, prbResult, args_N( bCancelling? 1 : 0 ) );
 	if( !prbResult )
 		return true;
 	bool bDisallow = (prbResult->restype != RTNIL);

@@ -118,6 +118,7 @@ bool CProgressBarCtrl::OnApplyProperty( TPropertyPtr pProp )
 void CProgressBarCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst,
 																						 std::vector< Prop::Id >& ridLast )
 {
+	__super::ApplyPropertiesOrder( ridFirst, ridLast );
 	ridLast.push_back( Prop::Value );
 }
 
@@ -193,6 +194,7 @@ CString CProgressBarCtrl::GetRemainingText( double lfPercent, double lfSecsRemai
 
 BEGIN_MESSAGE_MAP(CProgressBarCtrl, CProgressCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
@@ -211,7 +213,14 @@ HBRUSH CProgressBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	if( !IsWindowEnabled() )
 		return NULL;
 	return NULL;
-	//return mColorService.CtlColor( pDC, nCtlColor );
+	//return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CProgressBarCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CProgressBarCtrl::PostNcDestroy() 

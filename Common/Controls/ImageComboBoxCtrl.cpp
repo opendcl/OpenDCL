@@ -273,6 +273,7 @@ BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_MESSAGE(CB_DIR, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_INSERTSTRING, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CImageComboBoxCtrl::OnResetContent)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -289,6 +290,13 @@ void CImageComboBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+BOOL CImageComboBoxCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CImageComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)

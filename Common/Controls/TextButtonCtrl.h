@@ -40,4 +40,5 @@ protected:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnNcPaint();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

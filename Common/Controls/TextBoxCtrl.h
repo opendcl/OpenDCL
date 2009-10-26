@@ -38,4 +38,6 @@ protected:
 	virtual afx_msg void PostNcDestroy();
 	afx_msg void OnChange();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

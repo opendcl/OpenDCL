@@ -616,6 +616,73 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return -1;
+#ifdef _DEBUG
+	//check whether all event handlers are defined, and assert if not
+	bool bMissingEventHandler = false;
+	class CLispEventHandlerCheck
+	{
+		bool mbValid;
+	public:
+		CLispEventHandlerCheck( const ACHAR* pszHandlerName ) : mbValid( false )
+			{
+				if( !pszHandlerName || !*pszHandlerName )
+				{
+					mbValid = true;
+					return;
+				}
+				resbuf* prbResult = NULL;
+			#if (_ACADTARGET >= 17)
+				int acedEvaluateLisp(ACHAR const *, struct resbuf * &result);
+				CString sLisp;
+				sLisp.Format( _T("(if (member (type %s) '(SUBR EXSUBR LIST)) 'T)"), pszHandlerName );
+				acedEvaluateLisp( sLisp, prbResult );
+				if( prbResult && prbResult->restype == RTT )
+					mbValid = true;
+			#else
+				if( RTNORM != acedGetSym( pszHandlerName, &prbResult ) ||
+						(prbResult && (prbResult->rbnext || prbResult->restype == RTVOID)) )
+					mbValid = true;
+			#endif //(_ACADTARGET >= 17)
+				acutRelRb( prbResult );
+			}
+		operator bool() const { return mbValid; }
+	};
+	TDclFormList Forms;
+	pDclForm->GetProject()->FindChildForms( pDclForm, Forms );
+	Forms.push_front( pDclForm );
+	for( TDclFormList::const_iterator iterForm = Forms.begin();
+			 iterForm != Forms.end();
+			 ++iterForm )
+	{
+		const TDclControlList& Controls = (*iterForm)->GetControlList();
+		for( TDclControlList::const_iterator iterControl = Controls.begin();
+				 iterControl != Controls.end();
+				 ++iterControl )
+		{
+			const TPropertyList& Props = (*iterControl)->GetPropertyList();
+			for( TPropertyList::const_iterator iterProp = Props.begin();
+					 iterProp != Props.end();
+					 ++iterProp )
+			{
+				if( (*iterProp)->GetType() == PropEvent )
+				{
+					if( !CLispEventHandlerCheck( (*iterProp)->GetStringValue() ) )
+					{
+						TraceFmt( _T("* Event handler (%s) not defined for (%s / %s)\r\n"),
+											(LPCTSTR)(*iterProp)->GetStringValue(),
+											(LPCTSTR)(*iterControl)->GetKeyPath(),
+											(LPCTSTR)(*iterProp)->GetApiName() );
+						bMissingEventHandler = true;
+					}
+				}
+				else if( (*iterProp)->GetType() == PropActiveXEvent )
+				{
+				}
+			}
+		}
+	}
+	assert( !bMissingEventHandler );
+#endif //_DEBUG
 	UINT nID = pDialog->GetID();
 	if( pDialog->IsModeless() )
 	{

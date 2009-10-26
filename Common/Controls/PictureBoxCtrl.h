@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "AcadColorService.h"
 #include "DialogControl.h"
 #include "PictureBox.h"
 
@@ -19,6 +20,7 @@
 class CPictureBoxCtrl : public CPictureBox, public CDialogControl
 {
 	bool mbButtonLike;
+	CAcadColorService mColorService;
 
 public:
 	CPictureBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -28,7 +30,7 @@ public:
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CAcadColorService* GetColorService() { return CPictureBox::GetColorService(); }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
@@ -48,4 +50,6 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

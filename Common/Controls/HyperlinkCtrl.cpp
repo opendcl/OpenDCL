@@ -69,10 +69,10 @@ bool CHyperlinkCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 
 BEGIN_MESSAGE_MAP(CHyperlinkCtrl, CWnd)
-	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_NCHITTEST()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_PAINT()
+	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_MESSAGE(WM_SETFONT, &CHyperlinkCtrl::OnSetFont)
 END_MESSAGE_MAP()
@@ -91,7 +91,14 @@ HBRUSH CHyperlinkCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CHyperlinkCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return TRUE;
 }
 
 __UINT_LRESULT CHyperlinkCtrl::OnNcHitTest(CPoint point) 
@@ -137,22 +144,11 @@ void CHyperlinkCtrl::OnPaint()
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
-		mColorService.CtlColor( &dc, CTLCOLOR_STATIC );
+		HandleCtlColor( &dc, CTLCOLOR_STATIC );
 		dc.SelectObject( &mFont );
 		dc.ExtTextOut( 0, 0, ETO_CLIPPED, &rcClient, sText, NULL );
 	}
 	dc.RestoreDC( -1 );
-}
-
-BOOL CHyperlinkCtrl::OnEraseBkgnd(CDC* pDC)
-{
-	if( !mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
-	}
-	return TRUE;
 }
 
 LRESULT CHyperlinkCtrl::OnSetFont(WPARAM wParam, LPARAM lParam)

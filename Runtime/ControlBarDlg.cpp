@@ -18,7 +18,7 @@ extern bool AcadIsQuitting(void);
 // CControlBarDlg dialog
 
 CControlBarDlg::CControlBarDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
-: CDialog( IDD_DOCKINGDLGHOST, &mHostControlBar )
+: CDialog()
 , CArxDialogObject( pSourceForm, this )
 , mpParent( pParent )
 , mHostControlBar( *new CAcadDockBarHost( this, pParent ) )
@@ -204,6 +204,8 @@ void CControlBarDlg::OnFrameChanged()
 
 void CControlBarDlg::ApplyPosition()
 {
+	if( IsEnumeratingProperties() )
+		return; //defer
 	if( IsIgnoreSizing() )
 		return;
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
@@ -370,12 +372,7 @@ void CControlBarDlg::OnDestroy()
 
 BOOL CControlBarDlg::OnEraseBkgnd(CDC* pDC)
 {
-	if( !mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
-	}
-	return TRUE;
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }

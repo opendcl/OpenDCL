@@ -67,7 +67,7 @@ bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID )
 	CString strWndClass = AfxRegisterWndClass( CS_DBLCLKS, LoadCursor( NULL, IDC_ARROW ) );	
 	bool bDisabled = (mpParent && !mpParent->IsWindowEnabled());
 	if( !CAdUiDockControlBar::Create( strWndClass, lpszTitle,
-																		WS_VISIBLE | WS_CHILD | (bDisabled? WS_DISABLED : 0) /*| WS_CLIPCHILDREN*/,
+																		WS_VISIBLE | WS_CHILD | (bDisabled? WS_DISABLED : 0) | WS_CLIPCHILDREN,
 																		rect, mpParent, nID ) )
 		return false;
 	ModifyStyleEx( 0, WS_EX_CONTROLPARENT );
@@ -417,9 +417,9 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 {
 	if( !mpDlgObject->GetColorService()->IsBackgroundTransparent() )
 	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mpDlgObject->GetColorService()->GetBackgroundColor() );
+		CRect rcPaint;
+		pDC->GetClipBox( &rcPaint );
+		pDC->FillSolidRect( &rcPaint, mpDlgObject->GetColorService()->GetBackgroundColor() );
 		return TRUE;
 	}
 	return __super::OnEraseBkgnd(pDC);

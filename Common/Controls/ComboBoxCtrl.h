@@ -52,4 +52,5 @@ protected:
 	afx_msg void OnCloseUp();
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

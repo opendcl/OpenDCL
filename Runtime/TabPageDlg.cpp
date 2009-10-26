@@ -19,8 +19,8 @@ END_MESSAGE_MAP()
 
 CTabPageDlg::CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
 : CDialog( IDD_TABPAGE, pTabCtrl )
-, CDialogObject( pSourceForm, &mControlPane, this )
-, mControlPane( pSourceForm, this )
+, CArxDialogObject( pSourceForm, this )
+, mColorService()
 , mbRecalcQueued( false )
 {
 	IgnoreSizing();
@@ -31,8 +31,8 @@ CTabPageDlg::CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rec
 	mpTemplate->SetLongProperty( Prop::Width, rectPane.Width() );
 	mpTemplate->SetLongProperty( Prop::Height, rectPane.Height() );
 	ApplyPropertiesEnum();
-	mControlPane.CreateControls( nId );
-	mControlPane.RecalcLayout();
+	GetControlPane()->CreateControls( nId );
+	GetControlPane()->RecalcLayout();
 }
 
 CTabPageDlg::~CTabPageDlg()
@@ -41,11 +41,13 @@ CTabPageDlg::~CTabPageDlg()
 
 void CTabPageDlg::ApplyPosition()
 {
+	if( IsEnumeratingProperties() )
+		return; //defer
 	bool bIgnoreSizing = IgnoreSizing();
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
 																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
 																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
-																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
+																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
 	if( GetTopLevelWnd()->IsWindowVisible() )
 		mpControlPane->RecalcLayout();
 	else
@@ -97,6 +99,8 @@ void CTabPageDlg::OnSize(UINT nType, int cx, int cy)
 
 BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 {
+	//CDialogControl::HandleEraseBkgnd( pDC ); //bypass CDialogObject to get transparency
+	return TRUE;
 	if( mpControlPane->GetThemeHelper() )
 	{
 		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
@@ -112,7 +116,6 @@ BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 			}
 		}
 	}
-	//return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
 

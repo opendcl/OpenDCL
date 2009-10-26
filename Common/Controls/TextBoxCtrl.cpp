@@ -204,6 +204,8 @@ bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
 	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnChange)
 	ON_WM_LBUTTONDOWN()
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -259,4 +261,18 @@ void CTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	}
 	__super::OnLButtonDown(nFlags, point);
+}
+
+HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+{
+	if( !IsWindowEnabled() )
+		return NULL;
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CTextBoxCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

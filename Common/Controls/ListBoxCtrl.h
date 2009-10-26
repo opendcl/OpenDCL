@@ -52,4 +52,5 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

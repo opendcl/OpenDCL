@@ -31,6 +31,7 @@ CArxPictureBoxCtrl::~CArxPictureBoxCtrl()
 
 
 BEGIN_MESSAGE_MAP(CArxPictureBoxCtrl, CPictureBoxCtrl)
+	ON_WM_GETDLGCODE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_KILLFOCUS()
 	ON_WM_SETFOCUS()
@@ -55,6 +56,20 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxPictureBoxCtrl message handlers
+
+BOOL CArxPictureBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+{
+	return __super::PreTranslateMessage(pMsg);
+}
+
+UINT CArxPictureBoxCtrl::OnGetDlgCode()
+{
+	UINT nResult = __super::OnGetDlgCode();
+	if( !mpTemplate->GetStringProperty( Prop::EventKeyDown ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyUp ).IsEmpty() )
+		nResult |= DLGC_WANTALLKEYS;
+	return nResult;
+}
 
 void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
@@ -146,7 +161,7 @@ LRESULT CArxPictureBoxCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 
 BOOL CArxPictureBoxCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( nFlags, zDelta, pt.x, pt.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseWheel, args_NNNN( nFlags, zDelta, pt.x, pt.y ) ) )
 		return FALSE;
 	return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
@@ -184,13 +199,15 @@ void CArxPictureBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CArxPictureBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
+	if( GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) ) )
+		return;
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxPictureBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
+	if( GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) ) )
+		return;
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 

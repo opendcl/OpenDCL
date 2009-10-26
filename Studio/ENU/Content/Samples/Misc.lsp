@@ -56,26 +56,6 @@
         )
         ;; cond tab 3
         ((= nSelIndex 3) (dcl_COMBOBOX_ADDCOLOR Misc_DemoModal_ComboBox4 156))
-        ((= nSelIndex 4)
-         (IF (ZEROP (dcl_ImageComboBox_GetCount Misc_DemoModal_ImageCombo1))
-             (PROGN (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1
-                                                 "Test 1"
-                                                 0
-                                                 0
-                    )
-                    (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1
-                                                 "Test 2"
-                                                 1
-                                                 1
-                    )
-                    (dcl_ImageComboBox_AddString Misc_DemoModal_ImageCombo1
-                                                 "Test 3"
-                                                 2
-                                                 2
-                    )
-             )
-         )
-        )
     )
 )
 
@@ -132,8 +112,8 @@
 
 
 (DEFUN c:DemoModal_BrowseFolders_Clicked (/ path)
-    (IF (SETQ path (dcl_BROWSEFOLDER "Pick a Directory:"
-                                     "c:\\Program Files"
+    (IF (SETQ path (dcl_SELECTFOLDER "Select a folder"
+                                     nil
                                      nil
                                      81
                    )

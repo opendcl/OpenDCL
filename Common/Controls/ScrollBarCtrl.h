@@ -40,4 +40,5 @@ protected:
 	afx_msg void HScroll(UINT nSBCode, UINT nPos);
 	afx_msg void VScroll(UINT nSBCode, UINT nPos);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

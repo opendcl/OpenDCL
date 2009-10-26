@@ -33,6 +33,11 @@ bool CArxProgressBarCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+void CArxProgressBarCtrl::ApplyPosition()
+{
+	__super::ApplyPosition();
+}
+
 
 BEGIN_MESSAGE_MAP(CArxProgressBarCtrl, CProgressBarCtrl)
 END_MESSAGE_MAP()

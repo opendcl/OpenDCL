@@ -2,6 +2,9 @@
 
 
 #include "Project.h"
+#include "PropertyIds.h"
+#include "PtrTypes.h"
+#include "PropertyObject.h"
 #include "FontSettings.h"
 #include "ImageListObject.h"
 #include <list>
@@ -10,7 +13,6 @@ class CAxContainerCtrl;
 class CDclFormObject;
 class CDialogControl;
 enum IOStatus;
-enum Prop::Id;
 
 typedef std::list< TPropertyPtr > TPropertyList;
 

@@ -106,7 +106,7 @@ void CRadioButtonCtrl::OnKillFocus(CWnd* pNewWnd)
 
 HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
 	//return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
 	//HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
 	//if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
@@ -116,17 +116,8 @@ HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CRadioButtonCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	if( mColorService.IsBackgroundTransparent() )
-	{
-		CRect rcClip;
-		pDC->GetClipBox( &rcClip );
-		ClientToScreen( &rcClip );
-		CWnd* pParentWnd = GetParent();
-		pParentWnd->ScreenToClient( &rcClip );
-		pParentWnd->RedrawWindow( &rcClip, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_NOCHILDREN | RDW_UPDATENOW );
+	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
-	}
-
 	return __super::OnEraseBkgnd(pDC);
 }
 

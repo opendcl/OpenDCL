@@ -49,8 +49,6 @@ protected:
 	virtual void PreSubclassWindow();
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
-	afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnEnHscroll();
 	afx_msg void OnEnVscroll();
 };

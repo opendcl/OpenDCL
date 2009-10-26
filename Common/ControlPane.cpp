@@ -114,12 +114,12 @@ bool CControlPane::CreateControls(UINT& nId)
 		else
 			bFailed = true;
 	}
-	ApplyZOrder();
+	//ApplyZOrder();
 	//InvalidateControls();
 	if( bVisible )
 	{
 		mpHostDlg->SetRedraw( TRUE );
-		mpHostDlg->RedrawWindow( NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
+		//mpHostDlg->RedrawWindow( NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
 	}
 	SetFirstControlFocus();
 	return !bFailed;
@@ -140,7 +140,7 @@ void CControlPane::RecalcLayout()
 
 	mbRecalcInProgress = true;
 	TraceFmt( _T("CControlPane(%s)::RecalcLayout() [%d x %d]\r\n"),
-						(LPCTSTR)mpSourceForm->GetKeyPath(),
+						asString( mpSourceForm ),
 						mpSourceForm->GetFormSize().cx,
 						mpSourceForm->GetFormSize().cy );
 	TDclControlList& Controls = mpSourceForm->mDclControls;
@@ -149,7 +149,7 @@ void CControlPane::RecalcLayout()
 	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		if( (*iter)->GetType() == CtlSplitter )
-			ResetControlsPos( (*iter) );
+			RecalcControlPos( (*iter) );
 	}
 
 	//next lets calc all the control positions for all NON-splitter controls.
@@ -158,12 +158,8 @@ void CControlPane::RecalcLayout()
 		if( (*iter)->GetType() == _CtlForm )
 			continue;
 		if( (*iter)->GetType() != CtlSplitter )
-			ResetControlsPos( (*iter) );
+			RecalcControlPos( (*iter) );
 	}
-
-	//mpDlgObject->OnNeedRepaint( true, true );
-	//InvalidateControls();
-	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
 	mbRecalcInProgress = false;
 }
 
@@ -182,12 +178,7 @@ void CControlPane::InvalidateControls()
 		{
 			const CDialogControl* pDlgControl = (*iter)->GetControlInstance();
 			if( pDlgControl )
-			{
-				//CWnd* pWnd = pDlgControl->GetTopLevelWnd();
-				//if( pWnd )
-				//	pWnd->Invalidate();
 				pDlgControl->OnNeedRepaint( false, false );
-			}
 		}
 	}
 }
@@ -216,7 +207,7 @@ bool CControlPane::HasSplitter( int nSplitterId ) const
 	return false;	
 }
 
-void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
+void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 {
 	if( !pDclControl || !pDclControl->IsZOrderAllowed() )
 		return;
@@ -226,12 +217,15 @@ void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 
 	assert( mbDeferWindowPos == false );
 	mbDeferWindowPos = true;
+	CRect rcBefore = pDlgControl->GetWndRect();
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) );
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseRightFromRight ) );
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) );
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
 	mbDeferWindowPos = false;
-	ApplyPosition( TDialogControlLockedPtr( pDlgControl ) );
+	CRect rcAfter = pDlgControl->GetWndRect();
+	if( rcAfter != rcBefore )
+		ApplyPosition( TDialogControlLockedPtr( pDlgControl ) );
 }
 
 void CControlPane::CleanUpControls() 
@@ -260,8 +254,7 @@ void CControlPane::ApplyZOrder()
 	}
 	if( hdwp )
 		EndDeferWindowPos( hdwp );
-	InvalidateControls();
-	//mpHostDlg->UpdateWindow();
+	//InvalidateControls();
 }
 
 void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
@@ -271,6 +264,7 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 	CWnd* pWndToMove = pDlgControl->GetControlWnd();
 	if( !pWndToMove )
 		return;
+	bool bTransparent = (0 != (pWndToMove->GetExStyle() & WS_EX_TRANSPARENT));
 	//if the control is hosted inside another window, find the ancestor that is a child
 	//of the host dialog and move it instead
 	bool bWindowLess = (pWndToMove->m_hWnd == NULL);
@@ -281,8 +275,24 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 					 (pWndToMove != mpHostDlg && pWndToMove->GetParent() != mpHostDlg) )
 			pWndToMove = pWndToMove->GetParent();
 	}
+	CRect rcCtrl;
+	pWndToMove->GetWindowRect( &rcCtrl );
+	if( pWndToMove->GetStyle() & WS_CHILD )
+		pWndToMove->GetParent()->ScreenToClient( &rcCtrl );
 	CRect rcNew = pDlgControl->GetWndRect();
-	pWndToMove->MoveWindow( &rcNew, TRUE );
+	if( rcNew == rcCtrl )
+		return; //no-op
+	TraceFmt( _T("CControlPane(%s)::ApplyPosition(%s)\r\n"),
+						asString( this ),
+						asString( pDlgControl ) );
+	UINT nFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER;
+	if( rcNew.Size() == rcCtrl.Size() )
+		nFlags |= SWP_NOSIZE;
+	if( rcNew.TopLeft() == rcCtrl.TopLeft() )
+		nFlags |= SWP_NOMOVE;
+	if( bTransparent )
+		nFlags |= SWP_NOCOPYBITS;
+	pWndToMove->SetWindowPos( NULL, rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height(), nFlags );
 }
 
 void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )

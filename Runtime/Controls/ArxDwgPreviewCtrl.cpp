@@ -190,13 +190,13 @@ void CArxDwgPreviewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
 	mbDrawSelected = true;
 	mclrHighlight = clrHighlight;		
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 void CArxDwgPreviewCtrl::RemoveHighlight()
 {
 	mbDrawSelected = false;
-	Invalidate();
+	OnNeedRepaint( false );
 }
 
 
@@ -344,5 +344,5 @@ BOOL CArxDwgPreviewCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CArxDwgPreviewCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
 }

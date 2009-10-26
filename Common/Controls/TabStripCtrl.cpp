@@ -39,7 +39,7 @@ bool CTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CTabStripCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (/*WS_CLIPCHILDREN | */TCS_FOCUSNEVER | TCS_TOOLTIPS);
+	dwStyle |= (WS_CLIPCHILDREN | TCS_FOCUSNEVER | TCS_TOOLTIPS);
 
 	if( mpTemplate->GetLongProperty( Prop::TabStyle ) == 0 )
 		dwStyle |= TCS_TABS;
@@ -291,7 +291,11 @@ void CTabStripCtrl::OnUsedAreaChanged()
 			continue;
 		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
 		if( pDlgObject )
+		{
+			pDlgObject->GetControlWnd()->SetWindowPos( NULL, rcControlArea.left, rcControlArea.top, 0, 0,
+																								 SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
 			pDlgObject->ApplyPosition();
+		}
 	}
 }
 
@@ -302,6 +306,8 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_HSCROLL()
 	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
 	ON_WM_NCHITTEST()
+	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -325,7 +331,43 @@ HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mColorService.CtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+BOOL CTabStripCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	//if( HandleEraseBkgnd( pDC ) )
+	//	return TRUE;
+	return __super::OnEraseBkgnd(pDC);
+}
+
+void CTabStripCtrl::OnPaint() 
+{
+	PAINTSTRUCT ps;
+	CDC* pDC = BeginPaint( &ps );
+	EndPaint( &ps );
+	InvalidateRect( &ps.rcPaint );
+	CRect rcUsed = GetUsedArea();
+	if( CRect().IntersectRect( &rcUsed, &ps.rcPaint ) )
+	{
+		for( CWnd* pTabPage = GetWindow( GW_CHILD ); pTabPage; pTabPage = pTabPage->GetWindow( GW_HWNDNEXT ) )
+		{
+			if( !pTabPage->IsWindowVisible() )
+				continue;
+			for( CWnd* pChild = pTabPage->GetWindow( GW_CHILD ); pChild; pChild = pChild->GetWindow( GW_HWNDNEXT ) )
+			{
+				if( !pChild->IsWindowVisible() )
+					continue;
+				if( pChild->GetExStyle() & WS_EX_TRANSPARENT )
+					continue;
+				CRect rcChild;
+				pChild->GetWindowRect( &rcChild );
+				ScreenToClient( &rcChild );
+				ValidateRect( &rcChild );
+			}
+		}
+	}
+	__super::OnPaint();
 }
 
 void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -358,7 +400,7 @@ LRESULT CTabStripCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_WINDOWPOSCHANGED:
 		break;
 	case WM_SIZE: //subclass' OnSize() never gets called, so intercept it here
-		OnUsedAreaChanged();
+		ResetTooltips();
 		break;
 	}
 	return lResult;
