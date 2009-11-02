@@ -170,7 +170,10 @@ void CArxPictureBoxCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
 	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventRightDblClick ) )
+	CString sEventDblClick = mpTemplate->GetStringProperty( Prop::EventRightDblClick );
+	if( sEventDblClick.IsEmpty() )
+		sEventDblClick = mpTemplate->GetStringProperty( Prop::EventRightClick );
+	if( GetArxServices()->HandleEvent( sEventDblClick ) )
 		return;
 	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
 		return;
@@ -215,7 +218,10 @@ void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventDblClicked ) )
+	CString sEventDblClick = mpTemplate->GetStringProperty( Prop::EventDblClicked );
+	if( sEventDblClick.IsEmpty() )
+		sEventDblClick = mpTemplate->GetStringProperty( Prop::EventClicked );
+	if( GetArxServices()->HandleEvent( sEventDblClick ) )
 		return;
 	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;

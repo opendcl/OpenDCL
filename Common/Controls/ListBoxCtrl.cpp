@@ -277,7 +277,6 @@ void CListBoxCtrl::OnDragLeave()
 bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 													 DROPEFFECT dropEffect )
 {
-	OnDragLeave(); //to make sure everything gets cleaned up
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( !hData )
 		return false;
@@ -451,8 +450,6 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 HBRUSH CListBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
 	return HandleCtlColor( pDC, nCtlColor );
 }
 

@@ -24,6 +24,7 @@ public:
 public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual void OnValidateBkgnd( CWnd* pBkgnd );
 
 public:
 	void SetPicture( TPicturePtr pPict );

@@ -31,6 +31,7 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 	virtual CAcadColorService* GetColorService() { return CFilteredComboExCtrl::GetColorService(); }
+	virtual void OnValidateBkgnd( CWnd* pBkgnd );
 
 public:
 	virtual DWORD GetComboStyle() const;

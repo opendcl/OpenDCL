@@ -14,6 +14,7 @@ BEGIN_MESSAGE_MAP(CTabPageDlg, CDialog)
 	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_SHOWWINDOW()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -67,7 +68,9 @@ LRESULT CTabPageDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			mbRecalcQueued = false;
 			mpControlPane->RecalcLayout();
+			return 0;
 		}
+		OnValidateBkgnd( NULL );
 		break;
 	}
 	return __super::WindowProc(message, wParam, lParam);
@@ -100,22 +103,6 @@ void CTabPageDlg::OnSize(UINT nType, int cx, int cy)
 BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 {
 	//CDialogControl::HandleEraseBkgnd( pDC ); //bypass CDialogObject to get transparency
-	return TRUE;
-	if( mpControlPane->GetThemeHelper() )
-	{
-		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
-		if( pParentForm )
-		{
-			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
-			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
-			{
-				CRect rcClient;
-				GetClientRect( &rcClient );
-				pDC->FillSolidRect( &rcClient, GetSysColor( COLOR_WINDOW ) );
-				return TRUE;
-			}
-		}
-	}
 	return __super::OnEraseBkgnd(pDC);
 }
 
@@ -143,4 +130,26 @@ void CTabPageDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		mbRecalcQueued = false;
 		mpControlPane->RecalcLayout();
 	}
+}
+
+HBRUSH CTabPageDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	LRESULT lResult;
+	if (pWnd->SendChildNotifyLastMsg(&lResult))
+		return (HBRUSH)lResult;     // eat it
+	if( mpControlPane->GetThemeHelper() )
+	{
+		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
+		if( pParentForm )
+		{
+			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
+			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
+			{
+				mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+				return mColorService.GetBackgroundBrush();
+			}
+		}
+	}
+	return NULL;
+	return (HBRUSH)Default();
 }

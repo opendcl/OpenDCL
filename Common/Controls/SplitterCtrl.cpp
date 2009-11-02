@@ -141,8 +141,6 @@ BOOL CSplitterCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CSplitterCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
 	return HandleCtlColor( pDC, nCtlColor );
 }
 

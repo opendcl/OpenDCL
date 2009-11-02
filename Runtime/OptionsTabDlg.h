@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ArxDialogObject.h"
+#include "AcadColorService.h"
 #include "Resource.h"
 
 
@@ -12,6 +13,8 @@
 
 class COptionsTabDlg : public CAcUiTabChildDialog, public CArxDialogObject
 {
+	CAcadColorService mColorService;
+
 	enum { IDD = IDD_CFGTAB };
 
 	// Construction
@@ -45,10 +48,13 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual void PostNcDestroy();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	LRESULT OnRecalcLayout(WPARAM wParam, LPARAM lParam);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

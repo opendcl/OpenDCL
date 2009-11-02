@@ -34,6 +34,7 @@ public:
 	COLORREF GetBackgroundColor() const;
 	HBRUSH GetBackgroundBrush() const;
 	CBrush* GetBackgroundCBrush() const;
+	bool IsBackgroundNotSet() const;
 	bool IsBackgroundTransparent() const;
 	static CBrush& GetTransparentBrush();
 	static COLORREF GetTransparentColor() { return (COLORREF)-1; }

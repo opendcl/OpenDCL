@@ -381,3 +381,11 @@ BOOL CPaletteDlg::OnEraseBkgnd(CDC* pDC)
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
+
+LRESULT CPaletteDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_PAINT )
+		OnValidateBkgnd( NULL );
+
+	return __super::WindowProc(message, wParam, lParam);
+}

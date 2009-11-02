@@ -631,3 +631,11 @@ LRESULT CCustomFileDlg::OnGetSelectedFiles( WPARAM wParam, LPARAM lParam )
 	*--pszCursor = _T('\0');
 	return pszCursor - (LPTSTR)lParam; //return number of characters copied, not including trailing NULL
 }
+
+LRESULT CCustomFileDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_PAINT )
+		OnValidateBkgnd( NULL );
+
+	return __super::WindowProc(message, wParam, lParam);
+}

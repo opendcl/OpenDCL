@@ -79,16 +79,6 @@ protected:
 protected:	
 	DECLARE_MESSAGE_MAP()
 
-protected:	
-	afx_msg void OnHelp();
-	virtual BOOL OnFileNameOK();
-	virtual void OnFileNameChange();	
-	virtual void OnFolderChange();
-	virtual void OnTypeChange();
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	virtual BOOL OnInitDialog();
-	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
-
 	//custom file dialog messages
 	afx_msg LRESULT OnGetFileName( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnGetFileTitle( WPARAM wParam, LPARAM lParam );
@@ -98,4 +88,14 @@ protected:
 	afx_msg LRESULT OnGetFolderName( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnGetSelectedFiles( WPARAM wParam, LPARAM lParam );
+
+	afx_msg void OnHelp();
+	virtual BOOL OnFileNameOK();
+	virtual void OnFileNameChange();	
+	virtual void OnFolderChange();
+	virtual void OnTypeChange();
+	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+	virtual BOOL OnInitDialog();
+	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

@@ -27,6 +27,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	virtual void OnValidateBkgnd( CWnd* pBkgnd );
 
 // Generated message map functions
 protected:

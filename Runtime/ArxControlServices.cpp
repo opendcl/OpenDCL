@@ -6,6 +6,7 @@
 #include "ArxWorkspace.h"
 #include "DialogControl.h"
 #include "InvokeMethod.h"
+#include "DragDropService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,6 +35,43 @@ void CArxControlServices::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 		theArxWorkspace.SetLispSymbol( msLispSymbolName, (const CDclControlObject*)mpDlgControl->GetTemplate(), odcl::ptrDclControl );
 	else
 		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
+}
+
+bool CArxControlServices::HandleDropOnControl( CWnd* pWnd, COleDataObject* pDataObject, 
+																							 DROPEFFECT dropEffect, CPoint point ) const
+{
+	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
+	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
+		return false;
+	CString sDropControlEvent = pDclControl->GetStringProperty( Prop::DragnDropFromControl );
+	if( !sDropControlEvent.IsEmpty() && pDataObject->IsDataAvailable( CDragDropService::GetDclControlClipboardFormat() ) )
+	{
+		HGLOBAL hData = pDataObject->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
+		if( !hData )
+			return false;
+		CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+		if( !pSourceDclControl )
+			return false;
+		CString sProject = pSourceDclControl->GetOwnerProject()->GetKeyName();
+		CString sForm = pSourceDclControl->GetOwnerForm()->GetKeyName();
+		CString sControl;
+		if( pSourceDclControl->GetType() != _CtlForm )
+			sControl = pSourceDclControl->GetKeyName();
+		if( HandleEvent( sDropControlEvent, args_SSSP( sProject, sForm, sControl, point ) ) )
+			return true;
+		return true;
+	}
+
+	CString sDropAcadWndPointEvent = pDclControl->GetStringProperty( Prop::DragnDropFromOther );
+	if( !sDropAcadWndPointEvent.IsEmpty() )
+	{
+		if( HandleEvent( sDropAcadWndPointEvent, args_P( point ) ) )
+			return true;
+		return true;
+	}
+	return false;
 }
 
 bool CArxControlServices::HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const resbuf* prbArgs ) const

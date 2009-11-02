@@ -186,16 +186,11 @@ void CDialogObject::ApplyPosition()
 	IgnoreSizing( bIgnoreSizing );
 }
 
-HBRUSH CDialogObject::HandleCtlColor( CDC* pDC, UINT nCtlColor )
+void CDialogObject::OnValidateBkgnd( CWnd* pBkgnd )
 {
-	CAcadColorService* pColorService = GetColorService();
-	if( !pColorService )
-		return NULL;
-	pDC->SetTextColor( pColorService->GetForegroundColor() );
-	if( pColorService->IsBackgroundTransparent() )
-		return NULL;
-	pDC->SetBkColor( pColorService->GetBackgroundColor() );
-	return pColorService->GetBackgroundBrush();
+	CControlPane* pPane = GetControlPane();
+	if( pPane )
+		pPane->OnValidateBkgnd( pBkgnd? pBkgnd : mpControlWnd );
 }
 
 BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )

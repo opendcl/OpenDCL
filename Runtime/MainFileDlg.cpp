@@ -160,3 +160,11 @@ void CMainFileDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	}
 	__super::OnShowWindow(bShow, nStatus);
 }
+
+LRESULT CMainFileDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_PAINT )
+		mpDlgObject->OnValidateBkgnd( this );
+
+	return __super::WindowProc(message, wParam, lParam);
+}

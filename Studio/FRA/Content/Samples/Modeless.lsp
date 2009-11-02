@@ -7,44 +7,44 @@
 ;; Main program
 (defun c:Modeless (/ cmdecho)
 
-    ;; Ensure OpenDCL Runtime is (quietly) loaded
-    (setq cmdecho (getvar "CMDECHO"))
-    (setvar "CMDECHO" 0)
-    (command "_OPENDCL")
-    (setvar "CMDECHO" cmdecho)
+	;; Ensure OpenDCL Runtime is (quietly) loaded
+	(setq cmdecho (getvar "CMDECHO"))
+	(setvar "CMDECHO" 0)
+	(command "_OPENDCL")
+	(setvar "CMDECHO" cmdecho)
 
-    ;; Load the project
-    (dcl_Project_Load (*ODCL:Samples:FindFile "Modeless.odcl"))
+	;; Load the project
+	(dcl_Project_Load (*ODCL:Samples:FindFile "Modeless.odcl"))
 
-    ;; Show the main form
-    (dcl_Form_Show Modeless_DemoModeless)
+	;; Show the main form
+	(dcl_Form_Show Modeless_DemoModeless)
 
-    ;; This is a modeless form, so (dcl_Form_Show) returns immediately,
-    ;; leaving the event handlers to manage the form.
+	;; This is a modeless form, so (dcl_Form_Show) returns immediately,
+	;; leaving the event handlers to manage the form.
 
-    (princ)
+	(princ)
 )
 
 ;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DemoModeless_cmdDrawLine_OnClicked ()
-    (command "_LINE" "0,0" "10,10" "")
-    (princ)
+	(command "_LINE" "0,0" "10,10" "")
+	(princ)
 )
 
 (defun c:DemoModeless_cmdZoomWin_OnClicked ()
-    (command "_ZOOM" "_W" PAUSE PAUSE)
-    (princ)
+	(command "_ZOOM" "_W" PAUSE PAUSE)
+	(princ)
 )
 
 (defun c:DemoModeless_cmdZoomExt_OnClicked ()
-    (command "_ZOOM" "_E")
-    (princ)
+	(command "_ZOOM" "_E")
+	(princ)
 )
 
 (defun c:DemoModeless_CloseButton_Clicked ()
-    (dcl_Form_Close Modeless_DemoModeless)
-    (princ)
+	(dcl_Form_Close Modeless_DemoModeless)
+	(princ)
 )
 
 (princ)
@@ -60,57 +60,57 @@
 ;;; are used throughout the samples.
 ;;;
 (or *ODCL:Samples:FindFile
-    (defun *ODCL:Samples:FindFile (file)
-        (setq *ODCL:Prefix
-             (cond
-                 (   *ODCL:Prefix
-                 ) ;_ already defined
-                 (   (vl-registry-read
-                         "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 32-bit location
-                 (   (vl-registry-read
-                         "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 32-bit location
-                 (   (vl-registry-read
-                         "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 64-bit location
-                 (   (vl-registry-read
-                         "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 64-bit location
-             )
-        )
-        (cond
-            ((findfile file)) ; check the support path first
-            (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-            (file)
-        )
-    )
+	(defun *ODCL:Samples:FindFile (file)
+		(setq *ODCL:Prefix
+			(cond
+				(	*ODCL:Prefix
+				) ;_ already defined
+				(	(vl-registry-read
+						 "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 32-bit location
+				(	(vl-registry-read
+						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 32-bit location
+				(	(vl-registry-read
+						 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 64-bit location
+				(	(vl-registry-read
+						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 64-bit location
+			)
+		)
+		(cond
+			((findfile file)) ; check the support path first
+			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+			(file)
+		)
+	)
 )
 
 ;; If master demo is active, run the main function immediately; otherwise
 ;; display a banner. The extra gymnastics allow the sample name to be
 ;; specified in only one place, thus making it easier to reuse this code.
-(   (lambda (demoname)
-        (if *ODCL:MasterDemo
-            (progn
-                (princ (strcat "'" demoname "\n"))
-                (apply (read (strcat "C:" demoname)) nil)
-            )
-            (progn
-                (princ (strcat "\n" demoname " OpenDCL sample loaded"))
-                (princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
-            )
-        )
-    )
-    "Modeless"
+(	(lambda (demoname)
+		(if *ODCL:MasterDemo
+			(progn
+				(princ (strcat "'" demoname "\n"))
+				(apply (read (strcat "C:" demoname)) nil)
+			)
+			(progn
+				(princ (strcat "\n" demoname " OpenDCL sample loaded"))
+				(princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
+			)
+		)
+	)
+	"Modeless"
 )
 (princ)
 

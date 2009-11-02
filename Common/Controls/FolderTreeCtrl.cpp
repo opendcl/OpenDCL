@@ -32,6 +32,10 @@ CFolderTreeCtrl::CFolderTreeCtrl()
 : mhtiSelected( NULL )
 , mpFolderCombo( NULL )
 {
+	CBitmap bitmap;
+	bitmap.LoadBitmap( IDB_FOLDER );
+	mImageList.Create( 16, 16, ILC_COLOR24, 10, 5 );
+	mImageList.Add( &bitmap, RGB(0,0,0) );
 }
 
 CFolderTreeCtrl::~CFolderTreeCtrl()
@@ -60,10 +64,6 @@ bool CFolderTreeCtrl::Create( CFolderComboBox* pFolderCombo, const CRect& rectWn
 	if( !SubclassWindow( hwndTreeCtrl ) )
 		return false;
 
-	CBitmap bitmap;
-	bitmap.LoadBitmap( IDB_FOLDER );
-	mImageList.Create( 16, 16, ILC_COLOR24, 10, 5 );
-	mImageList.Add( &bitmap, RGB(0,0,0) );
 	SetImageList( &mImageList, TVSIL_NORMAL );
 	EnumFolders();
 	return true;

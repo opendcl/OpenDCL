@@ -46,7 +46,7 @@
     ;;
     ;;==========================================================================
 
-    (   /
+    (	/
 
         ;;  Locals.
 
@@ -141,7 +141,7 @@
             ;;  called inappropriately) or older OpenDCL runtimes
             ;;  have been loaded. Either way alert and bail.
 
-            (   (null dcl_project_import)
+            (	(null dcl_project_import)
 
                 (princ "OpenDCL version 5.0 or newer is required.\n")
 
@@ -151,7 +151,7 @@
             ;;  All appears ok, call dcl_project_import with our
             ;;  data, returning the result to the caller.
 
-            (   (dcl_project_import project password alias)   )
+            (	(dcl_project_import project password alias)   )
         )
 
     ) ;;------------------------------------------------------------------------

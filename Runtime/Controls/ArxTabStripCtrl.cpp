@@ -306,3 +306,11 @@ void CArxTabStripCtrl::OnSetFocus( CWnd* pOldWnd )
 	__super::OnSetFocus( pOldWnd );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
+
+LRESULT CArxTabStripCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_PAINT && mpActiveTabPage )
+		mpActiveTabPage->OnValidateBkgnd( this );
+
+	return __super::WindowProc(message, wParam, lParam);
+}

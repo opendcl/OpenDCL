@@ -37,7 +37,6 @@ bool CArxListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 															DROPEFFECT dropEffect )
 {
-	OnDragLeave(); //to make sure everything gets cleaned up
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
 	{
 		CString sDropControlEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromControl );

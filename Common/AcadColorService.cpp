@@ -5,15 +5,18 @@
 static CBrush& CreateTransparentBrush()
 {
 	static CBrush brTransparent;
-	LOGBRUSH lbr = { BS_HOLLOW, 0, 0 };
-	brTransparent.CreateBrushIndirect( &lbr );
+	if( !(HBRUSH)brTransparent )
+	{
+		LOGBRUSH lbr = { BS_HOLLOW, 0, 0 };
+		brTransparent.CreateBrushIndirect( &lbr );
+	}
 	return brTransparent;
 }
 
 
 CAcadColorService::CAcadColorService()
 : mclrForeground( GetRGBColor( -19 /*button text*/ ) )
-, mclrBackground( GetRGBColor( -24 /*transparent*/ ) )
+, mclrBackground( CLR_DEFAULT )
 , mbrushBackground( GetRGBColor( -16 /*button face*/ ) )
 {
 }
@@ -38,13 +41,18 @@ CAcadColorService::~CAcadColorService()
 
 void CAcadColorService::SetBackgroundColor( long nAcadColor )
 {
-	mclrBackground = GetRGBColor( nAcadColor );
+	COLORREF color = GetRGBColor( nAcadColor );
+	if( mclrBackground == color )
+		return;
+	mclrBackground = color;
 	mbrushBackground.DeleteObject();
 	mbrushBackground.CreateSolidBrush( GetBackgroundColor() );
 }
 
 void CAcadColorService::SetBackgroundColor( COLORREF color )
 {
+	if( mclrBackground == color )
+		return;
 	mclrBackground = color;
 	mbrushBackground.DeleteObject();
 	mbrushBackground.CreateSolidBrush( GetBackgroundColor() );
@@ -67,11 +75,13 @@ COLORREF CAcadColorService::GetForegroundColor() const
 
 COLORREF CAcadColorService::GetBackgroundColor() const
 {
-	return (mclrBackground & 0x00FFFFFF);
+	return mclrBackground;
 }
 
 HBRUSH CAcadColorService::GetBackgroundBrush() const
 {
+	if( IsBackgroundNotSet() )
+		return NULL;
 	if( IsBackgroundTransparent() )
 		return GetTransparentBrush();
 	return mbrushBackground;
@@ -79,9 +89,16 @@ HBRUSH CAcadColorService::GetBackgroundBrush() const
 
 CBrush* CAcadColorService::GetBackgroundCBrush() const
 {
+	if( IsBackgroundNotSet() )
+		return NULL;
 	if( IsBackgroundTransparent() )
 		return &GetTransparentBrush();
 	return CBrush::FromHandle( mbrushBackground );
+}
+
+bool CAcadColorService::IsBackgroundNotSet() const
+{
+	return (mclrBackground == CLR_DEFAULT);
 }
 
 bool CAcadColorService::IsBackgroundTransparent() const

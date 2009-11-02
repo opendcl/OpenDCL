@@ -77,6 +77,20 @@ bool CLabelCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+void CLabelCtrl::OnValidateBkgnd( CWnd* pBkgnd )
+{
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	if( pBkgnd )
+	{
+		ClientToScreen( &rcClient );
+		pBkgnd->ScreenToClient( &rcClient );
+		pBkgnd->ValidateRect( &rcClient );
+	}
+	else
+		ValidateRect( &rcClient );
+}
+
 
 BEGIN_MESSAGE_MAP(CLabelCtrl, CStatic)
 	ON_WM_CTLCOLOR_REFLECT()
@@ -95,9 +109,14 @@ BOOL CLabelCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return HandleCtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
+	if( GetThemeHelper() &&
+			(LOBYTE(LOWORD(GetVersion())) < 6) &&
+			mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+		return NULL; //must use class brush when XP themes are active (else XP paints a black background)
+	if( !hbrBackground )
+		hbrBackground = CAcadColorService::GetTransparentBrush();
+	return hbrBackground;
 }
 
 BOOL CLabelCtrl::OnEraseBkgnd(CDC* pDC)

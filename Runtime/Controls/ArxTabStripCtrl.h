@@ -62,9 +62,9 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-protected:
 	afx_msg void OnSelchange( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg void OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult );	
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
 	afx_msg void OnSetFocus( CWnd* pOldWnd );
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

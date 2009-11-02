@@ -479,10 +479,7 @@ void CImageTreeCtrl::OnTvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult)
 
 HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return NULL;
-	//return HandleCtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
 }
 
 BOOL CImageTreeCtrl::OnEraseBkgnd(CDC* pDC)

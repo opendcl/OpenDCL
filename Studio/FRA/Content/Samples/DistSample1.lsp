@@ -50,7 +50,7 @@
     ;;
     ;;==========================================================================
 
-    (   /
+    (	/
 
         ;;  Locals.
 
@@ -116,7 +116,7 @@
             ;;  inappropriately called) or older OpenDCL runtimes
             ;;  have been loaded. Either way alert and bail.
 
-            (   (null dcl_project_import)
+            (	(null dcl_project_import)
 
                 (princ "OpenDCL version 5.0 or newer is required.\n")
 
@@ -126,7 +126,7 @@
             ;;  Trap unsuccesful retrieval of project from the vlx
             ;;  text resources; alert and bail.
 
-            (   (or
+            (	(or
                     (null (setq bytes (vl-get-resource projname)))
                     (not (eq 'str (setq rtype (type bytes))))
                     (eq "" bytes)
@@ -147,7 +147,7 @@
             ;;  Call dcl_project_import and return the result to the
             ;;  caller if successful ...
 
-            (   (dcl_project_import bytes password alias)  )
+            (	(dcl_project_import bytes password alias)  )
         )
 
     ) ;;------------------------------------------------------------------------
@@ -166,7 +166,7 @@
             ;;  inappropriately called) or older OpenDCL runtimes
             ;;  have been loaded. Either way alert and bail.
 
-            (   (null dcl_project_load)
+            (	(null dcl_project_load)
 
                 (princ "OpenDCL version 5 or later is required.\n")
 
@@ -176,7 +176,7 @@
             ;;  Call dcl_project_load and return the result to the
             ;;  caller if successful ...
 
-            (   (dcl_project_load projname reload password alias)  )
+            (	(dcl_project_load projname reload password alias)  )
 
             ;;  Since this file is installed along with the other
             ;;  OpenDCL samples, and since the samples folder is not
@@ -185,24 +185,24 @@
             ;;  Unless you're writing an OpenDCL sample,
             ;;  don't leave this part in your own code!
 
-            (   (setq samples
+            (	(setq samples
                     (cond
-                        (   (vl-registry-read
+                        (	(vl-registry-read
                                 "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
                                 "SamplesFolder"
                             )
                         ) ;_ 32-bit location
-                        (   (vl-registry-read
+                        (	(vl-registry-read
                                 "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
                                 "SamplesFolder"
                             )
                         ) ;_ 32-bit location
-                        (   (vl-registry-read
+                        (	(vl-registry-read
                                 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
                                 "SamplesFolder"
                             )
                         ) ;_ 64-bit location
-                        (   (vl-registry-read
+                        (	(vl-registry-read
                                 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
                                 "SamplesFolder"
                             )

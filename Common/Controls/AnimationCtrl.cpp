@@ -56,9 +56,7 @@ BOOL CAnimationCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CAnimationCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
-	return NULL;
-	//return mColorService.GetTransparentBrush();
+	return HandleCtlColor( pDC, nCtlColor );
 }
 
 BOOL CAnimationCtrl::OnEraseBkgnd(CDC* pDC)

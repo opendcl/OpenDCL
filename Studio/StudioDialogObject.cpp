@@ -82,6 +82,7 @@ BEGIN_MESSAGE_MAP(CStudioDialogObject, CDialog)
 	ON_WM_DESTROY()	
 	ON_WM_SIZE()	
 	ON_WM_CONTEXTMENU()
+	ON_WM_CTLCOLOR()
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZING()
 	ON_WM_NCPAINT()
@@ -1185,6 +1186,24 @@ void CStudioDialogObject::OnNcPaint()
 	__super::OnNcPaint();
 	// TODO: Add your message handler code here
 	// Do not call __super::OnNcPaint() for painting messages
+}
+
+HBRUSH CStudioDialogObject::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	LRESULT lResult;
+	if (pWnd->SendChildNotifyLastMsg(&lResult))
+		return (HBRUSH)lResult;     // eat it
+	if( mpControlPane->GetThemeHelper() )
+	{
+		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
+		if( pParentForm )
+		{
+			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
+			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
+				return CreateSolidBrush( GetSysColor( COLOR_WINDOW ) );
+		}
+	}
+	return (HBRUSH)Default();
 }
 
 BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)

@@ -44,6 +44,8 @@ BEGIN_MESSAGE_MAP(COptionsTabDlg, CAcUiTabChildDialog)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_REGISTERED_MESSAGE(refWM_RECALCLAYOUT(),OnRecalcLayout)
+	ON_WM_ERASEBKGND()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,6 +67,7 @@ BOOL COptionsTabDlg::OnInitDialog()
 {
 	CAcUiTabExtension::OnInitDialog();
 	ApplyPropertiesEnum();
+	ModifyStyleEx( 0, WS_EX_TRANSPARENT );
 	IgnoreSizing( false );
 
 	// call method to create the controls
@@ -106,6 +109,14 @@ BOOL COptionsTabDlg::OnMainDialogHelp()
   return TRUE;
 }
 
+LRESULT COptionsTabDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	//if( message == WM_PAINT )
+	//	OnValidateBkgnd( NULL );
+
+	return __super::WindowProc(message, wParam, lParam);
+}
+
 void COptionsTabDlg::PostNcDestroy() 
 {
 	CAcUiTabExtension::PostNcDestroy();
@@ -141,4 +152,21 @@ LRESULT COptionsTabDlg::OnRecalcLayout(WPARAM wParam, LPARAM lParam)
 {
 	mpControlPane->RecalcLayout();
 	return 0;
+}
+
+BOOL COptionsTabDlg::OnEraseBkgnd(CDC* pDC)
+{
+	return TRUE;
+	return __super::OnEraseBkgnd(pDC);
+}
+
+HBRUSH COptionsTabDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
+	if( pThemeHelper && pThemeHelper->IsThemeActive() )
+	{
+		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+		return mColorService.GetBackgroundBrush();
+	}
+	return __super::OnCtlColor(pDC, pWnd, nCtlColor);
 }

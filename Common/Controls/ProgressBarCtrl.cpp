@@ -210,10 +210,7 @@ BOOL CProgressBarCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CProgressBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return NULL;
-	//return HandleCtlColor( pDC, nCtlColor );
+	return HandleCtlColor( pDC, nCtlColor );
 }
 
 BOOL CProgressBarCtrl::OnEraseBkgnd(CDC* pDC)

@@ -100,8 +100,6 @@ BOOL CHtmlCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CHtmlCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
 	return HandleCtlColor( pDC, nCtlColor );
 }
 

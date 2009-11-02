@@ -78,6 +78,7 @@ public:
 	virtual void ApplyZOrder(); //reorder all control windows to reflect current Z order
 	virtual void ApplyPosition( TDialogControlPtr pDlgControl ); //move control window to new position
 	virtual void ApplyVisibility( TDialogControlPtr pDlgControl ); //show or hide control
+	virtual void OnValidateBkgnd( CWnd* pBkgnd );
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID ) = 0;

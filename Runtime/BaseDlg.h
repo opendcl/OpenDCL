@@ -51,8 +51,6 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	// Generated message map functions
-protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual BOOL OnInitDialog();
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
@@ -64,4 +62,5 @@ protected:
 	afx_msg void PostNcDestroy();
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

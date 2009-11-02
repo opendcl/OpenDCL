@@ -7,41 +7,41 @@
 ;; Main program
 (defun c:ViewDwg (/ cmdecho)
 
-    ;; Ensure OpenDCL Runtime is (quietly) loaded
-    (setq cmdecho (getvar "CMDECHO"))
-    (setvar "CMDECHO" 0)
-    (command "_OPENDCL")
-    (setvar "CMDECHO" cmdecho)
+	;; Ensure OpenDCL Runtime is (quietly) loaded
+	(setq cmdecho (getvar "CMDECHO"))
+	(setvar "CMDECHO" 0)
+	(command "_OPENDCL")
+	(setvar "CMDECHO" cmdecho)
 
-    ;; Load the project
-    (dcl_Project_Load (*ODCL:Samples:FindFile "ViewDwg.odcl"))
+	;; Load the project
+	(dcl_Project_Load (*ODCL:Samples:FindFile "ViewDwg.odcl"))
 
-    ;; Show the main form
-    (dcl_Form_Show ViewDWG_DwgPreview)
+	;; Show the main form
+	(dcl_Form_Show ViewDWG_DwgPreview)
 
-    ;; This is a modal form, so (dcl_Form_Show) does not return until
-    ;; the modal form is closed. In the meantime, the event handlers
-    ;; manage the form.
+	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; the modal form is closed. In the meantime, the event handlers
+	;; manage the form.
 
-    (princ)
+	(princ)
 )
 
 ;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DwgPreview_Cancel_Clicked ()
-   (dcl_Form_Close ViewDWG_DwgPreview)
+	(dcl_Form_Close ViewDWG_DwgPreview)
 )
 
 (defun c:DwgPreview_Browse_Clicked ( / )
-   (setq sFileName (GetFiled "Select a drawing file" "" "dwg" 8));_ get the path to a dwg file
-   (if sFileName
-     (progn
-       (dcl_DwgPreview_LoadDwg ViewDWG_DwgPreview_ViewDwg sFileName);_ load the DWG Thumbnail preview into the control
-       (dcl_BlockView_LoadDwg ViewDWG_DwgPreview_BlockView1 sFileName);_ load the DWG
-       (dcl_Control_SetCaption ViewDWG_DwgPreview_Label1 (dcl_DwgPreview_GetDwgName ViewDWG_DwgPreview_ViewDwg));_ show the path of the DWG
-       (dcl_Control_SetFocus ViewDWG_DwgPreview_BlockView1)
-     )
-   )
+	(setq sFileName (GetFiled "Select a drawing file" "" "dwg" 8));_ get the path to a dwg file
+	(if sFileName
+		(progn
+			(dcl_DwgPreview_LoadDwg ViewDWG_DwgPreview_ViewDwg sFileName);_ load the DWG Thumbnail preview into the control
+			(dcl_BlockView_LoadDwg ViewDWG_DwgPreview_BlockView1 sFileName);_ load the DWG
+			(dcl_Control_SetCaption ViewDWG_DwgPreview_Label1 (dcl_DwgPreview_GetDwgName ViewDWG_DwgPreview_ViewDwg));_ show the path of the DWG
+			(dcl_Control_SetFocus ViewDWG_DwgPreview_BlockView1)
+		)
+	)
 )
 
 (princ)
@@ -57,57 +57,57 @@
 ;;; are used throughout the samples.
 ;;;
 (or *ODCL:Samples:FindFile
-    (defun *ODCL:Samples:FindFile (file)
-        (setq *ODCL:Prefix
-             (cond
-                 (   *ODCL:Prefix
-                 ) ;_ already defined
-                 (   (vl-registry-read
-                         "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 32-bit location
-                 (   (vl-registry-read
-                         "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 32-bit location
-                 (   (vl-registry-read
-                         "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 64-bit location
-                 (   (vl-registry-read
-                         "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                         "SamplesFolder"
-                     )
-                 ) ;_ 64-bit location
-             )
-        )
-        (cond
-            ((findfile file)) ; check the support path first
-            (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-            (file)
-        )
-    )
+	(defun *ODCL:Samples:FindFile (file)
+		(setq *ODCL:Prefix
+			(cond
+				(	*ODCL:Prefix
+				) ;_ already defined
+				(	(vl-registry-read
+						 "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 32-bit location
+				(	(vl-registry-read
+						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 32-bit location
+				(	(vl-registry-read
+						 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 64-bit location
+				(	(vl-registry-read
+						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 64-bit location
+			)
+		)
+		(cond
+			((findfile file)) ; check the support path first
+			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+			(file)
+		)
+	)
 )
 
 ;; If master demo is active, run the main function immediately; otherwise
 ;; display a banner. The extra gymnastics allow the sample name to be
 ;; specified in only one place, thus making it easier to reuse this code.
-(   (lambda (demoname)
-        (if *ODCL:MasterDemo
-            (progn
-                (princ (strcat "'" demoname "\n"))
-                (apply (read (strcat "C:" demoname)) nil)
-            )
-            (progn
-                (princ (strcat "\n" demoname " OpenDCL sample loaded"))
-                (princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
-            )
-        )
-    )
-    "ViewDwg"
+(	(lambda (demoname)
+		(if *ODCL:MasterDemo
+			(progn
+				(princ (strcat "'" demoname "\n"))
+				(apply (read (strcat "C:" demoname)) nil)
+			)
+			(progn
+				(princ (strcat "\n" demoname " OpenDCL sample loaded"))
+				(princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
+			)
+		)
+	)
+	"ViewDwg"
 )
 (princ)
 

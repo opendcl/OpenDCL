@@ -329,8 +329,6 @@ BOOL CTabStripCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	if( !IsWindowEnabled() )
-		return NULL;
 	return HandleCtlColor( pDC, nCtlColor );
 }
 
@@ -347,8 +345,8 @@ void CTabStripCtrl::OnPaint()
 	CDC* pDC = BeginPaint( &ps );
 	EndPaint( &ps );
 	InvalidateRect( &ps.rcPaint );
-	CRect rcUsed = GetUsedArea();
-	if( CRect().IntersectRect( &rcUsed, &ps.rcPaint ) )
+	CRect rcTarget = GetUsedArea();
+	if( rcTarget.IntersectRect( &rcTarget, &ps.rcPaint ) )
 	{
 		for( CWnd* pTabPage = GetWindow( GW_CHILD ); pTabPage; pTabPage = pTabPage->GetWindow( GW_HWNDNEXT ) )
 		{
@@ -363,6 +361,7 @@ void CTabStripCtrl::OnPaint()
 				CRect rcChild;
 				pChild->GetWindowRect( &rcChild );
 				ScreenToClient( &rcChild );
+				rcChild.IntersectRect( &rcChild, &rcTarget );
 				ValidateRect( &rcChild );
 			}
 		}

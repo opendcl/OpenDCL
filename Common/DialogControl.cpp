@@ -53,36 +53,21 @@ ControlType CDialogControl::GetControlType() const
 
 HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 {
+	if( !mpControlWnd->IsWindowEnabled() )
+		return NULL;
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
 		return NULL;
 	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	if( pColorService->IsBackgroundNotSet() )
+		return NULL;
 	if( pColorService->IsBackgroundTransparent() )
 	{
-		//if( mpControlWnd )
-		//{
-		//	CRect rcCtrl;
-		//	mpControlWnd->GetWindowRect( &rcCtrl );
-		//	CWnd* pParentWnd = mpControlWnd->GetParent();
-		//	pParentWnd->ScreenToClient( &rcCtrl );
-		//	CDC* pParentDC = pParentWnd->GetDC();
-		//	pDC->BitBlt( 0, 0, rcCtrl.Width(), rcCtrl.Height(), pParentDC, rcCtrl.left, rcCtrl.top, SRCCOPY );
-		//	pParentWnd->ReleaseDC( pParentDC );
-		//}
 		pDC->SetBkMode( TRANSPARENT );
+		return NULL;
 	}
-	else
-	{
-		pDC->SetBkColor( pColorService->GetBackgroundColor() );
-		pDC->SetBkMode( TRANSPARENT );
-	}
-	//if( mpControlWnd )
-	//{
-	//	pDC->SetBkMode( TRANSPARENT );
-	//	CRect rcClient;
-	//	mpControlWnd->GetClientRect( &rcClient );
-	//	pDC->FillSolidRect( &rcClient, GetBackgroundColor() );
-	//}
+	pDC->SetBkColor( pColorService->GetBackgroundColor() );
+	pDC->SetBkMode( OPAQUE );
 	return pColorService->GetBackgroundBrush();
 }
 
@@ -91,63 +76,37 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	TraceFmt( _T("# CDialogControl(%s)::HandleEraseBkgnd(%s)\r\n"),
 						asString( this ),
 						asString( pDC ) );
+	if( !pDC )
+		return FALSE;
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
 		return FALSE;
-	if( !mpTemplate->GetPropertyObject( Prop::BackgroundColor ) )
+	if( pColorService->IsBackgroundNotSet() )
 		return FALSE;
 	CRect rcClip;
 	pDC->GetClipBox( &rcClip );
 	CRect rcClient;
 	mpControlWnd->GetClientRect( &rcClient );
 	rcClip.IntersectRect( &rcClip, &rcClient );
-	if( pColorService->IsBackgroundTransparent() )
+	if( mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT )
 	{
-		//CWnd* pParentWnd = mpControlWnd->GetParent();
-		//while( (pParentWnd->GetStyle() & WS_CHILD) && (pParentWnd->GetExStyle() & WS_EX_TRANSPARENT) )
-		//	pParentWnd = pParentWnd->GetParent();
-		//if( pParentWnd->GetStyle() & WS_CLIPCHILDREN )
-		//{
-		//	static std::set< HWND > setRedrawing;
-		//	HWND hwndTarget = mpControlWnd->m_hWnd;
-		//	if( setRedrawing.find( hwndTarget ) != setRedrawing.end() )
-		//	{
-		//		assert( false );
-		//		return FALSE;
-		//	}
-		//	setRedrawing.insert( hwndTarget );
-		//	mpControlWnd->ClientToScreen( &rcClip );
-		//	pParentWnd->ScreenToClient( &rcClip );
-		//	pParentWnd->RedrawWindow( &rcClip, NULL, RDW_INVALIDATE | RDW_INTERNALPAINT | RDW_NOCHILDREN | RDW_UPDATENOW );
-		//	setRedrawing.erase( hwndTarget );
-		//}
+		pDC->SetBkMode( TRANSPARENT );
 		return TRUE;
 	}
-	else if( mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT )
-		return TRUE;
-	else
+	if( pColorService->IsBackgroundTransparent() )
 	{
-		/*
-		if( !(mpControlWnd->GetStyle() & WS_CLIPCHILDREN) )
-		{
-			for( CWnd* pChild = mpControlWnd->GetWindow( GW_CHILD );
-					 pChild;
-					 pChild = pChild->GetWindow( GW_HWNDNEXT ) )
-			{
-				CRect rcChild;
-				pChild->GetWindowRect( &rcChild );
-				mpControlWnd->ScreenToClient( &rcChild );
-				pDC->ExcludeClipRect( &rcChild );
-			}
-		}
-		*/
 		CWnd* pParent = mpControlWnd->GetParent();
 		if( pParent )
 		{
-			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORSTATIC, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
+			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
 			if( !hbrBackground )
 				return FALSE;
+			pDC->FillRect( &rcClip, CBrush::FromHandle( hbrBackground ) );
 		}
+		return TRUE;
+	}
+	else if( mpTemplate->GetPropertyObject( Prop::BackgroundColor ) )
+	{
 		pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
 		return TRUE;
 	}
@@ -316,7 +275,7 @@ CRect CDialogControl::GetWndRect() const
 
 DWORD CDialogControl::GetWndStyle() const
 {
-	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE*/ | WS_CLIPSIBLINGS;
+	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE | WS_CLIPSIBLINGS*/;
 
 	if( mpTemplate->GetBooleanProperty(Prop::IsTabStop) )
 		dwStyle |= WS_TABSTOP;
@@ -583,7 +542,7 @@ bool CDialogControl::OnApplyDragDropAllowDrop( TPropertyPtr pProp )
 bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 {
 	mpControlWnd->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
-	OnNeedRepaint();
+	//OnNeedRepaint();
 	return true;
 }
 

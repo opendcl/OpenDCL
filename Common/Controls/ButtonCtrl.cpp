@@ -134,6 +134,13 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+DWORD CButtonCtrl::OnDrawBackground(CDC* pDC, CRect* pRect)
+{
+	//if( mpTemplate->GetLongProperty( Prop::GraphicButtonStyle ) == ButtonStyle_XPTheme )
+	//	return BTNST_OK;
+	return __super::OnDrawBackground( pDC, pRect );
+}
+
 void CButtonCtrl::SetResourceIcon(UINT idIcon)
 {
 	HICON hIcon = LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(idIcon) );
@@ -175,8 +182,8 @@ void CButtonCtrl::OnKillFocus(CWnd * pNewWnd)
 
 BOOL CButtonCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	if( HandleEraseBkgnd( pDC ) )
-		return TRUE;
+	//if( HandleEraseBkgnd( pDC ) )
+	//	return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
 

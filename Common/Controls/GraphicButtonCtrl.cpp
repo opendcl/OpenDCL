@@ -76,6 +76,20 @@ bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+void CGraphicButtonCtrl::OnValidateBkgnd( CWnd* pBkgnd )
+{
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	if( pBkgnd )
+	{
+		ClientToScreen( &rcClient );
+		pBkgnd->ScreenToClient( &rcClient );
+		pBkgnd->ValidateRect( &rcClient );
+	}
+	else
+		ValidateRect( &rcClient );
+}
+
 void CGraphicButtonCtrl::SetPicture( TPicturePtr pPict )
 {
 	mpPicture = pPict;
@@ -118,7 +132,6 @@ void CGraphicButtonCtrl::UpdateButtonGraphic()
 		SetIcon( hIn, hOut );
 	}
 }
-
 
 BEGIN_MESSAGE_MAP(CGraphicButtonCtrl, CButtonCtrl)
 END_MESSAGE_MAP()

@@ -150,6 +150,12 @@ BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 	return TRUE;
 }
 
+void CAcadDockBarHost::DrawBorders(CDC* pDC, CRect& rect)
+{
+	mpDlgObject->OnValidateBkgnd( this );
+	__super::DrawBorders( pDC, rect );
+}
+
 void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 {	
 	if( !mpDlgObject->IsResizable() )
@@ -237,7 +243,7 @@ void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 		return;
 	CRect rcClient;
 	GetClientArea( rcClient );
-	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER);
+	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);
 	if( !mpDlgObject->IsResizable() )
 		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,

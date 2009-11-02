@@ -157,9 +157,11 @@ private:
 	void CreateTooltip() { if( !mToolTip.m_hWnd ) mToolTip.Create( mpControlWnd ); }
 
 	// Windows painting helpers
+public:
+	virtual void OnValidateBkgnd( CWnd* pBkgnd ) { return; }
 protected:
-	HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
-	BOOL HandleEraseBkgnd( CDC* pDC );
+	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
+	virtual BOOL HandleEraseBkgnd( CDC* pDC );
 
 	// Drag and Drop Support
 public:

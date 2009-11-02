@@ -139,6 +139,14 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mpCellEditCtrl( NULL )
 {
 	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
+	mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 2, 1 );
+	CBitmap bmpNon;
+	bmpNon.LoadBitmap( IDB_OPTBTN );
+	mOptionButtonImageList.Add( &bmpNon, RGB(255,0,255) );
+	CBitmap bmpSel;
+	bmpSel.LoadBitmap( IDB_OPTBTNSEL );
+	mOptionButtonImageList.Add( &bmpSel, RGB(255,0,255) );
+
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
@@ -1336,25 +1344,6 @@ void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, 
 	//}
 	//else
 	{
-		if( !mOptionButtonImageList.m_hImageList )
-		{
-			mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 0, 1 );
-			CBitmap bmpNon;
-			bmpNon.LoadBitmap( IDB_OPTBTN );
-			mOptionButtonImageList.Add( &bmpNon, RGB(255,0,255) );
-
-			CBitmap bmpSel;
-			bmpSel.LoadBitmap( IDB_OPTBTNSEL );
-			mOptionButtonImageList.Add( &bmpSel, RGB(255,0,255) );
-
-			//CBitmap bmpNonH;
-			//bmpNonH.LoadBitmap(IDB_OPTBTNH);
-			//mOptionButtonImageList.Add( &bmpNonH, RGB(255,0,255) );
-
-			//CBitmap bmpSelH;
-			//bmpSelH.LoadBitmap(IDB_OPTBTNSELH);
-			//mOptionButtonImageList.Add( &bmpSelH, RGB(255,0,255) );
-		}
 		mOptionButtonImageList.Draw( &cdc, (bPressed? 1 : 0), rc.TopLeft(), ILD_TRANSPARENT );
 	}
 }

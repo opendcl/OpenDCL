@@ -37,6 +37,8 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	SetEditSel( -1, -1 );
+
 	return bSuccess;
 }
 
@@ -141,7 +143,16 @@ bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::Text:
-		SetWindowText( pProp->GetStringValue() );
+		{
+			CString sText = pProp->GetStringValue();
+			SetWindowText( sText );
+			if( !sText.IsEmpty() )
+			{
+				int idx = FindStringExact( -1, sText );
+				if( idx >= 0 )
+					SetCurSel( idx );
+			}
+		}
 		break;
 	case Prop::TextLimit:
 		LimitText( pProp->GetLongValue() );
@@ -267,14 +278,12 @@ LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
-	{
 		pHandler->PopulateList( this );
-		if( !sSelection.IsEmpty() )
-		{
-			int idx = FindStringExact( -1, sSelection );
-			if( idx >= 0 )
-				SetCurSel( idx );
-		}
+	if( !sSelection.IsEmpty() )
+	{
+		int idx = FindStringExact( -1, sSelection );
+		if( idx >= 0 )
+			SetCurSel( idx );
 	}
 	OnListChanged();
 	return (LRESULT)TRUE;

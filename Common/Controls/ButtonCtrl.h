@@ -84,6 +84,7 @@ public:
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 protected:
+	virtual DWORD OnDrawBackground(CDC* pDC, CRect* pRect);
 	virtual bool IsUsingPresetGraphic() const { return mbUsingPresetGraphic; }
 	virtual void UpdateButtonGraphic() {}
 	void SetResourceIcon(UINT idIcon);

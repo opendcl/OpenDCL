@@ -45,4 +45,5 @@ protected:
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

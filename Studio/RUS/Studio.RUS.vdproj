@@ -219,6 +219,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8B602F22FE9D4BF89FA32722D2BDCCAF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8FFDC8C2D6244635B778D77FDE53BD25"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -298,6 +304,12 @@
         "Entry"
         {
         "MsmKey" = "8:_A85FA73D710941A283CAE5F06F7037A5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A91158C04A564E6EB31BE039AEAB19A4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1170,6 +1182,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8B602F22FE9D4BF89FA32722D2BDCCAF"
+            {
+            "SourcePath" = "8:Content\\Samples\\Slider.odcl"
+            "TargetName" = "8:Slider.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8FFDC8C2D6244635B778D77FDE53BD25"
             {
             "SourcePath" = "8:Content\\Samples\\HTML.odcl"
@@ -1434,6 +1466,26 @@
             {
             "SourcePath" = "8:Content\\Samples\\Modeless.lsp"
             "TargetName" = "8:Modeless.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A91158C04A564E6EB31BE039AEAB19A4"
+            {
+            "SourcePath" = "8:Content\\Samples\\Slider.lsp"
+            "TargetName" = "8:Slider.lsp"
             "Tag" = "8:"
             "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
             "Condition" = "8:"
@@ -2082,14 +2134,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{60FAA6B8-7B5A-47C3-825E-7DE7D0990344}"
-        "PackageCode" = "8:{79694C15-C7AF-449D-BFA7-A090B9EAB7B6}"
+        "ProductCode" = "8:{419FB627-06C0-4CD8-B242-337C49D81CD3}"
+        "PackageCode" = "8:{433F71E7-1F8E-4699-B722-7496553E0156}"
         "UpgradeCode" = "8:{30C0C78D-D3B1-4C36-B37E-357F50E691D3}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:6.0.0010"
+        "ProductVersion" = "8:6.0.0011"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"

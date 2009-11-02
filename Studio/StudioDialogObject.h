@@ -150,6 +150,7 @@ protected:
 	afx_msg void OnUpdateBringtofront(CCmdUI *pCmdUI);
 	afx_msg void OnSendtoback();
 	afx_msg void OnUpdateSendtoback(CCmdUI *pCmdUI);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnNcPaint();
 	afx_msg void OnDestroy();

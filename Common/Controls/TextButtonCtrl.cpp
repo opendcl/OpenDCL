@@ -112,4 +112,5 @@ void CTextButtonCtrl::OnNcPaint()
 		ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
 	else
 		ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
+	__super::OnNcPaint();
 }

@@ -310,6 +310,12 @@ void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )
 	pWndToMove->ShowWindow( bHide? SW_HIDE : SW_SHOW );
 }
 
+void CControlPane::OnValidateBkgnd( CWnd* pBkgnd )
+{
+	//for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	//	(*iter)->OnValidateBkgnd( pBkgnd );
+}
+
 void CControlPane::SetFirstControlFocus() const
 {
 	if(!mpSourceForm)

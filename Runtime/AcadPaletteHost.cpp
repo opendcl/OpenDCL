@@ -151,6 +151,12 @@ bool CAcadPaletteHost::OnClosing()
 	return true;
 }
 
+void CAcadPaletteHost::DrawBorders(CDC* pDC, CRect& rect)
+{
+	mpDlgObject->OnValidateBkgnd( this );
+	__super::DrawBorders( pDC, rect );
+}
+
 void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 {	
 	if( !mpDlgObject->IsResizable() )
@@ -248,7 +254,7 @@ void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 		return;
 	CRect rcClient;
 	GetClientArea( rcClient );
-	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER);
+	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);
 	if( !mpDlgObject->IsResizable() )
 		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,

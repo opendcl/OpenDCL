@@ -11,7 +11,7 @@
 
 CFrameCtrl::CFrameCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mColorService( GetSysColor( COLOR_CAPTIONTEXT ), GetSysColor( COLOR_BTNFACE ) )
+, mColorService( GetSysColor( COLOR_BTNTEXT ), CLR_DEFAULT )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -27,17 +27,6 @@ bool CFrameCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess )
 		ModifyStyleEx( 0, WS_EX_TRANSPARENT );
-
-	if( mpControlPane->GetThemeHelper() )
-	{
-		TDclFormPtr pParentForm = mpTemplate->GetOwnerForm()->GetParentForm();
-		if( pParentForm )
-		{
-			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
-			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
-				mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
-		}
-	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -73,12 +62,14 @@ BOOL CFrameCtrl::PreTranslateMessage(MSG* pMsg)
 HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
-	//return NULL;
-	if( (LOBYTE(LOWORD(GetVersion())) < 6) &&
-			!(GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle )) )
-		return NULL; //must use class brush in XP when themes are inactive (else XP paints text same color as background)
+	if( GetThemeHelper() &&
+			(LOBYTE(LOWORD(GetVersion())) < 6) &&
+			mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	{
+		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+		return mColorService.GetBackgroundBrush();
+	}
 	return hbrBackground;
-	//return mColorService.GetTransparentBrush();
 }
 
 BOOL CFrameCtrl::OnEraseBkgnd(CDC* pDC)

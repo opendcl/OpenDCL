@@ -106,12 +106,14 @@ void CRadioButtonCtrl::OnKillFocus(CWnd* pNewWnd)
 
 HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return HandleCtlColor( pDC, nCtlColor );
-	//return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
-	//HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
-	//if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
-	//	return NULL; //must use class brush when themes are active, else XP paints a black background
-	//return hbrBackground;
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
+	if( GetThemeHelper() &&
+			(LOBYTE(LOWORD(GetVersion())) < 6) &&
+			mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+		return NULL; //must use class brush when XP themes are active (else XP paints a black background)
+	if( !hbrBackground )
+		hbrBackground = CAcadColorService::GetTransparentBrush();
+	return hbrBackground;
 }
 
 BOOL CRadioButtonCtrl::OnEraseBkgnd(CDC* pDC)

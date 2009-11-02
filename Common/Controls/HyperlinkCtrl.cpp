@@ -67,6 +67,25 @@ bool CHyperlinkCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+void CHyperlinkCtrl::OnValidateBkgnd( CWnd* pBkgnd )
+{
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	if( pBkgnd )
+	{
+		ClientToScreen( &rcClient );
+		pBkgnd->ScreenToClient( &rcClient );
+		CDC* pDC = pBkgnd->GetDC();
+		HBRUSH hbrBackground = (HBRUSH)pBkgnd->SendMessage( WM_CTLCOLORSTATIC, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
+		if( mColorService.IsBackgroundTransparent() )
+			hbrBackground = mColorService.GetBackgroundBrush();
+		pDC->FillRect( &rcClient, CBrush::FromHandle( hbrBackground ) );
+		pBkgnd->ValidateRect( &rcClient );
+	}
+	else
+		ValidateRect( &rcClient );
+}
+
 
 BEGIN_MESSAGE_MAP(CHyperlinkCtrl, CWnd)
 	ON_WM_NCHITTEST()
@@ -89,13 +108,29 @@ BOOL CHyperlinkCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CHyperlinkCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
 	return HandleCtlColor( pDC, nCtlColor );
 }
 
 BOOL CHyperlinkCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( mColorService.IsBackgroundTransparent() )
+	{
+		CWnd* pParent = mpControlWnd->GetParent();
+		if( pParent )
+		{
+			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORSTATIC, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
+			if( hbrBackground )
+			{
+				CRect rcClip;
+				pDC->GetClipBox( &rcClip );
+				CRect rcClient;
+				mpControlWnd->GetClientRect( &rcClient );
+				rcClip.IntersectRect( &rcClip, &rcClient );
+				pDC->FillRect( &rcClip, CBrush::FromHandle( hbrBackground ) );
+				return TRUE;
+			}
+		}
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return TRUE;
@@ -144,7 +179,7 @@ void CHyperlinkCtrl::OnPaint()
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
-		HandleCtlColor( &dc, CTLCOLOR_STATIC );
+		CtlColor( &dc, CTLCOLOR_STATIC );
 		dc.SelectObject( &mFont );
 		dc.ExtTextOut( 0, 0, ETO_CLIPPED, &rcClient, sText, NULL );
 	}

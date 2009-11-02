@@ -66,41 +66,11 @@ DROPEFFECT CArxControlDropTarget::OnDragOver( CWnd* pWnd, COleDataObject* pDataO
 BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject, 
 																		DROPEFFECT dropEffect, CPoint point )
 {
+	OnDragLeave( pWnd ); //to make sure everything gets cleaned up
+	const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
+	if( pArxServices && pArxServices->HandleDropOnControl( pWnd, pDataObject, dropEffect, point ) )
+		return TRUE;
 	if( mpDlgControl->OnDrop( point, pDataObject, dropEffect ) )
 		return TRUE;
-	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
-	if( pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
-	{
-		const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
-		CString sDropControlEvent = pDclControl->GetStringProperty( Prop::DragnDropFromControl );
-		if( !sDropControlEvent.IsEmpty() && pDataObject->IsDataAvailable( CDragDropService::GetDclControlClipboardFormat() ) )
-		{
-			HGLOBAL hData = pDataObject->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
-			if( !hData )
-				return FALSE;
-			CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
-			GlobalUnlock( hData );
-			GlobalFree( hData );
-			if( !pSourceDclControl )
-				return FALSE;
-			CString sProject = pSourceDclControl->GetOwnerProject()->GetKeyName();
-			CString sForm = pSourceDclControl->GetOwnerForm()->GetKeyName();
-			CString sControl;
-			if( pSourceDclControl->GetType() != _CtlForm )
-				sControl = pSourceDclControl->GetKeyName();
-			if( pArxServices )
-				pArxServices->HandleEvent( sDropControlEvent, args_SSSP( sProject, sForm, sControl, point ) );
-			return TRUE;
-		}
-
-		CString sDropAcadWndPointEvent = pDclControl->GetStringProperty( Prop::DragnDropFromOther );
-		if( !sDropAcadWndPointEvent.IsEmpty() )
-		{
-			if( pArxServices )
-				pArxServices->HandleEvent( sDropAcadWndPointEvent, args_P( point ) );
-			return TRUE;
-		}
-	}
-
 	return __super::OnDrop( pWnd, pDataObject, dropEffect, point );
 }

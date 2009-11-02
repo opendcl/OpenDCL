@@ -22,7 +22,6 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg void OnClose();
@@ -32,4 +31,5 @@ protected:
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

@@ -110,9 +110,10 @@ protected:
 	virtual void GetMinMaxSize( CSize& szMin, CSize& szMax ); //returns min/max size in window coordinates
 
 	// Windows painting helpers
+public:
+	virtual void OnValidateBkgnd( CWnd* pBkgnd );
 protected:
-	HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
-	BOOL HandleEraseBkgnd( CDC* pDC );
+	virtual BOOL HandleEraseBkgnd( CDC* pDC );
 
 	// Creation & Property Application
 public:

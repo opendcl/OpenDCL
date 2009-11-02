@@ -165,7 +165,7 @@ bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 {
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( !hData )
-		return __super::OnDrop( point, pSourceData, dropEffect )  ;
+		return __super::OnDrop( point, pSourceData, dropEffect );
 	CStringA sTextA = (char*)GlobalLock( hData );
 	GlobalUnlock( hData );
 	GlobalFree( hData );
@@ -265,8 +265,6 @@ void CTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
 	return HandleCtlColor( pDC, nCtlColor );
 }
 
