@@ -207,8 +207,8 @@ BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 	pDC->GetClipBox( &rcClip );
 	CRect rcClient;
 	mpControlWnd->GetClientRect( &rcClient );
-	rcClip.IntersectRect( &rcClip, &rcClient );
-	pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
+	if( rcClip.IntersectRect( &rcClip, &rcClient ) )
+		pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
 	return TRUE;
 }
 

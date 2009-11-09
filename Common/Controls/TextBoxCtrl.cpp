@@ -129,6 +129,15 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CTextBoxCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService )
+		pColorService->SetBackgroundColor( pProp->GetLongValue() );
+	OnNeedRepaint( true );
+	return true;
+}
+
 DROPEFFECT CTextBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
 {
 	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
@@ -265,12 +274,17 @@ void CTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return HandleCtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
+	if( hbrBackground )
+		return hbrBackground;
+	return NULL;
+	return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL CTextBoxCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
+	return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }

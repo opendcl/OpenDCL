@@ -110,13 +110,11 @@ BOOL CLabelCtrl::PreTranslateMessage(MSG* pMsg)
 HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
-	if( GetThemeHelper() &&
-			(LOBYTE(LOWORD(GetVersion())) < 6) &&
-			mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
-		return NULL; //must use class brush when XP themes are active (else XP paints a black background)
-	if( !hbrBackground )
-		hbrBackground = CAcadColorService::GetTransparentBrush();
-	return hbrBackground;
+	if( hbrBackground )
+		return hbrBackground;
+	if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+		return NULL; //when using visual style, transparent brush causes class background to be used
+	return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL CLabelCtrl::OnEraseBkgnd(CDC* pDC)

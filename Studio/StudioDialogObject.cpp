@@ -1200,7 +1200,10 @@ HBRUSH CStudioDialogObject::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		{
 			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
 			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
-				return CreateSolidBrush( GetSysColor( COLOR_WINDOW ) );
+			{
+				mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+				return mColorService.GetBackgroundBrush();
+			}
 		}
 	}
 	return (HBRUSH)Default();

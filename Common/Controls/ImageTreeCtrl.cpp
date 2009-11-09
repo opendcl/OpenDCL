@@ -17,6 +17,7 @@ static UINT GetTreeItemClipboardFormat()
 
 CImageTreeCtrl::CImageTreeCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mColorService( RGB(0, 0, 0), RGB(255, 255, 255) )
 , mbDeleting( false )
 , mhtiDragSource( NULL )
 {

@@ -43,8 +43,6 @@ bool CImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	SetEditSel( -1, -1 );
-
 	return bSuccess;
 }
 

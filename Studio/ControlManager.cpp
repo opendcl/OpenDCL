@@ -26,6 +26,7 @@ BEGIN_MESSAGE_MAP(CControlManager, CStatic)
 	ON_WM_LBUTTONUP()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_NCLBUTTONUP()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -331,24 +332,10 @@ void CControlManager::AutoSize()
 // CControlManager message handlers
 
 
-void CControlManager::OnPaint() 
-{
-	CPaintDC dc(this); // device context for painting
-	//CRect rcThis;
-	//GetClientRect( &rcThis );
-	//dc.FillSolidRect( &rcThis, GetSysColor( COLOR_GRAYTEXT ) );
-	return;
-}
-
 void CControlManager::OnDestroy() 
 {
 	mpDlgControl = NULL;
 	__super::OnDestroy();
-}
-
-BOOL CControlManager::OnEraseBkgnd(CDC* pDC)
-{
-	return __super::OnEraseBkgnd( pDC );
 }
 
 void CControlManager::PostNcDestroy()
@@ -567,4 +554,52 @@ void CControlManager::OnNcLButtonUp(UINT nHitTest, CPoint point)
 {
 	ReleaseCapture();
 	__super::OnNcLButtonUp(nHitTest, point);
+}
+
+void CControlManager::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+	return;
+}
+
+BOOL CControlManager::OnEraseBkgnd(CDC* pDC)
+{
+	return __super::OnEraseBkgnd( pDC );
+}
+
+HBRUSH CControlManager::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	if( pWnd == mpDlgControl->GetControlWnd() )
+	{
+		switch( mpDlgControl->GetControlType() )
+		{
+		case CtlScrollBar:
+			break;
+		default:
+			{
+				mpDlgControl->HandleEraseBkgnd( pDC );
+			}
+			break;
+		}
+		HBRUSH hbrBackground = mpDlgControl->HandleCtlColor( pDC, nCtlColor );
+		if( hbrBackground )
+			return hbrBackground;
+		switch( mpDlgControl->GetControlType() )
+		{
+		case CtlCheckBox:
+		case CtlTextBox:
+			{ //these controls display a black background in XP w/ themes when returning a hollow brush
+				CWnd* pParent = mpControlPane->GetHostDialog();
+				if( pParent )
+				{
+					HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( (WM_CTLCOLORMSGBOX + nCtlColor), (WPARAM)pDC, (LPARAM)pWnd->m_hWnd );
+					if( hbrBackground )
+						return hbrBackground;
+				}
+			}
+			break;
+		}
+		return CAcadColorService::GetTransparentBrush();
+	}
+	return __super::OnCtlColor(pDC, pWnd, nCtlColor);
 }

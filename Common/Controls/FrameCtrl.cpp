@@ -62,14 +62,11 @@ BOOL CFrameCtrl::PreTranslateMessage(MSG* pMsg)
 HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
-	if( GetThemeHelper() &&
-			(LOBYTE(LOWORD(GetVersion())) < 6) &&
-			mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
-	{
-		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
-		return mColorService.GetBackgroundBrush();
-	}
-	return hbrBackground;
+	if( hbrBackground )
+		return hbrBackground;
+	if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+		return NULL; //when using visual style, transparent brush causes class background to be used
+	return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL CFrameCtrl::OnEraseBkgnd(CDC* pDC)

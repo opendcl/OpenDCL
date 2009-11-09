@@ -66,10 +66,16 @@ CRect CBaseDlg::ReadPosition() const
 void CBaseDlg::UpdateGripPos()
 {
 	// size-grip goes bottom right in the client area
-	InvalidateRect( &mrectGrip );
+	CRect rcGrip = mrectGrip;
 	GetClientRect( &mrectGrip );
 	mrectGrip.left = mrectGrip.right - msizeGrip.cx;
 	mrectGrip.top = mrectGrip.bottom - msizeGrip.cy;
+	CRgn rgnInvalid;
+	rgnInvalid.CreateRectRgnIndirect( &rcGrip );
+	CRgn rgnNew;
+	rgnNew.CreateRectRgnIndirect( &mrectGrip );
+	rgnInvalid.CombineRgn( &rgnInvalid, &rgnNew, RGN_OR );
+	RedrawWindow( NULL, &rgnInvalid, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN );
 }
 
 bool CBaseDlg::OnApplyResizable( TPropertyPtr pProp )
@@ -281,14 +287,21 @@ BOOL CBaseDlg::OnEraseBkgnd(CDC* pDC)
 		bResult = __super::OnEraseBkgnd(pDC);
 	if( mbResizable && !IsZoomed() )
 	{
-		int nBlock = mrectGrip.Width() / 8;
-		for( int nRow = 2; nRow >= 0; --nRow )
+		CRect rcClip;
+		pDC->GetClipBox( &rcClip );
+		CRect rcGrip;
+		if( rcGrip.IntersectRect( &mrectGrip, rcClip ) )
 		{
-			for( int nCol = (2 - nRow); nCol >= 0; --nCol )
+			int nBlock = mrectGrip.Width() / 8;
+			for( int nRow = 2; nRow >= 0; --nRow )
 			{
-				CPoint ptLR( mrectGrip.BottomRight() - CSize( (nCol * 2 + 1) * nBlock, (nRow * 2 + 1) * nBlock ) );
-				CRect rcBlock( ptLR - CSize( nBlock, nBlock ), ptLR );
-				pDC->FillSolidRect( &rcBlock, GetSysColor( COLOR_BTNSHADOW ) );
+				for( int nCol = (2 - nRow); nCol >= 0; --nCol )
+				{
+					CPoint ptLR( mrectGrip.BottomRight() - CSize( (nCol * 2 + 1) * nBlock, (nRow * 2 + 1) * nBlock ) );
+					CRect rcBlock( ptLR - CSize( nBlock, nBlock ), ptLR );
+					if( rcBlock.IntersectRect( &rcBlock, &rcClip ) )
+						pDC->FillSolidRect( &rcBlock, GetSysColor( COLOR_BTNSHADOW ) );
+				}
 			}
 		}
 	}

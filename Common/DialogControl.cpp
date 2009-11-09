@@ -87,7 +87,8 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	pDC->GetClipBox( &rcClip );
 	CRect rcClient;
 	mpControlWnd->GetClientRect( &rcClient );
-	rcClip.IntersectRect( &rcClip, &rcClient );
+	if( !rcClip.IntersectRect( &rcClip, &rcClient ) )
+		return TRUE;
 	if( mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT )
 	{
 		pDC->SetBkMode( TRANSPARENT );
@@ -305,6 +306,7 @@ void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= false*/, bool bU
 	if( bUpdateNow )
 		mpControlWnd->UpdateWindow();
 	return;
+/*
 	if( bRepaintBackground &&
 			((mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT) || !mpControlWnd->IsWindowVisible()) )
 	{ //force the control's background to be redrawn if it has a transparent background
@@ -350,6 +352,7 @@ void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= false*/, bool bU
 			}
 		}
 	}
+*/
 }
 
 CRect CDialogControl::ValidatePosition( const CRect& rcProposed ) const
@@ -495,7 +498,7 @@ bool CDialogControl::OnApplyBackgroundColor( TPropertyPtr pProp )
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
 		pColorService->SetBackgroundColor( pProp->GetLongValue() );
-	OnNeedRepaint();
+	OnNeedRepaint( true );
 	return true;
 }
 

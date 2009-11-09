@@ -308,6 +308,7 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_NCHITTEST()
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -345,28 +346,47 @@ void CTabStripCtrl::OnPaint()
 	CDC* pDC = BeginPaint( &ps );
 	EndPaint( &ps );
 	InvalidateRect( &ps.rcPaint );
-	CRect rcTarget = GetUsedArea();
-	if( rcTarget.IntersectRect( &rcTarget, &ps.rcPaint ) )
+	//CRect rcTarget = GetUsedArea();
+	//if( rcTarget.IntersectRect( &rcTarget, &ps.rcPaint ) )
+	//{
+	//	for( CWnd* pTabPage = GetWindow( GW_CHILD ); pTabPage; pTabPage = pTabPage->GetWindow( GW_HWNDNEXT ) )
+	//	{
+	//		if( !pTabPage->IsWindowVisible() )
+	//			continue;
+	//		CRect rcPage = rcTarget;
+	//		ClientToScreen( &rcPage );
+	//		pTabPage->ScreenToClient( &rcPage );
+	//		pTabPage->InvalidateRect( &rcPage );
+	//		for( CWnd* pChild = pTabPage->GetWindow( GW_CHILD ); pChild; pChild = pChild->GetWindow( GW_HWNDNEXT ) )
+	//		{
+	//			if( !pChild->IsWindowVisible() )
+	//				continue;
+	//			if( pChild->GetExStyle() & WS_EX_TRANSPARENT )
+	//				continue;
+	//			CRect rcChild;
+	//			pChild->GetWindowRect( &rcChild );
+	//			ScreenToClient( &rcChild );
+	//			rcChild.IntersectRect( &rcChild, &rcTarget );
+	//			ValidateRect( &rcChild );
+	//		}
+	//	}
+	//}
+	CRect rcPaint = ps.rcPaint;
+	__super::OnPaint();
+	if( !rcPaint.IsRectEmpty() )
 	{
+		CRect rcTarget = GetUsedArea();
 		for( CWnd* pTabPage = GetWindow( GW_CHILD ); pTabPage; pTabPage = pTabPage->GetWindow( GW_HWNDNEXT ) )
 		{
 			if( !pTabPage->IsWindowVisible() )
 				continue;
-			for( CWnd* pChild = pTabPage->GetWindow( GW_CHILD ); pChild; pChild = pChild->GetWindow( GW_HWNDNEXT ) )
-			{
-				if( !pChild->IsWindowVisible() )
-					continue;
-				if( pChild->GetExStyle() & WS_EX_TRANSPARENT )
-					continue;
-				CRect rcChild;
-				pChild->GetWindowRect( &rcChild );
-				ScreenToClient( &rcChild );
-				rcChild.IntersectRect( &rcChild, &rcTarget );
-				ValidateRect( &rcChild );
-			}
+			CRect rcPage;
+			rcPage.IntersectRect( &rcTarget, &rcPaint );
+			ClientToScreen( &rcPage );
+			pTabPage->ScreenToClient( &rcPage );
+			pTabPage->RedrawWindow( &rcPage, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
 		}
 	}
-	__super::OnPaint();
 }
 
 void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -409,4 +429,15 @@ void CTabStripCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+HBRUSH CTabStripCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+	if( mpControlPane->GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	{
+		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+		return mColorService.GetBackgroundBrush();
+	}
+	return hbr;
 }

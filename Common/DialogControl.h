@@ -159,7 +159,6 @@ private:
 	// Windows painting helpers
 public:
 	virtual void OnValidateBkgnd( CWnd* pBkgnd ) { return; }
-protected:
 	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
 	virtual BOOL HandleEraseBkgnd( CDC* pDC );
 

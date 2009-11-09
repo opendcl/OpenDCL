@@ -102,7 +102,29 @@ void CTabPageDlg::OnSize(UINT nType, int cx, int cy)
 
 BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 {
+	if( !IsWindowVisible() )
+		return TRUE;
+	CRect rcTarget;
+	pDC->GetClipBox( &rcTarget );
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	if( rcTarget.IntersectRect( &rcTarget, rcClient ) )
+	{
+		for( CWnd* pChild = GetWindow( GW_CHILD ); pChild; pChild = pChild->GetWindow( GW_HWNDNEXT ) )
+		{
+			if( !pChild->IsWindowVisible() )
+				continue;
+			if( pChild->GetExStyle() & WS_EX_TRANSPARENT )
+				continue;
+			CRect rcChild;
+			pChild->GetWindowRect( &rcChild );
+			ScreenToClient( &rcChild );
+			if( rcChild.IntersectRect( &rcChild, &rcTarget ) )
+				ValidateRect( &rcChild );
+		}
+	}
 	//CDialogControl::HandleEraseBkgnd( pDC ); //bypass CDialogObject to get transparency
+	//return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
 
@@ -137,19 +159,12 @@ HBRUSH CTabPageDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	LRESULT lResult;
 	if (pWnd->SendChildNotifyLastMsg(&lResult))
 		return (HBRUSH)lResult;     // eat it
-	if( mpControlPane->GetThemeHelper() )
+	if( nCtlColor < CTLCOLOR_MAX )
 	{
-		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
-		if( pParentForm )
-		{
-			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
-			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
-			{
-				mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
-				return mColorService.GetBackgroundBrush();
-			}
-		}
+		HBRUSH hbrBackground =
+			(HBRUSH)GetParent()->SendMessage( (WM_CTLCOLORMSGBOX + nCtlColor), (WPARAM)pDC->GetSafeHdc(), (LPARAM)m_hWnd );
+		if( hbrBackground )
+			return hbrBackground;
 	}
-	return NULL;
 	return (HBRUSH)Default();
 }
