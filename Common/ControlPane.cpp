@@ -290,8 +290,9 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 		nFlags |= SWP_NOSIZE;
 	if( rcNew.TopLeft() == rcCtrl.TopLeft() )
 		nFlags |= SWP_NOMOVE;
-	if( bTransparent )
-		nFlags |= SWP_NOCOPYBITS;
+	//if( bTransparent )
+	//	nFlags |= SWP_NOCOPYBITS;
+	nFlags |= SWP_NOCOPYBITS;
 	pWndToMove->SetWindowPos( NULL, rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height(), nFlags );
 }
 

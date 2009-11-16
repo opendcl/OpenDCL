@@ -328,3 +328,15 @@ COLORREF GetRGBColor( long nColorIndex )
 
 	return (COLORREF)(nColorIndex & 0x00FFFFFF);
 }
+
+
+COLORREF GetSafeRGBColor( long nColorIndex, const COLORREF& crBackground )
+{
+	COLORREF crRGB = GetRGBColor( nColorIndex );
+	UINT contrast = (abs(GetRValue( crRGB ) - GetRValue( crBackground )) +
+									 abs(GetGValue( crRGB ) - GetGValue( crBackground )) +
+									 abs(GetBValue( crRGB ) - GetBValue( crBackground )));
+	if( contrast > 0x80 )
+		return crRGB;
+	return (crRGB ^ RGB(255,255,255));
+}

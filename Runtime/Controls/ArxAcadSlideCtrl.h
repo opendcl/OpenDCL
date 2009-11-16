@@ -4,10 +4,11 @@
 #pragma once
 
 #include "DialogControl.h"
-#include "CxAcadSlide.h"
+#include "AcadSld.h"
 #include "PPToolTip.h"
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
+#include "AcadColorService.h"
 
 class CControlPane;
 
@@ -18,8 +19,16 @@ class CControlPane;
 class CArxAcadSlideCtrl : public CButton, public CDialogControl
 {
 	CArxControlServices	mArxServices;
+	CAcadColorService mColorService;
 	CArxDragDropService mDragDropService;
-	CxAcadSlide mSlideCtrl;
+	class CArxSlide : public CAcadSld
+	{
+		CDialogControl& mCtrl;
+	public:
+		CArxSlide( CDialogControl& Ctrl ) : mCtrl( Ctrl ) {}
+	protected:
+		virtual COLORREF getBackgroundColor() const;
+	} mArxSlide;
 	bool mbTrackingMouse;
 
 public:
@@ -42,7 +51,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
-	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Implementation
 public:

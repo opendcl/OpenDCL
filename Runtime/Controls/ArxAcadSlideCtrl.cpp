@@ -20,6 +20,7 @@ CArxAcadSlideCtrl::CArxAcadSlideCtrl( CControlPane& Pane, TDclControlPtr pTempla
 : CDialogControl( pTemplate, &Pane, this )
 , mArxServices( this )
 , mDragDropService( this )
+, mArxSlide( *this )
 , mbTrackingMouse( false )
 {
 	m_bHasFocus = false;
@@ -36,6 +37,14 @@ CArxAcadSlideCtrl::~CArxAcadSlideCtrl()
 		::DeleteObject(m_hbmMem);
 }
 
+COLORREF CArxAcadSlideCtrl::CArxSlide::getBackgroundColor() const
+{
+	CAcadColorService* pColorService = mCtrl.GetColorService();
+	if( !pColorService )
+		return RGB(0,0,0);
+	return pColorService->GetBackgroundColor();
+}
+
 bool CArxAcadSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
@@ -50,12 +59,6 @@ DWORD CArxAcadSlideCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = __super::GetWndStyle();
 	return (dwStyle | BS_OWNERDRAW | BS_NOTIFY);
-}
-
-bool CArxAcadSlideCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
-{
-	mSlideCtrl.SetBackColor( GetRGBColor( pProp->GetLongValue() ) );
-	return true;
 }
 
 
@@ -119,7 +122,7 @@ void CArxAcadSlideCtrl::OnPaint()
 
 bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {	
-	if( !mSlideCtrl.Load( theWorkspace.FindFile( pszFilename ), pszSlide ) )
+	if( !mArxSlide.Load( theWorkspace.FindFile( pszFilename ), pszSlide ) )
 		return false;
 	OnNeedRepaint( false );
 	return true;
@@ -134,8 +137,7 @@ void CArxAcadSlideCtrl::Clear()
 		m_hbmMem = NULL;
 	}
 	m_bSelectedRect = false;
-	mSlideCtrl.FreeData();
-	mSlideCtrl.m_FileName = CString();
+	mArxSlide.Load( NULL );
 
 	try
 	{
@@ -154,24 +156,20 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 
 	int nThisWidth = rcCell.Width();
 	int nThisHeight = rcCell.Height();
-	
-	CBrush CellBrush;
-	CellBrush.CreateSolidBrush(mSlideCtrl.m_BkColor);
 		
 	// draw the Window background for the cell				
-	pdc->FillRect(rcCell, &CellBrush);
-	// delete the brush
-	CellBrush.DeleteObject();
+	pdc->FillRect(rcCell, mColorService.GetBackgroundCBrush());
 	
-	if (mSlideCtrl.m_FileName.GetLength() > 0)
+	if( !mArxSlide.GetSlideName().IsEmpty() )
 	{
 		try
 		{
+			CSize sizeSlide( mArxSlide.GetSlideSize() );
 			double dFactor;
 			double dH;
 			double dW;
 
-			dFactor = (double)mSlideCtrl.m_Height / (double)mSlideCtrl.m_Width;
+			dFactor = (double)sizeSlide.cy / (double)sizeSlide.cx;
 			dH = dFactor;
 			dW = 1.0;
 
@@ -181,7 +179,7 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 			// if the calc height is too large
 			if (nDrawHeight > nThisHeight)
 			{
-				dFactor = (double)mSlideCtrl.m_Width / (double)mSlideCtrl.m_Height;
+				dFactor = (double)sizeSlide.cx / (double)sizeSlide.cy;
 				dH = 1.0;
 				dW = dFactor;
 
@@ -200,7 +198,7 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 			// if the calc width is too large
 			if (nDrawWidth > nThisWidth)
 			{
-				dFactor = (double)mSlideCtrl.m_Height / (double)mSlideCtrl.m_Width;
+				dFactor = (double)sizeSlide.cy / (double)sizeSlide.cx;
 				dH = dFactor;
 				dW = 1.0;
 
@@ -213,7 +211,7 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 				rcCell.bottom = nThisHeight - rcCell.top;
 			}
 			// draw the slide
-			mSlideCtrl.Draw(pdc, rcCell);
+			mArxSlide.Draw(pdc, rcCell);
 		}
 		catch(...)
 		{
@@ -245,22 +243,10 @@ void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 
 void CArxAcadSlideCtrl::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName)
 {
-	HDC hdc = ::GetDC(m_hWnd);
-
 	CRect rcCell(nX, nY, nX + nSlideWidth, nY + nSlideHeight);
-	CxAcadSlide tSlide;
-
-	tSlide.Load( theWorkspace.FindFile( pszFilename ), pszSlideName);
-	//tSlide.Load(sFileName, sLibSldName);
-
-	// draw the slide
-	tSlide.Draw(hdc, rcCell);
-
-	tSlide.FreeData();
-	tSlide.m_FileName = CString();
-
-	// then releasing the DC itself
-	::ReleaseDC(m_hWnd, hdc);
+	CArxSlide Slide( *this );
+	Slide.Load( theWorkspace.FindFile( pszFilename ), pszSlideName);
+	Slide.Draw( GetDC(), rcCell );
 }
 
 
@@ -320,8 +306,6 @@ void CArxAcadSlideCtrl::OnDestroy()
 		m_hbmMem = NULL;
 	}
 	m_bSelectedRect = false;
-	mSlideCtrl.FreeData();
-	mSlideCtrl.m_FileName = CString();
 	__super::OnDestroy();
 }
 

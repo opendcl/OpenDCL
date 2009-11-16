@@ -96,21 +96,30 @@ void CTextButtonCtrl::PostNcDestroy()
 
 void CTextButtonCtrl::OnSetFocus(CWnd* pOldWnd)
 {
-	ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
+	if( (GetStyle() & BS_DEFPUSHBUTTON) == 0 )
+		ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
 	__super::OnSetFocus(pOldWnd);
 }
 
 void CTextButtonCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
-	ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
+	if( GetStyle() & BS_DEFPUSHBUTTON )
+		ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
 }
 
 void CTextButtonCtrl::OnNcPaint() 
 {
+	DWORD dwStyle = GetStyle();
 	if( GetFocus() != this )
-		ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
+	{
+		if( dwStyle & BS_DEFPUSHBUTTON )
+			ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
+	}
 	else
-		ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
+	{
+		if( (dwStyle & BS_DEFPUSHBUTTON) == 0 )
+			ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
+	}
 	__super::OnNcPaint();
 }

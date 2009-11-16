@@ -76,13 +76,13 @@
         "Entry"
         {
         "MsmKey" = "8:_2F9CF7B94A6B197B1536897F4B60A8C9"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "OwnerKey" = "8:_D08FCB323B4C410E9094A76D1B2646E9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_2F9CF7B94A6B197B1536897F4B60A8C9"
-        "OwnerKey" = "8:_D08FCB323B4C410E9094A76D1B2646E9"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -136,13 +136,13 @@
         "Entry"
         {
         "MsmKey" = "8:_3D947A68ECE3956F2646C4F1E2C7A4B0"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "OwnerKey" = "8:_D08FCB323B4C410E9094A76D1B2646E9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_3D947A68ECE3956F2646C4F1E2C7A4B0"
-        "OwnerKey" = "8:_D08FCB323B4C410E9094A76D1B2646E9"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -202,13 +202,13 @@
         "Entry"
         {
         "MsmKey" = "8:_66D0319D1F46372BF992BBB152E85FA6"
-        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
+        "OwnerKey" = "8:_D08FCB323B4C410E9094A76D1B2646E9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_66D0319D1F46372BF992BBB152E85FA6"
-        "OwnerKey" = "8:_D08FCB323B4C410E9094A76D1B2646E9"
+        "OwnerKey" = "8:_9FB43905CF6B4086B4DBB8FADAB6C721"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -890,7 +890,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:6.0.0.12"
+        "Version" = "8:6.0.0.13"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"

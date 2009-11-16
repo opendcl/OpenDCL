@@ -176,14 +176,14 @@ void CButtonCtrl::PreSubclassWindow()
 void CButtonCtrl::OnKillFocus(CWnd * pNewWnd)
 {
 	m_bIsDefault = FALSE;
-	OnNeedRepaint();
+	OnNeedRepaint( true );
 	__super::OnKillFocus( pNewWnd );
 }
 
 BOOL CButtonCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	//if( HandleEraseBkgnd( pDC ) )
-	//	return TRUE;
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
 

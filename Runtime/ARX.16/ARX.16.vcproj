@@ -849,14 +849,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\CxAcadSlide.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\CxAcadSlide.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\DimStyleComboHandler.h"
 				>
 			</File>
@@ -910,6 +902,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\AcadColorTable.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\AcadSld.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\AcadSld.h"
 				>
 			</File>
 			<File

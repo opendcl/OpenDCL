@@ -887,6 +887,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\AcadSld.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\AcadSld.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Common\ArchiveEx.cpp"
 				>
 			</File>
