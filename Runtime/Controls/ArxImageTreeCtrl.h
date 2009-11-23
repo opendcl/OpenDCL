@@ -13,7 +13,14 @@
 
 class CArxImageTreeCtrl : public CImageTreeCtrl
 {
-	CArxControlServices	mArxServices;
+	class CArxImageTreeControlServices : public CArxControlServices
+	{
+	public:
+		CArxImageTreeControlServices( CDialogControl* pDlgControl ) : CArxControlServices( pDlgControl ) {}
+		virtual bool HandleDropOnControl( CWnd* pWnd, COleDataObject* pDataObject, 
+																			DROPEFFECT dropEffect, CPoint point ) const
+			{ return false; } //force it to use the tree control's custom OnDrop event handler
+	} mArxServices;
 	CArxDragDropService mDragDropService;
 	bool mbCancelLabelEdit;
 

@@ -152,6 +152,8 @@ DROPEFFECT CImageTreeCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sou
 	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
 	GlobalUnlock( hData );
 	SourceData.CacheGlobalData( CF_TEXT, hData );
+	if( !GetTemplate()->GetStringProperty( Prop::DragnDropBegin ).IsEmpty() )
+		return DROPEFFECT_COPY;
 	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
 }
 

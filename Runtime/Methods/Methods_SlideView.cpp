@@ -243,7 +243,7 @@ ADSRESULT SlideView::EndImage()
 
 	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
-	pCtrl->CopyDC();
+	pCtrl->Snapshot();
 	acedRetT();
 	return RSRSLT;
 }

@@ -674,9 +674,9 @@ bool CPictureBox::LoadPictureFile(LPCTSTR pszFile, bool bStretch)
 
 void CPictureBox::CopyDC() 
 {
-	if (m_hbmMem != NULL)
+	if( m_hbmMem )
 	{
-		DeleteObject(m_hbmMem);
+		DeleteObject( m_hbmMem );
 		m_hbmMem = NULL;
 	}
 	if (!GetParent()->IsWindowVisible())		

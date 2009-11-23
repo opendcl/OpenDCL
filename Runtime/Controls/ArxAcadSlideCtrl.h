@@ -30,13 +30,12 @@ class CArxAcadSlideCtrl : public CButton, public CDialogControl
 		virtual COLORREF getBackgroundColor() const;
 	} mArxSlide;
 	bool mbTrackingMouse;
+	HBITMAP mhbmLast;
+	HBITMAP mhbmSaved;
 
 public:
-	CRect				m_rcFocus;
 	bool				m_bSelectedRect;
 	COLORREF			m_HighlightColor;
-	HBITMAP				m_hbmMem;
-	bool				m_bHasFocus;
 
 // Construction
 public:
@@ -62,8 +61,9 @@ public:
 	void RemoveHighlight();
 	bool SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Clear();
-	void CopyDC();
+	void Snapshot();
 private:
+	void SaveDC();
 	void PaintControl(CDC *pdc);
 
 // Overrides

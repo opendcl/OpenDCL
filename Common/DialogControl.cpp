@@ -295,7 +295,7 @@ CString CDialogControl::GetWndCaption() const
 
 void CDialogControl::OnFrameChanged()
 {
-	OnNeedRepaint();
+	OnNeedRepaint( true, true );
 }
 
 void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= false*/, bool bUpdateNow /*= false*/ ) const

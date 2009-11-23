@@ -1916,7 +1916,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->CopyDC();
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->Snapshot();
 
 		return (RSRSLT) ;
 	}
