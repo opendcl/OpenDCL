@@ -38,6 +38,7 @@ class CListViewCtrl : public CListCtrl, public CDialogControl
 {
 	CAcadColorService mColorService;
 	int mnEditSubItem;
+	int mnDragSource;
 	CLVEdit mLVEdit;
 
 // Construction
@@ -56,6 +57,7 @@ public:
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
 protected:
 	int GetCurrentSubItem() const { return mnEditSubItem; }

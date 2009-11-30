@@ -112,6 +112,10 @@ void CDialogObject::GetMinMaxSize( CSize& szMin, CSize& szMax )
 {
 	szMin.SetSize( mnMinWidth, mnMinHeight );
 	szMax.SetSize( mnMaxWidth, mnMaxHeight );
+	if( szMax.cx > 0 && szMax.cx < szMin.cx )
+		szMax.cx = szMin.cx;
+	if( szMax.cy > 0 && szMax.cy < szMin.cy )
+		szMax.cy = szMin.cy;
 }
 
 CRect CDialogObject::GetWndRect() const

@@ -276,7 +276,7 @@ CRect CDialogControl::GetWndRect() const
 
 DWORD CDialogControl::GetWndStyle() const
 {
-	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE | WS_CLIPSIBLINGS*/;
+	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE*/ | WS_CLIPSIBLINGS;
 
 	if( mpTemplate->GetBooleanProperty(Prop::IsTabStop) )
 		dwStyle |= WS_TABSTOP;

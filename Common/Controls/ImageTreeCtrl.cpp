@@ -152,8 +152,6 @@ DROPEFFECT CImageTreeCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sou
 	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
 	GlobalUnlock( hData );
 	SourceData.CacheGlobalData( CF_TEXT, hData );
-	if( !GetTemplate()->GetStringProperty( Prop::DragnDropBegin ).IsEmpty() )
-		return DROPEFFECT_COPY;
 	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
 }
 
@@ -264,6 +262,7 @@ HTREEITEM CImageTreeCtrl::AddChild( HTREEITEM hParent, LPCTSTR pszCaption, LPCTS
 	if( !hItem )
 		return NULL;
 	mTreeItems.push_back( CTreeItem( hItem, pszKey, nImage, nSelImage, nExpImage ) );
+	OnNeedRepaint();
 	return hItem;
 }
 

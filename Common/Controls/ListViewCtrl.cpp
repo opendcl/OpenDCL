@@ -52,6 +52,8 @@ void CLVEdit::OnSetfocus()
 
 CListViewCtrl::CListViewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mnEditSubItem( -1 )
+, mnDragSource( -1 )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -370,6 +372,72 @@ DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sour
 	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
 }
 
+bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
+														DROPEFFECT dropEffect )
+{
+	CStringA sTextA;
+	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
+	if( hData )
+	{
+		sTextA = (char*)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+	}
+	else if( NULL != (hData = pSourceData->GetGlobalData( CF_HDROP )) )
+	{
+		DROPFILES* pdf = (DROPFILES*)GlobalLock( hData );
+		if( pdf )
+		{
+			if( pdf->fWide )
+			{
+				CStringW sTextW = (LPCWSTR)((BYTE*)pdf + pdf->pFiles);
+				sTextA = sTextW;
+			}
+			else
+				sTextA = (LPCSTR)((BYTE*)pdf + pdf->pFiles);
+		}
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+	}
+	else
+		return false;
+
+	UINT nFlags = 0;
+	int idxItem = HitTest( point, &nFlags );
+	if( idxItem < 0 )
+		idxItem = 0;
+	else
+	{
+		CRect rcItem;
+		GetItemRect( idxItem, &rcItem, LVIR_BOUNDS );
+		if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
+			++idxItem;
+	}
+
+	int nImage = -1;
+	if( mnDragSource >= 0 && dropEffect == DROPEFFECT_MOVE )
+	{
+		nImage = GetItemImage( mnDragSource, 0 );
+		DeleteItem( mnDragSource );
+		if( mnDragSource < idxItem )
+			--idxItem;
+		mnDragSource = -1;
+	}
+
+	int idxInsert = idxItem;
+	CString sInsText( sTextA );
+	int nIdxToken = 0;
+	while( nIdxToken >= 0 )
+	{
+		CString sText = sInsText.Tokenize( _T("\r\n"), nIdxToken );
+		if( sText.IsEmpty() && nIdxToken < 0 )
+			break;
+		idxInsert = InsertItem( idxInsert, sText, nImage );
+		SetItemState( idxInsert, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
+		++idxInsert;
+	}
+	return true;
+}
 
 void CListViewCtrl::SetItemImage( int nRow, int nCol, int nImage )  
 {
@@ -691,8 +759,8 @@ void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 	{
 		UINT nHTFlags = 0;
-		int nDragSource = HitTest( point, &nHTFlags );
-		if( nDragSource >= 0 )
+		mnDragSource = HitTest( point, &nHTFlags );
+		if( mnDragSource >= 0 )
 		{
 			if( (nFlags & MK_CONTROL) == 0 )
 			{
@@ -700,18 +768,19 @@ void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				while( pos )
 				{
 					int idxItem = GetNextSelectedItem( pos );
-					if( idxItem != nDragSource )
-						SetItemState( nDragSource, 0, LVIS_SELECTED );
+					if( idxItem != mnDragSource )
+						SetItemState( mnDragSource, 0, LVIS_SELECTED );
 				}
 			}
-			bool bWasSelected = (GetItemState( nDragSource, LVIS_SELECTED ) != 0);
-			SetItemState( nDragSource, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
+			bool bWasSelected = (GetItemState( mnDragSource, LVIS_SELECTED ) != 0);
+			SetItemState( mnDragSource, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
 			DWORD dwDropEffect = BeginDragDrop( point );
 			if( dwDropEffect == DROPEFFECT_MOVE )
-				DeleteItem( nDragSource );
+				DeleteItem( mnDragSource );
 			//else if( (nFlags & MK_CONTROL) != 0 )
-			//	PostMessage( WM_SETSELECTEDSTATE, (WPARAM)nDragSource, (LPARAM)bWasSelected );	
+			//	PostMessage( WM_SETSELECTEDSTATE, (WPARAM)mnDragSource, (LPARAM)bWasSelected );	
 			PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
+			mnDragSource = -1;
 		}
 	}
 }

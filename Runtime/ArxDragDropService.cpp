@@ -103,7 +103,28 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 		const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
 		if( pArxServices )
 		{
-			if( pArxServices->HandleEvent( Prop::DragnDropBegin ) )
+			resbuf* prbResult = NULL;
+			bool bCancel = pArxServices->HandleEvent( Prop::DragnDropBegin, prbResult );
+			if( !bCancel && prbResult && prbResult->restype == RTSHORT )
+			{
+				switch( prbResult->resval.rint )
+				{
+				case DROPEFFECT_NONE:
+					bCancel = true;
+					break;
+				case DROPEFFECT_COPY:
+					dwSupportedDropEffects = DROPEFFECT_COPY;
+					break;
+				case DROPEFFECT_MOVE:
+					dwSupportedDropEffects = DROPEFFECT_MOVE;
+					break;
+				case DROPEFFECT_LINK:
+					dwSupportedDropEffects = DROPEFFECT_LINK;
+					break;
+				}
+			}
+			acutRelRb( prbResult );
+			if( bCancel )
 				return dwEffect;
 		}
 		CPoint ptScreen( point );
