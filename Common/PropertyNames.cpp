@@ -193,6 +193,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::DragnDropFromControl] = _T("DragnDropFromControl");
 	mmapIdToApiName[Prop::DragnDropFromOther] = _T("DragnDropFromOther");
 	mmapIdToApiName[Prop::DragnDropToAutoCAD] = _T("DragnDropToAutoCAD");
+	mmapIdToApiName[Prop::DragOverFromControl] = _T("DragOverFromControl");
 	mmapIdToApiName[Prop::DropDownHeight] = _T("DropDownHeight");
 	mmapIdToApiName[Prop::EditLabels] = _T("EditLabels");
 	mmapIdToApiName[Prop::Enabled] = _T("Enabled");

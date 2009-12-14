@@ -102,7 +102,10 @@ CArxDwgPreviewCtrl::CArxDwgPreviewCtrl( TDclControlPtr pTemplate, CControlPane* 
 , mArxServices( this )
 , mDragDropService( this )
 , mBlockInsertDropTarget( this )
-, mbDrawSelected( false )
+, mhbmLast( NULL )
+, mhbmSaved( NULL )
+, mclrHighlight( CAcadColorService::GetTransparentColor() )
+//, mbDrawSelected( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -110,6 +113,10 @@ CArxDwgPreviewCtrl::CArxDwgPreviewCtrl( TDclControlPtr pTemplate, CControlPane* 
 
 CArxDwgPreviewCtrl::~CArxDwgPreviewCtrl()
 {
+	if( mhbmLast )
+		::DeleteObject( mhbmLast );
+	if( mhbmSaved )
+		::DeleteObject( mhbmSaved );
 }
 
 bool CArxDwgPreviewCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -162,6 +169,18 @@ DROPEFFECT CArxDwgPreviewCtrl::OnBeginDrag( const CPoint& point, COleDataSource&
 	return DROPEFFECT_COPY;
 }
 
+void CArxDwgPreviewCtrl::SetHighlight(const COLORREF& clrHighlight)
+{
+	mclrHighlight = clrHighlight;		
+	OnNeedRepaint( false );
+}
+
+void CArxDwgPreviewCtrl::RemoveHighlight()
+{
+	mclrHighlight = CAcadColorService::GetTransparentColor();
+	OnNeedRepaint( false );
+}
+
 bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
 {
 	Clear();
@@ -177,31 +196,68 @@ bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
 void CArxDwgPreviewCtrl::Reset()
 {
 	msDwgFilename.Empty();
-	mbDrawSelected = false;
+	RemoveHighlight();
 }
 
 void CArxDwgPreviewCtrl::Clear()
 {
+	if( mhbmSaved )
+	{
+		DeleteObject( mhbmSaved );
+		mhbmSaved = NULL;
+	}
+	if( mhbmLast )
+	{
+		DeleteObject( mhbmLast );
+		mhbmLast = NULL;
+	}
 	Reset();
-	OnNeedRepaint();
+	RedrawWindow();
 }
 
-void CArxDwgPreviewCtrl::SetHighlight( const COLORREF& clrHighlight )
+void CArxDwgPreviewCtrl::SaveDC()
 {
-	mbDrawSelected = true;
-	mclrHighlight = clrHighlight;		
-	OnNeedRepaint( false );
+	HDC hDC = ::GetDC( m_hWnd );
+	HDC hDCmem = CreateCompatibleDC (hDC) ; 
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	int nSourceX = rcClient.Width();
+	int nSourceY = rcClient.Height(); 
+
+	// Create a compatible bitmap
+	HBITMAP hbmMem = CreateCompatibleBitmap( hDC, nSourceX, nSourceY ); 
+	HGDIOBJ hbmOld = SelectObject( hDCmem, hbmMem ) ; 
+	BitBlt( hDCmem, 0, 0, nSourceX, nSourceY, hDC, 0, 0, SRCCOPY );
+
+	SelectObject( hDCmem, hbmOld );
+	DeleteObject( hbmOld );
+	DeleteDC( hDCmem );
+	::ReleaseDC( m_hWnd, hDC );
+	if( mhbmLast )
+		DeleteObject( mhbmLast );
+	mhbmLast = hbmMem;
 }
 
-void CArxDwgPreviewCtrl::RemoveHighlight()
+void CArxDwgPreviewCtrl::Snapshot() 
 {
-	mbDrawSelected = false;
-	OnNeedRepaint( false );
+	if( mhbmSaved )
+	{
+		DeleteObject( mhbmSaved );
+		mhbmSaved = NULL;
+	}
+	if( !mhbmLast )
+		RedrawWindow();
+	if( mhbmSaved )
+	{
+		DeleteObject( mhbmSaved );
+		mhbmSaved = NULL;
+	}
+	mhbmSaved = mhbmLast;
+	mhbmLast = NULL;
 }
 
 
 BEGIN_MESSAGE_MAP(CArxDwgPreviewCtrl, CButton)
-	ON_WM_SIZE()
 	ON_WM_CHAR()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
@@ -220,27 +276,38 @@ void CArxDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 	int nDCState = pDC->SaveDC();
-	Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
-	acdbDisplayPreviewFromDwg( msDwgFilename, (void*)m_hWnd, &nBgColor );
-	
-	CRect rcCell = lpDrawItemStruct->rcItem;
-
-	if( mbDrawSelected )
+	if( msDwgFilename.IsEmpty() )
 	{
-		rcCell.DeflateRect(1, 1, 1, 1);
+		CRect rcCell = lpDrawItemStruct->rcItem;
+		pDC->FillSolidRect( &rcCell, mColorService.GetBackgroundColor() );
+	}
+	else
+	{
+		Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
+		acdbDisplayPreviewFromDwg( msDwgFilename, (void*)m_hWnd, &nBgColor );
+	}
+	
+	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
+	{
+		CRect rcCell = lpDrawItemStruct->rcItem;
+		rcCell.DeflateRect( 1, 1 );
 		
-		CPen Pen(PS_SOLID, 1, mclrHighlight);
-		pDC->SelectObject(&Pen);
-
-		pDC->MoveTo(1, 1);
-		pDC->LineTo(rcCell.Width(), 1);		
-		pDC->LineTo(rcCell.Width(), rcCell.Height());		
-		pDC->LineTo(1, rcCell.Height());		
-		pDC->LineTo(1, 1);		
+		CPen pen( PS_SOLID, 1, mclrHighlight );
+		CPen* pOldPen = pDC->SelectObject( &pen );
+		pDC->MoveTo( rcCell.TopLeft() );
+		pDC->LineTo( rcCell.right, rcCell.top );		
+		pDC->LineTo( rcCell.right, rcCell.bottom );		
+		pDC->LineTo( rcCell.left, rcCell.bottom );		
+		pDC->LineTo( rcCell.left, rcCell.top );		
+		pDC->SelectObject( pOldPen );
 	}
 
 	if( lpDrawItemStruct->itemState & ODS_FOCUS )
-		pDC->DrawFocusRect( &mrcFocus );
+	{
+		CRect rcFocus = lpDrawItemStruct->rcItem;
+		rcFocus.DeflateRect( 2, 2 );
+		pDC->DrawFocusRect( &rcFocus );
+	}
 
 	pDC->RestoreDC( nDCState );
 }
@@ -249,26 +316,6 @@ void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	CWnd::OnMouseMove(nFlags, point);
-}
-
-void CArxDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy) 
-{
-	__super::OnSize( nType, cx, cy );
-	return;
-	//if( !msDwgFilename.IsEmpty() )
-	//{
-	//	SetWindowText( msDwgFilename );
-	//	SetWindowText( _T("") );
-	//	Adesk::UInt32 Color = RGB(0,0,0);
-	//	// static frame works the best for this function
-	//	acdbDisplayPreviewFromDwg(msDwgFilename, (void*)m_hWnd, &Color);
-	//}
-	//else
-	//{
-	//	CDC *pdc = GetDC();
-	//	PaintCtrl( pdc );
-	//	ReleaseDC( pdc );
-	//}	
 }
 
 void CArxDwgPreviewCtrl::OnClicked() 
@@ -291,36 +338,20 @@ void CArxDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
-	CRect rcThis;
-	GetClientRect(&rcThis);
-
-	mrcFocus.left = 2;
-	mrcFocus.top = 2;
-	mrcFocus.right = rcThis.Width() - 2,
-	mrcFocus.bottom = rcThis.Height() - 2;
-
-	CDC *pdc = GetDC();
-	pdc->DrawFocusRect(mrcFocus);
-	ReleaseDC(pdc);
-	
+	__super::OnSetFocus( pOldWnd );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
-	
-	CDC *pdc = GetDC();
-	pdc->DrawFocusRect(mrcFocus);
-	ReleaseDC(pdc);
-
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
+	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) && nFlags == MK_LBUTTON)
 	{
 		DROPEFFECT dwDropEffect = BeginDragDrop( point );
 		PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	

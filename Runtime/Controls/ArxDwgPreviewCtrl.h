@@ -20,9 +20,14 @@ class CArxDwgPreviewCtrl : public CButton, public CDialogControl
 	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 	CString msDwgFilename;
-	bool mbDrawSelected;
+
+	HBITMAP mhbmLast;
+	HBITMAP mhbmSaved;
 	COLORREF mclrHighlight;
-	CRect mrcFocus;
+
+	//bool mbDrawSelected;
+	//COLORREF mclrHighlight;
+	//CRect mrcFocus;
 
 public:
 	CArxDwgPreviewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -45,10 +50,13 @@ protected:
 
 public:
 	LPCTSTR GetFilename() const { return (msDwgFilename.IsEmpty()? NULL : (LPCTSTR)msDwgFilename); }
-	void Clear();
 	void SetHighlight( const COLORREF& clrHighlight );
 	void RemoveHighlight();
 	bool LoadDwg( LPCTSTR pszFilename );
+	void Clear();
+	void Snapshot();
+private:
+	void SaveDC();
 
 	// Generated message map functions
 protected:
@@ -58,7 +66,6 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnClicked();
 	afx_msg void OnDoubleclicked();	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);	

@@ -134,7 +134,7 @@ public:
 protected:
 	void StartUIDrag();
 	void EndUIDrag();
-	virtual bool CanShowHighlight() const { return !(mbPanning || mbZooming || mbOrbiting); }
+	virtual bool CanShowHighlight() const;
 	virtual void PaintUI( CDC* pdc = NULL );
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView );
 	virtual AcGsView::RenderMode GetRenderMode();

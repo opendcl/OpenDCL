@@ -228,7 +228,7 @@
 		((< intPercent 0) (dcl_Control_SetText Slider_Form1_edt_percent "0"))
 		((> intPercent 100) (dcl_Control_SetText Slider_Form1_edt_percent "100"))
 	); cond
-	(dcl_Control_Refresh Slider_Form1_pic_slider)
+	(dcl_PictureBox_Refresh Slider_Form1_pic_slider)
 ); c:Slider_Form1_edt_percent_OnEditChanged
 
 

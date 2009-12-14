@@ -379,8 +379,8 @@ void CArxBlockListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CArxBlockListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
-	int nItem = plvdi->item.iItem;
+	NMITEMACTIVATE* plvia = (NMITEMACTIVATE*)pNMHDR;
+	int nItem = plvia->iItem;
 	if( nItem < GetItemCount() && nItem >= 0 )
 		GetArxServices()->HandleEvent( Prop::EventClicked, args_N( nItem ) );
 	*pResult = 0;
@@ -394,8 +394,8 @@ void CArxBlockListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CArxBlockListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
-	int nItem = plvdi->item.iItem;
+	NMITEMACTIVATE* plvia = (NMITEMACTIVATE*)pNMHDR;
+	int nItem = plvia->iItem;
 	if( nItem < GetItemCount() && nItem >= 0 )
 		GetArxServices()->HandleEvent( Prop::EventRightClick, args_N( nItem ) );
 	*pResult = 0;
@@ -403,8 +403,8 @@ void CArxBlockListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CArxBlockListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
-	int nItem = plvdi->item.iItem;
+	NMITEMACTIVATE* plvia = (NMITEMACTIVATE*)pNMHDR;
+	int nItem = plvia->iItem;
 	if( nItem < GetItemCount() && nItem >= 0 )
 		GetArxServices()->HandleEvent( Prop::EventRightDblClick, args_N( nItem ) );
 	*pResult = 0;

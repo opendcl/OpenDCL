@@ -26,8 +26,10 @@ public:
 	const CString& GetLispSymbolName() const { return msLispSymbolName; }
 	virtual void SetLispSymbol( bool bResetToNil = false ) const;
 	const CDialogControl* GetDlgControl() const { return mpDlgControl; }
-	virtual bool HandleDropOnControl( CWnd* pWnd, COleDataObject* pDataObject, 
-																		DROPEFFECT dropEffect, CPoint point ) const;
+	virtual bool HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
+																			const CPoint& point, DROPEFFECT& dwEffect ) const;
+	virtual bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT dropEffect,
+																		const CPoint& point ) const;
 	bool HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const resbuf* prbArgs ) const;
 	bool HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const arg_b& args = args_null() ) const;
 	bool HandleEvent( LPCTSTR pszHandlerName, bool bAsync, const arg_b& args = args_null(), AcApDocument* pDoc = NULL ) const;

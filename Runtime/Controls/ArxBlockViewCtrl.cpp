@@ -276,7 +276,7 @@ void CArxBlockViewCtrl::RefreshBlock()
 	UpdateModel( pRec );
 	pRec->close();
 
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 }
 
 bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
@@ -428,6 +428,12 @@ void CArxBlockViewCtrl::EndUIDrag()
 	ReleaseCapture();
 }
 
+bool CArxBlockViewCtrl::CanShowHighlight() const
+{
+	//if( !mpSourceDb )
+	//	return true;
+	return !(mbPanning || mbZooming || mbOrbiting);
+}
 
 BEGIN_MESSAGE_MAP(CArxBlockViewCtrl, CArxGsViewCtrl)
 	ON_WM_MOUSEWHEEL()
@@ -502,7 +508,7 @@ void CArxBlockViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	mbZooming = false;
 	mbPanning = false;
 		
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 	EndUIDrag();
 	__super::OnLButtonUp( nFlags, point );
 }

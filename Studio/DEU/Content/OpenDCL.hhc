@@ -2807,6 +2807,10 @@
 				<param name="Local" value="Reference\Event\DragnDropToAutoCAD.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="DragOverFromControl">
+				<param name="Local" value="Reference\Event\DragOverFromControl.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DropDown">
 				<param name="Local" value="Reference\Event\DropDown.htm">
 				</OBJECT>

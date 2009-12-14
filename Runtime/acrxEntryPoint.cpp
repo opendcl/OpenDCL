@@ -1605,8 +1605,10 @@ public:
 					if (pCtrl->GetType() == CtlSlideView)
 					{
 						CArxAcadSlideCtrl *pSlide = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-						pSlide->m_bSelectedRect = !pSlide->m_bSelectedRect;
-						pSlide->OnNeedRepaint( false );
+						if( CAcadColorService::IsTransparentColor( pSlide->GetHighlight() ) )
+							pSlide->SetHighlight( RGB(255,0,0) );
+						else
+							pSlide->RemoveHighlight();
 					}
 					break;
 				}

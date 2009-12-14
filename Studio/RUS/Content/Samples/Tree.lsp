@@ -28,7 +28,7 @@
 
 (defun Tree_LogEvent (event)
 	(if Tree_Main_lbxLog
-		(dcl_ListBox_SetTopIndex Tree_Main_lbxLog (dcl_ListBox_AddString Tree_Main_lbxLog event))
+		(dcl_ListBox_SetTopIndex Tree_Main_lbxLog (1- (dcl_ListBox_AddString Tree_Main_lbxLog event)))
 	)
 )
 
@@ -251,6 +251,12 @@
 
 (defun c:Tree_Main_Tree_OnDragnDropToAutoCAD (DropPoint Viewport /)
 	(Tree_LogEvent "OnDragnDropToAutoCAD")
+)
+
+
+(defun c:Tree_Main_tree_OnDragOverFromControl (ProjectName FormName ControlName DropPoint /)
+	(Tree_LogEvent "OnDragOverFromControl")
+	1 ; return 1 to force copy
 )
 
 

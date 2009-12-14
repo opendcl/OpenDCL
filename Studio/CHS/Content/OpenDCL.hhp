@@ -674,6 +674,7 @@ Reference\Event\DragnDropBegin.htm
 Reference\Event\DragnDropFromControl.htm
 Reference\Event\DragnDropFromOther.htm
 Reference\Event\DragnDropToAutoCAD.htm
+Reference\Event\DragOverFromControl.htm
 Reference\Event\DropDown.htm
 Reference\Event\EditChanged.htm
 Reference\Event\EndLabelEdit-Item.htm

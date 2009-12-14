@@ -18,8 +18,8 @@ class CControlPane;
 
 class CArxAcadSlideCtrl : public CButton, public CDialogControl
 {
-	CArxControlServices	mArxServices;
 	CAcadColorService mColorService;
+	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
 	class CArxSlide : public CAcadSld
 	{
@@ -32,10 +32,7 @@ class CArxAcadSlideCtrl : public CButton, public CDialogControl
 	bool mbTrackingMouse;
 	HBITMAP mhbmLast;
 	HBITMAP mhbmSaved;
-
-public:
-	bool				m_bSelectedRect;
-	COLORREF			m_HighlightColor;
+	COLORREF mclrHighlight;
 
 // Construction
 public:
@@ -56,8 +53,9 @@ public:
 public:
 	void DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb);
 	void DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& rgb);
-	void SetHighlight(const COLORREF& rgb);
 	void DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName);
+	void SetHighlight(const COLORREF& clrHighlight);
+	COLORREF GetHighlight() const { return mclrHighlight; }
 	void RemoveHighlight();
 	bool SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Clear();

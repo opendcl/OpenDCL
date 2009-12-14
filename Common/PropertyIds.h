@@ -284,8 +284,9 @@ enum Id
 	ProgressLegend = 258,
 	KeepFocus = 259,
 	ListImages = 260,
+	DragOverFromControl = 261,
 	_MinId = 1,
-	_MaxId = 260
+	_MaxId = 261
 };
 
 /* property ids in alphabetical order for easy manual lookup
@@ -353,6 +354,7 @@ enum Id
 	DragnDropFromControl = 173,
 	DragnDropFromOther = 174,
 	DragnDropToAutoCAD = 172,
+	DragOverFromControl = 261,
 	DropDownHeight = 49,
 	EditLabels = 133,
 	Enabled = 10,

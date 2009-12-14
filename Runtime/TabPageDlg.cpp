@@ -104,6 +104,7 @@ BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 {
 	if( !IsWindowVisible() )
 		return TRUE;
+/*
 	CRect rcTarget;
 	pDC->GetClipBox( &rcTarget );
 	CRect rcClient;
@@ -123,6 +124,7 @@ BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 				ValidateRect( &rcChild );
 		}
 	}
+*/
 	//CDialogControl::HandleEraseBkgnd( pDC ); //bypass CDialogObject to get transparency
 	//return TRUE;
 	return __super::OnEraseBkgnd(pDC);

@@ -288,7 +288,7 @@ BOOL CArxGsViewCtrl::OnEraseBkgnd(CDC* pDC)
 	return HandleEraseBkgnd( pDC );
 }
 
-void CArxGsViewCtrl::OnPaint() 
+void CArxGsViewCtrl::OnPaint()
 {
   CPaintDC dc(this);
 
@@ -304,23 +304,21 @@ void CArxGsViewCtrl::OnPaint()
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
-		rcClient.DeflateRect( 2, 2 );
+		rcClient.DeflateRect( 1, 1 );
 		if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
 		{
-
 			CPen Pen( PS_SOLID, 1, mclrHighlight );
 			CPen* pOldPen = dc.SelectObject( &Pen );
-
-			dc.MoveTo( 1, 1 );
-			dc.LineTo( rcClient.Width(), 1 );
-			dc.LineTo( rcClient.Width(), rcClient.Height() );
-			dc.LineTo( 1, rcClient.Height() );
-			dc.LineTo( 1, 1 );
-
+			dc.MoveTo( rcClient.TopLeft() );
+			dc.LineTo( rcClient.right, rcClient.top );		
+			dc.LineTo( rcClient.right, rcClient.bottom );		
+			dc.LineTo( rcClient.left, rcClient.bottom );		
+			dc.LineTo( rcClient.left, rcClient.top );		
 			dc.SelectObject( pOldPen );			
 		}
+		rcClient.DeflateRect( 2, 2 );
 		if( GetFocus() == this )
-			dc.DrawFocusRect( rcClient );
+			dc.DrawFocusRect( &rcClient );
 	}
 }
 
@@ -390,8 +388,15 @@ __UINT_LRESULT CArxGsViewCtrl::OnNcHitTest(CPoint point)
 void CArxGsViewCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus( pOldWnd );
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
+}
+
+void CArxGsViewCtrl::OnKillFocus(CWnd* pNewWnd) 
+{
+	__super::OnKillFocus(pNewWnd);
+	OnNeedRepaint( true );
+	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxGsViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
@@ -423,13 +428,6 @@ void CArxGsViewCtrl::OnDestroy()
 {
 	clearAll();
 	__super::OnDestroy();
-}
-
-void CArxGsViewCtrl::OnKillFocus(CWnd* pNewWnd) 
-{
-	__super::OnKillFocus(pNewWnd);
-	OnNeedRepaint( false );
-	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxGsViewCtrl::PostNcDestroy() 

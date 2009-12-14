@@ -254,49 +254,48 @@ void CPictureBox::Refresh()
 
 void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false*/ )
 {	
+	if( !pPicture )
+		return;
 	CDC *pdc = GetDC();
-	if( pPicture )
-	{
-		CRect rcCell;	
-		GetClientRect(&rcCell);
-		pdc->IntersectClipRect( &rcCell );
+	CRect rcCell;	
+	GetClientRect(&rcCell);
+	pdc->IntersectClipRect( &rcCell );
 
-		// get width and height of picture
-		long nPicWidth = pPicture->GetWidth();
-		long nPicHeight = pPicture->GetHeight();
-		long nPicLeft = 0;
-		long nPicTop = 0;
-		CRect rcPic = rcCell;
-		if( bShrinkToFit )
-			rcPic = CalcFitRect( nPicWidth, nPicHeight, rcCell.Width(), rcCell.Height() );
-		else
-		{
-			nPicTop = ( (rcCell.Height() - nPicHeight) / 2 ); // Center the icon vertically
-			nPicLeft = ( (rcCell.Width() - nPicWidth) / 2 ); // Center the icon horizontally
-			rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
-		}
-		if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bShrinkToFit )
-		{			
-			if( IsWindowEnabled() )
-				DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
-															 rcPic.left, rcPic.top, rcPic.Width(), rcPic.Height(), RGB(192,192,192) );
-			else
-				DrawDisabledTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
-																			 rcPic.left, rcPic.top, rcPic.Width(), rcPic.Height(), RGB(192,192,192) );
-		}
-		else if( PICTYPE_ICON == mpPicture->GetPicType() )
-		{
-			if( IsWindowEnabled() )
-				pdc->DrawState(	rcPic.TopLeft(), rcPic.Size(),
-												mpPicture->GetIcon(), DSS_NORMAL, (HBRUSH)NULL );
-			else
-				pdc->DrawState(	rcPic.TopLeft(), rcPic.Size(),
-												mpPicture->GetIcon(), DSS_DISABLED, (HBRUSH)NULL );
-		}
-		else
-			mpPicture->Render( pdc, rcPic );
-		ReleaseDC(pdc);
+	// get width and height of picture
+	long nPicWidth = pPicture->GetWidth();
+	long nPicHeight = pPicture->GetHeight();
+	long nPicLeft = 0;
+	long nPicTop = 0;
+	CRect rcPic = rcCell;
+	if( bShrinkToFit )
+		rcPic = CalcFitRect( nPicWidth, nPicHeight, rcCell.Width(), rcCell.Height() );
+	else
+	{
+		nPicTop = ( (rcCell.Height() - nPicHeight) / 2 ); // Center the icon vertically
+		nPicLeft = ( (rcCell.Width() - nPicWidth) / 2 ); // Center the icon horizontally
+		rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
 	}
+	if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bShrinkToFit )
+	{			
+		if( IsWindowEnabled() )
+			DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
+														 rcPic.left, rcPic.top, rcPic.Width(), rcPic.Height(), RGB(192,192,192) );
+		else
+			DrawDisabledTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
+																		 rcPic.left, rcPic.top, rcPic.Width(), rcPic.Height(), RGB(192,192,192) );
+	}
+	else if( PICTYPE_ICON == mpPicture->GetPicType() )
+	{
+		if( IsWindowEnabled() )
+			pdc->DrawState(	rcPic.TopLeft(), rcPic.Size(),
+											mpPicture->GetIcon(), DSS_NORMAL, (HBRUSH)NULL );
+		else
+			pdc->DrawState(	rcPic.TopLeft(), rcPic.Size(),
+											mpPicture->GetIcon(), DSS_DISABLED, (HBRUSH)NULL );
+	}
+	else
+		mpPicture->Render( pdc, rcPic );
+	ReleaseDC(pdc);
 }
 
 void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
@@ -679,9 +678,9 @@ void CPictureBox::CopyDC()
 		DeleteObject( m_hbmMem );
 		m_hbmMem = NULL;
 	}
-	if (!GetParent()->IsWindowVisible())		
+	if( !GetParent()->IsWindowVisible() )		
 		return;
-	
+
 	HDC hDC = ::GetDC(m_hWnd);
 	HDC hDCmem = CreateCompatibleDC (hDC) ; 
 	CRect rcClient;

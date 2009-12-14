@@ -17,8 +17,11 @@ class CArxImageTreeCtrl : public CImageTreeCtrl
 	{
 	public:
 		CArxImageTreeControlServices( CDialogControl* pDlgControl ) : CArxControlServices( pDlgControl ) {}
-		virtual bool HandleDropOnControl( CWnd* pWnd, COleDataObject* pDataObject, 
-																			DROPEFFECT dropEffect, CPoint point ) const
+		virtual bool HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
+																				const CPoint& point, DROPEFFECT& dwEffect ) const
+			{ return false; } //force it to use the tree control's custom OnDragOver event handler
+		virtual bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT dropEffect,
+																			CPoint point ) const
 			{ return false; } //force it to use the tree control's custom OnDrop event handler
 	} mArxServices;
 	CArxDragDropService mDragDropService;
@@ -33,6 +36,7 @@ public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
 	BOOL SetItemText( HTREEITEM hItem, LPCTSTR lpszItem );

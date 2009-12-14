@@ -37,8 +37,58 @@ void CArxControlServices::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }
 
-bool CArxControlServices::HandleDropOnControl( CWnd* pWnd, COleDataObject* pDataObject, 
-																							 DROPEFFECT dropEffect, CPoint point ) const
+bool CArxControlServices::HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
+																								 const CPoint& point, DROPEFFECT& dwEffect ) const
+{
+	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
+	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
+		return false;
+	CString sDragOverEvent = pDclControl->GetStringProperty( Prop::DragOverFromControl );
+	if( !sDragOverEvent.IsEmpty() && pDataObject->IsDataAvailable( CDragDropService::GetDclControlClipboardFormat() ) )
+	{
+		HGLOBAL hData = pDataObject->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
+		if( !hData )
+			return false;
+		CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+		if( !pSourceDclControl )
+			return false;
+		CString sProject = pSourceDclControl->GetOwnerProject()->GetKeyName();
+		CString sForm = pSourceDclControl->GetOwnerForm()->GetKeyName();
+		CString sControl;
+		if( pSourceDclControl->GetType() != _CtlForm )
+			sControl = pSourceDclControl->GetKeyName();
+		resbuf* prbResult = NULL;
+		bool bCancel = HandleEvent( Prop::DragOverFromControl, prbResult, args_SSSP( sProject, sForm, sControl, point ) );
+		if( bCancel )
+			dwEffect = DROPEFFECT_NONE;
+		else if( prbResult && prbResult->restype == RTSHORT )
+		{
+			switch( prbResult->resval.rint )
+			{
+			case DROPEFFECT_NONE:
+				dwEffect = DROPEFFECT_NONE;
+				break;
+			case DROPEFFECT_COPY:
+				dwEffect = DROPEFFECT_COPY;
+				break;
+			case DROPEFFECT_MOVE:
+				dwEffect = DROPEFFECT_MOVE;
+				break;
+			case DROPEFFECT_LINK:
+				dwEffect = DROPEFFECT_LINK;
+				break;
+			}
+		}
+		acutRelRb( prbResult );
+		return true;
+	}
+	return false;
+}
+
+bool CArxControlServices::HandleDropOnControl( COleDataObject* pDataObject, 
+																							 DROPEFFECT dropEffect, const CPoint& point ) const
 {
 	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
 	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )

@@ -323,6 +323,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
@@ -347,6 +348,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
@@ -421,6 +423,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventFolderChanged );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -440,6 +443,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -492,6 +496,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -549,6 +554,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -616,6 +622,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::Justification, PropEnum, 0 );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -642,6 +649,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		//pDclControl->AddBooleanProperty( Prop::UseTabStops, PropBool, false );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -678,6 +686,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventRightClick );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -750,6 +759,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -833,6 +843,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -913,6 +924,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::Text, PropString, pDclControl->GetKeyName() );
 		AddControlTooltipProperties( pDclControl );
 		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::EventEditChanged );
@@ -936,6 +948,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
@@ -959,6 +972,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
+		AddControlEvent( pDclControl, Prop::DragOverFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );

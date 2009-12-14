@@ -25,9 +25,8 @@ CArxAcadSlideCtrl::CArxAcadSlideCtrl( CControlPane& Pane, TDclControlPtr pTempla
 , mbTrackingMouse( false )
 , mhbmLast( NULL )
 , mhbmSaved( NULL )
+, mclrHighlight( CAcadColorService::GetTransparentColor() )
 {
-	m_bSelectedRect = false;
-
 	if( bCreate )
 		Create( Pane.GetHostDialog(), nID );
 }
@@ -64,16 +63,15 @@ DWORD CArxAcadSlideCtrl::GetWndStyle() const
 	return (dwStyle | BS_OWNERDRAW | BS_NOTIFY);
 }
 
-void CArxAcadSlideCtrl::SetHighlight(const COLORREF& rgb)
+void CArxAcadSlideCtrl::SetHighlight(const COLORREF& clrHighlight)
 {
-	m_bSelectedRect = true;
-	m_HighlightColor = rgb;		
+	mclrHighlight = clrHighlight;		
 	OnNeedRepaint( false );
 }
 
 void CArxAcadSlideCtrl::RemoveHighlight()
 {
-	m_bSelectedRect = false;
+	mclrHighlight = CAcadColorService::GetTransparentColor();
 	OnNeedRepaint( false );
 }
 
@@ -258,7 +256,7 @@ void CArxAcadSlideCtrl::Clear()
 		DeleteObject( mhbmLast );
 		mhbmLast = NULL;
 	}
-	m_bSelectedRect = false;
+	RemoveHighlight();
 	mArxSlide.Load( NULL );
 	RedrawWindow();
 }
@@ -368,8 +366,6 @@ END_MESSAGE_MAP()
 
 void CArxAcadSlideCtrl::OnPaint() 
 {
-	if( !GetParent()->IsWindowVisible() )		
-		return;
 	CPaintDC dc( this ); // Device context for painting
 	CRect rcClient;
 	GetClientRect( &rcClient );
@@ -387,13 +383,13 @@ void CArxAcadSlideCtrl::OnPaint()
 
 	GetArxServices()->HandleEvent( Prop::EventPaint, args_B( (GetFocus() == this) ) );
 
-	if( m_bSelectedRect )
+	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
 	{
 		CRect rcCell;
 		GetClientRect( &rcCell );
 		rcCell.DeflateRect( 1, 1 );
 		
-		CPen pen( PS_SOLID, 1, m_HighlightColor );
+		CPen pen( PS_SOLID, 1, mclrHighlight );
 		CPen* pOldPen = dc.SelectObject( &pen );
 		dc.MoveTo( rcCell.TopLeft() );
 		dc.LineTo( rcCell.right, rcCell.top );		
@@ -461,7 +457,6 @@ void CArxAcadSlideCtrl::OnDoubleclicked()
 
 void CArxAcadSlideCtrl::OnDestroy() 
 {
-	m_bSelectedRect = false;
 	__super::OnDestroy();
 }
 
@@ -501,7 +496,7 @@ void CArxAcadSlideCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxAcadSlideCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
+	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) && nFlags == MK_LBUTTON)
 	{
 		BeginDragDrop( point );
 		GetArxServices()->HandleEvent( Prop::EventClicked );	

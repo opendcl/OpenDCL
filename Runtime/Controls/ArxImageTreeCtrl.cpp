@@ -29,6 +29,62 @@ bool CArxImageTreeCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+DROPEFFECT CArxImageTreeCtrl::OnDragOver( const CPoint& point, COleDataObject* pSourceData,
+																					DWORD dwKeyState )
+{
+	if( !mpTemplate->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
+		return DROPEFFECT_NONE;
+	DWORD dwEffect = __super::OnDragOver( point, pSourceData, dwKeyState );
+	CString sDragOverEvent = mpTemplate->GetStringProperty( Prop::DragOverFromControl );
+	if( !sDragOverEvent.IsEmpty() && pSourceData->IsDataAvailable( CDragDropService::GetDclControlClipboardFormat() ) )
+	{
+		HGLOBAL hData = pSourceData->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
+		if( !hData )
+			return dwEffect;
+		CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+		GlobalUnlock( hData );
+		GlobalFree( hData );
+		if( !pSourceDclControl )
+			return dwEffect;
+		CString sProject = pSourceDclControl->GetOwnerProject()->GetKeyName();
+		CString sForm = pSourceDclControl->GetOwnerForm()->GetKeyName();
+		CString sControl;
+		if( pSourceDclControl->GetType() != _CtlForm )
+			sControl = pSourceDclControl->GetKeyName();
+		UINT flags = 0;
+		HTREEITEM	hItem = HitTest( point, &flags );
+		CString sKey = GetItemKey( hItem );
+		resbuf* prbResult = NULL;
+		bool bCancel = false;
+		if( !sKey.IsEmpty() )
+			bCancel = GetArxServices()->HandleEvent( sDragOverEvent, prbResult, args_SSSS( sProject, sForm, sControl, sKey ) );
+		else
+			bCancel = GetArxServices()->HandleEvent( sDragOverEvent, prbResult, args_SSSH( sProject, sForm, sControl, (DWORD_PTR)hItem ) );
+		if( bCancel )
+			dwEffect = DROPEFFECT_NONE;
+		else if( prbResult && prbResult->restype == RTSHORT )
+		{
+			switch( prbResult->resval.rint )
+			{
+			case DROPEFFECT_NONE:
+				dwEffect = DROPEFFECT_NONE;
+				break;
+			case DROPEFFECT_COPY:
+				dwEffect = DROPEFFECT_COPY;
+				break;
+			case DROPEFFECT_MOVE:
+				dwEffect = DROPEFFECT_MOVE;
+				break;
+			case DROPEFFECT_LINK:
+				dwEffect = DROPEFFECT_LINK;
+				break;
+			}
+		}
+		acutRelRb( prbResult );
+	}
+	return dwEffect;
+}
+
 bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 																DROPEFFECT dropEffect )
 {

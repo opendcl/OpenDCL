@@ -52,10 +52,12 @@ void CArxControlDropTarget::OnDragLeave(CWnd* pWnd)
 DROPEFFECT CArxControlDropTarget::OnDragOver( CWnd* pWnd, COleDataObject* pDataObject,
 																							DWORD dwKeyState, CPoint point )
 {
-	DROPEFFECT dwEffect = mpDlgControl->OnDragOver( point, pDataObject, dwKeyState );
-	if( dwEffect != DROPEFFECT_NONE )
+	DROPEFFECT dwEffect = DROPEFFECT_NONE;
+	const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
+	if( pArxServices && pArxServices->HandleDragOverControl( pDataObject, dwKeyState, point, dwEffect ) )
 		return dwEffect;
-	return DROPEFFECT_NONE;
+	dwEffect = mpDlgControl->OnDragOver( point, pDataObject, dwKeyState );
+	return dwEffect;
 	//return __super::OnDragOver( pWnd, pDataObject, dwKeyState, point );
 }
 
@@ -68,7 +70,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 {
 	OnDragLeave( pWnd ); //to make sure everything gets cleaned up
 	const CArxControlServices* pArxServices = mpDlgControl->GetArxServices();
-	if( pArxServices && pArxServices->HandleDropOnControl( pWnd, pDataObject, dropEffect, point ) )
+	if( pArxServices && pArxServices->HandleDropOnControl( pDataObject, dropEffect, point ) )
 		return TRUE;
 	if( mpDlgControl->OnDrop( point, pDataObject, dropEffect ) )
 		return TRUE;

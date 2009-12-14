@@ -1,0 +1,129 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Language" content="de">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../Utility.js"></script>
+<title>DragOverFromControl</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">
+                  <img border="0" src="../images/Event.png" width="16" height="16"> 
+                  DragOverFromControl</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink" style="font-size:xx-small;">
+					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmwerkung zur deutschen Übersetzung melden</a><br />
+					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
+            <td bgcolor="#CCFF99">c:<i>&lt;CONTROL-NAME&gt;</i>_OnDragOverFromControl</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
+&nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnDragOverFromControl 
+(<font color="red">strProjectName [als <a href="../DataType/String.htm">String</a>] 
+            strFormName [als <a href="../DataType/String.htm">String</a>] 
+            strControlName [als <a href="../DataType/String.htm">String</a>] 
+            uDropPoint [variiert] </font>/)<br />
+            )</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
+            <td bgcolor="#CCFF99"><a href="../DataType/Bitflag.htm">Bitflag</a></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
+            <td bgcolor="#CCFF99"><a href="../Control/BlockList.htm">Blockliste</a>,
+            <a href="../Control/BlockView.htm">Block</a>,
+      <a href="../Control/DwgList.htm">DWG-Liste</a>,
+            <a href="../Control/DwgPreview.htm">DWG-Vorschau</a>,
+            <a href="../Control/GraphicButton.htm">Bildschaltfl&auml;che</a>,
+            <a href="../Control/Hatch.htm">Schraffur</a>,
+            <a href="../Control/Label.htm">Bezeichnung</a>,
+            <a href="../Control/ListBox.htm">Listenfeld</a>,
+            <a href="../Control/ListView.htm">Erweiterte Liste</a>,
+            <a href="../Control/PictureBox.htm">Bild</a>,
+            <a href="../Control/SlideView.htm">Dia</a>,
+            <a href="../Control/TextBox.htm">Textfeld</a>,
+            <a href="../Control/TextButton.htm">Textschaltfl&auml;che</a>,
+            <a href="../Control/Tree.htm">Baumstruktur</a></td>
+          </tr>
+        </table>
+		<p>This event is triggered as the user passes the cursor over the 
+        control during a drag and drop 
+        operation from another OpenDCL control (or from this control). The 
+        return value from this function is used to determine which type of 
+        action will occur if the drop is made at the current point. 
+        The ProjectName, FormName, and ControlName arguments identify the 
+        control from which the drag operation was initiated. The DropPoint 
+        argument is a 
+        <a href="../../../../ENU/Content/Reference/DataType/2DPoint.htm">2DPoint</a> 
+        in most cases, with the following exceptions.</p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+          <tr>
+            <th nowrap>Zielsteuerelement</th>
+            <th nowrap>Datentyp von uDropPoint </th>
+          </tr>
+          <tr>
+            <td><a href="../Control/Tree.htm">Baumstruktur</a> mit Schl&uuml;sseln f&uuml;r die Eintr&auml;ge </td>
+            <td><a href="../DataType/String.htm">String</a> (Schl&uuml;ssel des Elements, auf dem die Maustaste losgelassen wurde)</td>
+          </tr>
+          <tr>
+            <td><a href="../Control/Tree.htm">Baumstruktur</a> ohne Schl&uuml;sseln f&uuml;r die Eintr&auml;ge </td>
+            <td><a href="../DataType/Handle.htm">Handle</a> (Handle des Zieleintrags)</td>
+          </tr>
+          <tr>
+            <td>Alle anderen Steuerelemente </td>
+            <td> <a href="../DataType/2DPoint.htm">2DPunkt</a> (Mauskoordinaten in Abh&auml;ngigkeit des Steuerelements)</td>
+          </tr>
+        </table>
+        <br />
+	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber4">
+          <tr>
+            <th nowrap>Return Value</th>
+            <th nowrap>Behavior</th>
+          </tr>
+          <tr>
+            <td>NIL</td>
+            <td>Default</td>
+          </tr>
+          <tr>
+            <td>0</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Copy</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td> Move</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td> Link</td>
+          </tr>
+        </table>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+	</div>
+</body>
+</html>
