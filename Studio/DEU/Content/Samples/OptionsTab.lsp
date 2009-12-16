@@ -1,11 +1,11 @@
 ;;;
-;;; Splash Screen-Beispiel
+;;; Beispiel einer Karteikarte in den Optionen
 ;;;
-;;; Dieses Beispiel zeigt die Möglichkeit eines Splash-Screens
+;;; Dieses Beispiel demonstriert die Anwendung einer zusätzlichen Karteikarte in den Optionen und ihren Ereignissen.
 ;;;
 
 ;; Hauptprogramm
-(defun c:Splash (/ cmdecho)
+(defun c:OptionsTab (/ cmdecho)
 
 	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
 	(setq cmdecho (getvar "CMDECHO"))
@@ -14,34 +14,36 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Splash.odcl"))
+	(dcl_Project_Load (*ODCL:Samples:FindFile "OptionsTab.odcl"))
 
-	;; Dialog anzeigen
-	(dcl_Form_Show splash_Form1)
-    
+	;; Karteikarten in den Optionen werden registriert, wenn das Projekt geladen wird.
+	;; Alle registrierten zusätzlichen Karteikarten werden automatisch angezeigt, wenn
+	;; die AutoCAD-Optionen aufgerufen werden.
+	(dcl_messagebox "Aktivieren Sie die Karteikarte \"OpenDCL Beispiel\"!" "OpenDCL - Zusätzliche Karteikarten in den Optionen")
+	(command "._OPTIONS") ; Startet die AutoCAD-Optionen
+
 	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
 	;; der Dialog aktiv ist.
 	;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen
 	;; daher global definiert sein.
 
-	(setq *Count* 4)
-	(C:CloseSplash)
-
-	(princ)
-)
-
-(defun C:CloseSplash ()
-	(dcl_Control_SetCaption splash_Form1_Label1 (strcat "Ich lade..." (itoa *Count*)))
-	(setq *Count* (1- *Count*))
-	(if (/= *Count* -1)
-		(dcl_DelayedInvoke 1000 "C:CloseSplash")
-		(dcl_Form_close splash_Form1)
-	)
 	(princ)
 )
 
 ;|<<OpenDCL Ereignisfunktionen>>|;
+
+(defun c:OptionsTab_OptionsTabDemo_OnOK (/)
+	(princ "\n[OpenDCL - Zusätzliche Karteikarten in den Optionen] Ihre Eingabe: \"")
+	(princ (dcl_Control_GetText OptionsTab_OptionsTabDemo_txtOptTabDemo))
+	(princ "\"; Status des Kontrollkästchens ")
+	(if (eq 1 (dcl_Control_GetValue OptionsTab_OptionsTabDemo_chkOptTabDemo))
+		(princ "EIN")
+		(princ "AUS")
+	)
+	(princ "\n")
+	(princ)
+)
 
 (princ)
 
@@ -108,7 +110,7 @@
 			)
 		)
 	)
-	"Splash"
+	"OptionsTab"
 )
 (princ)
 

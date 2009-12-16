@@ -1,44 +1,45 @@
 ;;;
-;;; Custom Slider Control Sample
+;;; Beispiel eines benutzerdefinierten Schiebereglers
 ;;;
-;;; Author: Fred Tomke
-;;; Date: 2009-10-27
+;;; Autor: Fred Tomke
+;;; Datum: 27.10.2009
 ;;;
-;;; Demonstrates how to create and manage a custom slider control based
-;;; on a generic OpenDCL picture box control.
+;;; Demonstriert das Erstellen und die Steuerung eines benutzerdefinierten
+;;; Schiebereglers basierend auf einem OpenDCL-Bild-Steuerelement
 ;;; 
 ;;; Modified by: Owen Wengerd [2009-10-30]
 ;;; I rewrote large portions of Fred's fine work to eliminate all globals
 ;;; and reformatted to more closely resemble the other OpenDCL samples
 
 
-;; Main program
+;; Hauptprogramm
 (defun c:Slider (/ cmdecho)
 
-	;; Ensure OpenDCL Runtime is (quietly) loaded
+	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
 	(setq cmdecho (getvar "CMDECHO"))
 	(setvar "CMDECHO" 0)
 	(command "_OPENDCL")
 	(setvar "CMDECHO" cmdecho)
 
-	;; Load the project
+	;; Projekt laden
 	(dcl_Project_Load (*ODCL:Samples:FindFile "Slider.odcl"))
 
-	;; Show the main form
+	;; Dialog anzeigen
 	(dcl_Form_Show Slider_Form1)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
-	;; the modal form is closed. In the meantime, the event handlers
-	;; manage the form.
+	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; bis der modale Dialog geschlosswen wird.
+	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
 	(princ)
 )
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: converts the slider button y-coordinate into percentage
-;; Arguments: intTop = new y coordinate of slider button in picture box client coordinates
-;; Returns: calculated percentage as integer
+;; Beschreibung: Konvertiert die y-Koordinate des Reglerknopfs in Prozentangaben
+;; Argumente: intTop = neue y-Koordinate des Reglerknopfs innerhalb des Bildsteuerelements als Integer
+;; Rückgabe: berechnete Prozentangabe in Integer
 
 (defun slider_get_percent (intPos / intBorder intButtonHeight intHeight)
 	(setq intBorder (slider_get_border_size))
@@ -54,9 +55,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: converts the percentage value into y-coordinate for the slider button
-;; Arguments: intPercent = percentage value as integer
-;; Returns: new y-coordinate in picture box client coordinates as integer
+;; Beschreibung: Konvertiert die Prozentangabe in die y-Koordinate des Reglerknopfs
+;; Argumente: intPercent = Prozentangabe als Integer
+;; Rückgabe: neue y-Koordinate des Reglerknopfs innerhalb des Bildsteuerelements als Integer
 
 (defun slider_get_pos (intPercent / intBorder intButtonHeight intHeight)
 	(setq intBorder (slider_get_border_size))
@@ -72,9 +73,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: updates the slider position while dragging
-;; Arguments: intPercent = new percentage value as integer
-;; Returns: <unused>
+;; Beschreibung: aktualisiert die Reglerposition im gedrückten Zustand
+;; Argumente: intPercent = Prozentangabe als Integer
+;; Rückgabe: <nicht verwendet>
 
 (defun slider_change_percent (intPercent)
 	(cond
@@ -91,9 +92,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: initiates dragging by enabling the OnMouseMove event
-;; Arguments: none
-;; Returns: <unused>
+;; Beschreibung: Initiiert den Drag-Vorgang durch Aktivieren des OnMouseMove-Ereignis
+;; Argumente: keine
+;; Rückgabe: <nicht verwendet>
 
 (defun slider_start_dragging ()
 	(dcl_Control_SetProperty Slider_Form1_pic_slider "MouseMove" "c:Slider_Form1_pic_slider_OnMouseMove")
@@ -101,9 +102,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: stops dragging by disabling the OnMouseMove event
-;; Arguments: none
-;; Returns: <unused>
+;; Beschreibung: Stoppt den Drag-Vorgang durch Deaktivieren des OnMouseMove-Ereignis
+;; Argumente: keine
+;; Rückgabe: <nicht verwendet>
 
 (defun slider_stop_dragging ()
 	(dcl_Control_SetProperty Slider_Form1_pic_slider "MouseMove" "")
@@ -111,9 +112,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: Validates and returns the large increment value
-;; Arguments: none
-;; Returns: large increment as integer
+;; Beschreibung: Überprüft und gibt das große Inkrement aus
+;; Argumente: keine
+;; Rückgabe: großes Inkrement als Integer
 
 (defun slider_get_large_increment (/ intVal)
 	(setq intVal (atoi (dcl_ComboBox_GetEBText Slider_Form1_cbb_large)))
@@ -126,9 +127,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: Validates and returns the small increment value
-;; Arguments: none
-;; Returns: small increment as integer
+;; Beschreibung: Überprüft und gibt das kleine Inkrement aus
+;; Argumente: keine
+;; Rückgabe: kleines Inkrement als Integer
 
 (defun slider_get_small_increment (/ intVal)
 	(setq intVal (atoi (dcl_ComboBox_GetEBText Slider_Form1_cbb_small)))
@@ -141,9 +142,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: Calculates the button height based on the selected style
-;; Arguments: none
-;; Returns: button height as integer
+;; Beschreibung: Berechnet die Reglerknopfgröße in Abhängigkeit vom gewählten Stil
+;; Argumente: keine
+;; Rückgabe: Reglerknopfgröße als Integer
 
 (defun slider_get_button_height (/ intButtonStyle)
 	(setq intButtonStyle (dcl_ComboBox_GetCurSel Slider_Form1_cbb_style))
@@ -157,9 +158,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: Calculates the border size based on the selected border style
-;; Arguments: none
-;; Returns: border size as integer
+;; Beschreibung: Berechnet die Randstärke in Abhängigkeit vom gewählten Stil
+;; Argumente: keine
+;; Rückgabe: Randgröße als Integer
 
 (defun slider_get_border_size (/ intBorderStyle)
 	(setq intBorderStyle (dcl_Control_GetBorderStyle Slider_Form1_pic_slider))
@@ -173,9 +174,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Description: Appends a new line to the end of the event log and scrolls it into view
-;; Arguments: strLine = new event log text as string
-;; Returns: <unused>
+;; Beschreibung: Ergänzt eine neue Zeile im Ereignisprotokoll und scrollt dorthin
+;; Argumente: strLine = neue Zeile als Text
+;; Rückgabe: <nicht verwendet>
 
 (defun slider_log_event (strLine)
 	(if (= 1 (dcl_Control_GetValue Slider_Form1_chb_event))
@@ -184,16 +185,17 @@
 ); slider_log_event
 
 
-;|<<OpenDCL Event Handlers>>|;
+;|<<OpenDCL Ereignisfunktionen>>|;
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when dcl_form_show is executed. Sets initial values for the form and its controls
-;; Arguments: none
-;; Returns: <unused>
+;; Ereignis: Wird aufgerufen, wenn dcl_form_show ausgeführt wird. Setzt Vorgabewerte für den Dialog und die Steuerelemente
+;; Argumente: keine
+;; Rückgabe: <nicht verwendet>
 
 (defun c:Slider_Form1_OnInitialize (/)
 ;|
-	;; Uncomment this code to reset the increment combos every time the form is shown
+	;; Entfernen Sie die Auskommentierung, um die Kombinationsfelder mit den
+	;; Inkrementangaben jedes mal zurückzusetzen, wenn der Dialog angezeigt wird.
 	(mapcar 'dcl_ComboBox_Clear (list Slider_Form1_cbb_small Slider_Form1_cbb_large))
 	(dcl_ComboBox_AddList Slider_Form1_cbb_small (list "1" "2" "5"))
 	(dcl_ComboBox_AddList Slider_Form1_cbb_large (list "5" "10" "20"))
@@ -206,9 +208,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when Return was pressed in the textbox or the user has pressed ESC or he is closing the form.
-;; Arguments: intIsESC = reason of closing as integer; 0, when Return was pressed in the textbox
-;; Returns: boole, T to prevent the form from closing
+;; Ereignis: Wird aufgerufen, wenn der Anwender im Eingabefeld ENTER drückt, die ESC-Taste drückt oder den Dialog schließt.
+;; Argumente: intIsESC = Grund der Dialogbeendigung als Integer; 0, wenn im Eingabefeld ENTER gedrückt wurde
+;; Rückgabe: T, um den Dialog nicht zu schließen
 
 (defun c:Slider_Form1_OnCancelClose (intIsESC /)
 	(slider_log_event (strcat "OnCancelClose / " (vl-prin1-to-string intIsESC)))
@@ -217,9 +219,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the textbox content was changed
-;; Arguments: strNewValue = new textbox content as string
-;; Returns: <unused>
+;; Ereignis: Wird aufgerufen, wenn sich der Textinhalt geändert hat
+;; Argumente: strNewValue = neuer Textwert als Text
+;; Rückgabe: <nicht verwendet>
 
 (defun c:Slider_Form1_edt_percent_OnEditChanged (strNewValue / intPercent)
 	(slider_log_event (strcat "OnEditChanged / " strNewValue))
@@ -233,10 +235,10 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the user changes the scrollbar style
-;; Arguments: intStyle = index of selected item
-;;  strValue = text value of selected item
-;; Returns: <unused>
+;; Ereignis: Wird aufgerufen, wenn der Anwender den Stil des Schiebereglers ändert
+;; Argumente: intStyle = Index als Integer
+;;            strValue = Bezeichnung als Text
+;; Rückgabe: <nicht verwendet>
 
 (defun c:Slider_Form1_cbb_style_OnSelChanged (intStyle strValue /)
 	(dcl_PictureBox_Refresh Slider_Form1_pic_slider)
@@ -244,10 +246,10 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the user changes the borderstyle style
-;; Arguments: intBorder = index of selected borderstyle
-;;  strValue = text value of selected item
-;; Returns: <unused>
+;; Ereignis: Wird aufgerufen, wenn der Anwender den Stil des Rands ändert
+;; Argumente: intBorder = Index als Integer
+;;            strValue = Bezeichnung als Text
+;; Rückgabe: <nicht verwendet>
 
 (defun c:Slider_Form1_cbb_border_OnSelChanged (intBorder strValue /)
 	(dcl_Control_SetBorderStyle Slider_Form1_pic_slider intBorder)
@@ -255,9 +257,9 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called whenever the picturebox has to be repainted
-;; Arguments: isHasFocus = boole, T id picturebox has focus
-;; Returns: <unused>
+;; Ereignis: Wird aufgerufen, sobald das Bild-Steuerelement neugezeichnet werden muss
+;; Argumente: isHasFocus = T, wenn das Bildsteuerlement den Fokus hat
+;; Rückgabe: <nicht verwendet>
 
 (defun c:Slider_Form1_pic_slider_OnPaint (isHasFocus / intPos intStyle lstPos lstLines intLeft)
 	(slider_log_event (strcat "OnPaint / " (vl-prin1-to-string isHasFocus)))
@@ -265,21 +267,21 @@
 	(setq lstPos (dcl_Control_GetPos Slider_Form1_pic_slider))
 	(setq intStyle (dcl_ComboBox_GetCurSel Slider_Form1_cbb_style))
 	(cond
-		(	(or (not intStyle) (<= intStyle 0)) ; scroll bar
+		(	(or (not intStyle) (<= intStyle 0)) ; Standard-Regler
 			(dcl_PictureBox_PaintPicture Slider_Form1_pic_slider (list (list 0 intPos 100 T nil))))
 
-	(	(= intStyle 1) ; solid rectangle
+	(	(= intStyle 1) ; Einfaches gefülltes Rechteck
 		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
 			(list
 				(list 0 intPos (caddr lstPos) 2 0)
 				(list 0 (+ intPos 2) (caddr lstPos) 8 171)
 				(list 0 (+ intPos 10) (caddr lstPos) 2 0))))
 
-	(	(= intStyle 2) ; solid fill
+	(	(= intStyle 2) ; Füllstandsanzeige
 		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
 			(list (list 0 intPos (caddr lstPos) (- (cadddr lstPos) intPos) 171))))
 
-	(	(= intStyle 3) ; solid triangle
+	(	(= intStyle 3) ; Füllendes Dreieck
 		(repeat (1+ (setq intLen (1- (caddr lstPos))))
 			(setq lstLines (cons (list 0 (last lstPos) (setq intLen (1- intLen)) 0 163) lstLines))
 		); repeat
@@ -287,7 +289,7 @@
 		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
 			(list (list 0 intPos (caddr lstPos) 4 0))))
 
-	(	(= intStyle 4) ; bullet
+	(	(= intStyle 4) ; Knopf
 		(setq intLeft (/ (caddr lstPos) 2))
 		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
 			(list (list intLeft 0 1 (last lstPos) 8)))
@@ -298,10 +300,10 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the mouse moves over the picturebox.
-;; Arguments: none
-;; Returns: <unused>
-;; Notes: To make sure that picturebox has focus for OnKeyPressed event and mousewheel
+;; Ereignis: Wird aufgerufen, wenn sich die Maus über dem Bild bewegt
+;; Argumente: keine
+;; Rückgabe: <nicht verwendet>
+;; Hinweis: To make sure that picturebox has focus for OnKeyPressed event and mousewheel
 
 (defun c:Slider_Form1_pic_slider_OnMouseEntered (/)
 	(dcl_Control_SetFocus Slider_Form1_pic_slider)
@@ -309,19 +311,18 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the user presses a mouse button on the control
-;; Arguments: intButton = button as integer
-;;  intFlags = sum of bitflags as integer
-;;  intX = client x coordinate of mouseposition as integer
-;;  intY = client y coordinate of mouseposition as integer
-;; Returns: <unused>
-;; Notes: The MouseDblClick event handler has been set to the same function name as
-;;  the MouseDown event in the .odcl, which results both single click and
-;;  double click events callign this event handler
-;;  Left mousebutton over the scrollbar button = large step up
-;;  Left mousebutton below the scrollbar button = large step down
-;;  Left mousebutton on the scrollbar button = move directly to destination
-;;  Right mousebutton anywhere = move directly to destination
+;; Ereignis: Wird aufgerufen, wenn der Anwender eine Maustaste auf dem Steuerelement klickt
+;; Argumente: intButton = Schaltfläche als Integer
+;;            intFlags = Summe der einzelnen Bitwerte als Integer
+;;            intX = X-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;;            intY = Y-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;; Rückgabe: <nicht verwendet>
+;; Hinweis: Das Ereignis MouseDblClick ruft die selbe Funktion auf wie das Ereignis MouseDown.
+;;	    Beide rufen daher diese Funktion auf.
+;;          Linke Maustaste über dem Reglerknopf = großer Schritt nach oben
+;;          Linke Maustaste unter dem Reglerknopf = großer Schritt nach unten
+;;          Linke Maustaste auf dem Reglerknopf = direkt zum Zielpunkt
+;;          Rechte Maustaste irgendwohin = direkt zum Zielpunkt
 
 (defun c:Slider_Form1_pic_slider_OnMouseDown (intButton intFlags intX intY / intPercent intTop intButtonHeight)
 	(slider_log_event (strcat "OnMouseDown / " (vl-prin1-to-string (list intButton intFlags intX intY))))
@@ -342,12 +343,12 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the user releases a mouse button on the control
-;; Arguments: intButton = button as integer
-;;  intFlags = sum of bitflags as integer
-;;  intX = client x coordinate of mouseposition as integer
-;;  intY = client y coordinate of mouseposition as integer
-;; Returns: <unused>
+;; Ereignis: Wird ausgeführt, wenn die Maustaste über dem Steuerelement losgelasen wird
+;; Argumente: intButton = Schaltfläche als Integer
+;;            intFlags = Summe der einzelnen Bitwerte als Integer
+;;            intX = X-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;;            intY = Y-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;; Rückgabe: <nicht verwendet>
 
 (defun c:Slider_Form1_pic_slider_OnMouseUp (intButton intFlags intX intY / intPercent intTop intButtonHeight)
 	(slider_log_event (strcat "OnMouseUp / " (vl-prin1-to-string (list intButton intFlags intX intY))))
@@ -356,15 +357,15 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the user moves the mouse over the control.
-;; Arguments: intFlags = sum of bitflags as integer
-;;  intX = client x coordinate of mouseposition as integer
-;;  intY = client y coordinate of mouseposition as integer
-;; Returns: <unused>
-;; Notes: Triggers the moving of the slider button while the mouse button is pressed.
+;; Ereignis: Wird ausgeführt, wenn der Anwender die Maus über dem Steuerelement bewegt
+;; Argumente: intFlags = Summe der einzelnen Bitwerte als Integer
+;;            intX = X-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;;            intY = Y-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;; Rückgabe: <nicht verwendet>
+;; Hinweis: Wird ausgeführt, wenn der Reglerknopf mit gedrückter Maustaste über dem Steuerelement bewegt wird
 
 (defun c:Slider_Form1_pic_slider_OnMouseMove (intFlags intX intY /)
-	;; logging mouse move events quickly overflows the list box
+	;; Das Protokoll der OnMouseMove-Ereignisse kann die Liste leicht überfüllen
 	;(slider_log_event (strcat "OnMouseMove / " (vl-prin1-to-string (list intFlags intX intY))))
 	(if (= (logand intFlags 1) 1)
 		(slider_change_percent (slider_get_percent (- intY (/ (slider_get_button_height) 2))))
@@ -373,15 +374,15 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when the user has scrolled the mousewheel
-;; Arguments: intFlags = sum of bitflags as integer
-;;  intZDelta = number of lines which are scrolled, negative, when down
-;;  intX = client x coordinate of mouseposition as integer
-;;  intY = client y coordinate of mouseposition as integer
-;; Returns: <unused>
-;; Notes: Scrolling down = small step down
-;;  Scrolling up = small step up
-;;  Pressing Shift-Key while scrolling uses large step instead of small steps
+;; Ereignis: Wird aufgerufen, wenn der Anwender mit dem Mausrad scrollt
+;; Argumente: intFlags = Summe der einzelnen Bitwerte als Integer
+;;            intZDelta = number of lines which are scrolled, negative, when down
+;;            intX = X-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;;            intY = Y-Koordinate der Mausposition innerhalb des Bild-Steuerelements als Integer
+;; Rückgabe: <nicht verwendet>
+;; Hinweis: Herunterscrollen = Kleiner Schritt runter
+;;          Hochscrollen = Kleiner Schritt nach oben
+;;          Wird beim Scrollen die Umschalttaste gehalten, wird in großen Schritten gescrollt
 
 (defun c:Slider_Form1_pic_slider_OnMouseWheel (intFlags intZDelta intX intY / intPercent intInc)
 	(slider_log_event (strcat "OnMouseWheel / " (vl-prin1-to-string (list intFlags intZDelta intX intY))))
@@ -392,17 +393,17 @@
 
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when a key was pressed while picturebox has focus
-;; Arguments: strCharacter = character as string
-;;  intRepeatCount = number of repeating as integer
-;;  intFlags = sum of bitflags as integer
-;; Returns: <unused>
-;; Notes: PgUp = large step up
-;;  PgDown = large step down
-;;  End = bottom
-;;  Home = top
-;;  Left or Up = small step up
-;;  Right or Down = small step down
+;; Ereignis: Wird aufgerufen, wenn eine Taste gedrückt wurde
+;; Argumente: strCharacter = Zeichen als Text
+;;            intRepeatCount = Anzahl der Wiederholungen als Integer
+;;            intFlags = Summe der einzelnen Bitwerte als Integer
+;; Rückgabe: <nicht verwendet>
+;; Hinweis: Bild auf = großer Schritt nach oben
+;;          Bild runter = großer Schritt nach unten
+;;          Ende = Ende
+;;          Pos1 = Anfang
+;;          Links oder Hoch = kleiner Schritt nach oben
+;;          Rechts oder Runter = kleiner Schritt nach unten
 
 (defun c:Slider_Form1_pic_slider_OnKeyDown (strCharacter intRepeatCount intFlags / intChar intSmall intLarge)
 	(setq intChar (ascii strCharacter))
@@ -410,14 +411,14 @@
 	(setq intPercent (atoi (dcl_Control_GetText Slider_Form1_edt_percent)))
 	(if (= (logand intFlags 256) 256)
 		(cond
-			((= intChar 33) (slider_log_event " \=> Page Up") (slider_change_percent (+ intPercent (slider_get_large_increment))))
-			((= intChar 34) (slider_log_event " \=> Page Down") (slider_change_percent (- intPercent (slider_get_large_increment))))
-			((= intChar 35) (slider_log_event " \=> End") (slider_change_percent 100))
-			((= intChar 36) (slider_log_event " \=> Home") (slider_change_percent 0))
-			((= intChar 37) (slider_log_event " \=> Left") (slider_change_percent (+ intPercent (slider_get_small_increment))))
-			((= intChar 38) (slider_log_event " \=> Up") (slider_change_percent (+ intPercent (slider_get_small_increment))))
-			((= intChar 39) (slider_log_event " \=> Right") (slider_change_percent (- intPercent (slider_get_small_increment))))
-			((= intChar 40) (slider_log_event " \=> Down") (slider_change_percent (- intPercent (slider_get_small_increment))))
+			((= intChar 33) (slider_log_event " \=> Bild auf") (slider_change_percent (+ intPercent (slider_get_large_increment))))
+			((= intChar 34) (slider_log_event " \=> Bild ab") (slider_change_percent (- intPercent (slider_get_large_increment))))
+			((= intChar 35) (slider_log_event " \=> Ende") (slider_change_percent 100))
+			((= intChar 36) (slider_log_event " \=> Pos1") (slider_change_percent 0))
+			((= intChar 37) (slider_log_event " \=> Links") (slider_change_percent (+ intPercent (slider_get_small_increment))))
+			((= intChar 38) (slider_log_event " \=> Hoch") (slider_change_percent (+ intPercent (slider_get_small_increment))))
+			((= intChar 39) (slider_log_event " \=> Rechts") (slider_change_percent (- intPercent (slider_get_small_increment))))
+			((= intChar 40) (slider_log_event " \=> Runter") (slider_change_percent (- intPercent (slider_get_small_increment))))
 		); cond
 	); if
 ); c:Slider_Form1_pic_slider_OnKeyDown
@@ -426,55 +427,57 @@
 ;; --------------------------------------------------------------------------------------
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|<<OpenDCL Beispiel Abschluss>>|;
 
 ;;;######################################################################
 ;;;######################################################################
-;;; The following section of code is designed to locate OpenDCL Studio
-;;; sample files in the samples folder by prefixing the filename with
-;;; the path prefix that was saved in the registry by the installer.
-;;; The global *ODCL:Prefix and function *ODCL:Samples:FindFile
-;;; are used throughout the samples.
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; werden in allen Beispieldateien verwendet.
 ;;;
 (or *ODCL:Samples:FindFile
 	(defun *ODCL:Samples:FindFile (file)
 		(setq *ODCL:Prefix
 			(cond
 				(	*ODCL:Prefix
-				) ;_ already defined
+				) ;_ Bereits definiert
 				(	(vl-registry-read
-						 "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						 "SamplesFolder"
+						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
 					)
-				) ;_ 32-bit location
+				) ;_ 32-bit Variante aktueller Nutzer
 				(	(vl-registry-read
-						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						 "SamplesFolder"
-					)
-				) ;_ 32-bit location
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					 )
+				) ;_ 32-bit Variante alle Nutzer
 				(	(vl-registry-read
-						 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						 "SamplesFolder"
+						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
 					)
-				) ;_ 64-bit location
+				) ;_ 64-bit Variante aktueller Nutzer
 				(	(vl-registry-read
-						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						 "SamplesFolder"
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
 					)
-				) ;_ 64-bit location
+				) ;_ 64-bit Variante alle Nutzer
 			)
 		)
 		(cond
-			((findfile file)) ; check the support path first
+			((findfile file)) ; überprüfe zunächst den Supportpfad
 			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
 			(file)
 		)
 	)
 )
 
-;; If master demo is active, run the main function immediately; otherwise
-;; display a banner. The extra gymnastics allow the sample name to be
-;; specified in only one place, thus making it easier to reuse this code.
+;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
+;; Andernfalls gib einen Text in der Befehlszeile aus, mit welchem Kommando das Beispiel
+;; gestartet werden kann. Auf diesem Wege wird sichergestellt, dass der Name des Beispiels
+;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
+
 (	(lambda (demoname)
 		(if *ODCL:MasterDemo
 			(progn
@@ -482,8 +485,8 @@
 				(apply (read (strcat "C:" demoname)) nil)
 			)
 			(progn
-				(princ (strcat "\n" demoname " OpenDCL sample loaded"))
-				(princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
+				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
 			)
 		)
 	)

@@ -1,328 +1,241 @@
-(PRINC "\nOpenDCL Beispielanwendungen.\nGeben Sie \"DEMO\", um die Beispiele zu aufzurufen.\n")
+;;;######################################################################
+;;;
+;;;OpenDCL Beispiel: MasterDemo
+;;;
+;;; Dieses Beispiel zeigt einen Dialog zum Start der einzelnen OpenDCL Beispiel.
+;;;
 
+;; Hauptprogramm
+(DEFUN c:OpenDCLDemo (/ *error*)
+	(DEFUN *error* (msg)
+		(WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
+		;; do error stuff
+		(IF (DCL_FORM_ISACTIVE _MasterDemo_Main)
+			(DCL_FORM_CLOSE _MasterDemo_Main)
+		)
+		(PRINC
+			(STRCAT "\nAnwendungsfehler: " (ITOA (GETVAR "errno")) " :- " msg)
+		)
+		(PRINC)
+	)
+	;;------------------------
 
-(defun LspLoader (lspFileName / fn)
-    (cond
-      ;; Supportpfad nach der .LSP-Datei durchsuchen und laden
-       ( (if (setq fn (findfile lspFileName))
-           (LOAD fn)
-       ))
-      ;; Die .LSP-Datei aus dem Vorgabeverzeichnis für Beispieldateien laden.
-       ( (if
-           (or
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
-           )
-           (LOAD (strcat fn lspFileName))
-       ))
-       ;; Kann die .LSP-Datei nicht geladen werden, soll ein Fehler ausgegeben
-       ;; werden, jetzt abbrechen (oder Änderung vornehmen und erneut versuchen
-       (T (alert (strcat "\"" lspFileName "\" kann nicht geladen werden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu, damit es geladen werden kann!"))
-         (EXIT)
-       )
-    )
+	;; Stellt sicher, dass die OpenDCL Laufzeitumgebung geladen ist (ohne Textausgabe an der Befehlszeile)
+	(SETQ cmdecho (GETVAR "CMDECHO"))
+	(SETVAR "CMDECHO" 0)
+	(COMMAND "_OPENDCL")
+	(SETVAR "CMDECHO" cmdecho)
+
+	;; Lädt das Projekt
+	(DCL_PROJECT_LOAD (*ODCL:Samples:FindFile "_MasterDemo.odcl"))
+
+	;; Zeig den Dialog an.
+	(DCL_FORM_SHOW _MasterDemo_Main)
+	;; Die Ereignisfunktionen steuern an dieser Stelle den Dialog.
+	(PRINC)
+)
+
+;; Lade das spezielle Beispiel
+(DEFUN *ODCL:RunSample (filename)
+	(SETQ *ODCL:MasterDemo T) ; definiert, dass das Beispiel aus dem Masterdemo geladen wurde
+	(IF (NOT (LOAD (*ODCL:Samples:FindFile filename) NIL))
+		((ALERT (STRCAT "\"" filename "\" konnte nicht geladen werden!")))
+	)
+	(SETQ *ODCL:MasterDemo nil)
 )
 
 
+;|<<OpenDCL Ereignisfunktionen>>|;
 
-(DEFUN c:Demo (/ project-name *error*)
-    (DEFUN *error* (msg)
-        (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
-        ;; Errorhandling
-        (IF _MasterDemo_DCLMaster (dcl_FORM_CLOSE _MasterDemo_DCLMaster))
-        (PRINC (STRCAT "\nAnwendungsfehler: " (itoa (GETVAR "errno")) " :- " msg))        
-        (PRINC)
-    )
-
-    (LspLoader "_OpendclUtils.LSP")
-    (LoadRunTime)
-    (LoadODCLProj "_MasterDemo.odcl")
-
-    
-    ;; Der Dialog basiert auf einem nichtmodalen andockbaren Dialog,
-    ;; deshalb wird hier erst einmal geprüft ob vielleicht der Dialog schon aktiv ist ... ansonsten anzeigen
-    (IF (NOT (dcl_FORM_ISACTIVE _MasterDemo_DCLMaster))
-          (dcl_FORM_SHOW _MasterDemo_DCLMaster) 
-          (PROMPT "\nDer Dialog ist bereits aktiv.")
-    )
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnMisc_OnClicked ()
+	(*ODCL:RunSample "Misc.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd1_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:misc) (LspLoader "Misc.lsp"))
-        (C:misc)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnMethods_OnClicked ()
+	(*ODCL:RunSample "Methods.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd2_OnClicked ()
-    (setq *MasterDemo* T)   
-    (IF (OR (VL-SYMBOL-VALUE 'C:Methods) (LspLoader "Methods.lsp"))
-        (C:Methods)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnEventHandling_OnClicked ()
+	(*ODCL:RunSample "EventHandling.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd3_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:Events) (LspLoader "EventHandling.lsp"))
-        (C:Events)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnMessageBox_OnClicked ()
+	(*ODCL:RunSample "MessageBox.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd4_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:MsgBox) (LspLoader "MessageBox.lsp"))
-        (C:MsgBox)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnTree_OnClicked ()
+	(*ODCL:RunSample "Tree.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd5_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:Tree) (LspLoader "TreeView.lsp"))
-        (C:Tree)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnViewDwg_OnClicked ()
+	(*ODCL:RunSample "ViewDwg.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd6_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:ViewDwg) (LspLoader "ViewDwg.lsp"))
-        (C:ViewDwg)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnModeless_OnClicked ()
+	(*ODCL:RunSample "Modeless.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd7_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:Modeless) (LspLoader "Modeless.lsp"))
-        (C:Modeless)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnOptionsTab_OnClicked ()
+	(*ODCL:RunSample "OptionsTab.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd8_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:ConfigTab) (LspLoader "Config.lsp"))
-        (C:ConfigTab)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnHTML_OnClicked ()
+	(*ODCL:RunSample "HTML.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd9_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:HTML) (LspLoader "HTML.lsp"))
-        (C:HTML)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnGrid_OnClicked ()
+	(*ODCL:RunSample "GRID.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd10_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:GRD) (LspLoader "GRID.lsp"))
-        (C:GRD)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnAnimation_OnClicked ()
+	(*ODCL:RunSample "Animation.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd11_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'C:AVI) (LspLoader "Animation.lsp"))
-        (C:AVI)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnHatches_OnClicked ()
+	(*ODCL:RunSample "Hatches.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd12_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:Hatches) (LspLoader "Hatches.lsp"))
-        (c:Hatches)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnToolTip_OnClicked ()
+	(*ODCL:RunSample "ToolTip.lsp")
+	(PRINC)
 )
 
-
-(DEFUN c:_MasterDemo_DCLMaster_cmd13_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:Tool) (LspLoader "ToolTip.lsp"))
-        (c:Tool)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnDragNDrop_OnClicked ()
+	(*ODCL:RunSample "DragNDrop.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd14_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:Drag) (LspLoader "DragNDrop.lsp"))
-        (c:Drag)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnSelections_OnClicked ()
+	(*ODCL:RunSample "Selections.lsp")
+	(PRINC)
 )
 
-
-(DEFUN c:_MasterDemo_DCLMaster_cmd15_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:sel) (LspLoader "Selections.lsp"))
-        (c:sel)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnListView_OnClicked ()
+	(*ODCL:RunSample "ListView.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd16_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:ListView) (LspLoader "ListView.lsp"))
-        (c:ListView)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnListBoxCopyPaste_OnClicked ()
+	(*ODCL:RunSample "ListBoxCopyPaste.lsp")
+	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_DCLMaster_cmd17_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:CopyPaste) (LspLoader "ListBoxCopyPaste.lsp"))
-        (c:CopyPaste)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnSplitter_OnClicked ()
+	(*ODCL:RunSample "Splitter.lsp")
+	(PRINC)
 )
 
-(defun c:_MasterDemo_DCLMaster_cmd18_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:SPLIT) (LspLoader "Splitter.lsp"))
-        (c:splitter)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnDwgList_OnClicked ()
+	(*ODCL:RunSample "DwgList.lsp")
+	(PRINC)
 )
 
-
-(defun c:_MasterDemo_DCLMaster_cmd19_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:DwgList) (LspLoader "DwgList.lsp"))
-        (PROGN (dcl_FORM_CLOSE _MasterDemo_DCLMaster) (c:DwgList))
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnListBox_OnClicked ()
+	(*ODCL:RunSample "ListBox.lsp")
+	(PRINC)
 )
 
-(defun c:_MasterDemo_DCLMaster_cmd20_OnClicked ()
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:ListBox) (LspLoader "ListBox.lsp"))
-        (c:ListBox)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnDistSample_OnClicked (/ readme)
+	(SETQ readme (*ODCL:Samples:FindFile "DistSampleReadMe.txt"))
+	(IF readme
+		(STARTAPP "notepad" readme)
+		(ALERT (STRCAT "Cant find \"DistSampleReadMe.txt\"!"))
+	)
+	(PRINC)
 )
 
-(defun c:_MasterDemo_DCLMaster_cmd21_OnClicked ( / txt fn)
-    (setq txt "DistSampleReadMe.txt")
-    (cond
-      ;; Supportpfade nach der Datei durchsuchen
-       ( (if (setq fn (findfile txt))
-           (startapp "notepad" fn)
-       ))
-      ;; Datei aus dem Ordner der Beispieldateien des Installationsverzeichnisses von OpenDCL-Studio laden
-       ( (if 
-           (or
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
-           )
-           (startapp "notepad" (strcat fn txt))
-       ))
-      ;; Kann's nicht finden.
-       (T (alert (strcat "Ich kann \"" txt "\" nicht finden, you may need to add it to an Acad support path!"))
-         (EXIT)
-       )
-    )
-    (princ)
+(DEFUN c:_MasterDemo_Main_btnSplash_OnClicked (/)
+	(*ODCL:RunSample "Splash.lsp")
+	(PRINC)
 )
 
-(defun c:_MasterDemo_DCLMaster_cmd22_OnClicked ()
-   (LspLoader "ManualLoading.lsp")
-   (princ)
+(DEFUN c:_MasterDemo_Main_btnFormMover_OnClicked (/)
+	(*ODCL:RunSample "FormMover.lsp")
+	(PRINC)
 )
 
-(defun c:_MasterDemo_DCLMaster_cmd23_OnClicked ( /)
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:OpenTree) (LspLoader "TMaCAD.lsp"));;_ BR FIX THIS...
-        (c:OpenTree)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnSlider_OnClicked (/)
+	(*ODCL:RunSample "Slider.lsp")
+	(PRINC)
 )
 
-
-(defun c:_MasterDemo_DCLMaster_cmd24_OnClicked ( /)
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:splash) (LspLoader "splash.lsp"))
-        (c:splash)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnReadme_OnClicked (/ readme)
+	(SETQ readme (*ODCL:Samples:FindFile "_ReadME.txt"))
+	(IF readme
+		(STARTAPP "notepad" readme)
+		(ALERT (STRCAT "Cant find \"_ReadME.txt\"!"))
+	)
+	(PRINC)
 )
 
-(defun c:_MasterDemo_DCLMaster_cmd25_OnClicked ( /)
-    (setq *MasterDemo* T)
-    (IF (OR (VL-SYMBOL-VALUE 'c:Mover) (LspLoader "FormMover.lsp"))
-        (c:Mover)
-    )
-    (setq *MasterDemo* nil)
-    (PRINC)
+(DEFUN c:_MasterDemo_Main_btnUpdateCheck_OnClicked ()
+	(DCL_UPDATECHECK)
+	(PRINC)
 )
 
+(princ)
 
-
-(defun c:_MasterDemo_DCLMaster_cmdReadme_OnClicked ( / txt fn)
-    (setq txt "_ReadME.txt")
-    (cond
-      ;; ;; Supportpfade nach der Datei durchsuchen
-       ( (if (setq fn (findfile txt))
-           (startapp "notepad" fn)
-       ))
-      ;; Datei aus dem Ordner der Beispieldateien des Installationsverzeichnisses von OpenDCL-Studio laden
-       ( (if 
-           (or
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
-           )
-           (startapp "notepad" (strcat fn txt))
-       ))
-      ;; Kann's nicht finden.
-       (T (alert (strcat "Ich kann die Datei \"" txt "\" nicht finden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu!"))
-         (EXIT)
-       )
-    )
-    (princ)
- )
-
-
-(defun c:_MasterDemo_DCLMaster_txtCheckVar_OnClicked ( )
-    (dcl_updatecheck)
-    (princ)
+;;;######################################################################
+;;;######################################################################
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; werden in allen Beispieldateien verwendet.
+;;;
+(or *ODCL:Samples:FindFile
+	(defun *ODCL:Samples:FindFile (file)
+		(setq *ODCL:Prefix
+			(cond
+				(	*ODCL:Prefix
+				) ;_ Bereits definiert
+				(	(vl-registry-read
+						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 32-bit Variante aktueller Nutzer
+				(	(vl-registry-read
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					 )
+				) ;_ 32-bit Variante alle Nutzer
+				(	(vl-registry-read
+						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 64-bit Variante aktueller Nutzer
+				(	(vl-registry-read
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 64-bit Variante alle Nutzer
+			)
+		)
+		(cond
+			((findfile file)) ; überprüfe zunächst den Supportpfad
+			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+			(file)
+		)
+	)
 )
 
+(princ "\nOPENDCLDEMO\n")
+(C:OpenDCLDemo)
 
-(C:demo)
-(PRINC)
+;;;######################################################################
+;;;######################################################################
 
  ;|«Visual LISP© Format Options»
 (80 4 50 2 nil "end of " 80 50 2 0 2 nil nil nil T)

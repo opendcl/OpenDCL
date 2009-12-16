@@ -1,175 +1,346 @@
-(IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"SEL\" ein, um das Beispiel zu starten.\n")
-)
+;;;
+;;; Auswahl Beispiel
+;;;
+;; Dieses Beispiel zeigt dem Umgang mit modalen Dialogen, die geschlossen werden,
+;; um am Bildschirm einen Punkt zu picken, um hernach wieder am Bildschirm zu
+;; erscheinen und den aktuellen Status aufgrund der Anwenderinteraktion abzubilden.
+;; Drückt der Anwender die Schaltfläche ESC während der Interaktion mit AutoCAD,
+;; wird der Dialog nicht wieder eingeblendet.
 
-;; In diesem Beispiel wird der Aufruf einer modalen Dialogbox demonstriert,
-;; die geschlossen wird, damit der Anwender Punkte oder Objekte wählen kann,
-;; um hernach wieder geöffnet zu werden und den Inhalt der Listen zu aktualisieren
-;; Drückt der Anwender während der Punkt- bzw. Objektwahl die ESC-Taste, wird der
-;; Dialog anschließend nicht wieder geöffnet, sondern das Programm abgebrochen.
-;;
-;; Zum Testen können Sie den Dialog wie folgt zurücksetzen
-;; (dcl_Project_Load "Selections" T "Selections")
+;; Hauptprogramm
+(DEFUN c:Sel (/
 
+              ;; lokale Variablen
+              lstPoints lstObjects doContinue intResult
 
-(DEFUN c:sel (/                              fn
-              bflag                          blipper
-              echo                           PtList
-              ObjList
-              ;; lokale Unterfunktionen
-              *error*                        ss->objlist
-              ;; Lokale Ereignisfunktionen
+              ;; lokale Funktionen
+              point_selection object_selection
+
+              ;; lokale Ereignisse
+              ;; da Funktionen mit modalen Dialoge an der Stelle (dcl_form_show ...)
+              ;; angehalten werden, werden die Ereignisse nur in dieser Funktion
+              ;; benötigt und können daher lokal definiert werden
+
               c:Selections_Form_OnInitialize
               c:Selections_Form_Close_OnClicked
-              c:Selections_Form_GraphicButton1_OnClicked
-              c:Selections_Form_GraphicButton2_OnClicked
-             )
+              c:Selections_Form_PickPointButton_OnClicked
+              c:Selections_Form_PickObjectButton_OnClicked
+              c:Selections_Form_PointListBox_OnDblClicked
+              c:Selections_Form_ObjectListBox_OnDblClicked
+              )
 
-    (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
-    (LoadRunTime)
     
-    (SETQ blipper (GETVAR "BLIPMODE")
-          echo    (GETVAR "CMDECHO")
-    )
-    (vl-load-com)
-    (SETVAR "CMDECHO" 0)
-    ;;------------------------------------------------------------------
-    ;;   Standard-Fehler-Funktion
-    ;;
-    ;; Diese Funktion wird ausgeführt, wenn der Anwender im Programmverlauf die ESC-Taste drückt.
-    (DEFUN *error* (msg)
-        (COND
-            ((NOT msg))                           ; kein Fehler, macht nichts
-            ((VL-POSITION
-                 (STRCASE msg T)                  ; Abbruch
-                 '("console break" "function cancelled" "quit / exit abort")
-             )
-             ;; zu Demonstrationszwecken ...
-             (dcl_MESSAGEBOX ".... Funktionsabbruch"
-                              "Innerhalb der Ereignisfunktion" ; Titelzeile
-                              2                   ; Nur eine OK-Taste
-                              1                   ; Ausrufungszeichen im Dialog
-             )
-            )
-            ((PRINC (STRCAT "\nProgrammfehler: " (itoa (GETVAR "errno")) " :- " msg "\n"))
-            )
-        )
-        (SETVAR "errno" 0)
-        ;;
-        ;;        
-        (SETQ bflag nil) ; Dialog soll nicht mehr geöffnet werden
-        (SETVAR "BLIPMODE" blipper)
-        (VL-CMDF "._REDRAW")
-        (SETVAR "CMDECHO" echo)
-    )
-    ;;------------------------------------------------------------------
-    ;;
-    (DEFUN ss->objlist (ss / i returnval)
-        (IF (AND ss (< 0 (SSLENGTH ss)))
-            (PROGN (SETQ i 0)
-                   (REPEAT (SSLENGTH ss)
-                       (SETQ returnval (CONS (VLAX-ENAME->VLA-OBJECT (SSNAME ss i))
-                                             returnval
-                                       )
-                             i         (1+ i)
-                       )
-                   )
-            )
-        )
-        (IF returnval
-            (REVERSE returnval)
-            nil
-        )
-    )
-    ;;------------------------------------------------------------------
-    ;;  
-    (DEFUN c:Selections_Form_Close_OnClicked ()
-        (SETQ bflag nil) ; Auf diesem Weg wird der Dialog nicht mehr geöffnet, wenn der Anwender rechts oben das Schließen-Symbol oder die ESC-Taste drückt
-        (dcl_FORM_CLOSE Selections_Form)
-    )
-    ;;------------------------------------------------------------------
-    ;;   
-    ;; Wird ausgelöst, wenn die Schaltfläche PickPointButton geklickt wird
-    ;;
-    (DEFUN c:Selections_Form_PickPointButton_OnClicked (/ pt)
-        ;;
-        ;; Ruft die Methode Form_Close auf, um den Dialog zu schließen, wenn der Anwender einen Punkt klickt
-        ;; bflag T setzen, damit die Schleife wieder durchlaufen und der Dialog wieder angezeigt wird
-        ;; wenn der Punkt gepickt wurde.
-        (SETQ bflag T)
-        (dcl_FORM_CLOSE Selections_Form)
-        (SETVAR "BLIPMODE" 1)
-        (SETQ pt     (GETPOINT "\nPunkt wählen: ")
-              ptList '()
-        )
-        (WHILE pt
-            (SETQ ptList (CONS (VL-PRINC-TO-STRING pt) ptList))
-            (PROMPT (STRCAT "\nEinen anderen Punkt wählen: "
-                            (VL-PRINC-TO-STRING pt)
-                            "\nDrücken Sie die Eingabetexte, um zum Dialog zurückzukrehren, oder ESC um abzubrechen. "
-                    )
-            )
-            (SETQ pt (GETPOINT "\nEinen anderen Punkt wählen: "))
-        )
-        (SETVAR "BLIPMODE" 0)
-        (VL-CMDF "._REDRAW")
-    )
-    ;;------------------------------------------------------------------
-    ;;
-    ;; Wird ausgelöst, wenn die Schaltfläche PickObjectButton geklickt wird
-    (DEFUN c:Selections_Form_PickObjectButton_OnClicked (/ ss)
-        ;;
-        ;; bflag T setzen, damit die Schleife wieder durchlaufen und der Dialog wieder angezeigt wird
-        ;; wenn das Objekt gewählt wurde.
-        (SETQ bflag T
-              ObjList '()
-        )
-        ;;
-        ;; Ruft die Methode Form_Close auf, um den Dialog zu schließen, wenn der Anwender ein Objekt wählt
-        (dcl_FORM_CLOSE Selections_Form)
-        (PROMPT "\nObjekte wählen oder Eingabetaste drücken, um zum Dialog zurückzukehren")
-        (SETQ ss (SSGET))
-        ;;
-        (FOREACH obj (SS->OBJLIST ss)
-            (SETQ ObjList (CONS (VLA-GET-OBJECTNAME obj) ObjList))
-        )
-        (SETQ ObjList (REVERSE ObjList))
-    )
-    ;;------------------------------------------------------------------
-    ;;   
-    (DEFUN c:Selections_Form_OnInitialize (/)
-        (IF PtList
-            (dcl_LISTBOX_ADDLIST Selections_Form_PointListBox PtList)
-        )
-        (IF ObjList
-            (dcl_LISTBOX_ADDLIST Selections_Form_ObjectListBox ObjList)
-        )
-    )
-    ;;------------------------------------------------------------------
-    ;;   
-    ;;  Haupteinstiegspunkt
-    ;;------------------------------------------------------------------
 
-    (LoadODCLProj "Selections.odcl")
+    ;|<<Zusätzliche Funktionen>>|;
 
-    ;; Dialog anzeigen und alle nötigen Einstellungen zur Initialiiserung
-    ;; setzen, bevor dcl_Form_Show aufgerufen wird
+
+    ;; Punktwahlfunktion
+
+    (defun point_selection (/ intBlip ptPoint strPoint doSel)
+
+        ;; Punktmarkierungen aktivieren
+        (setq intBlip (getvar "BLIPMODE"))
+        (setvar "BLIPMODE" 1)
+
+        (setq doSel T)
+        (while doSel
+
+            ;; Sicheres Punktpicken
+            (setq ptPoint (vl-catch-all-apply 'getpoint (list "\nPunkt picken (oder ENTER, um zum Dialog zurückzukehren): ")))
+
+            (cond
+                ;; ENTER wurde gedrückt, doContinue auf T setzen,
+                ;; damit der Dialog wieder angezeigt wird
+                ((not ptPoint)
+                 (setq ptPoint nil
+                       doSel nil
+                       doContinue T))
+
+                ;; ESC wurde gedrückt, doContinue auf T setzen,
+                ;; damit der Dialog wieder angezeigt wird
+                ((vl-catch-all-error-p ptPoint)
+                 (setq ptPoint nil
+                       doSel nil
+                       doContinue nil))
+
+                ;; Punkt zu Zeichenkette wandeln
+                ((not (setq strPoint (vl-prin1-to-string ptPoint)))
+                 (setq ptPoint nil
+                       doSel T))
+
+                ;; Punkt zu Liste hinzufügen, wenn er nicht schon drin ist
+                ;; dann wieder zum Dialog zurückkehren
+                ((not (member strPoint lstPoints))
+                 (setq lstPoints (reverse (cons strPoint (reverse lstPoints)))
+                       doSel T))
+            ); cond
+        ); while
+        
+        ;; Punktmarkierungen zurücksetzen
+        (setvar "BLIPMODE" intBlip)
+    ); point_selection
+
+
+    ;; Objektwahlfunktion
+
+    (defun object_selection (/ intBlip ssAusw intLen entObj vlaObj strObj)
+
+        ;; Punktmarkierungen aktivieren
+        (setq intBlip (getvar "BLIPMODE"))
+        (setvar "BLIPMODE" 1)
+
+        ;; Sicheres Punktpicken
+        (princ "\nObjekte wählen (oder ENTER, um zum Dialog zurückzukehren): ")
+        (setq ssAusw (vl-catch-all-apply 'ssget nil))
+        
+        (cond
+            ;; ENTER wurde gedrückt, doContinue auf T setzen,
+            ;; damit der Dialog wieder angezeigt wird
+            ((not ssAusw)
+             (setq ssAusw nil
+                   doContinue T))
+
+            ;; ESC wurde gedrückt, doContinue auf T setzen,
+            ;; damit der Dialog wieder angezeigt wird
+            ((vl-catch-all-error-p ssAusw)
+             (setq ssAusw nil
+                   doContinue nil))
+
+            ;; Prüfen, ob der Auswahlsatz Objekte hat
+            ((zerop (setq intLen (sslength ssAusw)))
+             (setq ssAusw nil
+                   doContinue T))
+
+            ;; Objekte zur Liste hinzufügen, sofern Sie nicht schon drin sind
+            ;; dann wieder zum Dialog zurückkehren
+            (T (repeat intLen
+                   (setq entObj (ssname ssAusw (setq intLen (1- intLen))))
+                   (setq vlaObj (vlax-ename->vla-object entObj))
+                   (setq strObj (strcat (vla-get-ObjectName vlaObj) " (" (vla-get-Handle vlaObj) ")"))
+                   (if (not (member strObj lstObjects))
+                       (setq lstObjects (reverse (cons strObj (reverse lstObjects))))
+                   ); if
+               ); repeat
+             (setq doContinue T))
+        ); cond
+        
+        ;; Punktmarkierungen zurücksetzen
+        (setvar "BLIPMODE" intBlip)
+    ); object_selection
+
     
-    (SETQ bflag T)
-    (WHILE bflag                                  ; Beginn der Schleife
-        (SETQ bflag nil)			  ; Auf diesem Weg wird der Dialog nicht mehr geöffnet, wenn der Anwender rechts oben das Schließen-Symbol oder die ESC-Taste drückt
 
-        ;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
-        ;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.
-        (dcl_FORM_SHOW Selections_Form)
-        ;; 
-    )
-    ;;------------------------------------------------------------------
-    ;;   
-    (*error* nil)
-    (PRINC)
+    ;|<<OpenDCL Ereignisfunktionen>>|;
+
+
+
+    ;; Das Ereignis OnInitialize wird bei jedem Mal aufgerufen,
+    ;; wenn der Dialog angezeigt werden soll
+    
+    (defun c:Selections_Form_OnInitialize (/)
+        
+        ;; Bereinigung, falls nötig
+        (dcl_ListBox_Clear Selections_Form_PointListBox)
+        (dcl_ListBox_Clear Selections_Form_ObjectListBox)
+
+        ;; Punktliste füllen
+        (if lstPoints
+            (dcl_ListBox_AddList Selections_Form_PointListBox lstPoints)
+        ); if
+
+        ;; Objektliste füllen
+        (if lstObjects
+            (dcl_ListBox_AddList Selections_Form_ObjectListBox lstObjects)
+        ); if
+        
+    ); c:Selections_Form_OnInitialize
+
+    
+    
+    ;; Das Ereignis wird ausgelöst, drückt der Anwender auf die Schaltfläche Schließen
+    ;; Dabei wird der Wert 1 zurückgegeben, der als Rückgabewert von dcl_form_show
+    ;; dient (siehe dort)
+    
+    (defun c:Selections_Form_Close_OnClicked (/)
+        (dcl_form_close Selections_Form 1)
+    ); c:Selections_Form_Close_OnClicked
+
+    
+    
+    ;; Das Ereignis wird ausgelöst, drückt der Anwender auf die Schaltfläche Punktwahl
+    ;; Dabei wird der Wert 3 zurückgegeben, der als Rückgabewert von dcl_form_show
+    ;; dient (siehe dort)
+    
+    (defun c:Selections_Form_PickPointButton_OnClicked (/)
+        (dcl_form_close Selections_Form 3)
+    ); c:Selections_Form_PickPointButton_OnClicked
+
+    
+    
+    ;; Das Ereignis wird ausgelöst, drückt der Anwender auf die Schaltfläche Objektwahl
+    ;; Dabei wird der Wert 4 zurückgegeben, der als Rückgabewert von dcl_form_show
+    ;; dient (siehe dort)
+    
+    (defun c:Selections_Form_PickObjectButton_OnClicked (/)
+        (dcl_form_close Selections_Form 4)
+    ); c:Selections_Form_PickObjectButton_OnClicked
+
+    
+    
+    ;; Das Ereignis wird ausgelöst, klickt der Anwender einen Listeneintrag doppelt
+    
+    (defun c:Selections_Form_PointListBox_OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_PointListBox))))
+            (progn
+                
+                ;; Element aus Liste und Listenfeld löschen
+                
+                (setq lstPoints (vl-remove (dcl_ListBox_GetItemText Selections_Form_PointListBox intRow) lstPoints))
+                (dcl_ListBox_DeleteItem Selections_Form_PointListBox intRow)
+            ); progn
+        ); if
+    ); c:Selections_Form_PointListBox_OnDblClicked
+
+    
+    
+    ;; Das Ereignis wird ausgelöst, klickt der Anwender einen Listeneintrag doppelt
+    
+    (defun c:Selections_Form_ObjectListBox_OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_ObjectListBox))))
+            (progn
+
+                ;; Element aus Liste und Listenfeld löschen
+                
+                (setq lstObjects (vl-remove (dcl_ListBox_GetItemText Selections_Form_ObjectListBox intRow) lstObjects))
+                (dcl_ListBox_DeleteItem Selections_Form_ObjectListBox intRow)
+            ); progn
+        ); if
+    ); c:Selections_Form_ObjectListBox_OnDblClicked
+
+    ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+    (setq cmdecho (getvar "CMDECHO"))
+    (setvar "CMDECHO" 0)
+    (command "_OPENDCL")
+    (setvar "CMDECHO" cmdecho)
+
+    ;; Projekt laden
+    (dcl_Project_Load (*ODCL:Samples:FindFile "Selections.odcl"))
+
+    ;; Der wiederholte Aufruf einer modalen Dialogbox wird mit Hilfe einer
+    ;; while-Schleife am einfachsten erreicht
+    (setq doContinue T)
+    (while doContinue
+        ;; Um jedoch eine Endlosschleife zu vermeiden, ist die Bedingung
+        ;; zur Wiederholung zu allererst zu negieren
+        ;; Sie (die Bedingung) wird erst im weiteren Programmablauf
+        ;; unter bestimmten Voraussetzungen wieder aktiviert.
+        (setq doContinue nil)
+
+        ;; wird der Dialog geschlossen, gibt die Funktion einen Wert zurück
+        ;; Dies ist entweder 1 für OK, 2 für ESC oder Abbruch oder aber der
+        ;; Wert, dem der Funktion dcl_form_close mitgegeben wurde.
+        (setq intResult (dcl_form_show Selections_Form))
+
+        ;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+        ;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+        ;; bis der modale Dialog geschlosswen wird.
+        ;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
+
+        ;; Nun können die Werte von intResult ausgewertet werden
+        (cond
+            
+            ;; Schließen-Schaltfläche
+            ;; Hier könnte was passieren mit den gewählten Punkten und Objekten
+            ((= intResult 1) (setq doContinue nil))
+
+            ;; ESC-Taste
+            ((= intResult 2) (setq doContinue nil))
+
+            ;; Punktwahl
+            ((= intResult 3) (point_selection))
+
+            ;; Objektwahl
+            ((= intResult 4) (object_selection))
+
+        ); cond
+    ); while
+
+    (redraw)
+    (princ)
+); c:Sel
+
+(princ)
+
+;|<<OpenDCL Beispiel Abschluss>>|;
+
+;;;######################################################################
+;;;######################################################################
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; werden in allen Beispieldateien verwendet.
+;;;
+(or *ODCL:Samples:FindFile
+	(defun *ODCL:Samples:FindFile (file)
+		(setq *ODCL:Prefix
+			(cond
+				(	*ODCL:Prefix
+				) ;_ Bereits definiert
+				(	(vl-registry-read
+						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 32-bit Variante aktueller Nutzer
+				(	(vl-registry-read
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					 )
+				) ;_ 32-bit Variante alle Nutzer
+				(	(vl-registry-read
+						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 64-bit Variante aktueller Nutzer
+				(	(vl-registry-read
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 64-bit Variante alle Nutzer
+			)
+		)
+		(cond
+			((findfile file)) ; überprüfe zunächst den Supportpfad
+			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+			(file)
+		)
+	)
 )
-(PRINC)
- ;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 2 0 2 nil nil nil T)
+
+;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
+;; Andernfalls gib einen Text in der Befehlszeile aus, mit welchem Kommando das Beispiel
+;; gestartet werden kann. Auf diesem Wege wird sichergestellt, dass der Name des Beispiels
+;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
+
+(	(lambda (demoname)
+		(if *ODCL:MasterDemo
+			(progn
+				(princ (strcat "'" demoname "\n"))
+				(apply (read (strcat "C:" demoname)) nil)
+			)
+			(progn
+				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+			)
+		)
+	)
+	"Sel"
+)
+(princ)
+
+;;;######################################################################
+;;;######################################################################
+
+;|«Visual LISP© Format Options»
+(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
 ;*** DO NOT add text below the comment! ***|;

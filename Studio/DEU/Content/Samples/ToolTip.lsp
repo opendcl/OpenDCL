@@ -1,52 +1,139 @@
-(IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"TOOL\" ein, um das Beispiel zu starten.\n")
+;;;
+;;; ToolTip Beispiel
+;;;
+;;; Dieses Beispiel erläutert den Funktionsumfang der Tooltips
+;;;
+
+;; Hauptprogramm
+(defun c:ToolTip (/ cmdecho)
+
+	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+	(setq cmdecho (getvar "CMDECHO"))
+	(setvar "CMDECHO" 0)
+	(command "_OPENDCL")
+	(setvar "CMDECHO" cmdecho)
+
+	;; Projekt laden
+	(dcl_Project_Load (*ODCL:Samples:FindFile "ToolTip.odcl"))
+
+	;; Dialog anzeigen
+	(dcl_Form_Show ToolTip_dclToolTip)
+
+	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; bis der modale Dialog geschlosswen wird.
+	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
+
+	(princ)
 )
 
-(defun c:Tool ( / )
-  (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
-  (LoadRunTime)
-  (LoadODCLProj "ToolTip.odcl")
-  (dcl_FORM_SHOW ToolTip_dclToolTip)
-   
-;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
-;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog. 
-  (PRINC)
-)
+;|<<OpenDCL Ereignisfunktionen>>|;
 
 (defun c:ToolTip_dclToolTip_OnInitialize ( /)
-  (dcl_ComboBox_SetCurSel ToolTip_dclToolTip_cboColor 1)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "<KeinBild>" -1 -1)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Fragezeichen" 1 1)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Information" 0 0)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Warnsymbol" 2 2)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Fehler" 3 3)
-  (dcl_ImageComboBox_SetCurSel ToolTip_dclToolTip_cboIcon 0)
+    (dcl_ComboBox_SetCurSel ToolTip_dclToolTip_cboColor 1)
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "<Kein>" -1 -1)
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Frage" 1 1)	;; das sind vorgegebene Bilder
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Information" 0 0)	;; das sind vorgegebene Bilder
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Achtung" 2 2)	;; das sind vorgegebene Bilder
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Fehler" 3 3)	;; das sind vorgegebene Bilder
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Bild" 4 4)		;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Ordner" 5 5)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Foto" 6 6)		;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Sound" 7 7)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Video" 8 8)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl_ImageComboBox_SetCurSel ToolTip_dclToolTip_cboIcon 0)
+    (dcl_Control_SetText ToolTip_dclToolTip_txtMain "Das ist ein <b>ToolTip</b>.\r\nDas ist die zweite Zeile.")
 )
 
 
-(defun c:ToolTip_dclToolTip_cmdOK_OnClicked ( / AviPath)
+(defun c:ToolTip_dclToolTip_cmdOK_OnClicked ( / intPos)
 
-;;;  (if (dcl_Control_GetValue ToolTip_dclToolTip_chkAVI)
-;;;    (progn
-;;;      (setq AviPath (findfile "FileCopy.avi"))
-;;;      (if AviPath
-;;;        (dcl_Control_SetToolTipAviFileName  ToolTip_dclToolTip_cmdOK AviPath)
-;;;        (alert "Sorry can't find FileCopy.avi, make sure it's in a support path")
-;;;      );_ if
-;;;    );_ progn
-;;;    (dcl_Control_SetToolTipAviFileName ToolTip_dclToolTip_cmdOK nil)
-;;;  ); _if
-
-  (dcl_Control_SetToolTipTitle ToolTip_dclToolTip_cmdOK (dcl_Control_GetText ToolTip_dclToolTip_txtTitle))   
-  (dcl_Control_SetToolTipMainText ToolTip_dclToolTip_cmdOK (dcl_Control_GetText ToolTip_dclToolTip_txtMain))
-  (dcl_Control_SetToolTipLine ToolTip_dclToolTip_cmdOK (= 1 (dcl_Control_GetValue ToolTip_dclToolTip_chkLine)))
-  (dcl_Control_SetToolTipTitleColor ToolTip_dclToolTip_cmdOK (dcl_ComboBox_GetItemData ToolTip_dclToolTip_cboColor (dcl_ComboBox_GetCurSel ToolTip_dclToolTip_cboColor)))
-  (dcl_Control_SetToolTipPicture ToolTip_dclToolTip_cmdOK (- (dcl_ImageComboBox_GetCurSel ToolTip_dclToolTip_cboIcon)))
-  (dcl_Control_SetToolTipBalloon ToolTip_dclToolTip_cmdOK (= 1 (dcl_Control_GetValue ToolTip_dclToolTip_chkBalloon)))
-
-  (dcl_Control_ShowToolTip ToolTip_dclToolTip_cmdOK)
-    
+	(dcl_Control_SetToolTipTitle ToolTip_dclToolTip_cmdOK (dcl_Control_GetText ToolTip_dclToolTip_txtTitle))
+	(dcl_Control_SetToolTipMainText ToolTip_dclToolTip_cmdOK (dcl_Control_GetText ToolTip_dclToolTip_txtMain))
+	(dcl_Control_SetToolTipLine ToolTip_dclToolTip_cmdOK (= 1 (dcl_Control_GetValue ToolTip_dclToolTip_chkLine)))
+	(dcl_Control_SetToolTipTitleColor ToolTip_dclToolTip_cmdOK
+                                          (dcl_ComboBox_GetItemData ToolTip_dclToolTip_cboColor
+                                                                    (dcl_ComboBox_GetCurSel ToolTip_dclToolTip_cboColor)))
+	(if (< (abs (setq intPos (dcl_ImageComboBox_GetCurSel ToolTip_dclToolTip_cboIcon))) 5)
+            (dcl_Control_SetToolTipPicture ToolTip_dclToolTip_cmdOK (- intPos))    ;; das sind vorgegebene Bilder (-1 -2 -3 -4)
+            (dcl_Control_SetToolTipPicture ToolTip_dclToolTip_cmdOK (+ 96 intPos)) ;; das sind Bilder der projektinternen Bilder- und Symbolliste
+        ); if
+	(dcl_Control_SetToolTipBalloon ToolTip_dclToolTip_cmdOK (= 1 (dcl_Control_GetValue ToolTip_dclToolTip_chkBalloon)))
+	(dcl_Control_ShowToolTip ToolTip_dclToolTip_cmdOK)
 )
-
 
 (princ)
+
+;|<<OpenDCL Beispiel Abschluss>>|;
+
+;;;######################################################################
+;;;######################################################################
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; werden in allen Beispieldateien verwendet.
+;;;
+(or *ODCL:Samples:FindFile
+	(defun *ODCL:Samples:FindFile (file)
+		(setq *ODCL:Prefix
+			(cond
+				(	*ODCL:Prefix
+				) ;_ Bereits definiert
+				(	(vl-registry-read
+						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 32-bit Variante aktueller Nutzer
+				(	(vl-registry-read
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						"SamplesFolder"
+					 )
+				) ;_ 32-bit Variante alle Nutzer
+				(	(vl-registry-read
+						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 64-bit Variante aktueller Nutzer
+				(	(vl-registry-read
+						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						"SamplesFolder"
+					)
+				) ;_ 64-bit Variante alle Nutzer
+			)
+		)
+		(cond
+			((findfile file)) ; überprüfe zunächst den Supportpfad
+			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+			(file)
+		)
+	)
+)
+
+;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
+;; Andernfalls gib einen Text in der Befehlszeile aus, mit welchem Kommando das Beispiel
+;; gestartet werden kann. Auf diesem Wege wird sichergestellt, dass der Name des Beispiels
+;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
+
+(	(lambda (demoname)
+		(if *ODCL:MasterDemo
+			(progn
+				(princ (strcat "'" demoname "\n"))
+				(apply (read (strcat "C:" demoname)) nil)
+			)
+			(progn
+				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+			)
+		)
+	)
+	"ToolTip"
+)
+(princ)
+
+;;;######################################################################
+;;;######################################################################
+
+;|«Visual LISP© Format Options»
+(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
+;*** DO NOT add text below the comment! ***|;
