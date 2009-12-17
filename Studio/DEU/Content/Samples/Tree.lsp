@@ -1,27 +1,28 @@
 ;;;
 ;;; Tree Sample
 ;;;
-;;; This sample demonstrates the tree control and all its events.
+;;; Dieses Beispiel demonstriert die Anwendung einer Baumstruktur und ihren Ereignissen.
 ;;;
 
-;; Main program
+;; Hauptprogramm
 (defun c:Tree (/ cmdecho)
 
-	;; Ensure OpenDCL Runtime is (quietly) loaded
+	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
 	(setq cmdecho (getvar "CMDECHO"))
 	(setvar "CMDECHO" 0)
 	(command "_OPENDCL")
 	(setvar "CMDECHO" cmdecho)
 
-	;; Load the project
+	;; Projekt laden
 	(dcl_Project_Load (*ODCL:Samples:FindFile "Tree.odcl"))
 
-	;; Show the main form
+	;; Dialog anzeigen
 	(dcl_Form_Show Tree_Main)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
-	;; the modal form is closed. In the meantime, the event handlers
-	;; manage the form.
+	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; bis der modale Dialog geschlosswen wird.
+	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
 	(princ)
 )
@@ -36,28 +37,28 @@
 	(and Tree_Main_chkTrack (= 1 (dcl_Control_GetValue Tree_Main_chkTrack)))
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|<<OpenDCL Ereignisfunktionen>>|;
 
 (defun c:Tree_Main_OnInitialize	(/ P1 P2)
-	(setq P1 (dcl_Tree_AddParent Tree_Main_tree "First Parent" 0 -1 1))
+	(setq P1 (dcl_Tree_AddParent Tree_Main_tree "Erste Gruppe" 0 -1 1))
 	(dcl_Tree_AddChild Tree_Main_tree
 		(list
-			(list P1 "Child 1" 2 3)
-			(list P1 "Child 2" 2 3)
-			(list P1 "Child 3" 2 3)
+			(list P1 "Element 1" 2 3)
+			(list P1 "Element 2" 2 3)
+			(list P1 "Element 3" 2 3)
 		)
 	)
-	(setq P2 (dcl_Tree_AddParent Tree_Main_tree "Second Parent" 0 -1 8))
+	(setq P2 (dcl_Tree_AddParent Tree_Main_tree "Zweite Gruppe" 0 -1 8))
 	(dcl_Tree_AddChild Tree_Main_tree
 		(list
-			(list P2 "Child C" 4 5)
-			(list P2 "Child B" 4 5)
-			(list P2 "Child A" 4 5)
+			(list P2 "Element C" 4 5)
+			(list P2 "Element B" 4 5)
+			(list P2 "Element A" 4 5)
 		)
 	)
 	(dcl_Tree_AddParent Tree_Main_tree
-		'(	("Third Parent" 0 -1 1)
-			("Fourth Parent" 0 -1 1)
+		'(	("Dritte Gruppe" 0 -1 1)
+			("Vierte Gruppe" 0 -1 1)
 		)
 	)
 	(dcl_Tree_SelectItem Tree_Main_tree P1)
@@ -271,8 +272,8 @@
 (defun c:Tree_Main_Tree_OnItemExpanded (Label Key /)
 	(Tree_LogEvent
 		(strcat
-			"OnItem"
-			(if (dcl_Tree_IsItemExpanded Tree_Main_tree Key) "Expanded" "Collapsed")
+			"Element "
+			(if (dcl_Tree_IsItemExpanded Tree_Main_tree Key) "erweitert" "zusammengeklappt")
 			" ("
 			Label
 			")"
@@ -284,8 +285,8 @@
 (defun c:Tree_Main_Tree_OnItemExpanding (Label Key /)
 	(Tree_LogEvent
 		(strcat
-			"OnItem"
-			(if (dcl_Tree_IsItemExpanded Tree_Main_tree Key) "Collapsing" "Expanding")
+			"Element "
+			(if (dcl_Tree_IsItemExpanded Tree_Main_tree Key) "zusammenklappen" "erweitern")
 			" ("
 			Label
 			")"
@@ -310,7 +311,7 @@
 
 
 (defun c:Tree_Main_Tree_OnMouseMove (Flags X Y /)
-	; Commented out to reduce log traffic
+	; wurde auskommentiert, um den Protokollierungsaufwand zu reduzieren
 	NIL ;(Tree_LogEvent (strcat "OnMouseMove (" (itoa Flags) " " (itoa X) " " (itoa Y) ")"))
 )
 

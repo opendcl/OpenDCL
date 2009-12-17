@@ -4,51 +4,50 @@
     ;;
     ;;  DistSample2.lsp
     ;;
-    ;;  Quick sample to demonstrate how to use an embedded OpenDCL stream.
+    ;;  Einfaches Beispiel, wie mit einem hardcodierten eingebetteten OpenDCL-Projekt verfahren wird.
     ;;
     ;;--------------------------------------------------------------------------
     ;;
-    ;;  History:
+    ;;  Geschichte:
     ;;
-    ;;  1.0 2007/06/xx - Original code - Michael Puckett (MP).
+    ;;  1.0 2007/06/xx - Original-Code - Michael Puckett (MP).
     ;;
-    ;;  1.1 2007/06/xx - ODCL_* functions renamed to DCL_* to reflect
-    ;;                   changes in OpenDCL 4.0 beta 18+. Owen Wengerd (OW).
+    ;;  1.1 2007/06/xx - ODCL_* Funktionen wurden in DCL_* umbenannt, um die 
+    ;;                   Änderungen der Version OpenDCL 4.0 beta 18+ abzubilden. Owen Wengerd (OW).
     ;;
-    ;;  1.2 2007/06/24 - Renamed _Load_ODCL_Runtimes to _Load_ODCL_Runtime.
-    ;;                   Modified _Load_ODCL_Runtime to use demand loading
-    ;;                   path etc. (MP)
+    ;;  1.2 2007/06/24 - Umbenannte Funktion _Load_ODCL_Runtimes zu _Load_ODCL_Runtime.
+    ;;                   Angepasste Funktion _Load_ODCL_Runtime für das Laden nach Bedarf (MP)
     ;;
-    ;;  1.3 2009/10/18 - Replaced runtime load logic with OPENDCL command
-    ;;                   for Bricscad compatibility; added function to search
-    ;;                   for dependent files in OpenDCL Studio samples folder;
-    ;;                   renamed some functions for consistency with other
-    ;;                   OpenDCl Studio samples. (OW)
-    ;;
-    ;;--------------------------------------------------------------------------
-    ;;
-    ;;  Dependencies:
-    ;;
-    ;;  1.  AutoCAD 2004+, OpenDCL 5.0 or newer.
-    ;;
-    ;;  2.  DistSample.odcl (OpenDCL project) saved as DistSample.odcl.lsp
-    ;;      (Base64 encoded stream wrapped in lisp). Said project has a form
-    ;;      varnamed DistSample_MainForm with a child button varnamed
-    ;;      DistSample_MainForm_OkButtonOkButton with the event OnClick enabled.
-    ;;      The project is not passworded.
+    ;;  1.3 2009/10/18 - Zugunsten der Koompatibilität mit Bricscad Ladevorgang
+    ;;                   mit OPENDCL-Kommando; ergänze Funktionen für die Suche
+    ;;                   nach den abhängigen Dateien im Beispielordner von OpenDCL
+    ;;                   einige Funktionen umbenannt zugunsten der Konsistenz
+    ;;                   mit anderen Beispielen des OpenDCl Studio. (OW)
     ;;
     ;;--------------------------------------------------------------------------
     ;;
-    ;;  Notable:
+    ;;  Voraussetzungen:
     ;;
-    ;;  1.  See function _Load_ODCL_Stream which loads the Base64 encoded
-    ;;      OpenDCL project data in-line.
+    ;;  1.  AutoCAD 2004+, OpenDCL 5.0 oder neuer.
+    ;;
+    ;;  2.  Das OpenDCL-Projekt DistSample.odcl wurde als DistSample.odcl.lsp
+    ;;      (Base64-codierter Datenstrom, umgebrochen als Lisp-Quelle) gespeichert.
+    ;;      Das Projekt beinhaltet einen Dialog in der Variable DistSample_MainForm
+    ;;      und einer darin enthaltenen Schaltfläche in der Variable DistSample_MainForm_OkButton,
+    ;;      das das OnClick-Ereignis abfängt. Das Projekt ist nicht passwortgeschützt.
+    ;;
+    ;;--------------------------------------------------------------------------
+    ;;
+    ;;  Hinweis:
+    ;;
+    ;;  1.  Beachten Sie die Funktion _Load_ODCL_Stream die den Base64-codierten
+    ;;      Datenstrom der OpenDCL-Projektdatei lädt.
     ;;
     ;;==========================================================================
 
     (	/
 
-        ;;  Locals.
+        ;;  Lokale Variablen
 
         c:DistSample_MainForm_OkButton_OnClicked
         _Load_ODCL_Runtime
@@ -61,35 +60,33 @@
 
         (or
 
-            ;;  Already loaded, vacate now (return t to caller).
+            ;;  OpenDCL ist bereits geladen, mit T beenden
 
             dcl_getversionex
 
-            ;;  If demand loading is enabled, use the OPENDCL command
-            ;;  to induce the loading of the OpenDCL Runtime. If demand
-            ;;  loading is disabled, assume it was disabled intentionally
-            ;;  and honor the intent by not loading anything.
+            ;;  Ist das Laden nach Bedarf aktiviert (DEMANDLOAD), nutze das OPENDCL-Kommando
+            ;;  um die OpenDCL-Laufzeitumgebung zu laden. Ist das Laden nach Bedarf deaktiviert,
+            ;;  nehmen wir an, dass dies gewünscht ist und laden deshalb nicht dazu.
 
             (and
 
-                ;;  Let's ensure demand loading is enabled, lest the
-                ;;  invocation of the OpenDCL command be pointless.
+                ;;  Ist das Laden nach Bedarf aktiviert
 
                 (= 2 (boole 1 (getvar "DEMANDLOAD") 2))
 
-                ;;  We're good, invoke the OpenDCL command ...
+                ;;  dann lade die OpenDCL Laufzeitumgebung
 
                 (vl-catch-all-apply 'vl-cmdf '("OPENDCL"))
 
-                ;;  Is core OpenDCL functionality now defined?
+                ;;  Und prüfe, ob die Funktionen nun geladen sind
 
                 dcl_getversionex
             )
 
-            ;;  If we got here the opendcl runtime was not loaded.
-            ;;  Inform the user of the sad news.
+            ;;  Konnte oder sollte die Laufzeitumgebung nicht geladen werden
+            ;;  wird der Anwender informiert.
 
-            (princ "Error: OpenDCL Runtime could not be loaded.\n")
+            (princ "\nFehler: OpenDCL-Laufzeitumgebung konnte nicht geladen werden.\n")
         )
 
         dcl_getversion
@@ -98,10 +95,9 @@
 
     (defun _Load_ODCL_Stream ( password alias / project rtype )
 
-        ;;  This is a reformatted copy of the content from
-        ;;  the OpenDCL project file DistSample.odcl.lsp.
-        ;;  The only reformatting is a change in the line
-        ;;  length so it looks tidy.
+        ;;  Das ist eine formatierte Kopie des Inhalts der Datei DistSample.odcl.lsp.
+        ;;  Die einzige Art der Formatierung bestand darin, dass alle Zeilen auf eine
+        ;;  einheitliche Länge gebracht wurden
 
         (setq project
             '("YWt6AykbAACPzuumBuKTJjUxLT9qgFBxx173ev1VMzR6v9Z6B2gd9j8cPiU+MvYPPd5TjFa7XoYm"
@@ -125,21 +121,20 @@
 
         (cond
 
-            ;;  At this point OpenDCL runtimes should have already
-            ;;  been loaded by initializing code, so either the
-            ;;  initialization failed (and this function is being
-            ;;  called inappropriately) or older OpenDCL runtimes
-            ;;  have been loaded. Either way alert and bail.
+            ;;  An diesem Punkt muss die OpenDCL-Laufzeitumgebung bereits geladen
+            ;;	sein. Wenn nicht, ist zuvor die Initialisierung fehlgeschlagen oder
+            ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
+            ;;  So oder so, an dieser Stell gehts nicht weiter...
 
             (	(null dcl_project_import)
 
-                (princ "OpenDCL version 5.0 or newer is required.\n")
+                (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
 
                 nil
             )
 
-            ;;  All appears ok, call dcl_project_import with our
-            ;;  data, returning the result to the caller.
+            ;;  Mit dcl_project_load wird das Projekt geladen und der Rückgabewert
+            ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
 
             (	(dcl_project_import project password alias)   )
         )
@@ -148,7 +143,7 @@
 
     (defun c:DistSample_MainForm_OkButton_OnClicked ( )
 
-        (dcl_MessageBox "Press [Ok] to terminate ..." "About to exit ...")
+        (dcl_MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
 
         (dcl_form_close DistSample_MainForm)
 
@@ -156,7 +151,7 @@
 
     (defun _Main ( / odclProjName )
 
-        ;;  Wrap up and call functionality defined in this file.
+        ;;  Die Funktionen in dieser Datei laden und ausführen.
 
         (if
 
@@ -164,7 +159,8 @@
 
                 (_Load_ODCL_Runtime)
 
-                ;;  Attempt to load the ODCL project from an inline stream.
+                ;;  Versuche das OpenDCL-Projekt aus den hardcodierten Projektdaten
+                ;;  des Quellcodes zu laden
 
                 (_Load_ODCL_Stream nil nil)
 
@@ -175,7 +171,7 @@
                     (dcl_Form_Show DistSample_MainForm)
                 )
 
-                (princ "Failed to show form: DistSample_MainForm\n")
+                (princ "\nKann den Dialog nicht anzeigen: DistSample_MainForm\n")
             )
         )
 
@@ -185,7 +181,7 @@
 
     ;;==========================================================================
     ;;
-    ;;  Invoke _Main ...
+    ;;  Hauptfunktion ausführen ...
     ;;
     ;;==========================================================================
 
@@ -193,6 +189,6 @@
 
 )
 
-(princ "OpenDCL DistSample2 (ver 1.3) loaded. Enter \"DistSample2\" to execute.\n")
+(princ "\nOpenDCL DistSample2 (ver 1.3) wurde geladen. Geben Sie den Befehl \"DistSample2\" ein, um ihn auszuführen.\n")
 
 (princ)

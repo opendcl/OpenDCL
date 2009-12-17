@@ -13,6 +13,8 @@
 		     c:Splitter_splitter_grd_OnBeginLabelEdit
 		     c:Splitter_splitter_grd_OnEndLabelEdit
 		     )
+
+  ;; Variablen setzen
   
   (setq lstDistance (list "10" "30" "50" "70"))
   (setq lstThickness (list "0" "1" "2" "3" "4" "5" "6" "7" "8"))
@@ -21,6 +23,8 @@
   (setq strThick "Stärke (in Pixel)")
   (setq strInner "Mindestabstand links/oben")
   (setq strOuter "Mindestabstand rechts/unten")
+
+  ;; Grundlegende Funktionen
 
   (defun set_style (n)
     (dcl_Control_SetEdgeStyle splitter_splitter_spl_hor n)
@@ -56,6 +60,9 @@
     ); if
   ); check_thickness
 
+  ;; Dieses Ereignis wird ausgelöst, sobald der Dialog angezeigt werden soll.
+  ;; Hier werden Vorgabewerte für den Dialog und seine Steuerelemente gesetzt.
+
   (defun c:splitter_splitter_OnInitialize (/ intRow lstRow intInside intOutside intThickness)
     (setq intInside (dcl_Control_GetClosestInside splitter_splitter_spl_ver))
     (check_distance (itoa intInside))
@@ -85,20 +92,33 @@
     (dcl_Control_SetText Splitter_splitter_edt_info "")
   ); c:splitter_splitter_OnInitialize
 
+  ;; Dieses Ereignis wird ausgelöst, wenn der Anwender im Datenblatt die Eingabetaste drückt.
+  ;; Diese Funktion muss den Wert T zurückgeben, damit der Dialog nicht geschlossen wird.
+  ;; Für den Fall, dass er aber geschlossen werden soll, muss diese Funktion den Wert nil zurückgeben
+  
   (defun c:splitter_splitter_OnCancelClose (intIsESC /)
+    (dcl_Grid_CancelCellEdit Splitter_splitter_grd)
     (/= intIsESC 1)
   ); c:splitter_splitter_OnCancelClose
 
+  ;; Dieses Ereignis wird ausgelöst, wenn der vertikale Splitter bewegt wird, um die
+  ;; Spaltenbreite des Datenblatts neu zu berechnen.
+  
   (defun c:splitter_splitter_spl_ver_OnSplitterMoved (intUpperLeftX intUpperLeftY intWidth intHeight /)
     (setq intWidth (fix (* 0.5 (dcl_Control_GetWidth Splitter_splitter_grd))))
     (dcl_Grid_SetColumnWidth Splitter_splitter_grd 0 intWidth)
     (dcl_Grid_SetColumnWidth Splitter_splitter_grd 1 intWidth)
   ); c:splitter_splitter_spl_ver_OnSplitterMoved
 
+  ;; Dieses Ereignis wird ausgelöst, wenn der Editiervorgang einer Zelle startet
+  ;; Dient u.a. dazu den aktuellen Wert zu sichern, um ihn bei Bedarf zurückzuschreiben
+    
   (defun c:Splitter_splitter_grd_OnBeginLabelEdit (intRow intCol /)
     (setq lstLastContent (list intRow intCol (dcl_Grid_GetCellText Splitter_splitter_grd intRow intCol)))
   ); c:Splitter_splitter_grd_OnBeginLabelEdit
 
+  ;; Dieses Ereignis wird ausgelöst, wenn der Editiervorgang der Zelle beendet wird.
+  
   (defun c:Splitter_splitter_grd_OnEndLabelEdit (intRow intCol / strValue strProp intPos)
     (cond
       ((not lstLastContent) nil)
@@ -130,6 +150,8 @@
     (setq lstLastContent nil)
   ); c:Splitter_splitter_grd_OnEndLabelEdit
 
+  ;; Dieses Ereignis wird ausgelöst, wenn sich die aktuelle Auswahl im Datenblatt ändert
+  
   (defun c:Splitter_splitter_grd_OnSelChanged (intRow intCol / strProp)
     (if (and (= intCol 1)
 	     (not lstLastContent))
@@ -146,23 +168,24 @@
     nil
   ); c:Splitter_splitter_grd_OnSelChanged
 
-  ;|<<Show the form>>|;
+  ;|<<Dialog anzeigen>>|;
 
-  ;; Ensure OpenDCL Runtime is (quietly) loaded
+  ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
   (setq cmdecho (getvar "CMDECHO"))
   (setvar "CMDECHO" 0)
   (command "_OPENDCL")
   (setvar "CMDECHO" cmdecho)
 
-  ;; Load the project
+  ;; Projekt laden
   (dcl_Project_Load (*ODCL:Samples:FindFile "Splitter.odcl"))
 
-  ;; Show the main form
+  ;; Dialog anzeigen
   (dcl_Form_Show splitter_splitter)
 
-  ;; This is a modal form, so (dcl_Form_Show) does not return until
-  ;; the modal form is closed. In the meantime, the event handlers
-  ;; manage the form.
+  ;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+  ;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+  ;; bis der modale Dialog geschlosswen wird.
+  ;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
   (princ)
 ); splitter

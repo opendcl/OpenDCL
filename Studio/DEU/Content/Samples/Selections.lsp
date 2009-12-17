@@ -17,7 +17,7 @@
               point_selection object_selection
 
               ;; lokale Ereignisse
-              ;; da Funktionen mit modalen Dialoge an der Stelle (dcl_form_show ...)
+              ;; da Funktionen mit modalen Dialogen an der Stelle (dcl_form_show ...)
               ;; angehalten werden, werden die Ereignisse nur in dieser Funktion
               ;; benötigt und können daher lokal definiert werden
 
@@ -56,8 +56,8 @@
                        doSel nil
                        doContinue T))
 
-                ;; ESC wurde gedrückt, doContinue auf T setzen,
-                ;; damit der Dialog wieder angezeigt wird
+                ;; ESC wurde gedrückt, doContinue auf nil setzen,
+                ;; damit der Dialog nicht wieder angezeigt wird
                 ((vl-catch-all-error-p ptPoint)
                  (setq ptPoint nil
                        doSel nil
@@ -216,6 +216,9 @@
             ); progn
         ); if
     ); c:Selections_Form_ObjectListBox_OnDblClicked
+
+    ;; COM laden
+    (vl-load-com)
 
     ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
     (setq cmdecho (getvar "CMDECHO"))
