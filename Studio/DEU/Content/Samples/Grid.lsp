@@ -99,7 +99,7 @@
                                                                 "43 - Symbolnamen-Kombinationsfeld"
 							   )
 		  ImageComboBoxList (list '("---" 100)     '("Stern" 0)
-								  '("Füße" 1)      '("Hand" 2)
+								  '("Fuß" 1)      '("Hand" 2)
 								  '("Mond" 3)
 								 )
 	)                                   ; Liste zur Auswahlliste hinzufügen
@@ -156,7 +156,7 @@
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1) ; Auswahlliste setzen
 	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1        nRow
 							  2
-							  '("Stern" "Füße" "Hand" "Mond")
+							  '("Stern" "Fuß" "Hand" "Mond")
 							  '(0 1 2 3)
 							 )          ; Das Element als Kombinationsfeld für Textwerte hinzufügen
 	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "6\t \tText-Kombinationsfeld"))

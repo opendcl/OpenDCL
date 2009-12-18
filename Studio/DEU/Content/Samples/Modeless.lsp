@@ -32,6 +32,7 @@
 
 (defun c:DemoModeless_cmdDrawLine_OnClicked ()
 	(command "_LINE" "0,0" "10,10" "")
+	(command "_ZOOM" "_W" "-10,-10" "20,20")
 	(princ)
 )
 

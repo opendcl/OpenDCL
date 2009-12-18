@@ -62,8 +62,8 @@
 ;;-----------------------------------------------------------
 
 (defun c:ListView_ListViewDlg_ListView1_OnClicked (nRow nCol /)
-	 (dcl_MessageBox (strcat "Column " (itoa nCol) ", Row " (itoa nRow))
-					  "Clicked Location"
+	 (dcl_MessageBox (strcat "Spalte " (itoa nCol) ", Zeile " (itoa nRow))
+					  "Geklickte Zelle"
 	 )
 )
 

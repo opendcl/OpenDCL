@@ -14,7 +14,7 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "DwgList.odcl"))
+	(dcl_Project_Load (*ODCL:Samples:FindFile "DwgList.odcl") T)
 
 	;; Dialog anzeigen
 	(dcl_Form_Show DwgList_DwgListForm)
@@ -31,8 +31,8 @@
 ;|<<OpenDCL Ereignisfunktionen>>|;
 
 (defun c:DwgListForm_DwgList1_OnDblClicked ()
-	(Setq fileName (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
-	(if (equal (strcase (substr fileName (- (strlen fileName) 3) 4)) ".DWG")
+	(if (and (Setq fileName (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
+                 (equal (strcase (substr fileName (- (strlen fileName) 3) 4)) ".DWG"))
 		(progn                                    ;(dcl_SetCmdBarFocus)
 			(dcl_sendstring (strcat "_-INSERT " fileName "\n"))
 		)
