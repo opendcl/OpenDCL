@@ -185,7 +185,7 @@
 ); slider_log_event
 
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 ;; --------------------------------------------------------------------------------------
 ;; Ereignis: Wird aufgerufen, wenn dcl_form_show ausgeführt wird. Setzt Vorgabewerte für den Dialog und die Steuerelemente
@@ -427,7 +427,7 @@
 ;; --------------------------------------------------------------------------------------
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

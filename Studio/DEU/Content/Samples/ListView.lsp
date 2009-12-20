@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 ;; Diese Funktion wird automatisch ausgeführt, wenn der Dialog geladen wird.
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
@@ -74,7 +74,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

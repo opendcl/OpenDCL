@@ -45,7 +45,7 @@
 )
 
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (DEFUN c:_MasterDemo_Main_btnMisc_OnClicked ()
 	(*ODCL:RunSample "Misc.lsp")

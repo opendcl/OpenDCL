@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 ;; Diese Funktion wird ausgelöst, wenn zwischen den Karteikarten gewechselt wird
 (DEFUN c:DemoModal_TabControl1_Changed (nSelIndex)
@@ -141,7 +141,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:MessageBox_MessageBoxes_ShowMessageBox_OnClicked
 		(/ OptIconCSel OptButtonCSel msg title ButtonFlag IconFlag HelpFlag)
@@ -62,7 +62,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

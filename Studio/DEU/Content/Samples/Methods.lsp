@@ -53,7 +53,7 @@
 	(dcl_Control_SetText Methods_Main_HeightBox (itoa nHeight))
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:Methods_Main_cmdClose_OnClicked (/)
 	(dcl_Form_Close Methods_Main)
@@ -469,7 +469,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

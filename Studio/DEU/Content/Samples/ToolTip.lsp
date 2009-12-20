@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:ToolTip_dclToolTip_OnInitialize ( /)
     (dcl_ComboBox_SetCurSel ToolTip_dclToolTip_cboColor 1)
@@ -64,7 +64,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

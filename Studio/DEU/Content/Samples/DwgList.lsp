@@ -28,7 +28,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DwgListForm_DwgList1_OnDblClicked ()
 	(if (and (Setq fileName (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
@@ -52,7 +52,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

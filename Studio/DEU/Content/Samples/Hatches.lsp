@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:Hatches_Hatch_OnInitialize (/ scale idx)
 	(setq scale (rtos (dcl_Control_GetHatchScale Hatches_Hatch_Hatch1) 2 0))
@@ -58,7 +58,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

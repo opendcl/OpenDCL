@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:HTML_Dcl1_OnInitialize (/)               ; Zu einer neuen Webseite navigieren
 	(dcl_Html_Navigate HTML_Dcl1_Html "http://www.opendcl.com")
@@ -120,7 +120,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

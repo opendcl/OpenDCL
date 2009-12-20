@@ -130,7 +130,7 @@
 
     
 
-    ;|<<OpenDCL Ereignisfunktionen>>|;
+    ;|<<OpenDCL Event Handlers>>|;
 
 
 
@@ -274,7 +274,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

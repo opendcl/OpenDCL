@@ -37,7 +37,7 @@
 	(and Tree_Main_chkTrack (= 1 (dcl_Control_GetValue Tree_Main_chkTrack)))
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:Tree_Main_OnInitialize	(/ P1 P2)
 	(setq P1 (dcl_Tree_AddParent Tree_Main_tree "Erste Gruppe" 0 -1 1))
@@ -351,7 +351,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

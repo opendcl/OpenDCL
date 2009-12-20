@@ -28,7 +28,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DragNDrop_Form1_ListView1_OnDragnDropToAutoCAD (3dPoint Viewport / rValue)
 	(Setq rValue (dcl_ListView_GetSelectedItems DragNDrop_Form1_ListView1))
@@ -59,7 +59,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

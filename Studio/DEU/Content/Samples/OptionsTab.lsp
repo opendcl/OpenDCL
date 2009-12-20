@@ -31,7 +31,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:OptionsTab_OptionsTabDemo_OnOK (/)
 	(princ "\n[OpenDCL - Zusätzliche Karteikarten in den Optionen] Ihre Eingabe: \"")
@@ -47,7 +47,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

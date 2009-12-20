@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 ;;;******************************************************************
 (defun c:Project1_Dcl-1_TB-Close_OnClicked () (dcl_Form_Close GRID_Dcl-1))
@@ -335,7 +335,7 @@ Argumente: nColumn: "      (itoa nColumn)
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################

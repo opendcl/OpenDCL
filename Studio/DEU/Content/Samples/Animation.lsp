@@ -27,7 +27,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Ereignisfunktionen>>|;
+;|<<OpenDCL Event Handlers>>|;
 
 (defun c:Animation_Form1_OnInitialize (/ fn avi)
 	(dcl_Animate_Load Animation_Form1_Animation1 (*ODCL:Samples:FindFile "Clock.avi"))
@@ -59,7 +59,7 @@
 
 (princ)
 
-;|<<OpenDCL Beispiel Abschluss>>|;
+;|<<OpenDCL Samples Epilog>>|;
 
 ;;;######################################################################
 ;;;######################################################################
