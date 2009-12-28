@@ -153,7 +153,6 @@ bool CAcadPaletteHost::OnClosing()
 
 void CAcadPaletteHost::DrawBorders(CDC* pDC, CRect& rect)
 {
-	mpDlgObject->OnValidateBkgnd( this );
 	__super::DrawBorders( pDC, rect );
 }
 

@@ -67,25 +67,6 @@ bool CHyperlinkCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-void CHyperlinkCtrl::OnValidateBkgnd( CWnd* pBkgnd )
-{
-	CRect rcClient;
-	GetClientRect( &rcClient );
-	if( pBkgnd )
-	{
-		ClientToScreen( &rcClient );
-		pBkgnd->ScreenToClient( &rcClient );
-		CDC* pDC = pBkgnd->GetDC();
-		HBRUSH hbrBackground = (HBRUSH)pBkgnd->SendMessage( WM_CTLCOLORSTATIC, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
-		if( mColorService.IsBackgroundTransparent() )
-			hbrBackground = mColorService.GetBackgroundBrush();
-		pDC->FillRect( &rcClient, CBrush::FromHandle( hbrBackground ) );
-		pBkgnd->ValidateRect( &rcClient );
-	}
-	else
-		ValidateRect( &rcClient );
-}
-
 
 BEGIN_MESSAGE_MAP(CHyperlinkCtrl, CWnd)
 	ON_WM_NCHITTEST()

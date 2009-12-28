@@ -111,9 +111,6 @@ BOOL COptionsTabDlg::OnMainDialogHelp()
 
 LRESULT COptionsTabDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	//if( message == WM_PAINT )
-	//	OnValidateBkgnd( NULL );
-
 	return __super::WindowProc(message, wParam, lParam);
 }
 

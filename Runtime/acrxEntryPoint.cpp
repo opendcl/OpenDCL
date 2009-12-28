@@ -758,12 +758,78 @@ BOOL GetDiscSpace(LPCTSTR lpszPath, DWORDLONG *pnFree)
 }
 
 
+#ifdef _USE_ODCL_DROPTARGET
+class COdclDropTarget : public COleDropTarget
+{
+public:
+	COdclDropTarget() {}
+	virtual ~COdclDropTarget() {}
+
+// COleDropTarget Overrides
+protected:
+	virtual DROPEFFECT OnDragEnter( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point )
+		{
+			if( GetOdclFilename( pDataObject ) )
+				return DROPEFFECT_COPY;
+			return DROPEFFECT_NONE;
+		}
+	virtual DROPEFFECT OnDragOver( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point )
+		{
+			if( GetOdclFilename( pDataObject ) )
+				return DROPEFFECT_COPY;
+			return DROPEFFECT_NONE;
+		}
+	virtual void OnDragLeave( CWnd* pWnd ) {}
+	virtual BOOL OnDrop( CWnd* pWnd, COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point )
+		{
+			LPCTSTR pszFilename = GetOdclFilename( pDataObject );
+			if( !pszFilename )
+				return FALSE;
+			TArxProjectPtr pProject = theArxWorkspace.LoadProjectFile( pszFilename, NULL, true );
+			return (pProject != NULL);
+		}
+	virtual DROPEFFECT OnDropEx( CWnd* pWnd, COleDataObject* pDataObject,
+															 DROPEFFECT dropDefault, DROPEFFECT dropList, CPoint point)
+		{ return DROPEFFECT_NONE; } //returning DROPEFFECT_NONE will cause OnDrop to be called instead
+
+	static LPCTSTR GetOdclFilename( COleDataObject* pDataObject )
+		{
+			HGLOBAL hData = pDataObject->GetGlobalData( CF_HDROP );
+			if( !hData )
+				return NULL;
+			static CString sFilename;
+			sFilename.Empty();
+			DROPFILES* pdf = (DROPFILES*)GlobalLock( hData );
+			if( pdf )
+			{
+				if( pdf->fWide )
+					sFilename = (LPCWSTR)((BYTE*)pdf + pdf->pFiles);
+				else
+					sFilename = (LPCSTR)((BYTE*)pdf + pdf->pFiles);
+			}
+			GlobalUnlock( hData );
+			GlobalFree( hData );
+			if( sFilename.IsEmpty() )
+				return NULL;
+			if( sFilename.Right( 5 ).CompareNoCase( _T(".odcl") ) == 0 )
+				return sFilename;
+			if( sFilename.Right( 9 ).CompareNoCase( _T(".odcl.lsp") ) == 0 )
+				return sFilename;
+			return NULL;
+		}
+};
+#endif //_USE_ODCL_DROPTARGET
+
+
 //-----------------------------------------------------------------------------
 //----- ObjectARX EntryPoint
 class CARXApp : public AcRxArxApp {
 
 protected:
 	T_PropertyIdSet mPropIds; //store the property ids used to define get/set lisp functions
+#ifdef _USE_ODCL_DROPTARGET
+	COdclDropTarget mOdclDropTarget; //for supporting drag/drop of .odcl file
+#endif
 
 	//dcl dialog state, probably should be stored in document state
 	static CString msDialogToBeShown;
@@ -854,6 +920,9 @@ public:
 		DWORD cchPath = GetModuleFileName( _hdllInstance, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
 		sModulePath.ReleaseBuffer( cchPath );
 		acedRegisterExtendedTab( sModulePath, _T("OptionsDialog") );
+	#ifdef _USE_ODCL_DROPTARGET
+		acedAddDropTarget( &mOdclDropTarget );
+	#endif
 
 		GetApiPropertyIdSet( mPropIds );
 
@@ -874,6 +943,9 @@ public:
 	}
 
 	virtual AcRx::AppRetCode On_kUnloadAppMsg (void *pkt) {
+	#ifdef _USE_ODCL_DROPTARGET
+		acedRemoveDropTarget( &mOdclDropTarget );
+	#endif
 		try
 		{
 			theArxWorkspace.UnloadAllProjects();

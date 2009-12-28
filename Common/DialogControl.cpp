@@ -12,6 +12,7 @@
 #include "ToolTips.h"
 #include "UndoManager.h"
 #include "DragDropService.h"
+#include "DialogObject.h"
 #include <algorithm>
 
 
@@ -63,6 +64,17 @@ HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 		return NULL;
 	if( pColorService->IsBackgroundTransparent() )
 	{
+		CDialogObject* pHostDlg = mpControlPane->GetDialogObject();
+		if( pHostDlg )
+		{
+			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
+			if( pDlgColor && !pDlgColor->IsBackgroundTransparent() )
+			{
+				pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
+				pDC->SetBkMode( OPAQUE );
+				return pDlgColor->GetBackgroundBrush();
+			}
+		}
 		pDC->SetBkMode( TRANSPARENT );
 		return NULL;
 	}
@@ -99,7 +111,7 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 		CWnd* pParent = mpControlWnd->GetParent();
 		if( pParent )
 		{
-			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)mpControlWnd->m_hWnd );
+			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)NULL/*mpControlWnd->m_hWnd*/ );
 			if( !hbrBackground )
 				return FALSE;
 			pDC->FillRect( &rcClip, CBrush::FromHandle( hbrBackground ) );
@@ -552,7 +564,7 @@ bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 bool CDialogControl::OnApplyCaption( TPropertyPtr pProp )
 {
 	mpControlWnd->SetWindowText( pProp->GetStringValue() );
-	OnNeedRepaint();
+	OnNeedRepaint( true );
 	return true;
 }
 

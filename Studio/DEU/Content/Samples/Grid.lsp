@@ -270,7 +270,7 @@
 (defun c:Project1_Dcl-1_TB-DeleteRows_OnClicked ()
 	(setq GridRowCount (dcl_Grid_GetRowCount GRID_Dcl-1_grid1))
 	(while (>= GridRowCount 0)
-		(if (= (dcl_Grid_GetItemCheck GRID_Dcl-1_grid1 GridRowCount 1) T)
+		(if (= (dcl_Grid_GetCellCheckState GRID_Dcl-1_grid1 GridRowCount 1) 1)
 			(dcl_Grid_DeleteRow GRID_Dcl-1_grid1 GridRowCount)
 		)
 		(setq GridRowCount (1- GridRowCount))

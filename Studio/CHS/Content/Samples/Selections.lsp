@@ -7,162 +7,267 @@
 ;; while interacting with AutoCAD, the dialog box will not reopen.
 
 ;; Main program
-(DEFUN c:Sel (/                              fn
-			  bflag                          blipper
-			  echo                           PtList
-			  ObjList
-			  ;; local Sub Functions
-			  *error*                        ss->objlist
-			  ;; local Sub Event handlers for Modal Form.
-			  c:Selections_Form_OnInitialize
-			  c:Selections_Form_Close_OnClicked
-			  c:Selections_Form_GraphicButton1_OnClicked
-			  c:Selections_Form_GraphicButton2_OnClicked
-			 )
+(DEFUN c:Sel (/
 
-	(SETQ blipper (GETVAR "BLIPMODE")
-		  echo    (GETVAR "CMDECHO")
-	)
-	(vl-load-com)
-	(SETVAR "CMDECHO" 0)
-	;;------------------------------------------------------------------
-	;;   Standard error trap
-	;;
-	;; This sub function is called by AutoCAD when the user presses
-	;; the [Esc] key during the getpoint prompt
-	(DEFUN *error* (msg)
-		(COND
-			((NOT msg))                           ; no error, do nothing
-			((VL-POSITION
-				 (STRCASE msg T)                  ; cancel
-				 '("console break" "function cancelled" "quit / exit abort")
-			 )
-			 ;; just for the Demo ...
-			 (dcl_MESSAGEBOX ".... Quit/Exit/Abort/*Cancelled*"
-							  "Inside Error Handler" ; Form Caption
-							  2                   ; OK Button Only
-							  1                   ; exclamation point icon is displayed in the message box.
-			 )
-			)
-			((PRINC (STRCAT "\nApplication Error: " (itoa (GETVAR "errno")) " :- " msg "\n"))
-			)
-		)
-		(SETVAR "errno" 0)
-		;;
-		;;
-		(SETQ bflag nil) ; So the dialog box doesn't reopen
-		(SETVAR "BLIPMODE" blipper)
-		(VL-CMDF "._REDRAW")
-		(SETVAR "CMDECHO" echo)
-	)
-	;;------------------------------------------------------------------
-	;;
-	(DEFUN ss->objlist (ss / i returnval)
-		(IF (AND ss (< 0 (SSLENGTH ss)))
-			(PROGN (SETQ i 0)
-				(REPEAT (SSLENGTH ss)
-					(SETQ returnval (CONS (VLAX-ENAME->VLA-OBJECT (SSNAME ss i))
-											 returnval
-									)
-							i (1+ i)
-					)
-				)
-			)
-		)
-		(IF returnval
-			(REVERSE returnval)
-			nil
-		)
-	)
-	;;------------------------------------------------------------------
-	;;
-	(DEFUN c:Selections_Form_Close_OnClicked ()
-		(SETQ bflag nil) ; So the dialog box doesn't reopen
-		(dcl_FORM_CLOSE Selections_Form)
-	)
-	;;------------------------------------------------------------------
-	;;
-	;; this sub function receives the clicked event of the PickPointButton
-	;;
-	(DEFUN c:Selections_Form_PickPointButton_OnClicked (/ pt)
-		;;
-		;; Call the Form_Close method to close the dialog while the user picks the point.
-		;; Set bflag to true so the while loop in Main will reshow the dialog box
-		;; once the point has been picked.
-		(SETQ bflag T)
-		(dcl_FORM_CLOSE Selections_Form)
-		(SETVAR "BLIPMODE" 1)
-		(SETQ pt     (GETPOINT "\nSelect point: ")
-			  ptList '()
-		)
-		(WHILE pt
-			(SETQ ptList (CONS (VL-PRINC-TO-STRING pt) ptList))
-			(PROMPT (STRCAT "\n Selected another Point : "
-							(VL-PRINC-TO-STRING pt)
-							"\nEnter to Return to Form or ESC to cancel. "
-					)
-			)
-			(SETQ pt (GETPOINT "\nSelect other point."))
-		)
-		(SETVAR "BLIPMODE" 0)
-		(VL-CMDF "._REDRAW")
-	)
-	;;------------------------------------------------------------------
-	;;
-	;; this sub function receives the clicked event of the PickObjectButton
-	(DEFUN c:Selections_Form_PickObjectButton_OnClicked (/ ss)
-		;;
-		;; set bflag to true so the while loop in Main will reshow the dialog box
-		;; once the objects have been selected.
-		(SETQ bflag T
-			  ObjList '()
-		)
-		;;
-		;; Call the method to close the dialog box
-		(dcl_FORM_CLOSE Selections_Form)
-		(PROMPT "\n Select Objects, or \n Enter to Return to Form.")
-		(SETQ ss (SSGET))
-		;;
-		(FOREACH obj (SS->OBJLIST ss)
-			(SETQ ObjList (CONS (VLA-GET-OBJECTNAME obj) ObjList))
-		)
-		(SETQ ObjList (REVERSE ObjList))
-	)
-	;;------------------------------------------------------------------
-	;;
-	(DEFUN c:Selections_Form_OnInitialize (/)
-		(IF PtList
-			(dcl_LISTBOX_ADDLIST Selections_Form_PointListBox PtList)
-		)
-		(IF ObjList
-			(dcl_LISTBOX_ADDLIST Selections_Form_ObjectListBox ObjList)
-		)
-	)
-	;;------------------------------------------------------------------
-	;;
-	;;  Main Entry Point
-	;;------------------------------------------------------------------
+              ;; local variables
+              lstPoints lstObjects doContinue intResult
 
-	;; Ensure OpenDCL Runtime is loaded
-	(command "_OPENDCL")
+              ;; local Sub Functions
+              point_selection object_selection
 
-	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Selections.odcl"))
+              ;; local Sub Event handlers for Modal Form.
+              ;; Commands and functions, which show modal form, won't continue after the line
+              ;; (dcl_form_show ...) until the form will be closed. That's why the event
+              ;; functions are only needed in this command. Therefore the event function
+              ;; can be defined as local sub functions.
 
-	;; show the form here, and make any calls required to
-	;; initialize/reinitialize the dialog box controls before dcl_Form_Show
-	(SETQ bflag T)
-	(WHILE bflag                                  ; To fire it up
-		(SETQ bflag nil)
-		(dcl_FORM_SHOW Selections_Form)
-		;; The Event handlers manage the form here.
-		;;
-	)
-	;;------------------------------------------------------------------
-	;;
-	(*error* nil)
-	(PRINC)
-)
+              c:Selections_Form_OnInitialize
+              c:Selections_Form_Close_OnClicked
+              c:Selections_Form_PickPointButton_OnClicked
+              c:Selections_Form_PickObjectButton_OnClicked
+              c:Selections_Form_PointListBox_OnDblClicked
+              c:Selections_Form_ObjectListBox_OnDblClicked
+              )
+
+    
+
+    ;|<<Additional sub functions>>|;
+
+
+    ;; point selection
+
+    (defun point_selection (/ intBlip ptPoint strPoint doSel)
+
+        ;; activate BLIPMODE
+        (setq intBlip (getvar "BLIPMODE"))
+        (setvar "BLIPMODE" 1)
+
+        (setq doSel T)
+        (while doSel
+
+            ;; secure point picking
+            (setq ptPoint (vl-catch-all-apply 'getpoint (list "\nPick a point (or press ENTER to return to the form): ")))
+
+            (cond
+                ;; ENTER was pressed, set doContinue to T,
+                ;; to re-show the form
+                ((not ptPoint)
+                 (setq ptPoint nil
+                       doSel nil
+                       doContinue T))
+
+                ;; ESC was pressed, set doContinue to nil,
+                ;; to cancel the loop and cancel the command
+                ((vl-catch-all-error-p ptPoint)
+                 (setq ptPoint nil
+                       doSel nil
+                       doContinue nil))
+
+                ;; Convert the point to string
+                ((not (setq strPoint (vl-prin1-to-string ptPoint)))
+                 (setq ptPoint nil
+                       doSel T))
+
+                ;; Add a point to the list if it doesnt already exist
+                ;; and return to the form after that
+                ((not (member strPoint lstPoints))
+                 (setq lstPoints (reverse (cons strPoint (reverse lstPoints)))
+                       doSel T))
+            ); cond
+        ); while
+        
+        ;; restore BLIPMODE
+        (setvar "BLIPMODE" intBlip)
+    ); point_selection
+
+
+    ;; object selection
+
+    (defun object_selection (/ intBlip ssAusw intLen entObj vlaObj strObj)
+
+        ;; activate BLIPMODE
+        (setq intBlip (getvar "BLIPMODE"))
+        (setvar "BLIPMODE" 1)
+
+        ;; secure object picking
+        (princ "\nSelect objects (or press ENTER to return to the form): ")
+        (setq ssAusw (vl-catch-all-apply 'ssget nil))
+        
+        (cond
+            ;; ENTER was pressed, set doContinue to T,
+            ;; to re-show the form
+            ((not ssAusw)
+             (setq ssAusw nil
+                   doContinue T))
+
+            ;; ESC was pressed, set doContinue to nil,
+            ;; to cancel the loop and cancel the command
+            ((vl-catch-all-error-p ssAusw)
+             (setq ssAusw nil
+                   doContinue nil))
+
+            ;; check if selection set has objects
+            ((zerop (setq intLen (sslength ssAusw)))
+             (setq ssAusw nil
+                   doContinue T))
+
+            ;; Add objects to list, if they're still not in
+            ;; and return to the form after that
+            (T (repeat intLen
+                   (setq entObj (ssname ssAusw (setq intLen (1- intLen))))
+                   (setq vlaObj (vlax-ename->vla-object entObj))
+                   (setq strObj (strcat (vla-get-ObjectName vlaObj) " (" (vla-get-Handle vlaObj) ")"))
+                   (if (not (member strObj lstObjects))
+                       (setq lstObjects (reverse (cons strObj (reverse lstObjects))))
+                   ); if
+               ); repeat
+             (setq doContinue T))
+        ); cond
+        
+        ;; restore BLIPMODE
+        (setvar "BLIPMODE" intBlip)
+    ); object_selection
+
+    
+
+    ;|<<OpenDCL Event Handlers>>|;
+
+
+
+    ;; The event OnInitialize will be called each time
+    ;; the form is going to be shown
+    
+    (defun c:Selections_Form_OnInitialize (/)
+        
+        ;; clean if necessary
+        (dcl_ListBox_Clear Selections_Form_PointListBox)
+        (dcl_ListBox_Clear Selections_Form_ObjectListBox)
+
+        ;; fill pointlist
+        (if lstPoints
+            (dcl_ListBox_AddList Selections_Form_PointListBox lstPoints)
+        ); if
+
+        ;; fill objectlist
+        (if lstObjects
+            (dcl_ListBox_AddList Selections_Form_ObjectListBox lstObjects)
+        ); if
+        
+    ); c:Selections_Form_OnInitialize
+
+    
+    
+    ;; This event will be called when the user picks the close-button
+    ;; In that case the value 1 is given to close method as an argument.
+    ;; This is the return value for the show method (see there).
+    
+    (defun c:Selections_Form_Close_OnClicked (/)
+        (dcl_form_close Selections_Form 1)
+    ); c:Selections_Form_Close_OnClicked
+
+    
+    
+    ;; This event will be called when the user picks the pointselection-button
+    ;; In that case the value 3 is given to close method as an argument.
+    ;; This is the return value for the show method (see there).
+    
+    (defun c:Selections_Form_PickPointButton_OnClicked (/)
+        (dcl_form_close Selections_Form 3)
+    ); c:Selections_Form_PickPointButton_OnClicked
+
+    
+    
+    ;; This event will be called when the user picks the objectselection-button
+    ;; In that case the value 14is given to close method as an argument.
+    ;; This is the return value for the show method (see there).
+    
+    (defun c:Selections_Form_PickObjectButton_OnClicked (/)
+        (dcl_form_close Selections_Form 4)
+    ); c:Selections_Form_PickObjectButton_OnClicked
+
+    
+    
+    ;; This event will be called when the user doubleclicks an item
+    
+    (defun c:Selections_Form_PointListBox_OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_PointListBox))))
+            (progn
+                
+                ;; remove an item from the lists
+                
+                (setq lstPoints (vl-remove (dcl_ListBox_GetItemText Selections_Form_PointListBox intRow) lstPoints))
+                (dcl_ListBox_DeleteItem Selections_Form_PointListBox intRow)
+            ); progn
+        ); if
+    ); c:Selections_Form_PointListBox_OnDblClicked
+
+    
+    
+    ;; This event will be called when the user doubleclicks an item
+    
+    (defun c:Selections_Form_ObjectListBox_OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_ObjectListBox))))
+            (progn
+
+                ;; remove an item from the lists
+                
+                (setq lstObjects (vl-remove (dcl_ListBox_GetItemText Selections_Form_ObjectListBox intRow) lstObjects))
+                (dcl_ListBox_DeleteItem Selections_Form_ObjectListBox intRow)
+            ); progn
+        ); if
+    ); c:Selections_Form_ObjectListBox_OnDblClicked
+
+    ;; load COM
+    (vl-load-com)
+
+    ;; Ensure OpenDCL Runtime is (quietly) loaded
+    (setq cmdecho (getvar "CMDECHO"))
+    (setvar "CMDECHO" 0)
+    (command "_OPENDCL")
+    (setvar "CMDECHO" cmdecho)
+
+    ;; Load the project
+    (dcl_Project_Load (*ODCL:Samples:FindFile "Selections.odcl"))
+
+    ;; The repeating calls to show the modal form can be easily achieved
+    ;; by a while loop
+    (setq doContinue T)
+    (while doContinue
+        ;; However, to avoid an endless loop, the condition for repeating the loop, must negate at first
+        ;; The condition will be "activated" again after dcl_form_show for some cases.
+        (setq doContinue nil)
+
+        ;; if the dialog get closed, the function returns a value
+        ;; This is 1 for OK (reserved value), 2 for ESC or Cancel (reserved value)
+        ;; or the value, which was given to dcl_form_close
+        (setq intResult (dcl_form_show Selections_Form))
+
+        ;; This is a modal form, so (dcl_Form_Show) does not return until
+        ;; the modal form is closed. In the meantime, the event handlers
+        ;; manage the form.
+
+        ;; Now the return value can be interpreted
+        (cond
+            
+            ;; close-button
+            ;; Here something can be done with the selected points ans objects
+            ((= intResult 1) (setq doContinue nil))
+
+            ;; ESC key
+            ((= intResult 2) (setq doContinue nil))
+
+            ;; point selection
+            ((= intResult 3) (point_selection))
+
+            ;; objectselection
+            ((= intResult 4) (object_selection))
+
+        ); cond
+    ); while
+
+    (redraw)
+    (princ)
+); c:Sel
 
 (princ)
 

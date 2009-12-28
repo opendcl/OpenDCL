@@ -190,13 +190,6 @@ void CDialogObject::ApplyPosition()
 	IgnoreSizing( bIgnoreSizing );
 }
 
-void CDialogObject::OnValidateBkgnd( CWnd* pBkgnd )
-{
-	CControlPane* pPane = GetControlPane();
-	if( pPane )
-		pPane->OnValidateBkgnd( pBkgnd? pBkgnd : mpControlWnd );
-}
-
 BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 {
 	TraceFmt( _T("# CDialogObject(%s)::HandleEraseBkgnd(%s)\r\n"),

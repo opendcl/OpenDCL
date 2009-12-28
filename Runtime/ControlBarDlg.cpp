@@ -379,8 +379,5 @@ BOOL CControlBarDlg::OnEraseBkgnd(CDC* pDC)
 
 LRESULT CControlBarDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if( message == WM_PAINT )
-		OnValidateBkgnd( NULL );
-
 	return __super::WindowProc(message, wParam, lParam);
 }

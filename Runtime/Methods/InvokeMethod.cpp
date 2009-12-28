@@ -90,9 +90,14 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 		return true;
 	if( bAsync )
 	{
+		bool bShowCommand = (sHandlerLispFunction.Left( 2 ).CompareNoCase( _T("C:") ) != 0);
 		CString sCommand;
-		sCommand.Format( _T("(%s%s)\n"), (LPCTSTR)sHandlerLispFunction, (LPCTSTR)args.asString() );
-		Acad::ErrorStatus es = ExecuteCommand( sCommand, false, pDoc );
+		CString sArgs = args.asString();
+		if( sArgs.IsEmpty() && bShowCommand && sHandlerLispFunction.Left( 1 ) != _T("_") )
+			sCommand = sHandlerLispFunction + _T('\n');
+		else
+			sCommand.Format( _T("(%s%s)\n"), (LPCTSTR)sHandlerLispFunction, (LPCTSTR)sArgs );
+		Acad::ErrorStatus es = ExecuteCommand( sCommand, bShowCommand, pDoc );
 		assert (es == Acad::eOk );
 		if( es != Acad::eOk )
 			return false;

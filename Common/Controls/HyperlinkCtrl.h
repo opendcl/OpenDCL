@@ -39,7 +39,6 @@ public:
 	virtual CString GetWndCaption() const; //get window caption from properties
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual void OnValidateBkgnd( CWnd* pBkgnd );
 
 // Generated message map functions
 protected:

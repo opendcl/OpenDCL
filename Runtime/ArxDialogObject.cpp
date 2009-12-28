@@ -87,7 +87,7 @@ bool CArxDialogObject::IsCloseAllowed( bool bCancelling ) const
 	GetArxServices()->HandleEvent( Prop::FormEventCancelClose, prbResult, args_N( bCancelling? 1 : 0 ) );
 	if( !prbResult )
 		return true;
-	bool bDisallow = (prbResult->restype != RTNIL);
+	bool bDisallow = (prbResult->restype != RTNIL && prbResult->restype != RTVOID);
 	acutRelRb( prbResult );
 	return !bDisallow;
 }

@@ -5,70 +5,186 @@
 ;;;
 
 ;; Main program
-(defun c:Splitter (/ cmdecho
-					 set_style
-					 set_thickness
-					 c:splitter_splitter_pb_1_OnClicked
-					 c:splitter_splitter_pb_2_OnClicked c:splitter_splitter_pb_3_OnClicked
-					 c:splitter_splitter_pb_4_OnClicked c:splitter_splitter_pb_5_OnClicked
-					 c:splitter_splitter_pb_6_OnClicked c:splitter_splitter_pb_8_OnClicked
-					 c:splitter_splitter_pb_10_OnClicked c:splitter_splitter_pb_12_OnClicked
-					 c:splitter_splitter_pb_raised_OnClicked c:splitter_splitter_pb_doubled_OnClicked
-					 c:splitter_splitter_pb_etched_OnClicked c:splitter_splitter_pb_flat_OnClicked
-					 c:splitter_splitter_pb_sunken_OnClicked c:splitter_splitter_pb_bump_OnClicked
-				  )
+(defun c:splitter (/ lstDistance lstStyle lstThickness lstLastContent strStyle strThick strInner strOuter
+                     set_style set_thickness check_distance set_inside set_outside
+                     c:splitter_splitter_OnInitialize
+                     c:splitter_splitter_OnCancelClose
+                     c:splitter_splitter_spl_ver_OnSplitterMoved
+                     c:Splitter_splitter_grd_OnBeginLabelEdit
+                     c:Splitter_splitter_grd_OnEndLabelEdit
+		     )
 
-	(defun set_style (n)
-		(dcl_Control_SetEdgeStyle splitter_splitter_spl_hor n)
-		(dcl_Control_SetEdgeStyle splitter_splitter_spl_ver n)
-	); set_style
+  ;; Setting variables
+  
+  (setq lstDistance (list "10" "30" "50" "70"))
+  (setq lstThickness (list "0" "1" "2" "3" "4" "5" "6" "7" "8"))
+  (setq lstStyle (list "Raised" "Double raised" "Etched" "Flat" "Sunken" "Bump"))
+  (setq strStyle "Style")
+  (setq strThick "Thickness (in px)")
+  (setq strInner "Closest to left/top")
+  (setq strOuter "Closest to right/bottom")
 
-	(defun set_thickness (n)
-		(dcl_Control_SetHeight splitter_splitter_spl_hor n)
-		(dcl_Control_SetWidth splitter_splitter_spl_ver n)
-	); set_thickness
+  ;; Helper functions
 
-	;|<<OpenDCL Event Handlers>>|;
+  (defun set_style (n)
+    (dcl_Control_SetEdgeStyle splitter_splitter_spl_hor n)
+    (dcl_Control_SetEdgeStyle splitter_splitter_spl_ver n)
+  ); set_style
 
-	(defun c:splitter_splitter_pb_1_OnClicked ( /) (set_thickness 1))
-	(defun c:splitter_splitter_pb_2_OnClicked ( /) (set_thickness 2))
-	(defun c:splitter_splitter_pb_3_OnClicked ( /) (set_thickness 3))
-	(defun c:splitter_splitter_pb_4_OnClicked ( /) (set_thickness 4))
-	(defun c:splitter_splitter_pb_5_OnClicked ( /) (set_thickness 5))
-	(defun c:splitter_splitter_pb_6_OnClicked ( /) (set_thickness 6))
-	(defun c:splitter_splitter_pb_8_OnClicked ( /) (set_thickness 8))
-	(defun c:splitter_splitter_pb_10_OnClicked ( /) (set_thickness 10))
-	(defun c:splitter_splitter_pb_12_OnClicked ( /) (set_thickness 12))
+  (defun set_thickness (n)
+    (dcl_Control_SetHeight splitter_splitter_spl_hor n)
+    (dcl_Control_SetWidth splitter_splitter_spl_ver n)
+  ); set_thickness
 
-	(defun c:splitter_splitter_pb_raised_OnClicked ( /) (set_style 0))
-	(defun c:splitter_splitter_pb_doubled_OnClicked ( /) (set_style 1))
-	(defun c:splitter_splitter_pb_etched_OnClicked ( /) (set_style 2))
-	(defun c:splitter_splitter_pb_flat_OnClicked ( /) (set_style 3))
-	(defun c:splitter_splitter_pb_sunken_OnClicked ( /) (set_style 4))
-	(defun c:splitter_splitter_pb_bump_OnClicked ( /) (set_style 5))
+  (defun set_outside (n)
+    (dcl_Control_SetClosestOutside splitter_splitter_spl_hor n)
+    (dcl_Control_SetClosestOutside splitter_splitter_spl_ver n)
+  ); set_outside
 
-	;|<<Show the form>>|;
+  (defun set_inside (n)
+    (dcl_Control_SetClosestInside splitter_splitter_spl_hor n)
+    (dcl_Control_SetClosestInside splitter_splitter_spl_ver n)
+  ); set_inside
 
-	;; Ensure OpenDCL Runtime is (quietly) loaded
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  (defun check_distance (strValue)
+    (if (not (member strValue lstDistance))
+      (setq lstDistance (vl-sort (cons strValue lstDistance)
+				 '(lambda (a b) (< (atoi a) (atoi b)))))
+    ); if
+  ); check_distance
 
-	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Splitter.odcl"))
+  (defun check_thickness (strValue)
+    (if (not (member strValue lstThickness))
+      (setq lstThickness (vl-sort (cons strValue lstThickness)
+				 '(lambda (a b) (< (atoi a) (atoi b)))))
+    ); if
+  ); check_thickness
 
-	;; Show the main form
-	(dcl_Form_Show splitter_splitter)
+  ;|<<OpenDCL Event Handlers>>|;
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
-	;; the modal form is closed. In the meantime, the event handlers
-	;; manage the form.
+  ;; This event is called before the form is shown.
+  ;; It sets default values for the dialog and its controls.
+  (defun c:splitter_splitter_OnInitialize (/ intRow lstRow intInside intOutside intThickness)
+    (setq intInside (dcl_Control_GetClosestInside splitter_splitter_spl_ver))
+    (check_distance (itoa intInside))
 
-	(princ)
-)
+    (setq intOutside (dcl_Control_GetClosestOutside splitter_splitter_spl_ver))
+    (check_distance (itoa intOutside))
 
-(princ)
+    (setq intThickness (dcl_Control_GetWidth splitter_splitter_spl_ver))
+    (check_thickness (itoa intThickness))
+
+    (setq intStyle (dcl_Control_GetEdgeStyle splitter_splitter_spl_ver))
+    
+    (foreach lstRow (list (list strInner 38 lstDistance (itoa intInside))
+			  (list strOuter 38 lstDistance (itoa intOutside))
+			  (list strThick 38 lstThickness (itoa intThickness))
+			  (list strStyle 18 lstStyle (nth intStyle lstStyle))
+			  )
+      (if (setq intRow (dcl_Grid_AddString Splitter_splitter_grd (car lstRow)))
+	(progn
+	  (dcl_Grid_SetCellStyle Splitter_splitter_grd intRow 1 (cadr lstRow))
+	  (dcl_Grid_SetCellDropList Splitter_splitter_grd intRow 1 (caddr lstRow))
+	  (dcl_Grid_SetCellText Splitter_splitter_grd intRow 1 (last lstRow))
+	); progn
+      ); if
+    ); foreach
+
+    (dcl_Control_SetText Splitter_splitter_edt_info "")
+  ); c:splitter_splitter_OnInitialize
+
+  ;; This event is called when Enter is pressed in the grid
+  ;; To prevent the form from closing this event function must return T
+  ;; But there must be a way that this event function will return NIL
+  ;; to close the form
+  (defun c:splitter_splitter_OnCancelClose (intIsESC /)
+    (dcl_Grid_CancelCellEdit Splitter_splitter_grd)
+    (/= intIsESC 1)
+  ); c:splitter_splitter_OnCancelClose
+
+  ;; This event is called when the vertical splitter is moved
+  ;; to recalculate the grid's column width
+  (defun c:splitter_splitter_spl_ver_OnSplitterMoved (intUpperLeftX intUpperLeftY intWidth intHeight /)
+    (setq intWidth (fix (* 0.5 (dcl_Control_GetWidth Splitter_splitter_grd))))
+    (dcl_Grid_SetColumnWidth Splitter_splitter_grd 0 intWidth)
+    (dcl_Grid_SetColumnWidth Splitter_splitter_grd 1 intWidth)
+  ); c:splitter_splitter_spl_ver_OnSplitterMoved
+
+  ;; This event is called when a cell is going to be edited.
+  ;; Just save the latest values for the possible case to restore
+  (defun c:Splitter_splitter_grd_OnBeginLabelEdit (intRow intCol /)
+    (setq lstLastContent (list intRow intCol (dcl_Grid_GetCellText Splitter_splitter_grd intRow intCol)))
+  ); c:Splitter_splitter_grd_OnBeginLabelEdit
+
+  ;; This event is called when cell editing is completed.
+  (defun c:Splitter_splitter_grd_OnEndLabelEdit (intRow intCol / strValue strProp intPos)
+    (cond
+      ((not lstLastContent) nil)
+      ((/= intRow (car lstLastContent)) nil)
+      ((or (not (setq strValue (dcl_Grid_GetCellText Splitter_splitter_grd intRow 1)))
+	   (= (vl-string-trim " " strValue) ""))
+       (dcl_Grid_SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent)))
+      ((or (not (setq strProp (dcl_Grid_GetCellText Splitter_splitter_grd intRow 0)))
+	   (= strProp ""))
+       (dcl_Grid_SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent)))
+      ((= strProp strStyle)
+       (if (setq intPos (vl-position strValue lstStyle))
+	 (set_style intPos)
+	 (dcl_Grid_SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent))
+       ))
+      ((= strProp strThick)
+       (check_thickness strValue)
+       (dcl_Grid_SetCellDropList Splitter_splitter_grd intRow 1 lstThickness)
+       (set_thickness (atoi strValue)))
+      ((= strProp strInner)
+       (check_distance strValue)
+       (dcl_Grid_SetCellDropList Splitter_splitter_grd intRow 1 lstDistance)
+       (set_inside (atoi strValue)))
+      ((= strProp strOuter)
+       (check_distance strValue)
+       (dcl_Grid_SetCellDropList Splitter_splitter_grd intRow 1 lstDistance)
+       (set_outside (atoi strValue)))
+    ); cond
+    (setq lstLastContent nil)
+  ); c:Splitter_splitter_grd_OnEndLabelEdit
+
+  ;; This event is called when the selection has changed in the grid
+  (defun c:Splitter_splitter_grd_OnSelChanged (intRow intCol / strProp)
+    (if (and (= intCol 1)
+	     (not lstLastContent))
+      (dcl_Grid_StartCellEdit Splitter_splitter_grd intRow intCol)
+    ); if
+    (setq strProp (dcl_Grid_GetCellText Splitter_splitter_grd intRow 0))
+    (cond
+      ((= strProp strStyle) (dcl_Control_SetText Splitter_splitter_edt_info "The edge style controls how the splitter is painted."))
+      ((= strProp strThick) (dcl_Control_SetText Splitter_splitter_edt_info "This property determines the width of the vertical splitter and the height of the horizontal splitter."))
+      ((= strProp strInner) (dcl_Control_SetText Splitter_splitter_edt_info "This property determines how close to the top or left edge the splitter is allowed to travel."))
+      ((= strProp strOuter) (dcl_Control_SetText Splitter_splitter_edt_info "This property determines how close to the bottom or right edge the splitter is allowed to travel."))
+      (T (dcl_Control_SetText Splitter_splitter_edt_info ""))
+    ); cond
+    nil
+  ); c:Splitter_splitter_grd_OnSelChanged
+
+  ;|<<Show the form>>|;
+
+  ;; Ensure OpenDCL Runtime is (quietly) loaded
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
+
+  ;; Load the project
+  (dcl_Project_Load (*ODCL:Samples:FindFile "Splitter.odcl"))
+
+  ;; Show the main form
+  (dcl_Form_Show splitter_splitter)
+
+  ;; This is a modal form, so (dcl_Form_Show) does not return until
+  ;; the modal form is closed. In the meantime, the event handlers
+  ;; manage the form.
+
+  (princ)
+); splitter
 
 ;|<<OpenDCL Samples Epilog>>|;
 
@@ -137,7 +253,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

@@ -21,6 +21,7 @@ public:
 	virtual ~CArxControlAcadDropTarget();
 
 // COleDropTarget Overrides
+protected:
 	virtual DROPEFFECT OnDragEnter( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point );
 	virtual DROPEFFECT OnDragOver( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point );
 	virtual void OnDragLeave( CWnd* pWnd );               

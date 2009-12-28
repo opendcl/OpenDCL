@@ -634,8 +634,5 @@ LRESULT CCustomFileDlg::OnGetSelectedFiles( WPARAM wParam, LPARAM lParam )
 
 LRESULT CCustomFileDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if( message == WM_PAINT )
-		OnValidateBkgnd( NULL );
-
 	return __super::WindowProc(message, wParam, lParam);
 }

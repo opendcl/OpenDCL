@@ -70,25 +70,20 @@ bool CLabelCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( (SS_LEFT | SS_CENTER), SS_RIGHT, 0 );
 				break;
 			}
-			OnNeedRepaint();
+			OnNeedRepaint( true );
 		}
 		break;
 	}
 	return !bFailed;
 }
 
-void CLabelCtrl::OnValidateBkgnd( CWnd* pBkgnd )
+bool CLabelCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
-	CRect rcClient;
-	GetClientRect( &rcClient );
-	if( pBkgnd )
-	{
-		ClientToScreen( &rcClient );
-		pBkgnd->ScreenToClient( &rcClient );
-		pBkgnd->ValidateRect( &rcClient );
-	}
-	else
-		ValidateRect( &rcClient );
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService )
+		pColorService->SetBackgroundColor( pProp->GetLongValue() );
+	OnNeedRepaint( true );
+	return true;
 }
 
 
@@ -109,7 +104,12 @@ BOOL CLabelCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return HandleCtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
+	if( hbrBackground )
+		return hbrBackground;
+	if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+		return NULL; //when using visual style, transparent brush causes class background to be used
+	return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL CLabelCtrl::OnEraseBkgnd(CDC* pDC)

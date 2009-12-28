@@ -130,7 +130,6 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL"
 				RuntimeLibrary="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"
 				ErrorReporting="0"
 			/>
 			<Tool
@@ -151,7 +150,6 @@
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

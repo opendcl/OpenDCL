@@ -184,20 +184,6 @@ bool CImageComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 	return true;
 }
 
-void CImageComboBoxCtrl::OnValidateBkgnd( CWnd* pBkgnd )
-{
-	CRect rcClient;
-	GetClientRect( &rcClient );
-	if( pBkgnd )
-	{
-		ClientToScreen( &rcClient );
-		pBkgnd->ScreenToClient( &rcClient );
-		pBkgnd->ValidateRect( &rcClient );
-	}
-	else
-		ValidateRect( &rcClient );
-}
-
 DWORD CImageComboBoxCtrl::GetComboStyle() const
 {
 	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )

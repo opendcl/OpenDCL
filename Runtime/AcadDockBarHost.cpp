@@ -152,7 +152,6 @@ BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 
 void CAcadDockBarHost::DrawBorders(CDC* pDC, CRect& rect)
 {
-	mpDlgObject->OnValidateBkgnd( this );
 	__super::DrawBorders( pDC, rect );
 }
 

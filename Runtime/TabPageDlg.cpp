@@ -70,7 +70,6 @@ LRESULT CTabPageDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			mpControlPane->RecalcLayout();
 			return 0;
 		}
-		OnValidateBkgnd( NULL );
 		break;
 	}
 	return __super::WindowProc(message, wParam, lParam);
