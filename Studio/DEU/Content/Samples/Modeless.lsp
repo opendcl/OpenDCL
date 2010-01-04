@@ -18,6 +18,7 @@
 
 	;; Dialog anzeigen
 	(dcl_Form_Show Modeless_DemoModeless)
+	(dcl_Form_Enable Modeless_DemoModeless T)
 
 	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
@@ -28,12 +29,27 @@
 	(princ)
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|<<OpenDCL Ereignisfunktionen>>|;
+;; Um den Lispausdruck "Command" ausführen zu können,
+;; muss im ODCL-Projekt im Feld "Event Invoke" die
+;; Option "Als Befehl ausführen" gewählt sein.
 
-(defun c:DemoModeless_cmdDrawLine_OnClicked ()
-	(command "_LINE" "0,0" "10,10" "")
-	(command "_ZOOM" "_W" "-10,-10" "20,20")
-	(princ)
+(defun c:DemoModeless_cmdDrawLine_OnClicked ( / strOldText ptStart ptEnde)
+  (setq strOldText (dcl_Control_GetCaption Modeless_DemoModeless_Label1))
+  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 "Picken Sie jetzt zwei Punkt am Bildschirm. Der Dialog bleibt geöffnet, ist jedoch inaktiv!")
+  (dcl_Form_Enable Modeless_DemoModeless nil)
+  (if (and (setq ptStart (vl-catch-all-apply 'getpoint (list "\nStartpunkt: ")))
+           (not (vl-catch-all-error-p ptStart))
+           (setq ptEnde (vl-catch-all-apply 'getpoint (list ptStart "\nZielpunkt: ")))
+           (not (vl-catch-all-error-p ptEnde)))
+    (progn
+      (command "_LINE" ptStart ptEnde "")
+      (command "_ZOOM" "_W" ptStart ptEnde)
+    ); progn
+  ); if
+  (dcl_Form_Enable Modeless_DemoModeless T)
+  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 strOldText)
+  (princ)
 )
 
 (defun c:DemoModeless_cmdZoomWin_OnClicked ()
@@ -53,7 +69,7 @@
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|<<OpenDCL Beispiel Abschluss>>|;
 
 ;;;######################################################################
 ;;;######################################################################
