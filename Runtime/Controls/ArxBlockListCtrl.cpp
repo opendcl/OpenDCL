@@ -203,6 +203,7 @@ bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 		}
 		catch( ... ) {}
 		mpLoadedDwg = NULL;
+		OnNeedRepaint( true );
 	}
 
 	if( pszFilename && *pszFilename )

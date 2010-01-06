@@ -188,6 +188,7 @@ bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
 		return true;
 
 	msDwgFilename = theWorkspace.FindFile( pszFilename ); 
+	OnNeedRepaint( true );
 	if( msDwgFilename.IsEmpty() )
 		return false;
 	return true;
@@ -197,6 +198,7 @@ void CArxDwgPreviewCtrl::Reset()
 {
 	msDwgFilename.Empty();
 	RemoveHighlight();
+	OnNeedRepaint( true );
 }
 
 void CArxDwgPreviewCtrl::Clear()

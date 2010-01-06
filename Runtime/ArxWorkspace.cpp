@@ -303,10 +303,13 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 	{
 		CDialogObject *pDialog = mDialogs.GetNext(posDialog);
 		assert( pDialog != NULL);
-		assert( pDialog->GetSourceForm() != NULL);
-		if( !pDialog || !pDialog->GetSourceForm() )
+		TDclFormPtr pSourceForm = pDialog->GetSourceForm();
+		assert( pSourceForm != NULL);
+		if( !pDialog || !pSourceForm )
 			continue;
-		CString sVarName = pDialog->GetSourceForm()->GetVarName();
+		if( pSourceForm->GetParentForm() )
+			continue; //child forms have the same key name as their parent, so ignore them
+		CString sVarName = pSourceForm->GetVarName();
 		if (!sVarName.IsEmpty())
 			SetLispSymbol( sVarName, (const CDclControlObject*)pDialog->GetSourceForm()->GetControlProperties(), odcl::ptrDclControl );
 		pDialog->GetControlPane()->SetGlobalLispSymbols();
