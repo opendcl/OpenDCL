@@ -222,8 +222,8 @@
 	(setq txt (dcl_Control_GetText GRID_Dcl-1_TB-ColTitle))
 	(setq cImg (1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-ColImages)))
 	(if (>= cImg 0)
-		(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) 24))
-		(Setq cWidth (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt))
+		(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) 46))
+		(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) 15))
 	)
 	(dcl_Grid_InsertColumn
 		GRID_Dcl-1_grid1
