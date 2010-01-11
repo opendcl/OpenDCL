@@ -66,6 +66,10 @@ typedef struct tagNMLVSCROLL
 #define LVN_ENDSCROLL            (LVN_FIRST-81)
 #endif //(_WIN32_WINNT < 0x501)
 
+#ifndef LVS_EX_LABELTIP
+#define LVS_EX_LABELTIP 0x00004000
+#endif
+
 
 struct TCellState { CString text; UINT state; _CellData data; };
 
@@ -177,7 +181,12 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 	}
 
-	//SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
+	if( bSuccess )
+	{
+		DWORD dwExStyle = GetExtendedStyle();
+		dwExStyle |= (LVS_EX_LABELTIP /*| LVS_EX_SUBITEMIMAGES*/);
+		SetExtendedStyle( dwExStyle );
+	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;

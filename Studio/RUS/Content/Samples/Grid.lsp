@@ -214,10 +214,7 @@
 (defun c:grid_Dcl-1_TB-AddCol_OnClicked (/ txt cWidth cImg)
 	(setq txt (dcl_Control_GetText GRID_Dcl-1_TB-ColTitle))
 	(setq cImg (1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-ColImages)))
-	(if (>= cImg 0)
-		(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) 24))
-		(Setq cWidth (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt))
-	)
+	(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) (if (>= cImg 0) 48 12)))
 	(dcl_Grid_InsertColumn
 		GRID_Dcl-1_grid1
 		(dcl_Grid_GetColumnCount GRID_Dcl-1_grid1)
@@ -263,7 +260,7 @@
 (defun c:Project1_Dcl-1_TB-DeleteRows_OnClicked ()
 	(setq GridRowCount (dcl_Grid_GetRowCount GRID_Dcl-1_grid1))
 	(while (>= GridRowCount 0)
-		(if (= (dcl_Grid_GetItemCheck GRID_Dcl-1_grid1 GridRowCount 1) T)
+		(if (= (dcl_Grid_GetCellCheckState GRID_Dcl-1_grid1 GridRowCount 1) 1)
 			(dcl_Grid_DeleteRow GRID_Dcl-1_grid1 GridRowCount)
 		)
 		(setq GridRowCount (1- GridRowCount))

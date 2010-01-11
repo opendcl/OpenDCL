@@ -19,6 +19,24 @@ static void ReturnRowCol( int nRow, int nCol )
 	acedRetList( &rbRow );
 }
 
+//This function performs the same task as CString::Tokenize, except this one accepts empty tokens
+static CString TokenizeAllowNull( const CString& sSubject, LPCTSTR pszTokens, int& idxStart )
+{
+	if( sSubject.IsEmpty() )
+	{
+		idxStart = -1;
+		return CString();
+	}
+	int cchToken = sSubject.Mid( idxStart ).FindOneOf( pszTokens );
+	if( cchToken == 0 )
+		cchToken = sSubject.Mid( ++idxStart ).FindOneOf( pszTokens );
+	if( cchToken < 0 )
+		cchToken = sSubject.GetLength() - idxStart;
+	int idxFirst = idxStart;
+	idxStart += cchToken;
+	return sSubject.Mid( idxFirst, cchToken );
+}
+
 
 ADSRESULT ListView::AddColumns()
 {
@@ -1110,13 +1128,13 @@ ADSRESULT ListView::AddString()
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
 	int nTokenPos = 0;
-	int nRow = pCtrl->InsertItem( pCtrl->GetItemCount(), sRowText.Tokenize( sDelimiters, nTokenPos ) );
+	int nRow = pCtrl->InsertItem( pCtrl->GetItemCount(), TokenizeAllowNull( sRowText, sDelimiters, nTokenPos ) );
 	if( nRow == -1 )
 		return RSRSLT;
 	int idxCol = 0;
 	int cchText = sRowText.GetLength();
 	while( nTokenPos >= 0 && nTokenPos < cchText )
-		pCtrl->SetItemText( nRow, ++idxCol, sRowText.Tokenize( sDelimiters, nTokenPos ) );
+		pCtrl->SetItemText( nRow, ++idxCol, TokenizeAllowNull( sRowText, sDelimiters, nTokenPos ) );
 
 	acedRetInt( nRow );
 	return RSRSLT;

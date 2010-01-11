@@ -228,27 +228,23 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 		pPreviousTabPage->ShowWindow( SW_HIDE );
 		OnNeedRepaint( true, true );
 	}
-	if( !pTabPage )
-		return;
-
-	TDclFormPtr pSourceForm = pTabPage->GetSourceForm();
-	if( !pSourceForm )
-		return;
-
-	//CRect rectTab = GetUsedArea();
-	//pTabPage->SetWindowPos( NULL, 
-	//												rectTab.left,
-	//												rectTab.top,
-	//												rectTab.Width(),
-	//												rectTab.Height(),
-	//												SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOOWNERZORDER );
-	//pTabPage->GetControlPane()->RecalcLayout();
-	pTabPage->ShowWindow( SW_SHOW );
-	if( bNewPage )
-		SetFirstControlFocus( pTabPage );
+	if( pTabPage )
+	{
+		//CRect rectTab = GetUsedArea();
+		//pTabPage->SetWindowPos( NULL, 
+		//												rectTab.left,
+		//												rectTab.top,
+		//												rectTab.Width(),
+		//												rectTab.Height(),
+		//												SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOOWNERZORDER );
+		//pTabPage->GetControlPane()->RecalcLayout();
+		pTabPage->ShowWindow( SW_SHOW );
+		if( bNewPage )
+			SetFirstControlFocus( pTabPage );
+	}
 	OnNeedRepaint();
 
-	if (bFireEvent)
+	if( bFireEvent )
 		GetArxServices()->HandleEvent( Prop::EventChanged, args_N( GetCurTabPage() ) );
 }
 

@@ -27,12 +27,10 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:DwgListForm_DwgList1_OnDblClicked ()
-	(Setq fileName (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
-	(if (equal (strcase (substr fileName (- (strlen fileName) 3) 4)) ".DWG")
-		(progn                                    ;(dcl_SetCmdBarFocus)
-			(dcl_sendstring (strcat "_-INSERT " fileName "\n"))
-		)
+(defun c:DwgListForm_DwgList1_OnDblClicked (/ filename)
+	(if (and (Setq filename (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
+                 (equal (strcase (substr filename (- (strlen filename) 3) 4)) ".DWG"))
+		(dcl_sendstring (strcat "_-INSERT " filename "\n"))
 	)
 	(princ)
 )

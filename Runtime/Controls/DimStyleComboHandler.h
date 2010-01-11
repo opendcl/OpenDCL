@@ -33,6 +33,8 @@ public:
 			if( es != Acad::eOk )
 				return false;
 			bool bSuccess = true;
+			int nMinWidth = 0;
+			CDC* pComboDC = pCombo->GetDC();
 			for( ; !pIterator->done(); pIterator->step() )
 			{
 				AcDbDimStyleTableRecord* pDimStyleTableRecord = NULL;
@@ -45,10 +47,23 @@ public:
 				if( pDimStyleTableRecord->getName( pszName ) != Acad::eOk )
 					bSuccess = false;
 				else
+				{
 					pCombo->AddString( pszName );
+					CSize sizeText = pComboDC->GetTextExtent( CString( pszName ) );
+					if( sizeText.cx > nMinWidth )
+						nMinWidth = sizeText.cx;
+				}
 				pDimStyleTableRecord->close();
 			}
 			delete pIterator;
+			if( bSuccess && nMinWidth > 0 )
+			{
+				int nCurrent = pCombo->GetDroppedWidth();
+				nMinWidth += 4; //to account for border
+				if( nMinWidth > nCurrent )
+					pCombo->SetDroppedWidth( nMinWidth );
+			}
+			pCombo->ReleaseDC( pComboDC );
 			return bSuccess;
 		}
 };

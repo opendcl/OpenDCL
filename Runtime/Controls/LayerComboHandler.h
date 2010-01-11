@@ -108,6 +108,8 @@ public:
 			if( es != Acad::eOk )
 				return false;
 			bool bSuccess = true;
+			int nMinWidth = 0;
+			CDC* pComboDC = pCombo->GetDC();
 			for( ; !pIterator->done(); pIterator->step() )
 			{
 				AcDbLayerTableRecord* pLayerTableRecord = NULL;
@@ -122,6 +124,9 @@ public:
 				else
 				{
 					int idx = pCombo->AddString( pszName );
+					CSize sizeText = pComboDC->GetTextExtent( CString( pszName ) );
+					if( sizeText.cx > nMinWidth )
+						nMinWidth = sizeText.cx;
 					mrLayerProperties.insert( mrLayerProperties.begin() + idx,
 																		_lprop( pszName,
 																						pLayerTableRecord->color(),
@@ -131,6 +136,14 @@ public:
 				pLayerTableRecord->close();
 			}
 			delete pIterator;
+			if( bSuccess && nMinWidth > 0 )
+			{
+				int nCurrent = pCombo->GetDroppedWidth();
+				nMinWidth += 50; //to account for images and border
+				if( nMinWidth > nCurrent )
+					pCombo->SetDroppedWidth( nMinWidth );
+			}
+			pCombo->ReleaseDC( pComboDC );
 			return bSuccess;
 		}
 };

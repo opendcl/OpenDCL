@@ -27,9 +27,22 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:DemoModeless_cmdDrawLine_OnClicked ()
-	(command "_LINE" "0,0" "10,10" "")
-	(princ)
+(defun c:DemoModeless_cmdDrawLine_OnClicked ( / strOldText ptStart ptEnd)
+  (setq strOldText (dcl_Control_GetCaption Modeless_DemoModeless_Label1))
+  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 "Pick two points in the drawing. The form will stay open but it will be disabled!")
+  (dcl_Form_Enable Modeless_DemoModeless nil)
+  (if (and (setq ptStart (vl-catch-all-apply 'getpoint (list "\nStart point: ")))
+           (not (vl-catch-all-error-p ptStart))
+           (setq ptEnd (vl-catch-all-apply 'getpoint (list ptStart "\nDestination point: ")))
+           (not (vl-catch-all-error-p ptEnd)))
+    (progn
+      (command "_LINE" ptStart ptEnd "")
+      (command "_ZOOM" "_W" ptStart ptEnd)
+    ); progn
+  ); if
+  (dcl_Form_Enable Modeless_DemoModeless T)
+  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 strOldText)
+  (princ)
 )
 
 (defun c:DemoModeless_cmdZoomWin_OnClicked ()
