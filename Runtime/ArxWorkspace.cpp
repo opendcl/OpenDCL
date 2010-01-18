@@ -636,8 +636,14 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 				resbuf* prbResult = NULL;
 			#if (_ACADTARGET >= 17)
 				int acedEvaluateLisp(ACHAR const *, struct resbuf * &result);
+				CString sHandlerName( pszHandlerName );
+				if( sHandlerName.Left( 2 ).CompareNoCase( _T("C:") ) != 0 )
+				{
+					sHandlerName = _T("c:");
+					sHandlerName += pszHandlerName;
+				}
 				CString sLisp;
-				sLisp.Format( _T("(if (member (type %s) '(SUBR EXSUBR LIST)) 'T)"), pszHandlerName );
+				sLisp.Format( _T("(if (member (type %s) '(SUBR EXSUBR LIST)) 'T)"), (LPCTSTR)sHandlerName );
 				acedEvaluateLisp( sLisp, prbResult );
 				if( prbResult && prbResult->restype == RTT )
 					mbValid = true;

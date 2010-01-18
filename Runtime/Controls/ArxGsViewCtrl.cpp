@@ -417,7 +417,7 @@ void CArxGsViewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	if( mRBState == dblclk )
 		GetArxServices()->HandleEvent( Prop::EventRightDblClick );	
-	else if( mLBState == down )
+	else if( mRBState == down )
 		GetArxServices()->HandleEvent( Prop::EventRightClick );	
 	mRBState = up;
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );

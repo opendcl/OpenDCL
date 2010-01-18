@@ -105,7 +105,19 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 	else
 	{
 		if( pDoc )
-			acDocManager->activateDocument( pDoc );
+		{
+			AcApDocManager* pDocMgr = acDocManager;
+			if( pDocMgr )
+			{
+				try
+				{
+					acDocManager->activateDocument( pDoc );
+				}
+				catch( ... )
+				{
+				}
+			}
+		}
 		resbuf* prbArgs = args.asResbuf();
 		resbuf rbLispFunction = { prbArgs, RTSTR };
 		rbLispFunction.resval.rstring = sHandlerLispFunction.LockBuffer();
