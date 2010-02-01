@@ -172,13 +172,13 @@ DROPEFFECT CArxDwgPreviewCtrl::OnBeginDrag( const CPoint& point, COleDataSource&
 void CArxDwgPreviewCtrl::SetHighlight(const COLORREF& clrHighlight)
 {
 	mclrHighlight = clrHighlight;		
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 }
 
 void CArxDwgPreviewCtrl::RemoveHighlight()
 {
 	mclrHighlight = CAcadColorService::GetTransparentColor();
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 }
 
 bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )

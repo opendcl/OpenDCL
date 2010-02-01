@@ -489,7 +489,36 @@ public:
 protected:
 	virtual CString methodType() const
 		{
-			return mpMethodDesc->GetReturnTypeDisplayName();
+			CString sArgList;
+			const std::vector< AxArg >& rArgs = mpMethodDesc->GetArgs();
+			for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+					 iter != rArgs.end();
+					 ++iter )
+			{
+				const AxArg& arg = *iter;
+				if( arg.vt & VT_BYREF )
+				{
+					CString sArg = arg.name;
+					if( sArg.IsEmpty() )
+						sArg = _T("Arg");
+					CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt & VT_TYPEMASK, arg.clsid ) );
+					if( sType.IsEmpty() )
+						sType = _T("??");
+					CString sArgHtml;
+					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+													 (LPCTSTR)sArg,
+													 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+													 (LPCTSTR)sType );
+					sArgList += sArgHtml;
+				}
+			}
+			CString sReturnType = mpMethodDesc->GetReturnTypeDisplayName();
+			CString sType;
+			if( !sReturnType.IsEmpty() )
+				sType.Format( _T("(%s%s)"), (LPCTSTR)sReturnType, (LPCTSTR)sArgList );
+			else if( !sArgList.IsEmpty() )
+				sType.Format( _T("(%s)"), (LPCTSTR)sArgList.Trim() );
+			return sType;
 		}
 	virtual CString methodDesc() const
 		{
@@ -575,11 +604,15 @@ protected:
 		{
 			CString sName = name();
 			params[_T("{TITLE}")] = sName;
-			params[_T("{TYPE}")] = _T("&nbsp;");
 			CString sOb = prop()->GetOwnerControl()->GetVarName();
 			CString sFunctionName;
 			sFunctionName.Format( _T("c:%s_On%s"), (LPCTSTR)sOb, (LPCTSTR)sName );
 			params[_T("{FUNCTIONNAME}")] = sFunctionName;
+			CString sEventResultList = eventResultList().Trim();
+			CString sType;
+			if( !sEventResultList.IsEmpty() )
+				sType.Format( _T("(%s)"), (LPCTSTR)sEventResultList );
+			params[_T("{TYPE}")] = sType;
 			CString sEventArgList = eventArgList().Trim();
 			if( sEventArgList.IsEmpty() )
 				sEventArgList = _T("/");
@@ -622,6 +655,33 @@ protected:
 												 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
 												 (LPCTSTR)sType );
 				sArgList += sArgHtml;
+			}
+			return sArgList;
+		}
+	virtual CString eventResultList() const
+		{
+			CString sArgList;
+			const std::vector< AxArg >& rArgs = mpEventDesc->GetArgs();
+			for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+					 iter != rArgs.end();
+					 ++iter )
+			{
+				const AxArg& arg = *iter;
+				if( arg.vt & VT_BYREF )
+				{
+					CString sArg = arg.name;
+					if( sArg.IsEmpty() )
+						sArg = _T("Arg");
+					CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt & VT_TYPEMASK, arg.clsid ) );
+					if( sType.IsEmpty() )
+						sType = _T("??");
+					CString sArgHtml;
+					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+													 (LPCTSTR)sArg,
+													 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+													 (LPCTSTR)sType );
+					sArgList += sArgHtml;
+				}
 			}
 			return sArgList;
 		}

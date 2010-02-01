@@ -1264,7 +1264,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			for( int cch = cchLabel; cch > 0; --cch )
 				sLabel += _T('*');
 		}
-		cdc.DrawText( sLabel, -1, &rcLabel, (DT_LEFT | DT_NOPREFIX | DT_NOCLIP | DT_TOP | fWordBreak) );
+    UINT fAlignment = 0;
+		const PropVal::TIntArray* pColAlignments = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();
+		if( pColAlignments && nCol >= 0 && (size_t)nCol < pColAlignments->size() )
+			fAlignment |= pColAlignments->at( nCol );
+		cdc.DrawText( sLabel, -1, &rcLabel, (DT_NOPREFIX | DT_NOCLIP | fAlignment | fWordBreak) );
 	}
 
 	//Draw focus rect if cell is current cell

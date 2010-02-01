@@ -252,11 +252,11 @@ void CPictureBox::Refresh()
 	UpdateWindow();
 }
 
-void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false*/ )
+void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false*/, CDC* pDestDC /*= NULL*/ )
 {	
 	if( !pPicture )
 		return;
-	CDC *pdc = GetDC();
+	CDC* pdc = pDestDC? pDestDC : GetDC();
 	CRect rcCell;	
 	GetClientRect(&rcCell);
 	pdc->IntersectClipRect( &rcCell );
@@ -295,7 +295,8 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false
 	}
 	else
 		mpPicture->Render( pdc, rcPic );
-	ReleaseDC(pdc);
+	if( !pDestDC )
+		ReleaseDC(pdc);
 }
 
 void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
@@ -743,8 +744,15 @@ void CPictureBox::OnPaint()
 	{
 		if( !mpPicture )
 			return;
-		DrawPicture( mpPicture, m_bStretchLoadedPicture );
-		CopyDC();
+		DrawPicture( mpPicture, m_bStretchLoadedPicture, &dc );
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		CRect rcClip;
+		dc.GetClipBox( &rcClip );
+		rcClip.IntersectRect( &rcClip, &rcClient );
+		if( rcClip == rcClient )
+			CopyDC();
+		return;
 	}
 	CDC memdc;
   memdc.CreateCompatibleDC( &dc );

@@ -6,6 +6,7 @@
 #include "AxInterfaceDescriptor.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
+#include "ArgumentsRetrieval.h"
 #include "Project.h"
 #include "VarUtils.h"
 #include "Workspace.h"
@@ -127,7 +128,18 @@ static resbuf* IUnknownToRB( IUnknown* pValue )
 	resbuf* prb = acutNewRb( RTENAME );
 	prb->resval.rlname[0] = (LONG_PTR)pValue;
 	prb->resval.rlname[1] = odcl::ptrIUnknown;
+	theArxWorkspace.AddUnknown( pValue );
 	return prb;
+}
+
+
+static resbuf* IDispatchToRB( IDispatch* pValue )
+{
+	IUnknown* pUnknown = NULL;
+	HRESULT hr = pValue->QueryInterface( IID_IUnknown, (void**)&pUnknown );
+	if( hr != S_OK )
+		return NULL;
+	return IUnknownToRB( pUnknown );
 }
 
 
@@ -138,8 +150,132 @@ static resbuf* StringToRB( const BSTR& sValue )
 	return prb;
 }
 
+static bool ResbufToVariantArg( resbuf*& pArgs, VARIANTARG& varArg )
+{
+	variant_t _arg;
+	switch( pArgs->restype )
+	{	
+		case RTREAL:
+		case RTANG:
+		case RTORINT:
+			{
+				_arg = pArgs->resval.rreal;
+				break;
+			}
+		case RTSHORT:
+			{
+				_arg = pArgs->resval.rint;
+				break;
+			}
+		case RTLONG:
+			{
+				_arg = pArgs->resval.rlong;
+				break;
+			}
+		case RTENAME:
+			{
+				if ((varArg.vt & VT_TYPEMASK) == VT_UNKNOWN)
+					_arg = (IUnknown*)pArgs->resval.rlname[0];
+				else
+					return false;
+				break;
+			}
+		case RTSTR:
+			{
+				_arg = pArgs->resval.rstring;				
+				break;
+			}
+		case RTT:
+			{
+				_arg.vt = VT_BOOL;
+				_arg.boolVal = VARIANT_TRUE;				
+				break;
+			}
+		case RTNIL:
+			{
+				if ((varArg.vt & VT_TYPEMASK) == VT_VARIANT)
+				{
+					_arg.vt = VT_VARIANT|VT_BYREF;
+					_arg.pvarVal = NULL;
+				}
+				else
+				{
+					_arg.vt = VT_BOOL;
+					_arg.boolVal = VARIANT_FALSE;				
+				}
+				break;
+			}
+		case RT3DPOINT:
+		case RTPOINT:
+			{
+				switch (varArg.vt & VT_TYPEMASK)
+				{
+				case VT_DATE:
+					{
+						COleDateTime Date;
+						Date.SetDate(
+							pArgs->resval.rpoint[0],
+							pArgs->resval.rpoint[1],
+							pArgs->resval.rpoint[2]);
+						_arg.vt = VT_DATE;
+						_arg.date = Date;
+						break;
+					}
+				case VT_UI4:
+					{
+						_arg.vt = VT_UI4;
+						_arg.ulVal = RGB(pArgs->resval.rpoint[0], pArgs->resval.rpoint[1], pArgs->resval.rpoint[2]);
+						break;
+					}
+				}
+				break;
+			}
+		default:
+			{
+				return false; 
+			}		
+	}
+	bool bSuccess = ((varArg.vt & VT_TYPEMASK) == VT_VARIANT ||
+									 (varArg.vt & VT_TYPEMASK) == VT_EMPTY ||
+									 S_OK == VariantChangeType( &_arg, &_arg, 0, (varArg.vt & VT_TYPEMASK) ));
+	if( !bSuccess )
+		return false;
 
-static resbuf* VariantArgToResbuf( const VARIANTARG& varArg, resbuf*& prbTail )
+	if( varArg.vt & VT_BYREF )
+	{
+		switch( varArg.vt & VT_TYPEMASK )
+		{
+			case VT_UI1: if( varArg.pbVal ) *varArg.pbVal = _arg.bVal; break;
+			case VT_I2: case VT_UI2: if( varArg.piVal ) *varArg.piVal = _arg.iVal; break;
+			case VT_I4: case VT_UI4: if( varArg.plVal ) *varArg.plVal = _arg.lVal; break;
+			case VT_R4: if( varArg.pfltVal ) *varArg.pfltVal = _arg.fltVal; break;
+			case VT_R8: if( varArg.pdblVal ) *varArg.pdblVal = _arg.dblVal; break;
+			case VT_CY: if( varArg.pcyVal ) varArg.pcyVal->int64 = _arg.cyVal.int64; break;
+			case VT_DATE: if( varArg.pdate ) *varArg.pdate = _arg.date; break;
+			case VT_BSTR: if( varArg.pbstrVal ) *varArg.pbstrVal = _arg.bstrVal; _arg.Detach(); break;
+		#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA: if( varArg.pbstrVal ) *varArg.pbstrVal = _arg.bstrVal; _arg.Detach(); break;
+		#endif
+			case VT_BOOL: if( varArg.pboolVal ) *varArg.pboolVal = _arg.boolVal; break;
+			case VT_ERROR: if( varArg.pscode ) *varArg.pscode = _arg.scode; break;
+			case VT_UNKNOWN: if( varArg.ppunkVal ) *varArg.ppunkVal = _arg.punkVal; _arg.Detach(); break;
+			case VT_DISPATCH: if( varArg.ppdispVal ) *varArg.ppdispVal = _arg.pdispVal; _arg.Detach(); break;
+			case VT_VARIANT: if( varArg.pvarVal ) VariantCopy( varArg.pvarVal, &_arg ); break;
+			default: return false;
+		}
+	}
+	else
+	{
+		if( S_OK != VariantCopy( &varArg, &_arg ) )
+			return false;
+	}
+
+	pArgs = pArgs->rbnext;
+	return true; 
+}
+
+
+resbuf* VariantArgToResbuf( const VARIANTARG& varArg, const GUID& guidType, resbuf*& prbTail )
 {
 	const VARIANT& var = (varArg.vt == (VT_VARIANT | VT_BYREF)? *varArg.pvarVal : varArg);
 	switch( var.vt )
@@ -148,8 +284,48 @@ static resbuf* VariantArgToResbuf( const VARIANTARG& varArg, resbuf*& prbTail )
 	case (VT_UI1 | VT_BYREF): return (prbTail = acutNewRb( (*var.pbVal == 1)? RTT : RTNIL ));
 	case VT_I2: return (prbTail = LongToRB( var.iVal ));
 	case (VT_I2 | VT_BYREF): return (prbTail = LongToRB( *var.piVal ));
-	case VT_I4: return (prbTail = LongToRB( var.lVal ));
-	case (VT_I4 | VT_BYREF): return (prbTail = LongToRB( *var.plVal ));
+	case VT_UI4:
+	case VT_I4:
+		{
+			if( guidType == GUID_COLOR )
+			{
+				COLORREF clr = var.lVal;
+				int nRed = GetRValue(clr);
+				int nGreen = GetGValue(clr);
+				int nBlue = GetBValue(clr);
+				struct resbuf* prbColor = acutBuildList(
+					RTSHORT, nRed,
+					RTSHORT, nGreen,
+					RTSHORT, nBlue,
+					RTNONE);
+				if( prbColor )
+					prbTail = prbColor->rbnext->rbnext;
+				return prbColor;
+			}
+			else
+				return (prbTail = LongToRB( var.lVal ));
+		}
+	case (VT_UI4 | VT_BYREF):
+	case (VT_I4 | VT_BYREF):
+		{
+			if( guidType == GUID_COLOR )
+			{
+				COLORREF clr = *var.plVal;
+				int nRed = GetRValue(clr);
+				int nGreen = GetGValue(clr);
+				int nBlue = GetBValue(clr);
+				struct resbuf* prbColor = acutBuildList(
+					RTSHORT, nRed,
+					RTSHORT, nGreen,
+					RTSHORT, nBlue,
+					RTNONE);
+				if( prbColor )
+					prbTail = prbColor->rbnext->rbnext;
+				return prbColor;
+			}
+			else
+				return (prbTail = LongToRB( *var.plVal ));
+		}
 	case VT_R4: return (prbTail = DoubleToRB( var.fltVal ));
 	case (VT_R4 | VT_BYREF): return (prbTail = DoubleToRB( *var.pfltVal ));
 	case VT_R8: return (prbTail = LongToRB( var.dblVal ));
@@ -170,6 +346,8 @@ static resbuf* VariantArgToResbuf( const VARIANTARG& varArg, resbuf*& prbTail )
 	case (VT_ERROR | VT_BYREF): return (prbTail = LongToRB( *var.pscode ));
 	case VT_UNKNOWN: return (prbTail = IUnknownToRB( var.punkVal ));
 	case (VT_UNKNOWN | VT_BYREF): return (prbTail = IUnknownToRB( *var.ppunkVal ));
+	case VT_DISPATCH: return (prbTail = IDispatchToRB( var.pdispVal ));
+	case (VT_DISPATCH | VT_BYREF): return (prbTail = IDispatchToRB( *var.ppdispVal ));
 	}	
 	return (prbTail = acutNewRb( RTNIL ));
 }
@@ -225,7 +403,7 @@ public:
 			while( idx > 0 )
 			{
 				resbuf* prbArgTail = NULL;
-				resbuf* prbArg = VariantArgToResbuf( _arg->rgvarg[--idx], prbArgTail );
+				resbuf* prbArg = VariantArgToResbuf( _arg->rgvarg[--idx], GUID_NULL, prbArgTail );
 				if( !prbHead )
 					prbHead = prbArg;
 				else
@@ -303,258 +481,38 @@ void CArxAxContainerCtrl::HandleAxEvent( AFX_EVENT* pEvent )
 		if( !pED )
 			continue;
 		if( pED->GetDispId() == pEvent->m_dispid && !pProp->GetStringValue().IsEmpty() )
-			GetArxServices()->HandleEvent( pProp->GetStringValue(), args_X( pEvent->m_pDispParams ) );
-	}
-}
-
-
-/*
-void CArxAxContainerCtrl::FireAxEvent( const CPropertyObject* pProp, AFX_EVENT* pEvent )
-{
-	try
-	{
-
-		// do standard method call
-		VARIANT var;
-		AfxVariantInit(&var);
-
-		DISPPARAMS dispparams;
-		dispparams.rgvarg = NULL;
-
-		memcpy(&dispparams, pEvent->m_pDispParams, sizeof(DISPPARAMS));
-		dispparams.rgvarg = new VARIANT[++dispparams.cArgs];
-		memcpy(dispparams.rgvarg, pEvent->m_pDispParams->rgvarg,
-			sizeof(VARIANT) * (dispparams.cArgs-1));
-
-		// this code is used if the programmer want to call the defun using the default option
-		struct resbuf *pRBList = NULL, *pRB = NULL, *pRBFinal = NULL;
-		// this code is used if the programmer want to call a (Command ...) from the defun
-		bool bShowCommand = false;
-		CString sCommand = CString("(") + FireCancel(pProp->GetStringValue()) + " ";
-
-		// again this code is for allow (Command ...)
-		if (IsAsyncEvents())
 		{
-			if (pProp->GetStringValue().Left(1) == _T("'"))
+			bool bByrefArgs = false;
+			DISPPARAMS*& pDispParams = pEvent->m_pDispParams;
+			VARIANTARG* rVarArgs = pDispParams->rgvarg;
+			UINT idx = pDispParams->cArgs;
+			while( idx > 0 )
 			{
-				sCommand = pProp->GetStringValue() + _T(" ");
-				bShowCommand = true;
-			}
-		}
-
-		// Again this code is used if the programmer want to call the defun using the default option
-		if (!IsAsyncEvents())
-		{
-			pRBFinal = acutNewRb(RTSTR);	//	create new resbuf
-			acutNewString(pProp->GetStringValue(), pRBFinal->resval.rstring);
-
-			//	If this is first resbuf in list,
-			//	we need to store its location in pRBList
-			pRBList = pRBFinal;
-			pRBList->rbnext = NULL;
-			pRBList->restype = RTSTR;
-		}
-
-		// do loop starting from the last argument to the index of 1. Because ActiveX arguments are in reverse order.
-		// don't ask me why!
-		// The Index last index is not an argument to be passed to AutoLISP.
-		for (int i=dispparams.cArgs-2; i>=0; i--)
-		{
-			VARIANT* pVarArg = &dispparams.rgvarg[i];
-
-			// again this code is for allow (Command ...)
-			if (IsAsyncEvents())
-			{
-				sCommand += acedVarToString(pVarArg) + " ";
-			}
-
-			// Again this code is used if the programmer want to call the defun using the default option
-			if (!IsAsyncEvents())
-			{
-				// get the type of argument to return;
-				int nRtType = acedGetRtType(pVarArg);
-				pRB = acutNewRb(nRtType);	//	create new resbuf
-
-				switch (pVarArg->vt)
+				if( rVarArgs[--idx].vt & VT_BYREF )
 				{
-				case VT_VARIANT:
-					break;
-				case VT_VARIANT|VT_BYREF:
-					pVarArg = pVarArg->pvarVal;
+					bByrefArgs = true;
 					break;
 				}
-
-				switch (nRtType)
+			}
+			if( bByrefArgs )
+			{ //utilize returned list to modify byref args
+				resbuf* prbResult = NULL;
+				GetArxServices()->HandleEvent( pProp->GetStringValue(), prbResult, args_X( pDispParams ) );
+				if( prbResult )
 				{
-				case RTLB:
-					try
+					resbuf* pArgs = prbResult;
+					UINT idx = pDispParams->cArgs;
+					while( pArgs && idx > 0 )
 					{
-						IDispatch *pDisp = NULL;
-
-						switch (pVarArg->vt)
-						{
-						case VT_DISPATCH:
-						case VT_UNKNOWN:
-							pDisp = pVarArg->pdispVal;
-							break;
-						case VT_DISPATCH|VT_BYREF:
-						case VT_UNKNOWN|VT_BYREF:							
-							pDisp = *pVarArg->ppdispVal;								
-							break;
-						}
-
-						// Build up the linked list
-						// Remember that pRBList still points
-						// to the beginning of the liked list.
-						pRBList->rbnext = pRB;
-						pRBList = pRB;
-
-						switch (pVarArg->vt)
-						{
-						case VT_DATE:
-							// create a new short
-							pRB = acutNewRb(RTSHORT);	//	create new resbuf
-
-							COleDateTime Date = pVarArg->date;
-
-							pRB->resval.rint = Date.GetYear();
-
-							// Build up the linked list
-							// Remember that pRBList still points
-							// to the beginning of the liked list.
-							pRBList->rbnext = pRB;
-							pRBList = pRB;
-
-							// create a new short
-							pRB = acutNewRb(RTSHORT);	//	create new resbuf
-
-							pRB->resval.rint = Date.GetMonth();
-
-							// Build up the linked list
-							// Remember that pRBList still points
-							// to the beginning of the liked list.
-							pRBList->rbnext = pRB;
-							pRBList = pRB;
-
-							// create a new short
-							pRB = acutNewRb(RTSHORT);	//	create new resbuf
-
-							pRB->resval.rint = Date.GetDay();									
-							break;
-						}
-						// for dispatch type arguments
-						if (pDisp != NULL)
-						{
-							// create a new long
-							pRB = acutNewRb(RTENAME);	//	create new resbuf
-
-							// get the ITypeInfo
-							ITypeInfo *TheInfo = NULL;
-							// get this project
-							TProjectPtr pProject = GetTemplate()->GetOwnerProject();
-
-							pDisp->GetTypeInfo(0, ::GetUserDefaultLCID(), &TheInfo);
-
-							// get the TYPEATTR
-							TYPEATTR *TheAttr;
-							TheInfo->GetTypeAttr(&TheAttr);
-
-							IUnknown* pUnknown = NULL;
-							if( SUCCEEDED(pDisp->QueryInterface( &pUnknown )) )
-								theArxWorkspace.AddUnknown( pUnknown );
-							pRB->resval.rlname[0] = (LONG_PTR)pUnknown;
-							pRB->resval.rlname[1] = odcl::ptrIUnknown;
-
-							// Build up the linked list
-							// Remember that pRBList still points
-							// to the beginning of the liked list.
-							pRBList->rbnext = pRB;
-							pRBList = pRB;
-							// create a new long
-							pRB = acutNewRb(RTENAME);	//	create new resbuf
-							// set the dispatch as the new long
-							pRB->resval.rlname[0] = (DWORD_PTR)pVarArg->pdispVal;
-							pRB->resval.rlname[1] = 0;
-						}
-						// Build up the linked list
-						// Remember that pRBList still points
-						// to the beginning of the liked list.
-						pRBList->rbnext = pRB;
-						pRBList = pRB;
-
-						// close the list.
-						pRB = acutNewRb(RTLE);	//	create new resbuf
+						VARIANTARG& varArg = rVarArgs[--idx];
+						if( varArg.vt & VT_BYREF )
+							ResbufToVariantArg( pArgs, varArg );
 					}
-					catch(...)
-					{
-						// close the list.
-						pRB = acutNewRb(RTLE);	//	create new resbuf							
-					}						
-					break;
-
-				case RTNIL:						
-					pRB->resval.rint = 0;
-					break;
-				case RTT:						
-					pRB->resval.rint = 1;
-					break;
-				case RTSHORT:						
-					pRB->resval.rint = int(acedVarToLong(pVarArg));
-					break;
-				case RTLONG:						
-					pRB->resval.rlong = acedVarToLong(pVarArg);
-					break;
-				case RTREAL:						
-					pRB->resval.rreal = acedVarToDouble(pVarArg);
-					break;
-				case RTSTR:		
-					acutNewString(acedVarToString(pVarArg), pRB->resval.rstring);
-					break;
+					acutRelRb( prbResult );
 				}
-
-				// Build up the linked list
-				// Remember that pRBList still points
-				// to the beginning of the liked list.
-				pRBList->rbnext = pRB;
-				pRBList = pRB;
 			}
+			else
+				GetArxServices()->HandleEvent( pProp->GetStringValue(), args_X( pDispParams ) );
 		}
-
-		// Again this code is used if the programmer want to call the defun using the default option
-		if (!IsAsyncEvents())
-		{	
-			struct resbuf *result = NULL;    
-			int stat = acedInvoke(pRBFinal, &result);
-			acutRelRb(pRBList);				
-		}
-
-		// again this code is for allow (Command ...)
-		if (IsAsyncEvents())
-		{
-			sCommand += ") ";
-
-			Acad::ErrorStatus es;
-
-			// get current document
-			AcApDocument* pDoc = acDocManager->curDocument();
-
-			// give the command bar focus
-			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			//CmdBarWnd->SetFocus();		
-
-			// send cancel string to current document
-			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, bShowCommand);
-		}
-
-		//hResult = CallMemberFunc(&pEntry->dispEntry, DISPATCH_METHOD, &var,
-		//	(bRange ? &dispparams : pEvent->m_pDispParams), &uArgError);
-		ASSERT(FAILED(hResult) || (V_VT(&var) == VT_BOOL));
-		BOOL bHandled = V_BOOL(&var);
-
-		delete [] dispparams.rgvarg;
-	}
-	catch(...)
-	{
 	}
 }
-*/

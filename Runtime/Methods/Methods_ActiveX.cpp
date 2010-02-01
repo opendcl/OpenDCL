@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Methods_ActiveX.h"
 #include "Resource.h"
-#include "AxContainerCtrl.h"
+#include "ArxAxContainerCtrl.h"
 #include "AxMethodDescriptor.h"
 #include "AxPropertyDescriptor.h"
 #include "AxInterfaceDescriptor.h"
@@ -17,6 +17,7 @@
 
 
 static void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp = NULL, const AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, const AxPropertyDescriptor *pAxProp = NULL);
+static void acedRetAxResult( const VARIANT& varResult, const GUID& guidResult, DISPPARAMS* const& pParams );
 static bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 																		size_t ctParams,
 																		resbuf*& pArgs,
@@ -163,7 +164,10 @@ ADSRESULT AxControl::Invoke()
 	if( varResult.vt == VT_EMPTY )
 		acedRetT();
 	else
-		acedRetOleVar( varResult, NULL, pMethod, pAxCont );
+	{
+		DISPPARAMS params = { rArgs.GetData(), NULL, rArgs.GetSize(), 0 };
+		acedRetAxResult( varResult, pMethod->GetReturnGuid(), &params );
+	}
 	return RSRSLT;
 }
 
@@ -396,7 +400,7 @@ ADSRESULT AxObject::Invoke()
 		return RSRSLT;
 	}
 
-	acedRetOleVar( varResult );
+	acedRetAxResult( varResult, GUID_NULL, &params );
 	return RSRSLT;
 }
 
@@ -506,6 +510,31 @@ ADSRESULT AxGeneral::GetOlePictureFromFile()
 		theArxWorkspace.RetIUnknown( pUnknown );
 	}
 	return RSRSLT;
+}
+
+
+void acedRetAxResult( const VARIANT& varResult, const GUID& guidResult, DISPPARAMS* const& pParams )
+{
+	resbuf* prbTail = NULL;
+	resbuf* prbHead = VariantArgToResbuf( varResult, guidResult, prbTail );
+	UINT idx = pParams->cArgs;
+	VARIANTARG* const& rArgs = pParams->rgvarg;
+	while( idx > 0 )
+	{
+		VARIANTARG& arg = rArgs[--idx];
+		if( arg.vt & VT_BYREF )
+		{
+			resbuf* prbArgTail = NULL;
+			resbuf* prbArg = VariantArgToResbuf( arg, GUID_NULL, prbArgTail );
+			if( !prbHead )
+				prbHead = prbArg;
+			else
+				prbTail->rbnext = prbArg;
+			prbTail = prbArgTail;
+		}
+	}
+	acedRetList( prbHead );
+	acutRelRb( prbHead );
 }
 
 void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, const AxMethodDescriptor *pMethod, CAxContainerCtrl *pAxContainer, const AxPropertyDescriptor *pAxProp)

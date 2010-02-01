@@ -2134,14 +2134,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{B20687EB-CA1A-49BF-AC62-FF7AB35B5C78}"
-        "PackageCode" = "8:{01C938FF-5516-41E5-ADD0-C723FB008025}"
+        "ProductCode" = "8:{3EE11F3A-AE73-407C-9A16-1F80D4D0EA80}"
+        "PackageCode" = "8:{2523D2F7-04DC-43BF-8EFD-CB37484443A6}"
         "UpgradeCode" = "8:{13AE30FE-5152-40D5-B724-3BE317FC4DF2}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:6.0.0020"
+        "ProductVersion" = "8:6.0.0021"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2947,7 +2947,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_77D4F61D81CE4E1E88FFD6E7CA07D973"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4E2DB0D02AA74C02BD382CF959A2D3D9"
@@ -3003,7 +3003,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8C5E9444C474B7D863DEF04E4D144B1"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
@@ -3031,7 +3031,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F8AAB33771054A08AC7C353BDBB36453"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"

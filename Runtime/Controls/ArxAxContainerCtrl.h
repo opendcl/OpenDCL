@@ -4,6 +4,9 @@
 #include "ArxControlServices.h"
 #include "DclControlObject.h"
 
+//export this function so it can be used elsewhere
+resbuf* VariantArgToResbuf( const VARIANTARG& varArg, const GUID& guidType, resbuf*& prbTail );
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxAxContainerCtrl window
