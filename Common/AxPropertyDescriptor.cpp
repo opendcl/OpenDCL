@@ -174,16 +174,11 @@ CString AxPropertyDescriptor::GetArgDisplayName( size_t idxArg ) const
 
 HRESULT AxPropertyDescriptor::Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const
 {
-	DISPPARAMS dpParams;
-	dpParams.rgvarg = rvarArgs;
-	dpParams.cArgs = ctArgs;
-	dpParams.rgdispidNamedArgs = NULL;
-	dpParams.cNamedArgs = 0;
-
-	EXCEPINFO excepInfo = {0};
-	UINT iArgErr = 0;
-  return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( DISPATCH_PROPERTYGET ),
-															&dpParams, &varResult, &excepInfo, &iArgErr );
+	DISPPARAMS params = { rvarArgs, NULL, ctArgs, 0 };
+	EXCEPINFO xinfo = { NULL };
+	UINT nErrArg = 0;
+  return pObjectDisp->Invoke( mDispId, IID_NULL, LOCALE_INVARIANT, INVOKE_PROPERTYGET,
+															&params, &varResult, &xinfo, &nErrArg );
 }
 
 HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, const VARIANTARG* rvarArgs, UINT ctArgs ) const
@@ -224,17 +219,14 @@ HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, const VARIANTARG* rva
 	WORD wFlags = mInvKind;//INVOKE_PROPERTYPUT;
 	if( wFlags != INVOKE_PROPERTYPUT && wFlags != INVOKE_PROPERTYPUTREF )
 		wFlags = INVOKE_PROPERTYPUT;
-   
-	DISPID dispidPropset = DISPID_PROPERTYPUT;
-	DISPPARAMS dpParams;
-	dpParams.cArgs = ctArgs;
-	dpParams.rgvarg = rArgs;
-	dpParams.rgdispidNamedArgs = &dispidPropset;
-	dpParams.cNamedArgs = 1;
 
+	DISPID idPut = DISPID_PROPERTYPUT;
+	DISPPARAMS params = { rArgs, &idPut, ctArgs, 1 };
 	COleVariant varResult;
-	HRESULT hr = pObjectDisp->Invoke( mDispId, GUID_NULL, LOCALE_USER_DEFAULT, 
-																		wFlags, &dpParams, &varResult, NULL, NULL );
+	EXCEPINFO xinfo = { NULL };
+	UINT nErrArg = 0;
+	HRESULT hr = pObjectDisp->Invoke( mDispId, GUID_NULL, LOCALE_INVARIANT, 
+																		wFlags, &params, &varResult, &xinfo, &nErrArg );
 	delete[] rArgs;
 	return hr;
 }

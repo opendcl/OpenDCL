@@ -21,7 +21,7 @@ class CArxImageTreeCtrl : public CImageTreeCtrl
 																				const CPoint& point, DROPEFFECT& dwEffect ) const
 			{ return false; } //force it to use the tree control's custom OnDragOver event handler
 		virtual bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT dropEffect,
-																			CPoint point ) const
+																			const CPoint& point ) const
 			{ return false; } //force it to use the tree control's custom OnDrop event handler
 	} mArxServices;
 	CArxDragDropService mDragDropService;

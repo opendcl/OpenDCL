@@ -383,11 +383,11 @@ protected:
 					if( sArg.IsEmpty() )
 						sArg = bLastArg? _T("NewValue") : _T("Arg");
 					CString sType = AxTypeToDisplayableLispType( arg.vt, arg.clsid );
-					if( sType.IsEmpty() )
-						sType = bLastArg? propType() : _T("??");
+					if( sType.Trim( _T('\'') ).IsEmpty() )
+						sType += bLastArg? propType() : _T("??");
 					else if( bLastArg )
 					{
-						if( sType == _T("AxObject") )
+						if( sType.Trim( _T('\'') ) == _T("AxObject") )
 							sType = propType();
 						else if( sType == _T("Long") && propType() == _T("OLEColor") )
 							sType = _T("OLEColor"); //it's really an OLEColor

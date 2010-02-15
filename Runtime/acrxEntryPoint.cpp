@@ -2849,29 +2849,49 @@ public:
 		CString sFilterList;
 		CString sCaption;
 		CString sPath;
-		PropVal::TCStringArray rsFilters;
-		if( GetStringArrayArgument( pArgs, rsFilters, true ) )
+		CString sFilter;
+		if( GetStringArgument( pArgs, sFilter, true ) )
 		{
-			for( size_t idx = 0; idx < rsFilters.size(); ++idx )
+			if( !sFilter.IsEmpty() )
 			{
-				CString sFilter = rsFilters[idx];
-				if( !sFilter.IsEmpty() )
-				{
-					if( sFilter.Right( 1 ) != _T("|") )
-						sFilter += _T('|');
-					int nFirstSeparator = sFilter.Find( _T('|') );
-					if( nFirstSeparator == sFilter.GetLength() - 1 )
-						sFilter += sFilter; //only one element was provided, so just use the same text for both
-					else if( sFilter.Find( _T('|'), nFirstSeparator + 1 ) != sFilter.GetLength() - 1 )
-						sFilter = sFilter.Left( sFilter.Find( _T('|'), nFirstSeparator + 1 ) + 1 ); //too many elements, so chop off the extras
-				}
-				sFilterList += sFilter;
+				if( sFilter.Right( 1 ) != _T("|") )
+					sFilter += _T('|');
+				int nFirstSeparator = sFilter.Find( _T('|') );
+				if( nFirstSeparator == sFilter.GetLength() - 1 )
+					sFilter += sFilter; //only one element was provided, so just use the same text for both
+				else if( sFilter.Find( _T('|'), nFirstSeparator + 1 ) != sFilter.GetLength() - 1 )
+					sFilter = sFilter.Left( sFilter.Find( _T('|'), nFirstSeparator + 1 ) + 1 ); //too many elements, so chop off the extras
 			}
+			sFilterList += sFilter;
 			if( GetStringArgument( pArgs, sCaption, true ) )
 				GetStringArgument( pArgs, sPath, true );
 		}
 		else
-			sFilterList = _T("All Files (*.*)|*.*|");
+		{
+			PropVal::TCStringArray rsFilters;
+			if( GetStringArrayArgument( pArgs, rsFilters, true ) )
+			{
+				for( size_t idx = 0; idx < rsFilters.size(); ++idx )
+				{
+					CString sFilter = rsFilters[idx];
+					if( !sFilter.IsEmpty() )
+					{
+						if( sFilter.Right( 1 ) != _T("|") )
+							sFilter += _T('|');
+						int nFirstSeparator = sFilter.Find( _T('|') );
+						if( nFirstSeparator == sFilter.GetLength() - 1 )
+							sFilter += sFilter; //only one element was provided, so just use the same text for both
+						else if( sFilter.Find( _T('|'), nFirstSeparator + 1 ) != sFilter.GetLength() - 1 )
+							sFilter = sFilter.Left( sFilter.Find( _T('|'), nFirstSeparator + 1 ) + 1 ); //too many elements, so chop off the extras
+					}
+					sFilterList += sFilter;
+				}
+				if( GetStringArgument( pArgs, sCaption, true ) )
+					GetStringArgument( pArgs, sPath, true );
+			}
+			else
+				sFilterList = _T("All Files (*.*)|*.*|");
+		}
 
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;

@@ -33,6 +33,7 @@ static void ReturnPropertyValue( TPropertyPtr pProperty )
 		break;
 	case PropString:
 	case PropEvent:
+	case PropActiveXEvent:
 		acedRetStr( pProperty->GetStringValue() );
 		break;
 	case PropDouble:

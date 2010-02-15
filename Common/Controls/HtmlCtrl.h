@@ -33,6 +33,7 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 	
+	virtual HRESULT OnGetHostInfo(DOCHOSTUIINFO *pInfo);
 	virtual BOOL PreTranslateMessage( MSG* pMsg );	
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);

@@ -71,6 +71,7 @@ CString FireCancel( LPCTSTR pszLispFunction )
 	if( sLispFunction.Left( 4 ).CompareNoCase( _T("^C^C") ) != 0 )
 		return sLispFunction;
 
+	//acdbHostApplicationServices()->
 	Acad::ErrorStatus es = ExecuteCommand( _T("\x1B\x1B") );
 	return sLispFunction.Mid( 4 );
 }

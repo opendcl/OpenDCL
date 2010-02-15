@@ -180,6 +180,7 @@ CString AxTypeToDisplayableLispType( VARTYPE vt, const GUID& guid /*= GUID_NULL*
 	case VT_VOID:
 	case VT_EMPTY:
 	case VT_NULL:
+	case VT_USERDEFINED:	
 		break;
 
 	case VT_PTR:

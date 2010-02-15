@@ -809,6 +809,8 @@ ADSRESULT ListView::FillList()
 
 	if( GetNilArgument( pArgs, true ) )
 	{
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 		acedRetT();
 		return RSRSLT;
 	}

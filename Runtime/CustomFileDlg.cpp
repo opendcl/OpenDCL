@@ -506,14 +506,15 @@ void CCustomFileDlg::OnFileNameChange()
 	
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
 	
+	CString sEventSelChanged = mpFileDlgCtrl->GetStringProperty( Prop::EventSelChanged );
 	int nSelCount = wndLst1->GetSelectedCount();
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
-	if (pos == NULL || nSelCount == 0)
-		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( -1, _T("") ) );		
+	if( pos == NULL || nSelCount == 0 )
+		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( -1, _T("") ) );
 	else if (nSelCount == 1)
-		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nSelCount, GetPathName() ) );			
+		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( nSelCount, GetPathName() ) );			
 	else 
-		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NS( nSelCount, _T("") ) );			
+		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( nSelCount, _T("") ) );			
 }
 
 void CCustomFileDlg::OnTypeChange()
@@ -523,7 +524,8 @@ void CCustomFileDlg::OnTypeChange()
 		return;
 	CString sText;
 	GetParent()->GetDlgItem(cmb1)->GetWindowText( sText );
-	GetArxServices()->HandleEvent( Prop::EventTypeChanged, args_S( sText ) );
+	CString sEventTypeChanged = mpFileDlgCtrl->GetStringProperty( Prop::EventTypeChanged );
+	CArxControlServices::HandleEventGeneric( false, sEventTypeChanged, args_S( sText ) );
 }
 
 BOOL CCustomFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
@@ -542,7 +544,8 @@ void CCustomFileDlg::OnFolderChange()
 	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
 		return;
-	GetArxServices()->HandleEvent( Prop::EventFolderChanged, args_S( GetFolderPath() ) );
+	CString sEventFolderChanged = mpFileDlgCtrl->GetStringProperty( Prop::EventFolderChanged );
+	CArxControlServices::HandleEventGeneric( false, sEventFolderChanged, args_S( GetFolderPath() ) );
 }
 
 LRESULT CCustomFileDlg::OnGetFileName( WPARAM wParam, LPARAM lParam )

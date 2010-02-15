@@ -92,6 +92,16 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CHtmlCtrl message handlers
 
+HRESULT CHtmlCtrl::OnGetHostInfo(DOCHOSTUIINFO *pInfo)
+{
+	HRESULT hr = __super::OnGetHostInfo( pInfo );
+	if( FAILED(hr) )
+		return hr;
+	if( pInfo )
+		pInfo->dwFlags |= DOCHOSTUIFLAG_NO3DOUTERBORDER;
+	return S_OK;
+}
+
 BOOL CHtmlCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);

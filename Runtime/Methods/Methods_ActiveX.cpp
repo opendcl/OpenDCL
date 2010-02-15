@@ -236,10 +236,10 @@ ADSRESULT AxObject::Get()
 
 	DISPPARAMS params = { rvarArgs, NULL, ctArgs, 0 };
 	COleVariant varResult;
-	EXCEPINFO exception = { NULL };
+	EXCEPINFO xinfo = { NULL };
 	UINT nErrArg = 0;
 	HRESULT hr =
-		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, DISPATCH_PROPERTYGET, &params, &varResult, &exception, &nErrArg );
+		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, INVOKE_PROPERTYGET, &params, &varResult, &xinfo, &nErrArg );
 
 	delete [] rvarArgs;
 
@@ -247,9 +247,9 @@ ADSRESULT AxObject::Get()
 	{
 		if( nErrArg > 0 )
 		{
-			CString sExtraInfo = exception.bstrDescription;
+			CString sExtraInfo = xinfo.bstrDescription;
 			pArgs = pArgC;
-			while( nErrArg > 0 && pArgs )
+			while( nErrArg-- > 0 && pArgs )
 				pArgs = pArgs->rbnext;
 			HandleArgValueError( pArgs, IDS_ERR_AXPARAM, (LPCTSTR)sExtraInfo );
 			return RSERR;
@@ -304,15 +304,13 @@ ADSRESULT AxObject::Put()
 		return RSERR;
 	}
 
-	DISPPARAMS params = { rvarArgs, NULL, ctArgs, 0 };
+	DISPID idPut = DISPID_PROPERTYPUT;
+	DISPPARAMS params = { rvarArgs, &idPut, ctArgs, 1 };
 	COleVariant varResult;
-	EXCEPINFO exception = { NULL };
+	EXCEPINFO xinfo = { NULL };
 	UINT nErrArg = 0;
-	DISPID d1 = 0;
-	params.cNamedArgs = 1;
-	params.rgdispidNamedArgs = &d1;
 	HRESULT hr =
-		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, DISPATCH_PROPERTYPUT, &params, &varResult, &exception, &nErrArg );
+		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, INVOKE_PROPERTYPUT, &params, &varResult, &xinfo, &nErrArg );
 
 	delete [] rvarArgs;
 
@@ -320,9 +318,9 @@ ADSRESULT AxObject::Put()
 	{
 		if( nErrArg > 0 )
 		{
-			CString sExtraInfo = exception.bstrDescription;
+			CString sExtraInfo = xinfo.bstrDescription;
 			pArgs = pArgC;
-			while( nErrArg > 0 && pArgs )
+			while( nErrArg-- > 0 && pArgs )
 				pArgs = pArgs->rbnext;
 			HandleArgValueError( pArgs, IDS_ERR_AXPARAM, (LPCTSTR)sExtraInfo );
 			return RSERR;
@@ -379,10 +377,10 @@ ADSRESULT AxObject::Invoke()
 
 	DISPPARAMS params = { rvarArgs, NULL, ctArgs, 0 };
 	COleVariant varResult;
-	EXCEPINFO exception = { NULL };
+	EXCEPINFO xinfo = { NULL };
 	UINT nErrArg = 0;
 	HRESULT hr =
-		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, DISPATCH_METHOD, &params, &varResult, &exception, &nErrArg );
+		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, DISPATCH_METHOD, &params, &varResult, &xinfo, &nErrArg );
 
 	delete [] rvarArgs;
 
@@ -390,9 +388,9 @@ ADSRESULT AxObject::Invoke()
 	{
 		if( nErrArg > 0 )
 		{
-			CString sExtraInfo = exception.bstrDescription;
+			CString sExtraInfo = xinfo.bstrDescription;
 			pArgs = pArgC;
-			while( nErrArg > 0 && pArgs )
+			while( nErrArg-- > 0 && pArgs )
 				pArgs = pArgs->rbnext;
 			HandleArgValueError( pArgs, IDS_ERR_AXPARAM, (LPCTSTR)sExtraInfo );
 			return RSERR;

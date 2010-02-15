@@ -203,3 +203,11 @@ bool CArxControlServices::HandleEvent( Prop::Id id, const arg_b& args /*= args_n
 	InvokeEventHandler( sEventHandler, args, mpDlgControl->IsAsyncEvents(), NULL );
 	return (pTemplate->GetControlInstance() == NULL); //return true to abort if the event handler destroyed the control
 }
+
+//static
+bool CArxControlServices::HandleEventGeneric( bool bAsync, LPCTSTR pszHandlerName, const arg_b& args /*= args_null()*/ )
+{
+	if( !pszHandlerName || !pszHandlerName )
+		return false;
+	return InvokeEventHandler( pszHandlerName, args, bAsync, NULL );
+}

@@ -95,22 +95,14 @@ BOOL CInsertControlDlg::OnInitDialog()
 
 void GetClassServerPath( REFCLSID clsid, CString& strServerPath )
 {
-	HKEY hKey;
-	HKEY hServerKey;
-	OLECHAR szCLSID[64];
-	LONG nResult;
-	ULONG nBytes;
-	DWORD dwType;
-	LPTSTR pszServerPath;
-
-	StringFromGUID2( clsid, szCLSID, 64 );
-
-	hKey = NULL;
-	hServerKey = NULL;
+	HKEY hKey = NULL;
+	HKEY hServerKey = NULL;
 
 	try
 	{
-		nResult = RegOpenKeyEx( HKEY_CLASSES_ROOT, CString( _T("CLSID\\") ) + szCLSID, 0, KEY_READ, &hKey );
+		OLECHAR szCLSID[64];
+		StringFromGUID2( clsid, szCLSID, 64 );
+		LONG nResult = RegOpenKeyEx( HKEY_CLASSES_ROOT, CString( _T("CLSID\\") ) + szCLSID, 0, KEY_READ, &hKey );
 		if( nResult != ERROR_SUCCESS )
 			throw( E_FAIL );
 
@@ -125,28 +117,39 @@ void GetClassServerPath( REFCLSID clsid, CString& strServerPath )
 					throw( E_FAIL );
 			}
 		}
-
-		nBytes = 0;
-		nResult = RegQueryValueEx( hServerKey, NULL, NULL, &dwType, NULL, &nBytes );
-		if( (nResult != ERROR_SUCCESS) || (dwType != REG_SZ) )
-			throw( E_FAIL );
-		pszServerPath = LPTSTR( _alloca( nBytes ) );
-		nResult = RegQueryValueEx( hServerKey, NULL, NULL, &dwType, LPBYTE( pszServerPath ), &nBytes );
-		if( (nResult != ERROR_SUCCESS) || (dwType != REG_SZ) )
-			throw( E_FAIL );
-
-		strServerPath = pszServerPath;
-
 		RegCloseKey( hKey );
 		hKey = NULL;
+
+		ULONG nBytes = 0;
+		DWORD dwType;
+		nResult = RegQueryValueEx( hServerKey, NULL, NULL, &dwType, NULL, &nBytes );
+		if( nResult != ERROR_SUCCESS )
+			throw( E_FAIL );
+		if( dwType != REG_EXPAND_SZ && dwType != REG_SZ )
+			throw( E_FAIL );
+		LPTSTR pszServerPath = LPTSTR( _alloca( nBytes ) );
+		nResult = RegQueryValueEx( hServerKey, NULL, NULL, &dwType, LPBYTE( pszServerPath ), &nBytes );
+		if( nResult != ERROR_SUCCESS )
+			throw( E_FAIL );
+		if( dwType != REG_EXPAND_SZ && dwType != REG_SZ )
+			throw( E_FAIL );
+
 		RegCloseKey( hServerKey );
 		hServerKey = NULL;
+
+		if( dwType == REG_EXPAND_SZ )
+		{
+			ExpandEnvironmentStrings( pszServerPath, strServerPath.GetBuffer( MAX_PATH + 2 ), MAX_PATH + 1 );
+			strServerPath.ReleaseBuffer();
+		}
+		else
+			strServerPath = pszServerPath;
 	}
 	catch( HRESULT )
 	{
-		if( hKey != NULL )
+		if( hKey )
 			RegCloseKey( hKey );
-		if( hServerKey != NULL )
+		if( hServerKey )
 			RegCloseKey( hServerKey );
 		strServerPath = theWorkspace.LoadResourceString( IDS_SERVERNOTFOUND );
 		return;

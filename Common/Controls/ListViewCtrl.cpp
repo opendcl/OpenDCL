@@ -640,7 +640,6 @@ BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_NOTIFY_REFLECT(LVN_BEGINLABELEDIT, OnBeginlabeledit)
-	ON_WM_LBUTTONDBLCLK()
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 	ON_WM_CTLCOLOR_REFLECT()
@@ -692,29 +691,6 @@ void CListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		mLVEdit.SetWindowText( GetItemText( nItem, mnEditSubItem ) );
 	}
 	*pResult = 0;
-}
-
-void CListViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
-{
-	__super::OnLButtonDblClk(nFlags, point);
-
-	POSITION pos = GetFirstSelectedItemPosition();
-	if (pos == NULL)
-	{
-		if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
-		{
-			LVHITTESTINFO lvhti;
-			lvhti.pt = point;
-			SubItemHitTest(&lvhti);
-			int nRow = lvhti.iItem;
-			if (nRow > -1)
-			{			
-				SetFocus();
-				UINT flag = LVIS_SELECTED | LVIS_FOCUSED;
-				SetItemState(nRow, flag, flag);
-			}
-		}
-	}
 }
 
 void CListViewCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 

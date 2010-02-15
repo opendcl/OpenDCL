@@ -892,7 +892,7 @@ static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCt
 			}
 		}
 	}
-	switch( GetActiveXPropType( pFirstProp ) )
+	switch( (VT_TYPEMASK & GetActiveXPropType( pFirstProp )) )
 	{
 	case VT_BOOL:
 		return CBooleanCheckBoxCtrl::Create( pGridCtrl, idxCell, bMultiple );
@@ -908,6 +908,8 @@ static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCt
 	case VT_UI4:
 	case VT_UI8:
 		return CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >( pGridCtrl, idxCell, bMultiple );
+	case VT_DISPATCH:
+		return bMultiple? NULL : CCommandButtonEditCtrl::Create< ID_AXPROPERTIES >( pGridCtrl, idxCell, bMultiple );
 	}
 	return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
 }
@@ -1004,6 +1006,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 {
 	switch( id )
 	{
+	case Prop::ActiveXPropPages: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_AXPROPERTIES >;
 	case Prop::AllowResizing: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::AlternatingColor: if( bMultiple ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CCommandButtonEditCtrl::Create< ID_ALTCOLORPROPERTIES >;
 	case Prop::AlternateOrient: return &CEnumComboBoxCtrl::Create;
@@ -1013,7 +1016,6 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::AutoVScroll: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::AutoSize: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::AutoWrap: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::ActiveXPropPages: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_AXPROPERTIES >;
 	case Prop::BackgroundColor: if( bMultiple ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CCommandButtonEditCtrl::Create< ID_BACKCOLORPROPERTIES >;
 	case Prop::BeginGroup: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::BlockName: return &CFilteredTextEditCtrl::Create< CSymbolNameFilter >;
@@ -1306,7 +1308,8 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 					nState |= PGIS_DISPLAYONLY;
 					break;
 				}
-				switch( pPropDesc->GetArgs().front().vt )
+				const AxArg& arg = pPropDesc->GetArgs().front();
+				switch( (VT_TYPEMASK & arg.vt) )
 				{ //if it's not a type we can set in the property grid, make it display-only
 				case VT_I2:
 				case VT_I4:
@@ -1325,9 +1328,11 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 				case VT_UINT:
 					break;
 				case VT_DISPATCH:
-					if( pPropDesc->GetArgs().front().clsid == IID_IPictureDisp )
+					if( arg.clsid == GUID_COLOR )
 						break;
-					if( pPropDesc->GetArgs().front().clsid == IID_IFontDisp )
+					if( arg.clsid == IID_IPictureDisp )
+						break;
+					if( arg.clsid == IID_IFontDisp )
 						break;
 					nState |= PGIS_DISPLAYONLY;
 					break;

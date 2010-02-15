@@ -955,7 +955,6 @@ bool GetIDispatchArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IDispatch*& pDisp,
 			return false; 
 		}
 	}
-	pArgs = pArgs->rbnext;
 	return true; 
 }
 
