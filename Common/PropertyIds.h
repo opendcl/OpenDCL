@@ -285,8 +285,9 @@ enum Id
 	KeepFocus = 259,
 	ListImages = 260,
 	DragOverFromControl = 261,
+	FormEventMove = 262,
 	_MinId = 1,
-	_MaxId = 261
+	_MaxId = 262
 };
 
 /* property ids in alphabetical order for easy manual lookup
@@ -429,6 +430,7 @@ enum Id
 	FormEventCancelClose = 156,
 	FormEventClose = 118,
 	FormEventInitialize = 119,
+	FormEventMove = 262,
 	FormEventOnCancel = 253,
 	FormEventOnOk = 251,
 	FormEventShow = 121,

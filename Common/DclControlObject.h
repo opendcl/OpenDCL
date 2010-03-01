@@ -95,6 +95,7 @@ protected: //for use by control instance only
 public:
 	void SetGlobalVariableName( LPCTSTR pszParentName = NULL );
 	void ClearGlobalVariableName();
+	void ResetEventNames();
 
 // Property access
 public:

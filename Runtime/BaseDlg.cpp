@@ -157,6 +157,8 @@ BOOL CBaseDlg::OnInitDialog()
 	GetControlPane()->RecalcLayout();
 
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
+	GetArxServices()->HandleEvent( Prop::FormEventMove, false,
+																 args_NN( rectWindow.left, rectWindow.top ) );
 	GetArxServices()->HandleEvent( Prop::FormEventSize, false,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );

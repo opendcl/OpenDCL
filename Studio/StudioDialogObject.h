@@ -146,6 +146,8 @@ protected:
 	afx_msg void OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI);
 	afx_msg void OnToolsClearlispsymbolnames();
 	afx_msg void OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI);
+	afx_msg void OnToolsReseteventnames();
+	afx_msg void OnUpdateToolsReseteventnames(CCmdUI *pCmdUI);
 	afx_msg void OnBringtofront();
 	afx_msg void OnUpdateBringtofront(CCmdUI *pCmdUI);
 	afx_msg void OnSendtoback();

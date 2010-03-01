@@ -474,6 +474,33 @@ ADSRESULT ListBox::SelectItem()
 	return RSRSLT;
 }
 
+ADSRESULT ListBox::HitPointTest()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListView))
+		return RSERR; //invalid input
+
+	int nX = -1;
+	if( !GetIntArgument( pArgs, nX ) )
+		return RSERR; //invalid input
+
+	int nY = -1;
+	if( !GetIntArgument( pArgs, nY ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
+
+	BOOL bOutside;
+	UINT nItem = pCtrl->ItemFromPoint( CPoint( nX, nY ), bOutside );
+	acedRetInt( (int)nItem );
+	return RSRSLT;
+}
+
 ADSRESULT ListBox::IsItemSelected()
 {
 	struct resbuf *pArgs =acedGetArgs () ;

@@ -42,10 +42,10 @@
 //	return -1;
 //}
 
-COLORREF CAcUiColorComboBox::GetColorFromIndex(int)
-{
-	return RGB(0,0,0);
-}
+//COLORREF CAcUiColorComboBox::GetColorFromIndex(int)
+//{
+//	return RGB(0,0,0);
+//}
 
 COLORREF CAcUiColorComboBox::LookupColor(int,LOGPALETTE*)
 {

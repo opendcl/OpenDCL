@@ -20,20 +20,20 @@ CAcUiPlotStyleTablesComboBox::~CAcUiPlotStyleTablesComboBox()
 {
 }
 
-bool CAcUiPlotStyleTablesComboBox::IsMissing(int)
-{
-	return true;
-}
-
-int CAcUiPlotStyleTablesComboBox::AddItemToList(LPCTSTR,int)
-{
-	return -1;
-}
-
-int CAcUiPlotStyleTablesComboBox::AddMissingStyleTable(LPCTSTR)
-{
-	return -1;
-}
+//bool CAcUiPlotStyleTablesComboBox::IsMissing(int)
+//{
+//	return true;
+//}
+//
+//int CAcUiPlotStyleTablesComboBox::AddItemToList(LPCTSTR,int)
+//{
+//	return -1;
+//}
+//
+//int CAcUiPlotStyleTablesComboBox::AddMissingStyleTable(LPCTSTR)
+//{
+//	return -1;
+//}
 
 int CAcUiPlotStyleTablesComboBox::ImageWidth()
 {
@@ -44,9 +44,9 @@ void CAcUiPlotStyleTablesComboBox::GetLBText(int,CString&) const
 {
 }
 
-void CAcUiPlotStyleTablesComboBox::SetFileType(bool,bool)
-{
-}
+//void CAcUiPlotStyleTablesComboBox::SetFileType(bool,bool)
+//{
+//}
 
 afx_msg BOOL CAcUiPlotStyleTablesComboBox::OnDropDown()
 {

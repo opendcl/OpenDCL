@@ -110,6 +110,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventClose );
+		AddControlEvent( pDclControl, Prop::FormEventMove );
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::FormEventOnOk );
 		AddControlEvent( pDclControl, Prop::FormEventOnCancel );
@@ -130,6 +131,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventClose );
+		AddControlEvent( pDclControl, Prop::FormEventMove );
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::FormEventOnOk );
 		AddControlEvent( pDclControl, Prop::FormEventOnCancel );
@@ -155,6 +157,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddLongProperty( Prop::DockableSides, PropEnum, 0 );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventClose );
+		AddControlEvent( pDclControl, Prop::FormEventMove );
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::DocEventActivated );
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
@@ -185,6 +188,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventCancelClose );
 		AddControlEvent( pDclControl, Prop::FormEventClose );
+		AddControlEvent( pDclControl, Prop::FormEventMove );
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::EventHelp );
 		break;
@@ -207,6 +211,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddLongProperty( Prop::DockableSides, PropEnum, 0 );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventClose );
+		AddControlEvent( pDclControl, Prop::FormEventMove );
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::DocEventActivated );
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );

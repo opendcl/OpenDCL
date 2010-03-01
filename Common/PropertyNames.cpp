@@ -267,6 +267,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::FormEventCancelClose] = _T("CancelClose");
 	mmapIdToApiName[Prop::FormEventClose] = _T("Close");
 	mmapIdToApiName[Prop::FormEventInitialize] = _T("Initialize");
+	mmapIdToApiName[Prop::FormEventMove] = _T("Move");
 	mmapIdToApiName[Prop::FormEventOnCancel] = _T("Cancel");
 	mmapIdToApiName[Prop::FormEventOnOk] = _T("OK");
 	mmapIdToApiName[Prop::FormEventShow] = _T("Show");

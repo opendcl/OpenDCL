@@ -246,6 +246,22 @@ void CAcadPaletteHost::TitleBarLocationUpdated( AdUiTitleBarLocation newLoc )
 	mpDlgObject->OnFrameChanged();
 }
 
+BOOL CAcadPaletteHost::Load(IUnknown* pNode)
+{
+	return __super::Load( pNode );
+}
+
+BOOL CAcadPaletteHost::Save(IUnknown* pNode)
+{
+	//The paletteset state is not saved unless at least one palette is added, so
+	//here a temporary palette is added for that purpose. [ORW]
+	CAdUiPalette pal;
+	AddPalette( &pal );
+	BOOL bResult = __super::Save( pNode );
+	RemovePalette( &pal );
+	return bResult;
+}
+
 void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);

@@ -2198,6 +2198,10 @@
 					<param name="Local" value="Reference\Method\ListBox/GetTopIndex.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="HitPointTest">
+					<param name="Local" value="Reference\Method\ListBox/HitPointTest.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="InsertString">
 					<param name="Local" value="Reference\Method\ListBox/InsertString.htm">
 					</OBJECT>
@@ -2901,6 +2905,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="MouseWheel">
 				<param name="Local" value="Reference\Event\MouseWheel.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Move">
+				<param name="Local" value="Reference\Event\Move.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="NavigationComplete">

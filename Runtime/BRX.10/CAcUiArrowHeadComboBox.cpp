@@ -15,15 +15,15 @@ CAcUiArrowHeadComboBox::~CAcUiArrowHeadComboBox()
 {
 }
 
-BOOL CAcUiArrowHeadComboBox::GetUseOrigin2()
-{
-	return FALSE;
-}
-
-int CAcUiArrowHeadComboBox::AddArrowHeadToMRU(LPCTSTR)
-{
-	return -1;
-}
+//BOOL CAcUiArrowHeadComboBox::GetUseOrigin2()
+//{
+//	return FALSE;
+//}
+//
+//int CAcUiArrowHeadComboBox::AddArrowHeadToMRU(LPCTSTR)
+//{
+//	return -1;
+//}
 
 void CAcUiArrowHeadComboBox::SetUseOrigin2(BOOL)
 {

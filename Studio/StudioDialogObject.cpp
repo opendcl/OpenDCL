@@ -23,6 +23,7 @@
 #include "PropertyWizard.h"
 #include "ControlBrowser.h"
 #include "FormVarNameUpdate.h"
+#include "EventNameReset.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -75,6 +76,8 @@ BEGIN_MESSAGE_MAP(CStudioDialogObject, CDialog)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_SETLISPSYMBOLNAMES, &CStudioDialogObject::OnUpdateToolsSetlispsymbolnames)
 	ON_COMMAND(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CStudioDialogObject::OnToolsClearlispsymbolnames)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CStudioDialogObject::OnUpdateToolsClearlispsymbolnames)
+	ON_COMMAND(ID_TOOLS_RESETEVENTNAMES, &CStudioDialogObject::OnToolsReseteventnames)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_RESETEVENTNAMES, &CStudioDialogObject::OnUpdateToolsReseteventnames)
 	ON_COMMAND(ID_SENDTOFRONT, &CStudioDialogObject::OnBringtofront)
 	ON_UPDATE_COMMAND_UI(ID_SENDTOFRONT, &CStudioDialogObject::OnUpdateBringtofront)
 	ON_COMMAND(ID_SENDTOBACK, &CStudioDialogObject::OnSendtoback)
@@ -1136,6 +1139,18 @@ void CStudioDialogObject::OnToolsClearlispsymbolnames()
 }
 
 void CStudioDialogObject::OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( mpSourceForm != NULL );
+}
+
+void CStudioDialogObject::OnToolsReseteventnames()
+{
+	CEventNameReset Dlg( mpSourceForm, NULL );
+	if( IDOK == Dlg.DoModal() )
+		theStudioWorkspace.ActivateDclControl( theStudioWorkspace.GetActiveDclControl() );
+}
+
+void CStudioDialogObject::OnUpdateToolsReseteventnames(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable( mpSourceForm != NULL );
 }

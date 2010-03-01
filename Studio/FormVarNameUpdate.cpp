@@ -38,7 +38,7 @@ INT_PTR CFormVarNameUpdate::DoModal()
 	return __super::DoModal();
 }
 
-void CFormVarNameUpdate::OnOK() 
+void CFormVarNameUpdate::OnOK()
 {
 	if( msFormName.IsEmpty() )
 		mpDclForm->ClearGlobalVariableName( mbSetControls );
@@ -50,7 +50,7 @@ void CFormVarNameUpdate::OnOK()
 	__super::OnOK();
 }
 
-void CFormVarNameUpdate::OnCtrlcheck() 
+void CFormVarNameUpdate::OnCtrlcheck()
 {
 	CButton* pSetControlsBtn = (CButton*)GetDlgItem( IDC_CTRLCHECK );
 	mbSetControls = (pSetControlsBtn->GetCheck() == BST_CHECKED);

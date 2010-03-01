@@ -10,10 +10,10 @@ IMPLEMENT_DYNAMIC(CAcUiStringComboBox, CAcUiComboBox)
 BEGIN_MESSAGE_MAP(CAcUiStringComboBox, CAcUiComboBox)
 END_MESSAGE_MAP()
 
-CAcUiStringComboBox::CAcUiStringComboBox()
-{
-}
-
-CAcUiStringComboBox::~CAcUiStringComboBox()
-{
-}
+//CAcUiStringComboBox::CAcUiStringComboBox()
+//{
+//}
+//
+//CAcUiStringComboBox::~CAcUiStringComboBox()
+//{
+//}

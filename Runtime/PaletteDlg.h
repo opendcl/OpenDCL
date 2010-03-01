@@ -22,6 +22,7 @@ class CPaletteDlg : public CDialog, public CArxDialogObject
 {
 	CWnd* mpParent;
 	CAcadPaletteHost& mHostPaletteSet;
+	CPoint mptInitPos;
 	bool mbKeepFocus;
 	bool mbResizable;
 	CAcadColorService mColorService;
@@ -76,6 +77,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
+	afx_msg void OnMove(int x, int y);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);

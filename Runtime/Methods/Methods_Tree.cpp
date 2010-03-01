@@ -281,8 +281,8 @@ ADSRESULT Tree::SelectItem()
 		return RSERR;
 
 	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
-	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : pCtrl->FindItem( sRefKey ) );
-	if( hItem && pCtrl->SelectItem( hItem ) )
+	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : (sRefKey.IsEmpty()? NULL : pCtrl->FindItem( sRefKey ) ));
+	if( pCtrl->SelectItem( hItem ) )
 		acedRetT();
 	return RSRSLT;
 }

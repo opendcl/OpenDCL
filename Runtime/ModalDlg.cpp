@@ -64,6 +64,7 @@ void CModalDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CModalDlg, CBaseDlg)
 	ON_WM_CREATE()
+	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
@@ -90,10 +91,18 @@ int CModalDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+void CModalDlg::OnMove(int x, int y)
+{
+	__super::OnMove(x, y);
+	if( IsIgnoreSizing() || !IsWindowVisible() )
+		return;
+	GetArxServices()->HandleEvent( Prop::FormEventMove, false, args_NN( x, y ) );
+}
+
 void CModalDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	if (IsWindowVisible())
+	if( !IsIgnoreSizing() && IsWindowVisible() )
 	{	
 		GetArxServices()->HandleEvent( Prop::FormEventSize, false,
 																	 args_NN( mpTemplate->GetLongProperty( Prop::Width ),

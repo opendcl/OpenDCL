@@ -927,6 +927,28 @@ void CDclControlObject::ClearGlobalVariableName()
 	SetStringProperty( Prop::VarName, NULL );
 }
 
+void CDclControlObject::ResetEventNames()	
+{	
+	for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
+	{
+		TPropertyPtr pProp = *iter;
+		switch( pProp->GetType() )
+		{
+		case PropEvent:
+		case PropActiveXEvent:
+			{
+				if( !pProp->GetStringValue().IsEmpty() )
+				{
+					CString sEventName;
+					sEventName.Format( _T("c:%s_On%s"), GetVarName(), pProp->GetName() );
+					pProp->SetStringValue( sEventName );
+				}
+			}
+			break;
+		}
+	}
+}
+
 bool CDclControlObject::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )	
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );

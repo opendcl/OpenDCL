@@ -564,12 +564,23 @@ void CColumnsPage::OnSelchangeStyle()
 	m_AltImage.SetCurSel(m_ColData[m_nIndex].m_AltImage + 1);					
 	switch(m_Style.GetCurSel())
 	{
+		case 1:
+		case 2:
+		{
+			m_ColData[m_nIndex].m_AltImage = -1;
+			break;
+		}
+		case 3:
+		{
+			m_AltLabel.ShowWindow(TRUE);
+			m_AltImage.ShowWindow(TRUE);		
+			break;
+		}
 		case 15:
 		{
 			m_DefLabel.ShowWindow( SW_HIDE );
 			m_DefImage.ShowWindow( SW_HIDE );
 			if (m_ColData[m_nIndex].m_Image == -1)
-				m_ColData[m_nIndex].m_Image = 0;
 			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_DATEFORMAT) );
 			break;
 		}
@@ -592,12 +603,6 @@ void CColumnsPage::OnSelchangeStyle()
 		case 41:
 		{
 			m_DropListBtn.ShowWindow(TRUE);
-			break;
-		}
-		case 3:
-		{
-			m_AltLabel.ShowWindow(TRUE);
-			m_AltImage.ShowWindow(TRUE);		
 			break;
 		}
 		case 35:

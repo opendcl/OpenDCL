@@ -20,29 +20,29 @@ int CAcUiPlotStyleNamesComboBox::ImageWidth()
 	return 0;
 }
 
-void CAcUiPlotStyleNamesComboBox::OtherRunsCurrentPlotStyle()
-{
-}
-
-void CAcUiPlotStyleNamesComboBox::OtherRunsDefault()
-{
-}
-
-void CAcUiPlotStyleNamesComboBox::OtherRunsSelectPlotStyle()
-{
-}
-
-void CAcUiPlotStyleNamesComboBox::SetAllowByLayerByBlock(BOOL)
-{
-}
-
-void CAcUiPlotStyleNamesComboBox::SetColorDependentMode()
-{
-}
-
-void CAcUiPlotStyleNamesComboBox::SetNamedMode()
-{
-}
+//void CAcUiPlotStyleNamesComboBox::OtherRunsCurrentPlotStyle()
+//{
+//}
+//
+//void CAcUiPlotStyleNamesComboBox::OtherRunsDefault()
+//{
+//}
+//
+//void CAcUiPlotStyleNamesComboBox::OtherRunsSelectPlotStyle()
+//{
+//}
+//
+//void CAcUiPlotStyleNamesComboBox::SetAllowByLayerByBlock(BOOL)
+//{
+//}
+//
+//void CAcUiPlotStyleNamesComboBox::SetColorDependentMode()
+//{
+//}
+//
+//void CAcUiPlotStyleNamesComboBox::SetNamedMode()
+//{
+//}
 
 BOOL CAcUiPlotStyleNamesComboBox::OnSelectOther(BOOL,int,int&)
 {

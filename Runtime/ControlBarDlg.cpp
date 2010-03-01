@@ -11,7 +11,11 @@
 #include "DclControlObject.h"
 #include "Resource.h"
 
+#ifdef _BRXTARGET
+bool AcadIsQuitting() { return false; }
+#else
 extern bool AcadIsQuitting(void);
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -22,6 +26,7 @@ CControlBarDlg::CControlBarDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 , CArxDialogObject( pSourceForm, this )
 , mpParent( pParent )
 , mHostControlBar( *new CAcadDockBarHost( this, pParent ) )
+, mptInitPos( -1, -1 )
 , mbKeepFocus( true )
 , mbResizable( true )
 , mbHiding( false )
@@ -29,6 +34,8 @@ CControlBarDlg::CControlBarDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mbResizable = (!pResizableProp || pResizableProp->GetBooleanValue());
+	if( pParams )
+		mptInitPos = pParams->position;
 }
 
 
@@ -113,6 +120,15 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 	mHostControlBar.EnableDocking( dwDockableSides );
 
 	mHostControlBar.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
+	if( mptInitPos.x >= 0 && mptInitPos.y >= 0 )
+	{
+		if( !IsFloating() )
+		{
+			if( mHostControlBar.m_pDockContext )
+				mHostControlBar.m_pDockContext->ToggleDocking();
+		}
+		MoveDialog( mptInitPos.x, mptInitPos.y );
+	}
 	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostControlBar, TRUE, TRUE );
 
 	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostControlBar ) )
@@ -265,6 +281,7 @@ BEGIN_MESSAGE_MAP(CControlBarDlg, CDialog)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
@@ -302,11 +319,21 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetControlPane()->RecalcLayout();
 
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
+	GetArxServices()->HandleEvent( Prop::FormEventMove,
+																 args_NN( rcWindow.left, rcWindow.top ) );
 	GetArxServices()->HandleEvent( Prop::FormEventSize,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 
 	return 1;
+}
+
+void CControlBarDlg::OnMove(int x, int y)
+{
+	__super::OnMove(x, y);
+	if( IsIgnoreSizing() )
+		return;
+	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( x, y ) );
 }
 
 void CControlBarDlg::OnSize(UINT nType, int cx, int cy) 

@@ -505,6 +505,7 @@ Reference\Method\ListBox\GetSelCount.htm
 Reference\Method\ListBox\GetSelectedItems.htm
 Reference\Method\ListBox\GetSelectedNths.htm
 Reference\Method\ListBox\GetTopIndex.htm
+Reference\Method\ListBox\HitPointTest.htm
 Reference\Method\ListBox\InsertString.htm
 Reference\Method\ListBox\IsItemSelected.htm
 Reference\Method\ListBox\SelectItem.htm
@@ -699,6 +700,7 @@ Reference\Event\MouseMove.htm
 Reference\Event\MouseMovedOff.htm
 Reference\Event\MouseUp.htm
 Reference\Event\MouseWheel.htm
+Reference\Event\Move.htm
 Reference\Event\NavigationComplete.htm
 Reference\Event\Ok.htm
 Reference\Event\OptionsApply.htm

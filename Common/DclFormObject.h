@@ -78,6 +78,7 @@ public:
 	bool GetControlFonts( CFontCollection& Fonts ) const;
 	void SetGlobalVariableName( LPCTSTR pszRootName = NULL, bool bUpdateChildren = true );
 	void ClearGlobalVariableName( bool bUpdateChildren = true );
+	void ResetEventNames( bool bUpdateChildren = true );
 	TDclFormPtr AddChildForm( FormType type );
 
 	//Attributes

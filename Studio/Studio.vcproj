@@ -330,6 +330,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EventNameReset.h"
+				>
+			</File>
+			<File
 				RelativePath=".\EventsTabPane.h"
 				>
 			</File>
@@ -640,6 +644,10 @@
 			</File>
 			<File
 				RelativePath=".\DropListContents.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EventNameReset.cpp"
 				>
 			</File>
 			<File

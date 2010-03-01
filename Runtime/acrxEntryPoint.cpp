@@ -509,6 +509,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("ListBox_GetSelectedItems"),     ListBox::GetSelectedItems},	
 	{_T("ListBox_GetSelectedNths"),      ListBox::GetSelectedNths},	
 	{_T("ListBox_GetTopIndex"),          ListBox::GetTopIndex},
+	{_T("ListBox_HitPointTest"),         ListBox::HitPointTest},
 	{_T("ListBox_InsertString"),         ListBox::InsertString},
 	{_T("ListBox_IsItemSelected"),       ListBox::IsItemSelected},
 	{_T("ListBox_SelectItem"),           ListBox::SelectItem},
@@ -2568,11 +2569,18 @@ public:
 		AcDbBlockTableRecord *pBlockDef ;
 		es = acdbOpenObject (pBlockDef, blockId, AcDb::kForRead) ;
 		if (es != Acad::eOk)
+		{
+			pBlkRef->close () ;
 			return RSRSLT;
+		}
 		AcDbBlockTableRecordIterator *pIterator ;
 		es = pBlockDef->newIterator (pIterator) ;
+		pBlockDef->close () ;
 		if (es != Acad::eOk)
+		{
+			pBlkRef->close () ;
 			return RSRSLT;
+		}
 		AcDbEntity *pEnt ;
 		AcDbAttributeDefinition *pAttdef ;
 		for ( pIterator->start () ; !pIterator->done() ; pIterator->step () ) {
@@ -2648,7 +2656,6 @@ public:
 			pEnt->close () ; //----- Use pEnt... pAttdef might be NULL
 		}
 		delete pIterator ;
-		pBlockDef->close () ;
 		pBlkRef->close () ;
 
 		if (es == Acad::eOk)

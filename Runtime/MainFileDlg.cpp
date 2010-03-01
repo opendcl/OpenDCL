@@ -145,6 +145,8 @@ void CMainFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 		mpDlgObject->GetTemplate()->SetLongProperty( Prop::Width, nNewWidth );
 		mpDlgObject->GetTemplate()->SetLongProperty( Prop::Height, nNewHeight );
 		mpDlgObject->GetControlPane()->RecalcLayout();
+		mpDlgObject->GetWindowRect( &rcDlg );
+		mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventMove, false, args_NN( rcDlg.left, rcDlg.top ) );
 		mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventSize, false, args_NN( nNewWidth, nNewHeight ) );
 		mpDlgObject->SavePosition();
 	}

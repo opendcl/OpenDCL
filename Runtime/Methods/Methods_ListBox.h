@@ -26,6 +26,7 @@ ADSRESULT FindString();
 ADSRESULT SelectString();
 ADSRESULT FindStringExact();
 ADSRESULT SelectItem();
+ADSRESULT HitPointTest();
 ADSRESULT IsItemSelected();
 ADSRESULT SetFocusIndex(); // SetCaretIndex
 ADSRESULT GetFocusIndex(); // GetCaretIndex

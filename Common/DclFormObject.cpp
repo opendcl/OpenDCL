@@ -277,6 +277,16 @@ void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
 		(*iter)->ClearGlobalVariableName();
 }
 
+void CDclFormObject::ResetEventNames( bool bUpdateChildren /*= true*/ )	
+{
+	OnModified();
+	GetControlProperties()->ResetEventNames();
+	if( !bUpdateChildren )
+		return;
+	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		(*iter)->ResetEventNames();
+}
+
 TDclFormPtr CDclFormObject::AddChildForm( FormType type )
 {
 	TDclFormPtr pDclForm = mpProject->AddForm( type, TDclFormLockedPtr( this ) );

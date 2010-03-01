@@ -94,6 +94,7 @@ bool CModelessDlg::OnApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_ACAD_KEEPFOCUS, onAcadKeepFocus)	
+	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
@@ -128,6 +129,14 @@ BOOL CModelessDlg::OnInitDialog()
 LRESULT CModelessDlg::onAcadKeepFocus(WPARAM, LPARAM)
 {
 	return LRESULT(GetCapture() || mbKeepFocus);
+}
+
+void CModelessDlg::OnMove(int x, int y)
+{
+	__super::OnMove(x, y);
+	if( IsIgnoreSizing() || !IsWindowVisible() )
+		return;
+	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( x, y ) );
 }
 
 void CModelessDlg::OnSize(UINT nType, int cx, int cy) 
