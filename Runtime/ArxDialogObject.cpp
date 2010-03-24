@@ -107,8 +107,8 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
 	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
 #elif defined(_BRXTARGET) && (_BRXTARGET <= 10)
-	case FrmControlBar: return new CModelessDlg( pDclForm, pParent, pParams );
-	case FrmPaletteDlg: return new CModelessDlg( pDclForm, pParent, pParams );
+	case FrmControlBar: return new CControlBarDlg( pDclForm, pParent, pParams );
+	case FrmPaletteDlg: return new CControlBarDlg( pDclForm, pParent, pParams );
 #else
 	case FrmControlBar: return new CControlBarDlg( pDclForm, pParent, pParams );
 	case FrmPaletteDlg: return new CPaletteDlg( pDclForm, pParent, pParams );

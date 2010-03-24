@@ -132,6 +132,11 @@ DROPEFFECT CArxBlockViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& 
 void CArxBlockViewCtrl::Clear()
 {
 	clearAll();
+	if( mpSourceDb )
+	{
+		delete mpSourceDb;
+		mpSourceDb = NULL;
+	}
 }
 
 void CArxBlockViewCtrl::PaintUI( CDC* pdc /*= NULL*/ )
@@ -281,7 +286,7 @@ void CArxBlockViewCtrl::RefreshBlock()
 
 bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 {
-	clearAll();
+	Clear();
 	if( !pszFilename || !*pszFilename )
 		return false;
 
@@ -316,7 +321,7 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename )
 bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, bool bZoomExtents,
 																		int nScaleType, const AcGeVector3d& vecViewDir )
 {
-	clearAll();
+	Clear();
 	if( !pszFilename || !*pszFilename )
 		return false;
 
@@ -378,7 +383,7 @@ bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName, double dZoomFactor, 
 {
 	if( !pszBlockName || !*pszBlockName )
 	{
-		clearAll();
+		Clear();
 		return false;
 	}
 	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());

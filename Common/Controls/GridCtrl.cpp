@@ -298,7 +298,15 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 		OnNeedRepaint();
 		break;
 	case Prop::ColumnWidths:
-		SetupColumns();
+		if( !IsEnumeratingProperties() )
+		{
+			const PropVal::TIntArray* prnWidths = pProp->GetConstIntArrayPtr();	
+			size_t idxMax = prnWidths? prnWidths->size() : 0;
+			for( int idxColumn = idxMax - 1; idxColumn >= 0; --idxColumn )
+				SetColumnWidth( idxColumn, prnWidths->at( idxColumn ) );
+		}
+		else
+			SetupColumns();
 		OnNeedRepaint();
 		break;
 	case Prop::ColumnCaptions:

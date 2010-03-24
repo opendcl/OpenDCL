@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 
 
 CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= true*/ )
-: CStatic()
+: CWnd()
 , mpDlgControl( pDlgControl )
 , mpTemplate( pDlgControl->GetTemplate() )
 , mpControlPane( pDlgControl->GetControlPane() )
@@ -55,7 +55,7 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 		if( pTopLevelWnd->m_hWnd )
 			pTopLevelWnd->SetRedraw( FALSE );
 		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
-		Create( _T(""), WS_CHILD | WS_DISABLED, rcControl, pTopLevelWnd->GetParent() );
+		Create( WS_CHILD | WS_DISABLED, rcControl, pTopLevelWnd->GetParent() );
 		ModifyStyle( WS_CLIPCHILDREN, WS_CLIPSIBLINGS, 0 );
 		if( mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT )
 			ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
@@ -77,6 +77,18 @@ CControlManager::~CControlManager()
 	if( mpDlgControl )
 		mpDlgControl->SetControlManager( NULL );
 	TraceFmt( _T("< CControlManager::~CControlManager() [this: %p]\r\n"), this );
+}
+
+BOOL CControlManager::Create( DWORD dwStyle, const RECT& rect, CWnd* pParentWnd )
+{
+	WNDCLASS wc;
+	if( !GetClassInfo( NULL, _T("STATIC"), &wc ) )
+		return FALSE;
+	//wc.lpszClassName = _T("OPENDCL.CONTROLMANAGER");
+	//wc.style |= (CS_VREDRAW | CS_HREDRAW);
+	//wc.lpfnWndProc = ::DefWindowProc;
+	//RegisterClass( &wc );
+	return CWnd::Create( wc.lpszClassName, _T(""), dwStyle, rect, pParentWnd, -1 );
 }
 
 CStudioDialogObject* CControlManager::GetDialogObject() const
@@ -247,7 +259,7 @@ void CControlManager::OnControlPositionChanged()
 	mbIgnoreSizing = true;
 	CRect rcCtrl = mpTemplate->GetWndRect();
 	mpControlWnd->SetWindowPos( NULL, 0, 0, rcCtrl.Width(), rcCtrl.Height(),
-															SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER );
+															SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER );
 	CRect rcCtrlNew;
 	mpControlWnd->GetWindowRect( &rcCtrlNew );
 	GetDialogObject()->GetControlWnd()->ScreenToClient( &rcCtrlNew );
@@ -264,7 +276,9 @@ void CControlManager::OnControlPositionChanged()
 		mpTemplate->SetLongProperty( Prop::Height, rcCtrlNew.Height() );
 		CStudioDialogControl::UpdateProperty( mpTemplate, Prop::UseBottomFromBottom );
 	}
-	MoveWindow( &rcCtrl, TRUE);
+	SetWindowPos( NULL, rcCtrl.left, rcCtrl.top, 0, 0,
+								SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER );
+	//MoveWindow( &rcCtrl, TRUE);
 	mbIgnoreSizing = false;
 }
 
@@ -576,9 +590,7 @@ HBRUSH CControlManager::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		case CtlScrollBar:
 			break;
 		default:
-			{
-				mpDlgControl->HandleEraseBkgnd( pDC );
-			}
+			mpDlgControl->HandleEraseBkgnd( pDC );
 			break;
 		}
 		HBRUSH hbrBackground = mpDlgControl->HandleCtlColor( pDC, nCtlColor );

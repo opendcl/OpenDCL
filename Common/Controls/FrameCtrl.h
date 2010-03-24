@@ -24,7 +24,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	//virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 protected:
 	DECLARE_MESSAGE_MAP()

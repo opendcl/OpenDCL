@@ -426,7 +426,7 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	DWORD dwDropEffect = BeginDragDrop( point );
 	if( bSuperMessage && dwDropEffect == DROPEFFECT_NONE )
 		__super::OnLButtonDown( nFlags, point );
-	if( !setnDragSource.empty() ) //if drop was on this control, mnDragSource gets reset to -1
+	if( !setnDragSource.empty() ) //if drop was on this control, setnDragSource gets cleared
 	{
 		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
 		// will "follow" the mouse (like when you hold the left mouse down and 

@@ -210,7 +210,6 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -218,7 +217,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -302,7 +300,6 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -310,7 +307,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2051,10 +2047,38 @@
 			<File
 				RelativePath=".\CAcUiAngleComboBox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAcUiArrowHeadComboBox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAcUiColorComboBox.cpp"
@@ -2095,9 +2119,43 @@
 			<File
 				RelativePath=".\CAcUiLineTypeComboBox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAcUiMRUComboBox.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\CAcUiPlotStyleNamesComboBox.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -2115,20 +2173,58 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\CAcUiPlotStyleNamesComboBox.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CAcUiPlotStyleTablesComboBox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAcUiStringComboBox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAcUiSymbolComboBox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\CAdUiComboBox.cpp"
@@ -2153,6 +2249,7 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2160,6 +2257,7 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"

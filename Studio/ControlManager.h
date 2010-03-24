@@ -19,7 +19,7 @@ class CAxContainerCtrl;
 #endif
 
 
-class CControlManager : public CStatic
+class CControlManager : public CWnd
 {
 	CDialogControl* mpDlgControl;
 	TDclControlPtr mpTemplate;
@@ -39,6 +39,8 @@ protected:
 public:
 	CControlManager( CDialogControl* pDlgControl, bool bCreate = true );
 	virtual ~CControlManager();
+
+	BOOL Create( DWORD dwStyle, const RECT& rect, CWnd* pParentWnd );
 
 	CDialogControl* GetDialogControl() const { return mpDlgControl; }
 	TDclControlPtr GetTemplate() const { return mpTemplate; }

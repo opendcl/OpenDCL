@@ -1091,8 +1091,19 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				return false;
 			}
 			color = RGB(red, green, blue);
+			pArgs = pArgs->rbnext;
 		}
 		break;
+	case 110:
+	case 111:
+	case 112:
+	case 113:
+	case 114:
+	case 115:
+	case 116:
+	case 117:
+	case 118:
+	case 119:
 	case 210:
 	case 211:
 	case 212:
@@ -1114,6 +1125,7 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				return false;
 			}
 			color = RGB(red, green, blue);
+			pArgs = pArgs->rbnext;
 		}
 		break;
 	case RTLB:
@@ -1141,7 +1153,7 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				return false;
 			}
 			color = RGB(red, green, blue);
-			pArgs = pArgC;
+			pArgs = pArgC->rbnext;
 		}
 		break;
 	default:
@@ -1160,13 +1172,12 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				color = RGB(red, green, blue);
 			else
 			{
-				pArgs = pArgC;
+				pArgs = pArgC->rbnext;
 				color = GetRGBColor( red );
 			}
 		}
 		break;
 	}
-	pArgs = pArgs->rbnext;
 	return true;
 }
 

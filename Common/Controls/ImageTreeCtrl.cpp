@@ -256,8 +256,8 @@ HTREEITEM CImageTreeCtrl::AddChild( HTREEITEM hParent, LPCTSTR pszCaption, LPCTS
 {
 	if( pszKey && *pszKey && FindItem( pszKey ) )
 		return NULL; //duplicate key!
-	if( hAddAfter && !hParent )
-		hParent = GetParentItem( hAddAfter );
+	if( !hParent )
+		hParent = TVI_ROOT;
 	HTREEITEM hItem = InsertItem( pszCaption, I_IMAGECALLBACK, I_IMAGECALLBACK, hParent, hAddAfter );
 	if( !hItem )
 		return NULL;
@@ -460,6 +460,8 @@ void CImageTreeCtrl::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 			break;
 		}
 	}
+	if( mhtiDragSource == hItem )
+		mhtiDragSource = NULL;
 	*pResult = 0;
 }
 

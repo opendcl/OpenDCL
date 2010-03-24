@@ -2134,14 +2134,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{BE1353BD-D9E4-4DAE-9766-D93DB3CAEE1D}"
-        "PackageCode" = "8:{B708A991-42DD-4BF8-BB3C-286DBE619EFC}"
+        "ProductCode" = "8:{4B0DC9FC-9762-46BB-9A6A-F8853D410424}"
+        "PackageCode" = "8:{6808F484-B9C4-44E9-BB94-905174D01D5A}"
         "UpgradeCode" = "8:{140D3C25-5463-4688-8A52-FEA8E9FA4940}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:6.0.0023"
+        "ProductVersion" = "8:6.0.0024"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2947,7 +2947,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BC222713505949A9A1649D9BD53DC5B9"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B2F9F08891D54751B4ADB1AACED6A136"
@@ -2975,7 +2975,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D2E30088FE6F44CDA911B5E5558D3661"
             {
-            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3031,7 +3031,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FC2D5545372945918DF1FEDE403FE50B"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"

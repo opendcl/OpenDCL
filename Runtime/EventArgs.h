@@ -65,6 +65,8 @@ public:
 	arg_t( DWORD_PTR arg ) : _arg( arg ) {}
 	virtual resbuf* asResbuf() const
 		{
+			if( !_arg )
+				return acutNewRb( RTNIL );
 			resbuf* prb = acutNewRb( RTENAME );
 			if( !prb )
 				return NULL;

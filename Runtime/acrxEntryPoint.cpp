@@ -2906,8 +2906,10 @@ public:
 		CWnd *pParent = CWnd::FromHandle(theArxWorkspace.GetTopmostModalForm());
 		DWORD dwFlags = OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING |
 										OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+		sPath.Replace( _T('/'), _T('\\') );
+		sPath.TrimRight( _T('\\') );
 		// create the open dialog box
-		CFileDialog BrowseWnd(TRUE, NULL, sPath, dwFlags, sFilterList, pParent);
+		CFileDialog BrowseWnd( TRUE, NULL, sPath, dwFlags, sFilterList, pParent );
 		BrowseWnd.m_ofn.lpstrTitle = sCaption.LockBuffer();
 		CString sResults = sPath;
 		// proceed to setup the file buffer size

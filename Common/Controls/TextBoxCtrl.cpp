@@ -119,11 +119,11 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 			if( !IsEnumeratingProperties() )
 				SetMargins( mpTemplate->GetLongProperty( Prop::MarginLeft ), pProp->GetLongValue() );
 			break;
+		}
 	case Prop::ReadOnly:
 		{
 			SetReadOnly( pProp->GetBooleanValue() );
 			break;
-		}
 		}
 	}
 	return !bFailed;
@@ -210,6 +210,13 @@ bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	return true;
 }
 
+HBRUSH CTextBoxCtrl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
+{
+	if( (GetStyle() & ES_READONLY) )
+		return NULL;
+	return __super::HandleCtlColor( pDC, nCtlColor );
+}
+
 BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
 	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnChange)
 	ON_WM_LBUTTONDOWN()
@@ -286,5 +293,5 @@ BOOL CTextBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return TRUE;
-	return __super::OnEraseBkgnd(pDC);
+	return __super::OnEraseBkgnd( pDC );
 }

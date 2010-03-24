@@ -30,6 +30,7 @@ void CArxHatchCtrl::Clear()
 	msHatchPattern.Empty();
 	if( mpHatchDb )
 	{
+		delete mpHatchDb;
 		mpHatchDb = NULL;
 	}
 	midHatch.setNull();

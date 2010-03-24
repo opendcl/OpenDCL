@@ -43,7 +43,7 @@ CFormControlManager::CFormControlManager( CStudioDialogObject* pDlgObject )
 , mpResizeTarget( NULL )
 {
 	CRect rcControlArea = pDlgObject->GetWndRect();
-	Create( _T(""), WS_CHILD | WS_VISIBLE, rcControlArea, pDlgObject->GetControlWnd() );
+	Create( WS_CHILD | WS_VISIBLE, rcControlArea, pDlgObject->GetControlWnd() );
 	SetWindowPos( &CWnd::wndTop, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING | SWP_NOACTIVATE );
 	ModifyStyle( WS_CLIPCHILDREN, 0, 0 );
 	ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
