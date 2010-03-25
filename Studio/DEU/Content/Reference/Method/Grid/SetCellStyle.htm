@@ -230,12 +230,65 @@
             <td>Symbolnamen-Kombinationsfeld</td>
           </tr>
         </table>
-	    <p> F&uuml;r den Stil: 3 - Schaltbare Bilder &uuml;bergeben Sie die Argumente intData1 und intData2 f&uuml;r die beiden Bilder der Bildliste zwischen denen geschalten werden soll. Dieser Zellenstil verh&auml;lt sich &auml;hnlich dem Kontrollk&auml;stchen: mit den Methoden GetItemChecked und SetItemChecked k&ouml;nnen Sie den aktuellen Zustand einstellen. Generell sichtbar ist sonst das Bild des Arguments intData1.</p>
-        <p>Hinweis: F&uuml;r den Stil: 15 - Datum k&ouml;nnen Sie die beiden Argumente intData1 und intData2 f&uuml;r das Datumsformat &uuml;bergeben. G&uuml;ltige Werte sind 0 bis 9.</p>
-        <p>Hinweis: F&uuml;r den Stil: 16 - Zeit &uuml;bergeben Sie das Argument intData1 f&uuml;r das Format der Zeit. G&uuml;ltige Werte sind 0 bis 5.</p>
-        <p>Hinweis: F&uuml;r den Stil: 35 - Dateien &uuml;bergeben Sie das Argument strString f&uuml;r die Dateierweiterung, nach der gesucht wird. Andernfalls wird &quot;dwg;dxf&quot; verwendet.</p>
-        <p>Hinweis: Der Stil der Zelle oder Spalte regelt nur das Verhalten der Zelle, und was geschieht, wenn der Benutzer auf die Zelle klickt.</p>
-        <p>Zum Beispiel: Haben Sie den Stil 33 - Linientyp f&uuml;r die Zelle gew&auml;hlt, dann muss die &uuml;bergebene Auswahl f&uuml;r den Linientyp in den Methoden AddString oder AddRow richtig gesetzt werden, d.h. in diesem Fall muss der Linientyp existieren. M&ouml;glicherweise ist sonst das dargestellte Ergebnis nicht korrekt.</p>
+	    <p><strong>Hinweise:</strong></p>
+	    <table width="100%" noborder cellspacing="5" v>
+          <tr align="left">
+            <th width="25" scope="col">Stil</th>
+            <th width="126" scope="col">Bezeichnung</th>
+            <th scope="col">Hinweis</th>
+          </tr>
+          <tr valign="top">
+            <th scope="row">3</th>
+            <td>Schaltbare Bilder </td>
+            <td>Schaltbare Bilder &uuml;bergeben Sie die Argumente intData1 und intData2 f&uuml;r die beiden Bilder der Bildliste zwischen denen geschalten werden soll. Dieser Zellenstil verh&auml;lt sich &auml;hnlich dem Kontrollk&auml;stchen: mit den Methoden <a href="GetCellCheckState.htm">GetCellCheckState</a> und <a href="SetCellCheckState.htm">SetCellCheckState</a> k&ouml;nnen Sie den aktuellen Zustand einstellen. Generell sichtbar ist sonst das Bild des Arguments intData1.</td>
+          </tr>
+          <tr valign="top">
+            <th scope="row">15</th>
+            <td>Datum</td>
+            <td>Als Datum k&ouml;nnen Sie die beiden Argumente intData1 und intData2 f&uuml;r das Datumsformat &uuml;bergeben. G&uuml;ltige Werte sind 0 bis 9.</td>
+          </tr>
+          <tr valign="top">
+            <th scope="row">16</th>
+            <td>Zeit</td>
+            <td>F&uuml;r die Zeit &uuml;bergeben Sie das Argument intData1 f&uuml;r das Format der Zeit. G&uuml;ltige Werte sind 0 bis 5.</td>
+          </tr>
+          <tr valign="top">
+            <th scope="row">35</th>
+            <td>Dateien</td>
+            <td>&Uuml;bergeben Sie das Argument strString f&uuml;r die Dateierweiterung, nach der gesucht wird. Andernfalls wird &quot;dwg;dxf&quot; verwendet.</td>
+          </tr>
+          <tr valign="top">
+            <th colspan="2" rowspan="2" scope="row"><div align="left">Alle Zellenstile</div></th>
+            <td>Der Stil der Zelle oder Spalte regelt nur das Verhalten der Zelle, und was geschieht, wenn der Benutzer auf die Zelle klickt.</td>
+          </tr>
+          <tr valign="top">
+            <td><table width="100%" cellspacing="5" noborder v>
+              <tr align="left">
+                <th width="25" scope="col">Stil</th>
+                <th width="126" scope="col">Bezeichnung</th>
+                <th scope="col">Hinweis</th>
+              </tr>
+              <tr valign="top">
+                <th scope="row">31</th>
+                <td>RGB-Farben</td>
+                <td>Um die richtigen Farben im Symbol sehen zu k&ouml;nnen, &uuml;bergeben Sie die ACI-Farben 1 bis 7 als Texte, also rot, gelb, gr&uuml;n usw. Die Farben 0 (VonBlock), 256 (VonLayer), 257 (VonObjekt) und 200 (keine, siehe Schraffurhintergrundfarbe ab AutoCAD 2011), geben Sie den tats&auml;chlichen Namen ein. Die Voransicht ist dann immer schwarz. RGB-Farben geben Sie als kommagetrennte Werte ein, z.B. 123,234,245. Lassen Sie das Pr&auml;fix RGB: weg. Farben aus Farbb&uuml;chern geben Sie in dem Format Farbbuchname$Farbname ein. Anschlie&szlig;end wenden Sie die Funktion <a href="SetCellImages.htm">SetCellImages</a> an und &uuml;bergeben den Wert -2 als Argument intImageIndex, um die korrekte Farbe anzuzeigen. </td>
+              </tr>
+              <tr valign="top">
+                <th scope="row">33</th>
+                <td>Linientypen</td>
+                <td>Die &uuml;bergebene Auswahl f&uuml;r den Linientyp muss in den Methoden <a href="AddString.htm">AddString</a>, <a href="AddRow.htm">AddRow</a>, <a href="InsertRow.htm">InsertRow</a> und <a href="InsertString.htm">InsertString</a> richtig gesetzt werden, d.h. in diesem Fall muss der Linientyp existieren. M&ouml;glicherweise ist sonst das dargestellte Ergebnis nicht korrekt.</td>
+              </tr>
+              <tr valign="top">
+                <th scope="row">38</th>
+                <td>Ganzzahlen-Kombinationsfeld</td>
+                <td>Alle Elemente der &uuml;bergebenen Liste m&uuml;ssen Texte sein. Das gilt auch f&uuml;r die Methode <a href="SetCellDropList.htm">SetCellDropList</a>. </td>
+              </tr>
+            </table></td>
+          </tr>
+        </table>
+	    <p>&nbsp;</p>
+	    <p>&nbsp;</p>
+	    <p>Zum Beispiel: Haben Sie den Stil 33 - Linientyp f&uuml;r die Zelle gew&auml;hlt, dann muss die &uuml;bergebene Auswahl f&uuml;r den Linientyp in den Methoden AddString oder AddRow richtig gesetzt werden, d.h. in diesem Fall muss der Linientyp existieren. M&ouml;glicherweise ist sonst das dargestellte Ergebnis nicht korrekt.</p>
         <p>Zum Beispiel: Haben Sie den Stil 38 - Ganzzahlen-Kombinationsfeld f&uuml;r die Zelle gew&auml;hlt, m&uuml;ssen alle Elemente der &uuml;bergebenen Liste Texte sein. <br>
         </p>
 </div>
