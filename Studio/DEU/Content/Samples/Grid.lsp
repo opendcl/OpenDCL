@@ -103,6 +103,7 @@
 								  '("Mond" 3)
 								 )
 	)                                   ; Liste zur Auswahlliste hinzufügen
+        (dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridCellType)
 	(dcl_ComboBox_AddList GRID_Dcl-1_CBx-GridCellType GridCellTypeList)
 										; Ersten Eintrag der Liste auswählen
 	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridCellType 0)
