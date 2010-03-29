@@ -100,6 +100,7 @@
 								  '("moon" 3)
 								 )
 	)                                   ;add list to the ComboBox
+	(dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridCellType)
 	(dcl_ComboBox_AddList GRID_Dcl-1_CBx-GridCellType GridCellTypeList)
 										;Shows first element from the list
 	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridCellType 0)

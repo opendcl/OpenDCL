@@ -405,7 +405,17 @@ bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	UINT nFlags = 0;
 	int idxItem = HitTest( point, &nFlags );
 	if( idxItem < 0 )
+	{
 		idxItem = 0;
+		int idxLast = GetItemCount() - 1;
+		if( idxLast >= 0 )
+		{
+			CRect rcLast;
+			GetItemRect( idxLast, &rcLast, LVIR_BOUNDS );
+			if( point.y > rcLast.bottom )
+				idxItem = idxLast + 1;
+		}
+	}
 	else
 	{
 		CRect rcItem;
@@ -415,14 +425,8 @@ bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	}
 
 	int nImage = -1;
-	if( mnDragSource >= 0 && dropEffect == DROPEFFECT_MOVE )
-	{
+	if( mnDragSource >= 0 )
 		nImage = GetItemImage( mnDragSource, 0 );
-		DeleteItem( mnDragSource );
-		if( mnDragSource < idxItem )
-			--idxItem;
-		mnDragSource = -1;
-	}
 
 	int idxInsert = idxItem;
 	CString sInsText( sTextA );
@@ -644,6 +648,9 @@ BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_WM_HSCROLL()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_LBUTTONDOWN()
+	ON_NOTIFY_REFLECT(LVN_INSERTITEM, &CListViewCtrl::OnLvnInsertitem)
+	ON_NOTIFY_REFLECT(LVN_DELETEITEM, &CListViewCtrl::OnLvnDeleteitem)
+	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, &CListViewCtrl::OnLvnDeleteallitems)
 END_MESSAGE_MAP()
 
 
@@ -770,4 +777,34 @@ LRESULT CListViewCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return __super::WindowProc(message, wParam, lParam);
+}
+
+void CListViewCtrl::OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	int nRow = pNMLV->iItem;
+	if( nRow >= 0 && nRow <= mnDragSource )
+		++mnDragSource;
+	*pResult = 0;
+}
+
+void CListViewCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	int nRow = pNMLV->iItem;
+	if( nRow >= 0 )
+	{
+		if( nRow < mnDragSource )
+			--mnDragSource;
+		else if( nRow == mnDragSource )
+			mnDragSource = -1;
+	}
+	*pResult = 0;
+}
+
+void CListViewCtrl::OnLvnDeleteallitems(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	mnDragSource = -1;
+	*pResult = 0;
 }

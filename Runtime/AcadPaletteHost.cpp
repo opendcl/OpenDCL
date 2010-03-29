@@ -104,6 +104,7 @@ BEGIN_MESSAGE_MAP(CAcadPaletteHost, CAdUiPaletteSet)
 	ON_WM_SETCURSOR()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_ERASEBKGND()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -455,4 +456,13 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 		return TRUE;
 	}
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CAcadPaletteHost::OnClose()
+{
+	__super::OnClose();
+#if (_BRXTARGET && _BRXTARGET <= 10)
+	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
+	DestroyWindow();
+#endif
 }

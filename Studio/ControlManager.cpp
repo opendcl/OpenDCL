@@ -276,9 +276,8 @@ void CControlManager::OnControlPositionChanged()
 		mpTemplate->SetLongProperty( Prop::Height, rcCtrlNew.Height() );
 		CStudioDialogControl::UpdateProperty( mpTemplate, Prop::UseBottomFromBottom );
 	}
-	SetWindowPos( NULL, rcCtrl.left, rcCtrl.top, 0, 0,
-								SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER );
-	//MoveWindow( &rcCtrl, TRUE);
+	SetWindowPos( NULL, rcCtrl.left, rcCtrl.top, rcCtrl.Width(), rcCtrl.Height(),
+								SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER );
 	mbIgnoreSizing = false;
 }
 

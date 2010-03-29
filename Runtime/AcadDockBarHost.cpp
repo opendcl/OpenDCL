@@ -59,7 +59,16 @@ void CAcadDockBarHost::GetClientArea( CRect& rect )
 {
 	GetUsedRect( rect );
 	if( !mpDlgObject->IsFloating() )
+	{
+	#if (_BRXTARGET && _BRXTARGET <= 10)
+		if( rect.top >= 10 )
+		{
+			rect.top -= 18;
+			rect.bottom -= 18;
+		}
+	#endif
 		rect.top += 5;
+	}
 }
 
 bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
@@ -94,6 +103,7 @@ BEGIN_MESSAGE_MAP(CAcadDockBarHost, CAdUiDockControlBar)
 	ON_WM_SETCURSOR()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_ERASEBKGND()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -133,18 +143,8 @@ BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 {
 	if (IsWindowVisible())
 	{
-		// Get the menu object.
-		CMenu menu;
-		menu.Attach((HMENU) hMenu);
-
-		// remove the menu its
-		// I am doing this so the user can right click on the ISO view picture and have
-		// is scroll thru the different ISO Plane Options
-		menu.RemoveMenu(ID_ADUI_ALLOWDOCK, MF_BYCOMMAND);
-		menu.RemoveMenu(ID_ADUI_HIDEBAR, MF_BYCOMMAND);
-
-		// Release the menu object.
-		menu.Detach();
+		::RemoveMenu( (HMENU)hMenu, ID_ADUI_ALLOWDOCK, MF_BYCOMMAND );
+		::RemoveMenu( (HMENU)hMenu, ID_ADUI_HIDEBAR, MF_BYCOMMAND );
 	}
 	
 	return TRUE;
@@ -428,4 +428,13 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 		return TRUE;
 	}
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CAcadDockBarHost::OnClose()
+{
+	__super::OnClose();
+#if (_BRXTARGET && _BRXTARGET <= 10)
+	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
+	DestroyWindow();
+#endif
 }

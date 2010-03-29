@@ -11,7 +11,7 @@
 #include "DclControlObject.h"
 #include "Resource.h"
 
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
 bool AcadIsQuitting() { return false; }
 #else
 extern bool AcadIsQuitting(void);
@@ -147,8 +147,6 @@ void CControlBarDlg::CloseDialog(int nStatus)
 	mHostControlBar.EndModalLoop( nStatus ); //set the status
 	if( hwndTopLevel && ::IsWindow( hwndTopLevel ) )
 		::SendMessage( hwndTopLevel, WM_CLOSE, 0, 0 );
-	//if( hwndOwner && ::IsWindow( hwndOwner ) )
-	//	::DestroyWindow( hwndOwner );
 }
 
 bool CControlBarDlg::CenterDialog()

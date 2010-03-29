@@ -8,7 +8,7 @@
 #include "DialogControl.h"
 #include "ArxControlServices.h"
 
-#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 9)
 BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget)
 {
 	return FALSE;
@@ -26,6 +26,80 @@ BOOL acedRemoveDropTarget(COleDropTarget* pTarget)
 	return FALSE;
 }
 #endif
+
+//custom drop source implemented just like the MFC default drop source except this
+//one dispatches mouse messages during the drag wait loop instead of eating them
+class OdclDropSource : public COleDropSource
+{
+	CWnd* mpCtrl;
+public:
+	OdclDropSource( CWnd* pCtrl )
+		: COleDropSource()
+		, mpCtrl( pCtrl )
+		{}
+	virtual BOOL OnBeginDrag(CWnd* pWnd)
+	{
+		ASSERT_VALID(this);
+
+		m_bDragStarted = FALSE;
+
+		// opposite button cancels drag operation
+		m_dwButtonCancel = 0;
+		m_dwButtonDrop = 0;
+		if (GetKeyState(VK_LBUTTON) < 0)
+		{
+			m_dwButtonDrop |= MK_LBUTTON;
+			m_dwButtonCancel |= MK_RBUTTON;
+		}
+		else if (GetKeyState(VK_RBUTTON) < 0)
+		{
+			m_dwButtonDrop |= MK_RBUTTON;
+			m_dwButtonCancel |= MK_LBUTTON;
+		}
+
+		DWORD dwLastTick = GetTickCount();
+		mpCtrl->SetCapture();
+
+		while (!m_bDragStarted)
+		{
+			// some applications steal capture away at random times
+			if (CWnd::GetCapture() != mpCtrl)
+				break;
+
+			MSG msg;
+			if( GetMessage( &msg, NULL, 0, 0 ) )
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+
+				// check for button cancellation (any button down will cancel)
+				if (msg.message == WM_LBUTTONUP || msg.message == WM_RBUTTONUP ||
+					msg.message == WM_LBUTTONDOWN || msg.message == WM_RBUTTONDOWN)
+					break;
+
+				// check for keyboard cancellation
+				if( msg.message == WM_KEYDOWN && msg.wParam == VK_ESCAPE )
+					break;
+
+				// check for drag start transition
+				m_bDragStarted = !m_rectStartDrag.PtInRect(msg.pt);
+			}
+			else
+			{
+				PostQuitMessage( msg.wParam );
+				break;
+			}
+
+			// if the user sits here long enough, we eventually start the drag
+			if (GetTickCount() - dwLastTick > nDragDelay)
+				m_bDragStarted = TRUE;
+		}
+		ReleaseCapture();
+
+		return m_bDragStarted;
+	}
+};
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -132,7 +206,7 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 		CSize sizDragRect( GetSystemMetrics( SM_CXDOUBLECLK ), GetSystemMetrics( SM_CYDOUBLECLK ) );
 		ptScreen.Offset( -sizDragRect.cx / 2, -sizDragRect.cy / 2 );
 		CRect rcDragRegion( ptScreen, sizDragRect );
-		dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource );
+		dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource? mpDropSource : &OdclDropSource( mpDlgControl->GetControlWnd() ) );
 	}
 	if( pAcadDropTarget )
 		acedEndOverrideDropTarget( pAcadDropTarget );

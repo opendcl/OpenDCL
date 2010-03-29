@@ -87,4 +87,7 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnDeleteallitems(NMHDR *pNMHDR, LRESULT *pResult);
 };
