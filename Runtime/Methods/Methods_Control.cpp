@@ -214,7 +214,9 @@ bool SetCtrlProperty( Prop::Id id )
 	if( !AssertOutOfArgs( pArgs ) )
 		return false;
 
-	CArxDialogControl::UpdateProperty( pControl, id );
+	CDialogControl* pDlgControl = pControl->GetControlInstance();
+	if( pDlgControl )
+		pDlgControl->ApplyProperty( pProperty );
 
 	acedRetT();
 	return true;
@@ -247,15 +249,21 @@ ADSRESULT Control::SetProperty()
 	if( !GetControlArgument( pArgs, pControl ) )
 		return RSERR; //invalid input
 
+	CDialogControl* pDlgControl = pControl->GetControlInstance();
+
+	TPropertyPtr pProperty;
 	CString sPropName;
 	if( GetStringArgument( pArgs, sPropName, true ) )
 	{
-		TPropertyPtr pProperty = pControl->GetPropertyObject( GetPropertyId( sPropName ) );
+		pProperty = pControl->GetPropertyObject( GetPropertyId( sPropName ) );
 		if( !pProperty )
 			return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
 		if( !GetPropertyArgument( pArgs, pProperty ) )
 			return RSERR; //invalid input
+
+		if( pDlgControl )
+			pDlgControl->ApplyProperty( pProperty );
 	}
 	else if( GetNilArgument( pArgs, true ) )
 	{
@@ -276,12 +284,15 @@ ADSRESULT Control::SetProperty()
 			if( !GetStringArgument( pArgs, sPropName ) )
 			return RSERR; //invalid input
 
-			TPropertyPtr pProperty = pControl->FindPropertyObject( sPropName );
+			pProperty = pControl->FindPropertyObject( sPropName );
 			if( !pProperty )
 				return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
 			if( !GetPropertyArgument( pArgs, pProperty ) )
 				return RSERR; //invalid input
+
+			if( pDlgControl )
+				pDlgControl->ApplyProperty( pProperty );
 
 			if( !GetListEndArgument( pArgs ) )
 				return RSERR; //invalid input
@@ -292,7 +303,6 @@ ADSRESULT Control::SetProperty()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxDialogControl::UpdateAllProperties( pControl );
 	acedRetT();
 	return RSRSLT;
 }

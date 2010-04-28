@@ -52,9 +52,9 @@ CString CHyperlinkCtrl::GetWndCaption() const
 	return mpTemplate->GetStringProperty( Prop::Caption );
 }
 
-bool CHyperlinkCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CHyperlinkCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

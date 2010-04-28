@@ -252,7 +252,7 @@ bool CProject::AddPicture( TPicturePtr pPicture )
 				for( TPropertyList::const_iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
 				{
 					if( (*iterProp)->GetType() == PropPicture && (*iterProp)->GetLongValue() == nID )
-						(*iterControl)->GetControlInstance()->OnApplyProperty( (*iterProp) ); //apply the updated picture
+						(*iterControl)->GetControlInstance()->ApplyProperty( (*iterProp) ); //apply the updated picture
 				}
 			}
 		}
@@ -281,7 +281,7 @@ void CProject::DeletePicture( int nID )
 				{
 					(*iterProp)->SetShortValue( -1 ); //reset the picture ID
 					if( (*iterControl)->GetControlInstance() )
-						(*iterControl)->GetControlInstance()->OnApplyProperty( (*iterProp) ); //apply the deleted picture
+						(*iterControl)->GetControlInstance()->ApplyProperty( (*iterProp) ); //apply the deleted picture
 				}
 			}
 		}

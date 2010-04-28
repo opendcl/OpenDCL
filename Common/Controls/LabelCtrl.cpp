@@ -49,9 +49,9 @@ DWORD CLabelCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CLabelCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CLabelCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

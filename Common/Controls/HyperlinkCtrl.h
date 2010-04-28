@@ -37,7 +37,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual CString GetWndCaption() const; //get window caption from properties
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Generated message map functions

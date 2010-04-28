@@ -418,7 +418,10 @@ ADSRESULT Form::SetMinMaxSizes()
 		bFailed = true;
 	if( !pControl->SetLongProperty( Prop::MaxDialogHeight, nMaxHeight ) )
 		bFailed = true;
-	CArxDialogControl::UpdateProperty( pControl, Prop::MaxDialogHeight );
+
+	CDialogControl* pDlgControl = pControl->GetControlInstance();
+	if( pDlgControl )
+		pDlgControl->ApplyProperty( pControl->GetPropertyObject( Prop::MaxDialogHeight ) );
 
 	if( !bFailed )
 		acedRetT();

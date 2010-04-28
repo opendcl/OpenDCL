@@ -2911,8 +2911,17 @@ public:
 		// create the open dialog box
 		CFileDialog BrowseWnd( TRUE, NULL, sPath, dwFlags, sFilterList, pParent );
 		BrowseWnd.m_ofn.lpstrTitle = sCaption.LockBuffer();
-		CString sResults = sPath;
-		// proceed to setup the file buffer size
+		CString sResults = BrowseWnd.m_ofn.lpstrFile;
+		if( BrowseWnd.m_ofn.lStructSize > OPENFILENAME_SIZE_VERSION_400/*0x98*/ )
+		{
+			DWORD dwAttrib = GetFileAttributes( sPath );
+			if( dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY) != 0 )
+			{
+				sPath += _T('\\');
+				BrowseWnd.m_ofn.lpstrInitialDir = sPath;
+				sResults.Empty();
+			}
+		}
 		BrowseWnd.m_ofn.nMaxFile = 8192;
 		BrowseWnd.m_ofn.lpstrFile = sResults.GetBuffer(8192);
 		int nStat = BrowseWnd.DoModal();

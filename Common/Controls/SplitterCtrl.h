@@ -35,7 +35,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CRect ValidatePosition( const CRect& rcProposed ) const;
 	virtual void ApplyPosition(); //move control window to new position
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
 	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
 	virtual CAcadColorService* GetColorService() { return &mColorService; }

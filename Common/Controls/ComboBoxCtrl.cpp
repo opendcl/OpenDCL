@@ -86,9 +86,9 @@ void CComboBoxCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std
 	ridFirst.push_back( Prop::List );
 }
 
-bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

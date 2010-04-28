@@ -103,8 +103,8 @@ END_MESSAGE_MAP()
 BOOL CBaseDlg::OnInitDialog()
 {
 	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::AllowResizing ) );
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::TitleBar ) );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::AllowResizing ) );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::TitleBar ) );
 
 	__super::OnInitDialog();
 

@@ -64,9 +64,9 @@ DWORD CMonthCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CMonthCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CMonthCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

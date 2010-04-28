@@ -81,9 +81,9 @@ DWORD CArxFontComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxFontComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxFontComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )

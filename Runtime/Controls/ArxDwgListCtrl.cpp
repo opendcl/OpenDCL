@@ -456,9 +456,9 @@ DWORD CArxDwgListCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxDwgListCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxDwgListCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

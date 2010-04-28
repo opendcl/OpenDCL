@@ -88,9 +88,9 @@ void CSplitterCtrl::ApplyPosition()
 	__super::ApplyPosition();
 }
 
-bool CSplitterCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CSplitterCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

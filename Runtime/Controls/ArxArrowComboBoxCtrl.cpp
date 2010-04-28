@@ -52,9 +52,9 @@ DWORD CArxArrowComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxArrowComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxArrowComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

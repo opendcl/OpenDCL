@@ -63,9 +63,9 @@ DWORD CProgressBarCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CProgressBarCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CProgressBarCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -100,7 +100,7 @@ bool CProgressBarCtrl::OnApplyProperty( TPropertyPtr pProp )
 		{
 			SetRange32( pProp->GetLongValue(),
 									mpTemplate->GetLongProperty( Prop::MaxValue ) );
-			bFailed = !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
+			bFailed = !ApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
 		}
 		break;
 	case Prop::MaxValue:
@@ -108,7 +108,7 @@ bool CProgressBarCtrl::OnApplyProperty( TPropertyPtr pProp )
 		{
 			SetRange32( mpTemplate->GetLongProperty( Prop::MinValue ),
 									pProp->GetLongValue() );
-			bFailed = !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
+			bFailed = !ApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
 		}
 		break;
 	}

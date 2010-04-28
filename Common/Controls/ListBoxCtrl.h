@@ -30,7 +30,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyPropertiesEnum();
 	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
 	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );

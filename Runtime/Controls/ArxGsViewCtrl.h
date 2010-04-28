@@ -60,7 +60,9 @@ protected:
 					assert( mpFactory != NULL );
 					if( !mpFactory )
 						return;
+				#ifndef _BRXTARGET
 					mpFactory->addReactor( this );
+				#endif
 					//a device with standard autocad color palette
 					mpDevice = mpManager->createAutoCADDevice( mpCtrl->m_hWnd );
 					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
@@ -101,7 +103,9 @@ protected:
 					{
 						if( mpFactory )
 						{
+						#ifndef _BRXTARGET
 							mpFactory->removeReactor( this );
+						#endif
 							if( mpView )
 							{
 								mpFactory->deleteView( mpView );

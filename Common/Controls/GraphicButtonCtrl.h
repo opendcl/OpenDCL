@@ -23,7 +23,7 @@ public:
 // DialogControl Interface
 public:
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 public:
 	void SetPicture( TPicturePtr pPict );

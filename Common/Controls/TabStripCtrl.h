@@ -31,7 +31,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 	virtual bool OnApplyToolTip( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }

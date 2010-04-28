@@ -46,9 +46,9 @@ DWORD CArxPrinterComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxPrinterComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxPrinterComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )

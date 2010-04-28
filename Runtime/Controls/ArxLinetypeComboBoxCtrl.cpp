@@ -55,9 +55,9 @@ DWORD CArxLinetypeComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxLinetypeComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxLinetypeComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

@@ -90,9 +90,9 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

@@ -70,9 +70,9 @@ DWORD CImageTreeCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CImageTreeCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CImageTreeCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

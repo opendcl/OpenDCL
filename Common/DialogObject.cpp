@@ -209,7 +209,7 @@ BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 	return TRUE;
 }
 
-bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )
+bool CDialogObject::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !pProp )
 		return false;
@@ -227,7 +227,7 @@ bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::OptionsTabCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case Prop::TitleBarIcon: if( !OnApplyIcon( pProp ) ) bSuccess = false; break;
 	case Prop::TitleBar: if( !OnApplyTitleBar( pProp ) ) bSuccess = false; break;
-	default: bSuccess = __super::OnApplyProperty( pProp ); break;
+	default: bSuccess = __super::ApplyProperty( pProp ); break;
 	}
 	return bSuccess;
 }

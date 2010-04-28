@@ -122,7 +122,7 @@ public:
 	virtual void ApplyPosition(); //move control window to new position
 
 	// for properties without specific handlers
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 	// handlers for specific properties
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp ); //Prop::BackgroundColor

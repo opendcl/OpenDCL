@@ -225,9 +225,9 @@ void CPaletteDlg::ApplyPosition()
 	mpControlPane->RecalcLayout();
 }
 
-bool CPaletteDlg::OnApplyProperty( TPropertyPtr pProp )
+bool CPaletteDlg::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -241,7 +241,9 @@ bool CPaletteDlg::OnApplyProperty( TPropertyPtr pProp )
 
 bool CPaletteDlg::OnApplyCaption( TPropertyPtr pProp )
 {
-	mHostPaletteSet.SetWindowText( pProp->GetStringValue() );
+	CString sCaption = pProp->GetStringValue();
+	mHostPaletteSet.SetWindowText( sCaption );
+	mHostPaletteSet.SetName( sCaption );
 	OnNeedRepaint();
 	return true;
 }

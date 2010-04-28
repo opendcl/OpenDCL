@@ -236,9 +236,9 @@ void CControlBarDlg::ApplyPosition()
 	mpControlPane->RecalcLayout();
 }
 
-bool CControlBarDlg::OnApplyProperty( TPropertyPtr pProp )
+bool CControlBarDlg::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

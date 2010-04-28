@@ -76,9 +76,9 @@ void CModelessDlg::CloseDialog(int nStatus)
 	DestroyWindow();
 }
 
-bool CModelessDlg::OnApplyProperty( TPropertyPtr pProp )
+bool CModelessDlg::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -103,8 +103,6 @@ BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
 	ON_WM_ENTERMENULOOP()
 	ON_WM_EXITMENULOOP()
 	ON_WM_TIMER()
-	ON_WM_NCHITTEST()
-	ON_WM_SETCURSOR()
 	ON_WM_CAPTURECHANGED()
 END_MESSAGE_MAP()
 
@@ -128,7 +126,7 @@ BOOL CModelessDlg::OnInitDialog()
 
 LRESULT CModelessDlg::onAcadKeepFocus(WPARAM, LPARAM)
 {
-	return LRESULT(GetCapture() || mbKeepFocus);
+	return LRESULT(mbKeepFocus || !mbMouseLeft || GetCapture());
 }
 
 void CModelessDlg::OnMove(int x, int y)
@@ -208,20 +206,29 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 	}
-	if( GetCapture() == this )
+	else if( pMsg->message == WM_NCMOUSEMOVE && !mbTrackingMouse )
 	{
-		if( mhwndKeyboardFocus && 
-				pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST &&
-				pMsg->message != WM_MOUSEMOVE && pMsg->message != WM_NCMOUSEMOVE )
+		SendMessage( refWM_MOUSEENTER(), 0, 0 );
+	}
+	else if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST )
+	{
+		if( mhwndKeyboardFocus && GetCapture() == this )
 		{
 			CWnd* pTarget = WindowFromPoint( pMsg->pt );
 			if( pTarget )
 			{
 				if( IsDescendant( this, pTarget ) )
-				{
-					mhwndKeyboardFocus = pTarget->m_hWnd;
-					pMsg->hwnd = mhwndKeyboardFocus;
 					SendMessage( refWM_MOUSEENTER(), 0, 0 );
+				if( pMsg->message != WM_MOUSEMOVE )
+				{
+					mhwndKeyboardFocus = NULL;
+					ReleaseCapture();
+					pTarget->SetFocus();
+					UINT nHitTest = pTarget->SendMessage( WM_NCHITTEST, 0, MAKELPARAM(pMsg->pt.x, pMsg->pt.y) );
+					pTarget->SendMessage( WM_SETCURSOR, (WPARAM)pTarget->m_hWnd, MAKELPARAM(nHitTest, WM_MOUSEMOVE) );
+				}
+				if( pTarget != this )
+				{
 					if( !pTarget->PreTranslateMessage( pMsg ) )
 					{
 						CPoint ptMouse( pMsg->pt );
@@ -231,11 +238,10 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 					}
 					return TRUE;
 				}
-				::SetCapture( NULL );
-				pTarget->SetFocus();
 			}
-			return TRUE;
 		}
+		else if( !mbTrackingMouse )
+			SendMessage( refWM_MOUSEENTER(), 0, 0 );
 	}
 
 	return __super::PreTranslateMessage(pMsg);
@@ -245,19 +251,19 @@ LRESULT CModelessDlg::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 {
 	if( !mbTrackingMouse )
 	{
-		SetTimer( WM_MOUSELEAVE, 200, NULL );
 		mbTrackingMouse = true;
+		SetTimer( WM_MOUSELEAVE, 200, NULL );
 	}
 	if( mhwndKeyboardFocus )
 	{
 		::SetFocus( mhwndKeyboardFocus );
-		ReleaseCapture();
 		mhwndKeyboardFocus = NULL;
+		ReleaseCapture();
 	}
 	if( mbMouseLeft )
 	{
-		GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 		mbMouseLeft = false;
+		GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 	}
 	return 0;
 }
@@ -281,9 +287,12 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		}
 	}
-	mbMouseLeft = (GetCapture() != this);
-	if( mbMouseLeft )
-		GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
+	if( !mbMouseLeft )
+	{
+		mbMouseLeft = (GetCapture() != this);
+		if( mbMouseLeft )
+			GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
+	}
 	return 0;
 }
 
@@ -306,33 +315,16 @@ void CModelessDlg::OnTimer(UINT_PTR nIDEvent)
 		CPoint ptCursor;
 		if( GetCursorPos( &ptCursor ) )
 		{
-			CWnd* pTarget = WindowFromPoint( ptCursor );
-			if( !IsDescendant( this, pTarget ) )
+			CRect rcDlg;
+			GetWindowRect( &rcDlg );
+			if( !rcDlg.PtInRect( ptCursor ) )
 			{
-				PostMessage( WM_MOUSELEAVE, 0, 0 );
 				KillTimer( WM_MOUSELEAVE );
+				SendMessage( WM_MOUSELEAVE, 0, 0 );
 			}
 		}
 	}
 	__super::OnTimer(nIDEvent);
-}
-
-__UINT_LRESULT CModelessDlg::OnNcHitTest(CPoint point)
-{
-	SendMessage( refWM_MOUSEENTER(), 0, 0 );
-	return __super::OnNcHitTest(point);
-}
-
-BOOL CModelessDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
-{
-	CPoint ptCursor;
-	if( ::GetCursorPos( &ptCursor ) )
-	{
-		CWnd* pTarget = WindowFromPoint( ptCursor );
-		if( IsDescendant( this, pTarget ) )
-			SendMessage( refWM_MOUSEENTER(), 0, 0 );
-	}
-	return __super::OnSetCursor(pWnd, nHitTest, message);
 }
 
 void CModelessDlg::OnCaptureChanged(CWnd *pWnd)

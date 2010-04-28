@@ -25,7 +25,7 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 public:
 	void SetDwgListCtrl( CArxDwgListCtrl* pDwgList ) { mpDwgList = pDwgList; }

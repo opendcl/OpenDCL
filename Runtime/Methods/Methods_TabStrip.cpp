@@ -36,7 +36,7 @@ ADSRESULT TabStrip::SetTabCaption()
 	while( nIndex-- > 0 ) iterAt++;
 	(*iterAt) = sText;
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	if( pDlgControl->ApplyProperty( pItemList ) )
 		acedRetT();
 	return RSRSLT;
 }

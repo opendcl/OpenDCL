@@ -271,7 +271,7 @@ void CStudioDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id
 	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
 	if( !pDlgControl )
 		return;
-	pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
+	pDlgControl->ApplyProperty( pTemplate->GetPropertyObject( id ) );
 	CControlManager* pManager = pDlgControl->GetControlManager();
 	if( pManager && pManager->IsSelected() )
 		pManager->Invalidate();

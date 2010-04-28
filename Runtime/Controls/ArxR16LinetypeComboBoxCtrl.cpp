@@ -33,9 +33,9 @@ bool CArxComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

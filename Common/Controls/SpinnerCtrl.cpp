@@ -54,9 +54,9 @@ DWORD CSpinnerCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CSpinnerCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CSpinnerCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -123,7 +123,7 @@ void CSpinnerCtrl::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult)
 
 	TPropertyPtr pValueProp = mpTemplate->GetPropertyObject( Prop::Value );
 	pValueProp->SetLongValue( nNewPos );
-	OnApplyProperty( pValueProp );
+	ApplyProperty( pValueProp );
 
 	*pResult = 0;
 }

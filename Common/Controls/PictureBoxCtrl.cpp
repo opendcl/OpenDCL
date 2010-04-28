@@ -129,9 +129,9 @@ bool CPictureBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CPictureBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CPictureBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

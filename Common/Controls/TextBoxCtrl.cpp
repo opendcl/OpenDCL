@@ -56,9 +56,9 @@ DWORD CTextBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CTextBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

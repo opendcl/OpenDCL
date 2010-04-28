@@ -54,9 +54,9 @@ DWORD CHtmlCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CHtmlCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CHtmlCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

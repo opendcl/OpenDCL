@@ -5,12 +5,6 @@
 
 #include "BaseDlg.h"
 
-#if (_MFC_VER < 0x0800)
-#define __UINT_LRESULT UINT
-#else
-#define __UINT_LRESULT LRESULT
-#endif
-
 
 #ifndef WM_ACAD_MFC_BASE
 #define WM_ACAD_MFC_BASE        (1000)
@@ -51,7 +45,7 @@ public:
 	virtual void CloseDialog(int nStatus);
 protected:
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 // CDialog Overrides
 protected:
@@ -73,7 +67,5 @@ protected:
 	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 };

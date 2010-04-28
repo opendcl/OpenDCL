@@ -82,9 +82,9 @@ bool COptionListCtrl::ApplyPropertiesEnum()
 	return bSuccess;
 }
 
-bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool COptionListCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -111,8 +111,8 @@ bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
 		}
 	case Prop::BtnCaption:
 		{
-			OnApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
-			OnApplyProperty( mpTemplate->GetPropertyObject( Prop::FontName ) );
+			ApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
+			ApplyProperty( mpTemplate->GetPropertyObject( Prop::FontName ) );
 			int nCurSel = GetCurSel();
 			ResetContent();					
 			size_t nMax = pProp->size();

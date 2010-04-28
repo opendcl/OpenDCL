@@ -218,10 +218,10 @@ void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 	assert( mbDeferWindowPos == false );
 	mbDeferWindowPos = true;
 	CRect rcBefore = pDlgControl->GetWndRect();
-	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) );
-	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseRightFromRight ) );
-	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) );
-	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
+	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) );
+	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseRightFromRight ) );
+	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) );
+	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
 	mbDeferWindowPos = false;
 	CRect rcAfter = pDlgControl->GetWndRect();
 	if( rcAfter != rcBefore )

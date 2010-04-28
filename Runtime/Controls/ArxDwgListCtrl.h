@@ -100,7 +100,7 @@ public:
 	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 // ListBoxCtrl Interface
 	virtual LPCTSTR GetDragTextPrefix() const;

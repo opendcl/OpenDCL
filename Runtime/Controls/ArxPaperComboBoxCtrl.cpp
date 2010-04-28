@@ -59,9 +59,9 @@ DWORD CArxPaperComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxPaperComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxPaperComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )

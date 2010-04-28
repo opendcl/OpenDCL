@@ -218,28 +218,3 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(TDclControlPtr pTemplate
 	}
 	return NULL;
 }
-
-// This function is being phased out as control classes are changed to implement their own CDialogControl interface
-//static
-void CArxDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
-{
-	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
-	if( !pDlgControl )
-		return;
-	pDlgControl->ApplyPropertiesEnum();
-	pDlgControl->OnNeedRepaint();
-}
-
-// This function is being phased out as control classes are changed to implement their own CDialogControl interface
-//static
-void CArxDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id )
-{
-	assert( pTemplate != NULL );
-	if( !pTemplate )
-		return;
-	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
-	if( !pDlgControl )
-		return;
-	pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
-	pDlgControl->OnNeedRepaint();
-}

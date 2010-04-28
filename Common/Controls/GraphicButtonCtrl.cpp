@@ -45,9 +45,9 @@ DWORD CGraphicButtonCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CGraphicButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -56,7 +56,7 @@ bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 		{
 			SetPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
 			if( !IsEnumeratingProperties() )
-				OnApplyProperty( mpTemplate->GetPropertyObject( Prop::AutoSize ) );
+				ApplyProperty( mpTemplate->GetPropertyObject( Prop::AutoSize ) );
 			break;
 		}
 	case Prop::MouseOverPicture:

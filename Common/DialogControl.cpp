@@ -395,7 +395,7 @@ bool CDialogControl::ApplyPropertiesEnum()
 	for( std::vector< Prop::Id >::const_iterator iter = ridFirst.begin();
 			 iter != ridFirst.end();
 			 ++iter )
-		OnApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
+		ApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	const TPropertyList& Props = mpTemplate->GetPropertyList();
 	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
@@ -404,12 +404,12 @@ bool CDialogControl::ApplyPropertiesEnum()
 		if( std::find( ridFirst.begin(), ridFirst.end(), id ) != ridFirst.end() || 
 				std::find( ridLast.begin(), ridLast.end(), id ) != ridLast.end() )
 			continue; //skip first/last properties
-		OnApplyProperty( pProp );
+		ApplyProperty( pProp );
 	}
 	for( std::vector< Prop::Id >::const_iterator iter = ridLast.begin();
 			 iter != ridLast.end();
 			 ++iter )
-		OnApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
+		ApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	mbEnumProps = false;
 	ApplyPosition();
 	return bSuccess;
@@ -426,7 +426,7 @@ void CDialogControl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, st
 	ridLast.push_back( Prop::AutoSize ); //save autosize for last
 }
 
-bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
+bool CDialogControl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !pProp )
 		return false;

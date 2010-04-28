@@ -61,7 +61,7 @@ ADSRESULT OptionList::AddButton()
 	for( size_t idx = 0; idx < ctArgs; ++idx )
 		pItemList->AddStringItem( rsToAdd[idx] );
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	if( pDlgControl->ApplyProperty( pItemList ) )
 		acedRetInt( pItemList->size() - 1 );
 	return RSRSLT;
 }
@@ -146,7 +146,7 @@ ADSRESULT OptionList::SetCurSel()
 	TPropertyPtr pCurSel = pDlgControl->GetTemplate()->GetPropertyObject( Prop::CurSelIndex );
 	pCurSel->SetLongValue( nCurSel );
 
-	if( pDlgControl->OnApplyProperty( pCurSel ) )
+	if( pDlgControl->ApplyProperty( pCurSel ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -164,7 +164,7 @@ ADSRESULT OptionList::Clear()
 
 	TPropertyPtr pOptionList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::BtnCaption );
 	pOptionList->clear();
-	if( pDlgControl->OnApplyProperty( pOptionList ) )
+	if( pDlgControl->ApplyProperty( pOptionList ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -231,7 +231,7 @@ ADSRESULT OptionList::DeleteButton()
 	while( nIndex-- > 0 ) iterAt++;
 	pItems->erase( iterAt );
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	if( pDlgControl->ApplyProperty( pItemList ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -263,7 +263,7 @@ ADSRESULT OptionList::InsertButton()
 	while( nIndex-- > 0 ) iterAt++;
 	pItems->insert( iterAt, sToAdd );
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	if( pDlgControl->ApplyProperty( pItemList ) )
 		acedRetT();
 	return RSRSLT;
 }

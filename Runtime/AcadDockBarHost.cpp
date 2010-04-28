@@ -99,8 +99,6 @@ BEGIN_MESSAGE_MAP(CAcadDockBarHost, CAdUiDockControlBar)
 	ON_WM_ENTERMENULOOP()
 	ON_WM_EXITMENULOOP()
 	ON_WM_TIMER()
-	ON_WM_NCHITTEST()
-	ON_WM_SETCURSOR()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_ERASEBKGND()
 	ON_WM_CLOSE()
@@ -113,7 +111,7 @@ END_MESSAGE_MAP()
 
 bool CAcadDockBarHost::CanFrameworkTakeFocus ()
 {
-	return (!GetCapture() && !mpDlgObject->IsKeepFocus());
+	return (!mpDlgObject->IsKeepFocus() && mbMouseLeft );
 	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
 	return false;
 }
@@ -127,6 +125,8 @@ void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 
 LRESULT CAcadDockBarHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 {
+	if( mhwndKeyboardFocus )
+		ReleaseCapture();
 	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mpDlgObject->OnApplyResizable( pResizableProp );
@@ -252,14 +252,14 @@ void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 
 BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
+	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
 	{
-		if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
+		if( pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL) )
 		{
-			HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
-			if (hItem == NULL || ::IsWindowEnabled(hItem))
+			HWND hItem = ::GetDlgItem( m_hWnd, IDCANCEL );
+			if( hItem == NULL || ::IsWindowEnabled( hItem ) )
 			{
-				SendMessage(WM_COMMAND, IDCANCEL, 0);
+				SendMessage( WM_COMMAND, IDCANCEL, 0 );
 				return TRUE;
 			}
 		}
@@ -272,22 +272,32 @@ BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg)
 		}
 		TDialogControlPtr pControl = mpDlgObject->GetControlPane()->FindControl( pMsg->hwnd );
 		if( pControl && pControl->GetControlType() == CtlActiveX )
-			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
+			return CWnd::PreTranslateMessage( pMsg ); //if it's for an ActiveX control, bypass the immediate base class
 	}
-	if( GetCapture() == this )
+	else if( pMsg->message == WM_NCMOUSEMOVE && !mbTrackingMouse )
 	{
-		if( mhwndKeyboardFocus && 
-				pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST &&
-				pMsg->message != WM_MOUSEMOVE && pMsg->message != WM_NCMOUSEMOVE )
+		SendMessage( refWM_MOUSEENTER(), 0, 0 );
+	}
+	else if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST )
+	{
+		if( mhwndKeyboardFocus && GetCapture() == this )
 		{
 			CWnd* pTarget = WindowFromPoint( pMsg->pt );
 			if( pTarget )
 			{
-				if( IsDescendant( this, pTarget ) )
-				{
-					mhwndKeyboardFocus = pTarget->m_hWnd;
-					pMsg->hwnd = mhwndKeyboardFocus;
+				CWnd* pTop = mpDlgObject->GetTopLevelWnd();
+				if( IsDescendant( pTop, pTarget ) )
 					SendMessage( refWM_MOUSEENTER(), 0, 0 );
+				if( pMsg->message != WM_MOUSEMOVE )
+				{
+					mhwndKeyboardFocus = NULL;
+					ReleaseCapture();
+					pTarget->SetFocus();
+					UINT nHitTest = pTarget->SendMessage( WM_NCHITTEST, 0, MAKELPARAM(pMsg->pt.x, pMsg->pt.y) );
+					pTarget->SendMessage( WM_SETCURSOR, (WPARAM)pTarget->m_hWnd, MAKELPARAM(nHitTest, WM_MOUSEMOVE) );
+				}
+				if( pTarget != this )
+				{
 					if( !pTarget->PreTranslateMessage( pMsg ) )
 					{
 						CPoint ptMouse( pMsg->pt );
@@ -297,11 +307,10 @@ BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg)
 					}
 					return TRUE;
 				}
-				::SetCapture( NULL );
-				pTarget->SetFocus();
 			}
-			return TRUE;
 		}
+		else if( !mbTrackingMouse )
+			SendMessage( refWM_MOUSEENTER(), 0, 0 );
 	}
 
 	return __super::PreTranslateMessage(pMsg);
@@ -316,19 +325,19 @@ LRESULT CAcadDockBarHost::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 {
 	if( !mbTrackingMouse )
 	{
-		SetTimer( WM_MOUSELEAVE, 200, NULL );
 		mbTrackingMouse = true;
+		SetTimer( WM_MOUSELEAVE, 200, NULL );
 	}
 	if( mhwndKeyboardFocus )
 	{
 		::SetFocus( mhwndKeyboardFocus );
-		ReleaseCapture();
 		mhwndKeyboardFocus = NULL;
+		ReleaseCapture();
 	}
 	if( mbMouseLeft )
 	{
-		mpDlgObject->OnMouseEnter();
 		mbMouseLeft = false;
+		mpDlgObject->OnMouseEnter();
 	}
 	return 0;
 }
@@ -345,16 +354,19 @@ LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
 				pCmdLine->SetFocus();
 		}
-		else if( IsDescendant( this, pFocusWnd ) )
+		else if( IsDescendant( mpDlgObject->GetTopLevelWnd(), pFocusWnd ) )
 		{
 			mhwndKeyboardFocus = pFocusWnd->m_hWnd;
 			SetCapture();
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		}
 	}
-	mbMouseLeft = (GetCapture() != this);
-	if( mbMouseLeft )
-		mpDlgObject->OnMouseLeave();
+	if( !mbMouseLeft )
+	{
+		mbMouseLeft = (GetCapture() != this);
+		if( mbMouseLeft )
+			mpDlgObject->OnMouseLeave();
+	}
 	return 0;
 }
 
@@ -377,33 +389,16 @@ void CAcadDockBarHost::OnTimer(UINT_PTR nIDEvent)
 		CPoint ptCursor;
 		if( GetCursorPos( &ptCursor ) )
 		{
-			CWnd* pTarget = WindowFromPoint( ptCursor );
-			if( !IsDescendant( this, pTarget ) )
+			CRect rcDlg;
+			mpDlgObject->GetTopLevelWnd()->GetWindowRect( &rcDlg );
+			if( !rcDlg.PtInRect( ptCursor ) )
 			{
-				PostMessage( WM_MOUSELEAVE, 0, 0 );
 				KillTimer( WM_MOUSELEAVE );
+				SendMessage( WM_MOUSELEAVE, 0, 0 );
 			}
 		}
 	}
 	__super::OnTimer(nIDEvent);
-}
-
-__UINT_LRESULT CAcadDockBarHost::OnNcHitTest(CPoint point)
-{
-	SendMessage( refWM_MOUSEENTER(), 0, 0 );
-	return __super::OnNcHitTest(point);
-}
-
-BOOL CAcadDockBarHost::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
-{
-	CPoint ptCursor;
-	if( ::GetCursorPos( &ptCursor ) )
-	{
-		CWnd* pTarget = WindowFromPoint( ptCursor );
-		if( IsDescendant( this, pTarget ) )
-			SendMessage( refWM_MOUSEENTER(), 0, 0 );
-	}
-	return __super::OnSetCursor(pWnd, nHitTest, message);
 }
 
 void CAcadDockBarHost::PostNcDestroy() 

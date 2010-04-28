@@ -30,9 +30,9 @@ bool CRectangleCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CRectangleCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CRectangleCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )

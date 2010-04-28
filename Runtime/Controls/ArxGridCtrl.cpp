@@ -416,9 +416,9 @@ bool CArxGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxGridCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxGridCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )

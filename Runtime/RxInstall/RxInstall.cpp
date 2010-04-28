@@ -1,6 +1,6 @@
 // RxInstall.cpp : Install-time AutoCAD ObjectARX module demand-load setup
 //
-// Copyright 2008 ManuSoft. All Rights Reserved.
+// Copyright 2010 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -30,7 +30,8 @@ enum LoadReasons
 	kOnCommandInvocation    = 0x04,
 	kOnLoadRequest          = 0x08,
 	kLoadDisabled           = 0x10,
-	kTransparentlyLoadable  = 0x20
+	kTransparentlyLoadable  = 0x20,
+	kOnIdleLoad             = 0x40,
 };
 
 static HMODULE ghThisModule = NULL;

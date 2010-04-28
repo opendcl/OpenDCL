@@ -14,7 +14,7 @@
 //    each possible value to each local language resource file (SharedRes.*.rc), then add an
 //    entry in PropEnumNames.cpp for defining the list of enumeration names.
 // 6) Edit DclControlProp.cpp and add the property to any controls that support it.
-// 7) Edit the relevant controls' OnApplyProperty() function to apply the value of the new
+// 7) Edit the relevant controls' ApplyProperty() function to apply the value of the new
 //    property to an instance of the control.
 // 8) Document the new property in the HTML help runtime reference, then update the OpenDCL.hhp
 //    and OpenDCL.hhc files.

@@ -52,9 +52,9 @@ DWORD CArxPlotStyleTableComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxPlotStyleTableComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxPlotStyleTableComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

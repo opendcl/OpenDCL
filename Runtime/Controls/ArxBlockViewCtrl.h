@@ -128,7 +128,7 @@ public:
 // DialogControl Interface
 public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 
 protected:

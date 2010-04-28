@@ -54,7 +54,7 @@ public:
 	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
 	virtual CRect GetEffectiveWindowRect() const;
 	virtual CRect GetEffectiveClientRect() const;
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 protected:
 	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }

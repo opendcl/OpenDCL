@@ -45,9 +45,9 @@ changing the control to use the new system. The steps for changing an old contro
 system are generally as follows:
 1) Derive the control class from an appropriate CDialogControl-derived class that implements all 
 pure virtual functions of the base class and overrides any virtual functions that require a custom 
-implementation for the particular control. Typically this means adding an override of OnApplyProperty 
+implementation for the particular control. Typically this means adding an override of ApplyProperty 
 and handling any properties that are specific to the control. Be sure to supermessage the base class' 
-OnApplyProperty so that common properties are correctly handled.
+ApplyProperty so that common properties are correctly handled.
 2) Implement a Create() function that creates the control's window and performs any necessary 
 initialization  of the control. If Create() is implemented in a base class, add an override of 
 Create() that simply supermessages the base class. This is important because the Create() function 
@@ -191,7 +191,7 @@ public:
 	virtual bool IsEnumeratingProperties() const { return mbEnumProps; }
 
 	// for properties without specific handlers
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 	// handlers for specific properties
 	virtual bool OnApplyName( TPropertyPtr pProp ); //Prop::Name

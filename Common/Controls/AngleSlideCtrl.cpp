@@ -44,9 +44,9 @@ DWORD CAngleSlideCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CAngleSlideCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CAngleSlideCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

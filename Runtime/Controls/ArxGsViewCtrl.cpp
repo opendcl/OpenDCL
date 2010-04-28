@@ -255,7 +255,7 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 	if( mpGsReactor )
 		mpGsReactor->setDrawable( pBTR );
 
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 }
 
 

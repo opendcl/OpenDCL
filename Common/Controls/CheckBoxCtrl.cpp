@@ -46,9 +46,9 @@ DWORD CCheckBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CCheckBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CCheckBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

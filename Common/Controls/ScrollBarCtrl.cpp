@@ -56,9 +56,9 @@ DWORD CScrollBarCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CScrollBarCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CScrollBarCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
@@ -142,7 +142,7 @@ void CScrollBarCtrl::OnScroll(UINT nSBCode, UINT nPos)
 	
 	TPropertyPtr pValueProp = mpTemplate->GetPropertyObject( Prop::Value );
 	pValueProp->SetLongValue( nNewPos );
-	OnApplyProperty( pValueProp );
+	ApplyProperty( pValueProp );
 }
 
 

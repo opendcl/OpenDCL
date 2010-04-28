@@ -60,9 +60,9 @@ DWORD CTabStripCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CTabStripCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	switch( pProp->GetID() )
 	{

@@ -29,7 +29,7 @@ public:
 	virtual CRect GetWndRect() const;
 	virtual DWORD GetWndStyle() const;
 	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return CFilteredComboCtrl::GetColorService(); }
 
 public:

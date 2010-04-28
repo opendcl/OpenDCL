@@ -136,9 +136,9 @@ DWORD CArxDwgPreviewCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxDwgPreviewCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxDwgPreviewCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )

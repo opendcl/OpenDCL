@@ -218,9 +218,9 @@ DWORD CGridCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

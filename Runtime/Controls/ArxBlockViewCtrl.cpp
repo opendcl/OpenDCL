@@ -71,9 +71,9 @@ bool CArxBlockViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxBlockViewCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxBlockViewCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

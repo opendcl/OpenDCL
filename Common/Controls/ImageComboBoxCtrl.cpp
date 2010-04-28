@@ -73,9 +73,9 @@ DWORD CImageComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyProperty( pProp ) )
+	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )

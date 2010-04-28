@@ -8,13 +8,6 @@
 class CPaletteDlg;
 
 
-#if (_MFC_VER < 0x0800)
-#define __UINT_LRESULT UINT
-#else
-#define __UINT_LRESULT LRESULT
-#endif
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CAcadPaletteHost dialog
 
@@ -62,8 +55,6 @@ protected:
 	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg LRESULT OnFrameChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
