@@ -323,6 +323,7 @@ void CModelessDlg::OnTimer(UINT_PTR nIDEvent)
 				SendMessage( WM_MOUSELEAVE, 0, 0 );
 			}
 		}
+		return;
 	}
 	__super::OnTimer(nIDEvent);
 }

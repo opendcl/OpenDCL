@@ -479,7 +479,7 @@ ADSRESULT ListBox::HitPointTest()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListView))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListBox))
 		return RSERR; //invalid input
 
 	int nX = -1;

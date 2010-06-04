@@ -310,7 +310,7 @@ bool GetDialogArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDial
 	if( !pDialog )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgsC, odcl::argNoInstance, NULL, true );
+			HandleArgError( pArgsC, odcl::argNoInstance, NULL );
 		return false;
 	}
 	return true;
@@ -325,14 +325,14 @@ bool GetDlgControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogControl*& 
 	if( !pControl || (type != _CtlInvalid && pControl->GetType() != type) )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgsC, odcl::argWrongType, NULL, true );
+			HandleArgError( pArgsC, odcl::argWrongType, NULL );
 		return false;
 	}
 	pDlgControl = pControl->GetControlInstance();
 	if( !pDlgControl )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgsC, odcl::argNoInstance, NULL, true );
+			HandleArgError( pArgsC, odcl::argNoInstance, NULL );
 		return false;
 	}
 	return true;

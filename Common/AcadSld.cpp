@@ -28,7 +28,8 @@ CPoint CAcadSld::SldToClient( const CPoint& ptSld, const CRect& rcTarget )
 {
 	double dblHScale = (double)rcTarget.Width() / (double)msizeSlide.cx;
 	double dblVScale = (double)rcTarget.Height() / (double)msizeSlide.cy;
-	return CPoint( rcTarget.left + int(dblHScale * ptSld.x), rcTarget.bottom - int(dblVScale * ptSld.y) );
+	CPoint ptClient( rcTarget.left + int(dblHScale * ptSld.x), rcTarget.bottom - int(dblVScale * ptSld.y) );
+	return ptClient;
 }
 
 bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
@@ -215,8 +216,8 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 				if( sizeof(bytes) == mData.Read( bytes, sizeof(bytes) ) )
 				{
 					CPoint ptFrom( ptCursor.x + (CHAR)lowbyte, ptCursor.y + bytes[0] );
-					CPoint ptTo( bytes[1], bytes[2] );
-					pDC->MoveTo( SldToClient( ptCursor, rcDest ) );
+					CPoint ptTo( ptCursor.x + bytes[1], ptCursor.y + bytes[2] );
+					pDC->MoveTo( SldToClient( ptFrom, rcDest ) );
 					pDC->LineTo( SldToClient( ptTo, rcDest ) );
 					ptCursor = ptFrom;
 				}
@@ -263,7 +264,7 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 				char y;
 				if( sizeof(y) == mData.Read( &y, sizeof(y) ) )
 				{
-					CPoint ptTo( (CHAR)lowbyte, y );
+					CPoint ptTo( ptCursor.x + (CHAR)lowbyte, ptCursor.y + y );
 					pDC->MoveTo( SldToClient( ptCursor, rcDest ) );
 					pDC->LineTo( SldToClient( ptTo, rcDest ) );
 					ptCursor = ptTo;
@@ -299,7 +300,7 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 						sizeof(x2) == mData.Read( &x2, sizeof(x2) ) &&
 						sizeof(y2) == mData.Read( &y2, sizeof(y2) ) )
 				{
-					CPoint ptFrom( (type << 8) | lowbyte, y );
+					CPoint ptFrom( (signed short)wRecord, y );
 					CPoint ptTo( x2, y2 );
 					pDC->MoveTo( SldToClient( ptFrom, rcDest ) );
 					pDC->LineTo( SldToClient( ptTo, rcDest ) );

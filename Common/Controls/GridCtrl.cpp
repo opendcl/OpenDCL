@@ -141,6 +141,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mbAlternateColumnColors( pTemplate->GetLongProperty( Prop::AlternateOrient ) != 0 )
 , mclrAlternate( pTemplate->GetColorProperty( Prop::AlternatingColor ) )
 , mpCellEditCtrl( NULL )
+, mnRowHeight( 24 )
 {
 	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
 	mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 2, 1 );
@@ -237,7 +238,7 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 			else
 			{
 				if( !mDefaultImageList.m_hImageList )
-					mDefaultImageList.Create( 1, mpTemplate->GetLongProperty( Prop::RowHeight ), ILC_COLOR, 1, 1 );
+					mDefaultImageList.Create( 1, mnRowHeight, ILC_COLOR, 1, 1 );
 				mDefaultImageList.SetBkColor( CLR_NONE );
 				SetImageList( &mDefaultImageList, TVSIL_NORMAL );
 				SetImageList( &mDefaultImageList, LVSIL_SMALL );
@@ -271,6 +272,13 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 			if( !m_hWnd )
 				break;
 			// row height only changes when Windows sends WM_MEASUREITEM, which can be triggered by WM_WINDOWPOSCHANGED
+			long lNewHeight = pProp->GetLongValue();
+			if( lNewHeight <= 0 )
+				lNewHeight = 24;
+			if( mnRowHeight == lNewHeight )
+				break;
+			mnRowHeight = lNewHeight;
+			ApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) );
 			CRect rcWnd;
 			GetWindowRect( &rcWnd );
 			WINDOWPOS wp =
@@ -1816,7 +1824,7 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
-	lpMeasureItemStruct->itemHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
+	lpMeasureItemStruct->itemHeight = mnRowHeight;
 }
 
 void CGridCtrl::HScroll(UINT nSBCode, UINT nPos) 

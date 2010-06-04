@@ -143,6 +143,7 @@ class CGridCtrl : public CListCtrl, public CDialogControl
 	CImageList mArrowImageList;
 	CImageList mFontImageList;
 	COLORREF mclrAlternate;
+	int mnRowHeight;
 
 protected:
 	class _Cell

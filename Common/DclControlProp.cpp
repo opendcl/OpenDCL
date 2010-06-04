@@ -522,7 +522,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::ListViewSort, PropEnum, 0 );
-		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, 24 );
+		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, 0 );
 		AddControlHiddenProperty( pDclControl, Prop::ColumnCaptions, _T(""), PropStringArray );
 		AddControlHiddenProperty( pDclControl, Prop::ColumnAlignments, _T(""), PropIntArray );
 		AddControlHiddenProperty( pDclControl, Prop::ColumnImages, _T(""), PropIntArray );

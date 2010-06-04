@@ -66,6 +66,8 @@ void CAcadDockBarHost::GetClientArea( CRect& rect )
 			rect.top -= 18;
 			rect.bottom -= 18;
 		}
+		rect.bottom -= 15;
+		rect.right -= 7;
 	#endif
 		rect.top += 5;
 	}
@@ -120,6 +122,10 @@ void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
+#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
+	else if( flags & ADUI_DOCK_NF_SIZECHANGED ) //Bricscad doesn't set the correct flag when docking/undocking
+		PostMessage( refWM_FRAMECHANGED() );
+#endif
 	__super::SizeChanged( lpRect, bFloating, flags );
 }
 
@@ -213,7 +219,14 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	if( !mpDlgObject->IsResizable() )
 		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
 									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
+#if (_BRXTARGET && _BRXTARGET <= 10)
+	//in Bricscad, CalcFixedLayout
+	CSize sizeDefault;
+	sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth();
+	sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight();
+#else
 	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
+#endif
 	CSize szMin( 0, 0 );
 	CSize szMax( 0, 0 );
 	mpDlgObject->GetMinMaxSize( szMin, szMax );
@@ -397,6 +410,7 @@ void CAcadDockBarHost::OnTimer(UINT_PTR nIDEvent)
 				SendMessage( WM_MOUSELEAVE, 0, 0 );
 			}
 		}
+		return;
 	}
 	__super::OnTimer(nIDEvent);
 }

@@ -19,6 +19,7 @@
 
 CCheckBoxCtrl::CCheckBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mbSpaceBarPressed( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -68,6 +69,7 @@ BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_CONTROL_REFLECT(BN_CLICKED, &CCheckBoxCtrl::OnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CCheckBoxCtrl::OnDoubleclicked)
@@ -132,12 +134,25 @@ void CCheckBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 }
 
+void CCheckBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	if( IsWindowEnabled() && nChar == _T(' ') && (nFlags & 0x4000) == 0 )
+ 		mbSpaceBarPressed = true;
+	__super::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
 void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if( IsWindowEnabled() && nChar == _T(' ') )
+	if( nChar == _T(' ') )
 	{
-		GetParent()->PostMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd );
-		return;
+		if( !mbSpaceBarPressed )
+			return; //ignore if this control didn't have input focus when the space bar was pressed
+		mbSpaceBarPressed = false;
+		if( IsWindowEnabled() )
+		{
+			GetParent()->PostMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd );
+			return;
+		}
 	}
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
