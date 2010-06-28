@@ -192,9 +192,9 @@ void CDialogObject::ApplyPosition()
 
 BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 {
-	TraceFmt( _T("# CDialogObject(%s)::HandleEraseBkgnd(%s)\r\n"),
-						asString( this ),
-						asString( pDC ) );
+	//TraceFmt( _T("# CDialogObject(%s)::HandleEraseBkgnd(%s)\r\n"),
+	//					asString( this ),
+	//					asString( pDC ) );
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
 		return FALSE;

@@ -2265,9 +2265,11 @@ public:
 				resbuf rbControlName = {NULL, RTSTR};
 				rbControlName.resval.rstring = sControlName.LockBuffer();
 				resbuf rbDialogName = {sControlName.IsEmpty()? NULL : &rbControlName, RTSTR};
-				rbDialogName.resval.rstring = CString(pDclObject->GetKeyName()).LockBuffer();
+				CString sFormName = pDclObject->GetKeyName();
+				rbDialogName.resval.rstring = sFormName.LockBuffer();
 				resbuf rbProjectName = {&rbDialogName, RTSTR};
-				rbProjectName.resval.rstring = CString(pDclObject->GetProject()->GetKeyName()).LockBuffer();
+				CString sProjectName = pDclObject->GetProject()->GetKeyName();
+				rbProjectName.resval.rstring = sProjectName.LockBuffer();
 				acedRetList(&rbProjectName);
 			}
 		}

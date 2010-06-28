@@ -85,9 +85,9 @@ HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 
 BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 {
-	TraceFmt( _T("# CDialogControl(%s)::HandleEraseBkgnd(%s)\r\n"),
-						asString( this ),
-						asString( pDC ) );
+	//TraceFmt( _T("# CDialogControl(%s)::HandleEraseBkgnd(%s)\r\n"),
+	//					asString( this ),
+	//					asString( pDC ) );
 	if( !pDC )
 		return FALSE;
 	CAcadColorService* pColorService = GetColorService();
@@ -374,12 +374,12 @@ CRect CDialogControl::ValidatePosition( const CRect& rcProposed ) const
 
 void CDialogControl::ApplyPosition()
 {
-	TraceFmt( _T("CDialogControl(%s)::ApplyPosition() [%d, %d] @ [%d x %d]\r\n"),
-						asString( this ),
-						mpTemplate->GetLongProperty( Prop::Left ),
-						mpTemplate->GetLongProperty( Prop::Top ),
-						mpTemplate->GetLongProperty( Prop::Width ),
-						mpTemplate->GetLongProperty( Prop::Height ) );
+	//TraceFmt( _T("CDialogControl(%s)::ApplyPosition() [%d, %d] @ [%d x %d]\r\n"),
+	//					asString( this ),
+	//					mpTemplate->GetLongProperty( Prop::Left ),
+	//					mpTemplate->GetLongProperty( Prop::Top ),
+	//					mpTemplate->GetLongProperty( Prop::Width ),
+	//					mpTemplate->GetLongProperty( Prop::Height ) );
 	if( mbEnumProps )
 		return; //defer
 	mpControlPane->ApplyPosition( TDialogControlLockedPtr( this ) );

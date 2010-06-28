@@ -359,6 +359,16 @@ DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sour
 	if( idxItem < 0 )
 		return dwEffect;
 	CString sText = GetItemText( idxItem, 0 );
+	CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
+	if( pHeaderCtrl )
+	{
+		int idxColumn = pHeaderCtrl->GetItemCount();
+		while( --idxColumn > 0 )
+		{
+			sText += _T('\t');
+			sText += GetItemText( idxItem, idxColumn );
+		}
+	}
 	if( sText.IsEmpty() )
 		return dwEffect;
 	CStringA sTextA( sText );
@@ -436,8 +446,18 @@ bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 		CString sText = sInsText.Tokenize( _T("\r\n"), nIdxToken );
 		if( sText.IsEmpty() && nIdxToken < 0 )
 			break;
-		idxInsert = InsertItem( idxInsert, sText, nImage );
+		int nIdxTab = 0;
+		CString sCellText = sText.Tokenize( _T("\t"), nIdxTab );
+		idxInsert = InsertItem( idxInsert, sCellText, nImage );
 		SetItemState( idxInsert, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
+		int idxCol = 1;
+		while( nIdxTab >= 0 )
+		{
+			sCellText = sText.Tokenize( _T("\t"), nIdxTab );
+			if( sCellText.IsEmpty() && nIdxToken < 0 )
+				break;
+			SetItemText( idxInsert, idxCol++, sCellText );
+		}
 		++idxInsert;
 	}
 	return true;

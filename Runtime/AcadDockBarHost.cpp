@@ -58,17 +58,12 @@ CAcadDockBarHost::~CAcadDockBarHost()
 void CAcadDockBarHost::GetClientArea( CRect& rect )
 {
 	GetUsedRect( rect );
+#if (_BRXTARGET && _BRXTARGET <= 10)
+	//GetUsedRect() returns invalid values in Bricscad!
+	GetClientRect( &rect );
+#endif
 	if( !mpDlgObject->IsFloating() )
 	{
-	#if (_BRXTARGET && _BRXTARGET <= 10)
-		if( rect.top >= 10 )
-		{
-			rect.top -= 18;
-			rect.bottom -= 18;
-		}
-		rect.bottom -= 15;
-		rect.right -= 7;
-	#endif
 		rect.top += 5;
 	}
 }
@@ -220,7 +215,6 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
 									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
 #if (_BRXTARGET && _BRXTARGET <= 10)
-	//in Bricscad, CalcFixedLayout
 	CSize sizeDefault;
 	sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth();
 	sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight();

@@ -372,11 +372,11 @@ static CString VariantArgToString( const VARIANTARG& varArg )
 	case (VT_CY | VT_BYREF): return LongLongToS( var.pcyVal->int64 );
 	case VT_DATE: return DateToS( var.date );
 	case (VT_DATE | VT_BYREF): return DateToS( *var.pdate );
-	case VT_BSTR: return var.bstrVal;
-	case (VT_BSTR | VT_BYREF): return *var.pbstrVal;
+	case VT_BSTR: return CString( _T('"') ) + var.bstrVal + _T('"');
+	case (VT_BSTR | VT_BYREF): return CString( _T('"') ) + *var.pbstrVal + _T('"');
 #if !defined(_UNICODE) && !defined(OLE2ANSI)
-	case VT_BSTRA: return var.bstrVal;
-	case (VT_BSTRA | VT_BYREF): return *var.pbstrVal;
+	case VT_BSTRA: return CString( _T('"') ) + var.bstrVal + _T('"');
+	case (VT_BSTRA | VT_BYREF): return CString( _T('"') ) + *var.pbstrVal + _T('"');
 #endif
 	case VT_BOOL: return ((var.boolVal == VARIANT_TRUE)? _T("T") : _T("NIL"));
 	case (VT_BOOL | VT_BYREF): return ((*var.pboolVal == VARIANT_TRUE)? _T("T") : _T("NIL"));
