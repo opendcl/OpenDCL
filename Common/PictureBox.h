@@ -16,22 +16,22 @@ const COLORREF COLOR_USEBACKGROUND = (COLORREF)0;
 class CPictureBox : public CButton
 {
 	TPicturePtr mpPicture;
-protected:
-	int				m_cxIcon;
-	int				m_cyIcon;
-	HBITMAP			m_hbmMem;
-	bool			m_bStretchLoadedPicture;
+	bool mbFitPictureToCtrl;
+	HBITMAP mhbmMem;
 
 public:
 	CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT nIconResId = -1 );
 	CPictureBox();
 	virtual ~CPictureBox();
 
+protected:
+	CSize GetPictureSize() const;
+
 public:
 	virtual bool IsAutoSized() { return false; }
 	virtual void AutoSize() {}
 	virtual void OnMouseEntered() {}
-	void DrawPicture( TPicturePtr, bool bShrinkToFit = false, CDC* pDestDC = NULL );
+	void DrawPicture( TPicturePtr, bool bFitToCtrl = false, CDC* pDestDC = NULL );
 	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );
 	void ClearPicture();

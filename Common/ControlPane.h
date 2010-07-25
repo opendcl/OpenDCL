@@ -51,6 +51,7 @@ public:
 	CPoint GetSplitterPos( int nSplitterId ) const;
 	bool HasSplitter( int nSplitterId ) const;
 	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
+	bool IsModal() const;
 
 // Operations
 public:

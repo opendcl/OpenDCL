@@ -3,7 +3,7 @@
 #include "AcadColorTable.h"
 
 
-static const CHAR szSlbHeader[] = "AutoCAD Slide Library 1.0\015\012\032\0\0\0";
+static const CHAR szSlbHeader[] = "AutoCAD Slide Library 1.0\015\012\032\0";
 static const CHAR szSldHeader[] = "AutoCAD Slide\015\012\032";
 
 struct SlbEntry
@@ -51,6 +51,11 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 		delete [] pszHeader;
 		if( !bHeaderOk )
 			return false;
+		WORD nul;
+		if( sizeof(nul) != fileSlide.Read( &nul, sizeof(nul) ) )
+			return false;
+		//it should be zero according to the spec, but AutoCAD accepts non-zero, so do the same here
+		//assert( nul == 0 );
 		CStringA sSlide( pszSlide );
 		SlbEntry Sld;
 		do
@@ -218,7 +223,9 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 					CPoint ptFrom( ptCursor.x + (CHAR)lowbyte, ptCursor.y + bytes[0] );
 					CPoint ptTo( ptCursor.x + bytes[1], ptCursor.y + bytes[2] );
 					pDC->MoveTo( SldToClient( ptFrom, rcDest ) );
-					pDC->LineTo( SldToClient( ptTo, rcDest ) );
+					CPoint ptEnd = SldToClient( ptTo, rcDest );
+					pDC->LineTo( ptEnd );
+					pDC->SetPixel( ptEnd, pDC->GetTextColor() );
 					ptCursor = ptFrom;
 				}
 				else
@@ -266,7 +273,9 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 				{
 					CPoint ptTo( ptCursor.x + (CHAR)lowbyte, ptCursor.y + y );
 					pDC->MoveTo( SldToClient( ptCursor, rcDest ) );
-					pDC->LineTo( SldToClient( ptTo, rcDest ) );
+					CPoint ptEnd = SldToClient( ptTo, rcDest );
+					pDC->LineTo( ptEnd );
+					pDC->SetPixel( ptEnd, pDC->GetTextColor() );
 					ptCursor = ptTo;
 				}
 				else
@@ -285,6 +294,7 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 				brush.CreateSolidBrush( crColor );
 				pDC->SelectObject( &pen );
 				pDC->SelectObject( &brush );
+				pDC->SetTextColor( crColor );
 			}
 			break;
 		default:
@@ -303,7 +313,9 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 					CPoint ptFrom( (signed short)wRecord, y );
 					CPoint ptTo( x2, y2 );
 					pDC->MoveTo( SldToClient( ptFrom, rcDest ) );
-					pDC->LineTo( SldToClient( ptTo, rcDest ) );
+					CPoint ptEnd = SldToClient( ptTo, rcDest );
+					pDC->LineTo( ptEnd );
+					pDC->SetPixel( ptEnd, pDC->GetTextColor() );
 					ptCursor = ptFrom;
 				}
 				else

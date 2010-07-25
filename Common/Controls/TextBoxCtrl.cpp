@@ -284,12 +284,21 @@ HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	if( hbrBackground )
 		return hbrBackground;
+	if( (GetStyle() & ES_READONLY) )
+	{
+		COLORREF crReadOnly = GetSysColor( COLOR_BTNFACE );
+		pDC->SetBkColor( crReadOnly );
+		static CBrush mbrReadOnly( crReadOnly );
+		return mbrReadOnly;
+	}
 	return NULL;
 	return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL CTextBoxCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( (GetStyle() & ES_READONLY) )
+		return __super::OnEraseBkgnd( pDC );
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return TRUE;

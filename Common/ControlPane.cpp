@@ -207,6 +207,18 @@ bool CControlPane::HasSplitter( int nSplitterId ) const
 	return false;	
 }
 
+bool CControlPane::IsModal() const
+{
+	TDclFormPtr pTopLevelForm = mpSourceForm;
+	TDclFormPtr pParentForm = pTopLevelForm->GetParentForm();
+	while( pParentForm )
+	{
+		pTopLevelForm = pParentForm;
+		pParentForm = pTopLevelForm->GetParentForm();
+	}
+	return !pTopLevelForm->IsModeless();
+}
+
 void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 {
 	if( !pDclControl || !pDclControl->IsZOrderAllowed() )

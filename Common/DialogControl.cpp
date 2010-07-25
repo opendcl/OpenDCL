@@ -197,6 +197,8 @@ CWnd* CDialogControl::GetTopLevelWnd()
 
 bool CDialogControl::IsAsyncEvents() const
 {
+	if( mpControlPane && mpControlPane->IsModal() )
+		return false; // force controls on modal forms to handle events synchronously
 	if( mpTemplate )
 		return (mpTemplate->GetLongProperty(Prop::EventInvoke) == 1);
 	return false;

@@ -295,6 +295,11 @@ CPictureObject* CPictureObject::CreatePictureObject( short nID, LPPICTUREDISP pP
 CPictureObject* CPictureObject::CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 {
 	CPictureObject* pPicture = new CPictureObject( nID, pszFile, bApplyMask );
+	if( !pPicture->m_hPicture.m_pPict )
+	{
+		delete pPicture;
+		return NULL;
+	}
 	pPicture->CalcLogicalSize();
 	return pPicture;
 }

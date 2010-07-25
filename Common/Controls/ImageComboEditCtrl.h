@@ -15,7 +15,23 @@
 class CImageComboEditCtrlBase : public CFilteredComboExCtrl, public CGridCellEditCtrl
 {
 	CComboHandler* mpHandler;
-	CStatic mClippingWnd;
+	class CClippingWnd : public CStatic
+	{
+		CGridCtrl* mpGridCtrl;
+	public:
+		CClippingWnd( CGridCtrl* pGridCtrl ) : mpGridCtrl( pGridCtrl ) {}
+	protected:
+		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+			{
+				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
+				if( message == WM_COMMAND )
+				{
+					if( HIWORD(wParam) == CBN_KILLFOCUS )
+						mpGridCtrl->HideEditControls();
+				}
+				return lResult;
+			}
+	} mClippingWnd;
 	std::vector< tstring > mrsComboList;
 	static CRect CalcRect( const CRect& rcCell )
 		{
@@ -26,6 +42,7 @@ public:
 		: CFilteredComboExCtrl( NULL )
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		, mpHandler( pHandler )
+		, mClippingWnd( pGridCtrl )
 		{
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
 			rcCell.DeflateRect( 2, 2 );

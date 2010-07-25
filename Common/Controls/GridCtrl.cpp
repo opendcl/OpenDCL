@@ -76,7 +76,23 @@ struct TCellState { CString text; UINT state; _CellData data; };
 
 class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCellEditCtrl
 {
-	CStatic mClippingWnd;
+	class CClippingWnd : public CStatic
+	{
+		CGridCtrl* mpGridCtrl;
+	public:
+		CClippingWnd( CGridCtrl* pGridCtrl ) : mpGridCtrl( pGridCtrl ) {}
+	protected:
+		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+			{
+				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
+				if( message == WM_COMMAND )
+				{
+					if( HIWORD(wParam) == CBN_KILLFOCUS )
+						mpGridCtrl->HideEditControls();
+				}
+				return lResult;
+			}
+	} mClippingWnd;
 	static CRect CalcRect( const CRect& rcCell )
 		{
 			return CRect( rcCell.left, rcCell.top, rcCell.right, rcCell.top + 120 );
@@ -85,6 +101,7 @@ public:
 	CDriveComboDropdownListEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, UINT nID = 100 )
 		: CFolderComboBox()
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		, mClippingWnd( pGridCtrl )
 		{
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
 			rcCell.DeflateRect( 2, 2 );
@@ -1032,7 +1049,7 @@ bool CGridCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol )
 
 void CGridCtrl::SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage )  
 {
-	if( nRow < 0 || nCol <= 0 ) //CListCtrl won't allow images in the first column
+	if( nRow < 0 || nCol < ((nImage >= 0)? 1 : 0) ) //CListCtrl won't allow images in the first column
 		return;
 	SetCellText( nRow, nCol, pszText );
 	SetCellImages( nRow, nCol, nImage );

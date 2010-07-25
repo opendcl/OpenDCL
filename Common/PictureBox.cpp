@@ -24,11 +24,10 @@ const TCHAR sC[] = _T("C");
 static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtrlHeight)
 {
 	CRect rcCell(0, 0, nCtrlWidth, nCtrlHeight);
-	double dblScale = 1.0;
-	if( nPicHeight > nCtrlHeight )
-		dblScale = (double)nCtrlHeight / (double)nPicHeight;
-	if( dblScale * nPicWidth > nCtrlWidth )
-		dblScale = (double)nCtrlWidth / (double)nPicWidth;
+	double dblScale = (double)nCtrlHeight / (double)nPicHeight;
+	double dblScaleH = (double)nCtrlWidth / (double)nPicWidth;
+	if( dblScaleH < dblScale )
+		dblScale = dblScaleH;
 
 	int nDrawWidth = int(dblScale * nPicWidth);
 	int nDrawHeight = int(dblScale * nPicHeight);
@@ -180,37 +179,39 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 
 CPictureBox::CPictureBox()
 : mpPicture( NULL )
+, mbFitPictureToCtrl( false )
+, mhbmMem( NULL )
 {
-	m_hbmMem = NULL;
-	m_bStretchLoadedPicture = false;
-	m_cxIcon = 16;
-	m_cyIcon = 16;
 }
 
 CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT nIconResId /*= -1*/ )
 : mpPicture( NULL )
+, mbFitPictureToCtrl( false )
+, mhbmMem( NULL )
 {
-	m_hbmMem = NULL;
-	m_bStretchLoadedPicture = false;
-	m_cxIcon = 16;
-	m_cyIcon = 16;
-
 	Create( _T(""), (WS_CHILD | WS_VISIBLE), rcWnd, pParentWnd, nID );
 	SetPicture( nIconResId );
 }
 
 CPictureBox::~CPictureBox()
 {
-	if( m_hbmMem )
-		DeleteObject( m_hbmMem );
+	if( mhbmMem )
+		DeleteObject( mhbmMem );
+}
+
+CSize CPictureBox::GetPictureSize() const
+{
+	if( mpPicture )
+		return CSize( mpPicture->GetWidth(), mpPicture->GetHeight() );
+	return CSize( 0, 0 );
 }
 
 void CPictureBox::Clear() 
 {
-	if( m_hbmMem )
+	if( mhbmMem )
 	{
-		DeleteObject( m_hbmMem );
-		m_hbmMem = NULL;
+		DeleteObject( mhbmMem );
+		mhbmMem = NULL;
 	}
 	if( m_hWnd )
 		Invalidate();
@@ -226,11 +227,7 @@ void CPictureBox::SetPicture( TPicturePtr pPicture )
 {
 	mpPicture = pPicture;
 	if( mpPicture )
-	{
-		m_cxIcon = mpPicture->GetWidth();
-		m_cyIcon = mpPicture->GetHeight();
 		AutoSize();
-	}
 	Refresh();
 }
 
@@ -238,8 +235,6 @@ void CPictureBox::SetPicture( UINT nIconResId )
 {
 	mpPicture = new CPictureObject( -1 );
 	mpPicture->LoadResourceIcon( nIconResId );
-	m_cxIcon = mpPicture->GetWidth();
-	m_cyIcon = mpPicture->GetHeight();
 	AutoSize();
 	Refresh();
 }
@@ -252,7 +247,7 @@ void CPictureBox::Refresh()
 	UpdateWindow();
 }
 
-void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false*/, CDC* pDestDC /*= NULL*/ )
+void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bFitToCtrl /*= false*/, CDC* pDestDC /*= NULL*/ )
 {	
 	if( !pPicture )
 		return;
@@ -267,7 +262,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false
 	long nPicLeft = 0;
 	long nPicTop = 0;
 	CRect rcPic = rcCell;
-	if( bShrinkToFit )
+	if( bFitToCtrl )
 		rcPic = CalcFitRect( nPicWidth, nPicHeight, rcCell.Width(), rcCell.Height() );
 	else
 	{
@@ -275,7 +270,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bShrinkToFit /*= false
 		nPicLeft = ( (rcCell.Width() - nPicWidth) / 2 ); // Center the icon horizontally
 		rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
 	}
-	if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bShrinkToFit )
+	if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bFitToCtrl )
 	{			
 		if( IsWindowEnabled() )
 			DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
@@ -658,7 +653,7 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 // This function loads a file into an IStream.
 bool CPictureBox::LoadPictureFile(LPCTSTR pszFile, bool bStretch)
 {
-	m_bStretchLoadedPicture = bStretch;
+	mbFitPictureToCtrl = bStretch;
 	if( !pszFile || !*pszFile )
 	{
 		Clear();
@@ -667,17 +662,17 @@ bool CPictureBox::LoadPictureFile(LPCTSTR pszFile, bool bStretch)
 	CString sPicFile = theWorkspace.FindFile( pszFile );
 	if( sPicFile.IsEmpty() )
 		sPicFile = pszFile;
-	mpPicture = CPictureObject::CreatePictureObject( -1, pszFile );
+	mpPicture = CPictureObject::CreatePictureObject( -1, sPicFile );
 	Refresh();
-	return true;
+	return (mpPicture != NULL);
 }
 
 void CPictureBox::CopyDC() 
 {
-	if( m_hbmMem )
+	if( mhbmMem )
 	{
-		DeleteObject( m_hbmMem );
-		m_hbmMem = NULL;
+		DeleteObject( mhbmMem );
+		mhbmMem = NULL;
 	}
 	if( !GetParent()->IsWindowVisible() )		
 		return;
@@ -702,7 +697,7 @@ void CPictureBox::CopyDC()
 	DeleteObject (hbmOld);
 	DeleteDC (hDCmem);
 	::ReleaseDC (m_hWnd, hDC);
-	m_hbmMem = hbmMem;
+	mhbmMem = hbmMem;
 }
 
 
@@ -740,11 +735,11 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 void CPictureBox::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-	if( !m_hbmMem )
+	if( !mhbmMem )
 	{
 		if( !mpPicture )
 			return;
-		DrawPicture( mpPicture, m_bStretchLoadedPicture, &dc );
+		DrawPicture( mpPicture, mbFitPictureToCtrl, &dc );
 		CRect rcClient;
 		GetClientRect( &rcClient );
 		CRect rcClip;
@@ -756,7 +751,7 @@ void CPictureBox::OnPaint()
 	}
 	CDC memdc;
   memdc.CreateCompatibleDC( &dc );
-  CBitmap* pBmpSave = memdc.SelectObject( CBitmap::FromHandle( m_hbmMem ) );
+  CBitmap* pBmpSave = memdc.SelectObject( CBitmap::FromHandle( mhbmMem ) );
 
   // Copy (BitBlt) bitmap from memory DC to screen DC
 	CRect rcClient;
@@ -774,7 +769,7 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 BOOL CPictureBox::OnEraseBkgnd(CDC* pDC)
 {
-	if( m_hbmMem )
+	if( mhbmMem )
 		return TRUE;
 	if( !pDC ) //derived classes can pass NULL to check whether the buffered bitmap exists
 		return FALSE;

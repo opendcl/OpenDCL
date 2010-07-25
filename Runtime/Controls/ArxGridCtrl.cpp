@@ -159,7 +159,23 @@ public:
 template< typename TAcUiBase, DWORD _Style = 0, DWORD _AcUiStyle = (DWORD)-1 >
 class CAcUiComboEditCtrl : public TAcUiBase, public CGridCellEditCtrl
 {
-	CStatic mClippingWnd;
+	class CClippingWnd : public CStatic
+	{
+		CGridCtrl* mpGridCtrl;
+	public:
+		CClippingWnd( CGridCtrl* pGridCtrl ) : mpGridCtrl( pGridCtrl ) {}
+	protected:
+		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+			{
+				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
+				if( message == WM_COMMAND )
+				{
+					if( HIWORD(wParam) == CBN_KILLFOCUS )
+						mpGridCtrl->HideEditControls();
+				}
+				return lResult;
+			}
+	} mClippingWnd;
 	static CRect CalcRect( const CRect& rcCell )
 		{
 			return CRect( rcCell.left, rcCell.top, rcCell.right, rcCell.top + 120 );
@@ -170,6 +186,7 @@ public:
 	CAcUiComboEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, UINT nID = 100 )
 		: TAcUiBase()
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		, mClippingWnd( pGridCtrl )
 		{
 			CAcUiComboHelper< TAcUiBase >::Init( this );
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );

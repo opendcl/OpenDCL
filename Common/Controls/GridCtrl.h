@@ -159,6 +159,8 @@ protected:
 			{ mRow = row; if( row < 0 ) mCol = -1; else mCol = col; }
 	} mCurrentCell;
 	std::vector< _RowData > mRowData;
+
+public:
 	static const UINT& refWM_CHECKFOCUS();
 
 // Construction
@@ -260,6 +262,7 @@ public:
 
 protected:
 	DECLARE_MESSAGE_MAP()
+
 
 // Generated message map functions
 protected:
