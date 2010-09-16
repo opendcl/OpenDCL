@@ -921,6 +921,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Controls\ImageTreeCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\LayerComboHandler.h"
 				>
 			</File>
@@ -1803,10 +1807,6 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\ImageComboEditCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Controls\ImageTreeCtrl.cpp"
 					>
 				</File>
 				<File

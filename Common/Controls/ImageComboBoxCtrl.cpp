@@ -102,12 +102,13 @@ bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
 			TPropertyPtr pImagesProp = mpTemplate->GetPropertyObject( Prop::ListImages );
 			const PropVal::TIntArray* prImage = pImagesProp? pImagesProp->GetConstIntArrayPtr() : NULL;
+			const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
 			if( prString )
 			{
-				for( int idx = 0; (size_t)idx < prString->size(); ++idx )
+				for( size_t idx = 0; idx < prString->size(); ++idx )
 				{
 					int nImage = -1;
-					if( prImage && (size_t)idx < prImage->size() )
+					if( prImage && idx < prImage->size() )
 						nImage = prImage->at( idx );
 					CString sItemLabel = prString->at( idx );
 					COMBOBOXEXITEM cbi =
@@ -124,12 +125,8 @@ bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 					int idxNewItem = InsertItem( &cbi );
 					if( idxNewItem < 0 )
 						continue;
-					if( IsEnumeratingProperties() )
-					{
-						const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-						if( prInt )
-							SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
-					}
+					if( prInt && idx < prInt->size() )
+						SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
 				}
 			}
 			mbIgnoreChange = false;

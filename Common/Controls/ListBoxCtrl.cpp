@@ -136,23 +136,22 @@ bool CListBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::List:
-		mbIgnoreChange = true;
-		ResetContent();
-		for (size_t idx = 0; idx < pProp->size(); idx++)
 		{
-			int idxNewItem = AddString( pProp->GetStringItem( idx ) );
-			if( idxNewItem < 0 )
-				continue;
-			if( IsEnumeratingProperties() )
+			mbIgnoreChange = true;
+			ResetContent();
+			const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
+			for (size_t idx = 0; idx < pProp->size(); idx++)
 			{
-				const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-				if( prInt )
+				int idxNewItem = AddString( pProp->GetStringItem( idx ) );
+				if( idxNewItem < 0 )
+					continue;
+				if( prInt && idx < prInt->size() )
 					SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
 			}
+			mbIgnoreChange = false;
+			if( (GetStyle() & LBS_SORT) )
+				OnListChanged(); //in case the list is sorted, to update the List property
 		}
-		mbIgnoreChange = false;
-		if( (GetStyle() & LBS_SORT) )
-			OnListChanged(); //in case the list is sorted, to update the List property
 		break;
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() )

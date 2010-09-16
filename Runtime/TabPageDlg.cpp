@@ -158,7 +158,7 @@ void CTabPageDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 HBRUSH CTabPageDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	LRESULT lResult;
-	if (pWnd->SendChildNotifyLastMsg(&lResult))
+	if (pWnd && pWnd->SendChildNotifyLastMsg(&lResult))
 		return (HBRUSH)lResult;     // eat it
 	if( nCtlColor < CTLCOLOR_MAX )
 	{

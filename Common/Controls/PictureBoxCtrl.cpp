@@ -82,6 +82,7 @@ static bool IsButtonLikeRequired( TDclControlPtr pDclControl )
 			!pDclControl->GetStringProperty( Prop::EventKeyUp ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventKillFocus ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventSetFocus ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseDblClick ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventMouseDown ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventMouseEntered ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventMouseMove ).IsEmpty() ||
@@ -146,6 +147,7 @@ bool CPictureBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 		case Prop::EventKeyUp:
 		case Prop::EventKillFocus:
 		case Prop::EventSetFocus:
+		case Prop::EventMouseDblClick:
 		case Prop::EventMouseDown:
 		case Prop::EventMouseEntered:
 		case Prop::EventMouseMove:
@@ -354,7 +356,7 @@ __UINT_LRESULT CPictureBoxCtrl::OnNcHitTest(CPoint point)
 	if( !mbButtonLike )
 		return HTTRANSPARENT;
 
-	return CButton::OnNcHitTest(point);
+	return __super::OnNcHitTest(point);
 }
 
 HBRUSH CPictureBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 

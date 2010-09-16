@@ -318,7 +318,7 @@ void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_SS( GetItemText( hItem ), sKey ) );
 	else if( hItem )
 		GetArxServices()->HandleEvent( Prop::EventSelChanged, args_SH( GetItemText( hItem ), (DWORD_PTR)hItem ) );
-	SelectDropTarget( hItem );
+	//SelectDropTarget( hItem ); //[ORW 2010-08-23] this causes the selection highlight to display always, thereby masking the ShowSelectAlways property]
 	OnNeedRepaint();
 	*pResult = 0;
 }

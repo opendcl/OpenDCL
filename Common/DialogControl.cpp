@@ -68,11 +68,27 @@ HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 		if( pHostDlg )
 		{
 			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
-			if( pDlgColor && !pDlgColor->IsBackgroundTransparent() )
+			if( pDlgColor )
 			{
-				pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
-				pDC->SetBkMode( OPAQUE );
-				return pDlgColor->GetBackgroundBrush();
+				if( pDlgColor->IsBackgroundNotSet() )
+				{
+					if( !pDlgColor->IsBackgroundTransparent() )
+					{
+						pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
+						pDC->SetBkMode( OPAQUE );
+					}
+					else
+						pDC->SetBkMode( TRANSPARENT );
+					HBRUSH hbrBackground = (HBRUSH)pHostDlg->GetControlWnd()->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pHostDlg->GetControlWnd()->m_hWnd );
+					if( hbrBackground )
+						return hbrBackground;
+				}
+				else if( !pDlgColor->IsBackgroundTransparent() )
+				{
+					pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
+					pDC->SetBkMode( OPAQUE );
+					return pDlgColor->GetBackgroundBrush();
+				}
 			}
 		}
 		pDC->SetBkMode( TRANSPARENT );
@@ -111,7 +127,7 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 		CWnd* pParent = mpControlWnd->GetParent();
 		if( pParent )
 		{
-			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)NULL/*mpControlWnd->m_hWnd*/ );
+			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pParent->m_hWnd );
 			if( !hbrBackground )
 				return FALSE;
 			pDC->FillRect( &rcClip, CBrush::FromHandle( hbrBackground ) );

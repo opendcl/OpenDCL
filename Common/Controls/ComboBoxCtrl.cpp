@@ -111,19 +111,16 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 			mbIgnoreChange = true;
 			ResetContent();
 			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
+			const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
 			if( prString )
 			{
-				for( int idx = 0; (size_t)idx < prString->size(); ++idx )
+				for( size_t idx = 0; idx < prString->size(); ++idx )
 				{
 					int idxNewItem = AddString( prString->at( idx ) );
 					if( idxNewItem < 0 )
 						continue;
-					if( IsEnumeratingProperties() )
-					{
-						const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-						if( prInt )
-							SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
-					}
+					if( prInt && idx < prInt->size() )
+						SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
 				}
 			}
 			mbIgnoreChange = false;

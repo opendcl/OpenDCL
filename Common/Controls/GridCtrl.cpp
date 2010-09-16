@@ -158,7 +158,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mbAlternateColumnColors( pTemplate->GetLongProperty( Prop::AlternateOrient ) != 0 )
 , mclrAlternate( pTemplate->GetColorProperty( Prop::AlternatingColor ) )
 , mpCellEditCtrl( NULL )
-, mnRowHeight( 24 )
+, mnRowHeight( -1 )
 {
 	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
 	mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 2, 1 );
@@ -254,8 +254,8 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 			}
 			else
 			{
-				if( !mDefaultImageList.m_hImageList )
-					mDefaultImageList.Create( 1, mnRowHeight, ILC_COLOR, 1, 1 );
+				mDefaultImageList.DeleteImageList();
+				mDefaultImageList.Create( 1, (mnRowHeight <= 0)? 24 : mnRowHeight, ILC_COLOR, 1, 1 );
 				mDefaultImageList.SetBkColor( CLR_NONE );
 				SetImageList( &mDefaultImageList, TVSIL_NORMAL );
 				SetImageList( &mDefaultImageList, LVSIL_SMALL );

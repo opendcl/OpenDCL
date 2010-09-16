@@ -113,7 +113,9 @@ void CModalDlg::OnSize(UINT nType, int cx, int cy)
 void CModalDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	__super::OnShowWindow(bShow, nStatus);
-	GetArxServices()->HandleEvent( Prop::FormEventShow, false );	
+	GetArxServices()->HandleEvent( Prop::FormEventShow, false );
+	SetForegroundWindow();
+	SetActiveWindow();
 }
 
 void CModalDlg::OnOK()

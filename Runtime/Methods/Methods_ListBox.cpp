@@ -31,7 +31,7 @@ ADSRESULT ListBox::AddString()
 		PropVal::TCStringArray* prsList = pListProp->GetStringArrayPtr();
 		prsList->insert( prsList->end(), rsToAdd.begin(), rsToAdd.end() );
 		if( pDlgControl->ApplyProperty( pListProp ) )
-			idxNewItem = prsList->size();
+			idxNewItem = prsList->size() - 1;
 	}
 
 	if( idxNewItem >= 0 )
