@@ -12,7 +12,11 @@
 #include "PictureObject.h"
 #include "Resource.h"
 
+#if defined(_BRXTARGET)
+static bool AcadIsQuitting() { return false; }
+#else
 extern bool AcadIsQuitting(void);
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////

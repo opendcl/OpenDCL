@@ -19,10 +19,12 @@ static FT_acedLineWeightDialog GetProc(void)
 	static FT_acedLineWeightDialog pfProc = NULL;
 	if( pfProc )
 		return pfProc;
-#if (_BRXTARGET == 10)
-	HMODULE hmodApi = GetModuleHandle( _T("brx10.dll") );
-#elif (_BRXTARGET == 9)
+#if (_BRXTARGET == 9)
 	HMODULE hmodApi = GetModuleHandle( _T("brx.dll") );
+#elif (_BRXTARGET == 10)
+	HMODULE hmodApi = GetModuleHandle( _T("brx10.dll") );
+#elif (_BRXTARGET == 11)
+	HMODULE hmodApi = GetModuleHandle( _T("brx11.dll") );
 #elif (_BRXTARGET)
 	#error Unknown BRX target!
 #else
