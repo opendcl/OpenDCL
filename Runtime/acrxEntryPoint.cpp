@@ -387,6 +387,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Grid_GetCellCheckState"),       Grid::GetCellCheckState},
 	{_T("Grid_GetCellDropList"),         Grid::GetCellDropList},
 	{_T("Grid_GetCellImages"),           Grid::GetCellImages},
+	{_T("Grid_GetCellStyle"),            Grid::GetCellStyle},
 	{_T("Grid_GetCellText"),             Grid::GetCellText},
 	{_T("Grid_GetColumnCells"),          Grid::GetColumnCells},
 	{_T("Grid_GetColumnCount"),          Grid::GetColumnCount},

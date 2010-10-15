@@ -334,6 +334,30 @@ ADSRESULT Grid::GetCellImages()
 	return RSRSLT;
 }
 
+ADSRESULT Grid::GetCellStyle()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	acedRetInt( pCtrl->GetCellStyle( nRow, nCol ) );
+	return RSRSLT;
+}
+
 ADSRESULT Grid::GetCellText()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
@@ -1057,7 +1081,6 @@ ADSRESULT Grid::StartCellEdit()
 	acedRetT();
 	return RSRSLT;
 }
-
 
 ADSRESULT Grid::GetCellCheckState()
 {

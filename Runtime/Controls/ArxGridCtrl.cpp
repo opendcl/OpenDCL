@@ -515,7 +515,7 @@ void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle )
 
 CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 {
-	switch( GetCellStyle( nRow, nCol ) )
+	switch( GetEffectiveCellStyle( nRow, nCol ) )
 	{
 		//case Grid::CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
 		//case Grid::OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );

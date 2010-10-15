@@ -182,6 +182,7 @@ public:
 	int GetCurColumn() const { return mCurrentCell.col(); }
 	ULONG GetColumnCount() const { return mcColumns; }
 	Grid::CellStyle GetCellStyle( int nRow, int nCol );
+	Grid::CellStyle GetEffectiveCellStyle( int nRow, int nCol );
 	Grid::CellStyle GetCurCellStyle();
 	void SetCellStyle( int nRow, int nCol, Grid::CellStyle nStyle, int image = -1, int altImage = -1,
 										 LPCTSTR pszListText = NULL );

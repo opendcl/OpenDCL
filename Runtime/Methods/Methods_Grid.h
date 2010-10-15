@@ -12,6 +12,7 @@ ADSRESULT AddString();
 ADSRESULT InsertRow();
 ADSRESULT InsertString();
 ADSRESULT StartCellEdit();
+ADSRESULT GetCellStyle();
 ADSRESULT SetCellStyle();
 ADSRESULT GetCellDropList();
 ADSRESULT SetCellDropList();

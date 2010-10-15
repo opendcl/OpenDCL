@@ -400,10 +400,18 @@ void CGridCtrl::SetCurCell( int nRow, int nCol )
 
 enum Grid::CellStyle CGridCtrl::GetCurCellStyle()
 {
-	return GetCellStyle( mCurrentCell.row(), mCurrentCell.col() );
+	return GetEffectiveCellStyle( mCurrentCell.row(), mCurrentCell.col() );
 }
 
 enum Grid::CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
+{
+	const _CellData* pCellData = GetCellData( nRow, nCol );
+	if( pCellData )
+		return pCellData->mType;
+	return Grid::Undefined;
+}
+
+enum Grid::CellStyle CGridCtrl::GetEffectiveCellStyle( int nRow, int nCol )
 {
 	const _CellData* pCellData = GetCellData( nRow, nCol );
 	if( pCellData && pCellData->mType != Grid::Undefined )
@@ -470,7 +478,7 @@ CString CGridCtrl::GetCurCellText() const
 bool CGridCtrl::SetCellText( int nRow, int nCol, LPCTSTR pszText )
 {
 	bool bSuccess = (__super::SetItemText( nRow, nCol, pszText ) != FALSE);
-	switch( GetCellStyle( nRow, nCol ) )
+	switch( GetEffectiveCellStyle( nRow, nCol ) )
 	{
 	case Grid::ArrowHead:
 	case Grid::AcadColors:
@@ -639,7 +647,7 @@ bool CGridCtrl::SetCellListData( int nRow, int nCol, const CArray<int, int>& rnI
 	for( INT_PTR idx = 0; idx < rsList.GetCount(); ++idx )
 	{
 		CString sText = rsList.GetAt( idx );
-		switch( GetCellStyle( nRow, nCol ) )
+		switch( GetEffectiveCellStyle( nRow, nCol ) )
 		{
 		case Grid::UpperCase:
 		case Grid::UpperCase_Combo:
@@ -936,7 +944,7 @@ void CGridCtrl::OnEndEditCurCell()
 
 CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 {
-	switch( GetCellStyle( nRow, nCol ) )
+	switch( GetEffectiveCellStyle( nRow, nCol ) )
 	{
 		case Grid::CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
 		case Grid::OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
@@ -1087,7 +1095,7 @@ bool CGridCtrl::ToggleCellState( int nRow, int nCol )
 
 void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 {
-	Grid::CellStyle nCellStyle = GetCellStyle( nRow, nCol );
+	Grid::CellStyle nCellStyle = GetEffectiveCellStyle( nRow, nCol );
 	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
   GetItem( &lvi );
 	bool bHighlight = false;

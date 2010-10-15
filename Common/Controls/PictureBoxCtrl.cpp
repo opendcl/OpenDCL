@@ -75,7 +75,8 @@ static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtr
 
 static bool IsButtonLikeRequired( TDclControlPtr pDclControl )
 {
-	if( !pDclControl->GetStringProperty( Prop::EventClicked ).IsEmpty() ||
+	if( pDclControl->GetBooleanProperty( Prop::DragnDropAllowBegin ) ||
+			!pDclControl->GetStringProperty( Prop::EventClicked ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventDblClicked ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::DragnDropBegin ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventKeyDown ).IsEmpty() ||
