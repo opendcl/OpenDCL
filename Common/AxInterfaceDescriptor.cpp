@@ -323,12 +323,10 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainerCtrl *axContainer)
 		COleFont font( pDispatch );
 		CString		sFontName = font.GetName();
 		CY			cyFontSize = font.GetSize();
-		BOOL		bFontBold = font.GetBold();
 		BOOL		bFontUnderLine = font.GetUnderline();
 		BOOL		bFontItalic = font.GetItalic();
 		BOOL		bFontStrikethrough = font.GetStrikethrough();
 		short		nFontWeight = font.GetWeight();
-		short		nFontCharset = font.GetCharset();
 				
 		LOGFONT lf;
 		memset(&lf, 0, sizeof(LOGFONT));

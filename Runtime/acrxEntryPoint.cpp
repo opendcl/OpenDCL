@@ -2782,6 +2782,7 @@ public:
 
 		CPoint ptMouse;
 		GetCursorPos(&ptMouse);
+		ScreenToClient( adsw_acadDocWnd(), &ptMouse );
 
 		acedDwgPoint cpt;
 		acedCoordFromPixelToWorld(ptMouse, cpt);

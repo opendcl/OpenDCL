@@ -69,11 +69,13 @@ static void DrawTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int
 	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
 
 	// Do the work - True Mask method - cool if not actual display
+	COLORREF clrOldBk = pDC->SetBkColor( RGB(255,255,255) );
 	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
 	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
 	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
 
 	// Restore settings
+	pDC->SetBkColor( clrOldBk );
 	dcImage.SelectObject(pOldBitmapImage);
 	dcTrans.SelectObject(pOldBitmapTrans);
 }
@@ -163,11 +165,13 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 	}
 
 	// Do the work - True Mask method - cool if not actual display
+	COLORREF clrOldBk = pDC->SetBkColor( RGB(255,255,255) );
 	pDC->BitBlt(x, y, nWidth, nHeight, &dcBW, 0, 0, SRCINVERT);
 	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
 	pDC->BitBlt(x, y, nWidth, nHeight, &dcBW, 0, 0, SRCINVERT);
 
 	// Restore settings
+	pDC->SetBkColor( clrOldBk );
 	dcImage.SelectObject(pOldBitmapImage);
 	dcTrans.SelectObject(pOldBitmapTrans);
 	pDC->RestoreDC(-1);
@@ -374,7 +378,7 @@ void CPictureBox::DrawText(int sX, int sY, COLORREF crFore, COLORREF crBack, CSt
 	::GetTextExtentPoint32(hdc, sText, sText.GetLength(), &szExtent);
 	
 
-	DWORD dwJustification;
+	DWORD dwJustification = 0;
 	sJustification.MakeUpper();
 	if (sJustification == sTL)
 	{
@@ -468,7 +472,7 @@ int CPictureBox::DrawWrappedText(int sX, int sY, int eX, COLORREF crFore, COLORR
 	// setup the font			
 	HGDIOBJ pOldFont = SelectObject(hdc, GetFont()->m_hObject);
 
-	DWORD dwJustification;
+	DWORD dwJustification = 0;
 	sJustification.MakeUpper();
 	if (sJustification == sL)
 	{

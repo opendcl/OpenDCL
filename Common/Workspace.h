@@ -24,7 +24,7 @@ class CWorkspace
 
 public:
 	CWorkspace();
-	~CWorkspace();
+	virtual ~CWorkspace();
 
 public:
 	//Workspace constants

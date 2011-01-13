@@ -23,7 +23,7 @@ CArxColorComboBoxCtrl::~CArxColorComboBoxCtrl()
 
 bool CArxColorComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bSuccess = __super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID );
+	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
 	if( bSuccess )
 	{

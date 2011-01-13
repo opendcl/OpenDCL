@@ -50,7 +50,7 @@ public:
 		}
 	void Lock()
 		{
-			ctRef = ~0;
+			ctRef = ~ULONG(0);
 		}
 	RefCounterBase* Copy()
 		{

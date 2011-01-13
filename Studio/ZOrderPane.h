@@ -9,18 +9,16 @@
 class CStudioDialogObject;
 
 
-#define ZOrderListID  107
-#define SendToBackId  108
-#define BringToFrontId  109
-#define ZUpArrowId  110
-#define ZDownArrowId  111
-#define ID_TOOLBAR  14
-#define nDeButtonCountZO  4
-#define nDeToolTipTitleLen  79
-
-#define nDeFontPtSize 80
-#define nDeIconW 19
-#define nDeIconHt 16
+//#define ZOrderListID  107
+//#define SendToBackId  108
+//#define BringToFrontId  109
+//#define ZUpArrowId  110
+//#define ZDownArrowId  111
+//#define nDeToolTipTitleLen  79
+//
+//#define nDeFontPtSize 80
+//#define nDeIconW 19
+//#define nDeIconHt 16
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -29,8 +27,7 @@ class CStudioDialogObject;
 class CZOrderPane : public CDialog
 {
 	CZOrderListBox mZOrderList;
-	CToolBarCtrl	m_Buttons;
-	TBBUTTON		*m_pTBButtons;
+	CToolBarCtrl mToolbar;
 
 // Construction
 public:
@@ -42,10 +39,11 @@ public:
 
 // Operations
 public:
-	void OnActivateDlgObject( CStudioDialogObject* pDlgObject ) { mZOrderList.OnActivateDlgObject( pDlgObject ); }
-	void OnActivateDclControl( TDclControlPtr pDclControl ) { mZOrderList.OnActivateDclControl( pDclControl ); }
-	void AddTheButtons();
-	CString NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
+	void OnActivateDlgObject( CStudioDialogObject* pDlgObject );
+	void OnActivateDclControl( TDclControlPtr pDclControl );
+
+protected:
+	void UpdateToolUI();
 
 	// Generated message map functions
 protected:
@@ -57,7 +55,6 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
-	BOOL OnNeedText( UINT id, NMHDR * pTTTStruct, LRESULT * pResult );
 	void OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
 	void OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
 };

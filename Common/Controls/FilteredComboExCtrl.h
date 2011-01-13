@@ -12,22 +12,22 @@
 
 class CFilteredComboExCtrl : public CComboExCtrl
 {
-	CInputFilter* mpFilter;
+	//CInputFilter* mpFilter;
 
 public:
 	CFilteredComboExCtrl( CInputFilter* pFilter )
 		: CComboExCtrl()
-		, mpFilter( pFilter )
+		//, mpFilter( pFilter )
 		{}
 	CFilteredComboExCtrl( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwComboStyle, UINT nID, CInputFilter* pFilter )
 		: CComboExCtrl( pParentWnd, rectWnd, dwComboStyle, nID )
-		, mpFilter( pFilter )
+		//, mpFilter( pFilter )
 		{}
 	virtual ~CFilteredComboExCtrl()
 		{
-			delete mpFilter;
+			//delete mpFilter;
 		}
 
 public:
-	virtual CInputFilter* GetInputFilter() { return mpFilter; }
+	//virtual CInputFilter* GetInputFilter() { return mpFilter; }
 };

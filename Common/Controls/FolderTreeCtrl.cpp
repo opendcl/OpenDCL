@@ -337,9 +337,7 @@ void CFolderTreeCtrl::EnumFolders()
 {
 	HTREEITEM myComputer;
     LPMALLOC pMalloc;
-    LPITEMIDLIST pidlProgFiles = NULL;
     LPITEMIDLIST pidlItems = NULL;
-    IShellFolder *psfFirstFolder = NULL;
     IShellFolder *psfDeskTop = NULL;
     LPENUMIDLIST ppenum = NULL;
     ULONG celtFetched;
@@ -432,7 +430,7 @@ void CFolderTreeCtrl::EnumFolders()
 	
 	
 	// look through the enum list and extract the appropriate directory names.
-    while( hr = ppenum->Next(1, &pidlItems, &celtFetched) == S_OK && (celtFetched) == 1)
+    while( (hr = ppenum->Next(1, &pidlItems, &celtFetched), hr) == S_OK && celtFetched == 1)
     {
         psfDeskTop->GetDisplayNameOf(pidlItems, SHGDN_INFOLDER, &strDispName);
         StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);

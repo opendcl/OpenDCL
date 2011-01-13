@@ -88,7 +88,7 @@ class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCell
 				if( message == WM_COMMAND )
 				{
 					if( HIWORD(wParam) == CBN_KILLFOCUS )
-						mpGridCtrl->HideEditControls();
+						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
 				}
 				return lResult;
 			}
@@ -141,7 +141,6 @@ public:
 		{
 			CString sText = GetSelectedPath();
 			mpGridCtrl->SetCellText( mnRow, mnCol, sText );
-			DestroyWindow();
 			mClippingWnd.DestroyWindow();
 		}
 };
@@ -159,6 +158,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mclrAlternate( pTemplate->GetColorProperty( Prop::AlternatingColor ) )
 , mpCellEditCtrl( NULL )
 , mnRowHeight( -1 )
+, mbIgnoreChange( false )
 {
 	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
 	mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 2, 1 );
@@ -368,7 +368,7 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 void CGridCtrl::SetCurCell( int nRow, int nCol )
 {
 	HideEditControls();
-	InvalidateRect( &GetCurCellRect() );
+	InvalidateRect( GetCurCellRect() );
 	if( mbHasRowHeader && nCol == 0 )
 		nCol = -1;
 	if( mCurrentCell.row() != nRow || mCurrentCell.col() != nCol )
@@ -393,7 +393,7 @@ void CGridCtrl::SetCurCell( int nRow, int nCol )
 		//		SetScrollPos( SB_HORZ, GetScrollPos( SB_HORZ ) + rcCell.left );
 		//	}
 		//}
-		InvalidateRect( &GetCurCellRect() );
+		InvalidateRect( GetCurCellRect() );
 		OnSelectionChanged();
 	}
 }
@@ -814,6 +814,36 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 				ColumnData.push_back( _CellData( Grid::Runtime ) );
 			}
 		}
+		if( !mbIgnoreChange )
+		{
+			PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetIntArrayPtr();
+			if( prnWidths && prnWidths->size() >= (size_t)nRet )
+				prnWidths->insert( prnWidths->begin() + nRet, nWidth );
+			PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();	
+			if( prsCaptions && prsCaptions->size() >= (size_t)nRet )
+				prsCaptions->insert( prsCaptions->begin() + nRet, sHeading );
+			PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();	
+			if( prnImages && prnImages->size() >= (size_t)nRet )
+				prnImages->insert( prnImages->begin() + nRet, nImageIndex );
+			PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();	
+			if( prnAlignment && prnAlignment->size() >= (size_t)nRet )
+				prnAlignment->insert( prnAlignment->begin() + nRet, nFormat );
+			PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();	
+			if( prnStyles && prnStyles->size() >= (size_t)nRet )
+				prnStyles->insert( prnStyles->begin() + nCol, Grid::Runtime );
+			PropVal::TIntArray* prnDefImages = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();	
+			if( prnDefImages && prnDefImages->size() >= (size_t)nRet )
+				prnDefImages->insert( prnDefImages->begin() + nCol, -1 );
+			PropVal::TIntArray* prnAltImages = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();	
+			if( prnAltImages && prnAltImages->size() >= (size_t)nRet )
+				prnAltImages->insert( prnAltImages->begin() + nCol, -1 );
+			PropVal::TCStringArrayList* prnListItems = mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();	
+			if( prnListItems && prnListItems->size() >= (size_t)nRet )
+				prnListItems->insert( prnListItems->begin() + nCol, PropVal::TCStringArray() );
+			PropVal::TIntArrayList* prnListImages = mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();	
+			if( prnListImages && prnListImages->size() >= (size_t)nRet )
+				prnListImages->insert( prnListImages->begin() + nCol, PropVal::TIntArray() );
+		}
 	}
 	OnNeedRepaint();
 	return nRet;
@@ -858,6 +888,36 @@ BOOL CGridCtrl::DeleteColumn( int nCol )
 	}
 	if( mcColumns > 0 )
 		--mcColumns;
+	if( !mbIgnoreChange )
+	{
+		PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetIntArrayPtr();
+		if( prnWidths && prnWidths->size() > (size_t)nCol )
+			prnWidths->erase( prnWidths->begin() + nCol );
+		PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();	
+		if( prsCaptions && prsCaptions->size() > (size_t)nCol )
+			prsCaptions->erase( prsCaptions->begin() + nCol );
+		PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();	
+		if( prnImages && prnImages->size() > (size_t)nCol )
+			prnImages->erase( prnImages->begin() + nCol );
+		PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();	
+		if( prnAlignment && prnAlignment->size() > (size_t)nCol )
+			prnAlignment->erase( prnAlignment->begin() + nCol );
+		PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();	
+		if( prnStyles && prnStyles->size() > (size_t)nCol )
+			prnStyles->erase( prnStyles->begin() + nCol );
+		PropVal::TIntArray* prnDefImages = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();	
+		if( prnDefImages && prnDefImages->size() > (size_t)nCol )
+			prnDefImages->erase( prnDefImages->begin() + nCol );
+		PropVal::TIntArray* prnAltImages = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();	
+		if( prnAltImages && prnAltImages->size() > (size_t)nCol )
+			prnAltImages->erase( prnAltImages->begin() + nCol );
+		PropVal::TCStringArrayList* prnListItems = mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();	
+		if( prnListItems && prnListItems->size() > (size_t)nCol )
+			prnListItems->erase( prnListItems->begin() + nCol );
+		PropVal::TIntArrayList* prnListImages = mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();	
+		if( prnListImages && prnListImages->size() > (size_t)nCol )
+			prnListImages->erase( prnListImages->begin() + nCol );
+	}
 	return TRUE;
 }
 
@@ -869,6 +929,7 @@ void CGridCtrl::InvalidateCell( int nRow, int nCol )
 
 void CGridCtrl::SetupColumns()
 {
+	mbIgnoreChange = true;
 	for( int idxColumn = mcColumns; idxColumn >= 0; --idxColumn )
 		DeleteColumn( idxColumn );
 	mcColumns = 0;
@@ -908,6 +969,7 @@ void CGridCtrl::SetupColumns()
 									((prnWidths && idxColumn < prnWidths->size())? prnWidths->at( idxColumn ) : 50),
 									((prnImages && idxColumn < prnImages->size())? prnImages->at( idxColumn ) : -1) );
 	}
+	mbIgnoreChange = false;
 }
 
 void CGridCtrl::HideEditControls()
@@ -933,12 +995,12 @@ void CGridCtrl::OnEditCurCell()
 
 void CGridCtrl::OnEndEditCurCell()
 {
+	CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
+	mpCellEditCtrl = NULL;
 	NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_ENDLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
 	CWnd* pParent = GetParent();
 	if( pParent )
 		pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
-	CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
-	mpCellEditCtrl = NULL;
 	delete pCellEditCtrl;
 }
 

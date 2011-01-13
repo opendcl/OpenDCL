@@ -276,7 +276,6 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 	CWnd* pWndToMove = pDlgControl->GetControlWnd();
 	if( !pWndToMove )
 		return;
-	bool bTransparent = (0 != (pWndToMove->GetExStyle() & WS_EX_TRANSPARENT));
 	//if the control is hosted inside another window, find the ancestor that is a child
 	//of the host dialog and move it instead
 	bool bWindowLess = (pWndToMove->m_hWnd == NULL);

@@ -281,7 +281,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	TDclFormPtr pTopLevelParentForm = pOwnerForm;
 	while( pTopLevelParentForm->GetParentForm() )
 		pTopLevelParentForm = pTopLevelParentForm->GetParentForm();
-	FormType eFormType = pTopLevelParentForm->GetType();
 
 	TPropertyPtr pPropEventInvoke = pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 	pPropEventInvoke->SetHidden( !pTopLevelParentForm->IsModeless() );

@@ -126,7 +126,6 @@ void CEditCtrl::PreSubclassWindow()
 
 void CEditCtrl::OnKillFocus( CWnd* pNewWnd )
 {
-	__super::OnKillFocus( pNewWnd );
 	CInputFilter* pFilter = GetInputFilter();
 	if( pFilter )
 	{
@@ -145,6 +144,7 @@ void CEditCtrl::OnKillFocus( CWnd* pNewWnd )
 		SetWindowText( sText ); //validate and set the input
 		SetSel( nSelStart, nSelEnd, TRUE );
 	}
+	__super::OnKillFocus( pNewWnd );
 }
 
 BOOL CEditCtrl::PreTranslateMessage( MSG* pMsg )

@@ -45,7 +45,7 @@ public:
 	virtual void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct )
 		{
 			size_t idxItem = lpDrawItemStruct->itemID;
-			if( idxItem < 0 || idxItem >= mrLayerProperties.size() )
+			if( idxItem >= mrLayerProperties.size() )
 				return;
 
 			CDC *pDC = CDC::FromHandle( lpDrawItemStruct->hDC );

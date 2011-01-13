@@ -314,7 +314,7 @@ BOOL CHtmlBrowser::PreTranslateMessage(MSG* pMsg)
 	// check if the browser control wants to handle the message
 	if(m_pBrowserApp != NULL)
 	{
-		CComQIPtr<IOleInPlaceActiveObject> spInPlace = m_pBrowserApp;
+		CComQIPtr<IOleInPlaceActiveObject> spInPlace( m_pBrowserApp );
 		if( spInPlace && spInPlace->TranslateAccelerator(pMsg) == S_OK )
 			return TRUE;
 	}

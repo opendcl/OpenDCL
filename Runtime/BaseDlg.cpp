@@ -278,7 +278,7 @@ void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 	__super::OnWindowPosChanged(lpwndpos);
 	if( IsIgnoreSizing() )
 		return;
-	if( (lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE) != (SWP_NOSIZE | SWP_NOMOVE)) )
+	if( ((lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE)) != (SWP_NOSIZE | SWP_NOMOVE)) )
 		SavePosition();
 }
 

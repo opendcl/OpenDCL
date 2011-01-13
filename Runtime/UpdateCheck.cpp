@@ -451,7 +451,7 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			#endif //(_WIN32_WINNT >= 0x0501)
 				case WM_LBUTTONDOWN:
 				{
-					CString sAction = ((UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA ))->sAction;
+					CString sAction( ((UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA ))->sAction );
 					if( !sAction.IsEmpty() )
 						ShellExecute( NULL, _T("open"), sAction, NULL, NULL, SW_SHOWNORMAL );
 					PostMessage( hwnd, WM_QUIT, 0, 0 );

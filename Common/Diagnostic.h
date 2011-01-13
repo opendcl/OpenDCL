@@ -325,7 +325,7 @@ template<>
 inline
 const TCHAR* asString( const std::vector< CString >& rStr )
 {
-	unsigned int ctElem = rStr.size();
+	size_t ctElem = rStr.size();
 	if( ctElem == 0 )
 		return _T("<empty>");
 	static TCHAR buf[1024];

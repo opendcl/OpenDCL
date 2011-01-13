@@ -426,9 +426,6 @@ bool readDISPIDAsLong(std::ifstream &sFile, DISPID& i)
 bool readDISPID(std::ifstream &sFile, DISPID& i)
 {
 	bool rVal = readGenericInt(sFile, labelDebugDISPID, labelReleaseDISPID, (long&)i);
-	if (!rVal) {
-		int p = 0;
-	}
   return rVal;
 }
 

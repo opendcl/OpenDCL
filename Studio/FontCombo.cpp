@@ -166,7 +166,7 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	rc.bottom += nOffset;
 
 	CString strCurFont,strNextFont;
-	if (lpDIS->itemID >= 0 && lpDIS->itemID < UINT(GetCount()))
+	if (lpDIS->itemID < UINT(GetCount()))
 	{
 		GetLBText(lpDIS->itemID,strCurFont);
 	}

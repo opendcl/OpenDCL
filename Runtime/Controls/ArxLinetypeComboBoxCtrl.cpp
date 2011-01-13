@@ -23,7 +23,7 @@ CArxLinetypeComboBoxCtrl::~CArxLinetypeComboBoxCtrl()
 
 bool CArxLinetypeComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bSuccess = __super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID );
+	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
 	if( bSuccess )
 		SetUseOther( FALSE );
@@ -133,7 +133,8 @@ void CArxLinetypeComboBoxCtrl::OnSelchange()
 
 void CArxLinetypeComboBoxCtrl::OnDropdown()
 {
-	LoadContentsFromDatabase();
+	setDbReload( true );
+	AddItems();
 	__super::OnDropDown();
 	GetArxServices()->HandleEvent( Prop::EventDropDown );
 }

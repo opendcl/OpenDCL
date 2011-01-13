@@ -192,8 +192,8 @@ static bool ObjectTypeInfoProperties( LPUNKNOWN pObj, LPTYPEINFO* ppAxTypeInfo )
 static void AddAxProp(TDclControlPtr pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
 {
 	TPropertyPtr pProp = new CPropertyObject(pControl, PropActiveXProp);
-	AxPropertyDescriptor* axPropPut =
-		new AxPropertyDescriptor( lId, sName, sDesc, vt, bSet? INVOKE_PROPERTYPUT : INVOKE_PROPERTYGET );
+	//AxPropertyDescriptor* axPropPut =
+	//	new AxPropertyDescriptor( lId, sName, sDesc, vt, bSet? INVOKE_PROPERTYPUT : INVOKE_PROPERTYGET );
 	pControl->InsertNamedProperty( pProp );
 }
 
@@ -377,7 +377,7 @@ bool CAxContainerCtrl::SetProperty( TPropertyPtr pProp, LPCTSTR pszValue )
 	assert( pPropPutDesc != NULL ); //no 'put' method for this property
 	if( !pPropPutDesc )
 		return false;
-	if( FAILED(SetProperty( pPropPutDesc, &COleVariant( pszValue ), 1 )) )
+	if( FAILED(SetProperty( pPropPutDesc, COleVariant( pszValue ), 1 )) )
 		return false;
 	return true;
 }
@@ -448,7 +448,6 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 	assert( SUCCEEDED(hr) );
 	if( FAILED(hr) )
 		return 0;
-	UINT ctVars = pTypeAttr->cVars;
 	UINT ctFuncs = pTypeAttr->cFuncs;
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
@@ -506,7 +505,6 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 	assert( SUCCEEDED(hr) );
 	if( FAILED(hr) )
 		return 0;
-	UINT ctVars = pTypeAttr->cVars;
 	UINT ctFuncs = pTypeAttr->cFuncs;
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 

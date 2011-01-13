@@ -237,7 +237,7 @@ bool CDialogObject::OnApplyBackgroundColor( TPropertyPtr pProp )
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
 		pColorService->SetBackgroundColor( pProp->GetLongValue() );
-	OnNeedRepaint();
+	OnNeedRepaint( true );
 	return true;
 }
 

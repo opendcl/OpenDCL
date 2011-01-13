@@ -33,12 +33,13 @@ bool CArxSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-void CArxSlideCtrl::OnPositionChanged( int nNewPos )
+void CArxSlideCtrl::OnPositionChanged( int nNewPos, bool bNotify /*= true*/ )
 {
 	if( nNewPos != mnLastReportedPosition )
 	{
 		mnLastReportedPosition = nNewPos;
-		GetArxServices()->HandleEvent( Prop::EventScroll, args_N( nNewPos ) );
+		if( bNotify )
+			GetArxServices()->HandleEvent( Prop::EventScroll, args_N( nNewPos ) );
 	}
 }
 

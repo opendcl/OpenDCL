@@ -210,12 +210,11 @@ ADSRESULT Tree::AddSibling()
 
 	HTREEITEM hItem = NULL;
 	HTREEITEM hAddAfter = (HTREEITEM)dwRefKey;
-	HTREEITEM hParent = NULL;
 	if( dwRefKey == -1 )
 		hAddAfter = pCtrl->FindItem( sRefKey );
+	HTREEITEM hParent = pCtrl->GetParentItem( hAddAfter );
 	if( hAddAfter && bInsertBefore )
 	{
-		hParent = pCtrl->GetParentItem( hAddAfter );
 		hAddAfter = pCtrl->GetPrevSiblingItem( hAddAfter );
 		if( !hAddAfter )
 			hAddAfter = TVI_FIRST;

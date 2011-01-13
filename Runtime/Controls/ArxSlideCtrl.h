@@ -24,7 +24,7 @@ public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
-	virtual void OnPositionChanged( int nNewPos );
+	virtual void OnPositionChanged( int nNewPos, bool bNotify = true );
 
 	// Generated message map functions
 protected:

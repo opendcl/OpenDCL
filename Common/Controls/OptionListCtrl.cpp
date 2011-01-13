@@ -30,15 +30,23 @@ COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 	CBitmap bitmap2;
 	bitmap2.LoadBitmap(IDB_OPTBTNH);
 	mImageList.Add( &bitmap2, RGB(255,0,255) );
-	
+
 	CBitmap bitmap3;
-	bitmap3.LoadBitmap(IDB_OPTBTNSEL);
+	bitmap3.LoadBitmap(IDB_OPTBTND);
 	mImageList.Add( &bitmap3, RGB(255,0,255) );
 	
 	CBitmap bitmap4;
-	bitmap4.LoadBitmap(IDB_OPTBTNSELH);
+	bitmap4.LoadBitmap(IDB_OPTBTNSEL);
 	mImageList.Add( &bitmap4, RGB(255,0,255) );
-
+	
+	CBitmap bitmap5;
+	bitmap5.LoadBitmap(IDB_OPTBTNSELH);
+	mImageList.Add( &bitmap5, RGB(255,0,255) );
+	
+	CBitmap bitmap6;
+	bitmap6.LoadBitmap(IDB_OPTBTNSELD);
+	mImageList.Add( &bitmap6, RGB(255,0,255) );
+	
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
@@ -76,7 +84,7 @@ bool COptionListCtrl::ApplyPropertiesEnum()
 	CRect rc;
 	GetWindowRect( &rc );
 	GetParent()->ScreenToClient( &rc );
-	MoveWindow( &CRect( 0, 0, 0, 0 ), FALSE );
+	MoveWindow( CRect( 0, 0, 0, 0 ), FALSE );
 	MoveWindow( &rc );
 
 	return bSuccess;
@@ -159,7 +167,7 @@ void COptionListCtrl::ResetTooltips()
 
 BEGIN_MESSAGE_MAP(COptionListCtrl, CListBox)
 	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)   
+	ON_MESSAGE(WM_MOUSELEAVE, &COptionListCtrl::OnMouseLeave)   
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_CONTROL_REFLECT(LBN_SELCHANGE, &COptionListCtrl::OnLbnSelchange)
@@ -233,6 +241,9 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			mbTrackingMouse = true;
 	}
 
+	if( !IsWindowEnabled() )
+		return;
+
 	CDC *pDC = GetDC();
 	pDC->SaveDC();
 	int nSel = GetCurSel();
@@ -248,20 +259,13 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		rcItem.bottom = rcItem.top + mnRowHeight;
 		if( !rcClient.PtInRect( rcItem.TopLeft() ) || !rcClient.PtInRect( rcItem.BottomRight() ) )
 			continue;
-		if( rcItem.PtInRect( point ) )
-		{
-			if( nSel == idxItem )
-				mImageList.Draw( pDC, 3, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
-			else
-				mImageList.Draw( pDC, 1, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
-		}
-		else
-		{
-			if( nSel == idxItem )
-				mImageList.Draw( pDC, 2, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
-			else
-				mImageList.Draw( pDC, 0, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
-		}
+
+		bool bSelected = (nSel == idxItem);
+		bool bHighlighted = (rcItem.PtInRect( point ) != FALSE);
+		int idxImage = bHighlighted? 1 : 0;
+		if( bSelected )
+			idxImage += 3;
+		mImageList.Draw( pDC, idxImage, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
 	}
 	pDC->RestoreDC( -1 );
 	ReleaseDC(pDC);
@@ -331,10 +335,12 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 	if( lpDrawItemStruct->itemAction & (ODA_SELECT | ODA_DRAWENTIRE) )
 	{
-		int nImageIndex = 0;
-		if( lpDrawItemStruct->itemState & ODS_SELECTED )
-			nImageIndex = 2;
-		mImageList.Draw( pDC, nImageIndex, CPoint( rcItem.left + 2, rcItem.top + 2 ), ILD_NORMAL );
+		bool bSelected = ((lpDrawItemStruct->itemState & ODS_SELECTED) != 0);
+		bool bDisabled = (lpDrawItemStruct->itemData >= 2);
+		int idxImage = bDisabled? 2 : 0;
+		if( bSelected )
+			idxImage += 3;
+		mImageList.Draw( pDC, idxImage, CPoint( rcItem.left + 2, rcItem.top + 2 ), ILD_NORMAL );
 	}
 	if( lpDrawItemStruct->itemAction & ODA_FOCUS )
 	{

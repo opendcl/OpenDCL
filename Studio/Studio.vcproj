@@ -50,6 +50,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4191 /wd4263 /wd4619 /wd4548 /wd4264"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;EDITOR;_PRERELEASE"

@@ -24,7 +24,6 @@ CFontPropertyPage::CFontPropertyPage(TDclControlPtr pDclControl /*= NULL*/)
 {
 	LOGFONT logfont;
 	CWindowDC dc(GetDesktopWindow());
-	int cyPixelsPerInch = GetDeviceCaps(dc, LOGPIXELSY);
 	CFont *pfont = dc.GetCurrentFont();
 	pfont->GetLogFont( &logfont );
 

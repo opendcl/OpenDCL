@@ -104,8 +104,7 @@ void CZOrderListBox::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
 			continue;
 		mControls.push_back( pDclControl );
 		int idxItem = AddString( pDclControl->GetKeyName() );
-		if( IsControlSelected( pDclControl ) )
-			SetSel( idxItem, TRUE );
+		SetSel( idxItem, IsControlSelected( pDclControl ) );
 	}
 }
 
@@ -140,6 +139,8 @@ void CZOrderListBox::OnActivateDclControl( TDclControlPtr pDclControl )
 
 void CZOrderListBox::OnZOrderChanged()
 {
+	if( !mpDlgObject )
+		return;
 	mbNotifying = true;
 	TDclFormPtr pSourceForm = mpDlgObject->GetSourceForm();
 	AutoUndoGroup UndoGroup( pSourceForm->GetUndoManager(), IDS_UNDO_ZORDER );
@@ -492,8 +493,6 @@ void CZOrderListBox::OnMouseMove(UINT nFlags, CPoint point)
 			GetItemRect( midxInsertAt - 1, &rcCaret );
 			rcCaret.top = rcCaret.bottom - 2;
 			bScroll = (point.y > rcClient.bottom);
-			if( !bScroll )
-				int n = 1;
 		}
 		else
 		{
@@ -551,7 +550,7 @@ void CZOrderListBox::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 	ScreenToClient( &ptClient );
 	BOOL bOutside;
 	UINT idxItem = ItemFromPoint( ptClient, bOutside );
-	if( idxItem < 0 || idxItem >= mControls.size() )
+	if( idxItem >= mControls.size() )
 		return;
 
 	TDclControlList::iterator iter = mControls.begin();

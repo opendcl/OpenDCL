@@ -1245,7 +1245,7 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 			mProperties[pProp->GetName()].push_back( pProp );
 		}
 	}
-	bool bNoPics = (pDclControl->GetOwnerProject()->GetPictureMap().empty());
+	//bool bNoPics = (pDclControl->GetOwnerProject()->GetPictureMap().empty());
 	for( TPropertyMap::const_iterator iterPropName = mProperties.begin();
 			 iterPropName != mProperties.end();
 			 ++iterPropName )
@@ -1936,7 +1936,6 @@ void CPropertyGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	pDC->SetBkMode( TRANSPARENT );
 	if( (nItemState & LVIS_FOCUSED) )
 		crBackground = GetSysColor( COLOR_INACTIVECAPTION );
-	LONG nRightEdge = lpDrawItemStruct->rcItem.right;
 	CRect rcCell = GetCellRect( nRow, 0 );
 	CRect rcClip;
 	pDC->GetClipBox( &rcClip );
@@ -1950,8 +1949,8 @@ void CPropertyGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		UINT nCustomState = GetItemState( nRow, LVIS_STATEIMAGEMASK );
 		if( (nCustomState & INDEXTOSTATEIMAGEMASK(PGIS_DISPLAYONLY)) != 0 )
 			pDC->SetTextColor( GetSysColor( COLOR_GRAYTEXT ) );
-		Prop::Id id = GetPropertyId( nRow );
-		PropertyType type = GetPropertyType( nRow );
+		//Prop::Id id = GetPropertyId( nRow );
+		//PropertyType type = GetPropertyType( nRow );
 		bool bVaries = ((nCustomState & INDEXTOSTATEIMAGEMASK(PGIS_INDETERMINATE)) != 0);
 		rcCell = GetCellRect( nRow, 1 );
 		if( (nCustomState & INDEXTOSTATEIMAGEMASK(PGIS_BOOLEAN)) != 0 )

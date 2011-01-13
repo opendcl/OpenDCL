@@ -195,7 +195,7 @@ void CImageListContents::OnUpdate()
 	POSITION pos = m_TheList.GetFirstSelectedItemPosition();
 	if (pos == NULL)	
 		nItem = m_TheList.GetItemCount();
-	if (pos != NULL)	
+	else
 		nItem = m_TheList.GetNextSelectedItem(pos);
 
 	CString sText;
@@ -244,10 +244,7 @@ void CImageListContents::OnDelete()
 	
 	if (pos == NULL)	
 		return;
-
-	if (pos != NULL)	
-		nItem = m_TheList.GetNextSelectedItem(pos);
-
+	nItem = m_TheList.GetNextSelectedItem(pos);
 	m_TheList.DeleteItem(nItem);
 	if (nItem >= m_TheList.GetItemCount())
 		nItem = m_TheList.GetItemCount()-1;

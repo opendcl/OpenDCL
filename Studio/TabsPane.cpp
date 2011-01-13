@@ -112,7 +112,6 @@ void CTabsPane::Setup()
 	if (mnTabIndex != -1)
 		return;
 
-	POSITION pos = NULL;
 	m_pTabCaptions = mpDclControl->GetPropertyObject(Prop::TabsCaption);	
 	m_pTabTTT = mpDclControl->GetPropertyObject(Prop::TabsTTT);	
 	m_pTabImages = mpDclControl->GetPropertyObject(Prop::TabsImageList);	
@@ -140,13 +139,8 @@ void CTabsPane::Setup()
 void CTabsPane::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
-
-	int nIndex = pNMUpDown->iPos;
 	
 	mnTabIndex += pNMUpDown->iDelta;
-
-	// if this index has been deleted, skip it.
-	POSITION pos = NULL;
 
 	// lets check our wrapping
 	// if to big

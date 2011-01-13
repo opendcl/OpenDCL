@@ -57,7 +57,7 @@ class CArxWorkspace : public CWorkspace
 
 public:
 	CArxWorkspace();
-	~CArxWorkspace();
+	virtual ~CArxWorkspace();
 
 public:
 	//CWorkspace overrides

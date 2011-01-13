@@ -775,7 +775,7 @@ void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 						SetItemState( mnDragSource, 0, LVIS_SELECTED );
 				}
 			}
-			bool bWasSelected = (GetItemState( mnDragSource, LVIS_SELECTED ) != 0);
+			//bool bWasSelected = (GetItemState( mnDragSource, LVIS_SELECTED ) != 0);
 			SetItemState( mnDragSource, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
 			DWORD dwDropEffect = BeginDragDrop( point );
 			if( dwDropEffect == DROPEFFECT_MOVE )

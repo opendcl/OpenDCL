@@ -186,7 +186,7 @@ CRect CPaletteDlg::GetEffectiveWindowRect() const
 	if( pTopLevelWnd == &mHostPaletteSet && mHostPaletteSet.RolledUp() )
 		mHostPaletteSet.GetFullRect( rectWindow );
 	else
-		pTopLevelWnd->GetWindowRect( &rectWindow );
+		GetWindowRect( &rectWindow );
 	return rectWindow;
 }
 
@@ -318,7 +318,12 @@ int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
 	}
 	else
+	{
 		IgnoreSizing( false );
+		SetWindowPos( NULL, rcClient.left, rcClient.top,
+									mpTemplate->GetLongProperty( Prop::Width ), mpTemplate->GetLongProperty( Prop::Height ),
+									SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	}
 
 	ApplyPropertiesEnum();
 	IgnoreSizing( false );

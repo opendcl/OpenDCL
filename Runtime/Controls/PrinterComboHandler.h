@@ -33,7 +33,7 @@ public:
 	virtual void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct )
 		{
 			size_t idxItem = lpDrawItemStruct->itemID;
-			if( idxItem < 0 || idxItem >= mrImage.size() )
+			if( idxItem >= mrImage.size() )
 				return;
 
 			CDC *pDC = CDC::FromHandle( lpDrawItemStruct->hDC );

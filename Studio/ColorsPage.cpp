@@ -192,6 +192,7 @@ void CColorsPage::OnTruebtn()
 	if( colorDlg.DoModal() == IDOK ) // The user selected the "OK" button
 	{
 		COLORREF crColor = colorDlg.GetColor(); 
+		crColor |= 0x01000000;
 		CString sColor;
 		sColor.Format( _T("%d"), crColor );
 		m_Edit.SetWindowText( sColor );

@@ -171,7 +171,7 @@ class CAcUiComboEditCtrl : public TAcUiBase, public CGridCellEditCtrl
 				if( message == WM_COMMAND )
 				{
 					if( HIWORD(wParam) == CBN_KILLFOCUS )
-						mpGridCtrl->HideEditControls();
+						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
 				}
 				return lResult;
 			}
@@ -194,7 +194,7 @@ public:
 			CRect rcCtrl = CalcRect( rcCell );
 			mClippingWnd.Create( _T(""), WS_CHILD, rcCell, pGridCtrl );
 			rcCtrl.MoveToXY( 0, 0 );
-			DWORD dwComboStyle = (WS_VISIBLE | WS_CHILD | CBS_DROPDOWN | CBS_HASSTRINGS);
+			DWORD dwComboStyle = (WS_VISIBLE | WS_CHILD | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS | CBS_AUTOHSCROLL);
 			dwComboStyle |= _Style;
 			if( !Create( dwComboStyle, rcCtrl, &mClippingWnd, 100 ) )
 				return;
@@ -207,7 +207,7 @@ public:
 			GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
 			CRect rcClip;
-			rcClip.IntersectRect( &rcCtrl, &CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
+			rcClip.IntersectRect( &rcCtrl, CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
 			mClippingWnd.SetWindowPos( NULL, 0, 0, rcClip.Width(), rcClip.Height(),
 																 (SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
 			rcCtrl.MoveToY( rcCtrl.top + rcClip.Height() - rcCtrl.Height() );
@@ -248,7 +248,6 @@ public:
 			GetWindowText( sText );
 			ConvertData( sText );
 			mpGridCtrl->SetCellTextImage( mnRow, mnCol, sText, CAcUiComboHelper< TAcUiBase >::GetCellValue( this ) );
-			DestroyWindow();
 			mClippingWnd.DestroyWindow();
 		}
 };
@@ -292,17 +291,20 @@ static int GetCurrentLayerColor()
 }
 
 
+static CString GetTrueColorDisplayName( DWORD dwColor ) //Acad BGR format true color
+{
+	AcCmColor color;
+	color.setRGB( GetBValue( dwColor ), GetGValue( dwColor ), GetRValue( dwColor ) );
+	return color.colorNameForDisplay();
+}
+
+
 static CString GetColorDisplayName( int nAcadColor )
 {
 	if( nAcadColor < 0 )
 		return CString();
 	if( nAcadColor > 256 )
-	{
-		COLORREF clr = (COLORREF)nAcadColor; //note: BGR instead of RGB!
-		AcCmColor color;
-		color.setRGB( GetBValue( clr ), GetGValue( clr ), GetRValue( clr ) );
-		return color.colorNameForDisplay();
-	}
+		return GetTrueColorDisplayName( (DWORD)nAcadColor );
 	const ACHAR* rszColors[9];
 	accmGetLocalizedColorNames( rszColors );
 	switch( nAcadColor )
@@ -382,7 +384,7 @@ public:
 			else
 			{
 				rbColor.restype = RTSHORT;
-				rbColor.resval.rint = (nCellImage > 0 && nCellImage < 256)? nCellImage : 7;
+				rbColor.resval.rint = (nCellImage >= 0 && nCellImage <= 256)? nCellImage : 7;
 			}
 			resbuf* prbResult = NULL;
 			if( RTNORM == acedInvoke( &rbFuncName, &prbResult ) && prbResult )
@@ -392,7 +394,7 @@ public:
 				if( prbColorBook && prbColorBook->restype == 430 )
 					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
 				else if( prbTrueColor && prbTrueColor->restype == 420 )
-					pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( prbTrueColor->resval.rlong ), -1 );
+					pGridCtrl->SetCellTextImage( nRow, nCol, GetTrueColorDisplayName( DWORD(prbTrueColor->resval.rlong) ), -1 );
 				else
 				{
 					int nColor = prbResult->resval.rint;

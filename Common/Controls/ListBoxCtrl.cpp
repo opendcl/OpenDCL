@@ -224,7 +224,7 @@ DROPEFFECT CListBoxCtrl::OnDragOver( const CPoint& point, COleDataObject* pSourc
 	BOOL bOutside = TRUE;
 	UINT idxItem = ItemFromPoint( point, bOutside );
 	CRect rcItem;
-	if( idxItem < 0 || GetCount() == 0 )
+	if( GetCount() == 0 )
 	{
 		GetClientRect( &rcItem );
 		rcItem.bottom = rcItem.top + 2;
@@ -364,6 +364,7 @@ BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_MESSAGE(LB_INSERTSTRING, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_RESETCONTENT, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_ADDFILE, &CListBoxCtrl::OnModifyContent)
+	ON_MESSAGE(LB_SETITEMDATA, &CListBoxCtrl::OnModifyContent)
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 

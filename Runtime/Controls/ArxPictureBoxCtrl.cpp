@@ -76,6 +76,7 @@ void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if( nFlags == MK_LBUTTON && mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) )
 	{
 		DROPEFFECT dwDropEffect = BeginDragDrop( point );
+		PostMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
 		if( dwDropEffect != DROPEFFECT_NONE )
 			return;
 	}

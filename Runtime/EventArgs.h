@@ -46,7 +46,7 @@ public:
 			resbuf* prb = acutNewRb( RTSHORT );
 			if( !prb )
 				return NULL;
-			prb->resval.rint = _arg;
+			prb->resval.rint = static_cast<short>(_arg);
 			return prb;
 		}
 	virtual CString asString() const
@@ -79,7 +79,7 @@ public:
 			//CString sArg;
 			//sArg.Format( _T(" %u"), _arg );
 			//return sArg;
-			ads_real rArg = _arg;
+			ads_real rArg = static_cast<ads_real>(_arg);
 			TCHAR szArg[256] = _T(" "); 
 			if( RTNORM == acdbRToS( rArg, 2, 0, szArg + 1 ) )
 				return szArg;

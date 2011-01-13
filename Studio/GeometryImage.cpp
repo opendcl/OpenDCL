@@ -70,7 +70,6 @@ void CGeometryImage::DrawDimensions(HDC hdc)
 
 	if (hdc != NULL)
 	{
-		HBRUSH pBrush = NULL;
 		::DrawState(
 			hdc,
 			NULL,//(HBRUSH)pBrush->GetSafeHandle(),

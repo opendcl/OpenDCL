@@ -230,6 +230,7 @@ void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl, bool bDea
 		TDclFormPtr pForm = pDclControl->GetOwnerForm();
 		CStudioDialogObject* pDlgObject = (CStudioDialogObject*)pForm->GetFormInstance();
 		assert( pDlgObject == mpActiveDlgObject ); //make sure the form is activated first!
+		pDlgObject->OnActivateDclControl( pDclControl );
 		CZOrderPane* pZOrderPane = GetZOrderPane();
 		if( pZOrderPane )
 			pZOrderPane->OnActivateDclControl( pDclControl );
@@ -237,13 +238,6 @@ void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl, bool bDea
 		if( pPropertyPane )
 			pPropertyPane->OnActivateDclControl( pDclControl );
 		mpStudioFrame->GetFontToolbar().OnActivateDclControl( pDclControl );
-		pDlgObject->OnActivateDclControl( pDclControl );
-		//if( pDclControl->GetType() != _CtlForm )
-		//{
-		//	CToolboxPane* pToolbox = GetToolboxPane();
-		//	if( pToolbox )
-		//		pToolbox->ResetToPointer();
-		//}
 	}
 	else
 	{

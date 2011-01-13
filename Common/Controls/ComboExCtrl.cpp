@@ -118,7 +118,6 @@ void CComboExCtrl::PreSubclassWindow()
 
 void CComboExCtrl::OnKillFocus( CWnd* pNewWnd )
 {
-	__super::OnKillFocus( pNewWnd );
 	CInputFilter* pFilter = GetInputFilter();
 	if( pFilter )
 	{
@@ -138,6 +137,7 @@ void CComboExCtrl::OnKillFocus( CWnd* pNewWnd )
 		if( pEditCtrl )
 			pEditCtrl->SetSel( nSelStart, nSelEnd, TRUE );
 	}
+	__super::OnKillFocus( pNewWnd );
 }
 
 BOOL CComboExCtrl::PreTranslateMessage( MSG* pMsg )
@@ -192,10 +192,6 @@ void CComboExCtrl::OnEditchange()
 	}
 
 	int cchText = sText.GetLength();
-	DWORD dwCurSel = GetEditSel(); // Currently selected range
-	WORD dStart = LOWORD(dwCurSel);
-	WORD dEnd   = HIWORD(dwCurSel);
-
 	for( int idx = 0; idx < GetCount(); ++idx )
 	{
 		CString sLBText;

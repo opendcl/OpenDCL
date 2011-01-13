@@ -193,7 +193,7 @@ BOOL CFolderComboBox::PreTranslateMessage(MSG* pMsg)
 
 void CFolderComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
-	UINT nItemHeight = 16;
+	//UINT nItemHeight = 16;
 }
 
 void CFolderComboBox::OnLButtonDown(UINT nFlags, CPoint point) 

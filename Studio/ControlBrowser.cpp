@@ -766,6 +766,15 @@ bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM
 			case Prop::ToolTipTitleColor:
 			case Prop::ToolTipLine:
 			case Prop::ToolTipTitle:
+			case Prop::ColumnAlignments:
+			case Prop::ColumnAlternateImages:
+			case Prop::ColumnCaptions:
+			case Prop::ColumnDefaultImages:
+			case Prop::ColumnListImages:
+			case Prop::ColumnListItems:
+			case Prop::ColumnImages:
+			case Prop::ColumnStyles:
+			case Prop::ColumnWidths:
 				bHidden = false; //these hidden properties should be treated like normal properties
 				break;
 			}

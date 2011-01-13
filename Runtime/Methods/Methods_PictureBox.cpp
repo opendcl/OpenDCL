@@ -126,7 +126,7 @@ ADSRESULT PictureBox::DrawPoint()
 
 		pCtrl->DrawPoint( nX, nY, crColor );
 		
-	} while( bNestedList = GetListBeginArgument( pArgs, true ) );
+	} while( (bNestedList = GetListBeginArgument( pArgs, true ), bNestedList) );
 
 	if( bListBegin && !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -952,7 +952,7 @@ ADSRESULT PictureBox::PaintPicture()
 
 		pCtrl->PaintPicture( nStartX, nStartY, nPicID, (bEnabled? 1 : 0), (bMasked? 1 : 0) );
 		
-	} while( GetListBeginArgument( pArgs, true ) || (bAsPt = Get3dPointArgument( pArgs, pt, true )) );
+	} while( GetListBeginArgument( pArgs, true ) || ((bAsPt = Get3dPointArgument( pArgs, pt, true )), bAsPt) );
 
 	if( !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input

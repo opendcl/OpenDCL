@@ -691,8 +691,6 @@ void CColumnsPage::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CColumnsPage::OnDelete() 
 {
-	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
-
 	m_List.DeleteColumn(m_nIndex);
 
 	// add the data to the list arrays
@@ -739,7 +737,7 @@ void CColumnsPage::OnDroplistbtn()
 		for (i=0; i<m_ColData[m_nIndex].m_ImageItems.GetSize(); i++)
 		{
 			int n = m_ColData[m_nIndex].m_ImageItems[i];
-			Dlg.sImages.Add(m_ColData[m_nIndex].m_ImageItems[i]);
+			Dlg.sImages.Add(n);
 		}
 		
 		Dlg.m_pImageListPage = mpImageListPage;
@@ -761,7 +759,7 @@ void CColumnsPage::OnDroplistbtn()
 			for (i=0; i<Dlg.sImages.GetSize(); i++)
 			{
 				int n = Dlg.sImages[i];
-				m_ColData[m_nIndex].m_ImageItems.Add(Dlg.sImages[i]);
+				m_ColData[m_nIndex].m_ImageItems.Add(n);
 			}
 		}
 	}

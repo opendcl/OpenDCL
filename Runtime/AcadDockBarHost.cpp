@@ -58,7 +58,7 @@ CAcadDockBarHost::~CAcadDockBarHost()
 void CAcadDockBarHost::GetClientArea( CRect& rect )
 {
 	GetUsedRect( rect );
-#if (_BRXTARGET && _BRXTARGET <= 10)
+#if (_BRXTARGET && _BRXTARGET <= 11)
 	//GetUsedRect() returns invalid values in Bricscad!
 	GetClientRect( &rect );
 #endif
@@ -117,7 +117,7 @@ void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
-#if defined(_BRXTARGET) && (_BRXTARGET <= 10)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 11)
 	else if( flags & ADUI_DOCK_NF_SIZECHANGED ) //Bricscad doesn't set the correct flag when docking/undocking
 		PostMessage( refWM_FRAMECHANGED() );
 #endif
@@ -250,7 +250,7 @@ void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 	CRect rcClient;
 	GetClientArea( rcClient );
 	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);
-	if( !mpDlgObject->IsResizable() )
+	if( mpDlgObject->IgnoreSizing() || !mpDlgObject->IsResizable() )
 		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
 														 rcClient.Width(), rcClient.Height(),
@@ -275,6 +275,7 @@ BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg)
 			pMsg->hwnd = mhwndKeyboardFocus;
 			if( !IsDialogMessage( pMsg ) && !TranslateMessage( pMsg ) )
 				DispatchMessage( pMsg );
+			mhwndKeyboardFocus = ::GetFocus(); //in case the key caused focus to change (e.g. [Tab])
 			return TRUE;
 		}
 		TDialogControlPtr pControl = mpDlgObject->GetControlPane()->FindControl( pMsg->hwnd );
@@ -317,7 +318,15 @@ BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 		else if( !mbTrackingMouse )
-			SendMessage( refWM_MOUSEENTER(), 0, 0 );
+		{
+			CWnd* pTarget = WindowFromPoint( pMsg->pt );
+			if( pTarget )
+			{
+				CWnd* pTop = mpDlgObject->GetTopLevelWnd();
+				if( IsDescendant( pTop, pTarget ) )
+					SendMessage( refWM_MOUSEENTER(), 0, 0 );
+			}
+		}
 	}
 
 	return __super::PreTranslateMessage(pMsg);
@@ -370,9 +379,8 @@ LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	}
 	if( !mbMouseLeft )
 	{
-		mbMouseLeft = (GetCapture() != this);
-		if( mbMouseLeft )
-			mpDlgObject->OnMouseLeave();
+		mbMouseLeft = true;
+		mpDlgObject->OnMouseLeave();
 	}
 	return 0;
 }
@@ -436,7 +444,7 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 void CAcadDockBarHost::OnClose()
 {
 	__super::OnClose();
-#if (_BRXTARGET && _BRXTARGET <= 10)
+#if (_BRXTARGET && _BRXTARGET <= 11)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

@@ -27,7 +27,7 @@ class CImageComboEditCtrlBase : public CFilteredComboExCtrl, public CGridCellEdi
 				if( message == WM_COMMAND )
 				{
 					if( HIWORD(wParam) == CBN_KILLFOCUS )
-						mpGridCtrl->HideEditControls();
+						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
 				}
 				return lResult;
 			}
@@ -65,7 +65,7 @@ public:
 			GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
 			CRect rcClip;
-			rcClip.IntersectRect( &rcCtrl, &CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
+			rcClip.IntersectRect( &rcCtrl, CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
 			mClippingWnd.SetWindowPos( NULL, 0, 0, rcClip.Width(), rcClip.Height(),
 																 (SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
 			rcCtrl.MoveToY( rcCtrl.top + rcClip.Height() - rcCtrl.Height() );
@@ -144,9 +144,10 @@ public:
 						mpGridCtrl->SetCellText( mnRow, mnCol, mrsComboList.at( nCurSel ).c_str() );
 				}
 			}
-			DestroyWindow();
+			CComboHandler* pHandler = mpHandler;
 			mClippingWnd.DestroyWindow();
-			delete mpHandler;
+			mpHandler = NULL;
+			delete pHandler;
 		}
 	virtual CInputFilter* GetInputFilter() { return mpHandler? mpHandler->GetInputFilter() : NULL; }
 

@@ -33,7 +33,7 @@ AxPropertyDescriptor::AxPropertyDescriptor( VARDESC* pVarDesc, ITypeInfo* pTypeI
 
 	CComBSTR bstrName;
 	CComBSTR bstrDesc;
-	CString sPropName = bstrName;
+	CString sPropName( bstrName );
 	msDesc = bstrDesc;
 	HRESULT hr = pTypeInfo->GetDocumentation( memid, &bstrName, &bstrDesc, NULL, NULL );
 	assert( SUCCEEDED(hr) );

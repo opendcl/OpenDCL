@@ -32,7 +32,7 @@ class CStudioWorkspace : public CWorkspace
 
 public:
 	CStudioWorkspace();
-	~CStudioWorkspace();
+	virtual ~CStudioWorkspace();
 
 public:
 	virtual CString GetAppKey(void) const { return _T("Studio"); }

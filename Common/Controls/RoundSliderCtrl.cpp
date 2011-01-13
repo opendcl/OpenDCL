@@ -132,8 +132,7 @@ void DrawCircle(CDC* pDC, CPoint p, LONG lRadius, COLORREF crBright, COLORREF cr
 
 	do {
 		const double Pi = 3.141592654, 
-					 Pi_on_2 = Pi * 0.5,
-					 Three_Pi_on_2 = Pi * 1.5;
+					 Pi_on_2 = Pi * 0.5;
 		COLORREF crColour;
 		double	 dAngle = atan2((double)lYoffset, (double)lXoffset);
 

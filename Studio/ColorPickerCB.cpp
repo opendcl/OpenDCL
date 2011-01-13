@@ -63,12 +63,12 @@ void CColorPickerCB::PreSubclassWindow()
 
 void CColorPickerCB::Initialize( void )
 {
-	int		iAddedItem = -1;
-
 	if( m_bInitialized )									// If Already Initialized
 		return;												// Return
 
 	/*
+	int		iAddedItem = -1;
+
 	for( int iColor = 0; iColor < CCB_MAX_COLORS; iColor++ )// For All Colors
 	{
 		iAddedItem = AddString(	ms_pColors[
@@ -95,7 +95,6 @@ void		CColorPickerCB::DrawItem( LPDRAWITEMSTRUCT pDIStruct )
 	CBrush		brFrameBrush;
 	int			iFourthWidth = 0;
 	int			iItem = pDIStruct -> itemID;
-	int			iAction = pDIStruct -> itemAction;
 	int			iState = pDIStruct -> itemState;
 	COLORREF	crColor = 0;
 	COLORREF	crNormal = GetSysColor( COLOR_WINDOW );

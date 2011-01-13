@@ -2,6 +2,7 @@
 
 
 #include "RefCountedPtr.h"
+#include "PictureObject.h"
 
 typedef RefCountedPtr< class CProject > TProjectPtr;
 typedef LockedPtr< class CProject > TProjectLockedPtr;

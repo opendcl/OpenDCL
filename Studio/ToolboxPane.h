@@ -8,15 +8,6 @@
 class CStudioDialogObject;
 
 
-#define ID_TOOLBAR 14
-#define nDeToolTipLength 79
-#define nDeButtonCount 35
-#define nDeBitmapSize 21
-#define nDeActiveXButton 28
-
-#define nCommandIDLimit 0xf000
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CToolboxPane window
 
@@ -24,15 +15,13 @@ class CToolboxPane : public CDialog
 {
 	bool mbToolSelected; // true = tool selected (cross cursor), false = arrow cursor selected
 	CStudioDialogObject* mpActiveDlgObject;
+	CToolBarCtrl mToolbar;
+	int mnSelectedCtrl;
 
-protected:
-	CToolBarCtrl	m_ToolBoxButtons;
-	TBBUTTON		*m_pTBButtons;
-	int				m_nSelectedCtrl;
-	CLSID m_clsid;
-	CString m_sLicenseKey;
-	CString m_ActiveXFileName;
-	int nButtonIndex;
+	//ActiveX control
+	CLSID mAxClsid;
+	CString msAxFileName;
+	CString msAxLicenseKey;
 
 // Construction
 public:
@@ -52,28 +41,15 @@ public:
 	void ActivateDclControl( TDclControlPtr pDclControl );
 
 protected:
-	void UpdateTabStripToolUI();
-	void AddTheButtons();
-	void AddButton(UINT);
-	void AddTheIcons();
-	CString GetTooltipText( UINT nID );
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CToolboxPane)
-protected:
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	//}}AFX_VIRTUAL
+	void UpdateToolUI();
 
 // Implementation
-public:
-
 protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
 	virtual BOOL OnInitDialog();
-	BOOL OnNeedText( UINT id, NMHDR * pTTTStruct, LRESULT * pResult );
+	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 	void OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
 	void OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
 	BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);

@@ -186,7 +186,6 @@ bool CReorderControlUA::Undo()
 	TDclFormPtr pForm = mpDclControl->GetOwnerForm();
 	if( !pForm )
 		return false;
-	CDialogControl* pDlgControl = mpDclControl->GetControlInstance();
 	pForm->ReorderControl( mpDclControl, mIdx );
 	CStudioDialogObject* pDlgObject = (CStudioDialogObject*)pForm->GetFormInstance();
 	if( pDlgObject )

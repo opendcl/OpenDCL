@@ -241,7 +241,14 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 		else if( !mbTrackingMouse )
-			SendMessage( refWM_MOUSEENTER(), 0, 0 );
+		{
+			CWnd* pTarget = WindowFromPoint( pMsg->pt );
+			if( pTarget )
+			{
+				if( IsDescendant( this, pTarget ) )
+					SendMessage( refWM_MOUSEENTER(), 0, 0 );
+			}
+		}
 	}
 
 	return __super::PreTranslateMessage(pMsg);
@@ -289,9 +296,8 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	}
 	if( !mbMouseLeft )
 	{
-		mbMouseLeft = (GetCapture() != this);
-		if( mbMouseLeft )
-			GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
+		mbMouseLeft = true;
+		GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 	}
 	return 0;
 }

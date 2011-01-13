@@ -544,7 +544,6 @@ IOStatus CDclFormObject::ReadFromTextFile(std::ifstream &sFile, const CString &f
   int iVersion;
   if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  bool rVal = true;
   switch (iVersion) {
     case 4 : 
       return ReadFromTextFile4(sFile, fileName);

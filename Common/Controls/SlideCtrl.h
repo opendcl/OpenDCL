@@ -27,7 +27,7 @@ public:
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
-	virtual void OnPositionChanged( int nNewPos ) {}
+	virtual void OnPositionChanged( int nNewPos, bool bNotify = true ) {}
 
 	// Generated message map functions
 protected:

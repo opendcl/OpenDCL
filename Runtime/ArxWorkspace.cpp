@@ -252,7 +252,7 @@ void CArxWorkspace::CloseAllDialogs( DWORD dwMask /*= (DWORD)-1*/ )
 	{
 		CDialogObject* pDialog = mDialogs.GetNext(posDialog);
 		assert(pDialog != NULL);
-		if( dwMask == 0 || (DWORD( 1 ) << pDialog->GetSourceForm()->GetType()) & dwMask != 0 )
+		if( dwMask == 0 || ((DWORD( 1 ) << pDialog->GetSourceForm()->GetType()) & dwMask) != 0 )
 			pDialog->CloseDialog(); //this call should result in the dialog being removed from the list
 	}
 }
@@ -541,9 +541,9 @@ FontSettings CArxWorkspace::GetDefaultFontSettings() const
 	static const CString sSection = theWorkspace.GetAppKey();
 	FontSettings FS( pApp->GetProfileString( sSection, S_DefaultFontName, NULL ),
 									 pApp->GetProfileInt( sSection, S_DefaultFontSize, -10 ),
-									 pApp->GetProfileInt( sSection, S_DefaultFontBold, 0 ),
-									 pApp->GetProfileInt( sSection, S_DefaultFontUnderLine, 0 ),
-									 pApp->GetProfileInt( sSection, S_DefaultFontItalic, 0 ) );
+									 pApp->GetProfileInt( sSection, S_DefaultFontBold, 0 ) != 0,
+									 pApp->GetProfileInt( sSection, S_DefaultFontUnderLine, 0 ) != 0,
+									 pApp->GetProfileInt( sSection, S_DefaultFontItalic, 0 ) != 0 );
   if( !FS )
     FS.setName( theWorkspace.GetDefaultFontName() );
 	if( pApp->GetProfileInt( sSection, S_DefaultFontSizeStyle, 0 ) != 0 )

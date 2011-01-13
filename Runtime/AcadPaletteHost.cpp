@@ -323,7 +323,7 @@ BOOL CAcadPaletteHost::PreTranslateMessage(MSG* pMsg)
 					mhwndKeyboardFocus = NULL;
 					ReleaseCapture();
 					pTarget->SetFocus();
-					UINT nHitTest = pTarget->SendMessage( WM_NCHITTEST, 0, MAKELPARAM(pMsg->pt.x, pMsg->pt.y) );
+					UINT nHitTest = (UINT)pTarget->SendMessage( WM_NCHITTEST, 0, MAKELPARAM(pMsg->pt.x, pMsg->pt.y) );
 					pTarget->SendMessage( WM_SETCURSOR, (WPARAM)pTarget->m_hWnd, MAKELPARAM(nHitTest, WM_MOUSEMOVE) );
 				}
 				if( pTarget != this )
@@ -340,7 +340,15 @@ BOOL CAcadPaletteHost::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 		else if( !mbTrackingMouse )
-			SendMessage( refWM_MOUSEENTER(), 0, 0 );
+		{
+			CWnd* pTarget = WindowFromPoint( pMsg->pt );
+			if( pTarget )
+			{
+				CWnd* pTop = mpDlgObject->GetTopLevelWnd();
+				if( IsDescendant( pTop, pTarget ) )
+					SendMessage( refWM_MOUSEENTER(), 0, 0 );
+			}
+		}
 	}
 
 	return __super::PreTranslateMessage(pMsg);
@@ -393,9 +401,8 @@ LRESULT CAcadPaletteHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	}
 	if( !mbMouseLeft )
 	{
-		mbMouseLeft = (GetCapture() != this);
-		if( mbMouseLeft )
-			mpDlgObject->OnMouseLeave();
+		mbMouseLeft = true;
+		mpDlgObject->OnMouseLeave();
 	}
 	return 0;
 }
@@ -459,7 +466,7 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 void CAcadPaletteHost::OnClose()
 {
 	__super::OnClose();
-#if (_BRXTARGET && _BRXTARGET <= 10)
+#if (_BRXTARGET && _BRXTARGET <= 11)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

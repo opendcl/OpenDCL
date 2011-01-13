@@ -1107,7 +1107,9 @@ void CStudioDialogObject::OnUpdateEditObjectbrowser(CCmdUI *pCmdUI)
 void CStudioDialogObject::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
 	CDialogControl* pDlgControl = GetControlAtPoint( point );
-	theStudioWorkspace.ActivateDclControl( pDlgControl? pDlgControl->GetTemplate() : GetTemplate(), true );
+	CControlManager* pManager = pDlgControl->GetControlManager();
+	bool bSelected = (pManager && pManager->IsSelected());
+	theStudioWorkspace.ActivateDclControl( pDlgControl? pDlgControl->GetTemplate() : GetTemplate(), !bSelected );
 	CMenu menu;
 	if( menu.LoadMenu( IDR_MAINFRAME ) )
 	{

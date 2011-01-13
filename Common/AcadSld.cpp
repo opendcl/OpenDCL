@@ -115,7 +115,7 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 		return false;
 	assert( nHeight < 0x1000 ); //this is pretty big -- it may be invalid
 	cbSlide -= sizeof(nHeight);
-	double aspect;
+	double aspect = 1;
 	unsigned short hfill;
 	Endian endian = unknown;
 	switch( format )

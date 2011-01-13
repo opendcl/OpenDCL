@@ -42,6 +42,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2010"
@@ -54,7 +55,7 @@
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
-				WarningLevel="1"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool

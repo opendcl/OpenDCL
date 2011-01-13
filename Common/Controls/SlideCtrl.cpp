@@ -64,7 +64,11 @@ bool CSlideCtrl::ApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Value:
-		SetPos( pProp->GetLongValue() );
+		{
+			long lPos = pProp->GetLongValue();
+			SetPos( lPos );
+			OnPositionChanged( lPos, false );
+		}
 		break;
 	case Prop::MinValue:
 		SetRangeMin( pProp->GetLongValue() );

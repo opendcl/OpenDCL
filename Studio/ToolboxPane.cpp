@@ -13,121 +13,94 @@
 #include "StudioWorkspace.h"
 
 
+#define nDeButtonCount 35
+#define nDeBitmapSize 21
+#define nCommandIDLimit 0xf000
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CToolboxPane
 
 CToolboxPane::CToolboxPane()
 : mbToolSelected( false )
 , mpActiveDlgObject( NULL )
+, mnSelectedCtrl( 1 )
 {
-	m_pTBButtons = NULL;
-	m_nSelectedCtrl = 1;
 }
 
 CToolboxPane::~CToolboxPane()
 {
-	delete[] m_pTBButtons;
 }
 
 ControlType CToolboxPane::GetSelectedTool() const
 {
 	if( !mbToolSelected )
 		return _CtlInvalid;
-	return (ControlType)(m_nSelectedCtrl);
+	return (ControlType)(mnSelectedCtrl);
 }
 
 bool CToolboxPane::GetActiveXControlInfo( CLSID& clsid, CString& sLicenseKey, CString& sFilename ) const
 {
 	if( clsid == GUID_NULL )
 		return false;
-	clsid = m_clsid;
-	sLicenseKey = m_sLicenseKey;
-	sFilename = m_ActiveXFileName;
+	clsid = mAxClsid;
+	sLicenseKey = msAxLicenseKey;
+	sFilename = msAxFileName;
 	return true;
 }
 
 void CToolboxPane::ResetToPointer()
 {
-	m_ToolBoxButtons.CheckButton(ID_TOOLBOX_POINTER, TRUE);
-	m_nSelectedCtrl = 1;
+	mToolbar.CheckButton(ID_TOOLBOX_POINTER, TRUE);
+	mnSelectedCtrl = 1;
 	mbToolSelected = false;
 }
 
-void CToolboxPane::UpdateTabStripToolUI() 
+void CToolboxPane::UpdateToolUI() 
 {
 	BOOL bEnable = FALSE;
+	BOOL bEnableTabCtrl = FALSE;
 	if( mpActiveDlgObject )
 	{
+		bEnable = TRUE;
 		TDclFormPtr pForm = mpActiveDlgObject->GetSourceForm();
 		if( pForm->GetType() != FrmTabPage && !pForm->FindFirstControlOfType( CtlTabStrip ) )
-			bEnable = TRUE;
+			bEnableTabCtrl = TRUE;
 	}
-	if( !bEnable && GetSelectedTool() == CtlTabStrip )
+	if( !bEnableTabCtrl && GetSelectedTool() == CtlTabStrip )
 		ResetToPointer();
-	m_ToolBoxButtons.EnableButton( ID_TOOLBOX_TABS, bEnable );
+	for( int idx = 0; idx < nDeButtonCount; ++idx )
+	{
+		UINT nID = idx + ID_TOOLBOX_POINTER;
+		switch( nID )
+		{
+			case ID_TOOLBOX_TABS:
+				mToolbar.EnableButton( ID_TOOLBOX_TABS, bEnableTabCtrl );
+				break;
+			default:
+				mToolbar.EnableButton( nID, bEnable );
+				break;
+		}
+	}
 }
 
 void CToolboxPane::ActivateDlgObject( CStudioDialogObject* pDlgObject )
 {
 	mpActiveDlgObject = pDlgObject;
-	if( !pDlgObject )
-	{
-		m_ToolBoxButtons.EnableWindow( FALSE );
-		return;
-	}
-	m_ToolBoxButtons.EnableWindow( TRUE );
-	UpdateTabStripToolUI();
+	UpdateToolUI();
 }
 
 void CToolboxPane::ActivateDclControl( TDclControlPtr pDclControl )
 {
-	UpdateTabStripToolUI();
-}
-
-void CToolboxPane::AddButton(UINT nID)
-{	
-	int nIndex = nID - ID_TOOLBOX_POINTER;
-	if (nID == ID_TOOLBOX_POINTER)
-		m_pTBButtons[nButtonIndex].fsState = BYTE(TBSTYLE_CHECKGROUP|TBSTYLE_TOOLTIPS);//TBSTATE_ENABLED|TBSTATE_CHECKED
-	else
-		m_pTBButtons[nButtonIndex].fsState = BYTE(TBSTYLE_CHECKGROUP|TBSTYLE_TOOLTIPS);//TBSTATE_ENABLED
-
-	m_pTBButtons[nButtonIndex].dwData = 0;
-	m_pTBButtons[nButtonIndex].iBitmap = nIndex;
-	m_pTBButtons[nButtonIndex].idCommand = nID;
-	m_pTBButtons[nButtonIndex].iString = -1;
-	nButtonIndex++;
-	m_ToolBoxButtons.AddButtons(nButtonIndex, &m_pTBButtons[nButtonIndex]);
-}
-
-void CToolboxPane::AddTheButtons()
-{	
-	m_ToolBoxButtons.AddBitmap(nDeButtonCount,IDR_TOOLBOX);
-	m_ToolBoxButtons.SetBitmapSize(CSize(nDeBitmapSize,nDeBitmapSize));
-	nButtonIndex = 0;
-	m_pTBButtons = new TBBUTTON[nDeButtonCount];
-	for (int nIndex = 0; nIndex < nDeButtonCount; nIndex++)
-	{
-		if (nIndex == nButtonIndex)
-			m_pTBButtons[nIndex].fsState = TBSTATE_ENABLED | TBSTATE_CHECKED;
-		else
-			m_pTBButtons[nIndex].fsState = TBSTATE_ENABLED;
-
-		m_pTBButtons[nIndex].fsStyle = (BYTE)(TBSTYLE_CHECKGROUP | TBSTYLE_TOOLTIPS);
-		m_pTBButtons[nIndex].dwData = 0;
-		m_pTBButtons[nIndex].iBitmap = nIndex;
-		m_pTBButtons[nIndex].idCommand = nIndex + ID_TOOLBOX_POINTER;
-		m_pTBButtons[nIndex].iString = -1;		
-	}
-	
-	for (int nIndex = 0; nIndex < nDeButtonCount; nIndex++)
-		VERIFY(m_ToolBoxButtons.AddButtons(1, &m_pTBButtons[nIndex]));
+	UpdateToolUI();
 }
 
 
 BEGIN_MESSAGE_MAP(CToolboxPane, CDialog)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_NOTIFY_RANGE( TTN_NEEDTEXTA, ID_TOOLBOX_POINTER, ID_TOOLBOX_POINTER + nDeButtonCount, OnNeedTextA)
+	ON_NOTIFY_RANGE( TTN_NEEDTEXTW, ID_TOOLBOX_POINTER, ID_TOOLBOX_POINTER + nDeButtonCount, OnNeedTextW)
 	ON_COMMAND(ID_TOOLBOX_POINTER, OnToolboxPointer)
 	ON_COMMAND(ID_TOOLBOX_ANGLESLIDER, OnToolboxAngleslider)
 	ON_COMMAND(ID_TOOLBOX_BLOCKLIST, OnToolboxBlocklist)
@@ -163,8 +136,6 @@ BEGIN_MESSAGE_MAP(CToolboxPane, CDialog)
 	ON_COMMAND(ID_TOOLBOX_GRID, OnToolboxGrid)
 	ON_COMMAND(ID_TOOLBOX_SPLITTER, OnToolboxSlitter)
 	ON_COMMAND(ID_TOOLBOX_HATCH, OnToolboxHatch)
-	ON_NOTIFY_RANGE( TTN_NEEDTEXTA, ID_TOOLBOX_POINTER, ID_TOOLBOX_POINTER + nDeButtonCount, OnNeedTextA)
-	ON_NOTIFY_RANGE( TTN_NEEDTEXTW, ID_TOOLBOX_POINTER, ID_TOOLBOX_POINTER + nDeButtonCount, OnNeedTextW)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -174,51 +145,10 @@ BOOL CToolboxPane::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_ToolBoxButtons.EnableToolTips(TRUE);	
+	mToolbar.EnableWindow( TRUE );
+	mToolbar.EnableToolTips(TRUE);	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
-}
-
-void CToolboxPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
-{
-	CString toolTipText = GetTooltipText(nID);
-	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-#ifdef _UNICODE
-	_tcsncpy(lpTTT->szText,(LPCTSTR)toolTipText, sizeof(lpTTT->szText) / sizeof(WCHAR));
-#else
-	mbstowcs(lpTTT->szText,(LPCTSTR)toolTipText, sizeof(lpTTT->szText) / sizeof(WCHAR));
-#endif
-}
-
-BOOL CToolboxPane::OnNeedText( UINT id, NMHDR * pTTTStruct, LRESULT * pResult )
-{
-	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pTTTStruct;
-  UINT nID =pTTTStruct->idFrom;
-  if (pTTT->uFlags & TTF_IDISHWND)
-  {
-      // idFrom is actually the HWND of the tool
-      nID = ::GetDlgCtrlID((HWND)nID);
-      if(nID)
-      {
-          pTTT->lpszText = MAKEINTRESOURCE(nID);
-          pTTT->hinst = AfxGetResourceHandle();
-          return(TRUE);
-      }
-  }
-  return(FALSE);
-}
-
-
-void CToolboxPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
-{
-	CString toolTipText = GetTooltipText(nID);
-	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct;
-	lstrcpyn(lpTTT->szText,toolTipText, _elements(lpTTT->szText));
-}
-
-CString CToolboxPane::GetTooltipText( UINT nID )
-{
-	return theWorkspace.LoadResourceString(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
 }
 
 
@@ -230,21 +160,46 @@ int CToolboxPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DWORD dwStyle = WS_VISIBLE | WS_DISABLED | WS_CHILD | CCS_NODIVIDER | CCS_NOPARENTALIGN      
 			| CCS_ADJUSTABLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | TBSTYLE_WRAPABLE;
 
-	if (!m_ToolBoxButtons.Create( dwStyle, CRect (0,0,2,2), this, IDR_TOOLBOX) )
+	if (!mToolbar.Create( dwStyle, CRect (0,0,2,2), this, IDR_TOOLBOX) )
 	{
 		TRACE0("Failed to create instant bar child\n");
 		return -1;		// fail to create
 	}
-	m_ToolBoxButtons.AutoSize();
-	AddTheButtons();
+	mToolbar.AddBitmap(nDeButtonCount,IDR_TOOLBOX);
+	mToolbar.SetBitmapSize(CSize(nDeBitmapSize,nDeBitmapSize));
+	for (int idx = 0; idx < nDeButtonCount; idx++)
+	{
+		TBBUTTON btn = 
+		{
+			idx,
+			idx + ID_TOOLBOX_POINTER,
+			0,
+			BYTE(TBSTYLE_CHECKGROUP | TBSTYLE_TOOLTIPS),
+		};
+		VERIFY(mToolbar.AddButtons( 1, &btn ));
+	}
+	mToolbar.AutoSize();
 	return 0;
 }
 
 void CToolboxPane::OnSize(UINT nType, int cx, int cy) 
 {
-	CDialog::OnSize(nType, cx, cy);
-	
-	m_ToolBoxButtons.MoveWindow(0,0,cx,cy,TRUE);
+	__super::OnSize(nType, cx, cy);
+	mToolbar.MoveWindow(0,0,cx,cy,TRUE);
+}
+
+void CToolboxPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
+{
+	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
+  lpTTT->lpszText = MAKEINTRESOURCE(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
+  lpTTT->hinst = AfxGetResourceHandle();
+}
+
+void CToolboxPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
+{
+	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
+  lpTTT->lpszText = MAKEINTRESOURCE(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
+  lpTTT->hinst = AfxGetResourceHandle();
 }
 
 BOOL CToolboxPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 
@@ -253,28 +208,11 @@ BOOL CToolboxPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	NMHDR* pNMHDR = (NMHDR*)lParam;
 	HWND hWndCtrl = pNMHDR->hwndFrom;
 
-	// get the child ID from the window itself
-	// UINT nID = _AfxGetDlgCtrlID(hWndCtrl);
-
-	//////////////////////////////////////////////////////////////////
-	// If TTN_NEEDTEXT we cannot get the ID from the tooltip window //
-	//////////////////////////////////////////////////////////////////
-
 	int nCode = pNMHDR->code;
-
-	//
-	// if it is the following notification message
-	// nID has to obtained from wParam
-	//
-	
 	if (nCode == TTN_NEEDTEXTA || nCode == TTN_NEEDTEXTW)
 	{
-		UINT nID;   // = _AfxGetDlgCtrlID(hWndCtrl);
-		nID = (UINT)wParam;
-
-
+		UINT nID = (UINT)wParam;
 		ASSERT((UINT)pNMHDR->idFrom == (UINT)wParam);
-		UNUSED(wParam);  // not used in release build
 		ASSERT(hWndCtrl != NULL);
 		ASSERT(::IsWindow(hWndCtrl));
 
@@ -288,10 +226,9 @@ BOOL CToolboxPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 		AFX_NOTIFY notify;
 		notify.pResult = pResult;
 		notify.pNMHDR = pNMHDR;
-		BOOL b = OnCmdMsg(nID, MAKELONG(nCode, WM_NOTIFY), &notify, NULL); 
-		return b;
-	}	
-	return CDialog::OnNotify(wParam, lParam, pResult);
+		return OnCmdMsg(nID, MAKELONG(nCode, WM_NOTIFY), &notify, NULL); 
+	}		
+	return __super::OnNotify(wParam, lParam, pResult);
 }
 
 BOOL CToolboxPane::OnCmdMsg(UINT nID, int nCode, void* pExtra,
@@ -300,7 +237,6 @@ BOOL CToolboxPane::OnCmdMsg(UINT nID, int nCode, void* pExtra,
 	if (__super::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
 		return TRUE;
 
-	BOOL b =  IS_COMMAND_ID(nID);
 	if ((nCode != CN_COMMAND && nCode != CN_UPDATE_COMMAND_UI) ||
 			!IS_COMMAND_ID(nID) || nID >= nCommandIDLimit)
 	{
@@ -345,176 +281,175 @@ BOOL CToolboxPane::OnCmdMsg(UINT nID, int nCode, void* pExtra,
 
 void CToolboxPane::OnToolboxPointer()
 {
-	
 	mbToolSelected = false;
-	m_nSelectedCtrl = 1;
+	mnSelectedCtrl = 1;
 }
 
 void CToolboxPane::OnToolboxAngleslider() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlAngleSlider;
+	mnSelectedCtrl = CtlAngleSlider;
 }
 
 void CToolboxPane::OnToolboxBlocklist() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlBlockList;
+	mnSelectedCtrl = CtlBlockList;
 }
 
 void CToolboxPane::OnToolboxBlockview() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlBlockView;
+	mnSelectedCtrl = CtlBlockView;
 }
 
 void CToolboxPane::OnToolboxCheckbox() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlCheckBox;
+	mnSelectedCtrl = CtlCheckBox;
 }
 
 void CToolboxPane::OnToolboxCombobox() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlComboBox;
+	mnSelectedCtrl = CtlComboBox;
 }
 
 void CToolboxPane::OnToolboxDwgpreview() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlDwgPreview;
+	mnSelectedCtrl = CtlDwgPreview;
 }
 
 void CToolboxPane::OnToolboxFrame() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlFrame;
+	mnSelectedCtrl = CtlFrame;
 }
 
 void CToolboxPane::OnToolboxGraphicbutton() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlGraphicButton;
+	mnSelectedCtrl = CtlGraphicButton;
 }
 
 void CToolboxPane::OnToolboxHtml() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlHtml;
+	mnSelectedCtrl = CtlHtml;
 }
 
 void CToolboxPane::OnToolboxLabel() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlLabel;
+	mnSelectedCtrl = CtlLabel;
 }
 
 void CToolboxPane::OnToolboxListbox() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlListBox;
+	mnSelectedCtrl = CtlListBox;
 }
 
 void CToolboxPane::OnToolboxListview() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlListView;
+	mnSelectedCtrl = CtlListView;
 }
 
 void CToolboxPane::OnToolboxMonthpicker() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlCalendar;
+	mnSelectedCtrl = CtlCalendar;
 }
 
 void CToolboxPane::OnToolboxOption() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlOptionButton;
+	mnSelectedCtrl = CtlOptionButton;
 }
 
 void CToolboxPane::OnToolboxPicturebox() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlPictureBox;
+	mnSelectedCtrl = CtlPictureBox;
 }
 
 void CToolboxPane::OnToolboxProgressbar() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlProgressBar;
+	mnSelectedCtrl = CtlProgressBar;
 }
 
 void CToolboxPane::OnToolboxRectangle() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlRectangle;	
+	mnSelectedCtrl = CtlRectangle;	
 }
 
 void CToolboxPane::OnToolboxScrollbar() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlScrollBar;
+	mnSelectedCtrl = CtlScrollBar;
 }
 
 void CToolboxPane::OnToolboxSlider() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlSlider;	
+	mnSelectedCtrl = CtlSlider;	
 }
 
 void CToolboxPane::OnToolboxSlideview() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlSlideView;
+	mnSelectedCtrl = CtlSlideView;
 }
 
 void CToolboxPane::OnToolboxSpinbutton() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlSpinButton;
+	mnSelectedCtrl = CtlSpinButton;
 }
 
 void CToolboxPane::OnToolboxTabs() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlTabStrip;
+	mnSelectedCtrl = CtlTabStrip;
 }
 
 void CToolboxPane::OnToolboxTextbox() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlTextBox;
+	mnSelectedCtrl = CtlTextBox;
 }
 
 void CToolboxPane::OnToolboxTextbutton() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlTextButton;
+	mnSelectedCtrl = CtlTextButton;
 }
 
 void CToolboxPane::OnToolboxTree() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlTree;
+	mnSelectedCtrl = CtlTree;
 }
 
 void CToolboxPane::OnToolboxUrllink() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlHyperlink;
+	mnSelectedCtrl = CtlHyperlink;
 }
 
 void CToolboxPane::OnToolboxOptionList() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlOptionList;
+	mnSelectedCtrl = CtlOptionList;
 }
 
 void CToolboxPane::OnToolboxActivex() 
 {
-	m_nSelectedCtrl = CtlActiveX;	
+	mnSelectedCtrl = CtlActiveX;	
 	CInsertControlDlg dlg;
 	if( dlg.DoModal() != IDOK )
 	{
@@ -522,51 +457,49 @@ void CToolboxPane::OnToolboxActivex()
 		return;
 	}
 
-	m_clsid = dlg.m_clsid;
-	m_ActiveXFileName = dlg.m_FileName;
+	mAxClsid = dlg.m_clsid;
+	msAxFileName = dlg.m_FileName;
 	mbToolSelected = true;
-	CString strLicenseKey;
+	CString sLicenseKey;
 	CWaitCursor wait;
-	if (RequestLicenseKey(strLicenseKey, dlg.m_clsid) == TRUE)
-		m_sLicenseKey = strLicenseKey;
+	if( RequestLicenseKey( sLicenseKey, dlg.m_clsid ) == TRUE )
+		msAxLicenseKey = sLicenseKey;
 	else
-		m_sLicenseKey.Empty();
-	
+		msAxLicenseKey.Empty();
 }
 
 void CToolboxPane::OnToolboxDwglist() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlDwgList;
+	mnSelectedCtrl = CtlDwgList;
 }
-
 
 void CToolboxPane::OnToolboxAnimate() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlAnimation;
+	mnSelectedCtrl = CtlAnimation;
 }
 
 void CToolboxPane::OnToolboxImagecombobox() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlImageComboBox;
+	mnSelectedCtrl = CtlImageComboBox;
 }
 
 void CToolboxPane::OnToolboxGrid() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlGrid;
+	mnSelectedCtrl = CtlGrid;
 }
 
 void CToolboxPane::OnToolboxSlitter() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlSplitter;
+	mnSelectedCtrl = CtlSplitter;
 }
 
 void CToolboxPane::OnToolboxHatch() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlHatch;
+	mnSelectedCtrl = CtlHatch;
 }
