@@ -344,8 +344,8 @@ BOOL CPictureBoxCtrl::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CPictureBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if( message == BM_SETSTYLE && (wParam & BS_DEFPUSHBUTTON) )
-		return 0;
+	//if( message == BM_SETSTYLE && (wParam & BS_DEFPUSHBUTTON) )
+	//	return 0;
 	if( message == WM_UPDATEUISTATE )
 		return 0;
 

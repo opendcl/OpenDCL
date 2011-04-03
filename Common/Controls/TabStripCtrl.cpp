@@ -39,7 +39,7 @@ bool CTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CTabStripCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (WS_CLIPCHILDREN | TCS_FOCUSNEVER | TCS_TOOLTIPS);
+	dwStyle |= (WS_TABSTOP | WS_CLIPCHILDREN | TCS_FOCUSNEVER | TCS_TOOLTIPS);
 
 	if( mpTemplate->GetLongProperty( Prop::TabStyle ) == 0 )
 		dwStyle |= TCS_TABS;

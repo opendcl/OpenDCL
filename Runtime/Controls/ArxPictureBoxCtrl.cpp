@@ -20,6 +20,7 @@ CArxPictureBoxCtrl::CArxPictureBoxCtrl( TDclControlPtr pTemplate, CControlPane* 
 , mArxServices( this )
 , mDragDropService( this )
 , mbTrackingMouse( false )
+, mbSkipOnClicked( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -73,6 +74,7 @@ UINT CArxPictureBoxCtrl::OnGetDlgCode()
 
 void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
+	mbSkipOnClicked = false;
 	if( nFlags == MK_LBUTTON && mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) )
 	{
 		DROPEFFECT dwDropEffect = BeginDragDrop( point );
@@ -108,6 +110,7 @@ void CArxPictureBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnLButtonUp(nFlags, point);
+	mbSkipOnClicked = false;
 }
 
 void CArxPictureBoxCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
@@ -224,6 +227,7 @@ void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		sEventDblClick = mpTemplate->GetStringProperty( Prop::EventClicked );
 	if( GetArxServices()->HandleEvent( sEventDblClick ) )
 		return;
+	mbSkipOnClicked = true;
 	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
 		return;
 	__super::OnLButtonDblClk(nFlags, point);
@@ -231,6 +235,8 @@ void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CArxPictureBoxCtrl::OnClicked() 
 {
+	if( mbSkipOnClicked )
+		return;
 	if( GetArxServices()->HandleEvent( Prop::EventClicked ) )
 		return;
 }

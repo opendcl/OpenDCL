@@ -582,7 +582,8 @@ ADSRESULT Grid::GetCellDropList()
 	{
 		resbuf* prbResult = acutNewRb( RTLB );
 		resbuf* prbTail = prbResult;
-		for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
+		INT_PTR ctText = rsText.GetCount();
+		for( INT_PTR idx = 0; idx < ctText; ++idx )
 		{
 			prbTail->rbnext = acutNewRb( RTSTR );
 			prbTail = prbTail->rbnext;
@@ -592,7 +593,8 @@ ADSRESULT Grid::GetCellDropList()
 		prbTail = prbTail->rbnext;
 		prbTail->rbnext = acutNewRb( RTLB );
 		prbTail = prbTail->rbnext;
-		for( int idx = rnImage.GetCount() - 1; idx >= 0; --idx )
+		INT_PTR ctImage = rnImage.GetCount();
+		for( INT_PTR idx = 0; idx < ctImage; ++idx )
 		{
 			prbTail->rbnext = acutNewRb( RTSHORT );
 			prbTail = prbTail->rbnext;

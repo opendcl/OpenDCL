@@ -16,6 +16,7 @@ class CArxPictureBoxCtrl : public CPictureBoxCtrl
 	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
 	bool mbTrackingMouse;
+	bool mbSkipOnClicked; //hack to skip erroneous OnClicked after OnDblClicked
 
 // Construction
 public:

@@ -200,13 +200,19 @@ void CHtmlBrowser::ReplaceText( LPCTSTR pszOldText, LPCTSTR pszNewText )
 	pHtmlDocument->get_body( &pBodyElm );
 	ASSERT(pBodyElm);
 	pHtmlDocument = NULL;
+	if( !pBodyElm )
+		return;
 	CComPtr< IHTMLBodyElement > pBody;
 	pBodyElm->QueryInterface( &pBody) ;
 	ASSERT(pBody);
 	pBodyElm = NULL;
+	if( !pBody )
+		return;
 	CComPtr< IHTMLTxtRange > pTxtRange;
 	pBody->createTextRange( &pTxtRange );
 	ASSERT(pTxtRange);
+	if( !pTxtRange )
+		return;
 
 	CComBSTR bsSearch( lstrlen( pszOldText ) + 1, pszOldText );
 

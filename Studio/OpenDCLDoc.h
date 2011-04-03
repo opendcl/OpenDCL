@@ -24,6 +24,7 @@ public:
 
 // Overrides
 public:
+	virtual BOOL CanCloseFrame(CFrameWnd* pFrame);
 	virtual void SetModifiedFlag(BOOL bModified = TRUE);
 	virtual BOOL SaveModified(); // return TRUE if ok to continue
 	virtual BOOL OnNewDocument();

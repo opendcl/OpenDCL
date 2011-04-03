@@ -36,6 +36,11 @@ COpenDCLDoc::~COpenDCLDoc()
 {
 }
 
+BOOL COpenDCLDoc::CanCloseFrame(CFrameWnd* pFrame)
+{
+	return SaveModified();
+}
+
 void COpenDCLDoc::SetModifiedFlag(BOOL bModified /*= TRUE*/)
 {
 	if( bModified )

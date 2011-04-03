@@ -1,6 +1,6 @@
 // RxInstall.cpp : Install-time AutoCAD ObjectARX module demand-load setup
 //
-// Copyright 2010 ManuSoft. All Rights Reserved.
+// Copyright 2011 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -658,6 +658,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
@@ -667,6 +668,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM, true );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM, true );
 	}
 	return ERROR_SUCCESS;
 }
@@ -727,6 +729,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_LOCAL_MACHINE );
@@ -743,6 +747,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }

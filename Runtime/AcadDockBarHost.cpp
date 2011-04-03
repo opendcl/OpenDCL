@@ -206,7 +206,8 @@ void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 
 CSize CAcadDockBarHost::CalcDynamicLayout( int nLength, DWORD dwMode )
 {
-	return __super::CalcDynamicLayout( nLength, dwMode );
+	CSize sizeLayout = __super::CalcDynamicLayout( nLength, dwMode );
+	return sizeLayout;
 }
 
 CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
@@ -250,7 +251,7 @@ void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 	CRect rcClient;
 	GetClientArea( rcClient );
 	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);
-	if( mpDlgObject->IgnoreSizing() || !mpDlgObject->IsResizable() )
+	if( mpDlgObject->IsIgnoreSizing() || !mpDlgObject->IsResizable() )
 		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
 														 rcClient.Width(), rcClient.Height(),

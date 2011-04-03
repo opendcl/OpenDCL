@@ -227,6 +227,8 @@ void CControlBarDlg::ApplyPosition()
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
+	//TODO: in Bricscad, the top level window refuses to resize because CalcDynamicLayout
+	//gets called when it shouldn't, and overrides the desired size
 	pTopLevelWnd->SetWindowPos( NULL, 0, 0,
 															lWidth + GetNCWidth(),
 															lHeight + GetNCHeight(),
@@ -302,14 +304,14 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rcClient = GetEffectiveClientRect();
 	SetNCWidth( rcWindow.Width() - rcClient.Width() );
 	SetNCHeight( rcWindow.Height() - rcClient.Height() );
-#if (_BRXTARGET && _BRXTARGET <= 11)
-	CRect rcWnd = GetWndRect();
-	LONG lWidth = rcWnd.Width() + GetNCWidth();
-	LONG lHeight = rcWnd.Height() + GetNCHeight();
-	mHostControlBar.SetWindowPos( NULL, 0, 0, lWidth, lHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
-	rcWindow = GetEffectiveWindowRect();
-	rcClient = GetEffectiveClientRect();
-#endif
+//#if (_BRXTARGET && _BRXTARGET <= 11)
+//	CRect rcWnd = GetWndRect();
+//	LONG lWidth = rcWnd.Width() + GetNCWidth();
+//	LONG lHeight = rcWnd.Height() + GetNCHeight();
+//	mHostControlBar.SetWindowPos( NULL, 0, 0, lWidth, lHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+//	rcWindow = GetEffectiveWindowRect();
+//	rcClient = GetEffectiveClientRect();
+//#endif
 	if( IsResizable() )
 	{
 		SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),

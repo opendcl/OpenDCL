@@ -67,7 +67,7 @@ BOOL COptionsTabDlg::OnInitDialog()
 {
 	CAcUiTabExtension::OnInitDialog();
 	ApplyPropertiesEnum();
-	ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+	ModifyStyleEx( 0, WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT );
 	IgnoreSizing( false );
 
 	// call method to create the controls

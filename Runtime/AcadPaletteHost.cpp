@@ -273,7 +273,7 @@ void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 	CRect rcClient;
 	GetClientArea( rcClient );
 	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);
-	if( !mpDlgObject->IsResizable() )
+	if( mpDlgObject->IsIgnoreSizing() || !mpDlgObject->IsResizable() )
 		nFlags |= SWP_NOSIZE;
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
 														 rcClient.Width(), rcClient.Height(),

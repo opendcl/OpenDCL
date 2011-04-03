@@ -54,9 +54,11 @@ void CArxLabelCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 __UINT_LRESULT CArxLabelCtrl::OnNcHitTest(CPoint point)
 {
-	if( !mpTemplate->GetStringProperty(Prop::EventMouseMove).IsEmpty() ||
-			!mpTemplate->GetStringProperty(Prop::EventClicked).IsEmpty() ||
-			mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) )
+	if( !mpTemplate->GetStringProperty( Prop::EventMouseMove ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventClicked ).IsEmpty() ||
+			mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) ||
+			!mpTemplate->GetStringProperty( Prop::ToolTipTitle ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::ToolTipBody ).IsEmpty() )
 		return HTCLIENT;
 	return __super::OnNcHitTest( point );
 }
