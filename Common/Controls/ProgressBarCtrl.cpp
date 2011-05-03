@@ -242,7 +242,7 @@ void CProgressBarCtrl::OnPaint()
 	GetClientRect( &rcClient );
 	rcBlock = rcClient;
 
-	CMemDC dc( &dcPaint, rcClient );
+	CMemDCx dc( &dcPaint, rcClient );
     
   int nRange = nUpper - nLower;
   double lfPercent = (double)(GetPos() - nLower) / (double)(nRange - nLower);

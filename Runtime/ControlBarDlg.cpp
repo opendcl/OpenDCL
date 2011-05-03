@@ -222,8 +222,8 @@ void CControlBarDlg::ApplyPosition()
 		return; //defer
 	if( IsIgnoreSizing() )
 		return;
-	if( !IsFloating() )
-		return;
+	//if( !IsFloating() )
+	//	return;
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
@@ -304,7 +304,7 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rcClient = GetEffectiveClientRect();
 	SetNCWidth( rcWindow.Width() - rcClient.Width() );
 	SetNCHeight( rcWindow.Height() - rcClient.Height() );
-//#if (_BRXTARGET && _BRXTARGET <= 11)
+//#if (_BRXTARGET && _BRXTARGET <= 10)
 //	CRect rcWnd = GetWndRect();
 //	LONG lWidth = rcWnd.Width() + GetNCWidth();
 //	LONG lHeight = rcWnd.Height() + GetNCHeight();

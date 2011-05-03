@@ -16,7 +16,7 @@
 #pragma once
 
 
-class CMemDC : public CDC
+class CMemDCx : public CDC
 {
 private:
 	CBitmap m_bitmap; // Offscreen bitmap
@@ -26,7 +26,7 @@ private:
 	BOOL m_bMemDC; // TRUE if CDC really is a Memory DC.
 
 public:
-	CMemDC(CDC* pDC) : CDC(), m_oldBitmap(NULL), m_pDC(pDC)
+	CMemDCx(CDC* pDC) : CDC(), m_oldBitmap(NULL), m_pDC(pDC)
 	{
 		ASSERT(m_pDC != NULL); // If you asserted here, you passed in a NULL CDC.
 		
@@ -49,7 +49,7 @@ public:
 			m_hAttribDC = pDC->m_hAttribDC;
 		}
 	}
-	CMemDC(CDC* pDC, const CRect& rcBounds) : CDC()
+	CMemDCx(CDC* pDC, const CRect& rcBounds) : CDC()
 	{
 		CreateCompatibleDC(pDC);
 		m_bitmap.CreateCompatibleBitmap(pDC, rcBounds.Width(), rcBounds.Height());
@@ -59,7 +59,7 @@ public:
 		m_bMemDC = TRUE;
 	}
 	
-	~CMemDC()
+	~CMemDCx()
 	{
 		if(m_bMemDC)
 		{
@@ -80,8 +80,8 @@ public:
 	}
 	
 	// Allow usage as a pointer
-	CMemDC* operator->() { return this; }
+	CMemDCx* operator->() { return this; }
 	
 	// Allow usage as a pointer
-	operator CMemDC*() { return this; }
+	operator CMemDCx*() { return this; }
 };

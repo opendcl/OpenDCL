@@ -22,6 +22,9 @@ public:
 			assert( pCombo->GetCount() == 0 );
 
 			CAutoDocReadLock CurDocLock;
+			AcDbDatabase* pCurDb = acdbHostApplicationServices()->workingDatabase();
+			if( !pCurDb )
+				return false;
 			AcDbLinetypeTable* pLinetypeTable;
 			Acad::ErrorStatus es = 
 				acdbHostApplicationServices()->workingDatabase()->getSymbolTable( pLinetypeTable, AcDb::kForRead );

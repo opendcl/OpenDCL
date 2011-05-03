@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ProgressTimeToComplete.h"
-#include "memdc.h"
+#include "MemDC.h"
 
 
 BEGIN_MESSAGE_MAP(TProgressTimeToComplete, CProgressCtrl)
@@ -43,7 +43,7 @@ void TProgressTimeToComplete::OnPaint()
     int      nRange, nLower, nUpper;
     CBrush   brush(::GetSysColor(COLOR_HIGHLIGHT));
     CPaintDC dcPaint(this);
-    CMemDC   dc(&dcPaint);
+    CMemDCx   dc(&dcPaint);
     CRect    rcClient, rcBlock, rcComplete;
     LONG     lStyle;
     int      nGapWidth = 2;

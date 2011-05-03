@@ -97,9 +97,12 @@ public:
 			mrLayerProperties.clear();
 
 			CAutoDocReadLock CurDocLock;
+			AcDbDatabase* pCurDb = acdbHostApplicationServices()->workingDatabase();
+			if( !pCurDb )
+				return true;
 			AcDbLayerTable* pLayerTable;
 			Acad::ErrorStatus es = 
-				acdbHostApplicationServices()->workingDatabase()->getSymbolTable( pLayerTable, AcDb::kForRead );
+				pCurDb->getSymbolTable( pLayerTable, AcDb::kForRead );
 			if( es != Acad::eOk )
 				return false;
 			AcDbLayerTableIterator* pIterator = NULL;

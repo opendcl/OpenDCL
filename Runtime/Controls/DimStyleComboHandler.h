@@ -22,9 +22,12 @@ public:
 			assert( pCombo->GetCount() == 0 );
 
 			CAutoDocReadLock CurDocLock;
+			AcDbDatabase* pCurDb = acdbHostApplicationServices()->workingDatabase();
+			if( !pCurDb )
+				return false;
 			AcDbDimStyleTable* pDimStyleTable;
 			Acad::ErrorStatus es = 
-				acdbHostApplicationServices()->workingDatabase()->getSymbolTable( pDimStyleTable, AcDb::kForRead );
+				pCurDb->getSymbolTable( pDimStyleTable, AcDb::kForRead );
 			if( es != Acad::eOk )
 				return false;
 			AcDbDimStyleTableIterator* pIterator = NULL;

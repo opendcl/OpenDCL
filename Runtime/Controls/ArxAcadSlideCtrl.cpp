@@ -84,12 +84,12 @@ void CArxAcadSlideCtrl::DrawLine(int sX, int sY, int eX, int eY, const COLORREF&
 	CRect rcClient;
 	GetClientRect( &rcClient );
 	pDC->IntersectClipRect( &rcClient );
-	CMemDC dc( pDC, rcClient );
+	CMemDCx dc( pDC, rcClient );
 	if( !mhbmLast )
 	{
 		if( mhbmSaved )
 		{
-			CMemDC dcSaved( pDC, rcClient );
+			CMemDCx dcSaved( pDC, rcClient );
 			CBitmap* pOldBmp = dcSaved.SelectObject( CBitmap::FromHandle( mhbmSaved ) );
 			mhbmLast = CreateCompatibleBitmap( dc.GetSafeHdc(), rcClient.Width(), rcClient.Height() ); 
 			CBitmap* pOldBmp2 = dc.SelectObject( CBitmap::FromHandle( mhbmLast ) );
@@ -124,12 +124,12 @@ void CArxAcadSlideCtrl::DrawFillRect(int sX, int sY, int eX, int eY, const COLOR
 	CRect rcClient;
 	GetClientRect( &rcClient );
 	pDC->IntersectClipRect( &rcClient );
-	CMemDC dc( pDC, rcClient );
+	CMemDCx dc( pDC, rcClient );
 	if( !mhbmLast )
 	{
 		if( mhbmSaved )
 		{
-			CMemDC dcSaved( pDC, rcClient );
+			CMemDCx dcSaved( pDC, rcClient );
 			CBitmap* pOldBmp = dcSaved.SelectObject( CBitmap::FromHandle( mhbmSaved ) );
 			mhbmLast = CreateCompatibleBitmap( dc.GetSafeHdc(), rcClient.Width(), rcClient.Height() ); 
 			CBitmap* pOldBmp2 = dc.SelectObject( CBitmap::FromHandle( mhbmLast ) );
@@ -161,12 +161,12 @@ void CArxAcadSlideCtrl::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHe
 	Slide.Load( theWorkspace.FindFile( pszFilename ), pszSlideName);
 	CRect rcClient;
 	GetClientRect( &rcClient );
-	CMemDC dc( pDC, rcClient );
+	CMemDCx dc( pDC, rcClient );
 	if( !mhbmLast )
 	{
 		if( mhbmSaved )
 		{
-			CMemDC dcSaved( pDC, rcClient );
+			CMemDCx dcSaved( pDC, rcClient );
 			CBitmap* pOldBmp = dcSaved.SelectObject( CBitmap::FromHandle( mhbmSaved ) );
 			mhbmLast = CreateCompatibleBitmap( dc.GetSafeHdc(), rcClient.Width(), rcClient.Height() ); 
 			CBitmap* pOldBmp2 = dc.SelectObject( CBitmap::FromHandle( mhbmLast ) );

@@ -216,8 +216,8 @@ void CPaletteDlg::ApplyPosition()
 		return; //defer
 	if( IsIgnoreSizing() )
 		return;
-	if( !IsFloating() )
-		return;
+	//if( !IsFloating() )
+	//	return;
 	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
 	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
 	CWnd* pTopLevelWnd = GetTopLevelWnd();

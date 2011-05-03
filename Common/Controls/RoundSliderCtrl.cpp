@@ -279,7 +279,7 @@ void CRoundSliderCtrl::OnPaint()
 	CPaintDC dc(this); // device context for painting
 
 #ifdef USE_MEM_DC
-	CMemDC DC(&dc);
+	CMemDCx DC(&dc);
 	CDC* pDC = &DC;
 #else
 	CDC* pDC = &dc;

@@ -864,7 +864,10 @@ public:
 			}
 			else
 			{
-			#ifdef _BRXTARGET
+			#if (_BRXTARGET >= 11)
+				if( nFunctionCode >= 0 && nFunctionCode < __adsRegisteredSymbols.length() )
+					return __adsRegisteredSymbols[nFunctionCode]->getName();
+			#elif (_BRXTARGET)
 				if( nFunctionCode >= 0 && nFunctionCode < __adsRegisteredSymbols.length() )
 					return __adsRegisteredSymbols[nFunctionCode].getName();
 			#else

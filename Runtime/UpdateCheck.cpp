@@ -12,6 +12,9 @@
 
 #pragma comment( lib, "Wininet.lib" )
 
+#ifndef NIN_BALLOONUSERCLICK
+#define NIN_BALLOONUSERCLICK    (WM_USER + 5) //from ShellAPI.h
+#endif
 
 static const UINT WM_MMTRAY_NOTIFY = WM_USER + 50;
 static const UINT ID_TOGGLEUPDATECHECK = WM_USER + 51;
@@ -436,19 +439,19 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		}
 		case WM_ACTIVATEAPP:
 		{
-		#if (_WIN32_WINNT >= 0x0501)
+		#ifdef NIN_BALLOONUSERCLICK
 			if( !((UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA ))->sAction.IsEmpty() )
 				SendMessage( hwnd, WM_MMTRAY_NOTIFY, 0, NIN_BALLOONUSERCLICK );
-		#endif //(_WIN32_WINNT >= 0x0501)
+		#endif //NIN_BALLOONUSERCLICK
 			break;
 		}
 		case WM_MMTRAY_NOTIFY:
 		{
 			switch( lParam )
 			{
-			#if (_WIN32_WINNT >= 0x0501)
+			#ifdef NIN_BALLOONUSERCLICK
 				case NIN_BALLOONUSERCLICK:
-			#endif //(_WIN32_WINNT >= 0x0501)
+			#endif //NIN_BALLOONUSERCLICK
 				case WM_LBUTTONDOWN:
 				{
 					CString sAction( ((UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA ))->sAction );

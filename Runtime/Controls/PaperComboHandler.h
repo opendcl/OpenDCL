@@ -28,6 +28,8 @@ public:
 			CAutoDocWriteLock CurDocLock;
 			AcDbLayoutManager* pLayoutManager = acdbHostApplicationServices()->layoutManager();
 			assert( pLayoutManager != NULL );
+			if( !pLayoutManager ) 
+				return false;
 			CString sLayout = pLayoutManager->findActiveLayout( true );
 			AcDbLayout* pLayoutObj = pLayoutManager->findLayoutNamed( sLayout, true );
 			if( !pLayoutObj ) 
