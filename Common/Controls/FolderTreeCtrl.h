@@ -61,9 +61,9 @@ public:
 	HTREEITEM SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath );
 	HTREEITEM AddFolder(CFolder* folder, HTREEITEM parent=TVI_ROOT, bool bCurrentDir = false);
 	void AddPath( LPCTSTR pszPath );
-	int SelectItem(HTREEITEM item);
+	BOOL SelectItem(HTREEITEM item);
 	HTREEITEM GetSelectedItem();
-	void HideAndInform();
+	void Hide();
 	HTREEITEM FreeMemory(HTREEITEM item);
 	void FreeMemory();
 	void Display( const CRect& rcTree );

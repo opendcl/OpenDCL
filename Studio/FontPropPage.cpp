@@ -41,6 +41,29 @@ CFontPropertyPage::CFontPropertyPage(TDclControlPtr pDclControl /*= NULL*/)
 		m_sStyle = theWorkspace.LoadResourceString(IDS_ITALIC);
 	else if ( logfont.lfWeight >= nDeBoldWeight )
 		m_sStyle = theWorkspace.LoadResourceString(IDS_BOLD);
+	HKEY hkFontMgmt;
+	if( ERROR_SUCCESS == RegOpenKey( HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Font Management"), &hkFontMgmt ) )
+	{
+		DWORD dwType;
+		DWORD cbVal;
+		if( ERROR_SUCCESS == RegQueryValueEx( hkFontMgmt, _T("Inactive Fonts"), NULL, &dwType, NULL, &cbVal ) && dwType == REG_MULTI_SZ )
+		{
+			cbVal += sizeof(TCHAR);
+			TCHAR* pszzVal = new TCHAR[cbVal / sizeof(TCHAR)];
+			if( ERROR_SUCCESS == RegQueryValueEx( hkFontMgmt, _T("Inactive Fonts"), NULL, &dwType, (LPBYTE)pszzVal, &cbVal ) && dwType == REG_MULTI_SZ )
+			{
+				TCHAR* pch = pszzVal;
+				while( *pch )
+				{
+					msetHiddenFonts.insert( pch );
+					while( *++pch );
+					++pch; //skip to next string
+				}
+			}
+			delete[] pszzVal;
+		}
+		RegCloseKey( hkFontMgmt );
+	}
 }
 
 CFontPropertyPage::~CFontPropertyPage()
@@ -97,7 +120,7 @@ BOOL CFontPropertyPage::OnInitDialog()
 		LOGFONT logfont;
 		memset(&logfont, 0, sizeof(LOGFONT));
 		logfont.lfCharSet = DEFAULT_CHARSET;
-		logfont.lfFaceName[0] = '\0';
+		logfont.lfFaceName[0] = _T('\0');
 		logfont.lfPitchAndFamily = 0;
 		EnumFontFamiliesEx(
 			dc.m_hDC,
@@ -189,15 +212,26 @@ BOOL CFontPropertyPage::OnInitDialog()
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
+bool CFontPropertyPage::IsHidden( LPCTSTR pszFont )
+{
+	if( msetHiddenFonts.find( pszFont ) != msetHiddenFonts.end() )
+		return true;
+	if( *pszFont == _T('@') && msetHiddenFonts.find( pszFont + 1 ) != msetHiddenFonts.end() )
+		return true;
+	return false;
+}
+
 int CALLBACK CFontPropertyPage::FontEnumProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, 
 		int FontType, CFontPropertyPage* pFontPage )
 {
-	CString sFontName = (LPCTSTR)lpelfe->elfFullName;
+	CString sFontName = lpelfe->elfLogFont.lfFaceName;
 	if (sFontName.IsEmpty() || sFontName.Left(1) == _T("¨") || sFontName.GetLength() <= 2)
 		return 1;
+	if( pFontPage->IsHidden( sFontName ) )
+		return 1;
 
-	if( pFontPage->m_comboFont.FindStringExact( 0, (LPCTSTR)lpelfe->elfFullName ) == CB_ERR )
-		pFontPage->m_comboFont.AddString( lpelfe->elfFullName );
+	if( pFontPage->m_comboFont.FindStringExact( 0, sFontName ) == CB_ERR )
+		pFontPage->m_comboFont.AddString( sFontName );
 
  	return 1;
 }

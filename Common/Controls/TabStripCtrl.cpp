@@ -343,7 +343,7 @@ BOOL CTabStripCtrl::OnEraseBkgnd(CDC* pDC)
 void CTabStripCtrl::OnPaint() 
 {
 	PAINTSTRUCT ps;
-	CDC* pDC = BeginPaint( &ps );
+	/*CDC* pDC = */BeginPaint( &ps );
 	EndPaint( &ps );
 	InvalidateRect( &ps.rcPaint );
 	//CRect rcTarget = GetUsedArea();

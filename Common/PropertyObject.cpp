@@ -1817,7 +1817,7 @@ PropVal::TIntArray* CPropertyObject::GetIntArrayPtr()
 const PropVal::TIntArrayList* CPropertyObject::GetConstIntArrayListPtr() const
 {
 	PropVal::TIntArrayList* const* v = NULL;
-	bool bSuccess = mpValue->GetValue( v );
+	/*bool bSuccess = */mpValue->GetValue( v );
 	return (*v);
 }
 

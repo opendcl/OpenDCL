@@ -108,10 +108,32 @@ CRect CDialogObject::GetEffectiveClientRect() const
 	return rcClient;
 }
 
-void CDialogObject::GetMinMaxSize( CSize& szMin, CSize& szMax )
+void CDialogObject::GetMinMaxClientSize( CSize& szMin, CSize& szMax )
 {
 	szMin.SetSize( mnMinWidth, mnMinHeight );
 	szMax.SetSize( mnMaxWidth, mnMaxHeight );
+	if( szMax.cx > 0 && szMax.cx < szMin.cx )
+		szMax.cx = szMin.cx;
+	if( szMax.cy > 0 && szMax.cy < szMin.cy )
+		szMax.cy = szMin.cy;
+}
+
+void CDialogObject::GetMinMaxSize( CSize& szMin, CSize& szMax )
+{
+	int nMinWidth = mnMinWidth;
+	int nMaxWidth = mnMaxWidth;
+	int nMinHeight = mnMinHeight;
+	int nMaxHeight = mnMaxHeight;
+	if( nMinWidth > 0 )
+		nMinWidth += mnNCWidth;
+	if( nMinHeight > 0 )
+		nMinHeight += mnNCHeight;
+	if( nMaxWidth > 0 )
+		nMaxWidth += mnNCWidth;
+	if( nMaxHeight > 0 )
+		nMaxHeight += mnNCHeight;
+	szMin.SetSize( nMinWidth, nMinHeight );
+	szMax.SetSize( nMaxWidth, nMaxHeight );
 	if( szMax.cx > 0 && szMax.cx < szMin.cx )
 		szMax.cx = szMin.cx;
 	if( szMax.cy > 0 && szMax.cy < szMin.cy )
@@ -268,22 +290,10 @@ bool CDialogObject::OnApplyHeight( TPropertyPtr pProp )
 bool CDialogObject::OnApplyMinMaxSize( TPropertyPtr pProp )
 {
 	assert(mpTemplate != NULL);
-	CSize szMin( mpTemplate->GetLongProperty(Prop::MinDialogWidth),
-							 mpTemplate->GetLongProperty(Prop::MinDialogHeight) );
-	CSize szMax( mpTemplate->GetLongProperty(Prop::MaxDialogWidth),
-							 mpTemplate->GetLongProperty(Prop::MaxDialogHeight) );
-	mnMinWidth = szMin.cx;
-	mnMinHeight = szMin.cy;
-	mnMaxWidth = szMax.cx;
-	mnMaxHeight = szMax.cy;
-	if( mnMinWidth > 0 )
-		mnMinWidth += mnNCWidth;
-	if( mnMinHeight > 0 )
-		mnMinHeight += mnNCHeight;
-	if( mnMaxWidth > 0 )
-		mnMaxWidth += mnNCWidth;
-	if( mnMaxHeight > 0 )
-		mnMaxHeight += mnNCHeight;
+	mnMinWidth = mpTemplate->GetLongProperty(Prop::MinDialogWidth);
+	mnMinHeight = mpTemplate->GetLongProperty(Prop::MinDialogHeight);
+	mnMaxWidth = mpTemplate->GetLongProperty(Prop::MaxDialogWidth);
+	mnMaxHeight = mpTemplate->GetLongProperty(Prop::MaxDialogHeight);
 	return true;
 }
 

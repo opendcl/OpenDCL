@@ -570,7 +570,6 @@ void CProjectPane::OnRemoveForm()
 	FormType type = pDclForm->GetType();
 	size_t idxTab = pDclForm->GetTabIndex();
 	mpProject->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
-	GetTreeCtrl().DeleteItem( hDclForm ); // delete the item.
 	if( pParentForm )
 	{ //need to delete the reference from the parent
 		switch( type )
@@ -628,6 +627,7 @@ void CProjectPane::OnRemoveForm()
 			break;
 		}
 	}
+	GetTreeCtrl().DeleteItem( hDclForm ); // delete the item.
 
 	CDocument* pDoc = GetDocument();
 	if( pDoc )

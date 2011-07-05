@@ -8,6 +8,7 @@
 #include "Resource.h"
 #include <string>
 #include <map>
+#include <set>
 
 #define TRUETYPE_FONT		0x0001
 #define PRINTER_FONT		0x0002
@@ -45,6 +46,7 @@ class CFontComboHandler : public CComboHandler
 
 	CImageList mImageList;
 	std::map< tstring, CFontInfo > mmapFonts;
+	std::set< tstring > msetHiddenFonts;
 
 public:
 	CFontComboHandler()
@@ -53,6 +55,29 @@ public:
 			HMODULE hRes = theWorkspace.GetLocalResourceModule();
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_TTFONT ) ) );
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_SHXFONT ) ) );
+			HKEY hkFontMgmt;
+			if( ERROR_SUCCESS == RegOpenKey( HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Font Management"), &hkFontMgmt ) )
+			{
+				DWORD dwType;
+				DWORD cbVal;
+				if( ERROR_SUCCESS == RegQueryValueEx( hkFontMgmt, _T("Inactive Fonts"), NULL, &dwType, NULL, &cbVal ) && dwType == REG_MULTI_SZ )
+				{
+					cbVal += sizeof(TCHAR);
+					TCHAR* pszzVal = new TCHAR[cbVal / sizeof(TCHAR)];
+					if( ERROR_SUCCESS == RegQueryValueEx( hkFontMgmt, _T("Inactive Fonts"), NULL, &dwType, (LPBYTE)pszzVal, &cbVal ) && dwType == REG_MULTI_SZ )
+					{
+						TCHAR* pch = pszzVal;
+						while( *pch )
+						{
+							msetHiddenFonts.insert( pch );
+							while( *++pch );
+							++pch; //skip to next string
+						}
+					}
+					delete[] pszzVal;
+				}
+				RegCloseKey( hkFontMgmt );
+			}
 		}
 	virtual ~CFontComboHandler() {}
 
@@ -167,7 +192,15 @@ protected:
 			pCombo->AddString( _T("Courier"));
 
 			for( std::map< tstring, CFontInfo >::const_iterator iter = mmapFonts.begin(); iter != mmapFonts.end(); ++iter )
-				pCombo->AddString( iter->first.c_str() );
+			{
+				const tstring& font = iter->first;
+				if( msetHiddenFonts.find( font ) != msetHiddenFonts.end() )
+					continue;
+				LPCTSTR pszFont = font.c_str();
+				if( *pszFont == _T('@') && msetHiddenFonts.find( pszFont + 1 ) != msetHiddenFonts.end() )
+					continue;
+				pCombo->AddString( pszFont );
+			}
 			return true;
 		}
 	virtual void OnDropdownClose( CComboBox* pCombo )
@@ -253,13 +286,14 @@ protected:
 			LOGFONT lf;
 			ZeroMemory( &lf, sizeof(lf) );
 			lf.lfCharSet = DEFAULT_CHARSET;
-			if( !EnumFontFamiliesEx( pDC->GetSafeHdc(),	// handle to device context
-															 &lf,	// pointer to logical font information
-															 EnumFamScreenCallBackEx,	// pointer to callback function
-															 (LPARAM)this,	// application-supplied data
-															 0 ) )
+			int nResult = EnumFontFamiliesEx( pDC->GetSafeHdc(),	// handle to device context
+																			 &lf,	// pointer to logical font information
+																			 EnumFamScreenCallBackEx,	// pointer to callback function
+																			 (LPARAM)this,	// application-supplied data
+																			 0 );
+			pCombo->ReleaseDC( pDC );
+			if( nResult == 0 )
 				return false;
-			pCombo->ReleaseDC( pDC );	
 			return true;
 		}
 };

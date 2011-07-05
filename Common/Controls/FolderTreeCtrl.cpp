@@ -101,11 +101,9 @@ HTREEITEM CFolderTreeCtrl::FreeMemory(HTREEITEM hItem)
 	return hRet;
 }
 
-void CFolderTreeCtrl::HideAndInform()
+void CFolderTreeCtrl::Hide()
 {
 	ShowWindow(SW_HIDE);
-	Inform();
-
 	// collapse the child when selected the parent?
 	// Expand(m_selectedItem, TVE_COLLAPSE);
 }
@@ -124,7 +122,7 @@ HTREEITEM CFolderTreeCtrl::GetSelectedItem()
 	return mhtiSelected;
 }
 
-int CFolderTreeCtrl::SelectItem(HTREEITEM item)
+BOOL CFolderTreeCtrl::SelectItem(HTREEITEM item)
 {
 	mhtiSelected = item;
 	return __super::SelectItem(item);
@@ -483,6 +481,7 @@ void CFolderTreeCtrl::SelectNextItem(BOOL selectNext)
 
 void CFolderTreeCtrl::Display( const CRect& rcTree )
 {
+	__super::SelectItem(mhtiSelected);
 	CRect rc( rcTree );
 	HMONITOR hDisplay = ::MonitorFromWindow( m_hWnd, MONITOR_DEFAULTTONEAREST );
 	MONITORINFO DisplayInfo = { sizeof(MONITORINFO) };
@@ -523,7 +522,7 @@ void CFolderTreeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	UINT flags ;
 	HTREEITEM item = HitTest(point, &flags);
 	if (item != NULL)
-		SelectItem(item);
+		__super::SelectItem(item);
 		
 	__super::OnMouseMove(nFlags, point);
 }
@@ -558,7 +557,8 @@ void CFolderTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		mhtiSelected = item;
 		if( !item )
 			mhtiSelected = __super::GetSelectedItem();
-		HideAndInform();
+		Hide();
+		Inform();
 		return;
 	}
 	__super::OnLButtonDown(nFlags, point);
@@ -586,7 +586,8 @@ BOOL CFolderTreeCtrl::PreTranslateMessage(MSG* pMsg)
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->hwnd == m_hWnd)
 	{
 		mhtiSelected = __super::GetSelectedItem();
-		HideAndInform();
+		Hide();
+		Inform();
 		return TRUE;
 	}
 	return __super::PreTranslateMessage(pMsg);

@@ -123,6 +123,8 @@ BOOL CAcadPaletteHost::OnCommand (WPARAM wParam, LPARAM lParam)
 
 bool CAcadPaletteHost::CanFrameworkTakeFocus ()
 {
+	if( !__super::CanFrameworkTakeFocus() )
+		return false;
 	return (!mpDlgObject->IsKeepFocus() && mbMouseLeft );
 	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
 	return false;
@@ -212,7 +214,7 @@ CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
 	CSize szMin( 0, 0 );
 	CSize szMax( 0, 0 );
-	mpDlgObject->GetMinMaxSize( szMin, szMax );
+	mpDlgObject->GetMinMaxClientSize( szMin, szMax );
 
 	if( szMin.cx > 0 && sizeDefault.cx < szMin.cx )
 		sizeDefault.cx = szMin.cx;

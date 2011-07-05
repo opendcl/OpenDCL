@@ -5,8 +5,16 @@
 
 #include "Resource.h"
 #include "DclControlObject.h"
+#include <string>
+#include <set>
 
 class CPropertyObject;
+
+#if defined(_UNICODE)
+typedef std::wstring tstring;
+#else
+typedef std::string tstring;
+#endif //_UNICODE
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,6 +24,7 @@ class CFontPropertyPage : public CPropertyPage
 	DECLARE_DYNCREATE(CFontPropertyPage)
 
 	TDclControlPtr mpDclControl;
+	std::set< tstring > msetHiddenFonts;
 
 // Construction
 public:
@@ -65,4 +74,5 @@ private:
 	CFont m_fontSample;
 	static int CALLBACK FontEnumProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, 
 		int FontType, CFontPropertyPage* pFontPage );
+	bool IsHidden( LPCTSTR pszFont );
 };

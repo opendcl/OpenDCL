@@ -1962,7 +1962,7 @@ BOOL CGridCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 
 void CGridCtrl::OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
+	//LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
 	HideEditControls();
 	*pResult = 0;
 }

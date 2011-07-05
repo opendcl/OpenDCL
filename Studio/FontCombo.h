@@ -1,6 +1,14 @@
 #pragma once
 
 #include "TipWnd.h"
+#include <string>
+#include <set>
+
+#if defined(_UNICODE)
+typedef std::wstring tstring;
+#else
+typedef std::string tstring;
+#endif //_UNICODE
 
 
 #define TRUETYPE_FONT		0x0001
@@ -36,24 +44,22 @@ public:
 // CFontCombo window
 class CFontCombo : public CComboBox
 {
+	std::set< tstring > msetHiddenFonts;
 
 // Construction
 public:
 	CFontCombo();
-	void Initialize();
-	DWORD GetFontTypeId(CString sName);
-	bool m_bInvokeWithSendString;
-	CStringArray m_AcadFontFileList;
 protected:	
+	void Initialize();
+	DWORD GetFontTypeId( LPCTSTR pszFont );
 	BOOL EnumerateFonts();
-	void AddFont(CString strName, DWORD dwFlags);
+	void AddFont( LPCTSTR pszFontName, DWORD dwFlags );
 	void SetCurrentFont();
 	void SetFontInUse(const CString& strFont);
-	//TDclControlPtr m_ArxControl;
-public:
+private:
 	static BOOL CALLBACK AFX_EXPORT EnumFamScreenCallBackEx(
-	ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int FontType, 
-	LPVOID pThis);
+		ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int FontType, CFontCombo* pThis);
+	bool IsHidden( LPCTSTR pszFont );
 
 // Attributes
 public:

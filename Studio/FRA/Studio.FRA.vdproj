@@ -69,12 +69,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_18E7A457E45324BBFCAD9E402C2CC315"
-        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_1FE1CE3AE50745D29A787F07A7CB739D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -245,18 +239,6 @@
         {
         "MsmKey" = "8:_72795E6951EB4696A9A13453E4567F14"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7ABAE1F965D804E51924BC7165C05A5C"
-        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7AC656F6E4AB53F5B78995C6431E6ED9"
-        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -758,26 +740,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_18E7A457E45324BBFCAD9E402C2CC315"
-            {
-            "SourcePath" = "8:gdiplus.dll"
-            "TargetName" = "8:gdiplus.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1FE1CE3AE50745D29A787F07A7CB739D"
@@ -1358,46 +1320,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7ABAE1F965D804E51924BC7165C05A5C"
-            {
-            "SourcePath" = "8:IMM32.dll"
-            "TargetName" = "8:IMM32.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7AC656F6E4AB53F5B78995C6431E6ED9"
-            {
-            "SourcePath" = "8:MSIMG32.dll"
-            "TargetName" = "8:MSIMG32.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7DFEE52100304253A0EAC53C9492E52F"
@@ -2212,14 +2134,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{AC81FF82-C813-4E45-AC92-828B5F805CF5}"
-        "PackageCode" = "8:{2FB6834B-25E7-426E-A7C6-34878B075CB3}"
+        "ProductCode" = "8:{285C568F-5CB9-4A14-927B-AB0802B806EA}"
+        "PackageCode" = "8:{6E1C819E-8548-4538-B8AF-AEB24F540FBD}"
         "UpgradeCode" = "8:{140D3C25-5463-4688-8A52-FEA8E9FA4940}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:6.0.0203"
+        "ProductVersion" = "8:6.0.0204"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3025,7 +2947,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BC222713505949A9A1649D9BD53DC5B9"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B2F9F08891D54751B4ADB1AACED6A136"
@@ -3053,7 +2975,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D2E30088FE6F44CDA911B5E5558D3661"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3109,7 +3031,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FC2D5545372945918DF1FEDE403FE50B"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"

@@ -42,6 +42,29 @@ CFontCombo::CFontCombo()
 	m_img.Create( 15, 13, ILC_COLOR32 | ILC_MASK, 1, 1 );
 	HMODULE hRes = theWorkspace.GetLocalResourceModule();
 	m_img.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_TTFONT ) ) );
+	HKEY hkFontMgmt;
+	if( ERROR_SUCCESS == RegOpenKey( HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Font Management"), &hkFontMgmt ) )
+	{
+		DWORD dwType;
+		DWORD cbVal;
+		if( ERROR_SUCCESS == RegQueryValueEx( hkFontMgmt, _T("Inactive Fonts"), NULL, &dwType, NULL, &cbVal ) && dwType == REG_MULTI_SZ )
+		{
+			cbVal += sizeof(TCHAR);
+			TCHAR* pszzVal = new TCHAR[cbVal / sizeof(TCHAR)];
+			if( ERROR_SUCCESS == RegQueryValueEx( hkFontMgmt, _T("Inactive Fonts"), NULL, &dwType, (LPBYTE)pszzVal, &cbVal ) && dwType == REG_MULTI_SZ )
+			{
+				TCHAR* pch = pszzVal;
+				while( *pch )
+				{
+					msetHiddenFonts.insert( pch );
+					while( *++pch );
+					++pch; //skip to next string
+				}
+			}
+			delete[] pszzVal;
+		}
+		RegCloseKey( hkFontMgmt );
+	}
 }
 	
 
@@ -219,22 +242,8 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	pDC->RestoreDC(nIndexDC);
 }
 
-DWORD CFontCombo::GetFontTypeId(CString sName)
+DWORD CFontCombo::GetFontTypeId( LPCTSTR pszFont )
 {
-	CString sFontName;
-	CString sThisFontName = sName;
-	sThisFontName.MakeLower();
-	// lets check to set if it's an autocad font first
-	for (int i = 0; i< m_AcadFontFileList.GetSize(); i++)
-	{
-		sFontName = m_AcadFontFileList.GetAt(i);
-		sFontName.MakeLower();
-		if (sThisFontName == sFontName)
-		{
-			return 6;
-		}
-	}
-
 	CString strKey;
 	CFontObj* pFontObj = NULL;
 	POSITION pos = m_mapFonts.GetStartPosition();
@@ -242,38 +251,31 @@ DWORD CFontCombo::GetFontTypeId(CString sName)
 	{
 		pFontObj = NULL;
 		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);		
-		if (strKey == sName)
+		if (strKey == pszFont)
 			return pFontObj->GetFlags();
-
 	}
-
-	
 	return 0;
 }
 
 // As it says...EnumerateFonts on the system
 BOOL CFontCombo::EnumerateFonts()
 {
-	HDC hDC;
-	
-	// Get screen fonts
-	hDC = ::GetWindowDC(NULL);
-	
+	HDC hDC = ::GetWindowDC(NULL);
 	LOGFONT lf;
-	
 	ZeroMemory(&lf,sizeof(lf));
 	lf.lfCharSet = DEFAULT_CHARSET;
 
-	if (!EnumFontFamiliesEx(
+	int nResult = EnumFontFamiliesEx(
 			hDC,	// handle to device context
 			&lf,	// pointer to logical font information
 			(FONTENUMPROC)EnumFamScreenCallBackEx,	// pointer to callback function
 			(LPARAM) this,	// application-supplied data
-			(DWORD) 0))
+			(DWORD) 0);
+	::ReleaseDC(NULL,hDC);	
+
+	if( nResult == 0 )
 		return FALSE;
 
-	::ReleaseDC(NULL,hDC);	
-	
 	return TRUE; // All's ok
 }
 
@@ -529,46 +531,6 @@ void CFontCombo::Initialize()
 	CString strKey,strComp;
 	
 	EnumerateFonts();
-	
-	// add a list of acad fonts
-	m_AcadFontFileList.Add(_T("bigfont"));
-	m_AcadFontFileList.Add(_T("chineset"));
-	m_AcadFontFileList.Add(_T("complex"));
-	m_AcadFontFileList.Add(_T("extfont"));
-	m_AcadFontFileList.Add(_T("gbcbig"));
-	m_AcadFontFileList.Add(_T("gbeitc"));
-	m_AcadFontFileList.Add(_T("gbenor"));
-	m_AcadFontFileList.Add(_T("gothice"));
-	m_AcadFontFileList.Add(_T("gothicg"));
-	m_AcadFontFileList.Add(_T("gothici"));
-	m_AcadFontFileList.Add(_T("greekc"));
-	m_AcadFontFileList.Add(_T("greeks"));
-	m_AcadFontFileList.Add(_T("isocp"));
-	m_AcadFontFileList.Add(_T("isocp2"));
-	m_AcadFontFileList.Add(_T("isocp3"));
-	m_AcadFontFileList.Add(_T("isoct"));
-	m_AcadFontFileList.Add(_T("isoct2"));
-	m_AcadFontFileList.Add(_T("isoct3"));
-	m_AcadFontFileList.Add(_T("italic"));
-	m_AcadFontFileList.Add(_T("italicc"));
-	m_AcadFontFileList.Add(_T("italict"));
-	m_AcadFontFileList.Add(_T("monotxt"));
-	m_AcadFontFileList.Add(_T("romanc"));
-	m_AcadFontFileList.Add(_T("romand"));
-	m_AcadFontFileList.Add(_T("romans"));
-	m_AcadFontFileList.Add(_T("romant"));
-	m_AcadFontFileList.Add(_T("scriptc"));
-	m_AcadFontFileList.Add(_T("scripts"));
-	m_AcadFontFileList.Add(_T("syastro"));
-	m_AcadFontFileList.Add(_T("symap"));
-	m_AcadFontFileList.Add(_T("symeteo"));
-	m_AcadFontFileList.Add(_T("symusic"));
-	m_AcadFontFileList.Add(_T("txt"));
-	m_AcadFontFileList.Add(_T("whgdtxt"));
-	m_AcadFontFileList.Add(_T("whgtxt"));
-	m_AcadFontFileList.Add(_T("whtgtxt"));
-	m_AcadFontFileList.Add(_T("whtmtxt"));
-	
 
 	POSITION pos = m_mapFonts.GetStartPosition();
 	
@@ -585,9 +547,7 @@ void CFontCombo::Initialize()
 	while (pos)
 	{
 		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);
-
 		AddString(strKey);
-		
 	}
 	
 	// We set the timer because its the only way we know when a selection
@@ -617,13 +577,13 @@ void CFontCombo::Initialize()
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::AddFont(CString strName, DWORD dwFlags)
+void CFontCombo::AddFont(LPCTSTR pszFontName, DWORD dwFlags)
 {
 	CFontObj* pFontObj;	
 
 	// Check fonts not aleady in the array
-	if (!m_mapFonts.Lookup(strName,pFontObj))
-		m_mapFonts.SetAt(strName,new CFontObj(dwFlags));
+	if (!m_mapFonts.Lookup(pszFontName,pFontObj))
+		m_mapFonts.SetAt(pszFontName,new CFontObj(dwFlags));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -655,20 +615,20 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 		// Selected
 		if (nSel != -1 && FirstVis <= nSel)
 		{
+			int itemHeight = GetItemHeight( 0 );
 			CRect rc;
-			GetDroppedControlRect(rc);
-			int itemHeight = GetItemHeight(0);
-			int lastVis = FirstVis + ((rc.Height()-itemHeight)/itemHeight);
+			GetDroppedControlRect(&rc);
+			int ctVisible = SendMessage( /*CB_GETMINVISIBLE*/ 0x1702, 0, 0 );
+			if( ctVisible <= 0 )
+				ctVisible = (rc.Height() / itemHeight);
+			int lastVis = FirstVis + ctVisible - 1;
 			if (nSel <= lastVis)
 			{
-				int nThisHeight = itemHeight * ((nSel - FirstVis) + 1);
-				
-				CPoint pt(rc.right + 5,rc.top + nThisHeight);
-
 				// Show tip in correct position
+				int nThisHeight = itemHeight * ((nSel - FirstVis) + 1);
+				CPoint pt(rc.right + 5,rc.top + nThisHeight);
 				CString str;
 				GetLBText(nSel,str);
-				
 				m_wndTip.ShowTips(pt,str);
 			}
 		}
@@ -676,20 +636,30 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 	CComboBox::OnTimer(nIDEvent);
 }
 
+bool CFontCombo::IsHidden( LPCTSTR pszFont )
+{
+	if( msetHiddenFonts.find( pszFont ) != msetHiddenFonts.end() )
+		return true;
+	if( *pszFont == _T('@') && msetHiddenFonts.find( pszFont + 1 ) != msetHiddenFonts.end() )
+		return true;
+	return false;
+}
+
 BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf, 
-	NEWTEXTMETRICEX* lpntm, int FontType, LPVOID pThis)
+	NEWTEXTMETRICEX* lpntm, int FontType, CFontCombo* pThis)
 
 {
 	// don't put in non-printer raster fonts
 	if (FontType & RASTER_FONTTYPE)
 		return 1;
 	
-	DWORD dwData;
-	
 	if (FontType & TRUETYPE_FONTTYPE)
 	{
-		dwData = TRUETYPE_FONTTYPE;			
-		((CFontCombo*)pThis)->AddFont(pelf->elfLogFont.lfFaceName, dwData);
+		CFontCombo* pFontCombo = (CFontCombo*)pThis;
+		CString sFont = pelf->elfLogFont.lfFaceName;
+		if( pFontCombo->IsHidden( sFont ) )
+			return 1;
+		pFontCombo->AddFont(sFont, TRUETYPE_FONTTYPE);
 	}
 	
 	return 1; // Call me back

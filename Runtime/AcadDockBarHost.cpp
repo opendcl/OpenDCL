@@ -224,7 +224,7 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 #endif
 	CSize szMin( 0, 0 );
 	CSize szMax( 0, 0 );
-	mpDlgObject->GetMinMaxSize( szMin, szMax );
+	mpDlgObject->GetMinMaxClientSize( szMin, szMax );
 
 	if( szMin.cx > 0 && sizeDefault.cx < szMin.cx )
 		sizeDefault.cx = szMin.cx;

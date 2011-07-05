@@ -28,10 +28,6 @@ ADSRESULT BlockList::GetFileName()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlBlockList))
 		return RSERR; //invalid input
 
-	int nItem = -1;
-	if( !GetIntArgument( pArgs, nItem ) )
-		return RSERR; //invalid input
-
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 

@@ -172,6 +172,22 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
 			break;
 		}
+	case Prop::ShowSelectAlways:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, LVS_SHOWSELALWAYS );
+			else
+				ModifyStyle( LVS_SHOWSELALWAYS, 0 );
+			break;
+		}
+	case Prop::AutoArrange:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, LVS_AUTOARRANGE );
+			else
+				ModifyStyle( LVS_AUTOARRANGE, 0 );
+			break;
+		}
 	case Prop::EditLabels:
 		{
 			if( pProp->GetBooleanValue() && mpTemplate->GetLongProperty( Prop::ListViewStyle ) < 4 )
@@ -199,6 +215,14 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( LVS_SINGLESEL, 0 );
 			else
 				ModifyStyle( 0, LVS_SINGLESEL );
+			break;
+		}
+	case Prop::LabelWrap:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( LVS_NOLABELWRAP, 0 );
+			else
+				ModifyStyle( 0, LVS_NOLABELWRAP );
 			break;
 		}
 	case Prop::ColumnCaptions:
@@ -824,7 +848,7 @@ void CListViewCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CListViewCtrl::OnLvnDeleteallitems(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	//LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	mnDragSource = -1;
 	*pResult = 0;
 }

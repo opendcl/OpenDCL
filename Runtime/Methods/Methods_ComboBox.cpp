@@ -624,15 +624,21 @@ ADSRESULT ComboBox::Dir()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxFolderComboCtrl* pCtrl = (CArxFolderComboCtrl*)pDlgControl->GetControlWnd();
+	CComboBox* pCtrl = DYNAMIC_DOWNCAST(CComboBox, pDlgControl->GetControlWnd());
+	if( !pCtrl )
+		return RSERR; //invalid combo type
+
+	if( DYNAMIC_DOWNCAST(CComboBoxEx, pDlgControl->GetControlWnd()) )
+		return RSERR; //invalid combo type
 
 	TCHAR szOldPath[MAX_PATH];
 	::GetCurrentDirectory( MAX_PATH, szOldPath );
 	::SetCurrentDirectory( sDirectory );
 	pCtrl->ResetContent();
-	pCtrl->Dir( DDL_READWRITE | DDL_DIRECTORY, sFilter );
+	int nResult = pCtrl->Dir( DDL_READWRITE | DDL_DIRECTORY, sFilter );
 	::SetCurrentDirectory( szOldPath );
-	acedRetT();
+	if( nResult >= 0 )
+		acedRetT();
 	return RSRSLT;
 }
 

@@ -107,6 +107,7 @@ public:
 	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates
 	virtual CRect GetEffectiveClientRect() const; //return control's client rect
 protected:
+	virtual void GetMinMaxClientSize( CSize& szMin, CSize& szMax ); //returns min/max size in client coordinates
 	virtual void GetMinMaxSize( CSize& szMin, CSize& szMax ); //returns min/max size in window coordinates
 
 	// Windows painting helpers
