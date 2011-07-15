@@ -56,7 +56,7 @@ BOOL CArxImageComboBoxCtrl::PreTranslateMessage(MSG* pMsg)
 void CArxImageComboBoxCtrl::OnSelchange() 
 {
 	CString sText;
-	int nCurSel = -1;
+	int nCurSel = GetCurSel();
 	CEdit* pEditCtrl = GetEditCtrl();
 	if( pEditCtrl )
 		pEditCtrl->GetWindowText( sText );
