@@ -58,7 +58,7 @@ CAcadDockBarHost::~CAcadDockBarHost()
 void CAcadDockBarHost::GetClientArea( CRect& rect )
 {
 	GetUsedRect( rect );
-#if (_BRXTARGET && _BRXTARGET <= 11)
+#if (_BRXTARGET && _BRXTARGET <= 12)
 	//GetUsedRect() returns invalid values in Bricscad!
 	GetClientRect( &rect );
 #endif
@@ -117,7 +117,7 @@ void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
-#if defined(_BRXTARGET) && (_BRXTARGET <= 11)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 12)
 	else if( flags & ADUI_DOCK_NF_SIZECHANGED ) //Bricscad doesn't set the correct flag when docking/undocking
 		PostMessage( refWM_FRAMECHANGED() );
 #endif
@@ -383,6 +383,14 @@ LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		mpDlgObject->OnMouseLeave();
 	}
+#ifdef _BRXTARGET
+	CWnd* pFocusWnd = GetFocus();
+	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
+	{
+		if( !SendMessage( WM_ACAD_KEEPFOCUS, 0, 0 ) )
+			::SetFocus( adsw_acadMainWnd() );
+	}
+#endif
 	return 0;
 }
 
@@ -402,6 +410,8 @@ void CAcadDockBarHost::OnTimer(UINT_PTR nIDEvent)
 {
 	if( nIDEvent == WM_MOUSELEAVE )
 	{
+		if( GetCapture() )
+			return;
 		CPoint ptCursor;
 		if( GetCursorPos( &ptCursor ) )
 		{
@@ -445,7 +455,7 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 void CAcadDockBarHost::OnClose()
 {
 	__super::OnClose();
-#if (_BRXTARGET && _BRXTARGET <= 11)
+#if (_BRXTARGET && _BRXTARGET <= 12)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

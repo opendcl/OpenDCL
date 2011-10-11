@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Runtime.ESM.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\..\..\Common\ESM\SharedRes.ESM.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\RuntimeRes.Local.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\SharedRes.Local.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Common\ESM\Res\ArrowHeads.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Cross.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Error.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Filter.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Folder.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Folder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Hand.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Help.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Info.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Label.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\LargeBlock.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\LargeBlock.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\LayerFrozen.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\LayerOff.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\LayerOn.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\LayerThawed.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\OpenDCL.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\OptionButton.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\OptionButtonH.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\OptionButtonSel.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\OptionButtonSelH.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Orbit.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Pan.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Pick.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\PickSmall.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Plotter.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Printer.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\R14Large.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\R14Small.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Select.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\SHXFont.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\TTFont.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\ESM\Res\Warn.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Zoom.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

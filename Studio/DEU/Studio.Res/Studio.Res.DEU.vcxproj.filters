@@ -1,0 +1,365 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\Common\DEU\SharedRes.DEU.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="Studio.DEU.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Common\SharedRes.Local.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\StudioRes.Local.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\3drect.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\acad2002.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ActiveX.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Animate.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\arrowheads.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\ArrowHeads.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ArrowR.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\AxFile.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\AxObject.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\BlockList.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\BlockView.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Bold.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Button.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Calendar.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Check.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ClosedFolder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ComboBox.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\ControlBar.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\DropDown.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\DwgList.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\dwgpreview.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\EditBox.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Enum.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Enums.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Error.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Event.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\FileDlg.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\FileDlg.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Filter.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\Filter.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Filter.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Folder.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\Folder.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Folder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\Folder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Font.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Frame.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\geometry.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\GraphicButton.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Grid.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\Hand.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Hand.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Hand.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Hatch.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Help.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\HtmlCtrl.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\idr_main.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ImageComboBox.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Info.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Info.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Italic.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Label.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\Label.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\LargeBlock.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\LargeBlock.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\LineWeight.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ListBox.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ListView.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\lsp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\MainFrame.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Method.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ModalForm.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ModelessForm.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\MonthView.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\OleObject.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\OpenDCL.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\OpenFolder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Option.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\OptionButton.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\OptionButtonH.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\OptionButtonSel.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\OptionButtonSelH.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\OptionList.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\OptionsTab.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\Palette.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Password.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Pick.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\pick.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Pick.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\PickSmall.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\PickSmall.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Picture.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\PictureBox.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Progress.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Property.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Question.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\RoundSlider.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Scroll.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Select.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\Select.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Select.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Select.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\SHXFont.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\SHXFont.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Slider.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\SlideView.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\SpinButton.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Splitter.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Tab.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\TextColor.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Toolbox.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Tree.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\Res\truefont.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\TTFont.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\UnderLine.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Url.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Common\DEU\Res\Warn.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Warn.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\X.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ZOrder.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

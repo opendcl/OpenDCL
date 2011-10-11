@@ -7,6 +7,7 @@
 #include "InvokeMethod.h"
 #include "Workspace.h"
 #include "Resource.h"
+#include <math.h>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -300,10 +301,10 @@ void CArxGsViewCtrl::OnPaint()
 		pView->update();
 	}
 	PaintUI( &dc );
+	CRect rcClient;
+	GetClientRect( &rcClient );
 	if( CanShowHighlight() )
 	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
 		rcClient.DeflateRect( 1, 1 );
 		if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
 		{
@@ -316,10 +317,10 @@ void CArxGsViewCtrl::OnPaint()
 			dc.LineTo( rcClient.left, rcClient.top );		
 			dc.SelectObject( pOldPen );			
 		}
-		rcClient.DeflateRect( 2, 2 );
-		if( GetFocus() == this )
-			dc.DrawFocusRect( &rcClient );
 	}
+	rcClient.DeflateRect( 2, 2 );
+	if( CanShowFocus() && GetFocus() == this )
+		dc.DrawFocusRect( &rcClient );
 }
 
 void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy) 
@@ -359,6 +360,7 @@ void CArxGsViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	else if( mLBState == down )
 		GetArxServices()->HandleEvent( Prop::EventClicked );	
 	mLBState = up;
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 }
 
@@ -388,7 +390,7 @@ __UINT_LRESULT CArxGsViewCtrl::OnNcHitTest(CPoint point)
 void CArxGsViewCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus( pOldWnd );
-	OnNeedRepaint( true );
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 

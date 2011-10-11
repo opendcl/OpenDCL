@@ -969,10 +969,12 @@ ADSRESULT Grid::SetColumnImage()
 		return RSRSLT;
 
 	CImageList* pImageList = pHeader->GetImageList();
-	if( !pImageList || nImage < 0 || nImage >= pImageList->GetImageCount() )
+	if( nImage != -1 && (!pImageList || nImage < 0 || nImage >= pImageList->GetImageCount()) )
 		return HandleArgValueError( pArgs, IDS_ARG_IMAGENOTFOUND );
 
 	HDITEM hdi = { HDI_IMAGE };
+	if( nImage == -1)
+		nImage = I_IMAGENONE;
 	hdi.iImage = nImage;
 	if( pHeader->SetItem( nCol, &hdi ) )
 		acedRetT();
@@ -1001,7 +1003,12 @@ ADSRESULT Grid::GetColumnImage()
 
 	HDITEM hdi = { HDI_IMAGE };
 	if( pHeader->GetItem( nCol, &hdi ) )
-		acedRetInt( hdi.iImage );
+	{
+		int nImage = hdi.iImage;
+		if( nImage == I_IMAGENONE)
+			nImage = -1;
+		acedRetInt( nImage );
+	}
 	return RSRSLT;
 }
 

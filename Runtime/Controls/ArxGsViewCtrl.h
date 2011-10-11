@@ -192,6 +192,7 @@ protected:
 	AcGsModel* GetGsModel() { return (mpGsReactor? mpGsReactor->GetGsModel() : NULL); }
 	AcGsDevice* GetGsDevice() { return (mpGsReactor? mpGsReactor->GetGsDevice() : NULL); }
 	virtual bool CanShowHighlight() const { return true; }
+	virtual bool CanShowFocus() const { return false; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
 	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }

@@ -54,8 +54,6 @@ CModelessDlg::CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, Di
 
 CModelessDlg::~CModelessDlg()
 {
-	if( mbTrackingMouse )
-		KillTimer( WM_MOUSELEAVE );
 }
 
 bool CModelessDlg::CreateModeless( UINT nID )
@@ -156,6 +154,11 @@ void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CModelessDlg::OnDestroy() 
 {
+	if( mbTrackingMouse )
+	{
+		KillTimer( WM_MOUSELEAVE );
+		mbTrackingMouse = false;
+	}
 	SetClosing();
 	__super::OnDestroy();
 }
@@ -299,6 +302,14 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 	}
+#ifdef _BRXTARGET
+	CWnd* pFocusWnd = GetFocus();
+	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
+	{
+		if( !SendMessage( WM_ACAD_KEEPFOCUS, 0, 0 ) )
+			::SetFocus( adsw_acadMainWnd() );
+	}
+#endif
 	return 0;
 }
 
@@ -318,6 +329,8 @@ void CModelessDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if( nIDEvent == WM_MOUSELEAVE )
 	{
+		if( GetCapture() )
+			return;
 		CPoint ptCursor;
 		if( GetCursorPos( &ptCursor ) )
 		{

@@ -17,11 +17,6 @@
 #include "PropertyNames.h"
 
 #pragma warning(push)
-#pragma warning(disable:4005)
-#include <StrSafe.h>
-#pragma warning(pop)
-
-#pragma warning(push)
 #pragma warning(disable:4995)
 
 
@@ -310,14 +305,25 @@ const TCHAR* asString( const std::vector< T >& rT )
 	if( ctElem == 0 )
 		return _T("<empty>");
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("<%s> {%s"), asString( ctElem ), asString( rT.at( 0 ) ) );
+	int cchBuf = _sntprintf( buf, _elements(buf), _T("<%s> {%s"), asString( ctElem ), asString( rT.at( 0 ) ) );
+	if( cchBuf < 0 || cchBuf >= _elements(buf) )
+	{
+		buf[_elements(buf) - 1] = _T('\0');
+		return buf;
+	}
 	for( size_t idx = 1; idx < ctElem; ++idx )
 	{
 		TCHAR elem[1024];
-		_sntprintf( elem, _elements(elem), _T(", %s"), asString( rT.at( idx ) ) );
-		StringCbCat( buf, _elements(buf), elem );
+		int cchElem = _sntprintf( elem, _elements(elem), _T(", %s"), asString( rT.at( idx ) ) );
+		if( cchElem < 0 || cchElem > _elements(buf) )
+			cchElem = _elements(buf);
+		lstrcpyn( &buf[cchBuf], elem, _elements(buf) - cchBuf );
+		cchBuf += cchElem;
+		if( cchBuf >= _elements(buf) )
+			return buf;
 	}
-	StringCbCat( buf, _elements(buf), _T("}") );
+	if( cchBuf < _elements(buf) - 2 )
+		lstrcpyn( &buf[cchBuf], _T("}"), _elements(buf) - cchBuf );
 	return buf;
 }
 
@@ -329,14 +335,25 @@ const TCHAR* asString( const std::vector< CString >& rStr )
 	if( ctElem == 0 )
 		return _T("<empty>");
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("<%s> {\"%s\""), asString( ctElem ), asString( rStr.at( 0 ) ) );
+	int cchBuf = _sntprintf( buf, _elements(buf), _T("<%s> {\"%s\""), asString( ctElem ), asString( rStr.at( 0 ) ) );
+	if( cchBuf < 0 || cchBuf >= _elements(buf) )
+	{
+		buf[_elements(buf) - 1] = _T('\0');
+		return buf;
+	}
 	for( size_t idx = 1; idx < ctElem; ++idx )
 	{
 		TCHAR elem[1024];
-		_sntprintf( elem, _elements(elem), _T(", \"%s\""), asString( rStr.at( idx ) ) );
-		StringCbCat( buf, _elements(buf), elem );
+		int cchElem = _sntprintf( elem, _elements(elem), _T(", \"%s\""), asString( rStr.at( idx ) ) );
+		if( cchElem < 0 || cchElem > _elements(buf) )
+			cchElem = _elements(buf);
+		lstrcpyn( &buf[cchBuf], elem, _elements(buf) - cchBuf );
+		cchBuf += cchElem;
+		if( cchBuf >= _elements(buf) )
+			return buf;
 	}
-	StringCbCat( buf, _elements(buf), _T("}") );
+	if( cchBuf < _elements(buf) - 2 )
+		lstrcpyn( &buf[cchBuf], _T("}"), _elements(buf) - cchBuf );
 	return buf;
 }
 

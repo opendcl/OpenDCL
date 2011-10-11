@@ -463,12 +463,14 @@ void CArxAcadSlideCtrl::OnDestroy()
 void CArxAcadSlideCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus( pOldWnd );
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );	
 }
 
 void CArxAcadSlideCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus( pNewWnd );
+	OnNeedRepaint( true );
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 

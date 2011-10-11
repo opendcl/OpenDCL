@@ -57,6 +57,7 @@ public:
 	void Snapshot();
 private:
 	void SaveDC();
+	void PaintControl(CDC *pdc);
 
 	// Generated message map functions
 protected:
@@ -64,8 +65,8 @@ protected:
 
 	virtual afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg void OnPaint();
 	afx_msg void OnClicked();
 	afx_msg void OnDoubleclicked();	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);	

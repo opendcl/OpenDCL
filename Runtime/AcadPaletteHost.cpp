@@ -406,6 +406,14 @@ LRESULT CAcadPaletteHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		mpDlgObject->OnMouseLeave();
 	}
+#ifdef _BRXTARGET
+	CWnd* pFocusWnd = GetFocus();
+	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
+	{
+		if( !SendMessage( WM_ACAD_KEEPFOCUS, 0, 0 ) )
+			::SetFocus( adsw_acadMainWnd() );
+	}
+#endif
 	return 0;
 }
 
@@ -425,6 +433,8 @@ void CAcadPaletteHost::OnTimer(UINT_PTR nIDEvent)
 {
 	if( nIDEvent == WM_MOUSELEAVE )
 	{
+		if( GetCapture() )
+			return;
 		CPoint ptCursor;
 		if( GetCursorPos( &ptCursor ) )
 		{
@@ -468,7 +478,7 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 void CAcadPaletteHost::OnClose()
 {
 	__super::OnClose();
-#if (_BRXTARGET && _BRXTARGET <= 11)
+#if (_BRXTARGET && _BRXTARGET <= 12)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

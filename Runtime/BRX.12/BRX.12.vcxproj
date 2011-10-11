@@ -1,0 +1,568 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{97486B43-2DA5-4B49-B172-7AC1A87F4B17}</ProjectGuid>
+    <RootNamespace>OpenDCL.12</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v80</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="VI\BRX.12.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="VI\BRX.12.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RootNameSpace)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RootNameSpace)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)ZLib;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);$(SolutionDir)Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)ZLib;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level1</WarningLevel>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);$(SolutionDir)Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AcadBlockInsertDropTarget.cpp" />
+    <ClCompile Include="..\AcadDockBarHost.cpp" />
+    <ClCompile Include="..\AcadPaletteHost.cpp" />
+    <ClCompile Include="..\acrxEntryPoint.cpp" />
+    <ClCompile Include="..\ARX.cpp" />
+    <ClCompile Include="..\ArxControlAcadDropTarget.cpp" />
+    <ClCompile Include="..\ArxControlDropTarget.cpp" />
+    <ClCompile Include="..\ArxControlPane.cpp" />
+    <ClCompile Include="..\ArxControlServices.cpp" />
+    <ClCompile Include="..\ArxDialogControl.cpp" />
+    <ClCompile Include="..\ArxDialogObject.cpp" />
+    <ClCompile Include="..\ArxDragDropService.cpp" />
+    <ClCompile Include="..\ArxProject.cpp" />
+    <ClCompile Include="..\ArxWorkspace.cpp" />
+    <ClCompile Include="..\BaseDlg.cpp" />
+    <ClCompile Include="..\ControlBarDlg.cpp" />
+    <ClCompile Include="..\CustomFileDlg.cpp" />
+    <ClCompile Include="..\DelayedInvoke.cpp" />
+    <ClCompile Include="..\DocData.cpp" />
+    <ClCompile Include="..\FolderBrowseDlg.cpp" />
+    <ClCompile Include="..\LinetypeDlg.cpp" />
+    <ClCompile Include="..\LineWeightDlg.cpp" />
+    <ClCompile Include="..\MainFileDlg.cpp" />
+    <ClCompile Include="..\ModalDlg.cpp" />
+    <ClCompile Include="..\ModelessDlg.cpp" />
+    <ClCompile Include="..\OptionsTabDlg.cpp" />
+    <ClCompile Include="..\PaletteDlg.cpp" />
+    <ClCompile Include="..\SADirRead.cpp" />
+    <ClCompile Include="..\StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\TabPageDlg.cpp" />
+    <ClCompile Include="..\UpdateCheck.cpp" />
+    <ClCompile Include="..\Controls\ArxAcadSlideCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxAngleSlideCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxAnimationCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxArrowComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxAxContainerCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxBlockListCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxBlockViewCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxCheckBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxColorComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxDwgListCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxDwgPreviewCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxFolderComboCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxFontComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxFrameCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxGraphicButtonCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxGridCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxGsViewCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxHatchCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxHtmlCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxHyperlinkCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxImageComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxImageTreeCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxLabelCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxLinetypeComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxLineweightComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxListBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxListViewCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxMonthCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxOptionListCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxPaperComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxPictureBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxPlotStyleNameComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxPlotStyleTableComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxPrinterComboBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxProgressBarCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxRadioButtonCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxRectangleCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxScrollBarCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxSlideCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxSpinnerCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxSplitterCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxTabStripCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxTextBoxCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxTextButtonCtrl.cpp" />
+    <ClCompile Include="..\Methods\ArgumentsRetrieval.cpp" />
+    <ClCompile Include="..\Methods\InvokeMethod.cpp" />
+    <ClCompile Include="..\Methods\Methods_ActiveX.cpp" />
+    <ClCompile Include="..\Methods\Methods_Animation.cpp" />
+    <ClCompile Include="..\Methods\Methods_BinFile.cpp" />
+    <ClCompile Include="..\Methods\Methods_BlockList.cpp" />
+    <ClCompile Include="..\Methods\Methods_BlockView.cpp" />
+    <ClCompile Include="..\Methods\Methods_Calendar.cpp" />
+    <ClCompile Include="..\Methods\Methods_ComboBox.cpp" />
+    <ClCompile Include="..\Methods\Methods_Control.cpp" />
+    <ClCompile Include="..\Methods\Methods_DwgList.cpp" />
+    <ClCompile Include="..\Methods\Methods_DwgPreview.cpp" />
+    <ClCompile Include="..\Methods\Methods_FileExplorer.cpp" />
+    <ClCompile Include="..\Methods\Methods_Form.cpp" />
+    <ClCompile Include="..\Methods\Methods_Grid.cpp" />
+    <ClCompile Include="..\Methods\Methods_Hatch.cpp" />
+    <ClCompile Include="..\Methods\Methods_Html.cpp" />
+    <ClCompile Include="..\Methods\Methods_ImageComboBox.cpp" />
+    <ClCompile Include="..\Methods\Methods_ListBox.cpp" />
+    <ClCompile Include="..\Methods\Methods_ListView.cpp" />
+    <ClCompile Include="..\Methods\Methods_OptionList.cpp" />
+    <ClCompile Include="..\Methods\Methods_PictureBox.cpp" />
+    <ClCompile Include="..\Methods\Methods_ProgressBar.cpp" />
+    <ClCompile Include="..\Methods\Methods_SlideView.cpp" />
+    <ClCompile Include="..\Methods\Methods_TabStrip.cpp" />
+    <ClCompile Include="..\Methods\Methods_TextBox.cpp" />
+    <ClCompile Include="..\Methods\Methods_Tree.cpp" />
+    <ClCompile Include="..\..\Common\AcadColorService.cpp" />
+    <ClCompile Include="..\..\Common\AcadColorTable.cpp" />
+    <ClCompile Include="..\..\Common\AcadSld.cpp" />
+    <ClCompile Include="..\..\Common\ArchiveEx.cpp" />
+    <ClCompile Include="..\..\Common\AxEventDescriptor.cpp" />
+    <ClCompile Include="..\..\Common\AxInterfaceDescriptor.cpp" />
+    <ClCompile Include="..\..\Common\AxMethodDescriptor.cpp" />
+    <ClCompile Include="..\..\Common\AxPropertyDescriptor.cpp" />
+    <ClCompile Include="..\..\Common\Base64.cpp" />
+    <ClCompile Include="..\..\Common\CeXDib.cpp" />
+    <ClCompile Include="..\..\Common\ControlPane.cpp" />
+    <ClCompile Include="..\..\Common\DclControlObject.cpp" />
+    <ClCompile Include="..\..\Common\DclControlProp.cpp" />
+    <ClCompile Include="..\..\Common\DclFormObject.cpp" />
+    <ClCompile Include="..\..\Common\DialogControl.cpp" />
+    <ClCompile Include="..\..\Common\DialogObject.cpp" />
+    <ClCompile Include="..\..\Common\DragDropService.cpp" />
+    <ClCompile Include="..\..\Common\ExtractAviSize.cpp" />
+    <ClCompile Include="..\..\Common\Filing.cpp" />
+    <ClCompile Include="..\..\Common\FontCollection.cpp" />
+    <ClCompile Include="..\..\Common\FontSettings.cpp" />
+    <ClCompile Include="..\..\Common\ImageListObject.cpp" />
+    <ClCompile Include="..\..\Common\LayeredWindowHelperST.cpp" />
+    <ClCompile Include="..\..\Common\OleFont.cpp" />
+    <ClCompile Include="..\..\Common\OleLicenseKey.cpp" />
+    <ClCompile Include="..\..\Common\PictureBox.cpp" />
+    <ClCompile Include="..\..\Common\PictureObject.cpp" />
+    <ClCompile Include="..\..\Common\PPDrawManager.cpp" />
+    <ClCompile Include="..\..\Common\PPHtmlDrawer.cpp" />
+    <ClCompile Include="..\..\Common\PPTooltip.cpp" />
+    <ClCompile Include="..\..\Common\Project.cpp" />
+    <ClCompile Include="..\..\Common\PropertyNames.cpp" />
+    <ClCompile Include="..\..\Common\PropertyObject.cpp" />
+    <ClCompile Include="..\..\Common\ResizableDialog.cpp" />
+    <ClCompile Include="..\..\Common\SafeImageListWrite.cpp" />
+    <ClCompile Include="..\..\Common\StdDropSource.cpp" />
+    <ClCompile Include="..\..\Common\StgFile.cpp" />
+    <ClCompile Include="..\..\Common\ThemeHelperST.cpp" />
+    <ClCompile Include="..\..\Common\TipWnd.cpp" />
+    <ClCompile Include="..\..\Common\ToolTips.cpp" />
+    <ClCompile Include="..\..\Common\VarUtils.Cpp" />
+    <ClCompile Include="..\..\Common\Workspace.cpp" />
+    <ClCompile Include="..\..\Common\Controls\AngleSlideCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\AnimationCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\AxContainerCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\BlockListCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ButtonCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ButtonST.cpp" />
+    <ClCompile Include="..\..\Common\Controls\CheckBoxCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ComboBoxCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ComboCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ComboExCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\DateTimeEditCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\DynamicButtonCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\EditCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\FolderComboBox.cpp" />
+    <ClCompile Include="..\..\Common\Controls\FolderComboCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\FolderTreeCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\FrameCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\GraphicButtonCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\GridCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\HtmlBrowser.cpp" />
+    <ClCompile Include="..\..\Common\Controls\HtmlCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\HyperlinkCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ImageComboBoxCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ImageTreeCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\LabelCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ListBoxCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ListViewCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\MonthCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\OptionListCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\PictureBoxCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ProgressBarCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\RadioButtonCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\RectangleCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\RoundSliderCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ScrollBarCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\SlideCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\SpinnerCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\SplitterCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\TabStripCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\TextBoxCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\TextButtonCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\XPStyleButtonST.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\ARX.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AcadBlockInsertDropTarget.h" />
+    <ClInclude Include="..\AcadDockBarHost.h" />
+    <ClInclude Include="..\AcadPaletteHost.h" />
+    <ClInclude Include="..\ArxControlAcadDropTarget.h" />
+    <ClInclude Include="..\ArxControlDropTarget.h" />
+    <ClInclude Include="..\ArxControlPane.h" />
+    <ClInclude Include="..\ArxControlServices.h" />
+    <ClInclude Include="..\ArxDialogControl.h" />
+    <ClInclude Include="..\ArxDialogObject.h" />
+    <ClInclude Include="..\ArxDragDropService.h" />
+    <ClInclude Include="..\ArxProject.h" />
+    <ClInclude Include="..\ArxWorkspace.h" />
+    <ClInclude Include="..\AutoDocLock.h" />
+    <ClInclude Include="..\BaseDlg.h" />
+    <ClInclude Include="..\ControlBarDlg.h" />
+    <ClInclude Include="..\CustomFileDlg.h" />
+    <ClInclude Include="..\DelayedInvoke.h" />
+    <ClInclude Include="..\DocData.h" />
+    <ClInclude Include="..\EventArgs.h" />
+    <ClInclude Include="..\FolderBrowseDlg.h" />
+    <ClInclude Include="..\LinetypeDlg.h" />
+    <ClInclude Include="..\LineWeightDlg.h" />
+    <ClInclude Include="..\MainFileDlg.h" />
+    <ClInclude Include="..\ModalDlg.h" />
+    <ClInclude Include="..\ModelessDlg.h" />
+    <ClInclude Include="..\OptionsTabDlg.h" />
+    <ClInclude Include="..\PaletteDlg.h" />
+    <ClInclude Include="..\Resource.h" />
+    <ClInclude Include="..\RuntimeRes.h" />
+    <ClInclude Include="..\RuntimeRes.Local.h" />
+    <ClInclude Include="..\SADirRead.h" />
+    <ClInclude Include="..\StdAfx.h" />
+    <ClInclude Include="..\StringCompare.h" />
+    <ClInclude Include="..\TabPageDlg.h" />
+    <ClInclude Include="..\UpdateCheck.h" />
+    <ClInclude Include="..\Controls\ArxAcadSlideCtrl.h" />
+    <ClInclude Include="..\Controls\ArxAngleSlideCtrl.h" />
+    <ClInclude Include="..\Controls\ArxAnimationCtrl.h" />
+    <ClInclude Include="..\Controls\ArxArrowComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxAxContainerCtrl.h" />
+    <ClInclude Include="..\Controls\ArxBlockListCtrl.h" />
+    <ClInclude Include="..\Controls\ArxBlockViewCtrl.h" />
+    <ClInclude Include="..\Controls\ArxCheckBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxColorComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxDwgListCtrl.h" />
+    <ClInclude Include="..\Controls\ArxDwgPreviewCtrl.h" />
+    <ClInclude Include="..\Controls\ArxFolderComboCtrl.h" />
+    <ClInclude Include="..\Controls\ArxFontComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxFrameCtrl.h" />
+    <ClInclude Include="..\Controls\ArxGraphicButtonCtrl.h" />
+    <ClInclude Include="..\Controls\ArxGridCtrl.h" />
+    <ClInclude Include="..\Controls\ArxGsViewCtrl.h" />
+    <ClInclude Include="..\Controls\ArxHatchCtrl.h" />
+    <ClInclude Include="..\Controls\ArxHtmlCtrl.h" />
+    <ClInclude Include="..\Controls\ArxHyperlinkCtrl.h" />
+    <ClInclude Include="..\Controls\ArxImageComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxImageTreeCtrl.h" />
+    <ClInclude Include="..\Controls\ArxLabelCtrl.h" />
+    <ClInclude Include="..\Controls\ArxLayerComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxLinetypeComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxLineweightComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxListBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxListViewCtrl.h" />
+    <ClInclude Include="..\Controls\ArxMonthCtrl.h" />
+    <ClInclude Include="..\Controls\ArxOptionListCtrl.h" />
+    <ClInclude Include="..\Controls\ArxPaperComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxPictureBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxPlotStyleNameComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxPlotStyleTableComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxPrinterComboBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxProgressBarCtrl.h" />
+    <CustomBuildStep Include="..\Controls\ArxR16LinetypeComboBoxCtrl.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuildStep>
+    <ClInclude Include="..\Controls\ArxRadioButtonCtrl.h" />
+    <ClInclude Include="..\Controls\ArxRectangleCtrl.h" />
+    <ClInclude Include="..\Controls\ArxScrollBarCtrl.h" />
+    <ClInclude Include="..\Controls\ArxSlideCtrl.h" />
+    <ClInclude Include="..\Controls\ArxSpinnerCtrl.h" />
+    <ClInclude Include="..\Controls\ArxSplitterCtrl.h" />
+    <ClInclude Include="..\Controls\ArxTabStripCtrl.h" />
+    <ClInclude Include="..\Controls\ArxTextBoxCtrl.h" />
+    <ClInclude Include="..\Controls\ArxTextButtonCtrl.h" />
+    <ClInclude Include="..\Controls\DimStyleComboHandler.h" />
+    <ClInclude Include="..\Controls\FontComboHandler.h" />
+    <ClInclude Include="..\Controls\LayerComboHandler.h" />
+    <ClInclude Include="..\Controls\LinetypeComboHandler.h" />
+    <ClInclude Include="..\Controls\PaperComboHandler.h" />
+    <ClInclude Include="..\Controls\PrinterComboHandler.h" />
+    <ClInclude Include="..\Controls\R2006AcUiMRUComboBoxFixup.h" />
+    <ClInclude Include="..\Controls\TextStyleComboHandler.h" />
+    <ClInclude Include="..\Controls\UnitsNumericFilter.h" />
+    <ClInclude Include="..\Methods\ArgumentsRetrieval.h" />
+    <ClInclude Include="..\Methods\InvokeMethod.h" />
+    <ClInclude Include="..\Methods\Methods_ActiveX.h" />
+    <ClInclude Include="..\Methods\Methods_Animation.h" />
+    <ClInclude Include="..\Methods\Methods_BinFile.h" />
+    <ClInclude Include="..\Methods\Methods_BlockList.h" />
+    <ClInclude Include="..\Methods\Methods_BlockView.h" />
+    <ClInclude Include="..\Methods\Methods_Calendar.h" />
+    <ClInclude Include="..\Methods\Methods_ComboBox.h" />
+    <ClInclude Include="..\Methods\Methods_ComboBoxEx.h" />
+    <ClInclude Include="..\Methods\Methods_Control.h" />
+    <ClInclude Include="..\Methods\Methods_DwgList.h" />
+    <ClInclude Include="..\Methods\Methods_DwgPreview.h" />
+    <ClInclude Include="..\Methods\Methods_FileExplorer.h" />
+    <ClInclude Include="..\Methods\Methods_Form.h" />
+    <ClInclude Include="..\Methods\Methods_Grid.h" />
+    <ClInclude Include="..\Methods\Methods_Hatch.h" />
+    <ClInclude Include="..\Methods\Methods_Html.h" />
+    <ClInclude Include="..\Methods\Methods_ImageComboBox.h" />
+    <ClInclude Include="..\Methods\Methods_ListBox.h" />
+    <ClInclude Include="..\Methods\Methods_ListView.h" />
+    <ClInclude Include="..\Methods\Methods_OptionList.h" />
+    <ClInclude Include="..\Methods\Methods_PictureBox.h" />
+    <ClInclude Include="..\Methods\Methods_ProgressBar.h" />
+    <ClInclude Include="..\Methods\Methods_SlideView.h" />
+    <ClInclude Include="..\Methods\Methods_TabStrip.h" />
+    <ClInclude Include="..\Methods\Methods_TextBox.h" />
+    <ClInclude Include="..\Methods\Methods_Tree.h" />
+    <ClInclude Include="..\..\Common\AcadColorService.h" />
+    <ClInclude Include="..\..\Common\AcadColorTable.h" />
+    <ClInclude Include="..\..\Common\AcadSld.h" />
+    <ClInclude Include="..\..\Common\ArchiveEx.h" />
+    <ClInclude Include="..\..\Common\AxArg.h" />
+    <ClInclude Include="..\..\Common\AxEventDescriptor.h" />
+    <ClInclude Include="..\..\Common\AxInterfaceDescriptor.h" />
+    <ClInclude Include="..\..\Common\AxMethodDescriptor.h" />
+    <ClInclude Include="..\..\Common\AxPropertyDescriptor.h" />
+    <ClInclude Include="..\..\Common\Base64.h" />
+    <ClInclude Include="..\..\Common\CeXDib.h" />
+    <ClInclude Include="..\..\Common\ControlPane.h" />
+    <ClInclude Include="..\..\Common\ControlTypes.h" />
+    <ClInclude Include="..\..\Common\DclControlObject.h" />
+    <ClInclude Include="..\..\Common\DclControlProp.h" />
+    <ClInclude Include="..\..\Common\DclFormObject.h" />
+    <ClInclude Include="..\..\Common\Diagnostic.h" />
+    <ClInclude Include="..\..\Common\DialogControl.h" />
+    <ClInclude Include="..\..\Common\DialogObject.h" />
+    <ClInclude Include="..\..\Common\DragDropService.h" />
+    <ClInclude Include="..\..\Common\ExtractAviSize.h" />
+    <ClInclude Include="..\..\Common\Filing.h" />
+    <ClInclude Include="..\..\Common\FontCollection.h" />
+    <ClInclude Include="..\..\Common\FontSettings.h" />
+    <ClInclude Include="..\..\Common\FormTypes.h" />
+    <ClInclude Include="..\..\Common\ImageListObject.h" />
+    <ClInclude Include="..\..\Common\LayeredWindowHelperST.h" />
+    <ClInclude Include="..\..\Common\MemDC.h" />
+    <ClInclude Include="..\..\Common\OleFont.h" />
+    <ClInclude Include="..\..\Common\OleLicenseKey.h" />
+    <ClInclude Include="..\..\Common\PictureBox.h" />
+    <ClInclude Include="..\..\Common\PictureObject.h" />
+    <ClInclude Include="..\..\Common\PPDrawManager.h" />
+    <ClInclude Include="..\..\Common\PPHtmlDrawer.h" />
+    <ClInclude Include="..\..\Common\PPTooltip.h" />
+    <ClInclude Include="..\..\Common\Project.h" />
+    <ClInclude Include="..\..\Common\PropertyIds.h" />
+    <ClInclude Include="..\..\Common\PropertyNames.h" />
+    <ClInclude Include="..\..\Common\PropertyObject.h" />
+    <ClInclude Include="..\..\Common\PtrTypes.h" />
+    <ClInclude Include="..\..\Common\RefCountedPtr.h" />
+    <ClInclude Include="..\..\Common\ResizableDialog.h" />
+    <ClInclude Include="..\..\Common\SafeImageListWrite.h" />
+    <ClInclude Include="..\..\Common\StdDropSource.h" />
+    <ClInclude Include="..\..\Common\StgFile.h" />
+    <ClInclude Include="..\..\Common\ThemeHelperST.h" />
+    <ClInclude Include="..\..\Common\TipWnd.h" />
+    <ClInclude Include="..\..\Common\ToolTips.h" />
+    <ClInclude Include="..\..\Common\UndoManager.h" />
+    <ClInclude Include="..\..\Common\VarUtils.H" />
+    <ClInclude Include="..\..\Common\Workspace.h" />
+    <ClInclude Include="..\..\Common\Controls\AngleFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\AngleSlideCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\AnimationCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\AxContainerCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\BlockListCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ButtonCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ButtonEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ButtonST.h" />
+    <ClInclude Include="..\..\Common\Controls\CheckBoxCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboBoxCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboExCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboHandler.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboStyles.h" />
+    <ClInclude Include="..\..\Common\Controls\CurrencyFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\CustomFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\DateFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\DateTimeEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\DynamicButtonCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\EditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\FilteredComboCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\FilteredComboExCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\FilteredEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\FolderComboBox.h" />
+    <ClInclude Include="..\..\Common\Controls\FolderComboCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\FolderTreeCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\FrameCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\GraphicButtonCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\GridCellEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\GridCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\HtmlBrowser.h" />
+    <ClInclude Include="..\..\Common\Controls\HtmlCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\HyperlinkCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ImageComboBoxCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ImageComboEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ImageTreeCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\InputFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\IntegerFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\LabelCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ListBoxCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ListViewCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\LowerCaseFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\MonthCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\MultilineFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\NumericFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\OptionListCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\PasswordFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\PercentageFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\PictureBoxCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ProgressBarCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\RadioButtonCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\RadioEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\RectangleCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\RoundSliderCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ScrollBarCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\SlideCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\SpinnerCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\SplitterCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\SymbolNameFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\TabStripCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\TextBoxCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\TextBoxEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\TextBoxFilterTypes.h" />
+    <ClInclude Include="..\..\Common\Controls\TextButtonCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\TimeFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\ToggleEditCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\UnsignedIntegerFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\UpperCaseFilter.h" />
+    <ClInclude Include="..\..\Common\Controls\XPStyleButtonST.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ZLib\ZLib.32\ZLib.32.vcxproj">
+      <Project>{a459ef20-fc54-44d3-b922-9d872e52a1fd}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="..\ARX.rc" VCBuildHookBuildToolVersion="VC8" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -11,6 +11,7 @@
 #include "DclFormObject.h"
 #include "ControlPane.h"
 #include "VarUtils.h"
+#include <math.h>
 
 
 extern CString GetCurrentFunctionName();

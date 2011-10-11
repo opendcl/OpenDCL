@@ -260,6 +260,7 @@ void CArxDwgPreviewCtrl::Snapshot()
 
 
 BEGIN_MESSAGE_MAP(CArxDwgPreviewCtrl, CButton)
+	ON_WM_PAINT()
 	ON_WM_CHAR()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
@@ -274,15 +275,57 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxDwgPreviewCtrl message handlers
 
-void CArxDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) 
+void CArxDwgPreviewCtrl::OnPaint() 
 {
-	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
-	int nDCState = pDC->SaveDC();
-	if( msDwgFilename.IsEmpty() )
+	CPaintDC dc( this ); // Device context for painting
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	if( mhbmSaved || mhbmLast )
 	{
-		CRect rcCell = lpDrawItemStruct->rcItem;
-		pDC->FillSolidRect( &rcCell, mColorService.GetBackgroundColor() );
+		CDC memdc;
+		memdc.CreateCompatibleDC( &dc );
+		CBitmap* pSavedBmp = memdc.SelectObject( CBitmap::FromHandle( mhbmLast? mhbmLast : mhbmSaved ) );
+		// Copy (BitBlt) bitmap from memory DC to screen DC
+		dc.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &memdc, 0, 0, SRCCOPY );
+    memdc.SelectObject( pSavedBmp );
 	}
+	else
+		PaintControl( &dc );
+
+
+	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
+	{
+		CRect rcCell;
+		GetClientRect( &rcCell );
+		rcCell.DeflateRect( 1, 1 );
+		
+		CPen pen( PS_SOLID, 1, mclrHighlight );
+		CPen* pOldPen = dc.SelectObject( &pen );
+		dc.MoveTo( rcCell.TopLeft() );
+		dc.LineTo( rcCell.right, rcCell.top );		
+		dc.LineTo( rcCell.right, rcCell.bottom );		
+		dc.LineTo( rcCell.left, rcCell.bottom );		
+		dc.LineTo( rcCell.left, rcCell.top );		
+		dc.SelectObject( pOldPen );
+	}
+	GetArxServices()->HandleEvent( Prop::EventPaint, args_B( (GetFocus() == this) ) );
+
+	if( GetFocus() == this )
+	{
+		CRect rcFocus;
+		GetClientRect( &rcFocus );
+		rcFocus.DeflateRect( 2, 2 );
+		dc.DrawFocusRect( rcFocus );
+	}
+}
+
+void CArxDwgPreviewCtrl::PaintControl(CDC* pDC) 
+{
+	int nDCState = pDC->SaveDC();
+	CRect rcCell;
+	GetClientRect(&rcCell);
+	if( msDwgFilename.IsEmpty() )
+		pDC->FillSolidRect( &rcCell, mColorService.GetBackgroundColor() );
 	else
 	{
 		Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
@@ -291,27 +334,21 @@ void CArxDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	
 	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
 	{
-		CRect rcCell = lpDrawItemStruct->rcItem;
-		rcCell.DeflateRect( 1, 1 );
+		CRect rcHighlight = rcCell;
+		rcHighlight.DeflateRect( 1, 1 );
 		
 		CPen pen( PS_SOLID, 1, mclrHighlight );
 		CPen* pOldPen = pDC->SelectObject( &pen );
-		pDC->MoveTo( rcCell.TopLeft() );
-		pDC->LineTo( rcCell.right, rcCell.top );		
-		pDC->LineTo( rcCell.right, rcCell.bottom );		
-		pDC->LineTo( rcCell.left, rcCell.bottom );		
-		pDC->LineTo( rcCell.left, rcCell.top );		
+		pDC->MoveTo( rcHighlight.TopLeft() );
+		pDC->LineTo( rcHighlight.right, rcHighlight.top );		
+		pDC->LineTo( rcHighlight.right, rcHighlight.bottom );		
+		pDC->LineTo( rcHighlight.left, rcHighlight.bottom );		
+		pDC->LineTo( rcHighlight.left, rcHighlight.top );		
 		pDC->SelectObject( pOldPen );
 	}
 
-	if( lpDrawItemStruct->itemState & ODS_FOCUS )
-	{
-		CRect rcFocus = lpDrawItemStruct->rcItem;
-		rcFocus.DeflateRect( 2, 2 );
-		pDC->DrawFocusRect( &rcFocus );
-	}
-
 	pDC->RestoreDC( nDCState );
+	SaveDC();
 }
 
 void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -341,12 +378,14 @@ void CArxDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CArxDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus( pOldWnd );
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
 void CArxDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
+	OnNeedRepaint( true );
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 

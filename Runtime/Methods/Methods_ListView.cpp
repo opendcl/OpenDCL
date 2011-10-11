@@ -960,11 +960,13 @@ ADSRESULT ListView::SetColumnImage()
 		return RSRSLT;
 
 	CImageList* pImageList = pHeader->GetImageList();
-	if( !pImageList || nImage < 0 || nImage >= pImageList->GetImageCount() )
+	if( nImage != -1 && (!pImageList || nImage < 0 || nImage >= pImageList->GetImageCount()) )
 		return HandleArgValueError( pArgs, IDS_ARG_IMAGENOTFOUND );
 
 	HDITEM hdi = { HDI_IMAGE };
 	hdi.iImage = nImage;
+	if( nImage == -1)
+		nImage = I_IMAGENONE;
 	if( pHeader->SetItem( nCol, &hdi ) )
 		acedRetT();
 	return RSRSLT;

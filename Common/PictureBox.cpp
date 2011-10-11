@@ -608,26 +608,22 @@ void CPictureBox::DrawFocusRect(int sX, int sY, int eX, int eY)
 
 void CPictureBox::DrawRect(int sX, int sY, int eX, int eY, COLORREF rgb)
 {
-	HDC hdc = ::GetDC(m_hWnd);
-
-	// setup the CRect for FillRect
-	CRect rcCell;
-	rcCell.left = sX;
-	rcCell.top = sY;
-	rcCell.right = eX;
-	rcCell.bottom = eY;
-
-	CPoint point;
+	POINT rptRect[] = {
+		{ sX, sY },
+		{ sX, eY },
+		{ eX, eY },
+		{ eX, sY },
+		{ sX, sY },
+	};
 	
+	HDC hdc = ::GetDC(m_hWnd);
 	HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, rgb);
 	HGDIOBJ OldPen = SelectObject(hdc, pen);
 		
-	::Rectangle(hdc, rcCell.left, rcCell.top, rcCell.right, rcCell.bottom);
+	::Polyline( hdc, rptRect, 5 );
 
 	SelectObject(hdc, OldPen);			
 	DeleteObject(pen);
-
-	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
 }
 

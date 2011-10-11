@@ -362,8 +362,8 @@ class TargetModule
 {
 public:
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, };
-	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kARX1 = 13,
-											kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
+	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
+											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, };
 	typedef char TByte;
 	TargetModule( Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
@@ -457,6 +457,7 @@ public:
 		kBricscad9_3 =  ((kBricscad << shftPlatform) | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =  ((kBricscad << shftPlatform) | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =  ((kBricscad << shftPlatform) | (kBRX11 << shftMajorVer) | 0),
+		kBricscad12 =  ((kBricscad << shftPlatform) | (kBRX12 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -662,6 +663,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, sInstallDir ), bWantHKLM );
 	if( IsWow64() )
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM, true );
@@ -737,6 +739,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );

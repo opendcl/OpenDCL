@@ -23,6 +23,9 @@ public:
 // DialogControl Interface
 public:
 
+// AcGsViewCtrl Interface
+protected:
+
 public:
 	bool DisplayHatchPattern( LPCTSTR pszPattern );
 	void ResizeHatch();

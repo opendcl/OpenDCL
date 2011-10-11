@@ -228,8 +228,6 @@ void CSplitterCtrl::OnMove(int x, int y)
 		CRect rcThis = GetEffectiveWindowRect();
 		mpTemplate->SetLongProperty( Prop::Left, rcThis.left );
 		mpTemplate->SetLongProperty( Prop::Top, rcThis.top );
-		OnApplyLeft( mpTemplate->GetPropertyObject( Prop::Left ) );
-		OnApplyTop( mpTemplate->GetPropertyObject( Prop::Top ) );
 	}
 	mpControlPane->RecalcLayout();
 }

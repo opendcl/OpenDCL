@@ -695,7 +695,7 @@ bool CDialogControl::OnApplyTop( TPropertyPtr pProp )
 		switch( lTopFromBottom  )
 		{
 		case 0:
-		case 1: //offset from right edge of control area
+		case 1: //offset from bottom edge of control area
 			lNew = mpControlPane->GetControlArea().bottom - pProp->GetLongValue();
 			break;
 		case 2: //offset from center of control area
@@ -832,7 +832,7 @@ bool CDialogControl::OnApplyTopFromBottom( TPropertyPtr pProp )
 	switch( lUseTopFromBottom  )
 	{
 	case 0:
-	case 1: //offset from right edge of control area
+	case 1: //offset from bottom edge of control area
 		lNew = mpControlPane->GetControlArea().bottom - pProp->GetLongValue();
 		break;
 	case 2: //offset from center of control area

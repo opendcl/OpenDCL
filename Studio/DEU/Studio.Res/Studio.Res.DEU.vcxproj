@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{464B8A06-126B-4E42-BB9B-1C5E047FA43D}</ProjectGuid>
+    <RootNamespace>StudioResDEU</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Studio.Res</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Studio.Res</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;STUDIORESDEU_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)Common;$(SolutionDir)Common\DEU;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <NoEntryPoint>true</NoEntryPoint>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;STUDIORESDEU_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)Common;$(SolutionDir)Common\DEU;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <NoEntryPoint>true</NoEntryPoint>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\Common\DEU\SharedRes.DEU.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="Studio.DEU.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Common\SharedRes.Local.h" />
+    <ClInclude Include="..\..\StudioRes.Local.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\3drect.ico" />
+    <None Include="res\acad2002.ico" />
+    <None Include="res\ActiveX.ico" />
+    <None Include="res\Animate.ico" />
+    <None Include="..\..\..\Common\Res\arrowheads.bmp" />
+    <None Include="..\..\..\Common\DEU\Res\ArrowHeads.bmp" />
+    <None Include="res\ArrowR.ico" />
+    <None Include="res\AxFile.ico" />
+    <None Include="Res\AxObject.ico" />
+    <None Include="res\BlockList.ico" />
+    <None Include="res\BlockView.ico" />
+    <None Include="res\Bold.ico" />
+    <None Include="res\Button.ico" />
+    <None Include="res\Calendar.ico" />
+    <None Include="res\Check.ico" />
+    <None Include="res\ClosedFolder.ico" />
+    <None Include="res\ComboBox.ico" />
+    <None Include="Res\ControlBar.ico" />
+    <None Include="res\DropDown.ico" />
+    <None Include="res\DwgList.ico" />
+    <None Include="res\dwgpreview.ico" />
+    <None Include="res\EditBox.ico" />
+    <None Include="res\Enum.ico" />
+    <None Include="res\Enums.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Error.ico" />
+    <None Include="res\Event.ico" />
+    <None Include="res\FileDlg.bmp" />
+    <None Include="res\FileDlg.ico" />
+    <None Include="res\Filter.bmp" />
+    <None Include="..\..\..\Common\Res\Filter.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Filter.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Folder.bmp" />
+    <None Include="..\..\..\Common\Res\Folder.bmp" />
+    <None Include="..\..\..\Common\DEU\Res\Folder.ico" />
+    <None Include="..\..\..\Common\Res\Folder.ico" />
+    <None Include="res\Font.bmp" />
+    <None Include="res\Frame.ico" />
+    <None Include="res\geometry.bmp" />
+    <None Include="res\GraphicButton.ico" />
+    <None Include="res\Grid.ico" />
+    <None Include="..\..\..\Common\Res\Hand.cur" />
+    <None Include="..\..\..\Common\DEU\Res\Hand.cur" />
+    <None Include="res\Hand.cur" />
+    <None Include="res\Hatch.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Help.ico" />
+    <None Include="res\HtmlCtrl.ico" />
+    <None Include="..\..\..\Common\Res\idr_main.ico" />
+    <None Include="res\ImageComboBox.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Info.ico" />
+    <None Include="res\Info.ico" />
+    <None Include="res\Italic.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Label.ico" />
+    <None Include="..\..\..\Common\Res\Label.ico" />
+    <None Include="..\..\..\Common\DEU\Res\LargeBlock.ico" />
+    <None Include="Res\LargeBlock.ico" />
+    <None Include="res\LineWeight.ico" />
+    <None Include="res\ListBox.ico" />
+    <None Include="res\ListView.ico" />
+    <None Include="res\lsp.ico" />
+    <None Include="res\MainFrame.bmp" />
+    <None Include="res\Method.ico" />
+    <None Include="res\ModalForm.ico" />
+    <None Include="res\ModelessForm.ico" />
+    <None Include="res\MonthView.ico" />
+    <None Include="res\OleObject.ico" />
+    <None Include="..\..\..\Common\DEU\Res\OpenDCL.ico" />
+    <None Include="res\OpenFolder.ico" />
+    <None Include="res\Option.ico" />
+    <None Include="..\..\..\Common\DEU\Res\OptionButton.bmp" />
+    <None Include="..\..\..\Common\DEU\Res\OptionButtonH.bmp" />
+    <None Include="..\..\..\Common\DEU\Res\OptionButtonSel.bmp" />
+    <None Include="..\..\..\Common\DEU\Res\OptionButtonSelH.bmp" />
+    <None Include="res\OptionList.ico" />
+    <None Include="Res\OptionsTab.ico" />
+    <None Include="Res\Palette.ico" />
+    <None Include="res\Password.ico" />
+    <None Include="res\Pick.bmp" />
+    <None Include="..\..\..\Common\Res\pick.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Pick.ico" />
+    <None Include="..\..\..\Common\DEU\Res\PickSmall.ico" />
+    <None Include="..\..\..\Common\Res\PickSmall.ico" />
+    <None Include="res\Picture.ico" />
+    <None Include="res\PictureBox.ico" />
+    <None Include="res\Progress.ico" />
+    <None Include="res\Property.ico" />
+    <None Include="res\Question.ico" />
+    <None Include="res\RoundSlider.ico" />
+    <None Include="res\Scroll.ico" />
+    <None Include="res\Select.bmp" />
+    <None Include="..\..\..\Common\Res\Select.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Select.ico" />
+    <None Include="res\Select.ico" />
+    <None Include="..\..\..\Common\DEU\Res\SHXFont.ico" />
+    <None Include="..\..\..\Common\Res\SHXFont.ico" />
+    <None Include="res\Slider.ico" />
+    <None Include="res\SlideView.ico" />
+    <None Include="res\SpinButton.ico" />
+    <None Include="res\Splitter.ico" />
+    <None Include="res\Tab.ico" />
+    <None Include="res\TextColor.ico" />
+    <None Include="res\Toolbox.bmp" />
+    <None Include="res\Tree.ico" />
+    <None Include="..\..\..\Common\Res\truefont.ico" />
+    <None Include="..\..\..\Common\DEU\Res\TTFont.ico" />
+    <None Include="res\UnderLine.ico" />
+    <None Include="res\Url.ico" />
+    <None Include="..\..\..\Common\DEU\Res\Warn.ico" />
+    <None Include="res\Warn.ico" />
+    <None Include="res\X.ico" />
+    <None Include="res\ZOrder.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

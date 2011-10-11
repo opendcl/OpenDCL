@@ -8,6 +8,7 @@
 #include "Workspace.h"
 #include "Resource.h"
 #include "AutoDocLock.h"
+#include <math.h>
 
 const int nOrbitOffset = 20;
 const int nOrbitQuadCircleDia = 19;
