@@ -137,7 +137,7 @@ BEGIN_MESSAGE_MAP(CButtonST, CButton)
 	ON_WM_SYSCOLORCHANGE()
 	ON_CONTROL_REFLECT_EX(BN_CLICKED, OnClicked)
 	ON_WM_ACTIVATE()
-	ON_WM_ENABLE()
+	//ON_WM_ENABLE()
 	ON_WM_CANCELMODE()
 	ON_WM_GETDLGCODE()
 	ON_WM_CTLCOLOR_REFLECT()
@@ -319,21 +319,24 @@ void CButtonST::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruc
 } // End of OnMeasureItem
 #endif
 
-void CButtonST::OnEnable(BOOL bEnable) 
-{
-	CButton::OnEnable(bEnable);
-	
-	if (bEnable == FALSE)	
-	{
-		CWnd*	pWnd = GetParent()->GetNextDlgTabItem(this);
-		if (pWnd)
-			pWnd->SetFocus();
-		else
-			GetParent()->SetFocus();
-
-		CancelHover();
-	} // if
-} // End of OnEnable
+// This message handler tries to be smart and move focus to the next dialog control
+// even when this button didn't have the focus to begin with. Since Windows takes
+// care of all that, I just commented out the entire handler. [ORW 2011-10-28]
+//void CButtonST::OnEnable(BOOL bEnable) 
+//{
+//	CButton::OnEnable(bEnable);
+//	
+//	if (bEnable == FALSE)	
+//	{
+//		CWnd*	pWnd = GetParent()->GetNextDlgTabItem(this);
+//		if (pWnd)
+//			pWnd->SetFocus();
+//		else
+//			GetParent()->SetFocus();
+//
+//		CancelHover();
+//	} // if
+//} // End of OnEnable
 
 void CButtonST::OnKillFocus(CWnd * pNewWnd)
 {

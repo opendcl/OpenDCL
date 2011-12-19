@@ -81,22 +81,6 @@ DWORD CArxFontComboBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CArxFontComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::ApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	//switch( pProp->GetID() )
-	//{
-	//case Prop::DragnDropAllowDrop:
-	//	{
-	//		SetDragnDrop( pProp->GetBooleanValue() );
-	//		break;
-	//	}
-	//}
-	return !bFailed;
-}
-
 
 BEGIN_MESSAGE_MAP(CArxFontComboBoxCtrl, CArxComboBoxCtrl)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCloseUp)

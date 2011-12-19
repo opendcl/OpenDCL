@@ -268,9 +268,7 @@ void CArxWorkspace::ResetLispSymbol( LPCTSTR pszLispSymbol ) const
 	static struct resbuf rbNIL = { NULL, RTNIL };;
 	acedPutSym( pszLispSymbol, &rbNIL );
 
-#ifdef _DEBUG
 	TraceFmt( _T("Lisp Symbol %s reset to NIL\r\n"), pszLispSymbol );
-#endif
 }
 
 void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, const void* ptr, odcl::PtrType type ) const
@@ -283,9 +281,7 @@ void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, const void* ptr, odcl:
 	rbPtr.resval.rlname[1] = type;
 	acedPutSym( pszLispSymbol, &rbPtr );
 
-#ifdef _DEBUG
 	TraceFmt( _T("Lisp Symbol %s set to %p\r\n"), pszLispSymbol, ptr );
-#endif
 }
 
 bool CArxWorkspace::UpdateGlobalLispSymbols() const

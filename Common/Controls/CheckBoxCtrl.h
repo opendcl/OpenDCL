@@ -15,7 +15,6 @@ class CPropertyObject;
 class CCheckBoxCtrl : public CButton, public CDialogControl
 {
 	CAcadColorService mColorService;
-	bool mbSpaceBarPressed;
 
 // Construction
 public:

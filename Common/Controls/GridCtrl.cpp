@@ -1976,10 +1976,16 @@ LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 	{
 		CWnd* pFocusParent = pFocusWnd->GetParent();
 		if( pFocusParent != this )
-		{ //need to account for CDateTimeCtrl popup window in WinXP (it is a popup owned by the dialog)
-			if( pFocusParent != GetControlPane()->GetHostDialog() ||
-					(pFocusWnd->GetStyle() & WS_POPUP) == 0 )
-				HideEditControls();
+		{
+			//need to account for CDateTimeCtrl popup window in WinXP (it is a popup owned by the dialog)
+			//and AutoCAD color dialog (owned by disabled main AutoCAD window)
+			CWnd* pMainWnd = AfxGetMainWnd();
+			if( !pMainWnd || pMainWnd->IsWindowEnabled() )
+			{
+				if( pFocusParent != GetControlPane()->GetHostDialog() ||
+						(pFocusWnd->GetStyle() & WS_POPUP) == 0 )
+					HideEditControls();
+			}
 		}
 	}
 	return 0;

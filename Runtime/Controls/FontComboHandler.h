@@ -247,14 +247,18 @@ protected:
 		}
 
 protected:
+	struct _EnumFontState { CFontComboHandler* pHandler; CComboBox* pCombo; };
 	static int CALLBACK AFX_EXPORT EnumFamScreenCallBackEx(
-			CONST LOGFONT* lplf, CONST TEXTMETRIC* lpntm, DWORD FontType, LPARAM pThis )
+			CONST LOGFONT* lplf, CONST TEXTMETRIC* lpntm, DWORD FontType, LPARAM pState )
 		{
 			// don't put in non-printer raster fonts
 			if( FontType & RASTER_FONTTYPE )
 				return 1;
 			if( FontType & TRUETYPE_FONTTYPE )
-				((CFontComboHandler*)pThis)->AddFont( lplf->lfFaceName, TRUETYPE_FONTTYPE );
+			{
+				_EnumFontState& state = *(_EnumFontState*)pState;
+				state.pHandler->AddFont( lplf->lfFaceName, TRUETYPE_FONTTYPE );
+			}
 			return 1; // Call me back
 		}
 	void AddFont( const CString& sFont, DWORD nFlags ) { mmapFonts[(LPCTSTR)sFont] = CFontInfo( nFlags ); }
@@ -286,10 +290,11 @@ protected:
 			LOGFONT lf;
 			ZeroMemory( &lf, sizeof(lf) );
 			lf.lfCharSet = DEFAULT_CHARSET;
+			_EnumFontState state = { this, pCombo };
 			int nResult = EnumFontFamiliesEx( pDC->GetSafeHdc(),	// handle to device context
 																			 &lf,	// pointer to logical font information
 																			 EnumFamScreenCallBackEx,	// pointer to callback function
-																			 (LPARAM)this,	// application-supplied data
+																			 (LPARAM)&state,	// application-supplied data
 																			 0 );
 			pCombo->ReleaseDC( pDC );
 			if( nResult == 0 )

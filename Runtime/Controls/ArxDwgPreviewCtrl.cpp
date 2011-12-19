@@ -188,9 +188,9 @@ bool CArxDwgPreviewCtrl::LoadDwg( LPCTSTR pszFilename )
 		return true;
 
 	msDwgFilename = theWorkspace.FindFile( pszFilename ); 
-	OnNeedRepaint( true );
 	if( msDwgFilename.IsEmpty() )
 		return false;
+	OnNeedRepaint( true );
 	return true;
 }
 
@@ -214,7 +214,6 @@ void CArxDwgPreviewCtrl::Clear()
 		mhbmLast = NULL;
 	}
 	Reset();
-	RedrawWindow();
 }
 
 void CArxDwgPreviewCtrl::SaveDC()
