@@ -23,16 +23,16 @@ public:
 	OrbitGadget():m_pNode(NULL) {}
     void setGsView(AcGsView* pView) {m_pAcGsView=pView;}
 
-	virtual Adesk::UInt32   setAttributes   (AcGiDrawableTraits * traits)
+	virtual Adesk::UInt32   subSetAttributes   (AcGiDrawableTraits * traits)
     {
         traits->setTrueColor (AcCmEntityColor(0,200,0));
         return kDrawableNone;
     }
-    virtual Adesk::Boolean  worldDraw       (AcGiWorldDraw * wd)
+    virtual Adesk::Boolean  subWorldDraw       (AcGiWorldDraw * wd)
     {
         return Adesk::kFalse;
     }
-    virtual void            viewportDraw    (AcGiViewportDraw * pViewportDraw)
+    virtual void            subViewportDraw    (AcGiViewportDraw * pViewportDraw)
     {
         AcGsDCRect view_rect;
         m_pAcGsView->getViewport (view_rect);

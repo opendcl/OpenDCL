@@ -19,6 +19,7 @@ public:
 	size_t mnOriginalIndex;
 	TDclFormPtr mpChildForm;
 	CTabInfo(int nIndex = -1) : mnOriginalIndex( nIndex ), mnImageIndex( -1 ), mpChildForm( NULL ) {}
+	CTabInfo(TDclFormPtr pTabPage) : mnOriginalIndex( pTabPage? pTabPage->GetTabIndex() : -1 ), mnImageIndex( -1 ), mpChildForm( pTabPage ) {}
 };
 
 typedef CList<CTabInfo*> CTabInfoList;

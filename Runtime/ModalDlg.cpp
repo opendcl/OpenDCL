@@ -76,7 +76,7 @@ END_MESSAGE_MAP()
 
 BOOL CModalDlg::OnInitDialog() 
 {
-	__super::OnInitDialog();
+	return __super::OnInitDialog();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE

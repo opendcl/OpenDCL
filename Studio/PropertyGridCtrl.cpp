@@ -1888,7 +1888,7 @@ BOOL CPropertyGridCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 
 void CPropertyGridCtrl::OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
+	//LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
 	*pResult = 0;
 }

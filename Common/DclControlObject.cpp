@@ -1039,7 +1039,7 @@ bool CDclControlObject::IsMicrosoftActiveXCtrl() const
 	try
 	{
 		LPOLESTR pwszUserType = NULL;	
-		HRESULT hResult = OleRegGetUserType( mClsid, USERCLASSTYPE_FULL, &pwszUserType );
+		OleRegGetUserType( mClsid, USERCLASSTYPE_FULL, &pwszUserType );
 		sName = pwszUserType;
 		CoTaskMemFree( pwszUserType );
 	}

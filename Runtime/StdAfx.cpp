@@ -43,6 +43,8 @@ extern "C" long _ftol2( double dblSource ) { return _ftol( dblSource ); }
 #define HOSTAPP_DLL _T("AcDb17.dll")
 #elif (_ACADTARGET == 18)
 #define HOSTAPP_DLL _T("AcDb18.dll")
+#elif (_ACADTARGET == 19)
+#define HOSTAPP_DLL _T("AcDb19.dll")
 #endif
 
 #ifdef HOSTAPP_DLL

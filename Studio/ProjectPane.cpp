@@ -29,22 +29,21 @@ static CString StripPathFromFileName(CString sFullPath)
 }
 
 
-static CString FindTabCaption2(TDclFormPtr pDclTab, int nTabIndex)
-{
-	TDclControlPtr pControl = pDclTab->FindFirstControlOfType(CtlTabStrip);
-	if (pControl)
-		return pControl->GetPropertyListItem(Prop::TabsCaption, nTabIndex);
-	return CString();
-}
-
-
 static CString FindTabCaption(TDclFormPtr pDclTabPage)
 {
 	const TDclFormList& Forms = pDclTabPage->GetProject()->GetDclFormList();
 	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
 		if( pDclTabPage->GetParentName() == (*iter)->GetUniqueName() )
-			return FindTabCaption2( (*iter), pDclTabPage->GetTabIndex() );
+		{
+			TDclControlPtr pControl = (*iter)->FindFirstControlOfType(CtlTabStrip);
+			CString sTabName;
+			if (pControl)
+				sTabName = pControl->GetPropertyListItem(Prop::TabsCaption, pDclTabPage->GetTabIndex());
+			if( sTabName.IsEmpty() )
+				sTabName.Format( theWorkspace.LoadResourceString(IDS_TAB), pDclTabPage->GetTabIndex() + 1 );
+			return sTabName;
+		}
 	}
 	return CString();
 }

@@ -104,6 +104,7 @@ bool CArxTabStripCtrl::SetCurrentTab( size_t nPageIndex )
 	if( !pTabPage->GetSourceForm()->GetControlProperties()->GetBooleanProperty( Prop::Visible ) )
 		ShowTab( nPageIndex );
 	SetCurSel( GetTabItemIndex( nPageIndex ) );
+	ResetTooltips();
 	ActivateTabPage( pTabPage, true );
 	return true;
 }

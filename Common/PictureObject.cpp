@@ -582,11 +582,8 @@ void CPictureObject::Serialize(CArchive& ar)
 				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1);
 				ImageList.Add(hIconPic);
 				ar.Flush();
-				ULONGLONG lPos1 = ar.GetFile()->GetPosition();
 				SafeImageListWrite( ImageList.m_hImageList, &CArchiveStream( &ar ) );
 				ar.Flush();
-				ULONGLONG lPos2 = ar.GetFile()->GetPosition();
-				ULONGLONG lSize = lPos2 - lPos1;
 				ImageList.DeleteImageList();
 				break;
 			}

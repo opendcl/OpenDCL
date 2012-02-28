@@ -116,21 +116,30 @@ void CTabsPane::Setup()
 	m_pTabTTT = mpDclControl->GetPropertyObject(Prop::TabsTTT);	
 	m_pTabImages = mpDclControl->GetPropertyObject(Prop::TabsImageList);	
 
-	// create a pointer to pass to the list to insert
-	TProjectPtr pProject = mpDclControl->GetOwnerProject();
-	
-	for (size_t i = 0; i < m_pTabCaptions->size(); i++ )
+	TDclFormList TabPages;
+	mpDclControl->GetOwnerProject()->FindChildForms( mpDclControl->GetOwnerForm(), TabPages );
+	for( TDclFormList::const_iterator iter = TabPages.begin(); iter != TabPages.end(); ++iter )
 	{
-		CTabInfo *pTab = new CTabInfo(i);
-		pTab->mpChildForm = pProject->FindDclTabChildForm(mpDclControl->GetOwnerForm()->GetUniqueName(), i);
-		pTab->msCaption = m_pTabCaptions->GetConstStringArrayPtr()->at(i);
-		if (i < m_pTabImages->size())
-			pTab->mnImageIndex = m_pTabImages->GetConstIntArrayPtr()->at(i);
+		TDclFormPtr pForm = (*iter);
+		CTabInfo *pTab = new CTabInfo(pForm);
+		short idxTab = pForm->GetTabIndex();
+		if (idxTab < m_pTabCaptions->size())
+			pTab->msCaption = m_pTabCaptions->GetConstStringArrayPtr()->at( idxTab );
+		if( pTab->msCaption.IsEmpty() )
+			pTab->msCaption.Format( theWorkspace.LoadResourceString(IDS_TAB), idxTab + 1 );
+		if (idxTab < m_pTabImages->size())
+			pTab->mnImageIndex = m_pTabImages->GetConstIntArrayPtr()->at( idxTab );
 		else
 			pTab->mnImageIndex = -1;
-		if (i < m_pTabTTT->size())
-			pTab->msToolTipTitle = m_pTabTTT->GetConstStringArrayPtr()->at(i);
-		m_TabList.AddTail(pTab);
+		if (idxTab < m_pTabTTT->size())
+			pTab->msToolTipTitle = m_pTabTTT->GetConstStringArrayPtr()->at( idxTab );
+		POSITION pos = m_TabList.GetHeadPosition();
+		while( pos && m_TabList.GetAt(pos)->mnOriginalIndex <= pTab->mnOriginalIndex )
+			m_TabList.GetNext(pos);
+		if( pos )
+			m_TabList.InsertBefore( pos, pTab );
+		else
+			m_TabList.AddTail( pTab );
 	}
 
 	mnTabIndex = 0;

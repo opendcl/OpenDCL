@@ -50,7 +50,7 @@
 #define IDB_OPTBTND                     1205
 #define IDB_OPTBTNSELD                  1206
 #define IDB_FOLDER                      1207
-#define IDC_HAND                        1300
+#define IDC_OHAND                       1300
 #define IDS_PROP_NAME                   3201
 #define IDS_PROP_CUSTOM                 3202
 #define IDS_PROP_AUTOSIZE               3203

@@ -218,7 +218,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 	lvItem.iIndent = -1;
 
 	// insert the row item
-	int nInsertIndex = m_PicList.InsertItem(&lvItem);
+	m_PicList.InsertItem(&lvItem);
 	m_PicList.SetItemData(nPicIndex, nImage);
 	m_PicList.SetIconSpacing(nCurrentWidth + 16);
 	return (bRetVal);
@@ -438,7 +438,7 @@ BOOL CImageListPage::OnInitDialog()
 			lvItem.iIndent = -1;
 
 			// insert the row item
-			int nInsertIndex = m_PicList.InsertItem(&lvItem);
+			m_PicList.InsertItem(&lvItem);
 			m_PicList.SetItemData(i, i);
 		}
 	}

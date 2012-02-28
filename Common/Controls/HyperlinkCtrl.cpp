@@ -15,7 +15,7 @@ COLORREF CHyperlinkCtrl::g_colorVisited   = RGB(128,0,128);		 // purple
 
 CHyperlinkCtrl::CHyperlinkCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mhHandCursor( LoadCursor( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDC_HAND) ) )
+, mhHandCursor( LoadCursor( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDC_OHAND) ) )
 {
 	LOGFONT lfDefault;
 	::GetObject( (HFONT)GetStockObject( DEFAULT_GUI_FONT ), sizeof(lfDefault), &lfDefault );

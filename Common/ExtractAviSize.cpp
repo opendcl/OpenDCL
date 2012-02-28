@@ -33,9 +33,9 @@ CSize ExtractAviSize(CString sFileName)
         &aviStream,
         streamtypeVIDEO, 0);
 
-	//get start position and count of frames
-	long firstFrame = AVIStreamStart(aviStream);
-	long countFrames = AVIStreamLength(aviStream);
+	////get start position and count of frames
+	//long firstFrame = AVIStreamStart(aviStream);
+	//long countFrames = AVIStreamLength(aviStream);
 
 	//get header information            
 	AVISTREAMINFO streamInfo;// = new AVISTREAMINFO();

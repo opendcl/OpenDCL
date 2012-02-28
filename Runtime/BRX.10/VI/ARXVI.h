@@ -10,3 +10,7 @@ const int __arxRegisteredFlags_##T_KEY##T_GROUPNAME = __arxRegisteredCommand_##T
 
 
 extern "C" int ads_queueexpr( wchar_t* pszCommand );
+
+#define subSetAttributes setAttributes
+#define subWorldDraw worldDraw
+#define subViewportDraw viewportDraw

@@ -234,6 +234,7 @@ protected:
 	typedef struct _STRUCT_TAGPROP
 	{
 		DWORD dwTagIndex;	// The hot rect of the hyperlink
+		DWORD __padding;
 		CPPString strTagName;	// The type of the hyperlink
 	} STRUCT_TAGPROP;
 #pragma pack()

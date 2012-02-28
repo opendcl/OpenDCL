@@ -601,6 +601,18 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 			if( !pDlg->IsModeless() )
 			{
 				pParent = pDlg->GetControlWnd();
+				HWND hwndParent = pParent->m_hWnd;
+				if( hwndParent)
+				{
+					MSG msg;
+					while( PeekMessage( &msg, pParent->m_hWnd, 0, 0, PM_REMOVE ) )
+					{
+						TranslateMessage( &msg );
+						DispatchMessage( &msg );
+						if( msg.message == WM_QUIT )
+							break;
+					}
+				}
 				break;
 			}
 		}

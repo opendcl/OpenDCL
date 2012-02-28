@@ -256,7 +256,7 @@ CString CHtmlBrowser::GetHtmlText()
 	pBody = NULL;
 
 	CComBSTR html;
-	HRESULT hr = pTxtRange->get_htmlText(&html);
+	pTxtRange->get_htmlText(&html);
 	return (LPCWSTR)html;
 }
 

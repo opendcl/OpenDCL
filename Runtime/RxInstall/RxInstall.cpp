@@ -364,7 +364,7 @@ public:
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, };
 	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
-											kARX2007 = 17, kARX2010 = 18, };
+											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, };
 	typedef char TByte;
 	TargetModule( Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
 		: mPlatform( platform )
@@ -454,6 +454,7 @@ public:
 		kAutoCAD2010 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 0),
 		kAutoCAD2011 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 1),
 		kAutoCAD2012 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 2),
+		kAutoCAD2013 =  ((kAutoCAD << shftPlatform) | (kARX2013 << shftMajorVer) | 0),
 		kBricscad9_3 =  ((kBricscad << shftPlatform) | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =  ((kBricscad << shftPlatform) | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =  ((kBricscad << shftPlatform) | (kBRX11 << shftMajorVer) | 0),
@@ -660,6 +661,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
@@ -671,6 +673,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM, true );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM, true );
 	}
 	return ERROR_SUCCESS;
 }
@@ -733,6 +736,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_LOCAL_MACHINE );
@@ -753,6 +758,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_CURRENT_USER, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }

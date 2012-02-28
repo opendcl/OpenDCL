@@ -146,7 +146,7 @@ void CImageListContents::OnDblclkThelist(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CImageListContents::OnEndlabeleditThelist(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	//LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	// TODO: Add your control notification handler code here
 	
 	*pResult = 0;
@@ -154,7 +154,7 @@ void CImageListContents::OnEndlabeleditThelist(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CImageListContents::OnBeginlabeleditThelist(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	//LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	// TODO: Add your control notification handler code here
 	
 	*pResult = 0;
@@ -162,7 +162,7 @@ void CImageListContents::OnBeginlabeleditThelist(NMHDR* pNMHDR, LRESULT* pResult
 
 void CImageListContents::OnItemchangedThelist(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	//NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	// TODO: Add your control notification handler code here
 	
 	*pResult = 0;
@@ -170,7 +170,7 @@ void CImageListContents::OnItemchangedThelist(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CImageListContents::OnKeydownThelist(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_KEYDOWN* pLVKeyDow = (LV_KEYDOWN*)pNMHDR;
+	//LV_KEYDOWN* pLVKeyDow = (LV_KEYDOWN*)pNMHDR;
 	// TODO: Add your control notification handler code here
 	
 	*pResult = 0;
@@ -298,8 +298,8 @@ void CImageListContents::OnOK()
 
 void CImageListContents::OnOdstatechangedThelist(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NMLVODSTATECHANGE* pStateChanged = (NMLVODSTATECHANGE*)pNMHDR;
-	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;	
+	//NMLVODSTATECHANGE* pStateChanged = (NMLVODSTATECHANGE*)pNMHDR;
+	//LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;	
 	
 	*pResult = 0;
 }

@@ -21,12 +21,14 @@ int __stdcall CFolderBrowseDlg::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM 
   else if( uMsg == BFFM_SELCHANGED )
   {
     LPITEMIDLIST pidl = (LPITEMIDLIST) lParam;
-    TCHAR selection[MAX_PATH];
-    if( ! ::SHGetPathFromIDList(pidl, selection) )
-      selection[0] = _T('\0');
+    TCHAR selection[MAX_PATH] = _T("");
+    BOOL bOk = ::SHGetPathFromIDList(pidl, selection);
 
-    CString csStatusText;
-    BOOL bOk = pDirDialogObj->SelChanged(selection, csStatusText);
+		if( bOk )
+		{
+			CString csStatusText;
+			bOk = pDirDialogObj->SelChanged(selection, csStatusText);
+		}
 
     ::SendMessage(hwnd, BFFM_ENABLEOK, 0, bOk);
   }

@@ -11,3 +11,7 @@
 
 
 extern "C" int ads_queueexpr( wchar_t* pszCommand );
+
+#define subSetAttributes setAttributes
+#define subWorldDraw worldDraw
+#define subViewportDraw viewportDraw

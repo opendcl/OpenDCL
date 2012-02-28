@@ -6,7 +6,10 @@
 #pragma comment(lib, "comctl32.lib")
 
 #include "Workspace.h"
-
+#ifndef IDC_HAND
+#include "resource.h"
+#define IDC_HAND MAKEINTRESOURCE(IDC_OHAND)
+#endif
 
 /*
 #ifdef _DEBUG

@@ -266,7 +266,7 @@ HRESULT CAxContainerCtrl::GetOleDispatch( IDispatch** ppDispatch )
 		IUnknown* pUnknown = GetControlUnknown();
 		if( !pUnknown )
 			return E_NOINTERFACE;
-		HRESULT hr = pUnknown->QueryInterface( IID_IDispatch, (void**)&mpDispatch );
+		pUnknown->QueryInterface( IID_IDispatch, (void**)&mpDispatch );
 	}
 	*ppDispatch = mpDispatch;
 	(*ppDispatch)->AddRef();

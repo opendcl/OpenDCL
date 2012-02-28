@@ -281,7 +281,7 @@ static void RegisterServer( LPCTSTR pszPathName )
 		PDLLREGISTERSERVER pDllRegisterServer =
 			(PDLLREGISTERSERVER)GetProcAddress( hLibrary, "DllRegisterServer" );
 		if( pDllRegisterServer )
-			HRESULT hResult = pDllRegisterServer();
+			pDllRegisterServer();
 		FreeLibrary( hLibrary );
 	}
 }

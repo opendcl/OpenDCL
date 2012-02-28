@@ -712,6 +712,25 @@ void CProject::Serialize(CArchive& ar)
 				//those forms so they don't confuse the project list in the editor. [ORW]
 				if( !pDclForm->GetParentForm() )
 					continue;
+
+				//Re-index tab pages with a duplicate tab index, otherwise the duplicate will appear
+				//as a phantom tab.
+				TDclFormList SiblingTabPages;
+				if( FindChildForms( pDclForm->GetParentForm(), SiblingTabPages ) )
+				{
+					bool bDuplicateIndex = false;
+					for( TDclFormList::const_iterator iter = SiblingTabPages.begin(); iter != SiblingTabPages.end(); ++iter )
+					{
+						TDclFormPtr pForm = (*iter);
+						if( pForm->GetTabIndex() == pDclForm->GetTabIndex() )
+						{
+							bDuplicateIndex = true;
+							break;
+						}
+					}
+					if( bDuplicateIndex )
+						continue; //just ignore the dupe
+				}
 			}
 
 			mDclForms.push_back(pDclForm);
