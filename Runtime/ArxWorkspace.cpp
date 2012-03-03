@@ -593,6 +593,7 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 	CWnd *pParent = NULL;
 	if( !pDclForm->IsModeless() )
 	{
+		::ReleaseCapture();
 		POSITION posDialog = mDialogs.GetTailPosition();
 		while( posDialog )
 		{
