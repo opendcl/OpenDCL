@@ -97,39 +97,41 @@ protected:
 	protected:
 		void clear()
 			{
-				if( mpDb )
+				if( mpManager )
 				{
-					if( mpManager )
+					if( mpModel )
 					{
-						if( mpFactory )
-						{
-						#ifndef _BRXTARGET
-							mpFactory->removeReactor( this );
-						#endif
-							if( mpView )
-							{
-								mpFactory->deleteView( mpView );
-								mpView = NULL;
-							}
-							if( mpGhostModel )
-							{
-								mpFactory->deleteModel( mpGhostModel );
-								mpGhostModel = NULL;
-							}
-							mpFactory = NULL;
-						}
-						if( mpModel )
-						{
-							mpManager->destroyAutoCADModel( mpModel );
-							mpModel = NULL;
-						}
-						if( mpDevice )
-						{
-							mpManager->destroyAutoCADDevice( mpDevice );
-							mpDevice = NULL;
-						}
-						mpManager = NULL;
+						mpManager->destroyAutoCADModel( mpModel );
+						mpModel = NULL;
 					}
+					if( mpDevice )
+					{
+						if( mpView )
+						{
+							mpView->eraseAll();
+							mpDevice->erase( mpView );
+						}
+						mpManager->destroyAutoCADDevice( mpDevice );
+						mpDevice = NULL;
+					}
+					mpManager = NULL;
+				}
+				if( mpFactory )
+				{
+				#ifndef _BRXTARGET
+					mpFactory->removeReactor( this );
+				#endif
+					if( mpView )
+					{
+						mpFactory->deleteView( mpView );
+						mpView = NULL;
+					}
+					if( mpGhostModel )
+					{
+						mpFactory->deleteModel( mpGhostModel );
+						mpGhostModel = NULL;
+					}
+					mpFactory = NULL;
 				}
 				mpDb = NULL;
 				mpCtrl->OnNeedRepaint( false );
