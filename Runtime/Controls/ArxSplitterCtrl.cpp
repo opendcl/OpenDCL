@@ -60,7 +60,7 @@ bool CArxSplitterCtrl::ReadPosition()
 			lPos = nMin;
 		else if( rcControlArea.right - lPos < nMax )
 			lPos = rcControlArea.right - nMax;
-		mpTemplate->SetLongProperty( Prop::Left, lPos );
+		SetPosLeft( lPos );
 	}
 	else
 	{
@@ -68,7 +68,7 @@ bool CArxSplitterCtrl::ReadPosition()
 			lPos = nMin;
 		else if( rcControlArea.bottom - lPos < nMax )
 			lPos = rcControlArea.bottom - nMax;
-		mpTemplate->SetLongProperty( Prop::Top, lPos );
+		SetPosTop( lPos );
 	}
 	return true;
 }

@@ -50,7 +50,7 @@ void CFolderComboBox::AddPath( LPCTSTR pszPath )
 
 CString CFolderComboBox::GetSelectedPathDisplayName()
 {
-	return m_treeCtrl.GetSelectedPathDisplayName();
+	return m_treeCtrl.GetSelectedDisplayName();
 }
 
 CString CFolderComboBox::GetSelectedPath()
@@ -116,6 +116,7 @@ BEGIN_MESSAGE_MAP(CFolderComboBox, CComboBox)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_DESTROY()
+	ON_MESSAGE(CB_DIR, OnCbDir)
 	ON_REGISTERED_MESSAGE(CFolderTreeCtrl::refWM_SELCHANGE(), OnSelchange)
 END_MESSAGE_MAP()
 
@@ -140,32 +141,33 @@ void CFolderComboBox::DrawItem(LPDRAWITEMSTRUCT pDIStruct)
 	HTREEITEM item = m_treeCtrl.GetSelectedItem();
 	if (item != NULL)
 	{
-		CFolder* folder = (CFolder*) m_treeCtrl.GetItemData(item);
-		if (folder != NULL)
+		int idxImage = m_treeCtrl.GetItemImageIndex(item);
+		if (idxImage >= 0)
 		{
 			CImageList* imageList = m_treeCtrl.GetImageList(TVSIL_NORMAL);
 			if (imageList)
 			{
-				if (folder->m_imageIndex == 0)
+				if (idxImage == 0)
 					imageList->Draw(&dc, 1, p, ILD_NORMAL);
 				else
-					imageList->Draw(&dc, folder->m_imageIndex, p, ILD_NORMAL);
-			}			
-			rc.top += 1;
-			rc.bottom -= 1;
-			rc.left += m_iconWidth + 2;
-			CSize size = dc.GetTextExtent(folder->m_pathDescription);
-			rc.right = rc.left + size.cx + 4;
-			if(pDIStruct -> itemState & ODS_SELECTED)
-			{	dc.FillSolidRect(rc, GetSysColor(COLOR_HIGHLIGHT) );
-				dc.DrawFocusRect(rc);
-				dc.SetTextColor((0x00FFFFFF & ~(GetSysColor(COLOR_WINDOWTEXT))));
+					imageList->Draw(&dc, idxImage, p, ILD_NORMAL);
 			}
-			else
-				dc.SetTextColor( GetSysColor(COLOR_WINDOWTEXT) );
-			rc.left += 2;
-			dc.DrawText(folder->m_pathDescription, rc, DT_SINGLELINE | DT_VCENTER);
 		}
+		CString sDisplayName = m_treeCtrl.GetItemDisplayName(item);
+		rc.top += 1;
+		rc.bottom -= 1;
+		rc.left += m_iconWidth + 2;
+		CSize size = dc.GetTextExtent(sDisplayName);
+		rc.right = rc.left + size.cx + 4;
+		if(pDIStruct -> itemState & ODS_SELECTED)
+		{	dc.FillSolidRect(rc, GetSysColor(COLOR_HIGHLIGHT) );
+			dc.DrawFocusRect(rc);
+			dc.SetTextColor((0x00FFFFFF & ~(GetSysColor(COLOR_WINDOWTEXT))));
+		}
+		else
+			dc.SetTextColor( GetSysColor(COLOR_WINDOWTEXT) );
+		rc.left += 2;
+		dc.DrawText(sDisplayName, rc, DT_SINGLELINE | DT_VCENTER);
 	}
 	dc.Detach();
 }
@@ -211,10 +213,7 @@ void CFolderComboBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 LRESULT CFolderComboBox::OnSelchange( WPARAM wParam, LPARAM lParam )
 {
-	CString sPath;
-	CFolder* pFolderInfo = (CFolder*)lParam;
-	if( pFolderInfo )
-		sPath = pFolderInfo->m_pathDescription;
+	CString sPath = m_treeCtrl.GetItemPath((HTREEITEM)lParam);
 	ResetContent();
 	AddString( sPath );
 	SetCurSel( 0 );
@@ -223,13 +222,23 @@ LRESULT CFolderComboBox::OnSelchange( WPARAM wParam, LPARAM lParam )
 	return 0;
 }
 
+LRESULT CFolderComboBox::OnCbDir( WPARAM wParam, LPARAM lParam )
+{
+	TCHAR szPath[MAX_PATH];
+	::GetCurrentDirectory( MAX_PATH, szPath );
+	CString sPath = szPath;
+	ResetContent();
+	AddString( sPath );
+	SetCurSel( 0 );
+	SetFocus();
+	Invalidate();
+	m_treeCtrl.AddPath(szPath);
+	return 0;
+}
+
 void CFolderComboBox::OnDestroy() 
 {
 	if( m_treeCtrl.m_hWnd )
-	{
-		m_treeCtrl.FreeMemory(m_treeCtrl.GetRootItem());
-		m_treeCtrl.DeleteAllItems();
 		m_treeCtrl.DestroyWindow();
-	}
 	__super::OnDestroy();
 }

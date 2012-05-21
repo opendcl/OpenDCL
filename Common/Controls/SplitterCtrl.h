@@ -21,7 +21,7 @@ class CSplitterCtrl : public CStatic, public CDialogControl
 	CAcadColorService mColorService;
 	bool mbVertical;
 	CPoint mptDragStart;
-	bool mbIgnoreMove;
+	bool mbIgnoreSizing;
 
 // Construction
 public:

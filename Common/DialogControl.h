@@ -133,7 +133,20 @@ public:
 	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates
 	virtual CRect GetEffectiveClientRect() const; //return control's client rect
 
+	// Set position property and sync related properties
+	virtual void SetPosLeft( long lNewLeft );
+	virtual void SetPosTop( long lNewTop );
+	virtual void SetPosWidth( long lNewWidth );
+	virtual void SetPosHeight( long lNewHeight );
+
+protected:
+	void SyncPosLeft(); //sync the position properties to a new Left value
+	void SyncPosTop(); //sync the position properties to a new Top value
+	void SyncPosRight(); //sync the position properties to a new Width value
+	void SyncPosBottom(); //sync the position properties to a new Height value
+
 	// ARX specific services
+public:
 	virtual const CArxControlServices* GetArxServices() const { return NULL; }
 	virtual bool IsAsyncEvents() const;
 

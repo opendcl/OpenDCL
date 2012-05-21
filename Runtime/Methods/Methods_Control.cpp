@@ -496,13 +496,12 @@ ADSRESULT Control::SetPos()
 	}
 	else
 	{
-		TDclControlPtr pDclControl = pDlgControl->GetTemplate();
-		pDclControl->SetLongProperty( Prop::Left, lLeft );
-		pDclControl->SetLongProperty( Prop::Top, lTop );
+		pDlgControl->SetPosLeft( lLeft );
+		pDlgControl->SetPosTop( lTop );
 		if( lWidth >= 0 )
-			pDclControl->SetLongProperty( Prop::Width, lWidth );
+			pDlgControl->SetPosWidth( lWidth );
 		if( lHeight >= 0 )
-			pDclControl->SetLongProperty( Prop::Height, lHeight );
+			pDlgControl->SetPosHeight( lHeight );
 	}
 	pDlgControl->ApplyPosition();
 	pDlgControl->OnNeedRepaint();

@@ -277,25 +277,21 @@ void CTabStripCtrl::OnUsedAreaChanged()
 			continue;
 		bool bChanged = false;
 		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
+		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
 		if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
 		{
 			bChanged = true;
-			pFormProps->SetLongProperty( Prop::Width, lNewWidth );
+			if( pDlgObject )
+				pDlgObject->SetPosWidth( lNewWidth );
 		}
 		if( lNewHeight != pFormProps->GetLongProperty( Prop::Height ) )
 		{
 			bChanged = true;
-			pFormProps->SetLongProperty( Prop::Height, lNewHeight );
+			if( pDlgObject )
+				pDlgObject->SetPosHeight( lNewHeight );
 		}
-		if( !bChanged )
-			continue;
-		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
-		if( pDlgObject )
-		{
-			pDlgObject->GetControlWnd()->SetWindowPos( NULL, rcControlArea.left, rcControlArea.top, 0, 0,
-																								 SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
+		if( bChanged && pDlgObject )
 			pDlgObject->ApplyPosition();
-		}
 	}
 }
 

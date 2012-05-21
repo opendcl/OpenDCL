@@ -251,8 +251,23 @@ public:
 			mClippingWnd.DestroyWindow();
 		}
 };
+
+class CAcUiPlotStyleNamesComboBoxEx : public CAcUiPlotStyleNamesComboBox
+{
+public:
+	CAcUiPlotStyleNamesComboBoxEx()
+	{
+	}
+protected:
+  virtual BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel )
+	{
+		CAutoDocWriteLock DocLock( acdbCurDwg() ); //must lock document or AutoCAD crashes when adding a new plot style
+		return __super::OnSelectOther(isOther2, curSel, newSel);
+	}
+};
+
 typedef CAcUiComboEditCtrl< CAcUiArrowHeadComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiArrowComboEditCtrl;
-typedef CAcUiComboEditCtrl< CAcUiPlotStyleNamesComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleNameComboEditCtrl;
+typedef CAcUiComboEditCtrl< CAcUiPlotStyleNamesComboBoxEx, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleNameComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiPlotStyleTablesComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleTableComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiStringComboBox, CBS_DROPDOWN > CAcUiStringComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiNumericComboBox, CBS_DROPDOWN > CAcUiUnitsComboEditCtrl;
@@ -326,89 +341,6 @@ static CString GetColorDisplayName( int nAcadColor )
 }
 
 
-class CAcadColorEditCtrl : public CGridCellEditCtrl
-{
-public:
-	CAcadColorEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol )
-		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
-		{
-			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
-			int nCurLayerColor = GetCurrentLayerColor();
-			if( nCellImage < 0 )
-				nCellImage = _tstol( pGridCtrl->GetCellText( nRow, nCol ) );
-			else if( nCellImage > 256 )
-				nCellImage = 256;
-			if( acedSetColorDialog( nCellImage, Adesk::kTrue, nCurLayerColor ) )
-				pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( nCellImage ), nCellImage );
-		}
-	virtual ~CAcadColorEditCtrl()
-		{
-		}
-};
-
-class CTrueColorEditCtrl : public CGridCellEditCtrl
-{
-public:
-	CTrueColorEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol )
-		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
-		{
-			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
-		#if defined(_BRXTARGET)
-			resbuf rbT = { NULL, RTT };
-		#else
-			resbuf rbCurColor = { NULL, RTSHORT };
-			rbCurColor.resval.rint = GetCurrentLayerColor();
-			resbuf rbT = { &rbCurColor, RTT };
-		#endif
-			resbuf rbColor = { &rbT };
-			resbuf rbFuncName = { &rbColor, RTSTR };
-			rbFuncName.resval.rstring = _T("acad_truecolordlg");
-			CString sText = pGridCtrl->GetCellText( nRow, nCol );
-			if( nCellImage == -1 )
-			{
-				int idxComma = sText.Find( _T(",") );
-				CString sRed = sText.Left( idxComma );
-				CString sGreen = sText.Mid( idxComma + 1 );
-				idxComma = sGreen.Find( _T(",") );
-				CString sBlue = sGreen.Mid( idxComma + 1 );
-				sGreen = sGreen.Left( idxComma );
-				rbColor.restype = 420;
-				rbColor.resval.rlong =
-					(long)RGB(_tstol( sBlue ), _tstol( sGreen ), _tstol( sRed ) ); //note: BGR instead of RGB!
-			}
-			else if( nCellImage == -2 )
-			{
-				rbColor.restype = 430;
-				rbColor.resval.rstring = sText.LockBuffer(); //color book color
-			}
-			else
-			{
-				rbColor.restype = RTSHORT;
-				rbColor.resval.rint = (nCellImage >= 0 && nCellImage <= 256)? nCellImage : 7;
-			}
-			resbuf* prbResult = NULL;
-			if( RTNORM == acedInvoke( &rbFuncName, &prbResult ) && prbResult )
-			{
-				resbuf* prbTrueColor = prbResult->rbnext;
-				resbuf* prbColorBook = (prbTrueColor? prbTrueColor->rbnext : NULL);
-				if( prbColorBook && prbColorBook->restype == 430 )
-					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
-				else if( prbTrueColor && prbTrueColor->restype == 420 )
-					pGridCtrl->SetCellTextImage( nRow, nCol, GetTrueColorDisplayName( DWORD(prbTrueColor->resval.rlong) ), -1 );
-				else
-				{
-					int nColor = prbResult->resval.rint;
-					pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( nColor ), nColor );
-				}
-				acutRelRb( prbResult );
-			}
-		}
-	virtual ~CTrueColorEditCtrl()
-		{
-		}
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CArxGridCtrl
 
@@ -440,14 +372,6 @@ bool CArxGridCtrl::ApplyProperty( TPropertyPtr pProp )
 	if( !__super::ApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
-	//switch( pProp->GetID() )
-	//{
-	//case Prop::DragnDropAllowDrop:
-	//	{
-	//		SetDragnDrop( pProp->GetBooleanValue() );
-	//		break;
-	//	}
-	//}
 	return !bFailed;
 }
 
@@ -468,6 +392,88 @@ void CArxGridCtrl::OnEndEditCurCell()
 }
 
 
+void CArxGridCtrl::DoAcadColorDlg()
+{
+	int nRow = mCurrentCell.row();
+	int nCol = mCurrentCell.col();
+	int nCellImage = GetCellImage( nRow, nCol );
+	int nCurLayerColor = GetCurrentLayerColor();
+	if( nCellImage < 0 )
+		nCellImage = _tstol( GetCellText( nRow, nCol ) );
+	else if( nCellImage > 256 )
+		nCellImage = 256;
+	CWnd* pFocusWnd = GetFocus();
+	GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
+	Adesk::Boolean bResult = acedSetColorDialog( nCellImage, Adesk::kTrue, nCurLayerColor );
+	GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
+	if( bResult )
+		SetCellTextImage( nRow, nCol, GetColorDisplayName( nCellImage ), nCellImage );
+	if( pFocusWnd )
+		pFocusWnd->SetFocus();
+}
+
+void CArxGridCtrl::DoAcadTrueColorDlg()
+{
+	int nRow = mCurrentCell.row();
+	int nCol = mCurrentCell.col();
+	int nCellImage = GetCellImage( nRow, nCol );
+#if defined(_BRXTARGET)
+	resbuf rbT = { NULL, RTT };
+#else
+	resbuf rbCurColor = { NULL, RTSHORT };
+	rbCurColor.resval.rint = GetCurrentLayerColor();
+	resbuf rbT = { &rbCurColor, RTT };
+#endif
+	resbuf rbColor = { &rbT };
+	resbuf rbFuncName = { &rbColor, RTSTR };
+	rbFuncName.resval.rstring = _T("acad_truecolordlg");
+	CString sText = GetCellText( nRow, nCol );
+	if( nCellImage == -1 )
+	{
+		int idxComma = sText.Find( _T(",") );
+		CString sRed = sText.Left( idxComma );
+		CString sGreen = sText.Mid( idxComma + 1 );
+		idxComma = sGreen.Find( _T(",") );
+		CString sBlue = sGreen.Mid( idxComma + 1 );
+		sGreen = sGreen.Left( idxComma );
+		rbColor.restype = 420;
+		rbColor.resval.rlong =
+			(long)RGB(_tstol( sBlue ), _tstol( sGreen ), _tstol( sRed ) ); //note: BGR instead of RGB!
+	}
+	else if( nCellImage == -2 )
+	{
+		rbColor.restype = 430;
+		rbColor.resval.rstring = sText.LockBuffer(); //color book color
+	}
+	else
+	{
+		rbColor.restype = RTSHORT;
+		rbColor.resval.rint = (nCellImage >= 0 && nCellImage <= 256)? nCellImage : 7;
+	}
+	CWnd* pFocusWnd = GetFocus();
+	GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
+	resbuf* prbResult = NULL;
+	int nResult = acedInvoke( &rbFuncName, &prbResult );
+	GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
+	if( RTNORM == nResult && prbResult )
+	{
+		resbuf* prbTrueColor = prbResult->rbnext;
+		resbuf* prbColorBook = (prbTrueColor? prbTrueColor->rbnext : NULL);
+		if( prbColorBook && prbColorBook->restype == 430 )
+			SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
+		else if( prbTrueColor && prbTrueColor->restype == 420 )
+			SetCellTextImage( nRow, nCol, GetTrueColorDisplayName( DWORD(prbTrueColor->resval.rlong) ), -1 );
+		else
+		{
+			int nColor = prbResult->resval.rint;
+			SetCellTextImage( nRow, nCol, GetColorDisplayName( nColor ), nColor );
+		}
+		acutRelRb( prbResult );
+	}
+	if( pFocusWnd )
+		pFocusWnd->SetFocus();
+}
+
 void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle ) 
 {
 	switch (nStyle)
@@ -475,8 +481,14 @@ void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle )
 		case Grid::DirectoryCell:
 		{			
 			CFolderBrowseDlg dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
-			if (dlg.DoBrowse(this) == TRUE)
+			CWnd* pFocusWnd = GetFocus();
+			GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
+			BOOL bResult = dlg.DoBrowse(this);
+			GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
+			if (bResult == TRUE)
 				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), dlg.GetSelectedFolder(), -1 );
+			if( pFocusWnd )
+				pFocusWnd->SetFocus();
 			break;
 		}
 		case Grid::DwgFilesCell:
@@ -507,9 +519,15 @@ void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle )
 						sTitle = (++rsList.begin())->c_str();
 				}
 			}
-			if( acedGetFileD( sTitle, sFile, sFileExt, 8, result ) == RTNORM )
+			CWnd* pFocusWnd = GetFocus();
+			GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
+			int nResult = acedGetFileD( sTitle, sFile, sFileExt, 8, result );
+			GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
+			if( nResult == RTNORM )
 				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), result->resval.rstring, -1 );
 			acutRelRb(result);
+			if( pFocusWnd )
+				pFocusWnd->SetFocus();
 			break;
 		}
 	}
@@ -548,8 +566,8 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid::LayerList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CLayerComboHandler );
 		case Grid::DimStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CDimStyleComboHandler );
 		//case Grid::ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid::AcadColorCell: return new CAcadColorEditCtrl( this, nRow, nCol );
-		case Grid::TrueColorCell: return new CTrueColorEditCtrl( this, nRow, nCol );
+		case Grid::AcadColorCell: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
+		case Grid::TrueColorCell: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
 		case Grid::LineWeightCell: return new CAcUiLineWeightComboEditCtrl( this, nRow, nCol );
 		case Grid::LinetypeCell:
 	#if (_ACADTARGET >= 17)
@@ -622,6 +640,8 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 {
 	switch( GetCurCellStyle() )
 	{
+	case Grid::AcadColorCell: return DoAcadColorDlg();
+	case Grid::TrueColorCell: return DoAcadTrueColorDlg();
 	case Grid::DirectoryCell: return DoFileDlg( Grid::DirectoryCell );
 	case Grid::DwgFilesCell: return DoFileDlg( Grid::DwgFilesCell );
 	}

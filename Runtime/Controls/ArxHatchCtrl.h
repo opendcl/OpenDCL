@@ -22,12 +22,12 @@ public:
 
 // DialogControl Interface
 public:
+	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 // AcGsViewCtrl Interface
 protected:
 
 public:
 	bool DisplayHatchPattern( LPCTSTR pszPattern );
-	void ResizeHatch();
 	void Clear();
 };

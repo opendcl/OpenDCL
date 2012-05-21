@@ -282,4 +282,5 @@ protected:
 	afx_msg LRESULT OnCheckFocus( WPARAM wParam, LPARAM lParam );
 	afx_msg UINT OnGetDlgCode();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
 };

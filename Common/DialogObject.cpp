@@ -67,8 +67,8 @@ bool CDialogObject::MoveDialog( long nNewLeft, long nNewTop )
 
 bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 {
-	mpTemplate->SetLongProperty( Prop::Width, nNewWidth );
-	mpTemplate->SetLongProperty( Prop::Height, nNewHeight );
+	SetPosWidth( nNewWidth );
+	SetPosHeight( nNewHeight );
 	ApplyPosition();
 	return true;
 }

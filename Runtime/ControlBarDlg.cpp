@@ -202,18 +202,16 @@ void CControlBarDlg::GetClientArea( CRect& rect )
 
 void CControlBarDlg::OnFrameChanged()
 {
-	CWnd* pTopLevelWnd = GetTopLevelWnd();
-	CRect rectWindow;
-	pTopLevelWnd->GetWindowRect( &rectWindow );
-	CRect rcClient;
-	GetClientArea( rcClient );
+	CRect rectWindow = GetEffectiveWindowRect();
+	CRect rcClient = GetEffectiveClientRect();
 	long lNCWidth = rectWindow.Width() - rcClient.Width();
 	long lNCHeight = rectWindow.Height() - rcClient.Height();
 	SetNCWidth( lNCWidth );
 	SetNCHeight( lNCHeight );
 	assert( GetNCWidth() >= 0 && GetNCHeight() >= 0 );
 	OnApplyMinMaxSize( NULL );
-	//ApplyPosition();
+	SetWindowPos( NULL, rcClient.left, rcClient.top, 0, 0,
+								SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 }
 
 void CControlBarDlg::ApplyPosition()

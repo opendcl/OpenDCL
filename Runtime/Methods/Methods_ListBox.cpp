@@ -88,7 +88,9 @@ ADSRESULT ListBox::GetSelectedItems()
 		{
 			CString sSel;
 			pCtrl->GetText( nCurSel, sSel );
-			acedRetStr( sSel );
+			resbuf rbSel = { NULL, RTSTR };
+			rbSel.resval.rstring = sSel.LockBuffer();
+			acedRetList( &rbSel );
 		}
 		return RSRSLT;
 	}

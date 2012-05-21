@@ -205,8 +205,8 @@ void CPictureBoxCtrl::AutoSize()
 	}
 
 	CSize sizPic = GetPictureSize();
-	mpTemplate->SetLongProperty( Prop::Width, sizPic.cx + nBorderSize );
-	mpTemplate->SetLongProperty( Prop::Height, sizPic.cy + nBorderSize );
+	SetPosWidth( sizPic.cx + nBorderSize );
+	SetPosHeight( sizPic.cy + nBorderSize );
 	ApplyPosition();
 }
 

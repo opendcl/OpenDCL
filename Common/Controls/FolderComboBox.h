@@ -46,6 +46,7 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg LRESULT OnSelchange( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnCbDir( WPARAM wParam, LPARAM lParam );
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnDestroy();

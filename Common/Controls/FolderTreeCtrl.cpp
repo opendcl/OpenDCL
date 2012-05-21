@@ -24,6 +24,25 @@
 #define CONTROLPANEL_ICON	8
 #define MY_DOCUMENT_ICON	9
 
+class CFolder  
+{
+public:
+	CFolder() : mnImg( -1 ), mnImgExpanded( -1 ) {}
+	CFolder( LPCTSTR pszDisplayName, LPCTSTR pszPath, int nImg = 0, int nImgExpanded = 1 )
+		: mnImg( nImg )
+		, mnImgExpanded( nImgExpanded )
+		, msDisplayName( pszDisplayName )
+		, msPath( pszPath )
+		{}
+	virtual ~CFolder() {}
+
+public:
+	int mnImg;
+	int mnImgExpanded;
+	CString msDisplayName;
+	CString msPath;
+};
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderTreeCtrl
@@ -111,10 +130,7 @@ void CFolderTreeCtrl::Hide()
 void CFolderTreeCtrl::Inform()
 {
 	if( mpFolderCombo )
-	{
-		CFolder* pFolder = (CFolder*)GetItemData( mhtiSelected );
-		mpFolderCombo->SendMessage( refWM_SELCHANGE(), 0, (LPARAM)pFolder );
-	}
+		mpFolderCombo->SendMessage( refWM_SELCHANGE(), 0, (LPARAM)mhtiSelected );
 }
 
 HTREEITEM CFolderTreeCtrl::GetSelectedItem()
@@ -128,17 +144,41 @@ BOOL CFolderTreeCtrl::SelectItem(HTREEITEM item)
 	return __super::SelectItem(item);
 }
 
+CString CFolderTreeCtrl::GetItemDisplayName(HTREEITEM item)
+{
+	CFolder* pFolder = (CFolder*)GetItemData( item );
+	if( !pFolder )
+		return CString();
+	return pFolder->msDisplayName;
+}
+
+CString CFolderTreeCtrl::GetItemPath(HTREEITEM item)
+{
+	CFolder* pFolder = (CFolder*)GetItemData( item );
+	if( !pFolder )
+		return CString();
+	return pFolder->msPath;
+}
+
+int CFolderTreeCtrl::GetItemImageIndex(HTREEITEM item)
+{
+	CFolder* pFolder = (CFolder*)GetItemData( item );
+	if( !pFolder )
+		return -1;
+	return pFolder->mnImg;
+}
+
 
 HTREEITEM CFolderTreeCtrl::AddFolder(CFolder* folder, HTREEITEM parent, bool bCurrentDir)
 {
 	if (folder == NULL)
 		return NULL;
 
-	int imageIndex = folder->m_imageIndex;
+	int imageIndex = folder->mnImg;
 
 	if (bCurrentDir)
 		imageIndex = 1;
-	HTREEITEM item = InsertItem(folder->m_pathDescription, 
+	HTREEITEM item = InsertItem(folder->msDisplayName, 
 							imageIndex, imageIndex, parent);
 	SetItemData(item, (DWORD_PTR)folder);
 	return item;
@@ -209,7 +249,7 @@ HTREEITEM CFolderTreeCtrl::SearchPath( HTREEITEM hItem, LPCTSTR pszPath )
 	if( !hItem )
 		return NULL;
 	CFolder* pFolder = (CFolder*)GetItemData( hItem );
-	if( pFolder && pFolder->m_path.CompareNoCase( pszPath ) == 0 )
+	if( pFolder && pFolder->msPath.CompareNoCase( pszPath ) == 0 )
 		return hItem;
 	hItem = GetNextItem( hItem, TVGN_CHILD );
 	while( hItem )
@@ -229,7 +269,7 @@ HTREEITEM CFolderTreeCtrl::SearchFolder( HTREEITEM hItem, LPCTSTR pszFolderName 
 	if( !hItem )
 		return NULL;
 	CFolder* pFolder = (CFolder*)GetItemData( hItem );
-	if( pFolder && pFolder->m_pathDescription.CompareNoCase( pszFolderName ) == 0 )
+	if( pFolder && pFolder->msDisplayName.CompareNoCase( pszFolderName ) == 0 )
 		return hItem;
 	hItem = GetNextItem( hItem, TVGN_CHILD );
 	while( hItem )
@@ -248,7 +288,7 @@ HTREEITEM CFolderTreeCtrl::SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath
 	while (hItem)
 	{	
 		folder = (CFolder*)GetItemData(hItem);
-		if (folder!=NULL && folder->m_path.CollateNoCase(pszPath)==0) 
+		if (folder!=NULL && folder->msPath.CompareNoCase(pszPath)==0) 
 			return hItem;
 
 		hItem = GetNextSiblingItem(hItem);		
@@ -256,14 +296,14 @@ HTREEITEM CFolderTreeCtrl::SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath
 	return NULL;
 }
 
-CString CFolderTreeCtrl::GetSelectedPathDisplayName()
+CString CFolderTreeCtrl::GetSelectedDisplayName()
 {
 	CString sPath;
 	if( m_hWnd && mhtiSelected )
 	{
 		CFolder* pFolder = (CFolder*)GetItemData( mhtiSelected );
 		if( pFolder )
-			sPath = pFolder->m_pathDescription;
+			sPath = pFolder->msDisplayName;
 	}
 	return sPath;
 }
@@ -275,7 +315,7 @@ CString CFolderTreeCtrl::GetSelectedPath()
 	{
 		CFolder* pFolder = (CFolder*)GetItemData( mhtiSelected );
 		if( pFolder )
-			sPath = pFolder->m_path;
+			sPath = pFolder->msPath;
 	}
 	return sPath;
 }
@@ -537,8 +577,8 @@ void CFolderTreeCtrl::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 	CFolder* folder = (CFolder*) GetItemData(hti);
 	if (folder != NULL)
 	{	
-		imageIndex = folder->m_imageIndex;
-		imageIndexExpanded = folder->m_imageIndexExpanded;
+		imageIndex = folder->mnImg;
+		imageIndexExpanded = folder->mnImgExpanded;
 	}
 	if (pNMTreeView->action == TVE_EXPAND)
 		SetItemImage(hti, imageIndexExpanded, imageIndexExpanded);
@@ -566,11 +606,8 @@ void CFolderTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CFolderTreeCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
-	CPoint point;
-	GetCursorPos(&point);
-	CWnd* wnd = WindowFromPoint(point);
-	if (wnd->GetSafeHwnd() != mpFolderCombo->GetSafeHwnd())
-		ShowWindow(SW_HIDE);
+	if( pNewWnd != mpFolderCombo )
+		Hide();
 
 	__super::OnKillFocus(pNewWnd);
 }

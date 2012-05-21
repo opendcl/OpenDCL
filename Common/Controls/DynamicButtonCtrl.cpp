@@ -13,7 +13,7 @@ CDynamicButtonCtrl::CDynamicButtonCtrl( CWnd* pParentWnd, const CRect& rectWnd, 
 : CXPStyleButtonST()
 , mpParentWnd( pParentWnd )
 {
-	Create( NULL, WS_CHILD | WS_VISIBLE, rectWnd, pParentWnd, nID );
+	Create( NULL, WS_CHILD | WS_VISIBLE | BS_NOTIFY, rectWnd, pParentWnd, nID );
 }
 
 CDynamicButtonCtrl::~CDynamicButtonCtrl()

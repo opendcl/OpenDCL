@@ -4,25 +4,7 @@
 #pragma once
 
 class CFolderComboBox;
-
-class CFolder  
-{
-public:
-	CFolder() : m_imageIndex( -1 ), m_imageIndexExpanded( -1 ) {}
-	CFolder( LPCTSTR pathDescription, LPCTSTR path, int imageIndex = 0, int imageIndexExpanded = 1 )
-		: m_imageIndex( imageIndex )
-		, m_imageIndexExpanded( imageIndexExpanded )
-		, m_pathDescription( pathDescription )
-		, m_path( path )
-		{}
-	virtual ~CFolder() {}
-
-public:
-	int m_imageIndex;		
-	int m_imageIndexExpanded;		
-	CString m_pathDescription;	
-	CString m_path;	
-};
+class CFolder;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,26 +29,29 @@ public:
 protected:
 	void EnumFolders();
 	void AddDrives(HTREEITEM myComputer);
-
-// Implementation
-public:
-	void SelectNextItem(BOOL selectNext=TRUE);
-	void Inform();
-	CString GetSelectedPathDisplayName();
-	CString GetSelectedPath();
-	bool SelectPath( LPCTSTR pszPath );
-	bool SelectFolder( LPCTSTR pszFolderName );
+	HTREEITEM FreeMemory(HTREEITEM item);
+	void FreeMemory();
 	HTREEITEM SearchPath( HTREEITEM hItem, LPCTSTR pszPath );
 	HTREEITEM SearchFolder( HTREEITEM hItem, LPCTSTR pszFolderName );
 	HTREEITEM SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath );
 	HTREEITEM AddFolder(CFolder* folder, HTREEITEM parent=TVI_ROOT, bool bCurrentDir = false);
+	void Hide();
+	void Inform();
+
+// Implementation
+public:
+	void Display( const CRect& rcTree );
+	void SelectNextItem(BOOL selectNext=TRUE);
+	CString GetSelectedDisplayName();
+	CString GetItemDisplayName(HTREEITEM item);
+	CString GetItemPath(HTREEITEM item);
+	int GetItemImageIndex(HTREEITEM item);
+	CString GetSelectedPath();
+	bool SelectPath( LPCTSTR pszPath );
+	bool SelectFolder( LPCTSTR pszFolderName );
 	void AddPath( LPCTSTR pszPath );
 	BOOL SelectItem(HTREEITEM item);
 	HTREEITEM GetSelectedItem();
-	void Hide();
-	HTREEITEM FreeMemory(HTREEITEM item);
-	void FreeMemory();
-	void Display( const CRect& rcTree );
 
 	// Generated message map functions
 protected:

@@ -195,8 +195,10 @@ public:
 			sArg.Replace( _T("\r"), _T("\\r") );
 			sArg.Replace( _T("\n"), _T("\\n") );
 			sArg.Replace( _T("\t"), _T("\\t") );
+			if( sArg.GetLength() == 1 && _arg < _T(' '))
+				sArg.Format( _T("\\\\%.3o"), _arg );
 			CString sResult = _T(" \"");
-			sResult += _arg;
+			sResult += sArg;
 			sResult += _T("\"");
 			return sResult;
 		}

@@ -31,6 +31,7 @@ protected:
 	CWnd* mpHostDlg;
 	CThemeHelperST mThemeHelper;
 	bool mbRecalcInProgress;
+	TDclControlList mPendingRecalc;
 	bool mbDeferWindowPos;
 
 // Construction
@@ -48,7 +49,7 @@ public:
 	CDialogObject* GetDialogObject() const { return mpDlgObject; }
 	CRect GetControlArea() const;
 	const TDialogControls& GetControlsList() const { return mControls; }
-	CPoint GetSplitterPos( int nSplitterId ) const;
+	CPoint GetSplitterPos( int nSplitterId );
 	bool HasSplitter( int nSplitterId ) const;
 	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
 	bool IsModal() const;

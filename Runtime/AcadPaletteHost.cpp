@@ -134,6 +134,10 @@ void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
+#if defined(_BRXTARGET) && (_BRXTARGET <= 12)
+	else if( flags & ADUI_DOCK_NF_SIZECHANGED ) //Bricscad doesn't set the correct flag when docking/undocking
+		PostMessage( refWM_FRAMECHANGED() );
+#endif
 	__super::SizeChanged( lpRect, bFloating, flags );
 }
 

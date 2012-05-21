@@ -2168,15 +2168,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{EEA0CF73-10EA-4F1F-A511-3B954D9A67EE}"
-        "PackageCode" = "8:{0C774481-7C80-4E5B-A084-929BE490F5A3}"
+        "ProductCode" = "8:{06AFA05E-C521-4C61-AD7F-FCB4243AB9A4}"
+        "PackageCode" = "8:{7D18D48F-58A1-40A3-B7C9-1D474939D15C}"
         "UpgradeCode" = "8:{13AE30FE-5152-40D5-B724-3BE317FC4DF2}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:7.0.0004"
+        "ProductVersion" = "8:7.0.0005"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2982,7 +2982,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_77D4F61D81CE4E1E88FFD6E7CA07D973"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4E2DB0D02AA74C02BD382CF959A2D3D9"
@@ -3038,7 +3038,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8C5E9444C474B7D863DEF04E4D144B1"
             {
-            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
@@ -3066,7 +3066,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F8AAB33771054A08AC7C353BDBB36453"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
@@ -3095,7 +3095,7 @@
                 {
                 "UseDynamicProperties" = "11:TRUE"
                 "IsDependency" = "11:FALSE"
-                "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+                "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
                     "Properties"
                     {
                         "_7F99C35034194A268768DD7967A8AD4B.0C4E4759A6C24D0EBAE57719C3BCF049"

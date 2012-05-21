@@ -10,6 +10,7 @@
 #include "ControlTypes.h"
 #include "UndoManager.h"
 #include "Project.h"
+#include <algorithm>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -143,22 +144,21 @@ void CControlPane::RecalcLayout()
 						asString( mpSourceForm ),
 						mpSourceForm->GetFormSize().cx,
 						mpSourceForm->GetFormSize().cy );
+	mPendingRecalc.clear();
 	TDclControlList& Controls = mpSourceForm->mDclControls;
-
-	// first lets calc all the control positions for any splitter controls.
-	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
-	{
-		if( (*iter)->GetType() == CtlSplitter )
-			RecalcControlPos( (*iter) );
-	}
-
-	//next lets calc all the control positions for all NON-splitter controls.
 	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		if( (*iter)->GetType() == _CtlForm )
 			continue;
-		if( (*iter)->GetType() != CtlSplitter )
-			RecalcControlPos( (*iter) );
+		mPendingRecalc.push_front( (*iter) );
+	}
+
+	//now recalc all the control positions
+	while( !mPendingRecalc.empty() )
+	{
+		TDclControlPtr pControl = mPendingRecalc.front();
+		mPendingRecalc.pop_front();
+		RecalcControlPos( pControl );
 	}
 	mbRecalcInProgress = false;
 }
@@ -183,14 +183,24 @@ void CControlPane::InvalidateControls()
 	}
 }
 
-CPoint CControlPane::GetSplitterPos( int nSplitterId ) const
+CPoint CControlPane::GetSplitterPos( int nSplitterId )
 {
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
 	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
 		TDclControlPtr pDclControl = (*iter);
 		if( pDclControl->GetType() == CtlSplitter && pDclControl->GetID() == nSplitterId )
+		{
+			for( TDclControlList::iterator iterPending = mPendingRecalc.begin(); iterPending != mPendingRecalc.end(); ++iterPending )
+			{
+				if( (*iterPending)->GetID() != nSplitterId )
+					continue;
+				mPendingRecalc.erase( iterPending );
+				RecalcControlPos( pDclControl );
+				break;
+			}
 			return pDclControl->GetWndRect().TopLeft();
+		}
 	}
 	return CPoint( 0, 0 );	
 }
@@ -227,7 +237,8 @@ void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 	if( !pDlgControl )
 		return;
 
-	assert( mbDeferWindowPos == false );
+	TraceFmt( _T("CControlPane(%s)::RecalcControlPos(%s)\r\n"), asString( this ), asString( pDlgControl ) );
+	bool bWasDeferWindowPos = mbDeferWindowPos;
 	mbDeferWindowPos = true;
 	CRect rcBefore = pDlgControl->GetWndRect();
 	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) );
@@ -238,6 +249,7 @@ void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 	CRect rcAfter = pDlgControl->GetWndRect();
 	if( rcAfter != rcBefore )
 		ApplyPosition( TDialogControlLockedPtr( pDlgControl ) );
+	mbDeferWindowPos = bWasDeferWindowPos;
 }
 
 void CControlPane::CleanUpControls() 
@@ -293,9 +305,10 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 	CRect rcNew = pDlgControl->GetWndRect();
 	if( rcNew == rcCtrl )
 		return; //no-op
-	TraceFmt( _T("CControlPane(%s)::ApplyPosition(%s)\r\n"),
+	TraceFmt( _T("CControlPane(%s)::ApplyPosition(%s @ [%d,%d/%dx%d])\r\n"),
 						asString( this ),
-						asString( pDlgControl ) );
+						asString( pDlgControl ),
+						rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height() );
 	UINT nFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER;
 	if( rcNew.Size() == rcCtrl.Size() )
 		nFlags |= SWP_NOSIZE;

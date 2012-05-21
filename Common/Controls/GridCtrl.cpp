@@ -131,11 +131,6 @@ public:
 			}
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
 			SelectPath( sText );
-			//SetWindowText( sText );
-			//int idxMatch = FindStringExact( 0, sText );
-			//if( idxMatch >= 0 )
-			//	SetCurSel( idxMatch );
-			SetFocus();
 		}
 	virtual ~CDriveComboDropdownListEditCtrl()
 		{
@@ -1841,6 +1836,7 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_REGISTERED_MESSAGE(refWM_CHECKFOCUS(), &CGridCtrl::OnCheckFocus)
 	ON_WM_GETDLGCODE()
 	ON_WM_ERASEBKGND()
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -1942,6 +1938,11 @@ BOOL CGridCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	return bResult;
 }
 
+void CGridCtrl::OnKillFocus(CWnd* pNewWnd)
+{
+	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+}
+
 BOOL CGridCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	BOOL bResult = __super::OnCommand(wParam, lParam);
@@ -1972,21 +1973,13 @@ LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 	CWnd* pFocusWnd = GetFocus();
 	if( !pFocusWnd )
 		HideEditControls();
-	else
+	else if( GetControlPane()->GetHostDialog()->IsWindowEnabled() )
 	{
 		CWnd* pFocusParent = pFocusWnd->GetParent();
+		if( pFocusParent == GetControlPane()->GetHostDialog() && (pFocusWnd->GetStyle() & WS_POPUP) == WS_POPUP )
+			return 0; //CDateTimeCtrl popup window in WinXP is a popup owned by the host dialog
 		if( pFocusParent != this )
-		{
-			//need to account for CDateTimeCtrl popup window in WinXP (it is a popup owned by the dialog)
-			//and AutoCAD color dialog (owned by disabled main AutoCAD window)
-			CWnd* pMainWnd = AfxGetMainWnd();
-			if( !pMainWnd || pMainWnd->IsWindowEnabled() )
-			{
-				if( pFocusParent != GetControlPane()->GetHostDialog() ||
-						(pFocusWnd->GetStyle() & WS_POPUP) == 0 )
-					HideEditControls();
-			}
-		}
+			HideEditControls();
 	}
 	return 0;
 }

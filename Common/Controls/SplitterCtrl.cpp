@@ -21,7 +21,7 @@ CSplitterCtrl::CSplitterCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UIN
 : CDialogControl( pTemplate, pPane, this )
 , mbVertical( pTemplate->GetLongProperty( Prop::Width ) <= pTemplate->GetLongProperty( Prop::Height ) )
 , mptDragStart( 0, 0 )
-, mbIgnoreMove( false )
+, mbIgnoreSizing( true )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -36,6 +36,7 @@ bool CSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 	if( bSuccess )
 		bSuccess = (ModifyStyleEx( 0, WS_EX_TRANSPARENT ) != FALSE);
+	mbIgnoreSizing = false;
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -82,9 +83,9 @@ void CSplitterCtrl::ApplyPosition()
 {
 	CRect rcNew = ValidatePosition( GetWndRect() );
 	if( mbVertical )
-		mpTemplate->SetLongProperty( Prop::Left, rcNew.left );
+		SetPosLeft( rcNew.left );
 	else
-		mpTemplate->SetLongProperty( Prop::Top, rcNew.top );
+		SetPosTop( rcNew.top );
 	__super::ApplyPosition();
 }
 
@@ -216,20 +217,23 @@ void CSplitterCtrl::OnPaint()
 void CSplitterCtrl::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
-	mpTemplate->SetLongProperty( Prop::Width, cx );
-	mpTemplate->SetLongProperty( Prop::Height, cy );
+	if( !mbIgnoreSizing )
+	{
+		SetPosWidth( cx );
+		SetPosHeight( cy );
+	}
 }
 
 void CSplitterCtrl::OnMove(int x, int y)
 {
 	__super::OnMove(x, y);
-	if( !mbIgnoreMove )
+	if( !mbIgnoreSizing )
 	{
 		CRect rcThis = GetEffectiveWindowRect();
-		mpTemplate->SetLongProperty( Prop::Left, rcThis.left );
-		mpTemplate->SetLongProperty( Prop::Top, rcThis.top );
+		SetPosLeft( rcThis.left );
+		SetPosTop( rcThis.top );
+		mpControlPane->RecalcLayout();
 	}
-	mpControlPane->RecalcLayout();
 }
 
 void CSplitterCtrl::OnNcLButtonDown(UINT nHitTest, CPoint point)
@@ -254,17 +258,15 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		if( rcNew.left == mpTemplate->GetLongProperty( Prop::Left ) )
 			return;
-		mpTemplate->SetLongProperty( Prop::Left, rcNew.left );
+		SetPosLeft( rcNew.left );
 	}
 	else
 	{
 		if( rcNew.top == mpTemplate->GetLongProperty( Prop::Top ) )
 			return;
-		mpTemplate->SetLongProperty( Prop::Top, rcNew.top );
+		SetPosTop( rcNew.top );
 	}
-	//mbIgnoreMove = true;
 	ApplyPosition();
-	//mbIgnoreMove = false;
 }
 
 void CSplitterCtrl::OnLButtonUp(UINT nFlags, CPoint point)

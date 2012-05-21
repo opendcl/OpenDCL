@@ -31,6 +31,8 @@ public:
 	//void ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings, CArray<int, int> &nItems);
 
 protected:
+	void DoAcadColorDlg();
+	void DoAcadTrueColorDlg();
 	void DoFileDlg( Grid::CellStyle nStyle );
 	//void DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW);
 	//void DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sText);
@@ -64,6 +66,5 @@ protected:
 	afx_msg void OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
-public:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 };

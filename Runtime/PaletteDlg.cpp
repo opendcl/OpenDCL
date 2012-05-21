@@ -207,7 +207,8 @@ void CPaletteDlg::OnFrameChanged()
 	SetNCHeight( lNCHeight );
 	assert( GetNCWidth() >= 0 && GetNCHeight() >= 0 );
 	OnApplyMinMaxSize( NULL );
-	//ApplyPosition();
+	SetWindowPos( NULL, rcClient.left, rcClient.top, 0, 0,
+								SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 }
 
 void CPaletteDlg::ApplyPosition()

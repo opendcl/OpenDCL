@@ -137,7 +137,9 @@ ADSRESULT DwgList::GetSelectedItems()
 	{ //only a single selection
 		CString sSel;
 		pCtrl->GetText( pCtrl->GetCurSel(), sSel );
-		acedRetStr( sSel );
+		resbuf rbSel = { NULL, RTSTR };
+		rbSel.resval.rstring = sSel.LockBuffer();
+		acedRetList( &rbSel );
 		return RSRSLT;
 	}
 

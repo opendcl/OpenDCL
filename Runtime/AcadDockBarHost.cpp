@@ -213,12 +213,12 @@ CSize CAcadDockBarHost::CalcDynamicLayout( int nLength, DWORD dwMode )
 CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 {
 	if( !mpDlgObject->IsResizable() )
-		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
-									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
+		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
+									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
 #if (_BRXTARGET && _BRXTARGET <= 10)
 	CSize sizeDefault;
-	sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth();
-	sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight();
+	sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width );
+	sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height );
 #else
 	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
 #endif

@@ -25,6 +25,19 @@ CArxHatchCtrl::~CArxHatchCtrl()
 	delete mpHatchDb;
 }
 
+bool CArxHatchCtrl::ApplyProperty( TPropertyPtr pProp )
+{
+	if( !__super::ApplyProperty( pProp ) )
+		return false;
+	switch( pProp->GetID() )
+	{
+	case Prop::HatchScale:
+		DisplayHatchPattern(msHatchPattern);
+		break;
+	}
+	return true;
+}
+
 void CArxHatchCtrl::Clear()
 {
 	msHatchPattern.Empty();
@@ -35,70 +48,6 @@ void CArxHatchCtrl::Clear()
 	}
 	midHatch.setNull();
 	clearAll();
-}
-
-void CArxHatchCtrl::ResizeHatch() 
-{
-	if( mpHatchDb )
-	{
-		AcGePoint3d vertexPts[4];
-		
-		CRect rc;
-		GetClientRect(&rc);
-		
-		int nTheWidth = rc.Width();
-		int nTheHeight = rc.Height();
-		
-		rc.left -= nTheWidth*0.5;
-		rc.right -= nTheWidth*0.5;
-		rc.top -= nTheHeight*0.5;
-		rc.bottom -= nTheHeight*0.5;
-		
-		vertexPts[0].set(rc.left, rc.top, 0.0);
-		vertexPts[1].set(rc.right, rc.top, 0.0);
-		vertexPts[2].set(rc.right, rc.bottom, 0.0);
-		vertexPts[3].set(rc.left, rc.bottom, 0.0);
-
-		AcDbLine *pLine;
-
-		if (acdbOpenObject(pLine, mridLoop[0], AcDb::kForWrite) == Acad::eOk)
-		{
-			pLine->setStartPoint(vertexPts[0]);
-			pLine->setEndPoint(vertexPts[1]);
-			pLine->close();			
-		}
-
-		if (acdbOpenObject(pLine, mridLoop[1], AcDb::kForWrite) == Acad::eOk)
-		{
-			pLine->setStartPoint(vertexPts[1]);
-			pLine->setEndPoint(vertexPts[2]);
-			pLine->close();
-		}
-
-		if (acdbOpenObject(pLine, mridLoop[2], AcDb::kForWrite) == Acad::eOk)
-		{
-			pLine->setStartPoint(vertexPts[2]);
-			pLine->setEndPoint(vertexPts[3]);
-			pLine->close();
-		}
-
-		if (acdbOpenObject(pLine, mridLoop[3], AcDb::kForWrite) == Acad::eOk)
-		{
-			pLine->setStartPoint(vertexPts[3]);
-			pLine->setEndPoint(vertexPts[0]);
-			pLine->close();
-		}
-
-		AcDbHatch *pHatch;
-		if( acdbOpenObject( pHatch, midHatch, AcDb::kForWrite ) == Acad::eOk )
-		{
-			for( int i = pHatch->numLoops() - 1; i >= 0; --i )
-				pHatch->removeLoopAt( i );
-			pHatch->appendLoop( AcDbHatch::kDefault, mridLoop ); 
-			pHatch->evaluateHatch(); 
-			pHatch->close();
-		}
-	}
 }
 
 bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )

@@ -295,6 +295,126 @@ CRect CDialogControl::GetEffectiveClientRect() const
 	return rcClient;
 }
 
+void CDialogControl::SetPosLeft( long lNewLeft )
+{
+	mpTemplate->SetLongProperty( Prop::Left, lNewLeft );
+	SyncPosLeft();
+}
+
+void CDialogControl::SetPosTop( long lNewTop )
+{
+	mpTemplate->SetLongProperty( Prop::Top, lNewTop );
+	SyncPosTop();
+}
+
+void CDialogControl::SetPosWidth( long lNewWidth )
+{
+	mpTemplate->SetLongProperty( Prop::Width, lNewWidth );
+	SyncPosRight();
+}
+
+void CDialogControl::SetPosHeight( long lNewHeight )
+{
+	mpTemplate->SetLongProperty( Prop::Height, lNewHeight );
+	SyncPosBottom();
+}
+
+void CDialogControl::SyncPosLeft()
+{
+	TPropertyPtr pLeftFromRightProp = mpTemplate->GetPropertyObject( Prop::LeftFromRight );
+	if( pLeftFromRightProp )
+	{
+		long lLeftFromRight = mpTemplate->GetLongProperty( Prop::UseLeftFromRight );
+		long lNew = 0;
+		switch( lLeftFromRight  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			lNew = mpControlPane->GetControlArea().right - mpTemplate->GetLongProperty( Prop::Left );
+			break;
+		case 2: //offset from center of control area
+			lNew = mpTemplate->GetLongProperty( Prop::Left ) - mpControlPane->GetControlArea().CenterPoint().x;
+			break;
+		default: //offset from splitter
+			lNew = mpTemplate->GetLongProperty( Prop::Left ) - mpControlPane->GetSplitterPos( lLeftFromRight ).x;
+			break;
+		}
+		if( pLeftFromRightProp->GetLongValue() != lNew )
+			pLeftFromRightProp->SetLongValue( lNew );
+	}
+}
+
+void CDialogControl::SyncPosTop()
+{
+	TPropertyPtr pTopFromBottomProp = mpTemplate->GetPropertyObject( Prop::TopFromBottom );
+	if( pTopFromBottomProp )
+	{
+		long lTopFromBottom = mpTemplate->GetLongProperty( Prop::UseTopFromBottom );
+		long lNew = 0;
+		switch( lTopFromBottom  )
+		{
+		case 0:
+		case 1: //offset from bottom edge of control area
+			lNew = mpControlPane->GetControlArea().bottom - mpTemplate->GetLongProperty( Prop::Top );
+			break;
+		case 2: //offset from center of control area
+			lNew = mpTemplate->GetLongProperty( Prop::Top ) - mpControlPane->GetControlArea().CenterPoint().y;
+			break;
+		default: //offset from splitter
+			lNew = mpTemplate->GetLongProperty( Prop::Top ) - mpControlPane->GetSplitterPos( lTopFromBottom ).y;
+			break;
+		}
+		if( pTopFromBottomProp->GetLongValue() != lNew )
+			pTopFromBottomProp->SetLongValue( lNew );
+	}
+}
+
+void CDialogControl::SyncPosRight()
+{
+	TPropertyPtr pRightFromRightProp = mpTemplate->GetPropertyObject( Prop::RightFromRight );
+	if( pRightFromRightProp )
+	{
+		long lLeft = mpTemplate->GetLongProperty( Prop::Left );
+		long lRightFromRight = mpTemplate->GetLongProperty( Prop::UseRightFromRight );
+		long lNew = 0;
+		switch( lRightFromRight  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			lNew = mpControlPane->GetControlArea().right - lLeft - mpTemplate->GetLongProperty( Prop::Width );
+			break;
+		default: //offset from splitter
+			lNew = lLeft + mpTemplate->GetLongProperty( Prop::Width ) - mpControlPane->GetSplitterPos( lRightFromRight ).x;
+			break;
+		}
+		if( pRightFromRightProp->GetLongValue() != lNew )
+			pRightFromRightProp->SetLongValue( lNew );
+	}
+}
+
+void CDialogControl::SyncPosBottom()
+{
+	TPropertyPtr pBottomFromBottomProp = mpTemplate->GetPropertyObject( Prop::BottomFromBottom );
+	if( pBottomFromBottomProp )
+	{
+		long lTop = mpTemplate->GetLongProperty( Prop::Top );
+		long lBottomFromBottom = mpTemplate->GetLongProperty( Prop::UseBottomFromBottom );
+		long lNew = 0;
+		switch( lBottomFromBottom  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			lNew = mpControlPane->GetControlArea().bottom - lTop - mpTemplate->GetLongProperty( Prop::Height );
+			break;
+		default: //offset from splitter
+			lNew = mpControlPane->GetSplitterPos( lBottomFromBottom ).y - mpTemplate->GetLongProperty( Prop::Height ) - lTop;
+			break;
+		}
+		if( pBottomFromBottomProp->GetLongValue() != lNew )
+			pBottomFromBottomProp->SetLongValue( lNew );
+	}
+}
+
 CRect CDialogControl::GetWndRect() const
 {
 	CPoint pntUpperLeft( mpTemplate->GetLongProperty(Prop::Left), mpTemplate->GetLongProperty(Prop::Top) );
@@ -654,116 +774,28 @@ bool CDialogControl::OnApplyFont( TPropertyPtr pProp )
 
 bool CDialogControl::OnApplyLeft( TPropertyPtr pProp )
 {
-	//if( pProp->GetLongValue() < 0 )
-	//	pProp->SetLongValue( 0 );
-
-	TPropertyPtr pLeftFromRightProp = mpTemplate->GetPropertyObject( Prop::LeftFromRight );
-	if( pLeftFromRightProp )
-	{
-		long lLeftFromRight = mpTemplate->GetLongProperty( Prop::UseLeftFromRight );
-		long lNew = 0;
-		switch( lLeftFromRight  )
-		{
-		case 0:
-		case 1: //offset from right edge of control area
-			lNew = mpControlPane->GetControlArea().right - pProp->GetLongValue();
-			break;
-		case 2: //offset from center of control area
-			lNew = pProp->GetLongValue() - mpControlPane->GetControlArea().CenterPoint().x;
-			break;
-		default: //offset from splitter
-			lNew = pProp->GetLongValue() - mpControlPane->GetSplitterPos( lLeftFromRight ).x;
-			break;
-		}
-		if( pLeftFromRightProp->GetLongValue() != lNew )
-			pLeftFromRightProp->SetLongValue( lNew );
-	}
+	SyncPosLeft();
 	ApplyPosition();
 	return true;
 }
 
 bool CDialogControl::OnApplyTop( TPropertyPtr pProp )
 {
-	//if( pProp->GetLongValue() < 0 )
-	//	pProp->SetLongValue( 0 );
-
-	TPropertyPtr pTopFromBottomProp = mpTemplate->GetPropertyObject( Prop::TopFromBottom );
-	if( pTopFromBottomProp )
-	{
-		long lTopFromBottom = mpTemplate->GetLongProperty( Prop::UseTopFromBottom );
-		long lNew = 0;
-		switch( lTopFromBottom  )
-		{
-		case 0:
-		case 1: //offset from bottom edge of control area
-			lNew = mpControlPane->GetControlArea().bottom - pProp->GetLongValue();
-			break;
-		case 2: //offset from center of control area
-			lNew = pProp->GetLongValue() - mpControlPane->GetControlArea().CenterPoint().y;
-			break;
-		default: //offset from splitter
-			lNew = pProp->GetLongValue() - mpControlPane->GetSplitterPos( lTopFromBottom ).y;
-			break;
-		}
-		if( pTopFromBottomProp->GetLongValue() != lNew )
-			pTopFromBottomProp->SetLongValue( lNew );
-	}
+	SyncPosTop();
 	ApplyPosition();
 	return true;
 }
 
 bool CDialogControl::OnApplyWidth( TPropertyPtr pProp )
 {
-	//if( pProp->GetLongValue() < 0 )
-	//	pProp->SetLongValue( 0 );
-
-	TPropertyPtr pRightFromRightProp = mpTemplate->GetPropertyObject( Prop::RightFromRight );
-	if( pRightFromRightProp )
-	{
-		long lLeft = mpTemplate->GetLongProperty( Prop::Left );
-		long lRightFromRight = mpTemplate->GetLongProperty( Prop::UseRightFromRight );
-		long lNew = 0;
-		switch( lRightFromRight  )
-		{
-		case 0:
-		case 1: //offset from right edge of control area
-			lNew = mpControlPane->GetControlArea().right - lLeft - pProp->GetLongValue();
-			break;
-		default: //offset from splitter
-			lNew = lLeft + pProp->GetLongValue() - mpControlPane->GetSplitterPos( lRightFromRight ).x;
-			break;
-		}
-		if( pRightFromRightProp->GetLongValue() != lNew )
-			pRightFromRightProp->SetLongValue( lNew );
-	}
+	SyncPosRight();
 	ApplyPosition();
 	return true;
 }
 
 bool CDialogControl::OnApplyHeight( TPropertyPtr pProp )
 {
-	//if( pProp->GetLongValue() < 0 )
-	//	pProp->SetLongValue( 0 );
-
-	TPropertyPtr pBottomFromBottomProp = mpTemplate->GetPropertyObject( Prop::BottomFromBottom );
-	if( pBottomFromBottomProp )
-	{
-		long lTop = mpTemplate->GetLongProperty( Prop::Top );
-		long lBottomFromBottom = mpTemplate->GetLongProperty( Prop::UseBottomFromBottom );
-		long lNew = 0;
-		switch( lBottomFromBottom  )
-		{
-		case 0:
-		case 1: //offset from right edge of control area
-			lNew = mpControlPane->GetControlArea().bottom - lTop - pProp->GetLongValue();
-			break;
-		default: //offset from splitter
-			lNew = mpControlPane->GetSplitterPos( lBottomFromBottom ).y - pProp->GetLongValue() - lTop;
-			break;
-		}
-		if( pBottomFromBottomProp->GetLongValue() != lNew )
-			pBottomFromBottomProp->SetLongValue( lNew );
-	}
+	SyncPosBottom();
 	ApplyPosition();
 	return true;
 }
