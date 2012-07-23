@@ -107,7 +107,7 @@ void CFontToolbar::AddTheButtons()
 	for( int i = 0; i < 10; i++)
 	{
 		mpTBButtons[i].fsState = NULL;
-		mpTBButtons[i].fsStyle = BYTE(TBSTYLE_BUTTON | TBSTYLE_TOOLTIPS);
+		mpTBButtons[i].fsStyle = BYTE(TBSTYLE_BUTTON);
 		mpTBButtons[i].dwData = 0;
 		mpTBButtons[i].iBitmap = 4;
 		mpTBButtons[i].idCommand = 0;
@@ -116,7 +116,7 @@ void CFontToolbar::AddTheButtons()
 	}
 	
 	mpTBButtons[10].fsState = TBSTATE_ENABLED;
-	mpTBButtons[10].fsStyle = BYTE(TBSTYLE_CHECK | TBSTYLE_TOOLTIPS);
+	mpTBButtons[10].fsStyle = BYTE(TBSTYLE_CHECK);
 	mpTBButtons[10].dwData = 0;
 	mpTBButtons[10].iBitmap = 0;
 	mpTBButtons[10].idCommand = ID_FONTBOLDBTN;
@@ -125,7 +125,7 @@ void CFontToolbar::AddTheButtons()
 
 
 	mpTBButtons[11].fsState = TBSTATE_ENABLED;
-	mpTBButtons[11].fsStyle = BYTE(TBSTYLE_CHECK | TBSTYLE_TOOLTIPS);
+	mpTBButtons[11].fsStyle = BYTE(TBSTYLE_CHECK);
 	mpTBButtons[11].dwData = 0;
 	mpTBButtons[11].iBitmap = 1;
 	mpTBButtons[11].idCommand = ID_FONTITALICBTN;
@@ -133,7 +133,7 @@ void CFontToolbar::AddTheButtons()
 	VERIFY(m_Buttons.AddButtons( 1, &mpTBButtons[11] ));		
 
 	mpTBButtons[12].fsState = TBSTATE_ENABLED;
-	mpTBButtons[12].fsStyle = BYTE(TBSTYLE_CHECK | TBSTYLE_TOOLTIPS);
+	mpTBButtons[12].fsStyle = BYTE(TBSTYLE_CHECK);
 	mpTBButtons[12].dwData = 0;
 	mpTBButtons[12].iBitmap = 2;
 	mpTBButtons[12].idCommand = ID_FONTUNDERLINEBTN;
@@ -141,7 +141,7 @@ void CFontToolbar::AddTheButtons()
 	VERIFY(m_Buttons.AddButtons( 1, &mpTBButtons[12] ));		
 	
 	mpTBButtons[13].fsState = TBSTATE_ENABLED;
-	mpTBButtons[13].fsStyle = BYTE(TBSTYLE_CHECK | TBSTYLE_TOOLTIPS);
+	mpTBButtons[13].fsStyle = BYTE(TBSTYLE_CHECK);
 	mpTBButtons[13].dwData = 0;
 	mpTBButtons[13].iBitmap = 3;
 	mpTBButtons[13].idCommand = ID_FONTSCALED;
@@ -251,10 +251,8 @@ void CFontToolbar::OnSize(UINT nType, int cx, int cy)
 	m_Buttons.MoveWindow(0,2,cx,cy,TRUE);
 }
 
-CString CFontToolbar::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
+CString CFontToolbar::GetTooltipText( UINT nID )
 {
-	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct ;
-	ASSERT(nID == lpTTT->hdr.idFrom);
 	CString toolTipText;
 	switch (nID)
 	{
@@ -271,8 +269,6 @@ CString CFontToolbar::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResu
 		toolTipText = theWorkspace.LoadResourceString(IDS_FONTSCALED);
 		break;		
 	}
-	int nLength = (toolTipText.GetLength() > nDeTTTLen) ? nDeTTTLen : toolTipText.GetLength();
-	toolTipText = toolTipText.Left(nLength);
 	return toolTipText;
 }
 
@@ -282,66 +278,29 @@ CString CFontToolbar::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResu
 
 void CFontToolbar::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
-	CString toolTipText = NeedText(nID, pNotifyStruct, lResult);
+	CStringW toolTipText = CStringW( GetTooltipText(nID) );
 	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-#ifdef _UNICODE
-	_tcsncpy(lpTTT->szText,(LPCTSTR)toolTipText, toolTipText.GetLength() + 1);
-#else
-	mbstowcs(lpTTT->szText,(LPCTSTR)toolTipText, toolTipText.GetLength() + 1);
-#endif
-}
-
-BOOL CFontToolbar::OnNeedText( UINT id, NMHDR * pTTTStruct, LRESULT * pResult )
-{
-	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pTTTStruct;
-	UINT nID =pTTTStruct->idFrom;
-	if (pTTT->uFlags & TTF_IDISHWND)
-	{
-		// idFrom is actually the HWND of the tool
-		nID = ::GetDlgCtrlID((HWND)nID);
-		if(nID)
-		{
-			pTTT->lpszText = MAKEINTRESOURCE(nID);
-			pTTT->hinst = AfxGetResourceHandle();
-			return(TRUE);
-		}
-	}
-	return(FALSE);
+	lstrcpynW(lpTTT->szText, toolTipText, _elements(lpTTT->szText));
 }
 
 void CFontToolbar::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
-	CString toolTipText = NeedText(nID, pNotifyStruct, lResult);
-	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct;
-	lstrcpyn(lpTTT->szText,toolTipText, _elements(lpTTT->szText));
+	CStringA toolTipText = CStringA( GetTooltipText(nID) );
+	LPTOOLTIPTEXTA lpTTT = (LPTOOLTIPTEXTA)pNotifyStruct;
+	lstrcpynA(lpTTT->szText, toolTipText, _elements(lpTTT->szText));
 }
 
-/*
 BOOL CFontToolbar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 
 {
 	ASSERT(pResult != NULL);
 	NMHDR* pNMHDR = (NMHDR*)lParam;
 	HWND hWndCtrl = pNMHDR->hwndFrom;
-
-	//////////////////////////////////////////////////////////////////
-	// If TTN_NEEDTEXT we cannot get the ID from the tooltip window //
-	//////////////////////////////////////////////////////////////////
-
 	int nCode = pNMHDR->code;
-
-	//
-	// if it is the following notification message
-	// nID has to obtained from wParam
-	//
-	
 	if (nCode == TTN_NEEDTEXTA || nCode == TTN_NEEDTEXTW)
 	{
-		UINT nID;   // = _AfxGetDlgCtrlID(hWndCtrl);
-		nID = (UINT)wParam;
-
+		UINT nID = (UINT)wParam;
 
 		ASSERT((UINT)pNMHDR->idFrom == (UINT)wParam);
-		UNUSED(wParam);  // not used in release build
 		ASSERT(hWndCtrl != NULL);
 		ASSERT(::IsWindow(hWndCtrl));
 
@@ -355,13 +314,11 @@ BOOL CFontToolbar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 		AFX_NOTIFY notify;
 		notify.pResult = pResult;
 		notify.pNMHDR = pNMHDR;
-		BOOL b = OnCmdMsg(nID, MAKELONG(nCode, WM_NOTIFY), &notify, NULL); 
-		return b;
+		return OnCmdMsg(nID, MAKELONG(nCode, WM_NOTIFY), &notify, NULL); 
 	}
 	
-	return CDialogBar::OnNotify(wParam, lParam, pResult);
+	return __super::OnNotify(wParam, lParam, pResult);
 }
-*/
 
 void CFontToolbar::OnFontName()
 {		

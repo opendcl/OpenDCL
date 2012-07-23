@@ -58,6 +58,16 @@ CString CFolderComboBox::GetSelectedPath()
 	return m_treeCtrl.GetSelectedPath();
 }
 
+CString CFolderComboBox::GetItemDisplayName(HTREEITEM item)
+{
+	return m_treeCtrl.GetItemDisplayName(item);
+}
+
+CString CFolderComboBox::GetItemPath(HTREEITEM item)
+{	
+	return m_treeCtrl.GetItemPath(item);
+}
+
 bool CFolderComboBox::SelectPath( LPCTSTR pszPath )
 {	
 	if( !m_treeCtrl.SelectPath( pszPath ) )
@@ -78,8 +88,17 @@ bool CFolderComboBox::SelectFolder( LPCTSTR pszFolderName )
 	return m_treeCtrl.SelectFolder( pszFolderName );
 }
 
+void CFolderComboBox::ShowDropDown(BOOL bShowIt /*= TRUE*/)
+{
+	if( bShowIt )
+		DisplayTree();
+	else
+		m_treeCtrl.ShowWindow(SW_HIDE);
+}
+
 void CFolderComboBox::DisplayTree()
 {
+	GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_DROPDOWN), (LPARAM)m_hWnd );
 	int nDropHeight = m_treeCtrl.GetItemHeight() * m_treeCtrl.GetCount() + 3;
 	CRect rc;
 	GetWindowRect( &rc );
@@ -196,6 +215,23 @@ BOOL CFolderComboBox::PreTranslateMessage(MSG* pMsg)
 void CFolderComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	//UINT nItemHeight = 16;
+}
+
+BOOL CFolderComboBox::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	BOOL bResult = __super::OnCommand(wParam, lParam);
+	if( lParam ) //child control notification?
+	{
+		switch( HIWORD(wParam) )
+		{
+		case CBN_SELENDOK:
+		case CBN_CLOSEUP:
+		case CBN_DROPDOWN:
+			GetParent()->SendMessage( WM_COMMAND, wParam, lParam );
+			break;
+		}
+	}
+	return bResult;
 }
 
 void CFolderComboBox::OnLButtonDown(UINT nFlags, CPoint point) 

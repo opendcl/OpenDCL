@@ -193,11 +193,12 @@ CPoint CControlPane::GetSplitterPos( int nSplitterId )
 		{
 			for( TDclControlList::iterator iterPending = mPendingRecalc.begin(); iterPending != mPendingRecalc.end(); ++iterPending )
 			{
-				if( (*iterPending)->GetID() != nSplitterId )
-					continue;
-				mPendingRecalc.erase( iterPending );
-				RecalcControlPos( pDclControl );
-				break;
+				if( (*iterPending)->GetType() == CtlSplitter && (*iterPending)->GetID() == nSplitterId )
+				{
+					mPendingRecalc.erase( iterPending );
+					RecalcControlPos( pDclControl );
+					break;
+				}
 			}
 			return pDclControl->GetWndRect().TopLeft();
 		}

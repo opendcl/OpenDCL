@@ -629,7 +629,25 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 				CPoint pt(rc.right + 5,rc.top + nThisHeight);
 				CString str;
 				GetLBText(nSel,str);
-				m_wndTip.ShowTips(pt,str);
+
+				m_wndTip.SetWindowText( str );
+
+				LOGFONT lfTip;
+				ZeroMemory( &lfTip, sizeof(lfTip) );
+				lfTip.lfHeight = 18;
+				lstrcpyn( lfTip.lfFaceName, str, sizeof(lfTip.lfFaceName)/sizeof(lfTip.lfFaceName[0]) );
+				CFont Font;
+				Font.CreateFontIndirect( &lfTip );
+				m_wndTip.SetFont( &Font, FALSE );
+
+				CDC* pDC = GetDC();
+				CFont* pOldFont = pDC->SelectObject( &Font );
+				CSize sz = pDC->GetTextExtent( str );
+				pDC->SelectObject( pOldFont );
+				ReleaseDC( pDC );
+				sz.cx += 8;
+				sz.cy += 8;
+				m_wndTip.Show( pt, sz );
 			}
 		}
 	}

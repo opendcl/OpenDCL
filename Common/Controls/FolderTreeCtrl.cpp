@@ -123,6 +123,8 @@ HTREEITEM CFolderTreeCtrl::FreeMemory(HTREEITEM hItem)
 void CFolderTreeCtrl::Hide()
 {
 	ShowWindow(SW_HIDE);
+	if( mpFolderCombo )
+		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_CLOSEUP), (LPARAM)m_hWnd );
 	// collapse the child when selected the parent?
 	// Expand(m_selectedItem, TVE_COLLAPSE);
 }
@@ -130,7 +132,10 @@ void CFolderTreeCtrl::Hide()
 void CFolderTreeCtrl::Inform()
 {
 	if( mpFolderCombo )
+	{
+		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_SELENDOK), (LPARAM)m_hWnd );
 		mpFolderCombo->SendMessage( refWM_SELCHANGE(), 0, (LPARAM)mhtiSelected );
+	}
 }
 
 HTREEITEM CFolderTreeCtrl::GetSelectedItem()
@@ -548,7 +553,7 @@ BEGIN_MESSAGE_MAP(CFolderTreeCtrl, CTreeCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDED, OnItemexpanded)
 	ON_WM_LBUTTONDOWN()
-	ON_WM_KILLFOCUS()
+	ON_NOTIFY_REFLECT(NM_KILLFOCUS, OnKillFocus)
 	ON_WM_DESTROY()
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
@@ -604,12 +609,9 @@ void CFolderTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 }
 
-void CFolderTreeCtrl::OnKillFocus(CWnd* pNewWnd) 
+void CFolderTreeCtrl::OnKillFocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	if( pNewWnd != mpFolderCombo )
-		Hide();
-
-	__super::OnKillFocus(pNewWnd);
+	Hide();
 }
 
 BOOL CFolderTreeCtrl::PreTranslateMessage(MSG* pMsg) 

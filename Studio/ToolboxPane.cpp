@@ -174,7 +174,7 @@ int CToolboxPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			idx,
 			idx + ID_TOOLBOX_POINTER,
 			0,
-			BYTE(TBSTYLE_CHECKGROUP | TBSTYLE_TOOLTIPS),
+			BYTE(TBSTYLE_CHECKGROUP),
 		};
 		VERIFY(mToolbar.AddButtons( 1, &btn ));
 	}
@@ -191,14 +191,14 @@ void CToolboxPane::OnSize(UINT nType, int cx, int cy)
 void CToolboxPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-  lpTTT->lpszText = MAKEINTRESOURCE(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
+  lpTTT->lpszText = MAKEINTRESOURCEW(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
   lpTTT->hinst = AfxGetResourceHandle();
 }
 
 void CToolboxPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
-	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-  lpTTT->lpszText = MAKEINTRESOURCE(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
+	LPTOOLTIPTEXTA lpTTT = (LPTOOLTIPTEXTA)pNotifyStruct;
+  lpTTT->lpszText = MAKEINTRESOURCEA(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
   lpTTT->hinst = AfxGetResourceHandle();
 }
 

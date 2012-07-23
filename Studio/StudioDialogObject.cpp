@@ -263,15 +263,7 @@ void CStudioDialogObject::OnGridSpacingChange( UINT nGridSpacing )
 
 int CStudioDialogObject::GetNextControlId()
 {
-	int nHighest = 10;
-	const TDclControlList& Controls = mpSourceForm->GetControlList();
-	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
-	{
-		TDclControlPtr pCtrl = *iter;
-		if (pCtrl->GetID() > nHighest)
-			nHighest = pCtrl->GetID();
-	}
-	return nHighest + 1;
+	return mpSourceForm->GetUniqueControlId();
 }
 
 CString CStudioDialogObject::GetNextControlName( LPCTSTR pszRootName )

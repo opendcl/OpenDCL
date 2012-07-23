@@ -12,8 +12,6 @@
 class CDclControlObject;
 class CStudioFrame;
 
-#define nDeTTTLen 79
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CFontToolbar dialog
@@ -40,13 +38,13 @@ public:
 
 protected:
 	void AddTheButtons();
-	CString NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
+	CString GetTooltipText( UINT nID );
 	
 // Overrides
 	// ClassWizard generated virtual function overrides
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 
 // Implementation
 protected:

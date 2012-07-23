@@ -118,8 +118,7 @@ BOOL CModelessDlg::OnInitDialog()
 	// Set the trasparency effect to 70%
 	//GetLayeredDialog()->SetTransparentPercentage(m_hWnd, 80);
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
+	return TRUE; //return TRUE so the dialog manager does its own control focus work
 }
 
 LRESULT CModelessDlg::onAcadKeepFocus(WPARAM, LPARAM)

@@ -87,10 +87,8 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 {
 	__super::OnSelchange( wParam, lParam );
 
-	CString sPath;
-	CFolder* pFolderInfo = (CFolder*)lParam;
-	if( pFolderInfo )
-		sPath = (LPCTSTR)lParam;
+	HTREEITEM hItem = (HTREEITEM)lParam;
+	CString sPath = GetItemPath(hItem);
 	mpTemplate->SetStringProperty( Prop::Text, sPath );
 
 	if( mpDwgList )

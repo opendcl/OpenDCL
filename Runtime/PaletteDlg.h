@@ -8,13 +8,6 @@
 #include "AcadColorService.h"
 
 
-#if (_MFC_VER < 0x0800)
-#define __UINT_LRESULT UINT
-#else
-#define __UINT_LRESULT LRESULT
-#endif
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CPaletteDlg dialog
 
@@ -61,6 +54,7 @@ protected:
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size
 	virtual void ApplyPosition(); //move control window to new position
 	virtual bool OnApplyIcon( TPropertyPtr pProp ); //Prop::TitleBarIcon
+	virtual BOOL HandleEraseBkgnd( CDC* pDC );
 
 protected:
 friend class CAcadPaletteHost;

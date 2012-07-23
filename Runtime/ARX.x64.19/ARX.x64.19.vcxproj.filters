@@ -265,9 +265,6 @@
     <ClCompile Include="..\Controls\ArxTextButtonCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ImageTreeCtrl.cpp">
-      <Filter>Controls</Filter>
-    </ClCompile>
     <ClCompile Include="..\Methods\ArgumentsRetrieval.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
@@ -593,6 +590,9 @@
       <Filter>Common\Controls</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\Controls\XPStyleButtonST.cpp">
+      <Filter>Common\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Controls\ImageTreeCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
   </ItemGroup>

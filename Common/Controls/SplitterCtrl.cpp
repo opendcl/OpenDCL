@@ -97,7 +97,7 @@ bool CSplitterCtrl::ApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::SplitterStyle:
-		OnNeedRepaint();
+		OnNeedRepaint(true);
 		break;
 	}
 	return !bFailed;

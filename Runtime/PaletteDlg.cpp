@@ -277,6 +277,33 @@ bool CPaletteDlg::OnApplyIcon( TPropertyPtr pProp )
 	return true;
 }
 
+BOOL CPaletteDlg::HandleEraseBkgnd( CDC* pDC )
+{
+	BOOL bResult = __super::HandleEraseBkgnd( pDC );
+	if( !bResult )
+	{
+		CAcadColorService* pColorService = GetColorService();
+		if( pColorService && pColorService->IsBackgroundTransparent() )
+		{
+			CWnd* pParent = mpControlWnd->GetParent();
+			if( pParent )
+			{
+				CBrush* pbrBackground = pDC->GetCurrentBrush();
+			#ifdef _BRXTARGET
+				HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pParent->m_hWnd );
+				if( hbrBackground )
+					pbrBackground = CBrush::FromHandle( hbrBackground );
+			#endif //_BRXTARGET
+				CRect rcClip;
+				pDC->GetClipBox( &rcClip );
+				pDC->FillRect( &rcClip, pbrBackground );
+			}
+			return TRUE;
+		}
+	}
+	return bResult;
+}
+
 void CPaletteDlg::OnMouseEnter()
 {
   GetArxServices()->HandleEvent( Prop::EventMouseEntered );

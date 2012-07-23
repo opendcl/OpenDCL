@@ -62,6 +62,6 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnKillFocus(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDestroy();
 };

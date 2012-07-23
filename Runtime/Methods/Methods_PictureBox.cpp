@@ -327,7 +327,7 @@ ADSRESULT PictureBox::DrawRect()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawRect( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, crColor );
+		pCtrl->DrawRect( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 

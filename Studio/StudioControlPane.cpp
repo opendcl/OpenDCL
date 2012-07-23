@@ -40,7 +40,11 @@ void CStudioControlPane::SetSourceForm( TDclFormPtr pSourceForm )
 TDialogControlPtr CStudioControlPane::CreateNewDialogControl( TDclControlPtr pTemplate,
 																															UINT nID )
 {
-	return CStudioDialogControl::Create( pTemplate, this, nID );
+	bool bRecalcInProgress = mbRecalcInProgress;
+	mbRecalcInProgress = true; //to prevent recalc
+	TDialogControlPtr pNewCtrl = CStudioDialogControl::Create( pTemplate, this, nID );
+	mbRecalcInProgress = bRecalcInProgress;
+	return pNewCtrl;
 }
 
 void CStudioControlPane::ApplyPosition( TDialogControlPtr pDlgControl )

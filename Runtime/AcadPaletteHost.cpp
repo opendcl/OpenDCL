@@ -57,14 +57,16 @@ CAcadPaletteHost::~CAcadPaletteHost()
 
 void CAcadPaletteHost::GetClientArea( CRect& rect )
 {
+	GetClientRect( &rect );
 	if( !mpDlgObject->IsFloating() )
 	{
-		GetAdjustedClientRect( rect );
+		CRect rcAdj;
+		GetAdjustedClientRect( rcAdj );
 		rect.top += 5;
+		IntersectRect( &rect, &rect, &rcAdj );
 	}
 	else
 	{
-		GetClientRect( &rect );
 		CRect rcWnd;
 		GetFullRect( rcWnd );
 		ScreenToClient( &rcWnd.TopLeft() );

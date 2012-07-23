@@ -161,9 +161,6 @@
     <ClInclude Include="ProgressTimeToComplete.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectBar.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectPane.h">
       <Filter>Include Files</Filter>
     </ClInclude>
@@ -755,9 +752,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProgressTimeToComplete.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProjectPane.cpp">

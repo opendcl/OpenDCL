@@ -83,6 +83,7 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 		if( HasSubItemImages() )
 			dwExStyle |= LVS_EX_SUBITEMIMAGES;
 		SetExtendedStyle( dwExStyle );
+		EnableToolTips(FALSE);
 	}
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -681,6 +682,48 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 	SetRedraw( TRUE );
 	OnNeedRepaint();
 	return true;
+}
+
+bool CListViewCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol ) const
+{
+	int ctColumns = 1;
+	CHeaderCtrl* pHeaderCtrl = const_cast<CListViewCtrl*>(this)->GetHeaderCtrl();
+	if( pHeaderCtrl )
+		ctColumns = pHeaderCtrl->GetItemCount();
+	for( int idxRow = GetItemCount() - 1; idxRow >= 0; --idxRow )
+	{
+		CRect rcRow;
+		GetItemRect( idxRow, &rcRow, LVIR_BOUNDS );
+		if( rcRow.PtInRect( point ) )
+		{
+			CPoint ptTest( point );
+			for( int idxColumn = ctColumns - 1; idxColumn >= 0; --idxColumn )
+			{
+				if( GetCellRect( idxRow, idxColumn, LVIR_BOUNDS ).PtInRect( ptTest ) )
+				{
+					nRow = idxRow;
+					nCol = idxColumn;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+CRect CListViewCtrl::GetCellRect(	int nRow, int nCol, int area /*= LVIR_BOUNDS*/ ) const
+{
+	ASSERT( nRow >= 0 && nRow < GetItemCount() );
+	CRect rcCell;
+	if( nCol <= 0 )
+	{
+		GetItemRect( nRow, rcCell, area );
+		if( nCol == 0 )
+			rcCell.right = GetColumnWidth( 0 );
+	}
+	else
+		const_cast<CListViewCtrl*>(this)->GetSubItemRect( nRow, nCol, area, rcCell );
+	return rcCell;
 }
 
 

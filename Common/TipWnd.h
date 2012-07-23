@@ -3,15 +3,11 @@
 
 #pragma once
 
-//////////////////////////////////////////////////////////////////////////
-// © Paramax Technology Limited                                         // 
-// ----------------------------                                         //
-//                                                                      //
-// The author accepts no liablility for injury or loss of profits       // 
-// if this software is used. You willingness to use this software       //
-// indicates you accept total liability                                 //
-//                                                                      // 
-//////////////////////////////////////////////////////////////////////////
+#if (_MFC_VER < 0x0800)
+#define __UINT_LRESULT UINT
+#else
+#define __UINT_LRESULT LRESULT
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -19,35 +15,33 @@
 
 class CTipWnd : public CWnd
 {
+	CFont mFont;
+	COLORREF mclrForeground;
+	COLORREF mclrBackground;
+
 // Construction
 public:
 	CTipWnd();
-
-// Attributes
-public:
-protected:
-	CFont		m_font;
-	CString		m_strFont;
-	
-// Operations
-public:
-	BOOL Create(CWnd* pParent);
-	void ShowTips(CPoint pt, const CString& str);
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CTipWnd)
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
+	CTipWnd(COLORREF clrForeground, COLORREF clrBackground);
 	virtual ~CTipWnd();
 
-	// Generated message map functions
+// Interface
+public:
+	BOOL Create(CWnd* pParent);
+	void Show(const CPoint& ptTip, const CSize& szTip);
+	void Show();
+	void Hide();
+
 protected:
-	//{{AFX_MSG(CTipWnd)
+	virtual void Paint(CDC* pDC);
+
+// Generated message map functions
+protected:
+	DECLARE_MESSAGE_MAP()
+	
+	afx_msg LRESULT OnGetFont(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSetFont(WPARAM wParam, LPARAM lParam);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 };

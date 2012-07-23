@@ -72,14 +72,14 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	static TBBUTTON rTbButtons[] =
 	{
-		{0, ID_SENDTOFRONT, 0, BYTE(TBSTYLE_BUTTON | TBSTYLE_TOOLTIPS)},
-		{1, ID_SENDTOBACK, 0, BYTE(TBSTYLE_BUTTON | TBSTYLE_TOOLTIPS)},
-		{2, ID_MOVEZFRONTBY1, 0, BYTE(TBSTYLE_BUTTON | TBSTYLE_TOOLTIPS)},
-		{3, ID_MOVEZBACKBY1, 0, BYTE(TBSTYLE_BUTTON | TBSTYLE_TOOLTIPS)},
+		{0, ID_SENDTOFRONT, 0, BYTE(TBSTYLE_BUTTON)},
+		{1, ID_SENDTOBACK, 0, BYTE(TBSTYLE_BUTTON)},
+		{2, ID_MOVEZFRONTBY1, 0, BYTE(TBSTYLE_BUTTON)},
+		{3, ID_MOVEZBACKBY1, 0, BYTE(TBSTYLE_BUTTON)},
 	};
 	mToolbar.AddBitmap( 4, IDR_ZTABORDER );
 	mToolbar.SetBitmapSize( CSize( 16, 16 ) );
-	VERIFY(mToolbar.AddButtons( _elements(rTbButtons), rTbButtons ));		
+	VERIFY(mToolbar.AddButtons( _elements(rTbButtons), rTbButtons ));
 	mToolbar.AutoSize();
 	mToolbar.EnableWindow(TRUE);
 	mToolbar.ShowWindow(TRUE);
@@ -109,14 +109,14 @@ void CZOrderPane::OnSize(UINT nType, int cx, int cy)
 void CZOrderPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-  lpTTT->lpszText = MAKEINTRESOURCE(nID);
+  lpTTT->lpszText = MAKEINTRESOURCEW(nID);
   lpTTT->hinst = AfxGetResourceHandle();
 }
 
 void CZOrderPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
-	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-  lpTTT->lpszText = MAKEINTRESOURCE(nID);
+	LPTOOLTIPTEXTA lpTTT = (LPTOOLTIPTEXTA)pNotifyStruct;
+  lpTTT->lpszText = MAKEINTRESOURCEA(nID);
   lpTTT->hinst = AfxGetResourceHandle();
 }
 

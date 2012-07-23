@@ -54,7 +54,6 @@ CDclFormObject::CDclFormObject()
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
-, mnNextId( 10 )
 {
 	m_htiTreeItem = NULL;
 }
@@ -65,7 +64,6 @@ CDclFormObject::CDclFormObject( CProject* pProject, FormType type /*= _FrmInvali
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
-, mnNextId( 10 )
 {
 	m_htiTreeItem = NULL;
 	CreateControlProperties();
@@ -144,7 +142,7 @@ void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /
 		pUndoManager->AddControl( pDclControl );
 	OnModified();
 	if( bAssignNewID || pDclControl->GetID() < 0 )
-		pDclControl->SetID( GetNextId() );
+		pDclControl->SetID( GetUniqueControlId() );
 }
 
 
@@ -318,6 +316,18 @@ UINT_PTR CDclFormObject::GetTitleBarIcon()
 	return (UINT_PTR)pControl->GetLongProperty(Prop::TitleBarIcon);
 }
 
+UINT_PTR CDclFormObject::GetUniqueControlId()
+{
+	UINT_PTR nHighest = 10;
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+	{
+		UINT_PTR nID = (*iter)->GetID();
+		if (nID > nHighest)
+			nHighest = nID;
+	}
+	return nHighest + 1;
+}
+
 //IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
 //{
 //  POSITION pos;	
@@ -458,7 +468,30 @@ void CDclFormObject::Serialize(CArchive& ar)
 		{
 			TDclControlPtr pDclControl = new CDclControlObject( this );
 			pDclControl->Serialize(ar);
-			AddControl( pDclControl );
+
+			//Check for another control with the same ID; assign a new one if there's a collision
+			bool bAssignNewID = false;
+			int nID = pDclControl->GetID();
+			for (TDclControlList::iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter)
+			{
+				if ((*iter)->GetID() == nID)
+				{
+					if (pDclControl->GetType() != CtlSplitter)
+						bAssignNewID = true;
+					else if ((*iter)->GetType() == CtlSplitter)
+						bAssignNewID = true;
+					else
+					{
+						UINT_PTR nNewID = GetUniqueControlId();
+						if (nID == nNewID)
+							++nNewID;
+						(*iter)->SetID( nNewID );
+					}
+					break;
+				}
+			}
+
+			AddControl( pDclControl, bAssignNewID );
 			#ifdef _DIAGNOSTIC
 				if( (GetAsyncKeyState( VK_CONTROL ) & KF_UP) == KF_UP )
 					TraceFmt( _T("< %s\r\n"), pDclControl->toString() );

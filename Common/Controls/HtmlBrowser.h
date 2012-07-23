@@ -34,6 +34,7 @@ public:
 	CString GetHtmlText();
 
 protected:
+	virtual void OnStatusTextChange(LPCTSTR lpszText) {} //eat 'em, else they mess up the AutoCAD status bar
 	virtual void OnAppCmd( LPCTSTR lpszWhere ) {} //override to handle links to "app:mumble...".
 	// override to trap "app:" pseudo protocol
 	virtual void OnBeforeNavigate2( LPCTSTR lpszURL,

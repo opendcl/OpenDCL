@@ -87,8 +87,13 @@ class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCell
 				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
 				if( message == WM_COMMAND )
 				{
-					if( HIWORD(wParam) == CBN_KILLFOCUS )
+					switch( HIWORD(wParam) )
+					{
+					case CBN_KILLFOCUS:
 						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
+					case CBN_CLOSEUP:
+						mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+					}
 				}
 				return lResult;
 			}
@@ -131,6 +136,9 @@ public:
 			}
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
 			SelectPath( sText );
+			SetFocus();
+			if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+				DisplayTree();
 		}
 	virtual ~CDriveComboDropdownListEditCtrl()
 		{
@@ -146,6 +154,8 @@ public:
 
 CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mTipWnd( this )
+, mbTrackingMouse( false )
 , mcColumns( 0 )
 , mbHasRowHeader( pTemplate->GetBooleanProperty( Prop::RowHeader ) )
 , mbHasGridLines( pTemplate->GetBooleanProperty( Prop::GridLines ) )
@@ -192,13 +202,6 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 		BOOL bUnicode = FALSE;
 	#endif
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
-	}
-
-	if( bSuccess )
-	{
-		DWORD dwExStyle = GetExtendedStyle();
-		dwExStyle |= (LVS_EX_LABELTIP /*| LVS_EX_SUBITEMIMAGES*/);
-		SetExtendedStyle( dwExStyle );
 	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
@@ -727,7 +730,7 @@ CRect CGridCtrl::GetCurSelRect()
 	return rcCell;
 }
 
-CRect CGridCtrl::GetCellRect(	int nRow, int nCol, int area /*= LVIR_BOUNDS*/  )
+CRect CGridCtrl::GetCellRect(	int nRow, int nCol, int area /*= LVIR_BOUNDS*/ ) const
 {
 	ASSERT( nRow >= 0 && nRow < GetItemCount() );
 	CRect rcCell;
@@ -738,7 +741,7 @@ CRect CGridCtrl::GetCellRect(	int nRow, int nCol, int area /*= LVIR_BOUNDS*/  )
 			rcCell.right = GetColumnWidth( 0 );
 	}
 	else
-		GetSubItemRect( nRow, nCol, area, rcCell );
+		const_cast<CGridCtrl*>(this)->GetSubItemRect( nRow, nCol, area, rcCell );
 	return rcCell;
 }
 
@@ -969,7 +972,7 @@ void CGridCtrl::SetupColumns()
 
 void CGridCtrl::HideEditControls()
 {
-	if( mpCellEditCtrl )
+	if( mpCellEditCtrl && !mpCellEditCtrl->isInModalLoop() )
 		OnEndEditCurCell();
 }
 
@@ -1089,7 +1092,7 @@ void CGridCtrl::MoveRight()
 	SetCurCell( mCurrentCell.row(), nCol );
 }
 
-bool CGridCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol )
+bool CGridCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol ) const
 {
 	for( int idxRow = GetItemCount() - 1; idxRow >= 0; --idxRow )
 	{
@@ -1150,7 +1153,7 @@ bool CGridCtrl::ToggleCellState( int nRow, int nCol )
 	return true;
 }
 
-void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
+void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize(0, 0)*/, bool bCalcOnly /*= false*/ )
 {
 	Grid::CellStyle nCellStyle = GetEffectiveCellStyle( nRow, nCol );
 	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
@@ -1166,72 +1169,89 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 
 	bool bWordWrap = (rcLabel.Height() >= ((cdc.GetTextExtent( _T(" "), 1 ).cy * 2) + 1));
 
-	COLORREF crBackground = mColorService.GetBackgroundColor();
-	if( !mbAlternateColumnColors )
+	int nCellInflateX = sizCell.cx - rcBounds.Width();
+	if( nCellInflateX > 0 )
 	{
-		if( (nRow % 2) != 0 )
-			crBackground = mclrAlternate;
+		rcBounds.right += nCellInflateX;
+		rcLabel.right += nCellInflateX;
 	}
-	else
+	int nCellInflateY = sizCell.cy - rcBounds.Height();
+	if( nCellInflateY > 0 )
 	{
-		int nStart = mbHasRowHeader? 1 : 0;
-		if( (nCol % 2) != nStart )
-			crBackground = mclrAlternate;
+		rcBounds.bottom += nCellInflateY;
+		rcLabel.bottom += nCellInflateY;
+		rcIcon.bottom += nCellInflateY;
 	}
 
-	//Draw cell background and border
-	if( nCol == 0 && mbHasRowHeader )
+	if( !bCalcOnly )
 	{
-		cdc.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
-		cdc.SetTextColor( ::GetSysColor( COLOR_BTNTEXT ) );
-		CRect rcHeader = rcBounds;
-		HTHEME hTheme = NULL;
-		CThemeHelperST* pTheme = GetThemeHelper();
-		if( pTheme )
-			hTheme = pTheme->OpenThemeData( GetSafeHwnd(), L"HEADER" );
-		if( !hTheme )
-		{			
-			CBrush br( ::GetSysColor( COLOR_BTNFACE ) );
-			cdc.FillRect( &rcHeader, &br );
-			cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
-		}    
-		else
+		COLORREF crBackground = mColorService.GetBackgroundColor();
+		if( !mbAlternateColumnColors )
 		{
-			pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
-			pTheme->CloseThemeData( hTheme );
-			CPen penHighlight( PS_SOLID, 1, ::GetSysColor( COLOR_BTNHIGHLIGHT ) );
-			CPen* pOldPen = cdc.SelectObject( &penHighlight );
-			cdc.MoveTo( rcHeader.left, rcHeader.top );
-			cdc.LineTo( rcHeader.right, rcHeader.top );
-			cdc.SelectObject( pOldPen );
-		}
-		cdc.SetBkColor( crBackground );
-		cdc.SetTextColor( mColorService.GetForegroundColor() ); 
-	}
-	else
-	{
-		if( bHighlight )
-		{
-			CBrush br( ::GetSysColor( COLOR_HIGHLIGHT ) );
-			cdc.FillRect( rcBounds, &br );
-			cdc.SetBkColor( ::GetSysColor( COLOR_HIGHLIGHT ) );
-			cdc.SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
+			if( (nRow % 2) != 0 )
+				crBackground = mclrAlternate;
 		}
 		else
 		{
-			CBrush br( crBackground );
-			cdc.FillRect( rcBounds, &br ); 
+			int nStart = mbHasRowHeader? 1 : 0;
+			if( (nCol % 2) != nStart )
+				crBackground = mclrAlternate;
+		}
+
+		//Draw cell background and border
+		if( nCol == 0 && mbHasRowHeader )
+		{
+			cdc.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
+			cdc.SetTextColor( ::GetSysColor( COLOR_BTNTEXT ) );
+			CRect rcHeader = rcBounds;
+			HTHEME hTheme = NULL;
+			CThemeHelperST* pTheme = GetThemeHelper();
+			if( pTheme )
+				hTheme = pTheme->OpenThemeData( GetSafeHwnd(), L"HEADER" );
+			if( !hTheme )
+			{			
+				CBrush br( ::GetSysColor( COLOR_BTNFACE ) );
+				cdc.FillRect( &rcHeader, &br );
+				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
+			}    
+			else
+			{
+				pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
+				pTheme->CloseThemeData( hTheme );
+				CPen penHighlight( PS_SOLID, 1, ::GetSysColor( COLOR_BTNHIGHLIGHT ) );
+				CPen* pOldPen = cdc.SelectObject( &penHighlight );
+				cdc.MoveTo( rcHeader.left, rcHeader.top );
+				cdc.LineTo( rcHeader.right, rcHeader.top );
+				cdc.SelectObject( pOldPen );
+			}
 			cdc.SetBkColor( crBackground );
 			cdc.SetTextColor( mColorService.GetForegroundColor() ); 
 		}
-		if (mbHasGridLines)
+		else
 		{
-			CPen penBackground( PS_SOLID, 1, ::GetSysColor( COLOR_BTNFACE ) );
-			CPen* pOldPen = cdc.SelectObject( &penBackground );
-			cdc.MoveTo( rcBounds.left, rcBounds.bottom - 1 );
-			cdc.LineTo( rcBounds.right, rcBounds.bottom - 1 );
-			cdc.LineTo( rcBounds.right, rcBounds.top );
-			cdc.SelectObject( pOldPen );
+			if( bHighlight )
+			{
+				CBrush br( ::GetSysColor( COLOR_HIGHLIGHT ) );
+				cdc.FillRect( rcBounds, &br );
+				cdc.SetBkColor( ::GetSysColor( COLOR_HIGHLIGHT ) );
+				cdc.SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
+			}
+			else
+			{
+				CBrush br( crBackground );
+				cdc.FillRect( rcBounds, &br ); 
+				cdc.SetBkColor( crBackground );
+				cdc.SetTextColor( mColorService.GetForegroundColor() ); 
+			}
+			if (mbHasGridLines)
+			{
+				CPen penBackground( PS_SOLID, 1, ::GetSysColor( COLOR_BTNFACE ) );
+				CPen* pOldPen = cdc.SelectObject( &penBackground );
+				cdc.MoveTo( rcBounds.left, rcBounds.bottom - 1 );
+				cdc.LineTo( rcBounds.right, rcBounds.bottom - 1 );
+				cdc.LineTo( rcBounds.right, rcBounds.top );
+				cdc.SelectObject( pOldPen );
+			}
 		}
 	}
 
@@ -1246,8 +1266,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon.bottom = rcIcon.top + 14;
 			if( sLabel.IsEmpty() )
 				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
-			bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
-			DrawCheckBox( cdc, rcIcon, bChecked, bHighlight );
+			if( !bCalcOnly )
+			{
+				bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
+				DrawCheckBox( cdc, rcIcon, bChecked, bHighlight );
+			}
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1258,8 +1281,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon.bottom = rcIcon.top + 14;
 			if( sLabel.IsEmpty() )
 				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
-			bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
-			DrawOptionButton( cdc, rcIcon, bChecked, bHighlight );
+			if( !bCalcOnly )
+			{
+				bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
+				DrawOptionButton( cdc, rcIcon, bChecked, bHighlight );
+			}
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1268,8 +1294,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );
-			DrawArrow( cdc, rcIcon, nCellImage, sLabel );
+			if( !bCalcOnly )
+			{
+				int nCellImage = GetCellImage( nRow, nCol );
+				DrawArrow( cdc, rcIcon, nCellImage, sLabel );
+			}
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1278,8 +1307,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );
-			DrawColor( cdc, rcIcon, nCellImage, sLabel );
+			if( !bCalcOnly )
+			{
+				int nCellImage = GetCellImage( nRow, nCol );
+				DrawColor( cdc, rcIcon, nCellImage, sLabel );
+			}
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1288,8 +1320,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nFontImage = (GetCellText( nRow, nCol ).Right( 4 ) == _T(".shx")? 1 : 0);
-			DrawFontIcons( cdc, rcIcon, nFontImage, sLabel );
+			if( !bCalcOnly )
+			{
+				int nFontImage = (GetCellText( nRow, nCol ).Right( 4 ) == _T(".shx")? 1 : 0);
+				DrawFontIcons( cdc, rcIcon, nFontImage, sLabel );
+			}
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1299,8 +1334,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );
-			DrawColor( cdc, rcIcon, nCellImage, sLabel );
+			if( !bCalcOnly )
+			{
+				int nCellImage = GetCellImage( nRow, nCol );
+				DrawColor( cdc, rcIcon, nCellImage, sLabel );
+			}
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1309,8 +1347,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 48;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );;
-			DrawLineWeight( cdc, rcIcon, nCellImage, sLabel );
+			if( !bCalcOnly )
+			{
+				int nCellImage = GetCellImage( nRow, nCol );;
+				DrawLineWeight( cdc, rcIcon, nCellImage, sLabel );
+			}
 			rcLabel.left = rcIcon.right + 1; //shift label rect to leave space for image
 		}
 		break;
@@ -1337,9 +1378,12 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 					rcIcon.bottom = rcIcon.top + inf.rcImage.bottom - inf.rcImage.top;
 					if( sLabel.IsEmpty() )
 						rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - rcIcon.Width()) / 2 ); //center the icon in an empty cell
-					pImageList->Draw( &cdc,
-														nCellImage, CPoint( rcIcon.left + 1, rcIcon.top + 1 ),
-														(bHighlight? ILD_BLEND50 : 0) | ILD_TRANSPARENT | (lvi.state & LVIS_OVERLAYMASK) ); 
+					if( !bCalcOnly )
+					{
+						pImageList->Draw( &cdc,
+															nCellImage, CPoint( rcIcon.left + 1, rcIcon.top + 1 ),
+															(bHighlight? ILD_BLEND50 : 0) | ILD_TRANSPARENT | (lvi.state & LVIS_OVERLAYMASK) );
+					}
 				}
 				rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 			}
@@ -1354,7 +1398,9 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 		rcLabel.top += 4;
 		rcLabel.left += 4;
 		cdc.SetBkMode( TRANSPARENT );
-		UINT fWordBreak = (bWordWrap? DT_WORDBREAK : (DT_SINGLELINE | DT_END_ELLIPSIS));
+		UINT fWordBreak = (bWordWrap? DT_WORDBREAK : DT_SINGLELINE);
+		if( !bCalcOnly )
+			fWordBreak |= DT_END_ELLIPSIS;
 		if( nCellStyle == Grid::Password )
 		{
 			int cchLabel = sLabel.GetLength();
@@ -1366,16 +1412,11 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 		const PropVal::TIntArray* pColAlignments = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();
 		if( pColAlignments && nCol >= 0 && (size_t)nCol < pColAlignments->size() )
 			fAlignment |= pColAlignments->at( nCol );
-		cdc.DrawText( sLabel, -1, &rcLabel, (DT_NOPREFIX | DT_NOCLIP | fAlignment | fWordBreak) );
+		UINT fCalcRect = (bCalcOnly? DT_CALCRECT : 0);
+		cdc.DrawText( sLabel, -1, &rcLabel, (DT_NOPREFIX | DT_NOCLIP | fAlignment | fWordBreak | fCalcRect) );
+		rcBounds.UnionRect( &rcBounds, &rcLabel );
 	}
-
-	//Draw focus rect if cell is current cell
-	if( mCurrentCell.row() == nRow && mCurrentCell.col() == nCol )
-	{
-		CRect rcFocus = rcBounds;
-		rcFocus.DeflateRect( 1, 1 );
-		cdc.DrawFocusRect( &rcFocus );
-	}
+	sizCell.SetSize( rcBounds.Width(), rcBounds.Height() );
 }
 
 void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight )
@@ -1837,6 +1878,11 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_GETDLGCODE()
 	ON_WM_ERASEBKGND()
 	ON_WM_KILLFOCUS()
+	ON_WM_DESTROY()
+	ON_WM_CANCELMODE()
+	ON_WM_MOUSEMOVE()
+	ON_MESSAGE(WM_MOUSELEAVE, &CGridCtrl::OnMouseLeave)   
+	ON_MESSAGE(WM_MOUSEHOVER, &CGridCtrl::OnMouseHover)   
 END_MESSAGE_MAP()
 
 
@@ -1862,7 +1908,16 @@ void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		CRect rcClip;
 		pDC->GetClipBox( &rcClip );
 		pDC->IntersectClipRect( &rectCell );
-		DrawCell( nRow, nCol, rectCell, *pDC );
+		DrawCell( nRow, nCol, *pDC );
+
+		//Draw focus rect if cell is current cell
+		if( mCurrentCell.row() == nRow && mCurrentCell.col() == nCol )
+		{
+			CRect rcFocus = GetCellRect( nRow, nCol, LVIR_BOUNDS );
+			rcFocus.DeflateRect( 1, 1 );
+			pDC->DrawFocusRect( &rcFocus );
+		}
+
 		pDC->SelectClipRgn( NULL );
 	}
 
@@ -1886,6 +1941,11 @@ void CGridCtrl::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp
 BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
+	if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST )
+	{
+		if( pMsg->message != WM_MOUSEMOVE )
+			mTipWnd.Hide();
+	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
@@ -1932,8 +1992,11 @@ void CGridCtrl::PostNcDestroy()
 
 BOOL CGridCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 {
+	ASSERT(pResult != NULL);
+	NMHDR* pNMHDR = (NMHDR*)lParam;
+	int nCode = pNMHDR->code;
 	BOOL bResult = __super::OnNotify(wParam, lParam, pResult);
-	if( ((NMHDR*)lParam)->code == NM_KILLFOCUS )
+	if( nCode == NM_KILLFOCUS )
 		PostMessage( refWM_CHECKFOCUS(), 0, 0 );
 	return bResult;
 }
@@ -1978,6 +2041,8 @@ LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 		CWnd* pFocusParent = pFocusWnd->GetParent();
 		if( pFocusParent == GetControlPane()->GetHostDialog() && (pFocusWnd->GetStyle() & WS_POPUP) == WS_POPUP )
 			return 0; //CDateTimeCtrl popup window in WinXP is a popup owned by the host dialog
+		while( pFocusParent && pFocusParent != this )
+			pFocusParent = pFocusParent->GetParent();
 		if( pFocusParent != this )
 			HideEditControls();
 	}
@@ -1999,4 +2064,55 @@ UINT CGridCtrl::OnGetDlgCode()
 			!mpTemplate->GetStringProperty( Prop::EventKeyUp ).IsEmpty() )
 		nResult |= DLGC_WANTALLKEYS;
 	return nResult;
+}
+
+void CGridCtrl::OnDestroy()
+{
+	HideEditControls();
+	__super::OnDestroy();
+}
+
+void CGridCtrl::OnCancelMode()
+{
+	__super::OnCancelMode();
+	HideEditControls();
+}
+
+void CGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
+{
+	__super::OnMouseMove(nFlags, point);
+
+	if( !mbTrackingMouse )
+	{
+		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_HOVER | TME_LEAVE, m_hWnd, 0 };
+		if( _TrackMouseEvent( &tm ) )
+			mbTrackingMouse = true;
+	}
+	mTipWnd.Track( point );
+}
+
+LRESULT CGridCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
+{
+	if( mbTrackingMouse )
+		mTipWnd.Hide();
+	mbTrackingMouse = false;
+	return FALSE;
+}
+
+LRESULT CGridCtrl::OnMouseHover(WPARAM wParam, LPARAM lParam) 
+{
+	mbTrackingMouse = false;
+	if( wParam != 0 )
+		mTipWnd.Hide();
+	else
+	{
+		CPoint ptHover( lParam );
+		int nRow = -1;
+		int nCol = -1;
+		if( CellHitTest( ptHover, nRow, nCol ) )
+			mTipWnd.Show( nRow, nCol );
+		else
+			mTipWnd.Hide();
+	}
+	return FALSE;
 }

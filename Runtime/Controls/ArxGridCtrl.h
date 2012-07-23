@@ -43,7 +43,7 @@ protected:
 	virtual void OnEditCurCell();
 	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
 	virtual void OnEndEditCurCell();
-	virtual void DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc );
+	virtual void DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell = CSize(0, 0), bool bCalcOnly = false );
 	virtual void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
 
 protected:

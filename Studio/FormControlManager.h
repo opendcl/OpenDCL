@@ -9,6 +9,12 @@
 
 class CStudioDialogObject;
 
+#if (_MFC_VER < 0x0800)
+#define __UINT_LRESULT UINT
+#else
+#define __UINT_LRESULT LRESULT
+#endif
+
 
 class CFormControlManager : public CControlManager, public COleDataSource, public CRectTracker
 {

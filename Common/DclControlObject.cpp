@@ -313,7 +313,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 		if (nThisVersion >= 6)
 			ar >> mnID;
 		else if( mpOwner )
-			mnID = mpOwner->GetNextId();
+			mnID = mpOwner->GetUniqueControlId();
 		if( mType == CtlSplitter )
 		{
 			assert( mnID > 2 ); //illegal splitter ID

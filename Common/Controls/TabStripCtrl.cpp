@@ -268,6 +268,8 @@ void CTabStripCtrl::OnUsedAreaChanged()
 	const TProjectPtr pProject = mpTemplate->GetOwnerProject();
 	TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
 	CRect rcControlArea = GetUsedArea();
+	long lNewLeft = rcControlArea.left;
+	long lNewTop = rcControlArea.top;
 	long lNewWidth = rcControlArea.Width();
 	long lNewHeight = rcControlArea.Height();
 	for( size_t idxTab = pTabsProp->size(); idxTab > 0; --idxTab )
@@ -278,6 +280,12 @@ void CTabStripCtrl::OnUsedAreaChanged()
 		bool bChanged = false;
 		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
 		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
+		if( pDlgObject )
+		{
+			CRect rcPage = pDlgObject->GetEffectiveWindowRect();
+			if( lNewLeft != rcPage.left || lNewTop != rcPage.top )
+				pDlgObject->MoveDialog( lNewLeft, lNewTop );
+		}
 		if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
 		{
 			bChanged = true;

@@ -62,6 +62,8 @@ public:
 protected:
 	int GetCurrentSubItem() const { return mnEditSubItem; }
 	virtual bool HasSubItemImages() const { return true; }
+	bool CellHitTest( const CPoint& point, int& nRow, int& nCol ) const;
+	CRect GetCellRect( int nRow, int nCol, int area = LVIR_BOUNDS ) const;
 
 // Implementation
 public:
@@ -82,10 +84,10 @@ protected:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void PostNcDestroy();
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);

@@ -139,6 +139,7 @@
     <None Include="res\ClosedFolder.ico" />
     <None Include="res\ComboBox.ico" />
     <None Include="Res\ControlBar.ico" />
+    <None Include="res\ControlBrowser.ico" />
     <None Include="res\DropDown.ico" />
     <None Include="res\DwgList.ico" />
     <None Include="res\dwgpreview.ico" />
@@ -157,6 +158,7 @@
     <None Include="..\..\..\Common\DEU\Res\Folder.ico" />
     <None Include="..\..\..\Common\Res\Folder.ico" />
     <None Include="res\Font.bmp" />
+    <None Include="res\FormEditor.ico" />
     <None Include="res\Frame.ico" />
     <None Include="res\geometry.bmp" />
     <None Include="res\GraphicButton.ico" />

@@ -159,23 +159,43 @@ public:
 template< typename TAcUiBase, DWORD _Style = 0, DWORD _AcUiStyle = (DWORD)-1 >
 class CAcUiComboEditCtrl : public TAcUiBase, public CGridCellEditCtrl
 {
+	bool mbInModalLoop;
+#pragma warning (push)
+#pragma warning (disable: 4371)
 	class CClippingWnd : public CStatic
 	{
-		CGridCtrl* mpGridCtrl;
+		CAcUiComboEditCtrl* mpEditCtrl;
+		typedef void (CAcUiComboEditCtrl::* F_onShowDropdown)(bool bShow);
+		F_onShowDropdown mpfShowDropdownHandler;
 	public:
-		CClippingWnd( CGridCtrl* pGridCtrl ) : mpGridCtrl( pGridCtrl ) {}
+		CClippingWnd( CAcUiComboEditCtrl* pEditCtrl, F_onShowDropdown pfShowDropdownHandler)
+			: mpEditCtrl( pEditCtrl )
+			, mpfShowDropdownHandler( pfShowDropdownHandler )
+			{}
 	protected:
 		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
 				if( message == WM_COMMAND )
 				{
-					if( HIWORD(wParam) == CBN_KILLFOCUS )
-						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
+					switch( HIWORD(wParam) )
+					{
+					case CBN_KILLFOCUS:
+						return mpEditCtrl->host()->SendMessage( WM_COMMAND, wParam, lParam );
+					case CBN_DROPDOWN:
+						if (mpfShowDropdownHandler )
+							(mpEditCtrl->*mpfShowDropdownHandler)( true );
+						break;;
+					case CBN_CLOSEUP:
+						if (mpfShowDropdownHandler )
+							(mpEditCtrl->*mpfShowDropdownHandler)( false );
+						break;;
+					}
 				}
 				return lResult;
 			}
 	} mClippingWnd;
+#pragma warning (pop)
 	static CRect CalcRect( const CRect& rcCell )
 		{
 			return CRect( rcCell.left, rcCell.top, rcCell.right, rcCell.top + 120 );
@@ -186,7 +206,8 @@ public:
 	CAcUiComboEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, UINT nID = 100 )
 		: TAcUiBase()
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
-		, mClippingWnd( pGridCtrl )
+		, mbInModalLoop( false )
+		, mClippingWnd( this, &CAcUiComboEditCtrl::onShowDropdown )
 		{
 			CAcUiComboHelper< TAcUiBase >::Init( this );
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
@@ -241,6 +262,8 @@ public:
 			CAcUiComboHelper< TAcUiBase >::SetCurSelFromValue( this, pGridCtrl->GetCellImage( nRow, nCol ), sText );
 			mClippingWnd.ShowWindow( SW_SHOW );
 			SetFocus();
+			if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+				ShowDropDown();
 		}
 	virtual ~CAcUiComboEditCtrl()
 		{
@@ -249,6 +272,22 @@ public:
 			ConvertData( sText );
 			mpGridCtrl->SetCellTextImage( mnRow, mnCol, sText, CAcUiComboHelper< TAcUiBase >::GetCellValue( this ) );
 			mClippingWnd.DestroyWindow();
+		}
+	__if_exists(TAcUiBase::OnSelectOther)
+	{
+	virtual BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel )
+	{
+		mbInModalLoop = true;
+		BOOL bResult = __super::OnSelectOther( isOther2, curSel, newSel );
+		mbInModalLoop = false;
+		return bResult;
+	}
+	}
+	virtual bool isInModalLoop() { return mbInModalLoop; }
+	void onShowDropdown( bool bShow )
+		{
+			if( !bShow && (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+				mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 		}
 };
 
@@ -781,9 +820,9 @@ void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CArxGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
+void CArxGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize(0, 0)*/, bool bCalcOnly /*= false*/ )
 {
-	__super::DrawCell( nRow, nCol, rectCell, cdc );
+	__super::DrawCell( nRow, nCol, cdc, sizCell, bCalcOnly );
 }
 
 void CArxGridCtrl::OnKillFocus(CWnd* pNewWnd)

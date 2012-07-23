@@ -15,23 +15,7 @@
 class CImageComboEditCtrlBase : public CFilteredComboExCtrl, public CGridCellEditCtrl
 {
 	CComboHandler* mpHandler;
-	class CClippingWnd : public CStatic
-	{
-		CGridCtrl* mpGridCtrl;
-	public:
-		CClippingWnd( CGridCtrl* pGridCtrl ) : mpGridCtrl( pGridCtrl ) {}
-	protected:
-		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-			{
-				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
-				if( message == WM_COMMAND )
-				{
-					if( HIWORD(wParam) == CBN_KILLFOCUS )
-						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
-				}
-				return lResult;
-			}
-	} mClippingWnd;
+	CStatic mClippingWnd;
 	std::vector< tstring > mrsComboList;
 	static CRect CalcRect( const CRect& rcCell )
 		{
@@ -42,7 +26,7 @@ public:
 		: CFilteredComboExCtrl( NULL )
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		, mpHandler( pHandler )
-		, mClippingWnd( pGridCtrl )
+		, mClippingWnd()
 		{
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
 			rcCell.DeflateRect( 2, 2 );
@@ -114,6 +98,8 @@ public:
 			if( idxMatch >= 0 )
 				SetCurSel( idxMatch );
 			SetFocus();
+			if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+				ShowDropDown();
 		}
 	virtual ~CImageComboEditCtrlBase()
 		{
@@ -159,6 +145,8 @@ protected:
 			static const AFX_MSGMAP_ENTRY _messageEntries[] =
 			{
 				ON_WM_MEASUREITEM_REFLECT()
+				ON_CONTROL_REFLECT(CBN_KILLFOCUS, &CImageComboEditCtrlBase::OnKillFocus)
+				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboEditCtrlBase::OnCloseUp)
 				{0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 },
 			};
 			static const AFX_MSGMAP messageMap =  { &__super::GetThisMessageMap, &_messageEntries[0] };
@@ -183,6 +171,15 @@ protected:
 			UINT nItemHeight = mpHandler->GetItemHeight();
 			if( nItemHeight > 0 )
 				lpMeasureItemStruct->itemHeight = nItemHeight;
+		}
+	afx_msg void OnKillFocus()
+		{
+			mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
+		}
+	afx_msg void OnCloseUp()
+		{
+			if( GetFocus() == GetComboBoxCtrl() && (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+				mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 		}
 };
 

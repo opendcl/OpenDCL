@@ -198,7 +198,6 @@
     <ClInclude Include="PreviewFileDlg.h" />
     <ClInclude Include="ProgressBarPage.h" />
     <ClInclude Include="ProgressTimeToComplete.h" />
-    <ClInclude Include="ProjectBar.h" />
     <ClInclude Include="ProjectPane.h" />
     <ClInclude Include="ProjectPasswordDlg.h" />
     <ClInclude Include="PropEnumNames.h" />
@@ -398,7 +397,6 @@
     <ClCompile Include="PreviewFileDlg.cpp" />
     <ClCompile Include="ProgressBarPage.cpp" />
     <ClCompile Include="ProgressTimeToComplete.cpp" />
-    <ClCompile Include="ProjectBar.cpp" />
     <ClCompile Include="ProjectPane.cpp" />
     <ClCompile Include="ProjectPasswordDlg.cpp" />
     <ClCompile Include="PropEnumNames.cpp" />

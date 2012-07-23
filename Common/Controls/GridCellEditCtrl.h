@@ -20,4 +20,7 @@ public:
 		: mpGridCtrl( pGridCtrl ), mnRow( nRow ), mnCol( nCol )
 		{}
 	virtual ~CGridCellEditCtrl() {}
+	virtual bool isInModalLoop() { return false; }
+protected:
+	CGridCtrl* host() const { return mpGridCtrl; }
 };

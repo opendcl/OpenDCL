@@ -23,7 +23,6 @@ protected:
 	TProjectLockedPtr mpProject;
 	TDclControlList mDclControls;
 	FormType mType;
-	UINT_PTR mnNextId;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 
 	//for managing tab hierarchy and order
@@ -110,7 +109,7 @@ public:
 	void SetTabIndex( short nIndex );
 	LPCTSTR GetTitleText() const;
 	UINT_PTR GetTitleBarIcon();
-	UINT_PTR GetNextId() { if( mnNextId < mDclControls.size() ) mnNextId = mDclControls.size(); return mnNextId++; }
+	UINT_PTR GetUniqueControlId();
 public:
 	static size_t GetCurrentControlIndex( TDclControlPtr pDclControl );
 

@@ -76,10 +76,9 @@ END_MESSAGE_MAP()
 
 BOOL CModalDlg::OnInitDialog() 
 {
-	return __super::OnInitDialog();
+	__super::OnInitDialog();
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
+	return TRUE; //return TRUE so the dialog manager does its own control focus work
 }
 
 int CModalDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 

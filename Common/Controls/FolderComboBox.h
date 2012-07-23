@@ -30,9 +30,12 @@ public:
 	void SetDroppedWidth(int width);
 	int GetDroppedWidth2();
 	int GetDroppedHeight();
+	void ShowDropDown(BOOL bShowIt = TRUE);
 	void DisplayTree();
 	CString GetSelectedPathDisplayName();
 	CString GetSelectedPath();
+	CString GetItemDisplayName(HTREEITEM item);
+	CString GetItemPath(HTREEITEM item);
 	bool SelectPath( LPCTSTR pszPath );
 	bool SelectFolder( LPCTSTR pszFolderName );
 	void AddPath( LPCTSTR pszPath );
@@ -44,6 +47,7 @@ protected:
 protected:
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg LRESULT OnSelchange( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnCbDir( WPARAM wParam, LPARAM lParam );

@@ -6,15 +6,6 @@
 #include "BaseDlg.h"
 
 
-#ifndef WM_ACAD_MFC_BASE
-#define WM_ACAD_MFC_BASE        (1000)
-#endif
-
-#ifndef WM_ACAD_KEEPFOCUS
-#define WM_ACAD_KEEPFOCUS       (WM_ACAD_MFC_BASE + 1)
-#endif
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CModelessDlg dialog
 

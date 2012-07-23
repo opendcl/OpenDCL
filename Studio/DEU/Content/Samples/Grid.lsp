@@ -322,7 +322,7 @@ Argumente: nRow: "         (itoa nRow)
 						   (itoa nCol)
 				   )
 	)
-	(dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue)
+	(if GRID_Dcl-1_GridStatus (dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue))
 )
 
 

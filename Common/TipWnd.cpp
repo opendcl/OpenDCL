@@ -5,23 +5,23 @@
 #include "TipWnd.h"
 
 
-#define FONT_HEIGHT -18
-
-//////////////////////////////////////////////////////////////////////////
-// © Paramax Technology Limited                                         // 
-// ----------------------------                                         //
-//                                                                      //
-// The author accepts no liablility for injury or loss of profits       // 
-// if this software is used. You willingness to use this software       //
-// indicates you accept total liability                                 //
-//                                                                      // 
-//////////////////////////////////////////////////////////////////////////
+#ifndef CS_DROPSHADOW
+#define CS_DROPSHADOW       0x00020000
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTipWnd
 
 CTipWnd::CTipWnd()
+: mclrForeground( GetSysColor( COLOR_INFOTEXT ) )
+, mclrBackground( GetSysColor( COLOR_INFOBK ) )
+{
+}
+
+CTipWnd::CTipWnd(COLORREF clrForeground, COLORREF clrBackground)
+: mclrForeground( clrForeground )
+, mclrBackground( clrBackground )
 {
 }
 
@@ -29,146 +29,109 @@ CTipWnd::~CTipWnd()
 {
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// FUNCTION:	CTipWnd::Create
-//
-// DESCRIPTION:	Creates tip window based on Parent window
-//
-// INPUTS:		
-//
-// RETURNS:     
-//
-// NOTES:       
-//
-// MODIFICATIONS:
-//
-// Name			Date      Version	Comments
-// N T ALMOND   25/09/98  1.0		Origin
-//
-////////////////////////////////////////////////////////////////////////////////
-BOOL CTipWnd::Create(CWnd* pParent)
+BOOL CTipWnd::Create( CWnd* pParentWnd ) 
 {
+	HWND hwndParent = pParentWnd? pParentWnd->m_hWnd : ::GetDesktopWindow();
+	DWORD dwStyle = (WS_BORDER | WS_POPUP);
+	DWORD dwExStyle = (WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW);
+	BOOL bSuccess = CreateEx( dwExStyle, AfxRegisterWndClass( CS_DROPSHADOW ), NULL, dwStyle, 0, 0, 0, 0, hwndParent, NULL );
+	if( !bSuccess )
+		return FALSE;
 
-	return 	CWnd::CreateEx(0,
-		AfxRegisterWndClass(0),
-		NULL,
-		WS_BORDER|WS_POPUP,
-		0,
-		0,0,0,
-		pParent->m_hWnd,
-		(HMENU)0);
+	LOGFONT lfDefault;
+	::GetObject( (HFONT)GetStockObject( DEFAULT_GUI_FONT ), sizeof(lfDefault), &lfDefault );
+	mFont.CreateFontIndirect( &lfDefault );
 
+	return TRUE;
+}
+
+void CTipWnd::Show(const CPoint& ptTip, const CSize& szTip)
+{
+	CRect rcWindow;
+	GetWindowRect( &rcWindow );
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	int nDeltaX = rcWindow.Width() - rcClient.Width();
+	int nDeltaY = rcWindow.Height() - rcClient.Height();
+	CPoint ptWindowOrg( ptTip );
+	ScreenToClient( &rcWindow );
+	ptWindowOrg.Offset( rcWindow.left, rcWindow.top );
+	SetWindowPos( NULL, ptWindowOrg.x, ptWindowOrg.y, szTip.cx + nDeltaX, szTip.cy + nDeltaY, SWP_SHOWWINDOW | SWP_NOACTIVATE );
+}
+
+void CTipWnd::Show()
+{
+	ShowWindow( SW_SHOWNA );
+}
+
+void CTipWnd::Hide()
+{
+	ShowWindow( SW_HIDE );
+}
+
+void CTipWnd::Paint(CDC* pDC)
+{
+	//paint background
+	CRect rcClip;
+	pDC->GetClipBox( &rcClip );
+	CBrush brBackground( mclrBackground );
+	CBrush* pOldBrush = pDC->SelectObject( &brBackground );
+	pDC->PatBlt( rcClip.left, rcClip.top, rcClip.Width(), rcClip.Height(), PATCOPY );
+	pDC->SelectObject( pOldBrush );
+
+	//paint foreeground
+	CString sText;
+	GetWindowText( sText );
+	CFont* pOldFont = pDC->SelectObject( &mFont );
+	CRect rcTip;
+	GetClientRect( &rcTip );
+	pDC->SetBkMode( TRANSPARENT );
+	pDC->SetTextColor( mclrForeground );
+	pDC->DrawText( sText, &rcTip, DT_SINGLELINE | DT_VCENTER | DT_CENTER );
+	pDC->SelectObject( pOldFont );
 }
 
 
 BEGIN_MESSAGE_MAP(CTipWnd, CWnd)
-	//{{AFX_MSG_MAP(CTipWnd)
+	ON_MESSAGE(WM_GETFONT, &CTipWnd::OnGetFont)
+	ON_MESSAGE(WM_SETFONT, &CTipWnd::OnSetFont)
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
+	ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTipWnd message handlers
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// FUNCTION:	CTipWnd::OnEraseBkgnd
-//
-// DESCRIPTION:	Called to paint background in infowindow color
-//
-// INPUTS:		
-//
-// RETURNS:     
-//
-// NOTES:       
-//
-// MODIFICATIONS:
-//
-// Name			Date      Version	Comments
-// N T ALMOND   25/09/98  1.0		Origin
-//
-////////////////////////////////////////////////////////////////////////////////
+LRESULT CTipWnd::OnGetFont(WPARAM wParam, LPARAM lParam)
+{
+	return (LRESULT)mFont.m_hObject;
+}
+
+LRESULT CTipWnd::OnSetFont(WPARAM wParam, LPARAM lParam)
+{
+	LOGFONT lf = { NULL };
+	CFont::FromHandle( (HFONT)wParam )->GetLogFont( &lf );
+	mFont.DeleteObject();
+	mFont.CreateFontIndirect(&lf);
+	if( LOWORD(lParam) )
+		RedrawWindow();
+	return 0;
+}
+
 BOOL CTipWnd::OnEraseBkgnd(CDC* pDC) 
 {
-	CBrush br(GetSysColor(COLOR_INFOBK));
-	CRect rc;
-	pDC->GetClipBox(rc);
-	CBrush* pOldBrush = pDC->SelectObject(&br);
-	pDC->PatBlt(rc.left,rc.top,rc.Width(),rc.Height(),PATCOPY);
-	pDC->SelectObject(pOldBrush);
-	br.DeleteObject();
 	return TRUE;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// FUNCTION:	CTipWnd::ShowTips
-//
-// DESCRIPTION:	Shows tip window 
-//
-// INPUTS:		
-//
-// RETURNS:     
-//
-// NOTES:       
-//
-// MODIFICATIONS:
-//
-// Name			Date      Version	Comments
-// N T ALMOND   25/09/98  1.0		Origin
-//
-////////////////////////////////////////////////////////////////////////////////
-void CTipWnd::ShowTips(CPoint pt,const CString& str)
-{
-	// Create new font if the selection has changed
-	if (m_strFont != str)
-	{
-		m_strFont = str;
-
-		LOGFONT lf;
-		ZeroMemory(&lf,sizeof(lf));
-
-		lf.lfHeight = FONT_HEIGHT;
-		_tcscpy(lf.lfFaceName,m_strFont);
-		
-		// Delete old font
-		m_font.DeleteObject();
-		m_font.CreateFontIndirect(&lf);
-		
-		CDC* pDC = GetDC();
-		CFont* pFont = pDC->SelectObject(&m_font);
-
-		// String demensions of font on screen 
-		CSize sz = pDC->GetTextExtent(m_strFont);
-
-		// Give some space round the font
-		sz.cx += 8;
-		sz.cy += 8;
-
-		pDC->SelectObject(pFont);
-		ReleaseDC(pDC);
-
-		SetWindowPos(0,pt.x,pt.y,sz.cx,sz.cy,SWP_SHOWWINDOW|SWP_NOACTIVATE);
-		RedrawWindow(); // Force immediate redraw
-	}
-}
-
-
-
 void CTipWnd::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
-	
-	dc.SelectObject(&m_font);
-	CRect rc;
-	GetClientRect(rc);
-	dc.SetBkMode(TRANSPARENT); // Add
-	dc.SetTextColor(GetSysColor(COLOR_INFOTEXT));  // Add
-	dc.DrawText(m_strFont,rc,DT_SINGLELINE|DT_VCENTER|DT_CENTER);
-	// Do not call CWnd::OnPaint() for painting messages
+	CPaintDC dc(this);
+	Paint( &dc );
+}
 
-
+__UINT_LRESULT CTipWnd::OnNcHitTest(CPoint point)
+{
+	return HTTRANSPARENT;
 }

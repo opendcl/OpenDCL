@@ -5,6 +5,7 @@
 
 #include "DialogControl.h"
 #include "AcadColorService.h"
+#include "TipWnd.h"
 #include <string>
 #include <locale>
 
@@ -133,6 +134,69 @@ struct _RowData
 class CGridCtrl : public CListCtrl, public CDialogControl
 {
 	CAcadColorService mColorService;
+	class CGridTipWnd : public CTipWnd
+	{
+		CGridCtrl* mpGridCtl;
+		int mnRow;
+		int mnCol;
+	public:
+		CGridTipWnd( CGridCtrl* pGridCtl ) : mpGridCtl( pGridCtl ), mnRow( -1 ), mnCol( -1 ) {}
+		void Track(const CPoint& point)
+		{
+			if( IsWindowVisible() )
+			{
+				int nRow = -1;
+				int nCol = -1;
+				if( !mpGridCtl->CellHitTest( point, nRow, nCol ) )
+					Hide();
+				else if( nRow != mnRow || nCol != mnCol )
+					Hide();
+			}
+		}
+		void Show(int nRow, int nCol)
+		{
+			if( IsWindowVisible() && mnRow == nRow && mnCol == nCol )
+				return;
+			mnRow = nRow;
+			mnCol = nCol;
+			CRect rcCell = mpGridCtl->GetCellRect( nRow, nCol, LVIR_BOUNDS );
+			CDC* pDC = mpGridCtl->GetDC();
+			CFont* pFont = mpGridCtl->GetFont();
+			CFont* pOldFont = pDC->SelectObject( pFont );
+			CSize sizCell = rcCell.Size();
+			mpGridCtl->DrawCell( mnRow, mnCol, *pDC, sizCell, true );
+			pDC->SelectObject( pOldFont );
+			mpGridCtl->ReleaseDC( pDC );
+			if( rcCell.Width() < sizCell.cx || rcCell.Height() < sizCell.cy )
+			{
+				if( !m_hWnd )
+					Create( NULL );
+				SetFont( pFont );
+				CString sLabel = mpGridCtl->GetCellText( nRow, nCol );
+				SetWindowText( sLabel );
+				mpGridCtl->ClientToScreen( &rcCell );
+				if( rcCell.Width() < sizCell.cx )
+					sizCell.cx += 4;
+				else
+					sizCell.cy += 4;
+				CTipWnd::Show( rcCell.TopLeft(), sizCell );
+			}
+		}
+	protected:
+		void Paint(CDC* pDC)
+		{
+			CRect rcTip;
+			GetClientRect( &rcTip );
+			CRect rcCell = mpGridCtl->GetCellRect( mnRow, mnCol );
+			CPoint ptOldOrg = pDC->GetWindowOrg();
+			pDC->SetWindowOrg( rcCell.TopLeft() );
+			CFont* pOldFont = pDC->SelectObject( GetFont() );
+			mpGridCtl->DrawCell( mnRow, mnCol, *pDC, rcTip.Size() );
+			pDC->SelectObject( pOldFont );
+			pDC->SetWindowOrg( ptOldOrg );
+		}
+	} mTipWnd;
+	bool mbTrackingMouse;
 	ULONG mcColumns;
 	bool mbHasRowHeader;
 	bool mbHasGridLines;
@@ -191,7 +255,7 @@ public:
 	CString GetCurCellText() const;
 	void SetCurCellText( LPCTSTR pszText );
 	bool SetCellText( int nRow, int nCol, LPCTSTR pszText );
-	CRect GetCellRect( int nRow, int nCol, int area = LVIR_BOUNDS );
+	CRect GetCellRect( int nRow, int nCol, int area = LVIR_BOUNDS ) const;
 	void SetCellImages( int nRow, int nCol, int nImage, int nAltImage = -2 );
 	void SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage );
 	int GetCellImage( int nRow, int nCol );
@@ -205,7 +269,7 @@ public:
 	bool GetCellComboListItems( int nRow, int nCol, std::vector< tstring >& rsList, std::vector< int >& ridxImage );
 	UINT GetCellState( int nRow, int nCol );
 	bool ToggleCellState( int nRow, int nCol );
-	bool CellHitTest( const CPoint& point, int& nRow, int& nCol );
+	bool CellHitTest( const CPoint& point, int& nRow, int& nCol ) const;
 	void HideEditControls();
 	bool EditCurCell() { OnEditCurCell(); return true; }
 	bool CancelEditing() { HideEditControls(); return true; }
@@ -247,7 +311,7 @@ protected:
 	virtual void OnEditCurCell();
 	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
 	virtual void OnEndEditCurCell();
-	virtual void DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc );
+	virtual void DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell = CSize(0, 0), bool bCalcOnly = false );
 
 // Operations
 protected:
@@ -283,4 +347,9 @@ protected:
 	afx_msg UINT OnGetDlgCode();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnDestroy();
+	afx_msg void OnCancelMode();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
+	afx_msg LRESULT OnMouseHover(WPARAM wParam, LPARAM lParam);	
 };
