@@ -68,8 +68,11 @@ BOOL CArxControlAcadDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 		acedDwgPoint dwgPt;
 		int nViewport = acedGetWinNum( point.x, point.y );
 		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
-		pArxServices->HandleEvent( sDropOnAcadWndPointEvent, args_P3N( dwgPt, nViewport ) );
-		return TRUE;
+		resbuf* prbResult = NULL;
+		if( !pArxServices->HandleEvent( sDropOnAcadWndPointEvent, prbResult, args_P3N( dwgPt, nViewport ) ) &&
+				prbResult &&
+				prbResult->restype != RTNIL )
+			return TRUE;
 	}
 	return FALSE;
 }
@@ -87,8 +90,11 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 		acedDwgPoint dwgPt;
 		int nViewport = acedGetWinNum( point.x, point.y );
 		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
-		pArxServices->HandleEvent( sDropOnAcadWndPointEvent, args_P3N( dwgPt, nViewport ) );
-		return DROPEFFECT_COPY;
+		resbuf* prbResult = NULL;
+		if( !pArxServices->HandleEvent( sDropOnAcadWndPointEvent, prbResult, args_P3N( dwgPt, nViewport ) ) &&
+				prbResult &&
+				prbResult->restype != RTNIL )
+			return DROPEFFECT_COPY;
 	}
 	return DROPEFFECT_NONE; //returning DROPEFFECT_NONE will cause OnDrop to be called instead
 }

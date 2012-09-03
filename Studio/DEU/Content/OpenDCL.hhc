@@ -2799,6 +2799,10 @@
 				<param name="Local" value="Reference\Event\DocActivated.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="DocumentComplete">
+				<param name="Local" value="Reference\Event\DocumentComplete.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="DragnDropBegin">
 				<param name="Local" value="Reference\Event\DragnDropBegin.htm">
 				</OBJECT>

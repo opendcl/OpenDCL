@@ -38,7 +38,7 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Return Type</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99"><a href="../DataType/Boolean.htm">Boolean</a></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Applies To</th>
@@ -60,7 +60,11 @@
 		<p>This event is triggered when the user completes a drag and drop 
         operation from the control by dropping onto the AutoCAD editor. The DropPoint 
         and Viewport arguments define the AutoCAD viewport number and the 
-        viewport coordinates where the drop was made.</p>
+        viewport coordinates where the drop was made. The return value indicates 
+        whether the drop was handled. A non-NIL return value indicates that the 
+        drop was handled and processing should stop. A return value of NIL 
+        indicates that the drop was not handled and triggers execution of the 
+        default handler for the control (if there is one).</p>
 	</div>
 	<hr />
 	<div id="footer">

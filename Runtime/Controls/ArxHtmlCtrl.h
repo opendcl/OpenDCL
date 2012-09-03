@@ -28,6 +28,7 @@ public:
 protected:
 	virtual void OnAppCmd( LPCTSTR lpszWhere ); //override to handle links to "app:mumble...".
 	virtual void OnNavigateComplete2( LPCTSTR strURL );
+	virtual void OnDocumentComplete( LPCTSTR lpszURL );
 
 // Generated message map functions
 protected:

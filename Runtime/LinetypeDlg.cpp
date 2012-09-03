@@ -30,6 +30,8 @@ static FT_acedLinetypeDialog GetProc(void)
 	HMODULE hmodApi = GetModuleHandle( _T("brx11.dll") );
 #elif (_BRXTARGET == 12)
 	HMODULE hmodApi = GetModuleHandle( _T("brx12.dll") );
+#elif (_BRXTARGET == 13)
+	HMODULE hmodApi = GetModuleHandle( _T("brx13.dll") );
 #elif (_BRXTARGET)
 	#error Unknown BRX target!
 #else

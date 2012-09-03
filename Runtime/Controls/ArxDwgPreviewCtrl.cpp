@@ -260,6 +260,7 @@ void CArxDwgPreviewCtrl::Snapshot()
 
 BEGIN_MESSAGE_MAP(CArxDwgPreviewCtrl, CButton)
 	ON_WM_PAINT()
+	ON_WM_SIZE()
 	ON_WM_CHAR()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
@@ -348,6 +349,16 @@ void CArxDwgPreviewCtrl::PaintControl(CDC* pDC)
 
 	pDC->RestoreDC( nDCState );
 	SaveDC();
+}
+
+void CArxDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy) 
+{
+	__super::OnSize( nType, cx, cy );
+	if( mhbmLast )
+	{
+		DeleteObject( mhbmLast );
+		mhbmLast = NULL;
+	}
 }
 
 void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point) 

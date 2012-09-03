@@ -32,6 +32,12 @@ void CArxHtmlCtrl::OnNavigateComplete2( LPCTSTR strURL )
 	GetArxServices()->HandleEvent( Prop::EventNavigateComplete, args_S( strURL ) );
 	__super::OnNavigateComplete2( strURL );
 }
+
+void CArxHtmlCtrl::OnDocumentComplete( LPCTSTR lpszURL ) 
+{
+	GetArxServices()->HandleEvent( Prop::EventDocumentComplete, args_S( lpszURL ) );
+	__super::OnDocumentComplete( lpszURL );
+}
  
 void CArxHtmlCtrl::OnAppCmd( LPCTSTR lpszWhere )
 {

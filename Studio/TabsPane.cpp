@@ -122,7 +122,7 @@ void CTabsPane::Setup()
 	{
 		TDclFormPtr pForm = (*iter);
 		CTabInfo *pTab = new CTabInfo(pForm);
-		short idxTab = pForm->GetTabIndex();
+		unsigned short idxTab = (unsigned short)pForm->GetTabIndex();
 		if (idxTab < m_pTabCaptions->size())
 			pTab->msCaption = m_pTabCaptions->GetConstStringArrayPtr()->at( idxTab );
 		if( pTab->msCaption.IsEmpty() )

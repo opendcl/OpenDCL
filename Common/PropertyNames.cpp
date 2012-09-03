@@ -204,6 +204,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventColumnClick] = _T("ColumnClick");
 	mmapIdToApiName[Prop::EventDblClicked] = _T("DblClicked");
 	mmapIdToApiName[Prop::EventDeleteItem] = _T("DeleteItem");
+	mmapIdToApiName[Prop::EventDocumentComplete] = _T("DocumentComplete");
 	mmapIdToApiName[Prop::EventDropDown] = _T("DropDown");
 	mmapIdToApiName[Prop::EventEditChanged] = _T("EditChanged");
 	mmapIdToApiName[Prop::EventEndLabelEdit] = _T("EndLabelEdit");

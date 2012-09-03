@@ -12,6 +12,7 @@ ADSRESULT CloseAll();
 ADSRESULT Enable();
 ADSRESULT GetControlArea();
 ADSRESULT GetControls();
+ADSRESULT GetUUID();
 ADSRESULT Hide();
 ADSRESULT IsActive();
 ADSRESULT IsApplyEnabled();

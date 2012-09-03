@@ -827,7 +827,7 @@ void CArxGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CS
 
 void CArxGridCtrl::OnKillFocus(CWnd* pNewWnd)
 {
-	CGridCtrl::OnKillFocus(pNewWnd);
+	__super::OnKillFocus(pNewWnd);
 	if( !pNewWnd || pNewWnd->GetParent() != this )
 		GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }

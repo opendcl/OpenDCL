@@ -28,6 +28,12 @@
         "Entry"
         {
         "MsmKey" = "8:_04FF7D57B209D4F273169C7DE3775CBA"
+        "OwnerKey" = "8:_E5994257798E4F518EC653EA21A4CCD8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_04FF7D57B209D4F273169C7DE3775CBA"
         "OwnerKey" = "8:_D5B11150A08D4A699918F95FDAE5346E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -143,6 +149,12 @@
         {
         "MsmKey" = "8:_10FFE037015BA1C533DAEBFF90196B21"
         "OwnerKey" = "8:_026ED025BBF34809B085A09A35C27791"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_10FFE037015BA1C533DAEBFF90196B21"
+        "OwnerKey" = "8:_E5994257798E4F518EC653EA21A4CCD8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -346,6 +358,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B16A2704701A6671E0B9308CE8F40EF8"
+        "OwnerKey" = "8:_E5994257798E4F518EC653EA21A4CCD8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B16A2704701A6671E0B9308CE8F40EF8"
         "OwnerKey" = "8:_D5B11150A08D4A699918F95FDAE5346E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -419,6 +437,12 @@
         {
         "MsmKey" = "8:_CD4F5FB869E1FF1CEB8D63DEA54316C0"
         "OwnerKey" = "8:_026ED025BBF34809B085A09A35C27791"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CD4F5FB869E1FF1CEB8D63DEA54316C0"
+        "OwnerKey" = "8:_E5994257798E4F518EC653EA21A4CCD8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -515,6 +539,12 @@
         {
         "MsmKey" = "8:_E2CC2C673291862E9F8F565644BF438C"
         "OwnerKey" = "8:_21BB4F976D9F449B8DB906B58769FC4A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E5994257798E4F518EC653EA21A4CCD8"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -958,7 +988,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1180,7 +1210,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:7.0.0.6"
+        "Version" = "8:7.0.0.7"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -1197,7 +1227,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_026ED025BBF34809B085A09A35C27791"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.18\\Debug\\OpenDCL.x64.18.arx"
+            "SourcePath" = "8:..\\..\\ARX.18.x64\\Debug\\OpenDCL.x64.18.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1617,7 +1647,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D08FCB323B4C410E9094A76D1B2646E9"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.17\\Debug\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17.x64\\Debug\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1645,7 +1675,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D5B11150A08D4A699918F95FDAE5346E"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.19\\Debug\\OpenDCL.x64.19.arx"
+            "SourcePath" = "8:..\\..\\ARX.19.x64\\Debug\\OpenDCL.x64.19.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1666,6 +1696,34 @@
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{CAFEE491-98D7-4F82-8294-DF6521F40CA8}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E5994257798E4F518EC653EA21A4CCD8"
+            {
+            "SourcePath" = "8:..\\..\\BRX.13\\Debug\\OpenDCL.13.brx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{4F50AE77-5065-4F60-874E-D63B6B2DB749}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {

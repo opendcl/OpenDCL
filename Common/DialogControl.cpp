@@ -694,8 +694,11 @@ bool CDialogControl::OnApplyDragDropAllowDrop( TPropertyPtr pProp )
 
 bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 {
-	mpControlWnd->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
-	//OnNeedRepaint();
+	CControlPane* pPane = GetControlPane();
+	if( pPane )
+		pPane->ApplyVisibility( TDialogControlLockedPtr( this ) );
+	else
+		mpControlWnd->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
 	return true;
 }
 

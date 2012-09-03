@@ -372,25 +372,28 @@ void CGridCtrl::SetCurCell( int nRow, int nCol )
 	if( mCurrentCell.row() != nRow || mCurrentCell.col() != nCol )
 	{
 		mCurrentCell.set( nRow, nCol );
-		EnsureVisible( nRow, FALSE );
+		//EnsureVisible( nRow, FALSE );
+		CSize sizScroll( 0, 0 );
 		CRect rcCell = GetCurCellRect();
-		//if( rcCell.left < 0 )
-		//{
-		//	UpdateWindow();
-		//	ScrollWindow( -rcCell.left, 0 );
-		//	SetScrollPos( SB_HORZ, GetScrollPos( SB_HORZ ) + rcCell.left );
-		//}
-		//else
-		//{
-		//	CRect rcClient;
-		//	GetClientRect( &rcClient );
-		//	if( rcCell.right > rcClient.right )
-		//	{
-		//		UpdateWindow();
-		//		ScrollWindow( -rcCell.left, 0 );
-		//		SetScrollPos( SB_HORZ, GetScrollPos( SB_HORZ ) + rcCell.left );
-		//	}
-		//}
+		if( rcCell.top < 0 )
+			sizScroll.cy = rcCell.top;
+		else
+		{
+			CRect rcClient;
+			GetClientRect( &rcClient );
+			if( rcCell.bottom > rcClient.bottom )
+				sizScroll.cy = rcCell.top;
+		}
+		if( rcCell.left < 0 )
+			sizScroll.cx = rcCell.left;
+		else
+		{
+			CRect rcClient;
+			GetClientRect( &rcClient );
+			if( rcCell.right > rcClient.right )
+				sizScroll.cx = rcCell.left;
+		}
+		Scroll( sizScroll );
 		InvalidateRect( GetCurCellRect() );
 		OnSelectionChanged();
 	}

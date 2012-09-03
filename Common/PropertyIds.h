@@ -286,8 +286,9 @@ enum Id
 	ListImages = 260,
 	DragOverFromControl = 261,
 	FormEventMove = 262,
+	EventDocumentComplete = 263,
 	_MinId = 1,
-	_MaxId = 262
+	_MaxId = 263
 };
 
 /* property ids in alphabetical order for easy manual lookup
@@ -367,6 +368,7 @@ enum Id
 	EventColumnClick = 184,
 	EventDblClicked = 13,
 	EventDeleteItem = 94,
+	EventDocumentComplete = 263,
 	EventDropDown = 103,
 	EventEditChanged = 14,
 	EventEndLabelEdit = 95,

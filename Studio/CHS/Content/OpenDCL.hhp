@@ -672,6 +672,7 @@ Reference\Event\DblClicked-Item.htm
 Reference\Event\DblClicked-RowColumn.htm
 Reference\Event\DeleteItem-Key.htm
 Reference\Event\DocActivated.htm
+Reference\Event\DocumentComplete.htm
 Reference\Event\DragnDropBegin.htm
 Reference\Event\DragnDropFromControl.htm
 Reference\Event\DragnDropFromOther.htm

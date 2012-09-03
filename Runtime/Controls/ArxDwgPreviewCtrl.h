@@ -67,6 +67,7 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnPaint();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnClicked();
 	afx_msg void OnDoubleclicked();	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);	

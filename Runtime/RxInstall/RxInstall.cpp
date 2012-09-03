@@ -362,7 +362,7 @@ class TargetModule
 {
 public:
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, };
-	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
+	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12, kBRX13 = 13,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, };
 	typedef char TByte;
@@ -459,6 +459,7 @@ public:
 		kBricscad10 =  ((kBricscad << shftPlatform) | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =  ((kBricscad << shftPlatform) | (kBRX11 << shftMajorVer) | 0),
 		kBricscad12 =  ((kBricscad << shftPlatform) | (kBRX12 << shftMajorVer) | 0),
+		kBricscad13 =  ((kBricscad << shftPlatform) | (kBRX13 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -666,6 +667,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13, sInstallDir ), bWantHKLM );
 	if( IsWow64() )
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM, true );
@@ -674,6 +676,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM, true );
+		//EnumerateRegTargets( TargetModule( TargetModule::kBricscad13, sInstallDir ), bWantHKLM, true );
 	}
 	return ERROR_SUCCESS;
 }
@@ -746,6 +749,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
@@ -760,6 +765,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER, true );
+		//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE, true );
+		//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }

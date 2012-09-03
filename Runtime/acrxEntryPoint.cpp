@@ -144,6 +144,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Form_Enable"),                  Form::Enable},
 	{_T("Form_GetControlArea"),          Form::GetControlArea},
 	{_T("Form_GetControls"),             Form::GetControls},
+	{_T("Form_GetUUID"),                 Form::GetUUID},
 	{_T("Form_Hide"),                    Form::Hide},
 	{_T("Form_IsActive"),                Form::IsActive},
 	{_T("Form_IsApplyEnabled"),          Form::IsApplyEnabled},

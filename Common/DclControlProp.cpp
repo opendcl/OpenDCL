@@ -577,6 +577,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventNavigateComplete );
+		AddControlEvent( pDclControl, Prop::EventDocumentComplete );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		break;
 

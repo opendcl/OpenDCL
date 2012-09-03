@@ -883,6 +883,7 @@ void CStudioDialogObject::OnEditCopy()
 		return;
 	DisableUndoManager DisableUndo( mpSourceForm->GetUndoManager() );
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	CStringA ClipboardText;
 	CMemFile ClipboardMem( 4096 );
 	CArchive ClipboardArchive( &ClipboardMem, CArchive::store );
 	size_t ctControls = 0;
@@ -899,6 +900,9 @@ void CStudioDialogObject::OnEditCopy()
 			continue;
 		if( pManager->IsSelected() )
 		{
+			if( !ClipboardText.IsEmpty() )
+				ClipboardText += ' ';
+			ClipboardText += CStringA( pDclControl->GetVarName() );
 			pDclControl->Serialize( ClipboardArchive );
 			++ctControls;
 			std::list< const CControlPane* > Children;
@@ -920,6 +924,8 @@ void CStudioDialogObject::OnEditCopy()
 	}
 	ClipboardArchive.Flush();
 	ClipboardMem.SeekToBegin();
+
+	//Set clipboard content to selected controls
 	SIZE_T cbControlData = (SIZE_T)ClipboardMem.GetLength();
 	SIZE_T cbClipboard = cbControlData + sizeof(SIZE_T) + sizeof(ctControls);
 	HGLOBAL hgMem = GlobalAlloc( GMEM_MOVEABLE, cbClipboard );
@@ -931,6 +937,15 @@ void CStudioDialogObject::OnEditCopy()
 	ClipboardMem.Read( pbData, cbControlData );
 	GlobalUnlock( hgMem );
 	SetClipboardData( CF_OPENDCLCONTROL, hgMem );
+
+	//Also set plain text of selected control's VarName for easy pasting into lisp code
+	SIZE_T cbControlText = (SIZE_T)ClipboardText.GetLength() + 1;
+	HGLOBAL hgClipText = GlobalAlloc( GMEM_DDESHARE, cbControlText );
+	CHAR* pszClipText = (CHAR*)GlobalLock(hgClipText);
+	lstrcpynA( pszClipText, ClipboardText, int(cbControlText) );
+	GlobalUnlock( hgClipText );
+	SetClipboardData( CF_TEXT, hgClipText );
+
 	CloseClipboard();
 }
 

@@ -323,8 +323,6 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 
 void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )
 {
-	if( !IsInvisibleControlAllowed( pDlgControl ) )
-		return;
 	CWnd* pWndToMove = pDlgControl->GetControlWnd();
 	//if the control is hosted inside another window, find the ancestor that is a child
 	//of the host dialog and show or hide it instead
@@ -333,6 +331,8 @@ void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )
 		pWndToMove = pWndToMove->GetParent();
 	TPropertyPtr pVisibility = pDlgControl->GetTemplate()->GetPropertyObject( Prop::Visible );
 	bool bHide = (pVisibility && !pVisibility->GetBooleanValue());
+	if( bHide && !IsInvisibleControlAllowed( pDlgControl ) )
+		bHide = false;
 	pWndToMove->ShowWindow( bHide? SW_HIDE : SW_SHOW );
 }
 

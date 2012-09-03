@@ -184,6 +184,25 @@ ADSRESULT Form::GetControls()
 	return (RSRSLT) ;
 }
 
+ADSRESULT Form::GetUUID()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TDclFormPtr pDclForm;
+	if( !GetFormArgument( pArgs, pDclForm ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pDclForm )
+		return RSRSLT; //form not found
+
+	acedRetStr( pDclForm->GetUUIDAsString() );
+
+	return (RSRSLT) ;
+}
+
 ADSRESULT Form::Hide()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
