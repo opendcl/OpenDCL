@@ -15,6 +15,7 @@ class CArxDialogObject : public CDialogObject
 		CArxDialogObject* mpDialogobject;
 		CString msDocActivatedEvent;
 		CString msEnteringNoDocStateEvent;
+		AcApDocument* mpLastActivatedDoc;
 	public:
 		CDocReactor( CArxDialogObject* pDialogobject );
 		~CDocReactor();

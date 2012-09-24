@@ -174,7 +174,8 @@ protected:
 		}
 	afx_msg void OnKillFocus()
 		{
-			mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
+			mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+			//mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
 		}
 	afx_msg void OnCloseUp()
 		{

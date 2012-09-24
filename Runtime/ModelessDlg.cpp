@@ -292,8 +292,11 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		else if( IsDescendant( this, pFocusWnd ) )
 		{
 			mhwndKeyboardFocus = pFocusWnd->m_hWnd;
-			SetCapture();
-			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+			if( IsWindowEnabled() )
+			{
+				SetCapture();
+				SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+			}
 		}
 	}
 	if( !mbMouseLeft )

@@ -181,7 +181,9 @@ class CAcUiComboEditCtrl : public TAcUiBase, public CGridCellEditCtrl
 					switch( HIWORD(wParam) )
 					{
 					case CBN_KILLFOCUS:
-						return mpEditCtrl->host()->SendMessage( WM_COMMAND, wParam, lParam );
+						//return mpEditCtrl->host()->SendMessage( WM_COMMAND, wParam, lParam );
+						mpEditCtrl->host()->PostMessage( WM_CANCELMODE, 0, 0 );
+						break;
 					case CBN_DROPDOWN:
 						if (mpfShowDropdownHandler )
 							(mpEditCtrl->*mpfShowDropdownHandler)( true );

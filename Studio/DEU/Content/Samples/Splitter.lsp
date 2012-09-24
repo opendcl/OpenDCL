@@ -153,10 +153,6 @@
   ;; Dieses Ereignis wird ausgelöst, wenn sich die aktuelle Auswahl im Datenblatt ändert
   
   (defun c:Splitter_splitter_grd_OnSelChanged (intRow intCol / strProp)
-    (if (and (= intCol 1)
-	     (not lstLastContent))
-      (dcl_Grid_StartCellEdit Splitter_splitter_grd intRow intCol)
-    ); if
     (setq strProp (dcl_Grid_GetCellText Splitter_splitter_grd intRow 0))
     (cond
       ((= strProp strStyle) (dcl_Control_SetText Splitter_splitter_edt_info "Diese Eigenschaft bestimmt die Darstellung des Splitters."))

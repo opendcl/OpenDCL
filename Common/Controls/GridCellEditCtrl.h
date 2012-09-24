@@ -21,6 +21,8 @@ public:
 		{}
 	virtual ~CGridCellEditCtrl() {}
 	virtual bool isInModalLoop() { return false; }
+	int row() const { return mnRow; }
+	int col() const { return mnCol; }
 protected:
 	CGridCtrl* host() const { return mpGridCtrl; }
 };

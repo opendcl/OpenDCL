@@ -17,6 +17,7 @@ public:
 		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		{
 			pGridCtrl->ToggleCellState( nRow, nCol );
+			pGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 		}
 	virtual ~CToggleEditCtrl()
 		{

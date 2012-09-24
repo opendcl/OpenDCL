@@ -18,7 +18,7 @@
 
 
 CArxDialogObject::CDocReactor::CDocReactor( CArxDialogObject* pDialogobject )
-: mpDialogobject( pDialogobject )
+: mpDialogobject( pDialogobject ), mpLastActivatedDoc( NULL )
 {
 	TDclControlPtr pProps = pDialogobject->GetSourceForm()->GetControlProperties();
 	if( pProps )
@@ -26,7 +26,10 @@ CArxDialogObject::CDocReactor::CDocReactor( CArxDialogObject* pDialogobject )
 		msDocActivatedEvent = pProps->GetStringProperty( Prop::DocEventActivated );
 		msEnteringNoDocStateEvent = pProps->GetStringProperty( Prop::DocEventEnteringNoDocState );
 		if( !msDocActivatedEvent.IsEmpty() || !msEnteringNoDocStateEvent.IsEmpty() )
+		{
+			mpLastActivatedDoc = acDocManager->mdiActiveDocument();
 			acDocManager->addReactor( this );
+		}
 	}
 }
 
@@ -38,6 +41,9 @@ CArxDialogObject::CDocReactor::~CDocReactor()
 
 void CArxDialogObject::CDocReactor::documentActivated(AcApDocument* pActivatedDoc)
 {
+	if( mpLastActivatedDoc == pActivatedDoc )
+		return;
+	mpLastActivatedDoc = pActivatedDoc;
 	if( pActivatedDoc )
 		mpDialogobject->GetArxServices()->HandleEvent( msDocActivatedEvent, true, args_null(), pActivatedDoc );
 }

@@ -90,9 +90,12 @@ class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCell
 					switch( HIWORD(wParam) )
 					{
 					case CBN_KILLFOCUS:
-						return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
+						//return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
+						mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+						break;
 					case CBN_CLOSEUP:
 						mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+						break;
 					}
 				}
 				return lResult;
@@ -981,6 +984,8 @@ void CGridCtrl::HideEditControls()
 
 void CGridCtrl::OnEditCurCell()
 {
+	if( mpCellEditCtrl && mCurrentCell && mCurrentCell.row() == mpCellEditCtrl->row() && mCurrentCell.col() == mpCellEditCtrl->col() )
+		return; //already editing this cell
 	HideEditControls();
 	if( !mCurrentCell || (mbHasRowHeader && mCurrentCell.col() == 0) )
 	{
