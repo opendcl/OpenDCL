@@ -382,6 +382,154 @@ static CString GetColorDisplayName( int nAcadColor )
 }
 
 
+class CAcadColorEditCtrl : public CGridCellEditCtrl
+{
+public:
+	CAcadColorEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol )
+		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		{
+			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
+			int nCurLayerColor = GetCurrentLayerColor();
+			if( nCellImage < 0 )
+				nCellImage = _tstol( pGridCtrl->GetCellText( nRow, nCol ) );
+			else if( nCellImage > 256 )
+				nCellImage = 256;
+			CWnd* pFocusWnd = CWnd::GetFocus();
+			CWnd* pHostDlg = pGridCtrl->GetControlPane()->GetHostDialog();
+			pHostDlg->EnableWindow( FALSE );
+			Adesk::Boolean bResult = acedSetColorDialog( nCellImage, Adesk::kTrue, nCurLayerColor );
+			pHostDlg->EnableWindow( TRUE );
+			if( bResult )
+				pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( nCellImage ), nCellImage );
+			if( pFocusWnd )
+				pFocusWnd->SetFocus();
+			pGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+		}
+	virtual ~CAcadColorEditCtrl()
+		{
+		}
+};
+
+
+class CTrueColorEditCtrl : public CGridCellEditCtrl
+{
+public:
+	CTrueColorEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol )
+		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		{
+			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
+		#if defined(_BRXTARGET)
+			resbuf rbT = { NULL, RTT };
+		#else
+			resbuf rbCurColor = { NULL, RTSHORT };
+			rbCurColor.resval.rint = GetCurrentLayerColor();
+			resbuf rbT = { &rbCurColor, RTT };
+		#endif
+			resbuf rbColor = { &rbT };
+			resbuf rbFuncName = { &rbColor, RTSTR };
+			rbFuncName.resval.rstring = _T("acad_truecolordlg");
+			CString sText = pGridCtrl->GetCellText( nRow, nCol );
+			if( nCellImage == -1 )
+			{
+				int idxComma = sText.Find( _T(",") );
+				CString sRed = sText.Left( idxComma );
+				CString sGreen = sText.Mid( idxComma + 1 );
+				idxComma = sGreen.Find( _T(",") );
+				CString sBlue = sGreen.Mid( idxComma + 1 );
+				sGreen = sGreen.Left( idxComma );
+				rbColor.restype = 420;
+				rbColor.resval.rlong =
+					(long)RGB(_tstol( sBlue ), _tstol( sGreen ), _tstol( sRed ) ); //note: BGR instead of RGB!
+			}
+			else if( nCellImage == -2 )
+			{
+				rbColor.restype = 430;
+				rbColor.resval.rstring = sText.LockBuffer(); //color book color
+			}
+			else
+			{
+				rbColor.restype = RTSHORT;
+				rbColor.resval.rint = (nCellImage >= 0 && nCellImage <= 256)? nCellImage : 7;
+			}
+			CWnd* pFocusWnd = CWnd::GetFocus();
+			CWnd* pHostDlg = pGridCtrl->GetControlPane()->GetHostDialog();
+			pHostDlg->EnableWindow( FALSE );
+			resbuf* prbResult = NULL;
+			int nResult = acedInvoke( &rbFuncName, &prbResult );
+			pHostDlg->EnableWindow( TRUE );
+			if( RTNORM == nResult && prbResult )
+			{
+				resbuf* prbTrueColor = prbResult->rbnext;
+				resbuf* prbColorBook = (prbTrueColor? prbTrueColor->rbnext : NULL);
+				if( prbColorBook && prbColorBook->restype == 430 )
+					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
+				else if( prbTrueColor && prbTrueColor->restype == 420 )
+					pGridCtrl->SetCellTextImage( nRow, nCol, GetTrueColorDisplayName( DWORD(prbTrueColor->resval.rlong) ), -1 );
+				else
+				{
+					int nColor = prbResult->resval.rint;
+					pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( nColor ), nColor );
+				}
+				acutRelRb( prbResult );
+			}
+			if( pFocusWnd )
+				pFocusWnd->SetFocus();
+			pGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+		}
+	virtual ~CTrueColorEditCtrl()
+		{
+		}
+};
+
+
+static void ShowDirectoryDlg( CGridCtrl* pGridCtrl, int nRow, int nCol ) 
+{
+	CFolderBrowseDlg dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), pGridCtrl->GetItemText(nRow, nCol) );
+	CWnd* pFocusWnd = CWnd::GetFocus();
+	CWnd* pHostDlg = pGridCtrl->GetControlPane()->GetHostDialog();
+	pHostDlg->EnableWindow( FALSE );
+	BOOL bResult = dlg.DoBrowse(pGridCtrl);
+	pHostDlg->EnableWindow( TRUE );
+	if (bResult == TRUE)
+		pGridCtrl->SetCellTextImage( nRow, nCol, dlg.GetSelectedFolder(), -1 );
+	if( pFocusWnd )
+		pFocusWnd->SetFocus();
+	pGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+}
+
+
+static void ShowFileDlg( CGridCtrl* pGridCtrl, int nRow, int nCol ) 
+{
+	if( !acDocManager->curDocument() )
+		return; //ARX docs say you can't call acedGetFileD in zero doc state
+	CString sFileExt = _T("dwg;dxf");
+	CString sFile = pGridCtrl->GetItemText(nRow, nCol);
+	CString sTitle;
+	{
+		CStringArray rsList;
+		CArray<int, int> rnImage;
+		if( pGridCtrl->GetCellListData( nRow, nCol, rnImage, rsList ) && !rsList.IsEmpty() )
+		{
+			sFileExt = rsList.GetAt( 0 );
+			if( rsList.GetSize() > 1 )
+				sTitle = rsList.GetAt( 1 );
+		}
+	}
+	CWnd* pFocusWnd = CWnd::GetFocus();
+	CWnd* pHostDlg = pGridCtrl->GetControlPane()->GetHostDialog();
+	pHostDlg->EnableWindow( FALSE );
+	resbuf* prbResult = acutNewRb(RTSTR);
+	int nResult = acedGetFileD( sTitle, sFile, sFileExt, 8, prbResult );
+	pHostDlg->EnableWindow( TRUE );
+	if( nResult == RTNORM )
+		pGridCtrl->SetCellTextImage( nRow, nCol, prbResult->resval.rstring, -1 );
+	acutRelRb(prbResult);
+	if( pFocusWnd )
+		pFocusWnd->SetFocus();
+	pGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CArxGridCtrl
 
@@ -419,8 +567,6 @@ bool CArxGridCtrl::ApplyProperty( TPropertyPtr pProp )
 void CArxGridCtrl::OnEditCurCell()
 {
 	__super::OnEditCurCell();
-	if( !IsEditing() )
-		return;
 	GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
@@ -430,148 +576,6 @@ void CArxGridCtrl::OnEndEditCurCell()
 	GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 	if( GetFocus() != this )
 		GetArxServices()->HandleEvent( Prop::EventKillFocus );
-}
-
-
-void CArxGridCtrl::DoAcadColorDlg()
-{
-	int nRow = mCurrentCell.row();
-	int nCol = mCurrentCell.col();
-	int nCellImage = GetCellImage( nRow, nCol );
-	int nCurLayerColor = GetCurrentLayerColor();
-	if( nCellImage < 0 )
-		nCellImage = _tstol( GetCellText( nRow, nCol ) );
-	else if( nCellImage > 256 )
-		nCellImage = 256;
-	CWnd* pFocusWnd = GetFocus();
-	GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
-	Adesk::Boolean bResult = acedSetColorDialog( nCellImage, Adesk::kTrue, nCurLayerColor );
-	GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
-	if( bResult )
-		SetCellTextImage( nRow, nCol, GetColorDisplayName( nCellImage ), nCellImage );
-	if( pFocusWnd )
-		pFocusWnd->SetFocus();
-}
-
-void CArxGridCtrl::DoAcadTrueColorDlg()
-{
-	int nRow = mCurrentCell.row();
-	int nCol = mCurrentCell.col();
-	int nCellImage = GetCellImage( nRow, nCol );
-#if defined(_BRXTARGET)
-	resbuf rbT = { NULL, RTT };
-#else
-	resbuf rbCurColor = { NULL, RTSHORT };
-	rbCurColor.resval.rint = GetCurrentLayerColor();
-	resbuf rbT = { &rbCurColor, RTT };
-#endif
-	resbuf rbColor = { &rbT };
-	resbuf rbFuncName = { &rbColor, RTSTR };
-	rbFuncName.resval.rstring = _T("acad_truecolordlg");
-	CString sText = GetCellText( nRow, nCol );
-	if( nCellImage == -1 )
-	{
-		int idxComma = sText.Find( _T(",") );
-		CString sRed = sText.Left( idxComma );
-		CString sGreen = sText.Mid( idxComma + 1 );
-		idxComma = sGreen.Find( _T(",") );
-		CString sBlue = sGreen.Mid( idxComma + 1 );
-		sGreen = sGreen.Left( idxComma );
-		rbColor.restype = 420;
-		rbColor.resval.rlong =
-			(long)RGB(_tstol( sBlue ), _tstol( sGreen ), _tstol( sRed ) ); //note: BGR instead of RGB!
-	}
-	else if( nCellImage == -2 )
-	{
-		rbColor.restype = 430;
-		rbColor.resval.rstring = sText.LockBuffer(); //color book color
-	}
-	else
-	{
-		rbColor.restype = RTSHORT;
-		rbColor.resval.rint = (nCellImage >= 0 && nCellImage <= 256)? nCellImage : 7;
-	}
-	CWnd* pFocusWnd = GetFocus();
-	GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
-	resbuf* prbResult = NULL;
-	int nResult = acedInvoke( &rbFuncName, &prbResult );
-	GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
-	if( RTNORM == nResult && prbResult )
-	{
-		resbuf* prbTrueColor = prbResult->rbnext;
-		resbuf* prbColorBook = (prbTrueColor? prbTrueColor->rbnext : NULL);
-		if( prbColorBook && prbColorBook->restype == 430 )
-			SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
-		else if( prbTrueColor && prbTrueColor->restype == 420 )
-			SetCellTextImage( nRow, nCol, GetTrueColorDisplayName( DWORD(prbTrueColor->resval.rlong) ), -1 );
-		else
-		{
-			int nColor = prbResult->resval.rint;
-			SetCellTextImage( nRow, nCol, GetColorDisplayName( nColor ), nColor );
-		}
-		acutRelRb( prbResult );
-	}
-	if( pFocusWnd )
-		pFocusWnd->SetFocus();
-}
-
-void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle ) 
-{
-	switch (nStyle)
-	{
-		case Grid::DirectoryCell:
-		{			
-			CFolderBrowseDlg dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
-			CWnd* pFocusWnd = GetFocus();
-			GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
-			BOOL bResult = dlg.DoBrowse(this);
-			GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
-			if (bResult == TRUE)
-				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), dlg.GetSelectedFolder(), -1 );
-			if( pFocusWnd )
-				pFocusWnd->SetFocus();
-			break;
-		}
-		case Grid::DwgFilesCell:
-		{
-			if( !acDocManager->curDocument() )
-				break; //ARX docs say you can't call acedGetFileD in zero doc state
-			struct resbuf * result;
-			CString sFileExt = _T("dwg;dxf");
-			CString sFile = GetItemText(mCurrentCell.row(), mCurrentCell.col());
-			CString sTitle;
-			result = acutNewRb(RTSTR);
-
-			const _CellData* pCellData = GetCellData( mCurrentCell.row(), mCurrentCell.col() );
-			if( pCellData && !pCellData->mrsComboList.empty() )
-			{
-				sFileExt = pCellData->mrsComboList.front().c_str();
-				if( pCellData->mrsComboList.size() > 1 )
-					sTitle = (++pCellData->mrsComboList.begin())->c_str();
-			}
-			else
-			{
-				std::vector< tstring > rsList;
-				std::vector< int > ridxImage;
-				if( GetCellComboListItems( mCurrentCell.row(), mCurrentCell.col(), rsList, ridxImage ) && !rsList.empty() )
-				{
-					sFileExt = rsList.front().c_str();
-					if( rsList.size() > 1 )
-						sTitle = (++rsList.begin())->c_str();
-				}
-			}
-			CWnd* pFocusWnd = GetFocus();
-			GetControlPane()->GetHostDialog()->EnableWindow( FALSE );
-			int nResult = acedGetFileD( sTitle, sFile, sFileExt, 8, result );
-			GetControlPane()->GetHostDialog()->EnableWindow( TRUE );
-			if( nResult == RTNORM )
-				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), result->resval.rstring, -1 );
-			acutRelRb(result);
-			if( pFocusWnd )
-				pFocusWnd->SetFocus();
-			break;
-		}
-	}
 }
 
 CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
@@ -607,8 +611,8 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid::LayerList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CLayerComboHandler );
 		case Grid::DimStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CDimStyleComboHandler );
 		//case Grid::ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid::AcadColorCell: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
-		case Grid::TrueColorCell: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
+		case Grid::AcadColorCell: return new CAcadColorEditCtrl( this, nRow, nCol );
+		case Grid::TrueColorCell: return new CTrueColorEditCtrl( this, nRow, nCol );
 		case Grid::LineWeightCell: return new CAcUiLineWeightComboEditCtrl( this, nRow, nCol );
 		case Grid::LinetypeCell:
 	#if (_ACADTARGET >= 17)
@@ -681,10 +685,8 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 {
 	switch( GetCurCellStyle() )
 	{
-	case Grid::AcadColorCell: return DoAcadColorDlg();
-	case Grid::TrueColorCell: return DoAcadTrueColorDlg();
-	case Grid::DirectoryCell: return DoFileDlg( Grid::DirectoryCell );
-	case Grid::DwgFilesCell: return DoFileDlg( Grid::DwgFilesCell );
+	case Grid::DirectoryCell: return ShowDirectoryDlg( this, mCurrentCell.row(), mCurrentCell.col() );
+	case Grid::DwgFilesCell: return ShowFileDlg( this, mCurrentCell.row(), mCurrentCell.col() );
 	}
 	GetArxServices()->HandleEvent( Prop::EventBtnClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
@@ -695,7 +697,6 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 	if( !mCurrentCell )
 		return;
-	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
@@ -741,7 +742,7 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case VK_ESCAPE: 
 			break;
 		case VK_SPACE: 
-			OnEditCurCell();
+			EditCurCell();
 			return;
 		case VK_UP: 
 		{
@@ -771,6 +772,7 @@ void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonUp(nFlags, point);
+	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point) 

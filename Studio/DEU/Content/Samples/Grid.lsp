@@ -1,28 +1,27 @@
 ;;;
-;;; Datenblatt Beispiel
+;;; GRID Beispiel
 ;;;
-;;; Dieses Beispiel demonstriert die Anwendung des Datenblatts und seinen Ereignissen.
+;;; Dieses Beispiel demonstriert das Datenblatt mit all seinen Ereignissen.
 ;;;
 
 ;; Hauptprogramm
 (defun c:Grd (/ cmdecho)
 
-	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+	;; Stellt sicher, dass die Laufzeitumgebung im Hintergrund geladen wird
 	(setq cmdecho (getvar "CMDECHO"))
 	(setvar "CMDECHO" 0)
 	(command "_OPENDCL")
 	(setvar "CMDECHO" cmdecho)
 
-	;; Projekt laden
+	;; Lädt das Projekt
 	(dcl_Project_Load (*ODCL:Samples:FindFile "Grid.odcl"))
 
-	;; Dialog anzeigen
+	;; Zeigt den Hauptdialog an
 	(dcl_Form_Show GRID_Dcl-1)
 
-	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
-	;; bis der modale Dialog geschlosswen wird.
-	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
+	;; Dies ist ein modaler Dialog, so dass das Programm nach (dcl_Form_Show)
+	;; erst fortfährt, wenn der Dialog geschlossen wurde. In der Zwischenzeit
+	;; behandeln die Ereignisse den Dialog.
 
 	(princ)
 )
@@ -42,7 +41,7 @@
 		)
 	)
 	(defun FillColCountList (/ cnt ColCnt)
-										; Füge die Gesamtzahl an Spalten zur Auswahlliste
+            	; Gesamtanzahl der Spalten zur Auswahlliste hinzufügen
 		(setq ColCnt (dcl_Grid_GetColumnCount GRID_Dcl-1_grid1))
 		(setq cnt 1)
 		(dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridColCount)
@@ -52,139 +51,140 @@
 		) ;_ while
 		(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridColCount (- ColCnt 2))
 	)
-	(setq GridCellTypeList  (list
-								"0 - Nicht editierbar"
-                                                                "1 - Kontrollkästchen"
-                                                                "2 - Optionsfelder"
-                                                                "3 - Schaltbare Bilder"
-                                                                "4 - Schaltflächen"
-                                                                "5 - Auswahl-Schaltflächen"
-                                                                "6 - Texte"
-                                                                "7 - Winkel"
-                                                                "8 - Ganzzahlen"
-                                                                "9 - Dezimalzahlen"
-                                                                "10 - Großbuchstaben"
-                                                                "11 - Kleinbuchstaben"
-                                                                "12 - Passwort"
-                                                                "13 - Mehrzeiliger Text"
-                                                                "14 - Währung"
-                                                                "15 - Datum"
-                                                                "16 - Zeit"
-                                                                "17 - Prozent"
-                                                                "18 - Auswahlliste"
-                                                                "19 - Pfeilspitzen"
-                                                                "20 - ACI-Farbenliste"
-                                                                "21 - Textstile"
-                                                                "22 - Plotstilnamen"
-                                                                "23 - Plotstiltabellen"
-                                                                "24 - Plotter"
-                                                                "25 - Schriftartenliste"
-                                                                "26 - Laufwerke"
-                                                                "27 - Layer"
-                                                                "28 - Bemaßungsstile"
-                                                                "29 - Bilderliste"
-                                                                "30 - ACI-Farben"
-                                                                "31 - RGB-Farben"
-                                                                "32 - Linienstärken"
-                                                                "33 - Linientypen"
-                                                                "34 - Ordner"
-                                                                "35 - Dateien"
-                                                                "36 - Text-Kombinationsfeld"
-                                                                "37 - Winkel-Kombinationsfeld"
-                                                                "38 - Ganzzahlen-Kombinationsfeld"
-                                                                "39 - Dezimalzahlen-Kombinationsfeld"
-                                                                "40 - Großbuchstaben-Kombinationsfeld"
-                                                                "41 - Kleinbuchstaben-Kombinationsfeld"
-                                                                "42 - Symbolnamen"
-                                                                "43 - Symbolnamen-Kombinationsfeld"
-							   )
-		  ImageComboBoxList (list '("---" 100)     '("Stern" 0)
-								  '("Fuß" 1)      '("Hand" 2)
-								  '("Mond" 3)
-								 )
-	)                                   ; Liste zur Auswahlliste hinzufügen
-        (dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridCellType)
-	(dcl_ComboBox_AddList GRID_Dcl-1_CBx-GridCellType GridCellTypeList)
-										; Ersten Eintrag der Liste auswählen
-	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridCellType 0)
-										; Elemente zur Auswahlliste mit Symbolen hinzufügen
-	(AddListImageComboBox ImageComboBoxList GRID_Dcl-1_IC-Images)
-										; Ersten Eintrag der Liste auswählen
-	(dcl_ImageComboBox_SetCurSel GRID_Dcl-1_IC-Images 0)
-										; Elemente zur Auswahlliste mit Symbolen hinzufügen
-	(AddListImageComboBox ImageComboBoxList GRID_Dcl-1_IC-ColImages)
-										; Ersten Eintrag der Liste auswählen
-	(dcl_ImageComboBox_SetCurSel GRID_Dcl-1_IC-ColImages 0)
-	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridColJust 0)
-	(Setq nRow
-			 (dcl_Grid_AddString GRID_Dcl-1_grid1 (strcat "0\t \tKontrollkästchen"))
+	(setq GridCellTypeList '(
+								(-1 . "Vorgabewert aus der Spaltendefinition")
+								(0 . "Nicht editierbar")
+								(1 . "Kontrollkästchen")
+								(2 . "Optionsfelder")
+								(3 . "Schaltbare Bilder")
+								(4 . "Schaltflächen")
+								(5 . "Auswahl-Schaltflächen")
+								(6 . "Texte")
+								(7 . "Winkel")
+								(8 . "Ganzzahlen")
+								(9 . "Dezimalzahlen")
+								(10 . "Großbuchstaben")
+								(11 . "Kleinbuchstaben")
+								(12 . "Passwort")
+								(13 . "Mehrzeiliger Text")
+								(14 . "Währung")
+								(15 . "Datum")
+								(16 . "Zeit")
+								(17 . "Prozent")
+								(18 . "Auswahlliste")
+								(19 . "Pfeilspitzen")
+								(20 . "ACI-Farbenliste")
+								(21 . "Textstile")
+								(22 . "Plotstilnamen")
+								(23 . "Plotstiltabellen")
+								(24 . "Plotter")
+								(25 . "Schriftartenliste")
+								(26 . "Laufwerke")
+								(27 . "Layer")
+								(28 . "Bemaßungsstile")
+								(29 . "Bilderliste")
+								(30 . "ACI-Farben")
+								(31 . "RGB-Farben")
+								(32 . "Linienstärken")
+								(33 . "Linientypen")
+								(34 . "Ordner")
+								(35 . "Dateien")
+								(36 . "Text-Kombinationsfeld")
+								(37 . "Winkel-Kombinationsfeld")
+								(38 . "Ganzzahlen-Kombinationsfeld")
+								(39 . "Dezimalzahlen-Kombinationsfeld")
+								(40 . "Großbuchstaben-Kombinationsfeld" )
+								(41 . "Kleinbuchstaben-Kombinationsfeld")
+								(42 . "Symbolnamen")
+								(43 . "Symbolnamen-Kombinationsfeld")
+								)
+	      ImageComboBoxList (list '("---" 100) '("Stern" 0) '("Füße" 1) '("Hand" 2) '("Mond" 3))) ; Liste zur Auswahlliste hinzufügen
+
+	(dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridCellType)			; Auswahlliste leeren
+
+        (foreach lstItem GridCellTypeList					; Liste zur Auswahlliste hinzufügen
+            (setq nRow (dcl_ComboBox_AddString GRID_Dcl-1_CBx-GridCellType (strcat (itoa (car lstItem)) " - " (cdr lstItem)))) ;; Fügt ein Element hinzu
+            (dcl_combobox_setitemdata GRID_Dcl-1_CBx-GridCellType nRow (car lstItem))					       ;; Weist Daten zu
+        ); foreach
+
+	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridCellType 0)			; Wählt das erste Element der Liste aus
+
+	(AddListImageComboBox ImageComboBoxList GRID_Dcl-1_IC-Images)		; Fügt Elemente zur Auswahlliste mit Bildern hinzu
+
+	(dcl_ImageComboBox_SetCurSel GRID_Dcl-1_IC-Images 0)			; Wählt das erste Element der Liste aus
+
+	(AddListImageComboBox ImageComboBoxList GRID_Dcl-1_IC-ColImages)	; Fügt Elemente zur Auswahlliste mit Bildern hinzu
+
+	(dcl_ImageComboBox_SetCurSel GRID_Dcl-1_IC-ColImages 0)			; Wählt das erste Element der Liste aus
+
+	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridColJust 0)			; Wählt das erste Element der Liste aus
+
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
+								   (strcat "0\t \tKontrollkästchen")
+			   )
 	)
 	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 0)
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 1)
+
 	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
-								   (strcat "1\t \tOptionsschalter")
+								   (strcat "1\t \tOptionsfelder")
 			   )
 	)
 	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 1)
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 2)
 
-        (Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
 								   (strcat "2\t \tSchaltflächen")
 			   )
 	)
 	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 2)
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 4)
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
-	(Setq nRow
-			 (dcl_Grid_AddString GRID_Dcl-1_grid1 (strcat "3\t \tWahlschaltflächen"))
+
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 
+								   (strcat "3\t \tAuswahl-Schaltflächen")
+			   )
 	)
 	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 3)
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 5)
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
-										; Das Element als Auswahlliste hinzufügen
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "4\t \tElement 1"))
-										; Neuen Zellenstil setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 18)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1) ; Auswahlliste setzen
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1
-							  nRow
-							  2
-							  '("Element 1" "Element 2" "Element 3" "Element 4")
-	)                                   ; Das Element als Auswahlliste von Symbolen hinzufügen
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "5\t \tStern"))
-										; Neuen Zellenstil setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 29)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1) ; Auswahlliste setzen
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1        nRow
-							  2
-							  '("Stern" "Fuß" "Hand" "Mond")
+									
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "4\t \tElement1"))	; Fügt ein Element zum Datenblatt hinzu
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 18)			; Setzt den neuen Zellenstil
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)		
+	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2 '("Element1" "Element2" "Element3" "Element4"))	; Setzt die Auswahlliste
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "5\t \tStern")) 	; Fügt ein Element als Auswahlliste mit Bildern hinzu	
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 29)			; Setzt den neuen Zellenstil
+  (dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 2 0)
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1) 
+	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2
+							  '("Stern" "Füße" "Hand" "Mond")
 							  '(0 1 2 3)
-							 )          ; Das Element als Kombinationsfeld für Textwerte hinzufügen
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "6\t \tText-Kombinationsfeld"))
-										; Neuen Zellenstil setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 36)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1) ; Auswahlliste setzen
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1
-							  nRow
-							  2
-							  '("Element 1" "Element 2" "Element 3" "Element 4")
-	)                                   ; Das Element als Kombinationsfeld für Winkelwerte hinzufügen
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "7\t \t0"))
-										; Neuen Zellenstil setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 37)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1) ; Auswahlliste setzen
+							 )			; Setzt die Auswahlliste
+          
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "6\t \tText-Liste"))	; Fügt ein Element als Auswahlliste mit Zeichenketten hinzu
+							
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 36)			; Setzt den neuen Zellenstil
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
+	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2
+                               '("Element1" "Element2" "Element3" "Element4"))	; Setzt die Auswahlliste
 
 
-        ; Beachten Sie, dass alle Auswahllisten zunächst mit Zeichenketten arbeiten,
-        ; obwohl der Zelle der Stil der Auswahlliste mit Realzahlen zugewiesen wurde.
-    
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2 '("0" "90" "180" "270"))
-										; Das Element als schaltbare Symbole hinzufügen
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "8\t \tSchaltbare Symbole"))
-										; Neuen Zellenstil setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 3 1 2)
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "7\t \t0"))		; Fügt ein Element als Auswahlliste mit Winkeln hinzu
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 37)			; Setzt den neuen Zellenstil
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
+
+	; Beachten Sie, dass alle Listenelemente Zeichenketten sein müssen,
+	; obgleich es eine Auswahlliste mit Winkeln ist. Gleiches gilt für
+	; Listen mit Realzahlen und Ganzzahlen
+	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2 '("0" "90" "180" "270"))	; Setzt die Auswahlliste
+										
+	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "8\t \tWechselnde Bilder"))	; Fügt ein Element mit wechselnden Bildern hinzu
+										
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 3 1 2)			; Setzt den neuen Zellenstil
 	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
 	(FillColCountList)
+	(dcl_ListBox_Clear Grid_Dcl-1_LB-Status)				; Leert das Protokoll
 	(princ)
 )
 
@@ -193,28 +193,28 @@
 (defun c:Project1_Dcl-1_TB-AddRow_OnClicked
 	   (/ GRIDCELLIMAGEINT GRIDCELLTYPEINT GRIDCOLUMNVALUE GRIDROWCOUNT NROW)
 	(setq GridCellTypeInt  (dcl_ComboBox_GetCurSel GRID_Dcl-1_CBx-GridCellType)
-		  GridCellImageInt (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images)
-		  GridColumnValue  (dcl_Control_GetText GRID_Dcl-1_TB-Value)
-		  GridRowCount     (dcl_Grid_GetRowCount GRID_Dcl-1_grid1)
-	)                                   ; Zelle mit Kontrollkästchen ergänzen
+              GridCellTypeVal  (dcl_combobox_getitemdata GRID_Dcl-1_CBx-GridCellType GridCellTypeInt)
+              GridCellImageInt (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images)
+              GridColumnValue  (dcl_Control_GetText GRID_Dcl-1_TB-Value)
+              GridRowCount     (dcl_Grid_GetRowCount GRID_Dcl-1_grid1)
+	)
+	; Fügt ein Element mit Kontrollkästchen hinzu
 	(Setq nRow (dcl_Grid_AddString
 				   GRID_Dcl-1_grid1
 				   (strcat (itoa GridRowCount) "\t \t" GridColumnValue)
 			   )
-	)                                   ; \t mit dem Tabulatorzeichen werden die Zellen einer Zeile voneinader getrennt
-										; Neuen Zellenstil für Spalte 1 setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
-										; Kontrollkästchen in neuer Zelle deaktivieren
-	(dcl_Grid_SetItemCheck GRID_Dcl-1_grid1 nRow 1 0)
-										; Neuen Zellenstil für Spalte 2 setzen
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 GridCellTypeInt)
-	(if (> (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images) 0)
+	)									; \t für einzelne Spalten
+							
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)			; Setzt den Zellenstil für die Zelle in Spalte 1
+	(dcl_Grid_SetItemCheck GRID_Dcl-1_grid1 nRow 1 0)			; Schaltet den Zustandsschalter im Kontrollkästchen aus
+	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 GridCellTypeVal)		; Setzt den Zellenstil für die Zelle in Spalte 2
+	(if (> (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images) 0)		; Setzt ein neues Bild für die Zelle in Spalte 2
 		(dcl_Grid_SetItemImage
 			GRID_Dcl-1_grid1
 			nRow
 			2
 			(1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images))
-		)                               ; Setze das neue Symbol für die Zelle in Spalte 2
+		)
 	)
 )
 
@@ -222,10 +222,7 @@
 (defun c:grid_Dcl-1_TB-AddCol_OnClicked (/ txt cWidth cImg)
 	(setq txt (dcl_Control_GetText GRID_Dcl-1_TB-ColTitle))
 	(setq cImg (1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-ColImages)))
-	(if (>= cImg 0)
-		(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) 46))
-		(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) 15))
-	)
+	(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) (if (>= cImg 0) 48 12)))
 	(dcl_Grid_InsertColumn
 		GRID_Dcl-1_grid1
 		(dcl_Grid_GetColumnCount GRID_Dcl-1_grid1)
@@ -280,58 +277,57 @@
 
 
 
-
-(defun c:Project1_Dcl-1_grid1_OnBeginLabelEdit (nRow nCol / newValue)
+(defun c:Grid_Dcl-1_grid1_OnBeginLabelEdit (nRow nCol / newValue)
 	(setq newValue (strcat "Ereignis: OnBeginLabelEdit
 Argumente: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue)
+	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
 )
 
 
 
 
-(defun c:Project1_Dcl-1_grid1_OnButtonClicked (nRow nCol / newValue)
+(defun c:Grid_Dcl-1_grid1_OnButtonClicked (nRow nCol / newValue)
 	(setq newValue (strcat "Ereignis: OnButtonClicked
 Argumente: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue)
+	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
 )
 
-(defun c:Project1_Dcl-1_grid1_OnSelChanged (nRow nCol / newValue)
+(defun c:Grid_Dcl-1_grid1_OnSelChanged (nRow nCol / newValue)
 	(setq newValue (strcat "Ereignis: OnSelChanged
 Argumente: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue)
+	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
 )
 
 
-(defun c:Project1_Dcl-1_grid1_OnEndLabelEdit (nRow nCol / newValue)
+(defun c:Grid_Dcl-1_grid1_OnEndLabelEdit (nRow nCol / newValue)
 	(setq newValue (strcat "Ereignis: OnEndLabelEdit
 Argumente: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(if GRID_Dcl-1_GridStatus (dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue))
+	(if Grid_Dcl-1_LB-Status (dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue)))
 )
 
 
-(defun c:Project1_Dcl-1_grid1_OnColumnClick (nColumn / newValue)
+(defun c:Grid_Dcl-1_grid1_OnColumnClick (nColumn / newValue)
 	(setq newValue (strcat "Ereignis: OnColumnClick
 Argumente: nColumn: "      (itoa nColumn)
 				   )
 	)
-	(dcl_Control_SetCaption GRID_Dcl-1_GridStatus newValue)
+	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
 )
 
 (princ)
@@ -351,31 +347,31 @@ Argumente: nColumn: "      (itoa nColumn)
 		(setq *ODCL:Prefix
 			(cond
 				(	*ODCL:Prefix
-				) ;_ Bereits definiert
+				) ;_ already defined
 				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
+						 "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+						 "SamplesFolder"
 					)
-				) ;_ 32-bit Variante aktueller Nutzer
+				) ;_ 32-bit location
 				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					 )
-				) ;_ 32-bit Variante alle Nutzer
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
+						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+						 "SamplesFolder"
 					)
-				) ;_ 64-bit Variante aktueller Nutzer
+				) ;_ 32-bit location
 				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
+						 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						 "SamplesFolder"
 					)
-				) ;_ 64-bit Variante alle Nutzer
+				) ;_ 64-bit location
+				(	(vl-registry-read
+						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+						 "SamplesFolder"
+					)
+				) ;_ 64-bit location
 			)
 		)
 		(cond
-			((findfile file)) ; überprüfe zunächst den Supportpfad
+			((findfile file)) ; check the support path first
 			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
 			(file)
 		)
@@ -394,8 +390,8 @@ Argumente: nColumn: "      (itoa nColumn)
 				(apply (read (strcat "C:" demoname)) nil)
 			)
 			(progn
-				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
-				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+				(princ (strcat "\n" demoname " OpenDCL sample loaded"))
+				(princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
 			)
 		)
 	)

@@ -15,6 +15,7 @@ class CFolderComboBox : public CComboBox
 	int m_droppedHeight;
 	int m_droppedWidth;
 	CFolderTreeCtrl	m_treeCtrl;
+	bool mbDropLock;
 
 public:
 	CFolderComboBox();
@@ -31,7 +32,6 @@ public:
 	int GetDroppedWidth2();
 	int GetDroppedHeight();
 	void ShowDropDown(BOOL bShowIt = TRUE);
-	void DisplayTree();
 	CString GetSelectedPathDisplayName();
 	CString GetSelectedPath();
 	CString GetItemDisplayName(HTREEITEM item);
@@ -51,6 +51,7 @@ protected:
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg LRESULT OnSelchange( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnCbDir( WPARAM wParam, LPARAM lParam );
+	afx_msg void OnCancelMode();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnDestroy();

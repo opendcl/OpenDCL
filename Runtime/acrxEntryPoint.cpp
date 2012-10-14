@@ -874,7 +874,7 @@ public:
 			#else
 				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryFirst = &__pAdsSymbolMapEntryFirst + 1;
 				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryLast = &__pAdsSymbolMapEntryLast;
-        int paramIter = 0;
+				int paramIter = 0;
 				for( _ADSSYMBOL_ENTRY** ppEntry = ppAdsSymbolMapEntryFirst;
 						 ppEntry < ppAdsSymbolMapEntryLast;
 						 ppEntry++ )
@@ -2342,7 +2342,7 @@ public:
 		if( sBlockName.IsEmpty() )
 			return RSERR; //invalid argument
 
-    AcDbDatabase* pDb = acdbCurDwg();
+		AcDbDatabase* pDb = acdbCurDwg();
 		assert(pDb != NULL);
 		if (!pDb)
 			return RSERR;

@@ -18,6 +18,7 @@ public:
 		{
 			if( !pGridCtrl->IsCellChecked( nRow, nCol ) )
 				pGridCtrl->ToggleCellState( nRow, nCol );
+			pGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 		}
 	virtual ~CRadioEditCtrl()
 		{

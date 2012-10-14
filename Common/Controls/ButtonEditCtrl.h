@@ -28,6 +28,7 @@ public:
 			SetIcon( hIcon );
 			SetThemeHelper( pGridCtrl->GetControlPane()->GetThemeHelper() );
 			SetFlat( FALSE );
+			SetFocus();
 		}
 	CButtonEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, LPCTSTR pszCaption, UINT nID = 100 )
 		: CDynamicButtonCtrl( pGridCtrl, CalcRect( pGridCtrl->GetCellRect( nRow, nCol ) ), nID )
@@ -36,6 +37,7 @@ public:
 			SetWindowText( pszCaption );
 			SetThemeHelper( pGridCtrl->GetControlPane()->GetThemeHelper() );
 			SetFlat( FALSE );
+			SetFocus();
 		}
 	virtual ~CButtonEditCtrl()
 		{

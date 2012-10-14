@@ -25,19 +25,6 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 
-public:
-	//void DoEditCellNow(int nStyle, UINT nChar = 0);
-	//void ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sStrings);
-	//void ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings, CArray<int, int> &nItems);
-
-protected:
-	void DoAcadColorDlg();
-	void DoAcadTrueColorDlg();
-	void DoFileDlg( Grid::CellStyle nStyle );
-	//void DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW);
-	//void DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sText);
-	//void ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar = 0);
-
 protected:
 	virtual void OnSelectionChanged();
 	virtual void OnEditCurCell();

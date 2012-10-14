@@ -89,10 +89,6 @@ class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCell
 				{
 					switch( HIWORD(wParam) )
 					{
-					case CBN_KILLFOCUS:
-						//return mpGridCtrl->SendMessage( WM_COMMAND, wParam, lParam );
-						mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
-						break;
 					case CBN_CLOSEUP:
 						mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 						break;
@@ -141,7 +137,7 @@ public:
 			SelectPath( sText );
 			SetFocus();
 			if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
-				DisplayTree();
+				ShowDropDown();
 		}
 	virtual ~CDriveComboDropdownListEditCtrl()
 		{
@@ -167,6 +163,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mpCellEditCtrl( NULL )
 , mnRowHeight( -1 )
 , mbIgnoreChange( false )
+, mbActOnButtonUp( false )
 {
 	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
 	mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 2, 1 );
@@ -979,35 +976,43 @@ void CGridCtrl::SetupColumns()
 void CGridCtrl::HideEditControls()
 {
 	if( mpCellEditCtrl && !mpCellEditCtrl->isInModalLoop() )
+	{
+		CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
+		mpCellEditCtrl = NULL;
+		NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_ENDLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
+		CWnd* pParent = GetParent();
+		if( pParent )
+			pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
+		delete pCellEditCtrl;
+		MSG msg;
+		while( PeekMessage( &msg, m_hWnd, WM_CANCELMODE, WM_CANCELMODE, PM_REMOVE ) ); //clear pending posted WM_CANCELMODE messages
 		OnEndEditCurCell();
+	}
 }
 
-void CGridCtrl::OnEditCurCell()
+bool CGridCtrl::EditCurCell()
 {
 	if( mpCellEditCtrl && mCurrentCell && mCurrentCell.row() == mpCellEditCtrl->row() && mCurrentCell.col() == mpCellEditCtrl->col() )
-		return; //already editing this cell
+		return true; //already editing this cell
 	HideEditControls();
-	if( !mCurrentCell || (mbHasRowHeader && mCurrentCell.col() == 0) )
+	if( !mCurrentCell || (mbHasRowHeader && mCurrentCell.col() <= 0) )
 	{
 		SetCurCell( mCurrentCell.row(), -1 );
-		return;
+		return true;
 	}
+	OnEditCurCell();
 	mpCellEditCtrl = CreateEditControl( mCurrentCell.row(), mCurrentCell.col() );
+	if (!mpCellEditCtrl)
+	{
+		OnEndEditCurCell();
+		return true;
+	}
+	mbActOnButtonUp = true;
 	NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_BEGINLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
 	CWnd* pParent = GetParent();
 	if( pParent )
 		pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
-}
-
-void CGridCtrl::OnEndEditCurCell()
-{
-	CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
-	mpCellEditCtrl = NULL;
-	NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_ENDLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
-	CWnd* pParent = GetParent();
-	if( pParent )
-		pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
-	delete pCellEditCtrl;
+	return true;
 }
 
 CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
@@ -1879,6 +1884,7 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_NCCALCSIZE()	
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 	ON_WM_HSCROLL_REFLECT()
 	ON_WM_VSCROLL_REFLECT()
 	ON_NOTIFY_REFLECT(LVN_BEGINSCROLL, &CGridCtrl::OnLvnBeginScroll)
@@ -1960,7 +1966,7 @@ BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg)
 void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	__super::OnLButtonDown(nFlags, point);
-
+	mbActOnButtonUp = false;
 	int nRow = -1;
 	int nCol = -1;
 	if( !CellHitTest( point, nRow, nCol ) )
@@ -1970,7 +1976,22 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	if( nRow != mCurrentCell.row() || nCol != mCurrentCell.col() )
 		SetCurCell( nRow, nCol );
-	OnEditCurCell();
+	EditCurCell();
+}
+
+void CGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+{
+	__super::OnLButtonUp(nFlags, point);
+	if( !mbActOnButtonUp )
+		return;
+	mbActOnButtonUp = false;
+	int nRow = -1;
+	int nCol = -1;
+	if( !CellHitTest( point, nRow, nCol ) )
+		return;
+	if( nRow != mCurrentCell.row() || nCol != mCurrentCell.col() )
+		SetCurCell( nRow, nCol );
+	EditCurCell();
 }
 
 void CGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
@@ -2046,6 +2067,8 @@ LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 		HideEditControls();
 	else if( GetControlPane()->GetHostDialog()->IsWindowEnabled() )
 	{
+		if( pFocusWnd == this )
+			return 0;
 		CWnd* pFocusParent = pFocusWnd->GetParent();
 		if( pFocusParent == GetControlPane()->GetHostDialog() && (pFocusWnd->GetStyle() & WS_POPUP) == WS_POPUP )
 			return 0; //CDateTimeCtrl popup window in WinXP is a popup owned by the host dialog

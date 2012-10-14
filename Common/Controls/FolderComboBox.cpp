@@ -12,6 +12,7 @@ CFolderComboBox::CFolderComboBox()
 : m_iconWidth( 16 )
 , m_droppedHeight( 100 )
 , m_droppedWidth( 50 )
+, mbDropLock( false )
 {
 }
 
@@ -37,7 +38,7 @@ bool CFolderComboBox::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwSt
 	return bSuccess;
 }
 
-BOOL CFolderComboBox::GetDroppedState( )
+BOOL CFolderComboBox::GetDroppedState()
 {
 	return m_treeCtrl.IsWindowVisible();
 }
@@ -91,22 +92,18 @@ bool CFolderComboBox::SelectFolder( LPCTSTR pszFolderName )
 void CFolderComboBox::ShowDropDown(BOOL bShowIt /*= TRUE*/)
 {
 	if( bShowIt )
-		DisplayTree();
+	{
+		GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_DROPDOWN), (LPARAM)m_hWnd );
+		int nDropHeight = m_treeCtrl.GetItemHeight() * m_treeCtrl.GetCount() + 3;
+		CRect rc;
+		GetWindowRect( &rc );
+		rc.top = rc.bottom + 1;
+		rc.bottom = rc.top + nDropHeight;
+		rc.right = rc.left + GetDroppedWidth();
+		m_treeCtrl.Display(rc);
+	}
 	else
 		m_treeCtrl.ShowWindow(SW_HIDE);
-}
-
-void CFolderComboBox::DisplayTree()
-{
-	GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_DROPDOWN), (LPARAM)m_hWnd );
-	int nDropHeight = m_treeCtrl.GetItemHeight() * m_treeCtrl.GetCount() + 3;
-	CRect rc;
-	GetWindowRect( &rc );
-	rc.top = rc.bottom + 1;
-	rc.bottom = rc.top + nDropHeight;
-	rc.right = rc.left + GetDroppedWidth();
-	
-	m_treeCtrl.Display(rc);
 }
 
 int CFolderComboBox::GetDroppedHeight()
@@ -132,6 +129,7 @@ void CFolderComboBox::SetDroppedWidth(int width)
 
 BEGIN_MESSAGE_MAP(CFolderComboBox, CComboBox)
 	ON_WM_MEASUREITEM_REFLECT()
+	ON_WM_CANCELMODE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_DESTROY()
@@ -193,22 +191,41 @@ void CFolderComboBox::DrawItem(LPDRAWITEMSTRUCT pDIStruct)
 
 BOOL CFolderComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message==WM_KEYDOWN && (pMsg->wParam==VK_DOWN || pMsg->wParam==VK_RIGHT))
-	{	m_treeCtrl.SelectNextItem(TRUE);
-		Invalidate();
-		return TRUE;
+	switch( pMsg->message )
+	{
+	case WM_KEYDOWN:
+		switch( pMsg->wParam )
+		{
+		case VK_DOWN:
+		case VK_RIGHT:
+			m_treeCtrl.SelectNextItem( TRUE );
+			Invalidate();
+			return TRUE;
+		case VK_UP:
+		case VK_LEFT:
+			m_treeCtrl.SelectNextItem( FALSE );
+			Invalidate();
+			return TRUE;
+		case VK_NEXT:
+			ShowDropDown( TRUE );
+			return TRUE;
+		case VK_PRIOR:
+			ShowDropDown( FALSE );
+			return TRUE;
+		}
+		break;
+	case WM_SYSKEYDOWN:
+		switch( pMsg->wParam )
+		{
+		case VK_UP:
+			ShowDropDown( FALSE );
+			return TRUE;
+		case VK_DOWN:
+			ShowDropDown( TRUE );
+			return TRUE;
+		}
+		break;
 	}
-	else if (pMsg->message==WM_KEYDOWN && (pMsg->wParam==VK_UP || pMsg->wParam==VK_LEFT))
-	{	m_treeCtrl.SelectNextItem(FALSE);
-		Invalidate();
-		return TRUE;
-	}
-	else if (pMsg->message==WM_SYSKEYDOWN && pMsg->wParam==VK_DOWN)
-	{	
-		DisplayTree();
-		return TRUE;
-	}
-
 	return CComboBox::PreTranslateMessage(pMsg);
 }
 
@@ -226,6 +243,8 @@ BOOL CFolderComboBox::OnCommand(WPARAM wParam, LPARAM lParam)
 		{
 		case CBN_SELENDOK:
 		case CBN_CLOSEUP:
+			mbDropLock = true;
+			PostMessage( WM_CANCELMODE );
 		case CBN_DROPDOWN:
 			GetParent()->SendMessage( WM_COMMAND, wParam, lParam );
 			break;
@@ -234,12 +253,16 @@ BOOL CFolderComboBox::OnCommand(WPARAM wParam, LPARAM lParam)
 	return bResult;
 }
 
+void CFolderComboBox::OnCancelMode() 
+{
+	mbDropLock = false;
+}
+
 void CFolderComboBox::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	if (m_treeCtrl.IsWindowVisible())
-		m_treeCtrl.ShowWindow(SW_HIDE);
-	else
-		DisplayTree ();
+	SetFocus();
+	if( !mbDropLock && !GetDroppedState() )
+		ShowDropDown();
 }
 
 void CFolderComboBox::OnLButtonDblClk(UINT nFlags, CPoint point) 

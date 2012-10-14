@@ -209,6 +209,7 @@ class CGridCtrl : public CListCtrl, public CDialogControl
 	COLORREF mclrAlternate;
 	int mnRowHeight;
 	bool mbIgnoreChange;
+	bool mbActOnButtonUp;
 
 protected:
 	class _Cell
@@ -271,7 +272,7 @@ public:
 	bool ToggleCellState( int nRow, int nCol );
 	bool CellHitTest( const CPoint& point, int& nRow, int& nCol ) const;
 	void HideEditControls();
-	bool EditCurCell() { OnEditCurCell(); return true; }
+	bool EditCurCell();
 	bool CancelEditing() { HideEditControls(); return true; }
 
 protected:
@@ -308,9 +309,9 @@ public:
 // Overridables
 protected:
 	virtual void OnSelectionChanged() {}
-	virtual void OnEditCurCell();
+	virtual void OnEditCurCell() {}
 	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
-	virtual void OnEndEditCurCell();
+	virtual void OnEndEditCurCell() {}
 	virtual void DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell = CSize(0, 0), bool bCalcOnly = false );
 
 // Operations
@@ -340,6 +341,7 @@ protected:
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void HScroll(UINT nSBCode, UINT nPos);
 	afx_msg void VScroll(UINT nSBCode, UINT nPos);
 	afx_msg void OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult);
