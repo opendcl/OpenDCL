@@ -13,6 +13,7 @@
 #undef SubclassWindow
 
 #define WM_SETSELECTEDSTATE (WM_USER + 45)
+#define HDM_SETBITMAPMARGIN (HDM_FIRST + 20)
 
 #ifndef LVS_EX_LABELTIP
 #define LVS_EX_LABELTIP 0x00004000
@@ -84,6 +85,10 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 			dwExStyle |= LVS_EX_SUBITEMIMAGES;
 		SetExtendedStyle( dwExStyle );
 		EnableToolTips(FALSE);
+
+		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
+		if( pHeaderCtrl )
+			pHeaderCtrl->SendMessage( HDM_SETBITMAPMARGIN, 1, 0 );
 	}
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -387,8 +392,8 @@ DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sour
 	CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
 	if( pHeaderCtrl )
 	{
-		int idxColumn = pHeaderCtrl->GetItemCount();
-		while( --idxColumn > 0 )
+		int ctColumn = pHeaderCtrl->GetItemCount();
+		for( int idxColumn = 1; idxColumn < ctColumn; ++idxColumn )
 		{
 			sText += _T('\t');
 			sText += GetItemText( idxItem, idxColumn );

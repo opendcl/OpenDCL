@@ -131,12 +131,14 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() && !GetComboHandler() )
 		{
+			mbIgnoreChange = true;
 			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
 			if( prInt )
 			{
 				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
 					SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
 			}
+			mbIgnoreChange = false;
 		}
 		break;
 	case Prop::Text:

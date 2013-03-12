@@ -57,14 +57,15 @@
 #if (_WIN32_WINNT < 0x501)
 typedef struct tagNMLVSCROLL
 {
-    NMHDR   hdr;
-    int     dx;
-    int     dy;
+		NMHDR   hdr;
+		int     dx;
+		int     dy;
 } NMLVSCROLL, *LPNMLVSCROLL;
 
 #define LVN_BEGINSCROLL          (LVN_FIRST-80)          
 #define LVN_ENDSCROLL            (LVN_FIRST-81)
 #endif //(_WIN32_WINNT < 0x501)
+#define HDM_SETBITMAPMARGIN (HDM_FIRST + 20)
 
 #ifndef LVS_EX_LABELTIP
 #define LVS_EX_LABELTIP 0x00004000
@@ -202,6 +203,10 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 		BOOL bUnicode = FALSE;
 	#endif
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
+
+		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
+		if( pHeaderCtrl )
+			pHeaderCtrl->SendMessage( HDM_SETBITMAPMARGIN, 1, 0 );
 	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
@@ -1170,15 +1175,15 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 {
 	Grid::CellStyle nCellStyle = GetEffectiveCellStyle( nRow, nCol );
 	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
-  GetItem( &lvi );
+	GetItem( &lvi );
 	bool bHighlight = false;
 	//bool bHighlight = ((GetFocus() == this || (GetStyle() & LVS_SHOWSELALWAYS)) &&
 	//									 ((lvi.state & LVIS_DROPHILITED) || (lvi.state & LVIS_SELECTED)));
 
-  CRect rcBounds = GetCellRect( nRow, nCol, LVIR_BOUNDS );
+	CRect rcBounds = GetCellRect( nRow, nCol, LVIR_BOUNDS );
 	CRect rcLabel = GetCellRect( nRow, nCol, LVIR_LABEL ); 
 	CRect rcIcon = GetCellRect( nRow, nCol, LVIR_ICON );
-  CString sLabel = GetCellText( nRow, nCol );
+	CString sLabel = GetCellText( nRow, nCol );
 
 	bool bWordWrap = (rcLabel.Height() >= ((cdc.GetTextExtent( _T(" "), 1 ).cy * 2) + 1));
 
@@ -1421,7 +1426,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 			for( int cch = cchLabel; cch > 0; --cch )
 				sLabel += _T('*');
 		}
-    UINT fAlignment = 0;
+		UINT fAlignment = 0;
 		const PropVal::TIntArray* pColAlignments = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();
 		if( pColAlignments && nCol >= 0 && (size_t)nCol < pColAlignments->size() )
 			fAlignment |= pColAlignments->at( nCol );
@@ -1907,7 +1912,7 @@ void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	if( lpDrawItemStruct->CtlType != ODT_LISTVIEW )
 		return;
-  int nRow = lpDrawItemStruct->itemID;
+	int nRow = lpDrawItemStruct->itemID;
 	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 	pDC->SetBkColor( mColorService.GetBackgroundColor() );
 	pDC->SetTextColor( mColorService.GetForegroundColor() );

@@ -20,6 +20,7 @@ COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 : CDialogControl( pTemplate, pPane, this )
 , mnRowHeight( 20 )
 , mbTrackingMouse( false )
+, idxInitialFocusItem( -1 )
 {
 	mImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 4, 1 );
 	
@@ -65,27 +66,24 @@ DWORD COptionListCtrl::GetWndStyle() const
 bool COptionListCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
 	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
-
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	SetCaretIndex( GetCurSel() );
-	ResetTooltips();
+	if( bSuccess )
+	{
+		ModifyStyleEx( WS_EX_TRANSPARENT, 0 );
+		SetCaretIndex( GetCurSel() );
 
-	return bSuccess;
-}
+		//The automatic vertical scroll bar doesn't get initialized correctly unless the listbox window is
+		//first resized small enough that the scroll bar would be needed
+		CRect rc;
+		GetWindowRect( &rc );
+		GetParent()->ScreenToClient( &rc );
+		MoveWindow( CRect( 0, 0, 0, 0 ), FALSE );
+		MoveWindow( &rc );
 
-bool COptionListCtrl::ApplyPropertiesEnum()
-{
-	bool bSuccess = __super::ApplyPropertiesEnum();
-
-	//The automatic vertical scroll bar doesn't get initialized correctly unless the listbox window is
-	//first resized small enough that the scroll bar would be needed
-	CRect rc;
-	GetWindowRect( &rc );
-	GetParent()->ScreenToClient( &rc );
-	MoveWindow( CRect( 0, 0, 0, 0 ), FALSE );
-	MoveWindow( &rc );
+		ResetTooltips();
+	}
 
 	return bSuccess;
 }
@@ -172,8 +170,10 @@ BEGIN_MESSAGE_MAP(COptionListCtrl, CListBox)
 	ON_CONTROL_REFLECT(LBN_SELCHANGE, &COptionListCtrl::OnLbnSelchange)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_KILLFOCUS()
+	ON_WM_SETFOCUS()
 	ON_WM_ERASEBKGND()
 	ON_WM_DRAWITEM_REFLECT()
+	ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
 
@@ -195,7 +195,7 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent( pMsg );
 	
-  if (pMsg->message == WM_KEYDOWN)
+	if (pMsg->message == WM_KEYDOWN)
 	{
 		if (pMsg->wParam == VK_RETURN)
 		{
@@ -205,23 +205,63 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 		else if (pMsg->wParam == VK_LEFT || pMsg->wParam == VK_UP)
 		{
 			int nCurSel = GetCurSel();
-			if( nCurSel > 0 )
-				--nCurSel;
-			else
-				nCurSel = GetCount() - 1;
-			SetCurSel(nCurSel);
-			GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0,LBN_SELCHANGE), (LPARAM)m_hWnd );
+			int idxNext = -1;
+			for( int idxItem = nCurSel - 1; idxItem >= 0; --idxItem )
+			{
+				if( !(GetItemData( idxItem ) & 2) ) //enabled?
+				{
+					idxNext = idxItem;
+					break;
+				}
+			}
+			if( idxNext < 0 )
+			{
+				for( int idxItem = GetCount() - 1; idxItem > nCurSel; --idxItem )
+				{
+					if( !(GetItemData( idxItem ) & 2) ) //enabled?
+					{
+						idxNext = idxItem;
+						break;
+					}
+				}
+			}
+			if( idxNext >= 0 )
+			{
+				SetCurSel(idxNext);
+				SetCaretIndex(idxNext);
+				GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0,LBN_SELCHANGE), (LPARAM)m_hWnd );
+			}
 			return TRUE;
 		}
 		else if (pMsg->wParam == VK_RIGHT || pMsg->wParam == VK_DOWN)
 		{
 			int nCurSel = GetCurSel();
-			if( nCurSel < GetCount() - 1 )
-				++nCurSel;
-			else
-				nCurSel = 0;
-			SetCurSel(nCurSel);
-			GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0,LBN_SELCHANGE), (LPARAM)m_hWnd );
+			int idxNext = -1;
+			for( int idxItem = nCurSel + 1; idxItem < GetCount(); ++idxItem )
+			{
+				if( !(GetItemData( idxItem ) & 2) ) //enabled?
+				{
+					idxNext = idxItem;
+					break;
+				}
+			}
+			if( idxNext < 0 )
+			{
+				for( int idxItem = 0; idxItem < nCurSel; ++idxItem )
+				{
+					if( !(GetItemData( idxItem ) & 2) ) //enabled?
+					{
+						idxNext = idxItem;
+						break;
+					}
+				}
+			}
+			if( idxNext >= 0 )
+			{
+				SetCurSel(idxNext);
+				SetCaretIndex(idxNext);
+				GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0,LBN_SELCHANGE), (LPARAM)m_hWnd );
+			}
 			return TRUE;
 		}
 	}
@@ -273,7 +313,7 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 LRESULT COptionListCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
 	mbTrackingMouse = false;        
-	OnNeedRepaint( false );
+	OnNeedRepaint( true );
 	return FALSE;
 }
 
@@ -294,10 +334,16 @@ BOOL COptionListCtrl::OnEraseBkgnd(CDC* pDC)
 	return __super::OnEraseBkgnd(pDC);
 }
 
+void COptionListCtrl::OnSetFocus(CWnd* pOldWnd) 
+{
+	__super::OnSetFocus( pOldWnd );
+	OnNeedRepaint( true );
+}
+
 void COptionListCtrl::OnKillFocus(CWnd* pNewWnd)
 {
-	OnNeedRepaint();
 	__super::OnKillFocus(pNewWnd);
+	OnNeedRepaint( true );
 }
 
 void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
@@ -319,34 +365,41 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	GetText( lpDrawItemStruct->itemID, sCaption );
 	pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_CALCRECT | DT_NOPREFIX );	
 
-	if( lpDrawItemStruct->itemAction & ODA_DRAWENTIRE )
+	if( (lpDrawItemStruct->itemAction & ODA_DRAWENTIRE) )
 	{
 		pDC->SetTextColor( GetColorService()->GetForegroundColor() );
 		pDC->SetBkMode( TRANSPARENT );
 		
-		if( lpDrawItemStruct->itemData < 2 )
+		if( !(lpDrawItemStruct->itemData & 2) )
 			pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_NOPREFIX );	
 		else
 		{ // draw the text as disabled
 			pDC->DrawState( rcText.TopLeft(), CSize( rcText.Width(), rcText.Height() ),
 											sCaption, DSS_DISABLED, FALSE, 0, (HBRUSH)NULL );
 		}
+		pDC->SetBkMode( OPAQUE );
 	}
-	if( lpDrawItemStruct->itemAction & (ODA_SELECT | ODA_DRAWENTIRE) )
+	if( (lpDrawItemStruct->itemAction & (ODA_SELECT | ODA_DRAWENTIRE)) )
 	{
 		bool bSelected = ((lpDrawItemStruct->itemState & ODS_SELECTED) != 0);
-		bool bDisabled = (lpDrawItemStruct->itemData >= 2);
+		bool bDisabled = ((lpDrawItemStruct->itemData & 2) != 0);
 		int idxImage = bDisabled? 2 : 0;
 		if( bSelected )
 			idxImage += 3;
 		mImageList.Draw( pDC, idxImage, CPoint( rcItem.left + 2, rcItem.top + 2 ), ILD_NORMAL );
 	}
-	if( lpDrawItemStruct->itemAction & ODA_FOCUS )
+	if( (lpDrawItemStruct->itemAction & ODA_FOCUS) )
 	{
-		CRect rcFocus( rcText );
-		rcFocus.InflateRect( 2, 2 );
-		rcFocus &= rcItem;
-		pDC->DrawFocusRect( &rcFocus );
+		bool bFocus = ((lpDrawItemStruct->itemState & ODS_FOCUS) != 0);
+		if( bFocus || idxInitialFocusItem >= 0 )
+		{
+			if( idxInitialFocusItem < 0 )
+				idxInitialFocusItem = lpDrawItemStruct->itemID;
+			CRect rcFocus( rcText );
+			rcFocus.InflateRect( 2, 2 );
+			rcFocus &= rcItem;
+			pDC->DrawFocusRect( &rcFocus );
+		}
 	}
 
 	pDC->RestoreDC( -1 );
@@ -363,4 +416,19 @@ LRESULT COptionListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return __super::WindowProc(message, wParam, lParam);
+}
+
+__UINT_LRESULT COptionListCtrl::OnNcHitTest(CPoint point)
+{
+	LRESULT lResult = __super::OnNcHitTest(point);
+	if( lResult == HTCLIENT )
+	{
+		CPoint ptClient = point;
+		ScreenToClient( &ptClient );
+		BOOL bOutside = TRUE;
+		int idxItem = ItemFromPoint( ptClient, bOutside );
+		if( !bOutside && idxItem >= 0 && (GetItemData( idxItem ) & 2) ) //is this item disabled?
+			return HTNOWHERE; //prevent clicking
+	}
+	return lResult;
 }

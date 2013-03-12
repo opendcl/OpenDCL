@@ -80,9 +80,9 @@ void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxOptionListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-  if( nChar == VK_RETURN )
+	if( nChar == VK_RETURN )
 	{
-    if( GetArxServices()->HandleEvent( Prop::EventDblClicked ) )
+		if( GetArxServices()->HandleEvent( Prop::EventDblClicked ) )
 			return;
 	}
 	__super::OnKeyDown(nChar,nRepCnt,nFlags);

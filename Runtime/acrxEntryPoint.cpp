@@ -390,6 +390,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Grid_GetCellImages"),           Grid::GetCellImages},
 	{_T("Grid_GetCellStyle"),            Grid::GetCellStyle},
 	{_T("Grid_GetCellText"),             Grid::GetCellText},
+	{_T("Grid_GetColumnCaption"),        Grid::GetColumnCaption},
 	{_T("Grid_GetColumnCells"),          Grid::GetColumnCells},
 	{_T("Grid_GetColumnCount"),          Grid::GetColumnCount},
 	{_T("Grid_GetColumnImage"),          Grid::GetColumnImage},
@@ -407,6 +408,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Grid_SetCellImages"),           Grid::SetCellImages},
 	{_T("Grid_SetCellStyle"),            Grid::SetCellStyle},											
 	{_T("Grid_SetCellText"),             Grid::SetCellText},
+	{_T("Grid_SetColumnCaption"),        Grid::SetColumnCaption},
 	{_T("Grid_SetColumnImage"),          Grid::SetColumnImage},
 	{_T("Grid_SetColumnWidth"),          Grid::SetColumnWidth},
 	{_T("Grid_SetCurCell"),              Grid::SetCurCell},
@@ -2363,9 +2365,9 @@ public:
 
 		AcGeVector3d size = ext.maxPoint() - ext.minPoint();
 		resbuf rbHeight = {NULL, RTREAL};
-		rbHeight.resval.rreal = size.x;
+		rbHeight.resval.rreal = size.y;
 		resbuf rbWidth = {&rbHeight, RTREAL};
-		rbWidth.resval.rreal = size.y;
+		rbWidth.resval.rreal = size.x;
 		acedRetList (&rbWidth);
 
 		return (RSRSLT) ;

@@ -540,8 +540,8 @@ FontSettings CArxWorkspace::GetDefaultFontSettings() const
 									 pApp->GetProfileInt( sSection, S_DefaultFontBold, 0 ) != 0,
 									 pApp->GetProfileInt( sSection, S_DefaultFontUnderLine, 0 ) != 0,
 									 pApp->GetProfileInt( sSection, S_DefaultFontItalic, 0 ) != 0 );
-  if( !FS )
-    FS.setName( theWorkspace.GetDefaultFontName() );
+	if( !FS )
+		FS.setName( theWorkspace.GetDefaultFontName() );
 	if( pApp->GetProfileInt( sSection, S_DefaultFontSizeStyle, 0 ) != 0 )
 	{
 		if( !FS.isScaled() )

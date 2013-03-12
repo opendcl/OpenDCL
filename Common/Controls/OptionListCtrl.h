@@ -6,6 +6,12 @@
 #include "DialogControl.h"
 #include "AcadColorService.h"
 
+#if (_MFC_VER < 0x0800)
+#define __UINT_LRESULT UINT
+#else
+#define __UINT_LRESULT LRESULT
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // COptionListCtrl window
@@ -16,6 +22,7 @@ class COptionListCtrl : public CListBox, public CDialogControl
 	int mnRowHeight;
 	CImageList mImageList;
 	bool mbTrackingMouse;
+	int idxInitialFocusItem;
 
 // Construction
 public:
@@ -27,7 +34,6 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyPropertiesEnum();
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
@@ -46,7 +52,9 @@ protected:
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
 	afx_msg void OnLbnSelchange();
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 };

@@ -19,6 +19,8 @@ ADSRESULT SetCellDropList();
 ADSRESULT GetCellCheckState();
 ADSRESULT SetCellCheckState();
 ADSRESULT HitPointTest();
+ADSRESULT GetColumnCaption();
+ADSRESULT SetColumnCaption();
 ADSRESULT GetColumnImage();
 ADSRESULT SetColumnImage();
 ADSRESULT GetRowCount();

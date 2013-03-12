@@ -29,7 +29,7 @@ struct ControlParams
 
 /*
 Architecture of ODCL Controls -- 2007-02-07 [ORW]
-  revised to use a multiple inheritance model -- 2007-02-25 [ORW]
+	revised to use a multiple inheritance model -- 2007-02-25 [ORW]
 
 The original implementation of controls duplicates a lot of logic in every control. The problem is 
 compounded by the fact that the various controls are derived from disparate base classes, thus making 

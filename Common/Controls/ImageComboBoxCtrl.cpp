@@ -135,6 +135,7 @@ bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() && !GetComboHandler() )
 		{
+			mbIgnoreChange = true;
 			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
 			if( prInt )
 			{
@@ -142,6 +143,7 @@ bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
 					pComboCtrl->SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
 			}
+			mbIgnoreChange = false;
 		}
 		break;
 	case Prop::Text:

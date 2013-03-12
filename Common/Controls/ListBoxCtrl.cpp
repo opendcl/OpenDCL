@@ -156,12 +156,14 @@ bool CListBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() )
 		{
+			mbIgnoreChange = true;
 			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
 			if( prInt )
 			{
 				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
 					SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
 			}
+			mbIgnoreChange = false;
 		}
 		break;
 	}
@@ -293,10 +295,10 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 		if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
 			++idxItem;
 	}
-	if( !setnDragSource.empty() && dropEffect == DROPEFFECT_MOVE )
+	if( !msetnDragSource.empty() && dropEffect == DROPEFFECT_MOVE )
 	{
-		for( std::set< UINT >::reverse_iterator iter = setnDragSource.rbegin();
-				 iter != setnDragSource.rend();
+		for( std::set< UINT >::reverse_iterator iter = msetnDragSource.rbegin();
+				 iter != msetnDragSource.rend();
 				 ++iter )
 		{
 			UINT nIdx = *iter;
@@ -304,7 +306,7 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 			if( nIdx < idxItem )
 				--idxItem;
 		}
-		setnDragSource.clear();
+		msetnDragSource.clear();
 	}
 	int idxInsert = idxItem;
 	CString sInsText( sTextA );
@@ -407,7 +409,7 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			int* rnSel = new int[ctSel];
 			GetSelItems( ctSel, rnSel );
 			for( int idx = 0; idx < ctSel; ++idx )
-				setnDragSource.insert( rnSel[idx] );
+				msetnDragSource.insert( rnSel[idx] );
 			delete[] rnSel;
 		}
 	}
@@ -415,9 +417,9 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		int nCurSel = GetCurSel();
 		if( nCurSel >= 0 )
-			setnDragSource.insert( nCurSel );
+			msetnDragSource.insert( nCurSel );
 	}
-	if( setnDragSource.empty() )
+	if( msetnDragSource.empty() )
 		return;
 
 	if( !bSuperMessage )
@@ -426,7 +428,7 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	DWORD dwDropEffect = BeginDragDrop( point );
 	if( bSuperMessage && dwDropEffect == DROPEFFECT_NONE )
 		__super::OnLButtonDown( nFlags, point );
-	if( !setnDragSource.empty() ) //if drop was on this control, setnDragSource gets cleared
+	if( !msetnDragSource.empty() ) //if drop was on this control, setnDragSource gets cleared
 	{
 		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
 		// will "follow" the mouse (like when you hold the left mouse down and 
@@ -436,15 +438,15 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
 		if( dwDropEffect == DROPEFFECT_MOVE )
 		{
-			for( std::set< UINT >::reverse_iterator iter = setnDragSource.rbegin();
-					 iter != setnDragSource.rend();
+			for( std::set< UINT >::reverse_iterator iter = msetnDragSource.rbegin();
+					 iter != msetnDragSource.rend();
 					 ++iter )
 			{
 				DeleteString( *iter );
 			}
 			GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), LBN_SELCHANGE), (LPARAM)m_hWnd );
 		}
-		setnDragSource.clear();
+		msetnDragSource.clear();
 	}
 }
 

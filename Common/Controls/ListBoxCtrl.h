@@ -14,7 +14,7 @@
 class CListBoxCtrl : public CListBox, public CDialogControl
 {
 	CAcadColorService mColorService;
-	std::set< UINT > setnDragSource;
+	std::set< UINT > msetnDragSource;
 	CRect mrcDropInsertMark;
 	bool mbIgnoreChange;
 

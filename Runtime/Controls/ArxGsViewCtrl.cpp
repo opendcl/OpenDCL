@@ -291,7 +291,7 @@ BOOL CArxGsViewCtrl::OnEraseBkgnd(CDC* pDC)
 
 void CArxGsViewCtrl::OnPaint()
 {
-  CPaintDC dc(this);
+	CPaintDC dc(this);
 
 	AcGsView* pView = GetGsView();
 	if( pView )

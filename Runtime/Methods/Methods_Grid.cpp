@@ -944,6 +944,37 @@ ADSRESULT Grid::SortNumericCells()
 	return RSRSLT;
 }
 
+ADSRESULT Grid::SetColumnCaption()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	CString sCaption;
+	if( !GetStringArgument( pArgs, sCaption ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	CHeaderCtrl* pHeader = pCtrl->GetHeaderCtrl();
+	if( !pHeader )
+		return RSRSLT;
+
+	HDITEM hdi = { HDI_TEXT };
+	hdi.pszText = sCaption.GetBuffer();
+	if( pHeader->SetItem( nCol, &hdi ) )
+		acedRetT();
+	return RSRSLT;
+}
+
 ADSRESULT Grid::SetColumnImage()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
@@ -978,6 +1009,32 @@ ADSRESULT Grid::SetColumnImage()
 	hdi.iImage = nImage;
 	if( pHeader->SetItem( nCol, &hdi ) )
 		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetColumnCaption()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	CHeaderCtrl* pHeader = pCtrl->GetHeaderCtrl();
+	if( !pHeader )
+		return RSRSLT;
+
+	HDITEM hdi = { HDI_TEXT };
+	if( pHeader->GetItem( nCol, &hdi ) )
+		acedRetStr( hdi.pszText );
 	return RSRSLT;
 }
 

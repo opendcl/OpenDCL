@@ -37,7 +37,10 @@ ADSRESULT OptionList::SetButtonEnabled()
 	else
 		dwData |= 2;
 	if( LB_ERR != pCtrl->SetItemData( nItem, dwData ) )
+	{
+		pDlgControl->OnNeedRepaint( true );
 		acedRetT();
+	}
 	return RSRSLT;
 }
 

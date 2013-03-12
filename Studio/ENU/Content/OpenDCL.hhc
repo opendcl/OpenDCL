@@ -1730,6 +1730,10 @@
 					<param name="Local" value="Reference\Method\Grid/GetCellText.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetColumnCaption">
+					<param name="Local" value="Reference\Method\Grid/GetColumnCaption.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetColumnCells">
 					<param name="Local" value="Reference\Method\Grid/GetColumnCells.htm">
 					</OBJECT>
@@ -1796,6 +1800,10 @@
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetCellText">
 					<param name="Local" value="Reference\Method\Grid/SetCellText.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetColumnCaption">
+					<param name="Local" value="Reference\Method\Grid/SetColumnCaption.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetColumnImage">
