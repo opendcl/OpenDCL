@@ -324,13 +324,13 @@ static bool IsWow64()
 #ifdef _WIN64
 	return false;
 #else
-  static BOOL bIsWow64 = FALSE;
+	static BOOL bIsWow64 = FALSE;
 	static bool bAlreadyTested = false;
 	if( !bAlreadyTested )
 	{
 		LPFN_ISWOW64PROCESS fnIsWow64Process =
 			(LPFN_ISWOW64PROCESS)GetProcAddress( GetModuleHandle( _T("KERNEL32") ), "IsWow64Process" );
-    if( fnIsWow64Process )
+		if( fnIsWow64Process )
 			fnIsWow64Process( GetCurrentProcess(), &bIsWow64 );
 		bAlreadyTested = true;
 	}
@@ -340,8 +340,8 @@ static bool IsWow64()
 
 
 BOOL APIENTRY DllMain( HMODULE hModule, 
-                       DWORD  ul_reason_for_call, 
-                       LPVOID lpReserved )
+											 DWORD  ul_reason_for_call, 
+											 LPVOID lpReserved )
 {
 	switch (ul_reason_for_call)
 	{
@@ -354,7 +354,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		case DLL_PROCESS_DETACH:
 			break;
 	}
-  return TRUE;
+	return TRUE;
 }
 
 
@@ -455,6 +455,7 @@ public:
 		kAutoCAD2011 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 1),
 		kAutoCAD2012 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 2),
 		kAutoCAD2013 =  ((kAutoCAD << shftPlatform) | (kARX2013 << shftMajorVer) | 0),
+		kAutoCAD2014 =  ((kAutoCAD << shftPlatform) | (kARX2013 << shftMajorVer) | 1),
 		kBricscad9_3 =  ((kBricscad << shftPlatform) | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =  ((kBricscad << shftPlatform) | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =  ((kBricscad << shftPlatform) | (kBRX11 << shftMajorVer) | 0),
@@ -663,6 +664,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
@@ -676,6 +678,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM, true );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM, true );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014, sInstallDir ), bWantHKLM, true );
 		//EnumerateRegTargets( TargetModule( TargetModule::kBricscad13, sInstallDir ), bWantHKLM, true );
 	}
 	return ERROR_SUCCESS;
@@ -741,6 +744,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_LOCAL_MACHINE );
@@ -765,6 +770,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_CURRENT_USER, true );
 		//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE, true );
 		//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER, true );
 	}

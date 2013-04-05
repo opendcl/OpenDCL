@@ -1003,6 +1003,15 @@ public:
 
 	virtual AcRx::AppRetCode On_kLoadDwgMsg (void *pkt) {
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kLoadDwgMsg (pkt) ;
+		
+	#if (_ACADTARGET >= 19)
+		static bool bInitialized = false;
+		if( !bInitialized )
+		{
+			bInitialized = true;
+			ads_queueexpr( _ACRX_T("(opendcl_init_ui)") );
+		}
+	#endif
 
 		if( retCode == AcRx::kRetOK )
 		{
@@ -3515,6 +3524,47 @@ public:
 
 		return (RSRSLT) ;
 	}
+
+	// ----- ads_opendcl_init_ui symbol (do not rename)
+	static int ads_opendcl_init_ui(void)
+	{
+		//----- Remove the following line if you do not expect any argument for this ADS function
+		struct resbuf *pArgs =acedGetArgs () ;
+
+	#if (_ACADTARGET >= 19)
+		CString sModulePath;
+		DWORD cchPath = GetModuleFileName( _hdllInstance, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
+		sModulePath.ReleaseBuffer( cchPath );
+		sModulePath.MakeReverse();
+		sModulePath = sModulePath.Mid( sModulePath.SpanExcluding( _T("\\/:") ).GetLength() );
+		sModulePath.MakeReverse();
+		resbuf rbTrustedPaths = { NULL };
+		if( RTNORM == acedGetVar( _ACRX_T("TRUSTEDPATHS"), &rbTrustedPaths ) )
+		{
+			CString sTrustedPaths = rbTrustedPaths.resval.rstring;
+			acutDelString( rbTrustedPaths.resval.rstring );
+			int idxToken = 0;
+			do
+			{
+				CString sPath = sTrustedPaths.Tokenize( _T(";"), idxToken );
+				if( sPath.CompareNoCase( sModulePath ) == 0 )
+					break;
+			} while( idxToken != -1 );
+			if( idxToken == -1 )
+			{ //module path wasn't found, so add it
+				if( sTrustedPaths.GetAt( sTrustedPaths.GetLength() - 1 ) != _T(';') )
+					sTrustedPaths += _T(';');
+				sTrustedPaths += sModulePath;
+				rbTrustedPaths.resval.rstring = sTrustedPaths.LockBuffer();
+				acedSetVar( _ACRX_T("TRUSTEDPATHS"), &rbTrustedPaths );
+			}
+		}
+	#endif
+
+		acedRetVoid () ;
+
+		return (RSRSLT) ;
+	}
 } ;
 
 CString CARXApp::msDialogToBeShown;
@@ -3703,3 +3753,4 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_updatecheck, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setautoupdatecheck, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getprojects, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_getforms, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, opendcl_init_ui, true)

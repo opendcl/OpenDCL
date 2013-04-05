@@ -89,7 +89,21 @@ ADSRESULT ListView::AddColumns()
 		if( !pHeaderCtrl )
 			return RSRSLT;
 
-		if( -1 == pCtrl->InsertColumn( pHeaderCtrl->GetItemCount(), sCaption, nFormat, nColWidth, nImage ) )
+		LVCOLUMN column;
+		column.mask = (LVCF_TEXT | LVCF_FMT);
+		column.pszText = sCaption.LockBuffer();
+		column.fmt = nFormat;
+		if (nColWidth != -1)
+		{
+			column.mask |= LVCF_WIDTH;
+			column.cx = nColWidth;
+		}
+		if (nImage != -1)
+		{
+			column.mask |= LVCF_IMAGE;
+			column.iImage = nImage;
+		}
+		if( -1 == pCtrl->InsertColumn( pHeaderCtrl->GetItemCount(), &column ) )
 			return RSRSLT;
 
 		if( !GetListBeginArgument( pArgs, true ) )
