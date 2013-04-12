@@ -3552,7 +3552,7 @@ public:
 			} while( idxToken != -1 );
 			if( idxToken == -1 )
 			{ //module path wasn't found, so add it
-				if( sTrustedPaths.GetAt( sTrustedPaths.GetLength() - 1 ) != _T(';') )
+				if( !sTrustedPaths.IsEmpty() && sTrustedPaths.GetAt( sTrustedPaths.GetLength() - 1 ) != _T(';') )
 					sTrustedPaths += _T(';');
 				sTrustedPaths += sModulePath;
 				rbTrustedPaths.resval.rstring = sTrustedPaths.LockBuffer();

@@ -361,39 +361,46 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 class TargetModule
 {
 public:
+	enum Architecture { kAny = 0, kX86, kX64, };
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, };
 	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12, kBRX13 = 13,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, };
 	typedef char TByte;
-	TargetModule( Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
-		: mPlatform( platform )
+	TargetModule( Architecture architecture, Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
+		: mArchitecture( architecture )
+		, mPlatform( platform )
 		, mMajorVer( majorVer )
 		, mMinorVer( minorVer )
 		, msInstallDir( pszInstallDir )
 		{}
 	TargetModule( unsigned int target, LPCTSTR pszInstallDir = NULL )
-		: mPlatform( static_cast< Platform >((TByte)(target >> shftPlatform)) )
+		: mArchitecture( static_cast< Platform >((TByte)(target >> shftArchitecture)) )
+		, mPlatform( static_cast< Platform >((TByte)(target >> shftPlatform)) )
 		, mMajorVer( static_cast< MajorVersion >((TByte)(target >> shftMajorVer)) )
 		, mMinorVer( (TByte)target )
 		, msInstallDir( pszInstallDir )
 		{}
 	TargetModule( const TargetModule& Src )
-		: mPlatform( Src.mPlatform )
+		: mArchitecture( Src.mArchitecture )
+		, mPlatform( Src.mPlatform )
 		, mMajorVer( Src.mMajorVer )
 		, mMinorVer( Src.mMinorVer )
 		, msInstallDir( (LPCTSTR)Src.msInstallDir )
 		{}
-	operator unsigned int() const { return ((mPlatform << sizeof(shftPlatform)) | (mMajorVer << sizeof(shftMajorVer)) | mMinorVer); }
+	operator unsigned int() const { return ((mArchitecture << sizeof(shftArchitecture)) | (mPlatform << sizeof(shftPlatform)) | (mMajorVer << sizeof(shftMajorVer)) | mMinorVer); }
+	Architecture architecture() const { return static_cast< Architecture >(mArchitecture); }
 	Platform platform() const { return static_cast< Platform >(mPlatform); }
 	MajorVersion majorVersion() const { return static_cast< MajorVersion >(mMajorVer); }
 	TByte minorVersion() const { return mMinorVer; }
 	LPCTSTR installDir() const { return msInstallDir; }
 protected:
+	TByte mArchitecture;
 	TByte mPlatform;
 	TByte mMajorVer;
 	TByte mMinorVer;
 	String msInstallDir;
+	static const int shftArchitecture = ((sizeof(TByte) + sizeof(TByte) + sizeof(TByte)) << 3);
 	static const int shftPlatform = ((sizeof(TByte) + sizeof(TByte)) << 3);
 	static const int shftMajorVer = (sizeof(TByte) << 3);
 	static bool isHKLMAccessible()
@@ -441,26 +448,39 @@ public:
 	//shortcuts
 	enum Target
 	{
-		kAutoCAD14 =    ((kAutoCAD << shftPlatform) | (kARX2 << shftMajorVer) | 0),
-		kAutoCAD2000 =  ((kAutoCAD << shftPlatform) | (kARX2000 << shftMajorVer) | 0),
-		kAutoCAD2000i = ((kAutoCAD << shftPlatform) | (kARX2000 << shftMajorVer) | 0),
-		kAutoCAD2002 =  ((kAutoCAD << shftPlatform) | (kARX2000 << shftMajorVer) | 0),
-		kAutoCAD2004 =  ((kAutoCAD << shftPlatform) | (kARX2004 << shftMajorVer) | 0),
-		kAutoCAD2005 =  ((kAutoCAD << shftPlatform) | (kARX2004 << shftMajorVer) | 1),
-		kAutoCAD2006 =  ((kAutoCAD << shftPlatform) | (kARX2004 << shftMajorVer) | 2),
-		kAutoCAD2007 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 0),
-		kAutoCAD2008 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 1),
-		kAutoCAD2009 =  ((kAutoCAD << shftPlatform) | (kARX2007 << shftMajorVer) | 2),
-		kAutoCAD2010 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 0),
-		kAutoCAD2011 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 1),
-		kAutoCAD2012 =  ((kAutoCAD << shftPlatform) | (kARX2010 << shftMajorVer) | 2),
-		kAutoCAD2013 =  ((kAutoCAD << shftPlatform) | (kARX2013 << shftMajorVer) | 0),
-		kAutoCAD2014 =  ((kAutoCAD << shftPlatform) | (kARX2013 << shftMajorVer) | 1),
-		kBricscad9_3 =  ((kBricscad << shftPlatform) | (kBRX9 << shftMajorVer) | 3),
-		kBricscad10 =  ((kBricscad << shftPlatform) | (kBRX10 << shftMajorVer) | 0),
-		kBricscad11 =  ((kBricscad << shftPlatform) | (kBRX11 << shftMajorVer) | 0),
-		kBricscad12 =  ((kBricscad << shftPlatform) | (kBRX12 << shftMajorVer) | 0),
-		kBricscad13 =  ((kBricscad << shftPlatform) | (kBRX13 << shftMajorVer) | 0),
+		kX86Architecture = (kX86 << shftArchitecture),
+		kX64Architecture = (kX64 << shftArchitecture),
+		kAutoCADPlatform = (kAutoCAD << shftPlatform),
+		kBricsCADPlatform = (kBricscad << shftPlatform),
+
+		kAutoCAD14 =         (kX86Architecture | kAutoCADPlatform | (kARX2 << shftMajorVer) | 0),
+		kAutoCAD2000 =       (kX86Architecture | kAutoCADPlatform | (kARX2000 << shftMajorVer) | 0),
+		kAutoCAD2000i =      (kX86Architecture | kAutoCADPlatform | (kARX2000 << shftMajorVer) | 0),
+		kAutoCAD2002 =       (kX86Architecture | kAutoCADPlatform | (kARX2000 << shftMajorVer) | 0),
+		kAutoCAD2004 =       (kX86Architecture | kAutoCADPlatform | (kARX2004 << shftMajorVer) | 0),
+		kAutoCAD2005 =       (kX86Architecture | kAutoCADPlatform | (kARX2004 << shftMajorVer) | 1),
+		kAutoCAD2006 =       (kX86Architecture | kAutoCADPlatform | (kARX2004 << shftMajorVer) | 2),
+		kAutoCAD2007 =       (kX86Architecture | kAutoCADPlatform | (kARX2007 << shftMajorVer) | 0),
+		kAutoCAD2008x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2007 << shftMajorVer) | 1),
+		kAutoCAD2008x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2007 << shftMajorVer) | 1),
+		kAutoCAD2009x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2007 << shftMajorVer) | 2),
+		kAutoCAD2009x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2007 << shftMajorVer) | 2),
+		kAutoCAD2010x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2010 << shftMajorVer) | 0),
+		kAutoCAD2010x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2010 << shftMajorVer) | 0),
+		kAutoCAD2011x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2010 << shftMajorVer) | 1),
+		kAutoCAD2011x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2010 << shftMajorVer) | 1),
+		kAutoCAD2012x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2010 << shftMajorVer) | 2),
+		kAutoCAD2012x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2010 << shftMajorVer) | 2),
+		kAutoCAD2013x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 0),
+		kAutoCAD2013x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 0),
+		kAutoCAD2014x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 1),
+		kAutoCAD2014x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 1),
+		kBricscad9_3 =       (kX86Architecture | kBricsCADPlatform | (kBRX9 << shftMajorVer) | 3),
+		kBricscad10 =        (kX86Architecture | kBricsCADPlatform | (kBRX10 << shftMajorVer) | 0),
+		kBricscad11 =        (kX86Architecture | kBricsCADPlatform | (kBRX11 << shftMajorVer) | 0),
+		kBricscad12 =        (kX86Architecture | kBricsCADPlatform | (kBRX12 << shftMajorVer) | 0),
+		kBricscad13x86 =     (kX86Architecture | kBricsCADPlatform | (kBRX13 << shftMajorVer) | 0),
+		kBricscad13x64 =     (kX64Architecture | kBricsCADPlatform | (kBRX13 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -490,6 +510,12 @@ public:
 				sRootKey = _T("SOFTWARE\\Bricsys\\Bricscad\\V");
 				String sMajor( majorVersion() );
 				sRootKey += sMajor;
+				switch( architecture() )
+				{
+				case kX64:
+					sRootKey += _T("x64");
+					break;
+				}
 				break;
 			}
 			return sRootKey;
@@ -566,11 +592,18 @@ public:
 };
 
 
-void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true, bool bX64 = false )
+void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true )
 {
+	bool bX64 = (Target.architecture() == TargetModule::kX64);
 	String sTargetKey = pszTargetKey;
-	RegKey rkDemandLoad( sTargetKey + _T("\\Applications\\") + GetAppLongName(),
+	RegKey rkApplications( sTargetKey + _T("\\Applications"),
 											 Target.GetTargetRootRegKey( bWantHKLM ),
+											 false,
+											 KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	if( !rkApplications )
+		return;
+	RegKey rkDemandLoad( GetAppLongName(),
+											 rkApplications,
 											 true,
 											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkDemandLoad )
@@ -579,8 +612,9 @@ void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bW
 }
 
 
-bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, bool bX64 = false )
+bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true )
 {
+	bool bX64 = (Target.architecture() == TargetModule::kX64);
 	String sRootKey = Target.GetTargetAppRegKey();
 	HKEY hkTargetRoot = Target.GetTargetRootRegKey( bWantHKLM );
 	RegKey rkTarget( sRootKey, hkTargetRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
@@ -608,7 +642,7 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, boo
 		sTargetKey += _T('\\');
 		sTargetKey += sSubkey;
 		if( bWantHKLM &&
-				Target.platform() == TargetModule::kBricscad &&
+				Target.architecture() == TargetModule::kBricscad &&
 				Target.majorVersion() == TargetModule::kBRX9 )
 		{
 			RegKey rkRoot( sTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
@@ -624,7 +658,7 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, boo
 				RegKey rkApps( _T("Applications"), rkLang, true, KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 			}
 		}
-		RxSelfInstallImp( Target, sTargetKey, bWantHKLM, bX64 );
+		RxSelfInstallImp( Target, sTargetKey, bWantHKLM );
 	}
 	return true;
 }
@@ -652,34 +686,34 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 #else
 	bool bWantHKLM = true;
 #endif
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x86, sInstallDir ), bWantHKLM );
 	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD14, sInstallDir ), bWantHKLM );
 	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2000, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2004, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2005, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2006, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2007, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014x86, sInstallDir ), bWantHKLM );
 	if( IsWow64() )
 	{
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008, sInstallDir ), bWantHKLM, true );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009, sInstallDir ), bWantHKLM, true );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010, sInstallDir ), bWantHKLM, true );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011, sInstallDir ), bWantHKLM, true );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012, sInstallDir ), bWantHKLM, true );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013, sInstallDir ), bWantHKLM, true );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014, sInstallDir ), bWantHKLM, true );
-		//EnumerateRegTargets( TargetModule( TargetModule::kBricscad13, sInstallDir ), bWantHKLM, true );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014x64, sInstallDir ), bWantHKLM );
 	}
 	return ERROR_SUCCESS;
 }
@@ -772,8 +806,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_CURRENT_USER, true );
-		//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE, true );
-		//RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }

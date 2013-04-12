@@ -1,6 +1,6 @@
 OpenDCL for AutoCAD
 
-Copyright (C) 2007 OpenDCL Consortium
+Copyright (C) 2013 OpenDCL Consortium
 www.opendcl.com
 
 See GNU-GPL.txt for license terms and conditions

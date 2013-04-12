@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 7, 0, 0, 11
- PRODUCTVERSION 7, 0, 0, 11
+ FILEVERSION 7, 0, 0, 12
+ PRODUCTVERSION 7, 0, 0, 12
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,13 +69,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL ARX Interface"
-            VALUE "FileVersion", "7, 0, 0, 11"
+            VALUE "FileVersion", "7, 0, 0, 12"
             VALUE "InternalName", "OpenDCL.Runtime"
             VALUE "LegalCopyright", "Copyright © 2013 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.*.arx"
             VALUE "ProductName", "OpenDCL Runtime"
-            VALUE "ProductVersion", "7, 0, 0, 11"
+            VALUE "ProductVersion", "7, 0, 0, 12"
         END
     END
     BLOCK "VarFileInfo"
