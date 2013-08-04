@@ -9,6 +9,7 @@
 #include "PropertyObject.h"
 #include "StudioDialogControl.h"
 #include "Workspace.h"
+#include <list>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -18,17 +19,12 @@ CImageListPage::CImageListPage( TDclControlPtr pDclControl )
 : CPropertyPage(CImageListPage::IDD)
 , mpDclControl( pDclControl )
 , mpImageList( new CImageList )
-, nCurrentWidth( 0 )
-, nCurrentHeight( 0 )
+, mnHeight( 0 )
+, mnWidth( 0 )
 {
 	TImageListPtr pImageList = pDclControl->GetImageList();
 	if( pImageList && pImageList->GetImageList().GetSafeHandle() )
-	{
 		mpImageList->Create( &pImageList->GetImageList() );
-		const CSize& szImage = pImageList->GetSize();
-		nCurrentWidth = szImage.cx;
-		nCurrentHeight = szImage.cy;
-	}
 }
 
 CImageListPage::~CImageListPage()
@@ -38,9 +34,9 @@ CImageListPage::~CImageListPage()
 void CImageListPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_EDITHEIGHT, m_DispHeight);
-	DDX_Control(pDX, IDC_EDITWIDTH, m_DispWidth);
-	DDX_Control(pDX, IDC_PICLIST, m_PicList);
+	DDX_Text(pDX, IDC_EDITHEIGHT, mnHeight);
+	DDX_Text(pDX, IDC_EDITWIDTH, mnWidth);
+	DDX_Control(pDX, IDC_PICLIST, mPicList);
 }
 
 
@@ -50,14 +46,193 @@ BEGIN_MESSAGE_MAP(CImageListPage, CPropertyPage)
 	ON_BN_CLICKED(IDC_CHANGEIMAGE, OnChangeimage)
 END_MESSAGE_MAP()
 
+BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
+{
+	CPictureHolder NewPicture;
+	NewPicture.SetPictureDispatch(iPic);
+	if (NULL == NewPicture.m_pPict)
+		return FALSE;
+
+	int idxPic = -1;
+
+	// if picture is a bitmap
+	if (PICTYPE_BITMAP == NewPicture.GetType())
+	{
+		// get handle of the bitmap
+		HBITMAP hBitmap = NULL;
+		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
+
+		// get dimensions of bitmap
+		long lPicWidth;
+		long lPicHeight;
+		NewPicture.m_pPict->get_Width(&lPicWidth);
+		NewPicture.m_pPict->get_Height(&lPicHeight);
+		CSize sizePic( (int)lPicWidth, (int)lPicHeight );
+
+		// convert coordinates from units to logical units
+		GetDC()->HIMETRICtoLP(&sizePic);
+
+		if (NULL == GetImageList()->m_hImageList)
+		{ // create the image list
+			if (!GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1 ))
+				return FALSE;
+			mnWidth = sizePic.cx;
+			mnHeight = sizePic.cy;
+			mPicList.SetIconSpacing( mnWidth + 16 );
+			mPicList.SetImageList(GetImageList(), LVSIL_NORMAL);
+			mPicList.SetImageList(GetImageList(), LVSIL_SMALL);
+		}
+
+		int nRetVal = GetImageList()->Add( CBitmap::FromHandle(hBitmap), RGB(192, 192, 192) ) ;
+		if( nRetVal == -1 )
+			return FALSE;
+		idxPic = nRetVal;
+	}
+	// else if picture is an icon
+	else if (PICTYPE_ICON == NewPicture.GetType())
+	{
+		// get handle of the icon
+		HICON hIcon;
+		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
+
+		// get dimensions of icon
+		long lPicWidth;
+		long lPicHeight;
+		NewPicture.m_pPict->get_Width(&lPicWidth);
+		NewPicture.m_pPict->get_Height(&lPicHeight);
+		CSize sizePic( (int)lPicWidth, (int)lPicHeight );
+
+		// convert coordinates from units to logical units
+		GetDC()->HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (NULL == GetImageList()->m_hImageList)
+		{ // create the image list
+			if (!GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1 ))
+				return FALSE;
+			mnWidth = sizePic.cx;
+			mnHeight = sizePic.cy;
+			mPicList.SetIconSpacing( mnWidth + 16 );
+			mPicList.SetImageList(GetImageList(), LVSIL_NORMAL);
+			mPicList.SetImageList(GetImageList(), LVSIL_SMALL);
+		}
+		
+		// add icon to image list
+		int nRetVal = GetImageList()->Add( hIcon ) ;
+		if( nRetVal == -1 )
+			return FALSE;
+		idxPic = nRetVal;
+	}
+	else
+		return FALSE;
+
+	CString sIndex;
+	sIndex.Format( _T("%d"), idxPic );
+	LV_ITEM lvItem =
+		{ LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT,
+			idxPic,
+			0,
+			0,
+			0,
+			sIndex.LockBuffer(),
+			-1,
+			idxPic,
+			NULL,
+			-1,
+		};
+	mPicList.InsertItem( &lvItem );
+	mPicList.Invalidate();
+	return TRUE;
+}
+
+BOOL CImageListPage::ImageListReplacePicture( int idxPic, LPPICTUREDISP iPic )
+{
+	CPictureHolder NewPicture;
+	NewPicture.SetPictureDispatch(iPic);
+	if (NULL == NewPicture.m_pPict)
+		return FALSE;
+
+	// if picture is a bitmap
+	if (PICTYPE_BITMAP == NewPicture.GetType())
+	{
+		// get handle of the bitmap
+		HBITMAP hBitmap = NULL;
+		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
+
+		// get dimensions of bitmap
+		long lPicWidth;
+		long lPicHeight;
+		NewPicture.m_pPict->get_Width(&lPicWidth);
+		NewPicture.m_pPict->get_Height(&lPicHeight);
+		CSize sizePic( (int)lPicWidth, (int)lPicHeight );
+
+		// convert coordinates from units to logical units
+		GetDC()->HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (NULL == GetImageList()->m_hImageList)
+			return FALSE;
+
+		int nRetVal = GetImageList()->Replace( idxPic, CBitmap::FromHandle( hBitmap ), NULL ) ;
+		if( nRetVal == -1 )
+			return FALSE;
+	}
+	// else if picture is an icon
+	else if (PICTYPE_ICON == NewPicture.GetType())
+	{
+		// get handle of the icon
+		HICON hIcon;
+		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
+
+		// get dimensions of icon
+		long lPicWidth;
+		long lPicHeight;
+		NewPicture.m_pPict->get_Width(&lPicWidth);
+		NewPicture.m_pPict->get_Height(&lPicHeight);
+		CSize sizePic( (int)lPicWidth, (int)lPicHeight );
+
+		// convert coordinates from units to logical units
+		GetDC()->HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (NULL == GetImageList()->m_hImageList)
+			return FALSE;
+		
+		// add icon to image list
+		int nRetVal = GetImageList()->Replace( idxPic, hIcon );
+		if( nRetVal == -1 )
+			return FALSE;
+	}
+	else
+		return FALSE;
+
+	CString sIndex;
+	sIndex.Format( _T("%d"), idxPic );
+	LV_ITEM lvItem =
+		{ LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT,
+			idxPic,
+			0,
+			0,
+			0,
+			sIndex.LockBuffer(),
+			-1,
+			idxPic,
+			NULL,
+			-1,
+		};
+	mPicList.SetItem( &lvItem );
+	mPicList.Invalidate();
+	return TRUE;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CImageListPage message handlers
 
 void CImageListPage::OnSelchange() 
 {
-	int nSelCount = m_PicList.GetSelectedCount();
-	GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( (nSelCount > 0)? TRUE : FALSE );
-	GetDlgItem( IDC_CHANGEIMAGE )->EnableWindow( (nSelCount == 1)? TRUE : FALSE );
+	int ctSel = mPicList.GetSelectedCount();
+	GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( (ctSel > 0)? TRUE : FALSE );
+	GetDlgItem( IDC_CHANGEIMAGE )->EnableWindow( (ctSel == 1)? TRUE : FALSE );
 }
 
 void CImageListPage::OnAddimage() 
@@ -84,278 +259,63 @@ void CImageListPage::OnAddimage()
 			ImageListAddPicture( pic.GetPictureDisp() );
 		}
 	}
+	UpdateData(FALSE);
 	SetModified();
 	OnSelchange();
-}
-
-BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
-{
-	BOOL bRetVal = TRUE;
-
-	CPictureHolder NewPicture;
-	NewPicture.SetPictureDispatch(iPic);
-	long lPicHeight = 0;
-	long lPicWidth = 0;
-	CDC * cdc = GetDC();
-	CSize sizePic;
-	int nRetVal;
-
-
-	if (NULL == NewPicture.m_pPict)
-	{
-		return FALSE;
-	}
-
-	// if picture is a bitmap
-	if (PICTYPE_BITMAP == NewPicture.GetType())
-	{
-		HBITMAP hBitmap = NULL;
-
-		// get handle of the bitmap
-		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
-
-		// get dimensions of bitmap
-		NewPicture.m_pPict->get_Width(&lPicWidth);
-		NewPicture.m_pPict->get_Height(&lPicHeight);
-
-		sizePic.cx = (int)lPicWidth;
-		sizePic.cy = (int)lPicHeight;
-
-		// convert coordinates from units to logical units
-		cdc->HIMETRICtoLP(&sizePic);
-
-		// if image list has not been created
-		if (NULL == GetImageList()->m_hImageList)
-		{			
-			if (nCurrentWidth == 0)
-			{
-				nCurrentWidth = sizePic.cx;
-				nCurrentHeight = sizePic.cy;
-			}
-
-			// create the image list
-			bRetVal = GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1 );
-			m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
-			m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
-			TCHAR Value[80];
-			_ltot(sizePic.cx, Value, 10);
-			m_DispWidth.SetWindowText(Value);
-			_ltot(sizePic.cy, Value, 10);
-			m_DispHeight.SetWindowText(Value);
-		}
-		if (bRetVal)
-		{
-			// add bitmap to imagelist; mask is ignored in this sample
-			nRetVal = GetImageList()->Add( CBitmap::FromHandle(hBitmap), RGB(192, 192, 192) ) ;
-			bRetVal = (nRetVal != -1);			
-		}
-		DeleteObject(hBitmap);
-	}
-	// else if picture is an icon
-	else if (PICTYPE_ICON == NewPicture.GetType())
-	{
-		HICON hIcon;
-
-		// get handle of the icon
-		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
-
-		// get dimensions of icon
-		NewPicture.m_pPict->get_Width(&lPicWidth);
-		NewPicture.m_pPict->get_Height(&lPicHeight);
-
-		CDC * cdc = GetDC();
-
-		sizePic.cx = (int)lPicWidth;
-		sizePic.cy = (int)lPicHeight;
-
-		// convert coordinates from units to logical units
-		cdc->HIMETRICtoLP(&sizePic);
-
-		// if image list has not been created
-		if (NULL == GetImageList()->m_hImageList)
-		{
-			if (nCurrentWidth == 0)
-			{
-				nCurrentWidth = sizePic.cx;
-				nCurrentHeight = sizePic.cy;
-			}
-			
-			// create the image list
-			bRetVal = GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1 );
-			m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
-			m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
-			TCHAR Value[80];
-			_ltot(sizePic.cx, Value, 10);
-			m_DispWidth.SetWindowText(Value);
-			_ltot(sizePic.cy, Value, 10);
-			m_DispHeight.SetWindowText(Value);
-		}
-		
-		if (bRetVal)
-		{
-			// add icon to image list
-			nRetVal = GetImageList()->Add(hIcon);
-			bRetVal = (nRetVal != -1);
-		}
-		//DestroyIcon(hIcon);		
-	}
-	else
-	{
-		bRetVal = FALSE;
-		return bRetVal;
-	}
-	
-	int nImage = GetImageList()->GetImageCount()-1;
-	int nPicIndex = m_PicList.GetItemCount();
-	LV_ITEM lvItem;
-	lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
-	lvItem.iItem = nImage;
-	lvItem.iSubItem = 0;
-	TCHAR sValue [256];
-	_ltot(nPicIndex, sValue, 10);
-	lvItem.pszText = sValue;
-	lvItem.iImage = nImage;
-	lvItem.iIndent = -1;
-
-	// insert the row item
-	m_PicList.InsertItem(&lvItem);
-	m_PicList.SetItemData(nPicIndex, nImage);
-	m_PicList.SetIconSpacing(nCurrentWidth + 16);
-	return (bRetVal);
-}
-
-BOOL CImageListPage::ImageListReplacePicture( int idxPic, LPPICTUREDISP iPic )
-{
-	BOOL bRetVal = TRUE;
-
-	CPictureHolder NewPicture;
-	NewPicture.SetPictureDispatch(iPic);
-	long lPicHeight = 0;
-	long lPicWidth = 0;
-	CDC * cdc = GetDC();
-	CSize sizePic;
-	int nRetVal;
-
-
-	if (NULL == NewPicture.m_pPict)
-	{
-		return FALSE;
-	}
-
-	// if picture is a bitmap
-	if (PICTYPE_BITMAP == NewPicture.GetType())
-	{
-		HBITMAP hBitmap = NULL;
-
-		// get handle of the bitmap
-		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
-
-		// get dimensions of bitmap
-		NewPicture.m_pPict->get_Width(&lPicWidth);
-		NewPicture.m_pPict->get_Height(&lPicHeight);
-
-		sizePic.cx = (int)lPicWidth;
-		sizePic.cy = (int)lPicHeight;
-
-		// convert coordinates from units to logical units
-		cdc->HIMETRICtoLP(&sizePic);
-
-		// if image list has not been created
-		if (NULL == GetImageList()->m_hImageList)
-			return FALSE;
-		nRetVal = GetImageList()->Replace( idxPic, CBitmap::FromHandle( hBitmap ), NULL ) ;
-		bRetVal = (nRetVal != -1);			
-		DeleteObject( hBitmap );
-	}
-	// else if picture is an icon
-	else if (PICTYPE_ICON == NewPicture.GetType())
-	{
-		HICON hIcon;
-
-		// get handle of the icon
-		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
-
-		// get dimensions of icon
-		NewPicture.m_pPict->get_Width(&lPicWidth);
-		NewPicture.m_pPict->get_Height(&lPicHeight);
-
-		CDC * cdc = GetDC();
-
-		sizePic.cx = (int)lPicWidth;
-		sizePic.cy = (int)lPicHeight;
-
-		// convert coordinates from units to logical units
-		cdc->HIMETRICtoLP(&sizePic);
-
-		// if image list has not been created
-		if (NULL == GetImageList()->m_hImageList)
-			return FALSE;
-		
-		// add icon to image list
-		nRetVal = GetImageList()->Replace( idxPic, hIcon );
-		bRetVal = (nRetVal != -1);
-		//DestroyIcon(hIcon);		
-	}
-	else
-	{
-		bRetVal = FALSE;
-		return bRetVal;
-	}
-
-	LV_ITEM lvItem;
-	lvItem.mask = LVIF_IMAGE;
-	lvItem.iItem = idxPic;
-	lvItem.iSubItem = 0;
-	lvItem.iImage = idxPic;
-	m_PicList.SetItem( &lvItem );
-	m_PicList.Invalidate();
-	return (bRetVal);
 }
 
 void CImageListPage::OnRemoveimage() 
 {
 	int nItem=-1;
-	POSITION pos = m_PicList.GetFirstSelectedItemPosition();
+	POSITION pos = mPicList.GetFirstSelectedItemPosition();
 	if (pos == NULL)
 		return;
+	std::list< int > listToRemove;
 	while (pos)
 	{
-		nItem = m_PicList.GetNextSelectedItem(pos);
+		nItem = mPicList.GetNextSelectedItem(pos);
 		if (nItem != -1)
-			m_PicList.DeleteItem(nItem);
-		GetImageList()->Remove(nItem);
+			listToRemove.push_back( nItem );
 	}
-	m_PicList.Arrange(LVA_ALIGNLEFT);
-	for (int i=0; i < m_PicList.GetItemCount(); i++)
+	listToRemove.sort();
+	for (std::list< int >::const_reverse_iterator iter = listToRemove.rbegin(); iter != listToRemove.rend(); ++iter)
+		GetImageList()->Remove(*iter);
+	mPicList.DeleteAllItems();
+	for( int idx = 0; idx < GetImageList()->GetImageCount(); ++idx )
 	{
-		TCHAR Value[80];
-		_ltot(i, Value, 10);
-
-		LVITEM lvItem;
-		lvItem.mask = LVIF_TEXT|LVIF_IMAGE;
-		lvItem.iItem = i;
-		lvItem.iSubItem = 0;	
-		lvItem.iImage = i;	
-		lvItem.pszText = Value;
-
-		m_PicList.SetItem(&lvItem);		
+		CString sIndex;
+		sIndex.Format( _T("%d"), idx );
+		LV_ITEM lvItem =
+			{ LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT,
+				idx,
+				0,
+				0,
+				0,
+				sIndex.LockBuffer(),
+				-1,
+				idx,
+				NULL,
+				-1,
+			};
+		mPicList.InsertItem( &lvItem );
 	}
 	
-	if (m_PicList.GetItemCount() == 0)
+	if (mPicList.GetItemCount() == 0)
 	{
-		m_DispHeight.SetWindowText(_T(""));
-		m_DispWidth.SetWindowText(_T(""));
+		mnHeight = 0;
+		mnWidth = 0;
 		mpImageList = new CImageList;
+		UpdateData(FALSE);
 	}
 
-	if (nItem >= m_PicList.GetItemCount())
-		nItem = m_PicList.GetItemCount() - 1;
+	if (nItem >= mPicList.GetItemCount())
+		nItem = mPicList.GetItemCount() - 1;
 	if (nItem >= 0)
 	{
-		m_PicList.SetFocus();
-		m_PicList.SetItem(nItem, 0, LVIF_STATE, NULL, nItem, LVIS_SELECTED, LVIS_SELECTED, 0);
-		m_PicList.EnsureVisible(nItem, TRUE);
-		m_PicList.Arrange(LVA_ALIGNLEFT);
+		mPicList.SetFocus();
+		mPicList.SetItem(nItem, 0, LVIF_STATE, NULL, nItem, LVIS_SELECTED, LVIS_SELECTED, 0);
+		mPicList.EnsureVisible(nItem, TRUE);
+		mPicList.Arrange(LVA_ALIGNLEFT);
 	}
 
 	SetModified();
@@ -365,10 +325,10 @@ void CImageListPage::OnRemoveimage()
 void CImageListPage::OnChangeimage() 
 {
 	int nItem=-1;
-	POSITION pos = m_PicList.GetFirstSelectedItemPosition();
+	POSITION pos = mPicList.GetFirstSelectedItemPosition();
 	if (pos == NULL)
 		return;
-	nItem = m_PicList.GetNextSelectedItem( pos );
+	nItem = mPicList.GetNextSelectedItem( pos );
 	if( nItem < 0 )
 		return;
 
@@ -393,8 +353,8 @@ void CImageListPage::OnChangeimage()
 		ImageListReplacePicture( nItem, pic.GetPictureDisp() );
 	}
 
-	m_PicList.EnsureVisible(nItem, TRUE);
-	m_PicList.Arrange(LVA_ALIGNLEFT);
+	mPicList.EnsureVisible(nItem, TRUE);
+	mPicList.Arrange(LVA_ALIGNLEFT);
 	SetModified();
 	OnSelchange();
 }
@@ -415,32 +375,29 @@ BOOL CImageListPage::OnInitDialog()
 	
 	if (GetImageList()->m_hImageList != NULL)
 	{
-		TCHAR sValue [80];
-		_ltot(nCurrentWidth, sValue, 10);
-		m_DispWidth.SetWindowText(sValue);
-		_ltot(nCurrentHeight, sValue, 10);
-		m_DispHeight.SetWindowText(sValue);
-
-		m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
-		m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
-		
-		//m_PicList.SetIconSpacing(16);
-		for (int i=0; i < GetImageList()->GetImageCount(); i++)
+		ImageList_GetIconSize( GetImageList()->m_hImageList, &mnWidth, &mnHeight );
+		mPicList.SetImageList( GetImageList(), TVSIL_NORMAL );
+		mPicList.SetImageList( GetImageList(), LVSIL_SMALL );
+		mPicList.SetIconSpacing( mnWidth + 16 );
+		for( int idx = 0; idx < GetImageList()->GetImageCount(); ++idx )
 		{
-			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
-			lvItem.iItem = i;
-			lvItem.iSubItem = 0;
-			
-			_ltot(i, sValue, 10);
-			lvItem.pszText = sValue;
-			lvItem.iImage = i;
-			lvItem.iIndent = -1;
-
-			// insert the row item
-			m_PicList.InsertItem(&lvItem);
-			m_PicList.SetItemData(i, i);
+			CString sIndex;
+			sIndex.Format( _T("%d"), idx );
+			LV_ITEM lvItem =
+				{ LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT,
+					idx,
+					0,
+					0,
+					0,
+					sIndex.LockBuffer(),
+					-1,
+					idx,
+					NULL,
+					-1,
+				};
+			mPicList.InsertItem( &lvItem );
 		}
+		UpdateData( FALSE );
 	}
 	OnSelchange();
 	return TRUE;  // return TRUE unless you set the focus to a control

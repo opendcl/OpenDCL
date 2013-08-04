@@ -58,7 +58,7 @@ CAcadDockBarHost::~CAcadDockBarHost()
 void CAcadDockBarHost::GetClientArea( CRect& rect )
 {
 	GetUsedRect( rect );
-#if (_BRXTARGET && _BRXTARGET <= 13)
+#if (defined(_BRXTARGET) && _BRXTARGET <= 13)
 	//GetUsedRect() returns invalid values in Bricscad!
 	GetClientRect( &rect );
 #endif
@@ -215,7 +215,7 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	if( !mpDlgObject->IsResizable() )
 		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
 									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
-#if (_BRXTARGET && _BRXTARGET <= 10)
+#if (defined(_BRXTARGET) && _BRXTARGET <= 10)
 	CSize sizeDefault;
 	sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width );
 	sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height );
@@ -386,7 +386,7 @@ LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		mpDlgObject->OnMouseLeave();
 	}
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET)
 	CWnd* pFocusWnd = GetFocus();
 	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
 	{
@@ -458,7 +458,7 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 void CAcadDockBarHost::OnClose()
 {
 	__super::OnClose();
-#if (_BRXTARGET && _BRXTARGET <= 13)
+#if (defined(_BRXTARGET) && _BRXTARGET <= 13)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

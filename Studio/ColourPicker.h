@@ -93,9 +93,9 @@ protected:
     afx_msg BOOL OnClicked();
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     //}}AFX_MSG
-    afx_msg LONG OnSelEndOK(UINT lParam, LONG wParam);
-    afx_msg LONG OnSelEndCancel(UINT lParam, LONG wParam);
-    afx_msg LONG OnSelChange(UINT lParam, LONG wParam);
+    afx_msg LRESULT OnSelEndOK(WPARAM wParam, LPARAM lParam);
+    afx_msg LRESULT OnSelEndCancel(WPARAM wParam, LPARAM lParam);
+    afx_msg LRESULT OnSelChange(WPARAM wParam, LPARAM lParam);
 
     DECLARE_MESSAGE_MAP()
 };

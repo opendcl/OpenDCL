@@ -1228,100 +1228,100 @@ void CDclControlObject::RemoveProperty( Prop::Id nId )
 IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
 	CStringA sClassname = readLine(sFile);
-  if ( sClassname != "CDclControlObject" && sClassname != "CArxControlObject") return statInvalidFormat;
-  int iVersion;
-  if (!readInt(sFile, iVersion)) return statInvalidFormat;
+	if ( sClassname != "CDclControlObject" && sClassname != "CArxControlObject") return statInvalidFormat;
+	int iVersion;
+	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  switch (iVersion) {
-    case 6 : 
-      return ReadFromTextFile6(sFile, fileName);
-      break;
-  }
+	switch (iVersion) {
+		case 6 : 
+			return ReadFromTextFile6(sFile, fileName);
+			break;
+	}
 
-  return statInvalidFormat;
+	return statInvalidFormat;
 }
 
 IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CString &fileName)
 {
 	CStringA sTypeName;
-  if (!readString(sFile, sTypeName)) return statInvalidFormat;
+	if (!readString(sFile, sTypeName)) return statInvalidFormat;
 	msAxTypeName = sTypeName;
 	long lType;
-  if (!readLong(sFile, lType)) return statInvalidFormat;
+	if (!readLong(sFile, lType)) return statInvalidFormat;
 	mType = (ControlType)lType;
 	if( mType == -1 )
 		mType = _CtlForm; //correct control type for controls from older ODC files
 	short nClientHeight; //discard it
-  if (!readShort(sFile, nClientHeight)) return statInvalidFormat;
+	if (!readShort(sFile, nClientHeight)) return statInvalidFormat;
 	int nPurchaseState;
-  if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
-  if (!readInt(sFile, mnID)) return statInvalidFormat;
+	if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
+	if (!readInt(sFile, mnID)) return statInvalidFormat;
 
 	mpImageList = NULL;
-  bool bImageList;
-  if (!readBool(sFile, bImageList)) return statInvalidFormat;
-  if (bImageList) {
-    mpImageList = new CImageListObject();
+	bool bImageList;
+	if (!readBool(sFile, bImageList)) return statInvalidFormat;
+	if (bImageList) {
+		mpImageList = new CImageListObject();
 		IOStatus stat = mpImageList->ReadFromTextFile(sFile, fileName);
-    if (stat != statOK) return stat;
-  }
+		if (stat != statOK) return stat;
+	}
 
-  if (mType == CtlActiveX)
-  {
-    // get the activeX info.
+	if (mType == CtlActiveX)
+	{
+		// get the activeX info.
 		CStringA sKey;
-    if (!readString(sFile, sKey)) return statInvalidFormat;
+		if (!readString(sFile, sKey)) return statInvalidFormat;
 		msLicenseKey = sKey;
 		CStringA sBaseCode; //ignored
-    if (!readString(sFile, sBaseCode)) return statInvalidFormat;
-    BOOL bLicenseChecked; //ignored
-    if (!readBOOL(sFile, bLicenseChecked)) return statInvalidFormat;
+		if (!readString(sFile, sBaseCode)) return statInvalidFormat;
+		BOOL bLicenseChecked; //ignored
+		if (!readBOOL(sFile, bLicenseChecked)) return statInvalidFormat;
 
-    if (!readCLSID(sFile, mClsid)) return statInvalidFormat;
+		if (!readCLSID(sFile, mClsid)) return statInvalidFormat;
 
-    LARGE_INTEGER nDisplacement;
+		LARGE_INTEGER nDisplacement;
 
-    mpStream = NULL;
+		mpStream = NULL;
 
-    try
-    {
-      BOOL bHasStream;
+		try
+		{
+			BOOL bHasStream;
 
-      if (!readBOOL(sFile, bHasStream)) return statInvalidFormat;
+			if (!readBOOL(sFile, bHasStream)) return statInvalidFormat;
 
-      if (bHasStream)
-      {
-        IStream *pStreamTemp = NULL;
-        HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &pStreamTemp);
+			if (bHasStream)
+			{
+				IStream *pStreamTemp = NULL;
+				HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &pStreamTemp);
 
-        if( FAILED( hResult ) ) return statInvalidFormat;
+				if( FAILED( hResult ) ) return statInvalidFormat;
 
 				std::string abData;
-        if (!readBits(sFile, abData)) return statInvalidFormat;
-        pStreamTemp->Write( abData.c_str(), abData.length(), NULL );
+				if (!readBits(sFile, abData)) return statInvalidFormat;
+				pStreamTemp->Write( abData.c_str(), abData.length(), NULL );
 
-        nDisplacement.QuadPart = 0;
-        pStreamTemp->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
-        mpStream = pStreamTemp;
-      }
-    }
-    catch( CFileException* pException )
-    {
-      pException->Delete();
-      return statInvalidFormat;
-    }					
-  }
+				nDisplacement.QuadPart = 0;
+				pStreamTemp->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
+				mpStream = pStreamTemp;
+			}
+		}
+		catch( CFileException* pException )
+		{
+			pException->Delete();
+			return statInvalidFormat;
+		}					
+	}
 
-  // get counter for objects
-  int nCount;
-  if (!readInt(sFile, nCount)) return statInvalidFormat;
+	// get counter for objects
+	int nCount;
+	if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  mProperties.clear();
-  while (nCount-- > 0)
-  {
-    TPropertyPtr pProp = new CPropertyObject(TDclControlLockedPtr( this ), PropInvalid);
+	mProperties.clear();
+	while (nCount-- > 0)
+	{
+		TPropertyPtr pProp = new CPropertyObject(TDclControlLockedPtr( this ), PropInvalid);
 		IOStatus stat = pProp->ReadFromTextFile(sFile);
-    if (stat != statOK) return stat;
+		if (stat != statOK) return stat;
 
 		if( pProp->GetName().IsEmpty() )
 		{
@@ -1335,15 +1335,15 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 				pProp->SetStringValue( pProp->GetConstAxInterfaceDescriptorPtr()->GetName() );
 			}
 		}
-    mProperties.push_back(pProp);		
-  }
+		mProperties.push_back(pProp);		
+	}
 
-  // here were are going to add the font of this object to the font collection
-  // before any pictures are loaded or any dialogs are displayed.
-  CFontCollection *pFontCol = &theWorkspace.GetFontCollection();
-  pFontCol->GetFont(TDclControlLockedPtr( this ), NULL);
+	// here were are going to add the font of this object to the font collection
+	// before any pictures are loaded or any dialogs are displayed.
+	CFontCollection *pFontCol = &theWorkspace.GetFontCollection();
+	pFontCol->GetFont(TDclControlLockedPtr( this ), NULL);
 
-  return statOK;
+	return statOK;
 }
 
 CString CDclControlObject::GetKeyName() const

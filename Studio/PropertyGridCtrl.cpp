@@ -31,9 +31,9 @@ static bool IsBooleanProperty( TPropertyPtr pProp );
 #if (_WIN32_WINNT < 0x501)
 typedef struct tagNMLVSCROLL
 {
-    NMHDR   hdr;
-    int     dx;
-    int     dy;
+		NMHDR   hdr;
+		int     dx;
+		int     dy;
 } NMLVSCROLL, *LPNMLVSCROLL;
 
 #define LVN_BEGINSCROLL          (LVN_FIRST-80)          
@@ -442,8 +442,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCheck() == BST_CHECKED );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -570,8 +570,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCurSel() );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -668,8 +668,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCurSel() );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -1927,7 +1927,7 @@ void CPropertyGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	if( lpDrawItemStruct->CtlType != ODT_LISTVIEW )
 		return;
-  int nRow = lpDrawItemStruct->itemID;
+	int nRow = lpDrawItemStruct->itemID;
 	UINT nItemState = lpDrawItemStruct->itemState;
 	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 

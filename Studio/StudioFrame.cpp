@@ -243,7 +243,7 @@ int CStudioFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndFontToolBar.EnableDocking(CBRS_ALIGN_ANY);
 
 #ifdef _SCB_REPLACE_MINIFRAME
-    m_pFloatingFrameClass = RUNTIME_CLASS(CSCBMiniDockFrameWnd);
+		m_pFloatingFrameClass = RUNTIME_CLASS(CSCBMiniDockFrameWnd);
 #endif //_SCB_REPLACE_MINIFRAME
 
 	// create toolbox sizing bar and pane

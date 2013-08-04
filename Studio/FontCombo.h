@@ -97,7 +97,7 @@ protected:
 	afx_msg void OnKillfocus();
 	afx_msg void OnSetfocus();
 	afx_msg void OnCloseUp();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	//}}AFX_MSG
 

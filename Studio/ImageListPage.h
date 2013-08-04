@@ -18,12 +18,10 @@ class CImageListPage : public CPropertyPage
 	TDclControlPtr mpDclControl;
 	RefCountedPtr< CImageList > mpImageList;
 
-	int nCurrentWidth;
-	int nCurrentHeight;
 	enum { IDD = IDD_IMAGELIST };
-	CEdit	m_DispHeight;
-	CEdit	m_DispWidth;
-	CListCtrl	m_PicList;
+	int	mnHeight;
+	int	mnWidth;
+	CListCtrl	mPicList;
 
 public:
 	CImageListPage( TDclControlPtr pDclControl );

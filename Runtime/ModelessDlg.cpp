@@ -166,7 +166,7 @@ void CModelessDlg::OnOK()
 {
 	if( IsClosing() || IsCloseAllowed( false ) )
 	{
-    if( GetArxServices()->HandleEvent( Prop::FormEventOnOk ) )
+		if( GetArxServices()->HandleEvent( Prop::FormEventOnOk ) )
 			return;
 		__super::OnOK();
 		CloseDialog(IDOK);
@@ -177,7 +177,7 @@ void CModelessDlg::OnCancel()
 {
 	if( IsClosing() || IsCloseAllowed( true ) )
 	{
-    if( GetArxServices()->HandleEvent( Prop::FormEventOnCancel ) )
+		if( GetArxServices()->HandleEvent( Prop::FormEventOnCancel ) )
 			return;
 		__super::OnCancel();
 		CloseDialog(IDCANCEL);
@@ -304,7 +304,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 	}
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET)
 	CWnd* pFocusWnd = GetFocus();
 	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
 	{

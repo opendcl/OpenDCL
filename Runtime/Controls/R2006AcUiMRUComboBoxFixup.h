@@ -3,6 +3,8 @@
 
 #pragma once
 
+#if (_ACADTARGET == 16)
+
 typedef CAcUiColorComboBox CAcUiColorComboBoxOriginal;
 typedef CAcUiLineWeightComboBox CAcUiLineWeightComboBoxOriginal;
 typedef CAcUiArrowHeadComboBox CAcUiArrowHeadComboBoxOriginal;
@@ -52,3 +54,5 @@ public:
 #define CAcUiArrowHeadComboBox CAcUiMRUComboBoxFixup< CAcUiArrowHeadComboBoxOriginal >
 #define CAcUiPlotStyleNamesComboBox CAcUiMRUComboBoxFixup< CAcUiPlotStyleNamesComboBoxOriginal >
 #define CAcUiPlotStyleTablesComboBox CAcUiMRUComboBoxFixup< CAcUiPlotStyleTablesComboBoxOriginal >
+
+#endif //(_ACADTARGET == 16)

@@ -15,13 +15,13 @@ bool IsWow64()
 #ifdef _WIN64
 	return false;
 #else
-  static BOOL bIsWow64 = FALSE;
+	static BOOL bIsWow64 = FALSE;
 	static bool bAlreadyTested = false;
 	if( !bAlreadyTested )
 	{
 		LPFN_ISWOW64PROCESS fnIsWow64Process =
 			(LPFN_ISWOW64PROCESS)GetProcAddress( GetModuleHandle( _T("KERNEL32") ), "IsWow64Process" );
-    if( fnIsWow64Process )
+		if( fnIsWow64Process )
 			fnIsWow64Process( GetCurrentProcess(), &bIsWow64 );
 		bAlreadyTested = true;
 	}
@@ -71,6 +71,8 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 	#ifdef EDITOR
 		CString sResRootDbg = sResRoot;
 		int cchBuildFolder = sResRootDbg.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 ).MakeReverse();
+		cchBuildFolder = sResRootDbg.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
 		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 ).MakeReverse();
 		CString sLanguageDirDbg;
 		sLanguageDirDbg.Format( _T("%s\\Studio.Res\\Debug\\"), (LPCTSTR)sLanguage );
@@ -219,6 +221,8 @@ CString CWorkspace::GetLanguageSubfolderPath(void) const
 #ifdef _DEBUG
 	//when running under the debugger, use the build project's language subfolder
 	int cchBuildFolder = sLangSubfolder.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
+	cchBuildFolder = sLangSubfolder.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
 	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
 	sLanguage += _T("\\Content");
 #endif

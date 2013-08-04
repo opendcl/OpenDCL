@@ -63,6 +63,24 @@ DWORD CArxAcadSlideCtrl::GetWndStyle() const
 	return (dwStyle | BS_OWNERDRAW | BS_NOTIFY);
 }
 
+void CArxAcadSlideCtrl::OnNeedRepaint( bool bRepaintBackground /*= false*/, bool bUpdateNow /*= false*/ ) const
+{
+	if( bRepaintBackground )
+	{
+		if( mhbmSaved )
+		{
+			DeleteObject( mhbmSaved );
+			(const_cast<CArxAcadSlideCtrl*>(this))->mhbmSaved = NULL;
+		}
+		if( mhbmLast )
+		{
+			DeleteObject( mhbmLast );
+			(const_cast<CArxAcadSlideCtrl*>(this))->mhbmLast = NULL;
+		}
+	}
+	__super::OnNeedRepaint( bRepaintBackground, bUpdateNow );
+}
+
 void CArxAcadSlideCtrl::SetHighlight(const COLORREF& clrHighlight)
 {
 	mclrHighlight = clrHighlight;		
@@ -376,7 +394,7 @@ void CArxAcadSlideCtrl::OnPaint()
 		CBitmap* pSavedBmp = memdc.SelectObject( CBitmap::FromHandle( mhbmLast? mhbmLast : mhbmSaved ) );
 		// Copy (BitBlt) bitmap from memory DC to screen DC
 		dc.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &memdc, 0, 0, SRCCOPY );
-    memdc.SelectObject( pSavedBmp );
+		memdc.SelectObject( pSavedBmp );
 	}
 	else
 		PaintControl( &dc );

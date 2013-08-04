@@ -43,6 +43,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual void OnNeedRepaint( bool bRepaintBackground = false, bool bUpdateNow = false ) const;
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 protected:

@@ -12,7 +12,7 @@
 #include "PictureObject.h"
 #include "Resource.h"
 
-#if defined(_BRXTARGET)
+#if (defined(_BRXTARGET) || defined(_ZRXTARGET))
 static bool AcadIsQuitting() { return false; }
 #else
 extern bool AcadIsQuitting(void);
@@ -289,7 +289,7 @@ BOOL CPaletteDlg::HandleEraseBkgnd( CDC* pDC )
 			if( pParent )
 			{
 				CBrush* pbrBackground = pDC->GetCurrentBrush();
-			#ifdef _BRXTARGET
+			#if defined(_BRXTARGET)
 				HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pParent->m_hWnd );
 				if( hbrBackground )
 					pbrBackground = CBrush::FromHandle( hbrBackground );
@@ -306,12 +306,12 @@ BOOL CPaletteDlg::HandleEraseBkgnd( CDC* pDC )
 
 void CPaletteDlg::OnMouseEnter()
 {
-  GetArxServices()->HandleEvent( Prop::EventMouseEntered );
+	GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 };
 
 void CPaletteDlg::OnMouseLeave()
 {
-  GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
+	GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 };
 
 

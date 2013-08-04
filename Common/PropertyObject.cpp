@@ -536,15 +536,15 @@ public:
 	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
-      int iCount;
-      if (!readInt(sFile, iCount)) return statInvalidFormat;
+			int iCount;
+			if (!readInt(sFile, iCount)) return statInvalidFormat;
 			if( !mpValue && iCount > 0 )
 				mpValue = new PropVal::TCStringArray;
-      for (int i = 0; i < iCount; i++) {
-        CStringA str;
-        if (!readString(sFile, str)) return statInvalidFormat;
-        mpValue->push_back(CString(str));
-      }
+			for (int i = 0; i < iCount; i++) {
+				CStringA str;
+				if (!readString(sFile, str)) return statInvalidFormat;
+				mpValue->push_back(CString(str));
+			}
 			return statOK;
 		}
 
@@ -673,16 +673,16 @@ public:
 	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
-      int iCount;
-      if (!readInt(sFile, iCount)) return statInvalidFormat;
+			int iCount;
+			if (!readInt(sFile, iCount)) return statInvalidFormat;
 			if( !mpValue && iCount > 0 )
 				mpValue = new PropVal::TIntArray;
-      for (int i = 0; i < iCount; i++)
+			for (int i = 0; i < iCount; i++)
 			{
-        int intValue;
-        if (!readInt(sFile, intValue)) return statInvalidFormat;
-        mpValue->push_back(intValue);
-      }
+				int intValue;
+				if (!readInt(sFile, intValue)) return statInvalidFormat;
+				mpValue->push_back(intValue);
+			}
 			return statOK;
 		}
 
@@ -1374,23 +1374,23 @@ public:
 	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
-      int iArrayCount;
-      if (!readInt(sFile, iArrayCount)) return statInvalidFormat;
+			int iArrayCount;
+			if (!readInt(sFile, iArrayCount)) return statInvalidFormat;
 			if( !mpValue && iArrayCount > 0 )
 				mpValue = new PropVal::TCStringArrayList;
-      for (int i = 0; i < iArrayCount; i++) {
+			for (int i = 0; i < iArrayCount; i++) {
 				mpValue->push_back( PropVal::TCStringArray() );
 				PropVal::TCStringArray& rStr = mpValue->back();
-        int iStringCount;
-        if (!readInt(sFile, iStringCount)) return statInvalidFormat;
-        if (iStringCount != -1) {
-          for (int j = 0; j < iStringCount; j++) {
-            CStringA str;
-            if (!readString(sFile, str)) return statInvalidFormat;
-            rStr.push_back(CString(str));
-          }
-        }
-      }
+				int iStringCount;
+				if (!readInt(sFile, iStringCount)) return statInvalidFormat;
+				if (iStringCount != -1) {
+					for (int j = 0; j < iStringCount; j++) {
+						CStringA str;
+						if (!readString(sFile, str)) return statInvalidFormat;
+						rStr.push_back(CString(str));
+					}
+				}
+			}
 			return statOK;
 		}
 
@@ -1472,23 +1472,23 @@ public:
 	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
-      int nCounter;
-      if (!readInt(sFile, nCounter)) return statInvalidFormat;;
+			int nCounter;
+			if (!readInt(sFile, nCounter)) return statInvalidFormat;;
 			if( !mpValue && nCounter > 0 )
 				mpValue = new PropVal::TIntArrayList;
-      for (int i=0; i<nCounter; i++)
-      {
-        mpValue->push_back(PropVal::TIntArray());
+			for (int i=0; i<nCounter; i++)
+			{
+				mpValue->push_back(PropVal::TIntArray());
 				PropVal::TIntArray& rInt = mpValue->back();
-        int nCounter2;
-        if (!readInt(sFile, nCounter2)) return statInvalidFormat;;
-        for (int j=0; j<nCounter2; j++)
-        {		
-          int nItem;
-          if (!readInt(sFile, nItem)) return statInvalidFormat;;
-          rInt.push_back(nItem);
-        }
-      }
+				int nCounter2;
+				if (!readInt(sFile, nCounter2)) return statInvalidFormat;;
+				for (int j=0; j<nCounter2; j++)
+				{		
+					int nItem;
+					if (!readInt(sFile, nItem)) return statInvalidFormat;;
+					rInt.push_back(nItem);
+				}
+			}
 			return statOK;
 		}
 
@@ -2022,35 +2022,35 @@ void CPropertyObject::Serialize(CArchive& ar)
 
 IOStatus CPropertyObject::ReadFromTextFile(std::ifstream &sFile)
 {
-  CString sObject;
-  if (readLine(sFile) != "CPropertyObject") return statInvalidFormat;
-  int iVersion;
-  if (!readInt(sFile, iVersion)) return statInvalidFormat;
+	CString sObject;
+	if (readLine(sFile) != "CPropertyObject") return statInvalidFormat;
+	int iVersion;
+	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  switch (iVersion) {
-    case 5 : 
-      return ReadFromTextFile5(sFile);
-      break;
-  }
-  return statInvalidFormat;
+	switch (iVersion) {
+		case 5 : 
+			return ReadFromTextFile5(sFile);
+			break;
+	}
+	return statInvalidFormat;
 }
 
 IOStatus CPropertyObject::ReadFromTextFile5(std::ifstream &sFile)
 {
 	int nID;
-  if (!readInt(sFile, nID)) return statInvalidFormat;
+	if (!readInt(sFile, nID)) return statInvalidFormat;
 	mnID = (Prop::Id)nID;
 	int nType;
-  if (!readInt(sFile, nType)) return statInvalidFormat;
+	if (!readInt(sFile, nType)) return statInvalidFormat;
 	SetType( (PropertyType)nType );
-  // get the flag that indicates this property is to be hidden
-  if (!readBool(sFile, mbHidden)) return statInvalidFormat;
+	// get the flag that indicates this property is to be hidden
+	if (!readBool(sFile, mbHidden)) return statInvalidFormat;
 
-  // if this property is a run time only activeX property, set it as hidden.
-  if (GetType() == PropActiveXRunTime)
-    mbHidden = true;
+	// if this property is a run time only activeX property, set it as hidden.
+	if (GetType() == PropActiveXRunTime)
+		mbHidden = true;
 
-  CStringA sType = readLine(sFile);
+	CStringA sType = readLine(sFile);
 	return mpValue->FileIn(sFile, 5);
 }
 

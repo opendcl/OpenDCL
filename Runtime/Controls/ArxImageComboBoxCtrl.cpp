@@ -116,6 +116,7 @@ void CArxImageComboBoxCtrl::OnEditchange()
 	CEdit* pEditCtrl = GetEditCtrl();
 	if( pEditCtrl )
 		pEditCtrl->GetWindowText( sText );
+	mpTemplate->SetStringProperty( Prop::Text, sText );
 	GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( sText ) );
 }
 

@@ -136,6 +136,24 @@ DWORD CArxDwgPreviewCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CArxDwgPreviewCtrl::OnNeedRepaint( bool bRepaintBackground /*= false*/, bool bUpdateNow /*= false*/ ) const
+{
+	if( bRepaintBackground )
+	{
+		if( mhbmSaved )
+		{
+			DeleteObject( mhbmSaved );
+			(const_cast<CArxDwgPreviewCtrl*>(this))->mhbmSaved = NULL;
+		}
+		if( mhbmLast )
+		{
+			DeleteObject( mhbmLast );
+			(const_cast<CArxDwgPreviewCtrl*>(this))->mhbmLast = NULL;
+		}
+	}
+	__super::OnNeedRepaint( bRepaintBackground, bUpdateNow );
+}
+
 bool CArxDwgPreviewCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -287,7 +305,7 @@ void CArxDwgPreviewCtrl::OnPaint()
 		CBitmap* pSavedBmp = memdc.SelectObject( CBitmap::FromHandle( mhbmLast? mhbmLast : mhbmSaved ) );
 		// Copy (BitBlt) bitmap from memory DC to screen DC
 		dc.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &memdc, 0, 0, SRCCOPY );
-    memdc.SelectObject( pSavedBmp );
+		memdc.SelectObject( pSavedBmp );
 	}
 	else
 		PaintControl( &dc );

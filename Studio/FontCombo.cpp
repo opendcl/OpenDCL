@@ -604,7 +604,7 @@ void CFontCombo::AddFont(LPCTSTR pszFontName, DWORD dwFlags)
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::OnTimer(UINT nIDEvent) 
+void CFontCombo::OnTimer(UINT_PTR nIDEvent) 
 {
 	// Is combo open
 	if (GetDroppedState( ))

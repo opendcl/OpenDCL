@@ -362,8 +362,9 @@ class TargetModule
 {
 public:
 	enum Architecture { kAny = 0, kX86, kX64, };
-	enum Platform { kNone = 0, kAutoCAD, kBricscad, };
+	enum Platform { kNone = 0, kAutoCAD, kBricscad, kZWCAD, };
 	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12, kBRX13 = 13,
+											kZRX2014 = 14,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, };
 	typedef char TByte;
@@ -451,7 +452,8 @@ public:
 		kX86Architecture = (kX86 << shftArchitecture),
 		kX64Architecture = (kX64 << shftArchitecture),
 		kAutoCADPlatform = (kAutoCAD << shftPlatform),
-		kBricsCADPlatform = (kBricscad << shftPlatform),
+		kBricscadPlatform = (kBricscad << shftPlatform),
+		kZWCADPlatform = (kZWCAD << shftPlatform),
 
 		kAutoCAD14 =         (kX86Architecture | kAutoCADPlatform | (kARX2 << shftMajorVer) | 0),
 		kAutoCAD2000 =       (kX86Architecture | kAutoCADPlatform | (kARX2000 << shftMajorVer) | 0),
@@ -475,12 +477,13 @@ public:
 		kAutoCAD2013x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 0),
 		kAutoCAD2014x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 1),
 		kAutoCAD2014x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2013 << shftMajorVer) | 1),
-		kBricscad9_3 =       (kX86Architecture | kBricsCADPlatform | (kBRX9 << shftMajorVer) | 3),
-		kBricscad10 =        (kX86Architecture | kBricsCADPlatform | (kBRX10 << shftMajorVer) | 0),
-		kBricscad11 =        (kX86Architecture | kBricsCADPlatform | (kBRX11 << shftMajorVer) | 0),
-		kBricscad12 =        (kX86Architecture | kBricsCADPlatform | (kBRX12 << shftMajorVer) | 0),
-		kBricscad13x86 =     (kX86Architecture | kBricsCADPlatform | (kBRX13 << shftMajorVer) | 0),
-		kBricscad13x64 =     (kX64Architecture | kBricsCADPlatform | (kBRX13 << shftMajorVer) | 0),
+		kBricscad9_3 =       (kX86Architecture | kBricscadPlatform | (kBRX9 << shftMajorVer) | 3),
+		kBricscad10 =        (kX86Architecture | kBricscadPlatform | (kBRX10 << shftMajorVer) | 0),
+		kBricscad11 =        (kX86Architecture | kBricscadPlatform | (kBRX11 << shftMajorVer) | 0),
+		kBricscad12 =        (kX86Architecture | kBricscadPlatform | (kBRX12 << shftMajorVer) | 0),
+		kBricscad13x86 =     (kX86Architecture | kBricscadPlatform | (kBRX13 << shftMajorVer) | 0),
+		kBricscad13x64 =     (kX64Architecture | kBricscadPlatform | (kBRX13 << shftMajorVer) | 0),
+		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -507,14 +510,29 @@ public:
 				}
 				break;
 			case kBricscad:
-				sRootKey = _T("SOFTWARE\\Bricsys\\Bricscad\\V");
-				String sMajor( majorVersion() );
-				sRootKey += sMajor;
-				switch( architecture() )
 				{
-				case kX64:
-					sRootKey += _T("x64");
-					break;
+					sRootKey = _T("SOFTWARE\\Bricsys\\Bricscad\\V");
+					String sMajor( majorVersion() );
+					sRootKey += sMajor;
+					switch( architecture() )
+					{
+					case kX64:
+						sRootKey += _T("x64");
+						break;
+					}
+				}
+				break;
+			case kZWCAD:
+				{
+					sRootKey = _T("SOFTWARE\\ZWSOFT\\ZWCAD\\");
+					String sMajor( 2000 + majorVersion() );
+					sRootKey += sMajor;
+					switch( architecture() )
+					{
+					case kX64:
+						sRootKey += _T("x64");
+						break;
+					}
 				}
 				break;
 			}
@@ -539,6 +557,9 @@ public:
 			case kBricscad:
 				sAppFilename += _T(".brx");
 				break;
+			case kZWCAD:
+				sAppFilename += _T(".zrx");
+				break;
 			}
 			return GetSiblingModulePath( sAppFilename );
 		}
@@ -547,6 +568,7 @@ public:
 			if( !rkDemandLoad )
 				return;
 			if( platform() == kBricscad ||
+					platform() == kZWCAD ||
 					(platform() == kAutoCAD && majorVersion() >= kARX2004) )
 			{
 				rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( pszModifier ) );
@@ -686,6 +708,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 #else
 	bool bWantHKLM = true;
 #endif
+	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2014x86, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
@@ -790,6 +813,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );

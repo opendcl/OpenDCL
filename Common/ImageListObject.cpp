@@ -12,6 +12,7 @@ CImageListObject::CImageListObject()
 : mbDeleted( false )
 {
 	mImageList.m_hImageList = NULL;
+	mszImage.SetSize( -1, -1 );
 }
 
 CImageListObject::CImageListObject( const CImageListObject& Src )

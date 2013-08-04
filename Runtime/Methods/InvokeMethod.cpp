@@ -31,6 +31,7 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 			return Acad::eStringTooLong;
 	}
 	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, sCmd, false, true, bShowCommand );
+#if !defined(_ZRXTARGET)
 	switch( es )
 	{
 	case Acad::eNoDocument:
@@ -44,6 +45,7 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 		}
 		break;
 	}
+#endif //!defined(_ZRXTARGET)
 	return es;
 }
 

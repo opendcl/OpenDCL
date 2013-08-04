@@ -37,54 +37,54 @@ BOOL ThumbnailFile::LoadDwgThumbnail()
 	// open DWG-File
 	CFile          f;
 	CFileException e;
-  TRACE (_T("Open DWG: %s\n"), (const TCHAR *) sFileName);
+	TRACE (_T("Open DWG: %s\n"), (const TCHAR *) sFileName);
 	if (f.Open (sFileName, CFile::modeRead | CFile::typeBinary| CFile::shareDenyNone , &e))
 	{ 
-      TRY
-      {
-         LONG  lOffset = DWG_OFFSET;
-         DWORD  lSize;
-         char  cbSenitel[SENITEL_LENGTH];
-         char  nCount;
-         char  nType;
+			TRY
+			{
+				 LONG  lOffset = DWG_OFFSET;
+				 DWORD  lSize;
+				 char  cbSenitel[SENITEL_LENGTH];
+				 char  nCount;
+				 char  nType;
  
-   // offset to start of Thumbnail-Data
-         f.Seek (lOffset, CFile::begin);
-         f.Read (&lOffset, sizeof(LONG));         
-         f.Seek (lOffset, CFile::begin);
+	 // offset to start of Thumbnail-Data
+				 f.Seek (lOffset, CFile::begin);
+				 f.Read (&lOffset, sizeof(LONG));         
+				 f.Seek (lOffset, CFile::begin);
  
-   // read senitel and test it
-         f.Read (cbSenitel, SENITEL_LENGTH);
-         
-   // OK we have a R13 Thumbnail - look for the different types
-         m_IsValid = TRUE;
-         f.Read (&lSize, 4);   // not used
+	 // read senitel and test it
+				 f.Read (cbSenitel, SENITEL_LENGTH);
+				 
+	 // OK we have a R13 Thumbnail - look for the different types
+				 m_IsValid = TRUE;
+				 f.Read (&lSize, 4);   // not used
 
-   // look for number of thumbnail entries
-         f.Read (&nCount, 1);
-   // iterate the entries
-         for (int num = 0;num < nCount;num++)
-         {
-   // Get type of thumbnail
-            f.Read (&nType, 1);
-   // Get Offset and Size in DWG
-            f.Read (&lOffset, sizeof(LONG));
-            f.Read (&lSize, 4);
-   // prepare different thumbnailtypes
-   // Text with Title
-            if (nType == TITLE_THUMB)
-            {
-               char szTitle[256];
-               LONGLONG lOld = (LONGLONG)f.GetPosition();
-               f.Seek (lOffset, CFile::begin);
-               f.Read(szTitle, lSize);
-               szTitle[lSize] = '\0';
-               m_szTitle = szTitle;
-               f.Seek (lOld, CFile::begin);
-            }
-   // Bitmap (copied from some DIB examples)
-            else if (nType == BMP_THUMB)
-            {
+	 // look for number of thumbnail entries
+				 f.Read (&nCount, 1);
+	 // iterate the entries
+				 for (int num = 0;num < nCount;num++)
+				 {
+	 // Get type of thumbnail
+						f.Read (&nType, 1);
+	 // Get Offset and Size in DWG
+						f.Read (&lOffset, sizeof(LONG));
+						f.Read (&lSize, 4);
+	 // prepare different thumbnailtypes
+	 // Text with Title
+						if (nType == TITLE_THUMB)
+						{
+							 char szTitle[256];
+							 LONGLONG lOld = (LONGLONG)f.GetPosition();
+							 f.Seek (lOffset, CFile::begin);
+							 f.Read(szTitle, lSize);
+							 szTitle[lSize] = '\0';
+							 m_szTitle = szTitle;
+							 f.Seek (lOld, CFile::begin);
+						}
+	 // Bitmap (copied from some DIB examples)
+						else if (nType == BMP_THUMB)
+						{
 				LONGLONG lOld = (LONGLONG)f.GetPosition();
 				f.Seek (lOffset, CFile::begin);
 				
@@ -170,18 +170,18 @@ BOOL ThumbnailFile::LoadDwgThumbnail()
 				f.Seek (lOld, CFile::begin);
 			}
 		 }
-      }
-      CATCH (CFileException, e)
-      {
-         TRACE ("Read error in LoadDwgThumbnail()\n");
-      }
-      END_CATCH
-      f.Close();
-	  m_bLoaded = true;	
-	  return TRUE;
-	  
-   }
-   return FALSE;
+			}
+			CATCH (CFileException, e)
+			{
+				 TRACE ("Read error in LoadDwgThumbnail()\n");
+			}
+			END_CATCH
+			f.Close();
+		m_bLoaded = true;	
+		return TRUE;
+		
+	 }
+	 return FALSE;
 }
 
 CSize ThumbnailFile::GetBitmapSize()
@@ -260,8 +260,8 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 			int nY = (nPaintableHeight - 51) / 2;
 			
 			pDC->StretchBlt(nX, pt.y+nY, 53, 51, 
-                     &dcMem, 0, 0, 53, 51,
-                     SRCCOPY);
+										 &dcMem, 0, 0, 53, 51,
+										 SRCCOPY);
 
 		}
 		else
@@ -272,8 +272,8 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 			int nY = (nPaintableHeight - 98) / 2;
 			
 			pDC->StretchBlt(nX+5, pt.y+nY+5, 100, 98, 
-                     &dcMem, 0, 0, 100, 98,
-                     SRCCOPY);
+										 &dcMem, 0, 0, 100, 98,
+										 SRCCOPY);
 
 		}
 
@@ -364,8 +364,8 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 		HBITMAP* pBmpOld = (HBITMAP*) ::SelectObject(dcMem.m_hDC, m_hBitmap);
 
 		pDC->StretchBlt(pt.x, pt.y, drawSize.cx, drawSize.cy, 
-                     &dcMem, 0, 0, nBmpWidth, nBmpHeight,
-                     SRCCOPY);
+										 &dcMem, 0, 0, nBmpWidth, nBmpHeight,
+										 SRCCOPY);
 
 		::SelectObject(dcMem.m_hDC, pBmpOld);
 

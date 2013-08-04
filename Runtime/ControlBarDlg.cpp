@@ -11,7 +11,7 @@
 #include "DclControlObject.h"
 #include "Resource.h"
 
-#if defined(_BRXTARGET)
+#if (defined(_BRXTARGET) || defined(_ZRXTARGET))
 static bool AcadIsQuitting() { return false; }
 #else
 extern bool AcadIsQuitting(void);
@@ -103,7 +103,7 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 
 	IgnoreSizing();
 	OnApplyMinMaxSize( NULL );
-  if( !mHostControlBar.Create( GetWndCaption(), GetWndRect(), nID ) )
+	if( !mHostControlBar.Create( GetWndCaption(), GetWndRect(), nID ) )
 		return false;
 
 	if( mpSourceForm->GetUUIDAsString().IsEmpty() )
@@ -114,7 +114,7 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 	}
 	else
 	{
-    UUID uuid = mpSourceForm->GetUUID();
+		UUID uuid = mpSourceForm->GetUUID();
 		mHostControlBar.SetToolID( &uuid );
 	}			
 	mHostControlBar.EnableDocking( dwDockableSides );
@@ -267,12 +267,12 @@ bool CControlBarDlg::OnApplyResizable( TPropertyPtr pProp )
 
 void CControlBarDlg::OnMouseEnter()
 {
-  GetArxServices()->HandleEvent( Prop::EventMouseEntered );
+	GetArxServices()->HandleEvent( Prop::EventMouseEntered );
 };
 
 void CControlBarDlg::OnMouseLeave()
 {
-  GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
+	GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 };
 
 
@@ -302,7 +302,7 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rcClient = GetEffectiveClientRect();
 	SetNCWidth( rcWindow.Width() - rcClient.Width() );
 	SetNCHeight( rcWindow.Height() - rcClient.Height() );
-//#if (_BRXTARGET && _BRXTARGET <= 10)
+//#if (defined(_BRXTARGET) && _BRXTARGET <= 10)
 //	CRect rcWnd = GetWndRect();
 //	LONG lWidth = rcWnd.Width() + GetNCWidth();
 //	LONG lHeight = rcWnd.Height() + GetNCHeight();

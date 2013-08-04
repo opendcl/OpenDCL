@@ -415,7 +415,7 @@ LRESULT CAcadPaletteHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		mpDlgObject->OnMouseLeave();
 	}
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET)
 	CWnd* pFocusWnd = GetFocus();
 	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
 	{
@@ -487,7 +487,7 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 void CAcadPaletteHost::OnClose()
 {
 	__super::OnClose();
-#if (_BRXTARGET && _BRXTARGET <= 13)
+#if (defined(_BRXTARGET) && _BRXTARGET <= 13)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

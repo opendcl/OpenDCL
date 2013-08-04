@@ -57,7 +57,7 @@ void CArxComboBoxCtrl::OnSelchange()
 		sVal.Format( _T("%d"), nCurSel );
 		resbuf rbValue = { NULL, RTSTR };
 		rbValue.resval.rstring = sVal.LockBuffer();
-    acedPutSym( _T("$value"), &rbValue );
+		acedPutSym( _T("$value"), &rbValue );
 		resbuf rbEvent = { NULL, RTSTR };
 		rbEvent.resval.rstring = sEvent.LockBuffer();
 		resbuf* prbResult = NULL;
@@ -97,5 +97,6 @@ void CArxComboBoxCtrl::OnEditchange()
 {
 	CString sText;
 	GetWindowText( sText );
+	mpTemplate->SetStringProperty( Prop::Text, sText );
 	GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( sText ) );
 }

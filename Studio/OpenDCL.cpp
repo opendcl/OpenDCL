@@ -63,8 +63,8 @@ FontSettings COpenDCLApp::GetDefaultFontSettings() const
 									 (0 != pApp->GetProfileInt( sSection, S_DefaultFontBold, 0 )),
 									 (0 != pApp->GetProfileInt( sSection, S_DefaultFontUnderLine, 0 )),
 									 (0 != pApp->GetProfileInt( sSection, S_DefaultFontItalic, 0 )) );
-  if( !FS )
-    FS.setName( theWorkspace.GetDefaultFontName() );
+	if( !FS )
+		FS.setName( theWorkspace.GetDefaultFontName() );
 	if( pApp->GetProfileInt( sSection, S_DefaultFontSizeStyle, 0 ) != 0 )
 	{
 		if( !FS.isScaled() )
@@ -75,7 +75,7 @@ FontSettings COpenDCLApp::GetDefaultFontSettings() const
 
 void COpenDCLApp::SetDefaultFontSettings( const FontSettings& FS, UINT flags /*= fontAll*/ )
 {
-  if( !FS )
+	if( !FS )
 		return;
 	CWinApp* pApp = AfxGetApp();
 	const CString sSection = theWorkspace.GetAppKey();

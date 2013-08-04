@@ -105,6 +105,29 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 			OnNeedRepaint();
 		}
 		break;
+	case Prop::ComboBoxStyle:
+		{
+			DWORD dwOldComboStyle = (GetStyle() & CBS_DROPDOWNLIST);
+			if( dwOldComboStyle != GetComboStyle() )
+			{
+				CWnd* pParent = GetParent();
+				UINT nID = GetControlId();
+				CRect rcOld;
+				GetClientRect( &rcOld );
+				CWnd* pPrevWnd = GetNextWindow(GW_HWNDPREV);
+				HWND hwndOld = UnsubclassWindow();
+				Create( pParent, nID );
+				SetWindowPos( pPrevWnd, rcOld.left, rcOld.top, 0, 0, SWP_NOSIZE | SWP_NOSENDCHANGING );
+				if( (dwOldComboStyle & CBS_DROPDOWN) != 0 )
+				{
+					mpTemplate->SetLongProperty( Prop::Height, rcOld.Height() + mpTemplate->GetLongProperty( Prop::DropDownHeight ) );
+					ApplyPosition();
+				}
+				::DestroyWindow( hwndOld );
+				OnFrameChanged();
+			}
+		}
+		break;
 	case Prop::List:
 		if( !GetComboHandler() )
 		{

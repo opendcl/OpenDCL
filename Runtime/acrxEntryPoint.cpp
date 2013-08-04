@@ -914,7 +914,7 @@ public:
 	CARXApp () : AcRxArxApp () {}
 
 	virtual AcRx::AppRetCode On_kInitAppMsg (void *pkt) {
-		// Load dependencies here
+		
 		if( !theWorkspace.GetLocalResourceModule() )
 		{
 			AfxMessageBox( _T("The OpenDCL local language resource module was not found or could not be loaded. OpenDCL cannot continue.\r\nPlease reinstall OpenDCL Runtime to correct the problem."), MB_OK | MB_ICONHAND );
@@ -3532,8 +3532,11 @@ public:
 		struct resbuf *pArgs =acedGetArgs () ;
 
 	#if (_ACADTARGET >= 19)
+		CString sModuleFilename;
+		DWORD cchFilename = GetModuleFileName( _hdllInstance, sModuleFilename.GetBuffer( MAX_PATH ), MAX_PATH );
+		sModuleFilename.ReleaseBuffer( cchFilename );
 		CString sModulePath;
-		DWORD cchPath = GetModuleFileName( _hdllInstance, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
+		DWORD cchPath = GetLongPathName( sModuleFilename, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
 		sModulePath.ReleaseBuffer( cchPath );
 		sModulePath.MakeReverse();
 		sModulePath = sModulePath.Mid( sModulePath.SpanExcluding( _T("\\/:") ).GetLength() );

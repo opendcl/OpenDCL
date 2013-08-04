@@ -75,7 +75,7 @@ protected:
 						color.m_blue = GetBValue( aColor );
 						mpDevice->setBackgroundColor( color );
 					}	
-				      
+							
 					CRect rect;
 					mpCtrl->GetClientRect( &rect);
 					mpDevice->onSize( rect.Width(), rect.Height() );   
@@ -223,7 +223,7 @@ protected:
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-  afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);

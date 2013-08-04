@@ -33,7 +33,7 @@ extern "C" long _ftol( double ); //defined by VC6 C libs
 extern "C" long _ftol2( double dblSource ) { return _ftol( dblSource ); }
 #endif
 
-#if !defined(_BRXTARGET)
+#if (!defined(_BRXTARGET) && !defined(_ZRXTARGET))
 
 #if (_ACADTARGET == 15)
 #define HOSTAPP_DLL _T("AcUtil15.dll")
@@ -72,4 +72,5 @@ AcDbHostApplicationServices* acdbHostApplicationServicesEx()
 AcDbHostApplicationServices* acdbHostApplicationServicesEx() { return acdbHostApplicationServices; } //use original
 #endif
 
-#endif //defined(_BRXTARGET)
+#endif //(!defined(_BRXTARGET) && !defined(_ZRXTARGET))
+
