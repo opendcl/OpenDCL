@@ -82,8 +82,8 @@
 	(PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnOptionsTab_OnClicked ()
-	(*ODCL:RunSample "OptionsTab.lsp")
+(DEFUN c:_MasterDemo_Main_btnAllControls_OnClicked ()
+	(*ODCL:RunSample "AllControls.lsp")
 	(PRINC)
 )
 
@@ -153,6 +153,11 @@
 		(STARTAPP "notepad" readme)
 		(ALERT (STRCAT "Cant find \"DistSampleReadMe.txt\"!"))
 	)
+	(PRINC)
+)
+
+(DEFUN c:_MasterDemo_Main_btnOptionsTab_OnClicked ()
+	(*ODCL:RunSample "OptionsTab.lsp")
 	(PRINC)
 )
 
