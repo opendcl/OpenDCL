@@ -31,7 +31,6 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 			return Acad::eStringTooLong;
 	}
 	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, sCmd, false, true, bShowCommand );
-#if !defined(_ZRXTARGET)
 	switch( es )
 	{
 	case Acad::eNoDocument:
@@ -45,7 +44,6 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 		}
 		break;
 	}
-#endif //!defined(_ZRXTARGET)
 	return es;
 }
 
@@ -73,7 +71,6 @@ CString FireCancel( LPCTSTR pszLispFunction )
 	if( sLispFunction.Left( 4 ).CompareNoCase( _T("^C^C") ) != 0 )
 		return sLispFunction;
 
-	//acdbHostApplicationServices()->
 	Acad::ErrorStatus es = ExecuteCommand( _T("\x1B\x1B") );
 	return sLispFunction.Mid( 4 );
 }

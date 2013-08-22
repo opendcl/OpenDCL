@@ -304,7 +304,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		mbMouseLeft = true;
 		GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
 	}
-#if defined(_BRXTARGET)
+#if defined(_BRXTARGET) || defined(_ZRXTARGET)
 	CWnd* pFocusWnd = GetFocus();
 	if( pFocusWnd && IsDescendant( this, pFocusWnd ) )
 	{

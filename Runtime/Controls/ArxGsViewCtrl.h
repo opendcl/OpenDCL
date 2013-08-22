@@ -108,7 +108,9 @@ protected:
 					{
 						if( mpView )
 						{
-							//mpView->eraseAll(); //causes crash in AutoCAD 2007 and earlier [ORW 12-07-20]
+						#if (_ACADTARGET > 17)
+							mpView->eraseAll(); //causes crash in AutoCAD 2007 and earlier [ORW 12-07-20]
+						#endif
 							mpDevice->erase( mpView );
 						}
 						mpManager->destroyAutoCADDevice( mpDevice );

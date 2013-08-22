@@ -105,6 +105,8 @@ HTREEITEM CFolderTreeCtrl::FreeMemory(HTREEITEM hItem)
 {
 	if(!hItem)
 		return NULL;
+	if( !m_hWnd )
+		return NULL;
 
 	CFolder* folder = (CFolder*)GetItemData(hItem);
 	if (folder!=NULL)
@@ -151,6 +153,8 @@ BOOL CFolderTreeCtrl::SelectItem(HTREEITEM item)
 
 CString CFolderTreeCtrl::GetItemDisplayName(HTREEITEM item)
 {
+	if( !m_hWnd )
+		return CString();
 	CFolder* pFolder = (CFolder*)GetItemData( item );
 	if( !pFolder )
 		return CString();
@@ -159,6 +163,8 @@ CString CFolderTreeCtrl::GetItemDisplayName(HTREEITEM item)
 
 CString CFolderTreeCtrl::GetItemPath(HTREEITEM item)
 {
+	if( !m_hWnd )
+		return CString();
 	CFolder* pFolder = (CFolder*)GetItemData( item );
 	if( !pFolder )
 		return CString();
@@ -167,6 +173,8 @@ CString CFolderTreeCtrl::GetItemPath(HTREEITEM item)
 
 int CFolderTreeCtrl::GetItemImageIndex(HTREEITEM item)
 {
+	if( !m_hWnd )
+		return -1;
 	CFolder* pFolder = (CFolder*)GetItemData( item );
 	if( !pFolder )
 		return -1;
@@ -253,6 +261,8 @@ HTREEITEM CFolderTreeCtrl::SearchPath( HTREEITEM hItem, LPCTSTR pszPath )
 		hItem = GetRootItem();
 	if( !hItem )
 		return NULL;
+	if( !m_hWnd )
+		return NULL;
 	CFolder* pFolder = (CFolder*)GetItemData( hItem );
 	if( pFolder && pFolder->msPath.CompareNoCase( pszPath ) == 0 )
 		return hItem;
@@ -273,6 +283,8 @@ HTREEITEM CFolderTreeCtrl::SearchFolder( HTREEITEM hItem, LPCTSTR pszFolderName 
 		hItem = GetRootItem();
 	if( !hItem )
 		return NULL;
+	if( !m_hWnd )
+		return NULL;
 	CFolder* pFolder = (CFolder*)GetItemData( hItem );
 	if( pFolder && pFolder->msDisplayName.CompareNoCase( pszFolderName ) == 0 )
 		return hItem;
@@ -289,6 +301,8 @@ HTREEITEM CFolderTreeCtrl::SearchFolder( HTREEITEM hItem, LPCTSTR pszFolderName 
 
 HTREEITEM CFolderTreeCtrl::SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath )
 {
+	if( !m_hWnd )
+		return NULL;
 	CFolder* folder;
 	while (hItem)
 	{	
@@ -348,7 +362,7 @@ void CFolderTreeCtrl::AddDrives(HTREEITEM myComputer)
 		CString str;
 		CString driveDesc;
 		int iconID = HARDDRIVE_ICON;
-    TCHAR driveName[] = _T("A:\\");
+		TCHAR driveName[] = _T("A:\\");
 		char driveLetter = _T('A');
 		long bits = 1;
 		SHFILEINFO sfi;
@@ -357,8 +371,8 @@ void CFolderTreeCtrl::AddDrives(HTREEITEM myComputer)
 		for (int i=0; i<size; i++)
 		{			
 			driveName[0] = driveLetter;
-      driveDesc.Format(_T("Drive (%c:)"), driveLetter);
-             
+			driveDesc.Format(_T("Drive (%c:)"), driveLetter);
+						 
 			if (SHGetFileInfo(driveName, 0, &sfi, sizeof(sfi), flags))
 				driveDesc = sfi.szDisplayName;
 			if (GetDriveType(driveName)==DRIVE_REMOVABLE)
@@ -379,23 +393,23 @@ void CFolderTreeCtrl::AddDrives(HTREEITEM myComputer)
 void CFolderTreeCtrl::EnumFolders()
 {
 	HTREEITEM myComputer;
-    LPMALLOC pMalloc;
-    LPITEMIDLIST pidlItems = NULL;
-    IShellFolder *psfDeskTop = NULL;
-    LPENUMIDLIST ppenum = NULL;
-    ULONG celtFetched;
-    HRESULT hr;
-    STRRET strDispName;
-    TCHAR pszDisplayName[MAX_PATH];
-    ULONG uAttr;
+		LPMALLOC pMalloc;
+		LPITEMIDLIST pidlItems = NULL;
+		IShellFolder *psfDeskTop = NULL;
+		LPENUMIDLIST ppenum = NULL;
+		ULONG celtFetched;
+		HRESULT hr;
+		STRRET strDispName;
+		TCHAR pszDisplayName[MAX_PATH];
+		ULONG uAttr;
 	LPITEMIDLIST pidl = NULL;
-    CString sMyComputer;
+		CString sMyComputer;
 	CString sRecycle;
 	CString sMyDocuments;
 	CString sSharedDocuments;
 	CString sNetwork;
 
-    CoInitialize( NULL );
+		CoInitialize( NULL );
 
 	
 	hr = SHGetMalloc(&pMalloc);
@@ -403,12 +417,22 @@ void CFolderTreeCtrl::EnumFolders()
 	hr = SHGetDesktopFolder(&psfDeskTop);
 	
 	hr = psfDeskTop->GetDisplayNameOf(NULL, SHGDN_NORMAL, &strDispName);
-    StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
+	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
 
-	
-	HTREEITEM desktop = AddFolder(new CFolder(pszDisplayName, pszDisplayName, DESKTOP_ICON, DESKTOP_ICON));
+	TCHAR szPath[MAX_PATH] = _T("");
+	CComQIPtr<IPersistFolder2> ipf2_desktop(psfDeskTop);
+	if( ipf2_desktop )
+	{
+		LPITEMIDLIST pidlDesktop = NULL;
+		if (SUCCEEDED(ipf2_desktop->GetCurFolder( &pidlDesktop )))
+			SHGetPathFromIDList( pidlDesktop, szPath );
+	}
+	if( !szPath[0] )
+		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
+
+	HTREEITEM desktop = AddFolder(new CFolder(pszDisplayName, szPath, DESKTOP_ICON, DESKTOP_ICON));
 			
-    psfDeskTop->Release();
+		psfDeskTop->Release();
 
 	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_PERSONAL, &pidl);
 	
@@ -417,9 +441,10 @@ void CFolderTreeCtrl::EnumFolders()
 
 	sMyDocuments = pszDisplayName;
 	
+	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
+		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
 	
-	AddFolder(new CFolder(pszDisplayName, pszDisplayName, MY_DOCUMENT_ICON, MY_DOCUMENT_ICON), desktop);		
-	
+	AddFolder(new CFolder(pszDisplayName, szPath, MY_DOCUMENT_ICON, MY_DOCUMENT_ICON), desktop);		
 
 	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_BITBUCKET , &pidl);
 	
@@ -428,7 +453,7 @@ void CFolderTreeCtrl::EnumFolders()
 
 	sRecycle = pszDisplayName;
 	
-    hr = psfDeskTop->EnumObjects(NULL,SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &ppenum);
+		hr = psfDeskTop->EnumObjects(NULL,SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &ppenum);
 	
 
 	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_DRIVES, &pidl);
@@ -438,7 +463,10 @@ void CFolderTreeCtrl::EnumFolders()
 	
 	sMyComputer = pszDisplayName;
 	
-	myComputer = AddFolder(new CFolder(pszDisplayName, pszDisplayName, FOLDER_ICON, FOLDER_EXPAND_ICON), desktop);
+	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
+		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
+	
+	myComputer = AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), desktop);
 	
 	AddDrives(myComputer);
 
@@ -450,7 +478,10 @@ void CFolderTreeCtrl::EnumFolders()
 	
 	sSharedDocuments = pszDisplayName;
 	
-	AddFolder(new CFolder(pszDisplayName, pszDisplayName, FOLDER_ICON, FOLDER_EXPAND_ICON), myComputer);
+	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
+		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
+	
+	AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), myComputer);
 
 
 	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_PERSONAL, &pidl);
@@ -458,7 +489,10 @@ void CFolderTreeCtrl::EnumFolders()
 	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
 	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
 	
-	AddFolder(new CFolder(pszDisplayName, pszDisplayName, FOLDER_ICON, FOLDER_EXPAND_ICON), myComputer);
+	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
+		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
+	
+	AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), myComputer);
 
 
 	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_NETWORK, &pidl);
@@ -467,41 +501,44 @@ void CFolderTreeCtrl::EnumFolders()
 	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
 
 	sNetwork = pszDisplayName;
+	
+	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
+		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
 
-	AddFolder(new CFolder(pszDisplayName, pszDisplayName, NETWORK_ICON, NETWORK_ICON), desktop);	
+	AddFolder(new CFolder(pszDisplayName, szPath, NETWORK_ICON, NETWORK_ICON), desktop);	
 
 	
 	
 	// look through the enum list and extract the appropriate directory names.
-    while( (hr = ppenum->Next(1, &pidlItems, &celtFetched), hr) == S_OK && celtFetched == 1)
-    {
-        psfDeskTop->GetDisplayNameOf(pidlItems, SHGDN_INFOLDER, &strDispName);
-        StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
+		while( (hr = ppenum->Next(1, &pidlItems, &celtFetched), hr) == S_OK && celtFetched == 1)
+		{
+				psfDeskTop->GetDisplayNameOf(pidlItems, SHGDN_INFOLDER, &strDispName);
+				StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
 
 		uAttr = SFGAO_FOLDER;
-        psfDeskTop->GetAttributesOf(1, (LPCITEMIDLIST *) &pidlItems, &uAttr);
-        if(uAttr & SFGAO_FOLDER)
-        {
+				psfDeskTop->GetAttributesOf(1, (LPCITEMIDLIST *) &pidlItems, &uAttr);
+				if(uAttr & SFGAO_FOLDER)
+				{
 			if (pszDisplayName != sMyComputer &&
 				pszDisplayName != sRecycle &&
 				pszDisplayName != sMyDocuments &&
 				pszDisplayName != sSharedDocuments &&
 				pszDisplayName != sNetwork)
 			{
-				AddFolder(new CFolder(pszDisplayName, pszDisplayName, FOLDER_ICON, FOLDER_EXPAND_ICON), desktop);
-			}
-	    }
-        
-		pMalloc->Free(pidlItems);
-    }
-
-    
-    ppenum->Release();
 	
-    CoUninitialize();
+				if (!SUCCEEDED(SHGetPathFromIDList( pidlItems, szPath )))
+					lstrcpyn( szPath, pszDisplayName, MAX_PATH );
+				AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), desktop);
+			}
+			}
+				
+		pMalloc->Free(pidlItems);
+		}
 
-	TCHAR szPath[MAX_PATH];
-	GetSystemDirectory(szPath, MAX_PATH);
+		
+		ppenum->Release();
+	
+		CoUninitialize();
 	
 	Expand(desktop, TVE_EXPAND);
 	Expand(myComputer, TVE_EXPAND);
@@ -544,7 +581,7 @@ void CFolderTreeCtrl::Display( const CRect& rcTree )
 	if (pTopParent != NULL)
 	{
 		pTopParent->SendMessage( WM_NCACTIVATE, TRUE );
-	  pTopParent->SetRedraw( TRUE );
+		pTopParent->SetRedraw( TRUE );
 	}
 }
 

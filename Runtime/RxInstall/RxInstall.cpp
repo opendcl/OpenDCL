@@ -617,15 +617,15 @@ public:
 void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true )
 {
 	bool bX64 = (Target.architecture() == TargetModule::kX64);
+	HKEY hkRoot = Target.GetTargetRootRegKey( bWantHKLM );
 	String sTargetKey = pszTargetKey;
-	RegKey rkApplications( sTargetKey + _T("\\Applications"),
-											 Target.GetTargetRootRegKey( bWantHKLM ),
-											 false,
-											 KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
-	if( !rkApplications )
-		return;
-	RegKey rkDemandLoad( GetAppLongName(),
-											 rkApplications,
+	sTargetKey += _T("\\Applications");
+	if( !RegKey( sTargetKey, hkRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) ) )
+		return; //skip keys with no 'Applications' subkey
+	sTargetKey += _T('\\');
+	sTargetKey += GetAppLongName();
+	RegKey rkDemandLoad( sTargetKey,
+											 hkRoot,
 											 true,
 											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkDemandLoad )

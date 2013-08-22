@@ -300,7 +300,7 @@ public:
 	{
 	}
 protected:
-  virtual BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel )
+	virtual BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel )
 	{
 		CAutoDocWriteLock DocLock( acdbCurDwg() ); //must lock document or AutoCAD crashes when adding a new plot style
 		return __super::OnSelectOther(isOther2, curSel, newSel);

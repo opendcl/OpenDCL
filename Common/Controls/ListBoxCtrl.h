@@ -14,6 +14,7 @@
 class CListBoxCtrl : public CListBox, public CDialogControl
 {
 	CAcadColorService mColorService;
+	int mnPrevSel;
 	std::set< UINT > msetnDragSource;
 	CRect mrcDropInsertMark;
 	bool mbIgnoreChange;
@@ -53,4 +54,5 @@ protected:
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnSelchange();
 };

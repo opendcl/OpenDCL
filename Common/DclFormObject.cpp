@@ -318,14 +318,14 @@ UINT_PTR CDclFormObject::GetTitleBarIcon()
 
 UINT_PTR CDclFormObject::GetUniqueControlId()
 {
-	UINT_PTR nHighest = 10;
+	int nHighest = 10;
 	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		UINT_PTR nID = (*iter)->GetID();
+		int nID = (*iter)->GetID();
 		if (nID > nHighest)
 			nHighest = nID;
 	}
-	return nHighest + 1;
+	return (UINT_PTR)nHighest + 1;
 }
 
 //IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const

@@ -218,7 +218,7 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 		HDC hdc = pDC->m_hDC;
 		CPoint point;
 		
-		CBrush StaticBrush(::GetSysColor(COLOR_WINDOW));
+		CBrush StaticBrush(pDC->GetBkColor());
 		CRect rc(pt.x, pt.y, pt.x + nPaintableWidth, pt.y + nPaintableHeight);
 		pDC->FillRect(rc, &StaticBrush);
 		StaticBrush.DeleteObject();
@@ -392,7 +392,7 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 			rcRight.right = ptOrignal.x + nPaintableWidth;
 			rcRight.bottom = ptOrignal.y + nPaintableHeight;
 			
-		CBrush StaticBrush(::GetSysColor(COLOR_WINDOW));
+			CBrush StaticBrush(pDC->GetBkColor());
 		if (rcTop.Height() > 0)
 			pDC->FillRect(rcTop, &StaticBrush);
 		if (rcBottom.Height() > 0)
@@ -664,7 +664,7 @@ END_MESSAGE_MAP()
 
 void CArxDwgListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-	ASSERT(lpDrawItemStruct->CtlType == ODT_LISTBOX); // We've gotta be a combo
+	ASSERT(lpDrawItemStruct->CtlType == ODT_LISTBOX);
 
 	// Lets make a CDC for ease of use
 	CDC *pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
@@ -782,7 +782,8 @@ void CArxDwgListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 	else
 	{
-		CPoint pt(1, rcText.top + szText.cy + 1);
+		pDC->SetBkColor(backGround);
+		CPoint pt(18, rcText.top + szText.cy + 1);
 	
 		POSITION pos = m_ThumbnailFileList.GetHeadPosition();
 		while (pos != NULL)
@@ -790,7 +791,7 @@ void CArxDwgListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			ThumbnailFile *pTFile = m_ThumbnailFileList.GetNext(pos);
 			if (pTFile->m_sFileName == strCurFont)
 			{
-				pTFile->DrawBitmap(pDC, pt, rc.Width(), mnRowHeight > 0? mnRowHeight : 100, mhR14LogoLarge, mhR14LogoSmall);
+				pTFile->DrawBitmap(pDC, pt, rc.Width() - pt.x, rc.bottom - pt.y - 2, mhR14LogoLarge, mhR14LogoSmall);
 				break;
 			}
 
@@ -857,7 +858,6 @@ int CArxDwgListCtrl::HitTest(CPoint point)
 void CArxDwgListCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus(pOldWnd);
-	
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
@@ -871,12 +871,13 @@ void CArxDwgListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 void CArxDwgListCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
-	
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
 void CArxDwgListCtrl::OnSelchange() 
 {
+	__super::OnSelchange();
+
 	int nSelCount = GetSelCount();
 	
 	if (nSelCount > -1)

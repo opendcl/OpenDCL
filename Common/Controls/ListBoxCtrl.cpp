@@ -14,6 +14,7 @@
 
 CListBoxCtrl::CListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mnPrevSel( -1 )
 , mrcDropInsertMark( 0, 0, 0, 0 )
 , mbIgnoreChange( false )
 {
@@ -360,6 +361,7 @@ void CListBoxCtrl::OnListChanged()
 BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnSelchange)
 	ON_MESSAGE(LB_ADDSTRING, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_DELETESTRING, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_DIR, &CListBoxCtrl::OnModifyContent)
@@ -383,6 +385,19 @@ BOOL CListBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
+}
+
+void CListBoxCtrl::OnSelchange() 
+{
+	int nCurSel = GetCurSel();
+	if( mnPrevSel >= 0 && nCurSel != mnPrevSel)
+	{
+		CRect rcOldSel;
+		GetItemRect( mnPrevSel, &rcOldSel );
+		rcOldSel.bottom += 2;
+		InvalidateRect( &rcOldSel );
+	}
+	mnPrevSel = nCurSel;
 }
 
 void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 

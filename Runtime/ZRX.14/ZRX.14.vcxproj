@@ -78,6 +78,10 @@
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(ZRX2014)\Tools\ZRXCheck\ZRXCheck.exe" "$(TargetPath)"</Command>
+      <Message>Signing ZRX module</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -108,6 +112,10 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(ZRX2014)\Tools\ZRXCheck\ZRXCheck.exe" "$(TargetPath)"</Command>
+      <Message>Signing ZRX module</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\AcadBlockInsertDropTarget.cpp" />

@@ -118,25 +118,6 @@
 #include "ARXVI.h" //include AutoCAD target version independence header before ObjectARX headers
 #include "arxHeaders.h"
 
-#if defined(_ZRXTARGET)
-//overwrite ZRX macros that prefix "zds_" to command handler names instead of "ads_"
-#undef ZCED_ZDSSYMBOL_ENTRY_AUTO
-#define ZCED_ZDSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
-		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_##name = { _RXST(#name), classname::ads_ ##name, regFunc, -1 } ; \
-		extern "C" __declspec(allocate("ZDSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_##name = &__ZdsSymbolMap_##name ; \
-		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(name)
-#undef ZCED_ZDSCOMMAND_ENTRY_AUTO
-#define ZCED_ZDSCOMMAND_ENTRY_AUTO(classname, name, regFunc) \
-		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_##name = { _RXST("c:") _RXST(#name), classname::ads_ ##name, regFunc, -1 } ; \
-		extern "C" __declspec(allocate("ZDSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_##name = &__ZdsSymbolMap_##name ; \
-		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(name)
-#undef ZCED_ZDSSYMBOL_ENTRYBYID_AUTO
-#define ZCED_ZDSSYMBOL_ENTRYBYID_AUTO(classname, name, nameId, regFunc) \
-		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_##name = { NULL, classname::ads_ ##name, regFunc, nameId } ; \
-		extern "C" __declspec(allocate("ADSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_##name = &__ZdsSymbolMap_##name ; \
-		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(name)
-#endif //defined(_ZRXTARGET)
-
 //-----------------------------------------------------------------------------
 #include "DocData.h" //- Your document specific data class holder
 

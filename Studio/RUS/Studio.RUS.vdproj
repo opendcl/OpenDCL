@@ -147,6 +147,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4CB45172B25147CCADC5356EACC6EC2F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_501D6773AA754378912A01E21862C882"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -195,6 +201,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6CAD70F304F84312B6657E6845144E45"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_76BC429529444C708818ED4FCE0FC079"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -202,6 +214,12 @@
         "Entry"
         {
         "MsmKey" = "8:_77CE5AA2022249CEA75A8D8447C19ACC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_793B374A126843A1AFDF77A1B32A926B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -369,6 +387,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CFFB4A89BEDA45129C601930600B4A0A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D02821DF40E3426B9FEDB157473DEA16"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -454,6 +478,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EFD6E54156424417B12B148A145B471D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F2FD8C0D5285482CB0843A8BAC29C6A7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -976,6 +1006,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4CB45172B25147CCADC5356EACC6EC2F"
+            {
+            "SourcePath" = "8:Content\\Samples\\AllControls.sld"
+            "TargetName" = "8:AllControls.sld"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_501D6773AA754378912A01E21862C882"
             {
             "SourcePath" = "8:Content\\Samples\\DistSample2.lsp"
@@ -1136,10 +1186,50 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6CAD70F304F84312B6657E6845144E45"
+            {
+            "SourcePath" = "8:Content\\Samples\\AllControls.avi"
+            "TargetName" = "8:AllControls.avi"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_77CE5AA2022249CEA75A8D8447C19ACC"
             {
             "SourcePath" = "8:Content\\Samples\\Animation.lsp"
             "TargetName" = "8:Animation.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_793B374A126843A1AFDF77A1B32A926B"
+            {
+            "SourcePath" = "8:Content\\Samples\\AllControls.odcl"
+            "TargetName" = "8:AllControls.odcl"
             "Tag" = "8:"
             "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
             "Condition" = "8:"
@@ -1696,6 +1786,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CFFB4A89BEDA45129C601930600B4A0A"
+            {
+            "SourcePath" = "8:Content\\Samples\\AllControls.lsp"
+            "TargetName" = "8:AllControls.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D02821DF40E3426B9FEDB157473DEA16"
             {
             "SourcePath" = "8:Content\\Samples\\DistSample1.prv"
@@ -1996,6 +2106,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2FD8C0D5285482CB0843A8BAC29C6A7"
+            {
+            "SourcePath" = "8:Content\\Samples\\AllControls.dwg"
+            "TargetName" = "8:AllControls.dwg"
+            "Tag" = "8:"
+            "Folder" = "8:_21A40BB0781741A390F830F8CAEF30E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3B4003936BA4116AF4A6E3BDB93F7DF"
             {
             "SourcePath" = "8:Content\\Samples\\EventHandling.odcl"
@@ -2168,15 +2298,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{A05BAEEA-288E-4D67-BC4E-F6C33773EEE5}"
-        "PackageCode" = "8:{4379F893-D660-4E9D-A098-F151A30858DE}"
+        "ProductCode" = "8:{57110090-8DB4-48B1-955E-9C806017DEC8}"
+        "PackageCode" = "8:{BA36ABA0-18D3-4583-B6F4-159444E81563}"
         "UpgradeCode" = "8:{30C0C78D-D3B1-4C36-B37E-357F50E691D3}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:7.0.0013"
+        "ProductVersion" = "8:7.0.0014"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"

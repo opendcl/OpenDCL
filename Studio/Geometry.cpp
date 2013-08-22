@@ -95,6 +95,8 @@ BOOL CGeometry::OnInitDialog()
 	mpDclControl->GetOwnerForm()->FindControls(CtlSplitter, Splitters);
 	for( TDclControlList::const_iterator iter = Splitters.begin(); iter != Splitters.end(); ++iter )
 	{
+		if (mpDclControl->GetID() == (*iter)->GetID())
+			continue;
 		int nTheWidth = (*iter)->GetLongProperty(Prop::Width);
 		int nTheHeight = (*iter)->GetLongProperty(Prop::Height);
 		if (nTheWidth > nTheHeight)

@@ -102,7 +102,7 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 		sVal.Format( _T("%d"), GetCurSel() );
 		resbuf rbValue = { NULL, RTSTR };
 		rbValue.resval.rstring = sVal.LockBuffer();
-    acedPutSym( _T("$value"), &rbValue );
+		acedPutSym( _T("$value"), &rbValue );
 		resbuf rbEvent = { NULL, RTSTR };
 		rbEvent.resval.rstring = sEvent.LockBuffer();
 		resbuf* prbResult = NULL;
