@@ -40,7 +40,7 @@ class CColourPopup : public CWnd
 public:
     CColourPopup();
     CColourPopup( CPoint p, COLORREF crColour, CWnd* pParentWnd,
-                  LPCTSTR szDefaultText = NULL, LPCTSTR szCustomText = NULL,
+                  LPCTSTR szCustomText = NULL,
 									TPropertyPtr pProp = NULL, CDialogControl *pCtrl = NULL );
     void Initialise();
 
@@ -51,7 +51,7 @@ public:
 // Operations
 public:
     BOOL Create(CPoint p, COLORREF crColour, CWnd* pParentWnd, 
-                LPCTSTR szDefaultText = NULL, LPCTSTR szCustomText = NULL);
+                LPCTSTR szCustomText = NULL);
 
 // Overrides
     // ClassWizard generated virtual function overrides
@@ -86,7 +86,6 @@ protected:
     int            m_nBoxSize, m_nMargin;
     int            m_nCurrentSel;
     int            m_nChosenColourSel;
-    CString        m_strDefaultText;
     CString        m_strCustomText;
     CRect          m_CustomTextRect, m_DefaultTextRect, m_WindowRect;
     CFont          m_Font;

@@ -27,6 +27,7 @@ const int __arxRegisteredFlags_##T_KEY##T_GROUPNAME = __arxRegisteredCommand_##T
 
 extern "C" int zds_queueexpr( char* pszCommand );
 #define ads_queueexpr zds_queueexpr
+#define acedEvaluateLisp zcedEvaluateLisp
 
 #define subSetAttributes setAttributes
 #define subWorldDraw worldDraw

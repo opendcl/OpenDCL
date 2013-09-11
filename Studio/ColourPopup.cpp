@@ -34,7 +34,6 @@
 #include "stdafx.h"
 #include <math.h>
 #include "ColourPopup.h"
-#include "WinColorDlg.h"
 #include "TrueColorDialog.h"
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
@@ -44,7 +43,6 @@
 #include "Resource.h"
 
 
-#define DEFAULT_BOX_VALUE -3
 #define CUSTOM_BOX_VALUE  -2
 #define INVALID_COLOUR    -1
 
@@ -122,7 +120,6 @@ CColourPopup::CColourPopup()
 }
 
 CColourPopup::CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
-                           LPCTSTR szDefaultText /* = NULL */,
                            LPCTSTR szCustomText  /* = NULL */,
 													 TPropertyPtr pProp /*= NULL */,
 													 CDialogControl *pCtrl /* = NULL */)
@@ -133,10 +130,9 @@ CColourPopup::CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
     m_pCtrl		 = pCtrl;
     m_crColour       = m_crInitialColour = crColour;
     m_pParent        = pParentWnd;
-    m_strDefaultText = (szDefaultText)? szDefaultText : _T("");
     m_strCustomText  = (szCustomText)?  szCustomText  : _T("");
 
-    CColourPopup::Create(p, crColour, pParentWnd, szDefaultText, szCustomText);
+    CColourPopup::Create(p, crColour, pParentWnd, szCustomText);
 }
 
 void CColourPopup::Initialise()
@@ -204,7 +200,6 @@ LPCTSTR CColourPopup::GetColourName(int nIndex)
 }
 
 BOOL CColourPopup::Create(CPoint p, COLORREF crColour, CWnd* pParentWnd,
-                          LPCTSTR szDefaultText /* = NULL */,
                           LPCTSTR szCustomText  /* = NULL */)
 {
     ASSERT(pParentWnd && ::IsWindow(pParentWnd->GetSafeHwnd()));
@@ -226,10 +221,6 @@ BOOL CColourPopup::Create(CPoint p, COLORREF crColour, CWnd* pParentWnd,
     // Store the Custom text
     if (szCustomText != NULL) 
         m_strCustomText = szCustomText;
-
-    // Store the Default Area text
-    if (szDefaultText != NULL) 
-        m_strDefaultText = szDefaultText;
         
     // Set the window size
     SetWindowSize();
@@ -283,14 +274,9 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
     if (nChar == VK_DOWN) 
     {
-        if (row == DEFAULT_BOX_VALUE) 
-            row = col = 0; 
-        else if (row == CUSTOM_BOX_VALUE)
+        if (row == CUSTOM_BOX_VALUE)
         {
-            if (m_strDefaultText.GetLength())
-                row = col = DEFAULT_BOX_VALUE;
-            else
-                row = col = 0;
+             row = col = 0;
         }
         else
         {
@@ -299,8 +285,6 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
             {
                 if (m_strCustomText.GetLength())
                     row = col = CUSTOM_BOX_VALUE;
-                else if (m_strDefaultText.GetLength())
-                    row = col = DEFAULT_BOX_VALUE;
                 else
                     row = col = 0;
             }
@@ -310,17 +294,7 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
     if (nChar == VK_UP) 
     {
-        if (row == DEFAULT_BOX_VALUE)
-        {
-            if (m_strCustomText.GetLength())
-                row = col = CUSTOM_BOX_VALUE;
-            else
-           { 
-                row = GetRow(m_nNumColours-1); 
-                col = GetColumn(m_nNumColours-1); 
-            }
-        }
-        else if (row == CUSTOM_BOX_VALUE)
+        if (row == CUSTOM_BOX_VALUE)
         { 
             row = GetRow(m_nNumColours-1); 
             col = GetColumn(m_nNumColours-1); 
@@ -328,9 +302,7 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
         else if (row > 0) row--;
         else /* row == 0 */
         {
-            if (m_strDefaultText.GetLength())
-                row = col = DEFAULT_BOX_VALUE;
-            else if (m_strCustomText.GetLength())
+            if (m_strCustomText.GetLength())
                 row = col = CUSTOM_BOX_VALUE;
             else
             { 
@@ -343,14 +315,9 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
     if (nChar == VK_RIGHT) 
     {
-        if (row == DEFAULT_BOX_VALUE) 
-            row = col = 0; 
-        else if (row == CUSTOM_BOX_VALUE)
+        if (row == CUSTOM_BOX_VALUE)
         {
-            if (m_strDefaultText.GetLength())
-                row = col = DEFAULT_BOX_VALUE;
-            else
-                row = col = 0;
+             row = col = 0;
         }
         else if (col < m_nNumColumns-1) 
             col++;
@@ -363,8 +330,6 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
         {
             if (m_strCustomText.GetLength())
                 row = col = CUSTOM_BOX_VALUE;
-            else if (m_strDefaultText.GetLength())
-                row = col = DEFAULT_BOX_VALUE;
             else
                 row = col = 0;
         }
@@ -374,17 +339,7 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
     if (nChar == VK_LEFT) 
     {
-        if (row == DEFAULT_BOX_VALUE)
-        {
-            if (m_strCustomText.GetLength())
-                row = col = CUSTOM_BOX_VALUE;
-            else
-           { 
-                row = GetRow(m_nNumColours-1); 
-                col = GetColumn(m_nNumColours-1); 
-            }
-        }
-        else if (row == CUSTOM_BOX_VALUE)
+        if (row == CUSTOM_BOX_VALUE)
         { 
             row = GetRow(m_nNumColours-1); 
             col = GetColumn(m_nNumColours-1); 
@@ -395,9 +350,7 @@ void CColourPopup::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
             if (row > 0) { row--; col = m_nNumColumns-1; }
             else 
             {
-                if (m_strDefaultText.GetLength())
-                    row = col = DEFAULT_BOX_VALUE;
-                else if (m_strCustomText.GetLength())
+                if (m_strCustomText.GetLength())
                     row = col = CUSTOM_BOX_VALUE;
                 else
                 { 
@@ -436,10 +389,6 @@ void CColourPopup::OnPaint()
 {
     CPaintDC dc(this); // device context for painting
 
-    // Draw the Default Area text
-    if (m_strDefaultText.GetLength())
-        DrawCell(&dc, DEFAULT_BOX_VALUE);
- 
     // Draw colour cells
     for (UINT i = 0; i < m_nNumColours; i++)
         DrawCell(&dc, i);
@@ -468,14 +417,8 @@ void CColourPopup::OnMouseMove(UINT nFlags, CPoint point)
     // First check we aren't in text box
     if (m_strCustomText.GetLength() && m_CustomTextRect.PtInRect(point))
         nNewSelection = CUSTOM_BOX_VALUE;
-    else if (m_strDefaultText.GetLength() && m_DefaultTextRect.PtInRect(point))
-        nNewSelection = DEFAULT_BOX_VALUE;
     else
     {
-        // Take into account text box
-        if (m_strDefaultText.GetLength()) 
-            point.y -= m_DefaultTextRect.Height();  
-
         // Get the row and column
         nNewSelection = GetIndex(point.y / m_nBoxSize, point.x / m_nBoxSize);
 
@@ -519,8 +462,6 @@ int CColourPopup::GetIndex(int row, int col) const
 { 
     if ((row == CUSTOM_BOX_VALUE || col == CUSTOM_BOX_VALUE) && m_strCustomText.GetLength())
         return CUSTOM_BOX_VALUE;
-    else if ((row == DEFAULT_BOX_VALUE || col == DEFAULT_BOX_VALUE) && m_strDefaultText.GetLength())
-        return DEFAULT_BOX_VALUE;
     else if (row < 0 || col < 0 || row >= m_nNumRows || col >= m_nNumColumns)
         return INVALID_COLOUR;
     else
@@ -536,8 +477,6 @@ int CColourPopup::GetRow(int nIndex) const
 { 
     if (nIndex == CUSTOM_BOX_VALUE && m_strCustomText.GetLength())
         return CUSTOM_BOX_VALUE;
-    else if (nIndex == DEFAULT_BOX_VALUE && m_strDefaultText.GetLength())
-        return DEFAULT_BOX_VALUE;
     else if (nIndex < 0 || (UINT)nIndex >= m_nNumColours)
         return INVALID_COLOUR;
     else
@@ -548,8 +487,6 @@ int CColourPopup::GetColumn(int nIndex) const
 { 
     if (nIndex == CUSTOM_BOX_VALUE && m_strCustomText.GetLength())
         return CUSTOM_BOX_VALUE;
-    else if (nIndex == DEFAULT_BOX_VALUE && m_strDefaultText.GetLength())
-        return DEFAULT_BOX_VALUE;
     else if (nIndex < 0 || (UINT)nIndex >= m_nNumColours)
         return INVALID_COLOUR;
     else
@@ -558,12 +495,6 @@ int CColourPopup::GetColumn(int nIndex) const
 
 void CColourPopup::FindCellFromColour(COLORREF crColour)
 {
-    if (crColour == CLR_DEFAULT && m_strDefaultText.GetLength())
-    {
-        m_nChosenColourSel = DEFAULT_BOX_VALUE;
-        return;
-    }
-
     for (UINT i = 0; i < m_nNumColours; i++)
     {
         if (GetColour(i) == crColour)
@@ -589,23 +520,12 @@ BOOL CColourPopup::GetCellRect(int nIndex, const LPRECT& rect)
                   m_CustomTextRect.right, m_CustomTextRect.bottom);
         return TRUE;
     }
-    else if (nIndex == DEFAULT_BOX_VALUE)
-    {
-        ::SetRect(rect, 
-                  m_DefaultTextRect.left,  m_DefaultTextRect.top,
-                  m_DefaultTextRect.right, m_DefaultTextRect.bottom);
-        return TRUE;
-    }
 
     if (nIndex < 0 || (UINT)nIndex >= m_nNumColours)
         return FALSE;
 
     rect->left = GetColumn(nIndex) * m_nBoxSize + m_nMargin;
     rect->top  = GetRow(nIndex) * m_nBoxSize + m_nMargin;
-
-    // Move everything down if we are displaying a default text area
-    if (m_strDefaultText.GetLength()) 
-        rect->top += (m_nMargin + m_DefaultTextRect.Height());
 
     rect->right = rect->left + m_nBoxSize;
     rect->bottom = rect->top + m_nBoxSize;
@@ -619,7 +539,7 @@ void CColourPopup::SetWindowSize()
     CSize TextSize;
 
     // If we are showing a custom or default text area, get the font and text size.
-    if (m_strCustomText.GetLength() || m_strDefaultText.GetLength())
+    if (m_strCustomText.GetLength())
     {
         CClientDC dc(this);
         CFont* pOldFont = (CFont*) dc.SelectObject(&m_Font);
@@ -628,14 +548,6 @@ void CColourPopup::SetWindowSize()
         TextSize = CSize(0,0);
         if (m_strCustomText.GetLength())
             TextSize = dc.GetTextExtent(m_strCustomText);
-
-        // Get the size of the default text (if there IS default text)
-        if (m_strDefaultText.GetLength())
-        {
-            CSize DefaultSize = dc.GetTextExtent(m_strDefaultText);
-            if (DefaultSize.cx > TextSize.cx) TextSize.cx = DefaultSize.cx;
-            if (DefaultSize.cy > TextSize.cy) TextSize.cy = DefaultSize.cy;
-        }
 
         dc.SelectObject(pOldFont);
         TextSize += CSize(2*m_nMargin,2*m_nMargin);
@@ -653,29 +565,9 @@ void CColourPopup::SetWindowSize()
     // Get the current window position, and set the new size
     CRect rect;
     GetWindowRect(rect);
-	CRect rectFinal;
-	rectFinal.SetRect(rect.left, rect.top, 
+	m_WindowRect.SetRect(rect.left, rect.top, 
                       rect.left + m_nNumColumns*m_nBoxSize + 2*m_nMargin,
                       rect.top  + m_nNumRows*m_nBoxSize + 2*m_nMargin);
-
-	
-    m_WindowRect.SetRect(rectFinal.left - rectFinal.Width(), rect.top, 
-                         rectFinal.right - rectFinal.Width(),
-                         rect.bottom);
-
-    // if custom text, then expand window if necessary, and set text width as
-    // window width
-    if (m_strDefaultText.GetLength()) 
-    {
-        if (TextSize.cx > m_WindowRect.Width())
-            m_WindowRect.right = m_WindowRect.left + TextSize.cx;
-        TextSize.cx = m_WindowRect.Width()-2*m_nMargin;
-
-        // Work out the text area
-        m_DefaultTextRect.SetRect(m_nMargin, m_nMargin, 
-                                  m_nMargin+TextSize.cx, 2*m_nMargin+TextSize.cy);
-        m_WindowRect.bottom += m_DefaultTextRect.Height() + 2*m_nMargin;
-    }
 
     // if custom text, then expand window if necessary, and set text width as
     // window width
@@ -741,7 +633,7 @@ void CColourPopup::ChangeSelection(int nIndex)
         nIndex = CUSTOM_BOX_VALUE; 
 
     if ((m_nCurrentSel >= 0 && (UINT)m_nCurrentSel < m_nNumColours) ||
-        m_nCurrentSel == CUSTOM_BOX_VALUE || m_nCurrentSel == DEFAULT_BOX_VALUE)
+        m_nCurrentSel == CUSTOM_BOX_VALUE)
     {
         // Set Current selection as invalid and redraw old selection (this way
         // the old selection will be drawn unselected)
@@ -756,16 +648,11 @@ void CColourPopup::ChangeSelection(int nIndex)
 
     // Store the current colour
     if (m_nCurrentSel == CUSTOM_BOX_VALUE)
-        m_pParent->SendMessage(CPN_SELCHANGE, (WPARAM) m_crInitialColour, 0);
-    else if (m_nCurrentSel == DEFAULT_BOX_VALUE)
-    {
-        m_crColour = CLR_DEFAULT;
-        m_pParent->SendMessage(CPN_SELCHANGE, (WPARAM) CLR_DEFAULT, 0);
-    }
+        m_pParent->SendMessage(CPN_SELCHANGE, 0, (LPARAM) m_crInitialColour);
     else
     {
         m_crColour = GetColour(m_nCurrentSel);
-        m_pParent->SendMessage(CPN_SELCHANGE, (WPARAM) m_crColour, 0);
+        m_pParent->SendMessage(CPN_SELCHANGE, 0, (LPARAM) m_crColour);
     }
 	}catch(...){}
 }
@@ -789,23 +676,9 @@ void CColourPopup::EndSelection(int nMessage)
         m_bChildWindowVisible = FALSE;
     } 
 
-	if (nMessage != CPN_SELENDCANCEL && m_nCurrentSel == DEFAULT_BOX_VALUE)
-    {
-        m_bChildWindowVisible = TRUE;
-
-        CWinColorDlg winDlg(GetParent());
-
-        if (winDlg.DoModal() == IDOK)
-            m_crColour = ::GetSysColor(winDlg.m_nColorSelection);
-        else
-            nMessage = CPN_SELENDCANCEL;
-
-        m_bChildWindowVisible = FALSE;
-    } 
-
     if (nMessage == CPN_SELENDCANCEL)
         m_crColour = m_crInitialColour;
-    m_pParent->SendMessage(nMessage, (WPARAM) m_crColour, 0);
+    m_pParent->SendMessage(nMessage, 0, (LPARAM) m_crColour);
     
     // Kill focus bug fixed by Martin Wawrusch
     if (!m_bChildWindowVisible)
@@ -848,46 +721,6 @@ void CColourPopup::DrawCell(CDC* pDC, int nIndex)
         CFont *pOldFont = (CFont*) pDC->SelectObject(&m_Font);
         pDC->SetBkMode(TRANSPARENT);
         pDC->DrawText(m_strCustomText, TextButtonRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        pDC->SelectObject(pOldFont);
-
-        return;
-    }        
-
-    // For the Default Text area
-    if (m_strDefaultText.GetLength() && nIndex == DEFAULT_BOX_VALUE)
-    {
-        // Fill background
-        pDC->FillSolidRect(m_DefaultTextRect, ::GetSysColor(COLOR_3DFACE));
-
-        // The extent of the actual text button
-        CRect TextButtonRect = m_DefaultTextRect;
-        TextButtonRect.DeflateRect(1,1);
-
-        // fill background
-        if (m_nChosenColourSel == nIndex && m_nCurrentSel != nIndex)
-            pDC->FillSolidRect(TextButtonRect, ::GetSysColor(COLOR_3DLIGHT));
-        else
-            pDC->FillSolidRect(TextButtonRect, ::GetSysColor(COLOR_3DFACE));
-
-        // Draw thin line around text
-        CRect LineRect = TextButtonRect;
-        LineRect.DeflateRect(2*m_nMargin,2*m_nMargin);
-        CPen pen(PS_SOLID, 1, ::GetSysColor(COLOR_3DSHADOW));
-        CPen* pOldPen = pDC->SelectObject(&pen);
-        pDC->SelectStockObject(NULL_BRUSH);
-        pDC->Rectangle(LineRect);
-        pDC->SelectObject(pOldPen);
-
-        // Draw button
-        if (m_nCurrentSel == nIndex) 
-            pDC->DrawEdge(TextButtonRect, BDR_RAISEDINNER, BF_RECT);
-        else if (m_nChosenColourSel == nIndex)
-            pDC->DrawEdge(TextButtonRect, BDR_SUNKENOUTER, BF_RECT);
-
-        // Draw custom text
-        CFont *pOldFont = (CFont*) pDC->SelectObject(&m_Font);
-        pDC->SetBkMode(TRANSPARENT);
-        pDC->DrawText(m_strDefaultText, TextButtonRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         pDC->SelectObject(pOldFont);
 
         return;

@@ -376,18 +376,27 @@ void CGridCtrl::SetCurCell( int nRow, int nCol )
 		nCol = -1;
 	if( mCurrentCell.row() != nRow || mCurrentCell.col() != nCol )
 	{
+		int nTop = 0;
+		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
+		if( pHeaderCtrl )
+		{
+			CRect rcHeader;
+			pHeaderCtrl->GetWindowRect(&rcHeader);
+			ScreenToClient(&rcHeader);
+			nTop = rcHeader.bottom;
+		}
 		mCurrentCell.set( nRow, nCol );
 		//EnsureVisible( nRow, FALSE );
 		CSize sizScroll( 0, 0 );
 		CRect rcCell = GetCurCellRect();
-		if( rcCell.top < 0 )
-			sizScroll.cy = rcCell.top;
+		if( rcCell.top < nTop )
+			sizScroll.cy = rcCell.top - nTop;
 		else
 		{
 			CRect rcClient;
 			GetClientRect( &rcClient );
 			if( rcCell.bottom > rcClient.bottom )
-				sizScroll.cy = rcCell.top;
+				sizScroll.cy = rcCell.top - nTop;
 		}
 		if( rcCell.left < 0 )
 			sizScroll.cx = rcCell.left;

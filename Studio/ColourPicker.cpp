@@ -32,6 +32,8 @@
 #include "stdafx.h"
 #include "ColourPopup.h"
 #include "ColourPicker.h"
+#include "Workspace.h"
+#include "StudioRes.Local.h"
 
 
 void AFXAPI DDX_ColourPicker(CDataExchange *pDX, int nIDC, COLORREF& crColour)
@@ -62,8 +64,7 @@ CColourPicker::CColourPicker()
 		m_nSelectionMode = CP_MODE_BK;
 		m_bActive = FALSE;
 
-		m_strDefaultText = _T("Automatic");
-		m_strCustomText  = _T("More Colours...");
+		m_strCustomText = theWorkspace.LoadResourceString( IDS_CPMORECOLORS );
 }
 
 CColourPicker::~CColourPicker()
@@ -93,12 +94,12 @@ LRESULT CColourPicker::OnSelEndOK(WPARAM wParam, LPARAM lParam)
 
 		CWnd *pParent = GetParent();
 		if (pParent) {
-				pParent->SendMessage(CPN_CLOSEUP, wParam, (WPARAM) GetDlgCtrlID());
-				pParent->SendMessage(CPN_SELENDOK, wParam, (WPARAM) GetDlgCtrlID());
+				pParent->SendMessage(CPN_CLOSEUP, (WPARAM) GetDlgCtrlID(), lParam);
+				pParent->SendMessage(CPN_SELENDOK, (WPARAM) GetDlgCtrlID(), lParam);
 		}
 
 		if (crNewColour != GetColour())
-				if (pParent) pParent->SendMessage(CPN_SELCHANGE, lParam, (WPARAM) GetDlgCtrlID());
+				if (pParent) pParent->SendMessage(CPN_SELCHANGE, (WPARAM) GetDlgCtrlID(), lParam);
 
 		return TRUE;
 }
@@ -110,8 +111,8 @@ LRESULT CColourPicker::OnSelEndCancel(WPARAM wParam, LPARAM lParam)
 
 		CWnd *pParent = GetParent();
 		if (pParent) {
-				pParent->SendMessage(CPN_CLOSEUP, wParam, (WPARAM) GetDlgCtrlID());
-				pParent->SendMessage(CPN_SELENDCANCEL, wParam, (WPARAM) GetDlgCtrlID());
+				pParent->SendMessage(CPN_CLOSEUP, (WPARAM) GetDlgCtrlID(), lParam);
+				pParent->SendMessage(CPN_SELENDOK, (WPARAM) GetDlgCtrlID(), lParam);
 		}
 
 		return TRUE;
@@ -119,10 +120,10 @@ LRESULT CColourPicker::OnSelEndCancel(WPARAM wParam, LPARAM lParam)
 
 LRESULT CColourPicker::OnSelChange(WPARAM wParam, LPARAM lParam)
 {
-		if (m_bTrackSelection) SetColour((COLORREF) wParam);
+		if (m_bTrackSelection) SetColour((COLORREF) lParam);
 
 		CWnd *pParent = GetParent();
-		if (pParent) pParent->SendMessage(CPN_SELCHANGE, wParam, (WPARAM) GetDlgCtrlID());
+		if (pParent) pParent->SendMessage(CPN_SELCHANGE, (WPARAM) GetDlgCtrlID(), lParam);
 
 		return TRUE;
 }
@@ -145,12 +146,11 @@ BOOL CColourPicker::OnClicked()
 		new CColourPopup(CPoint(rect.left, rect.bottom),    // Point to display popup
 										 GetColour(),                       // Selected colour
 										 this,                              // parent
-										 m_strDefaultText,                  // "Default" text area
 										 m_strCustomText);                  // Custom Text
 
 		CWnd *pParent = GetParent();
 		if (pParent)
-				pParent->SendMessage(CPN_DROPDOWN, (LPARAM)GetColour(), (WPARAM) GetDlgCtrlID());
+				pParent->SendMessage(CPN_DROPDOWN, (WPARAM) GetDlgCtrlID(), (LPARAM)GetColour());
 
 		// Docs say I should return FALSE to stop the parent also getting the message.
 		// HA! What a joke.
@@ -256,11 +256,6 @@ void CColourPicker::SetTextColour(COLORREF crColourText)
 		m_crColourText = crColourText;
 		if (IsWindow(m_hWnd)) 
 				RedrawWindow();
-}
-
-void CColourPicker::SetDefaultText(LPCTSTR szDefaultText)
-{
-		m_strDefaultText = (szDefaultText)? szDefaultText : _T("");
 }
 
 void CColourPicker::SetCustomText(LPCTSTR szCustomText)

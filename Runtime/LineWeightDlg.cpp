@@ -5,6 +5,28 @@
 #include "LineWeightDlg.h"
 
 
+#ifdef _ZRXTARGET
+
+bool zcedLineWeightDialog(AcDb::LineWeight,bool,AcDb::LineWeight &);
+
+bool SelectLineWeightUI( /*in-out*/ AcDb::LineWeight& lw,
+												 /*in*/ bool bIncludeMetaTypes /*= true*/,
+												 /*in*/ CWnd *pParent /*= NULL*/ )
+{
+	BOOL bParentEnabled = TRUE;
+	if( pParent )
+	{
+		bParentEnabled = pParent->IsWindowEnabled();
+		pParent->EnableWindow( FALSE );
+	}
+	bool bResult = zcedLineWeightDialog( lw, bIncludeMetaTypes, lw );
+	if( pParent )
+		pParent->EnableWindow( bParentEnabled );
+	return bResult;
+}
+
+#else //_ZRXTARGET
+
 #ifdef _WIN64
 static const char gpszaAcedLineWeightDialog_FN[] = "?acedLineWeightDialog@@YA_NW4LineWeight@AcDb@@_NAEAW412@@Z";
 #else
@@ -59,3 +81,5 @@ bool SelectLineWeightUI( /*in-out*/ AcDb::LineWeight& lw,
 		pParent->EnableWindow( bParentEnabled );
 	return bResult;
 }
+
+#endif //_ZRXTARGET

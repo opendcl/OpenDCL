@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <_PropertySheetDisplayName>ZRX 2014</_PropertySheetDisplayName>
+    <_PropertySheetDisplayName>ZRX 2014 x86</_PropertySheetDisplayName>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <TargetExt>.zrx</TargetExt>
@@ -10,11 +10,11 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>.\;..\;.\VI;$(ZRX2014)\arxport;$(ZRX2014)\Inc;$(MSVC10)\Include;$(MSVC10)\ATLMFC\Include;$(WindowsSdkDir)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=14;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=2014;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=14;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=2014;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ZRX2014)\Lib;$(MSVC10)\Lib;$(MSVC10)\ATLMFC\Lib;$(WindowsSdkDir)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -22,7 +22,7 @@
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
     </Link>
     <Midl>
-      <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=14;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=2014;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ZRX2014)\arxport;$(ZRX2014)\Inc;$(MSVC10)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateStublessProxies>true</GenerateStublessProxies>
       <HeaderFileName>%(Filename).h</HeaderFileName>

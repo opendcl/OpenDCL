@@ -5,6 +5,33 @@
 #include "LineTypeDlg.h"
 
 
+#ifdef _ZRXTARGET
+
+bool zcedLinetypeDialog(AcDbObjectId,bool,char * &,AcDbObjectId &);
+
+bool SelectLinetypeUI( /*in-out*/ AcDbObjectId& idLinetype,
+											 /*out*/ CString& sLinetype,
+											 /*in*/ bool bIncludeMetaTypes /*= true*/,
+											 /*in*/ CWnd* pParent /*= NULL*/ )
+{
+	BOOL bParentEnabled = TRUE;
+	if( pParent )
+	{
+		bParentEnabled = pParent->IsWindowEnabled();
+		pParent->EnableWindow( FALSE );
+	}
+	ACHAR* pszLinetype = NULL;
+	bool bResult = zcedLinetypeDialog( idLinetype, bIncludeMetaTypes, pszLinetype, idLinetype ); //call the exported function
+	if( bResult )
+		sLinetype = pszLinetype;
+	acutDelString( pszLinetype );
+	if( pParent )
+		pParent->EnableWindow( bParentEnabled );
+	return bResult;
+}
+
+#else //_ZRXTARGET
+
 #if (_ACADTARGET <= 16)
 static const char gpszaAcedLinetypeDialog_FN[] = "?acedLinetypeDialog@@YA_NVAcDbObjectId@@_NAAPADAAV1@@Z";
 #else //(_ACADTARGET <= 16)
@@ -67,3 +94,5 @@ bool SelectLinetypeUI( /*in-out*/ AcDbObjectId& idLinetype,
 		pParent->EnableWindow( bParentEnabled );
 	return bResult;
 }
+
+#endif //_ZRXTARGET

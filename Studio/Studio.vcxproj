@@ -353,7 +353,6 @@
     <ClInclude Include="ToolTipsPage.h" />
     <ClInclude Include="TrueColorDialog.h" />
     <ClInclude Include="UndoActions.h" />
-    <ClInclude Include="WinColorDlg.h" />
     <ClInclude Include="ZOrderListBox.h" />
     <ClInclude Include="ZOrderPane.h" />
     <ClInclude Include="..\Common\AcadColorService.h" />
@@ -554,7 +553,6 @@
     <ClCompile Include="ToolTipsPage.cpp" />
     <ClCompile Include="TrueColorDialog.cpp" />
     <ClCompile Include="UndoActions.cpp" />
-    <ClCompile Include="WinColorDlg.cpp" />
     <ClCompile Include="ZOrderListBox.cpp" />
     <ClCompile Include="ZOrderPane.cpp" />
     <ClCompile Include="..\Common\AcadColorService.cpp" />

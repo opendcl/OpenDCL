@@ -903,7 +903,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::TabsTTT, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, false );
-		AddControlHiddenProperty( pDclControl, Prop::ImageList, _T(""), PropImageList );
+		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		AddControlEvent( pDclControl, Prop::EventChanged );
 		AddControlEvent( pDclControl, Prop::EventSelChanging );
 		break;

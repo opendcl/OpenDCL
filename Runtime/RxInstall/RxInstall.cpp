@@ -540,7 +540,6 @@ public:
 		}
 	String GetTargetModulePath( LPCTSTR pszModifier = NULL ) const
 		{
-			String sVersion( majorVersion() );
 			String sAppFilename = GetAppName();
 			if( pszModifier )
 			{
@@ -548,17 +547,28 @@ public:
 				sAppFilename += pszModifier;
 			}
 			sAppFilename += _T(".");
-			sAppFilename += sVersion;
 			switch( platform() )
 			{
 			case kAutoCAD:
-				sAppFilename += _T(".arx");
+				{
+					String sVersion( majorVersion() );
+					sAppFilename += sVersion;
+					sAppFilename += _T(".arx");
+				}
 				break;
 			case kBricscad:
-				sAppFilename += _T(".brx");
+				{
+					String sVersion( majorVersion() );
+					sAppFilename += sVersion;
+					sAppFilename += _T(".brx");
+				}
 				break;
 			case kZWCAD:
-				sAppFilename += _T(".zrx");
+				{
+					String sVersion( 2000 + majorVersion() );
+					sAppFilename += sVersion;
+					sAppFilename += _T(".zrx");
+				}
 				break;
 			}
 			return GetSiblingModulePath( sAppFilename );

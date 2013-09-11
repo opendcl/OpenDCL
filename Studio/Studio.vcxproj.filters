@@ -248,9 +248,6 @@
     <ClInclude Include="UndoActions.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinColorDlg.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="ZOrderListBox.h">
       <Filter>Include Files</Filter>
     </ClInclude>
@@ -830,9 +827,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UndoActions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WinColorDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ZOrderListBox.cpp">

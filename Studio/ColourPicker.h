@@ -42,7 +42,6 @@ public:
     COLORREF GetColour();
     void     SetColour(COLORREF crColour); 
 
-    void     SetDefaultText(LPCTSTR szDefaultText);
     void     SetCustomText(LPCTSTR szCustomText);
 
     void     SetTrackSelection(BOOL bTracking = TRUE)  { m_bTrackSelection = bTracking; }
@@ -84,7 +83,6 @@ protected:
     COLORREF m_crColourText;
     UINT     m_nSelectionMode;
     CRect    m_ArrowRect;
-    CString  m_strDefaultText;
     CString  m_strCustomText;
 
     // Generated message map functions
