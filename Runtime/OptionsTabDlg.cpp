@@ -80,7 +80,7 @@ BOOL COptionsTabDlg::OnInitDialog()
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
+								// EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
 void COptionsTabDlg::OnMainDialogOK()
@@ -89,7 +89,7 @@ void COptionsTabDlg::OnMainDialogOK()
 	GetArxServices()->HandleEvent( Prop::EventOptionsOK, false );	
 }
 
-void COptionsTabDlg::OnMainDialogAPPLY()
+void COptionsTabDlg::OnMainDialogApply()
 // This function is called when the main dialog Apply button is pressed.
 {
 	GetArxServices()->HandleEvent( Prop::EventOptionsApply, false );	
@@ -106,7 +106,7 @@ BOOL COptionsTabDlg::OnMainDialogHelp()
 // and this is the active tab.
 {
 	GetArxServices()->HandleEvent( Prop::EventOptionsHelp, false );	
-  return TRUE;
+	return TRUE;
 }
 
 LRESULT COptionsTabDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)

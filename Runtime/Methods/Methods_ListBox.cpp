@@ -396,8 +396,18 @@ ADSRESULT ListBox::SelectString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	int idx = pCtrl->SelectString( nStartIndex, sSearch );
-	acedRetInt( idx );
+	if( (pCtrl->GetStyle() & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)) != 0 )
+	{
+		int idx = pCtrl->FindString( nStartIndex, sSearch );
+		if( idx >= 0 )
+			pCtrl->SetSel( idx );
+		acedRetInt( idx );
+	}
+	else
+	{
+		int idx = pCtrl->SelectString( nStartIndex, sSearch );
+		acedRetInt( idx );
+	}
 	return RSRSLT;
 }
 

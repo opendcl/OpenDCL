@@ -136,7 +136,7 @@ void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
-#if defined(_BRXTARGET) && (_BRXTARGET <= 13)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 14)
 	else if( flags & ADUI_DOCK_NF_SIZECHANGED ) //Bricscad doesn't set the correct flag when docking/undocking
 		PostMessage( refWM_FRAMECHANGED() );
 #endif
@@ -487,7 +487,7 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 void CAcadPaletteHost::OnClose()
 {
 	__super::OnClose();
-#if (defined(_BRXTARGET) && _BRXTARGET <= 13)
+#if (defined(_BRXTARGET) && _BRXTARGET <= 14)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 	DestroyWindow();
 #endif

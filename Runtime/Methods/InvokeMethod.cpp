@@ -8,6 +8,26 @@
 extern bool IsOnlyModalForm();
 
 
+class DelayedCommand : public AcEdInputContextReactor
+{
+	AcApDocument* mpDoc;
+	CString sCmd;
+public:
+	DelayedCommand( AcApDocument* pDoc, LPCTSTR pszCommand ) : mpDoc( pDoc ), sCmd( pszCommand )
+	{
+		mpDoc->inputPointManager()->addInputContextReactor( this );
+	}
+	~DelayedCommand()
+	{
+		mpDoc->inputPointManager()->removeInputContextReactor( this );
+	}
+	virtual void beginQuiescentState()
+	{
+		ads_queueexpr( sCmd.LockBuffer() );
+		delete this;
+	}
+};
+
 static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false, AcApDocument* pDoc = NULL )
 {
 	if( !pDoc )
@@ -36,11 +56,8 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 	case Acad::eNoDocument:
 	case Acad::eBufferTooSmall:
 		{
-			if( !acDocManager->isApplicationContext() )
-			{
-				if( RTNORM == ads_queueexpr( sCmd.LockBuffer() ) )
-					es = Acad::eOk;
-			}
+			new DelayedCommand( pDoc, sCmd.LockBuffer() );
+			es = Acad::eOk;
 		}
 		break;
 	}

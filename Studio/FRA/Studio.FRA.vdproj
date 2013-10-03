@@ -511,6 +511,24 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_BC222713505949A9A1649D9BD53DC5B9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_DBD1C7C782144AFAAE3B5B7C31E1B117"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -2298,15 +2316,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{3C06A0C6-E99C-47B7-A06F-F5ED818B5953}"
-        "PackageCode" = "8:{2648A871-9EFC-4612-9323-49BEFE4A71BD}"
+        "ProductCode" = "8:{9C986AA9-BC63-442B-9263-BE335691CAE9}"
+        "PackageCode" = "8:{FA4C8B9F-E219-4245-A781-EAE2AE8FDDA4}"
         "UpgradeCode" = "8:{140D3C25-5463-4688-8A52-FEA8E9FA4940}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:7.0.0014"
+        "ProductVersion" = "8:7.0.0016"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"

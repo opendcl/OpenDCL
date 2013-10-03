@@ -37,10 +37,10 @@ protected:
 	virtual bool IsAsyncEvents() const { return false; }
 
 // CAcUiTabChildDialog overrides
-	virtual void OnMainDialogAPPLY();
-  virtual void OnMainDialogCancel();
-  virtual void OnMainDialogOK();
-  virtual BOOL OnMainDialogHelp();    
+	virtual void OnMainDialogApply();
+	virtual void OnMainDialogCancel();
+	virtual void OnMainDialogOK();
+	virtual BOOL OnMainDialogHelp();    
 	virtual void OnTabActivation (BOOL bActivate) ;
 	virtual BOOL OnTabChanging () ;
 

@@ -363,7 +363,8 @@ class TargetModule
 public:
 	enum Architecture { kAny = 0, kX86, kX64, };
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, kZWCAD, };
-	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12, kBRX13 = 13,
+	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
+											kBRX13 = 13, kBRX14 = 14,
 											kZRX2014 = 14,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, };
@@ -483,6 +484,8 @@ public:
 		kBricscad12 =        (kX86Architecture | kBricscadPlatform | (kBRX12 << shftMajorVer) | 0),
 		kBricscad13x86 =     (kX86Architecture | kBricscadPlatform | (kBRX13 << shftMajorVer) | 0),
 		kBricscad13x64 =     (kX64Architecture | kBricscadPlatform | (kBRX13 << shftMajorVer) | 0),
+		kBricscad14x86 =     (kX86Architecture | kBricscadPlatform | (kBRX14 << shftMajorVer) | 0),
+		kBricscad14x64 =     (kX64Architecture | kBricscadPlatform | (kBRX14 << shftMajorVer) | 0),
 		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 	};
 
@@ -631,7 +634,14 @@ void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bW
 	String sTargetKey = pszTargetKey;
 	sTargetKey += _T("\\Applications");
 	if( !RegKey( sTargetKey, hkRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) ) )
-		return; //skip keys with no 'Applications' subkey
+	{
+		//no 'Applications' subkey
+		switch( Target.platform() )
+		{
+		case TargetModule::kAutoCADPlatform:
+			return; //skip AutoCAD keys with no existing 'Applications' subkey
+		}
+	}
 	sTargetKey += _T('\\');
 	sTargetKey += GetAppLongName();
 	RegKey rkDemandLoad( sTargetKey,
@@ -724,6 +734,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x86, sInstallDir ), bWantHKLM );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x86, sInstallDir ), bWantHKLM );
 	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD14, sInstallDir ), bWantHKLM );
 	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2000, sInstallDir ), bWantHKLM );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2004, sInstallDir ), bWantHKLM );
@@ -740,6 +751,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	if( IsWow64() )
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, sInstallDir ), bWantHKLM );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, sInstallDir ), bWantHKLM );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, sInstallDir ), bWantHKLM );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, sInstallDir ), bWantHKLM );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, sInstallDir ), bWantHKLM );
@@ -823,6 +835,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), HKEY_CURRENT_USER );
 	if( IsWow64() )
@@ -843,6 +857,8 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_CURRENT_USER, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }
