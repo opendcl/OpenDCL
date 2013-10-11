@@ -520,13 +520,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A53AED25517B492398CD826F7415D4A5"
+        "OwnerKey" = "8:_8CBCA467B7584FAAA8E4127A72FD3598"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8CBCA467B7584FAAA8E4127A72FD3598"
+        "OwnerKey" = "8:_A53AED25517B492398CD826F7415D4A5"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -2316,15 +2316,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{15F10A46-8A73-4437-9B03-06954590C58F}"
-        "PackageCode" = "8:{24975EDA-CC17-4B22-8B86-D799675D4525}"
+        "ProductCode" = "8:{DDF7445A-DCA3-4CFE-AC93-5230F9F9D098}"
+        "PackageCode" = "8:{D3ADBAA9-F404-40FE-BB3F-F6FDE59301D5}"
         "UpgradeCode" = "8:{AF16E7D3-800C-4BE7-BA12-B9C62FF78F51}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:7.0.0016"
+        "ProductVersion" = "8:7.0.0101"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3130,7 +3130,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3C8D288100B24DD89D5D4CFC9048980B"
             {
-            "SourcePath" = "8:..\\Win32\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Win32\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_68DCE7B648DB477F994B67FEC95873AE"
@@ -3186,7 +3186,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_989ED344671F4D5989BDC71B28A77FAD"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_68DCE7B648DB477F994B67FEC95873AE"
@@ -3239,7 +3239,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A53AED25517B492398CD826F7415D4A5"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AE8B790F33714FA6B1D10D2DC5153683"
