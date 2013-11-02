@@ -1,28 +1,28 @@
 ;; ALLCONTROLS
 ;; 2009-03-14
 ;; 
-;; Displays an OpenDCL palette form containing one of every OpenDCL control
+;; Zeigt eine OpenDCL Palette mit allen OpenDCL Steuerelementen
 ;;
 ;; Author: Owen Wengerd (owenw@manusoft.com)
 ;;
 ;;
-;; This file is placed in the public domain, and may be redistributed or used
-;; for any purpose. Changes to this file should be clearly identified as such.
+;; Diese Datei wird als frei verfügbar bereitgestellt und kann weitergegeben oder für jeden 
+;; anderen Zweck genutzt werden. Änderungen an dieser Datei müssen klar als solche erkennbar sein.
 ;; 
 ;;
 
 
 (defun c:AllControls_Form1_OnInitialize (/ parent)
-  (setq parent (dcl_Tree_AddParent AllControls_Form1_TreeControl1 "Tree Control" 0 -1 1))
+  (setq parent (dcl_Tree_AddParent AllControls_Form1_TreeControl1 "Baumstruktur" 0 -1 1))
   (dcl_Tree_AddChild AllControls_Form1_TreeControl1
-    (list (list parent "Child 1" 2) (list parent "Child 2" 2) (list parent "Child 3" 2)))
-  (dcl_Tree_AddParent AllControls_Form1_TreeControl1 '(("Item 2" 0 -1 1) ("Item 3" 0 -1 1)))
+    (list (list parent "Element 1" 2) (list parent "Element 2" 2) (list parent "Element 3" 2)))
+  (dcl_Tree_AddParent AllControls_Form1_TreeControl1 '(("Element 2" 0 -1 1) ("Element 3" 0 -1 1)))
   (dcl_ListView_AddColumns AllControls_Form1_ListView1
-    '(("List View" 0 100) ("Col 2" 0 50) ("Col 3" 0 50)))
+    '(("Liste" 0 100) ("Spalte 2" 0 50) ("Spalte 3" 0 50)))
   (dcl_ListView_AddString AllControls_Form1_ListView1
-    "Item 1\tItem 2\tItem 3")
+    "Element 1\tElement  2\tElement  3")
   (dcl_Grid_AddString AllControls_Form1_Grid1
-    "Item 1\tItem 2\tItem 3")
+    "Element 1\tElement 2\tElement 3")
   (dcl_Animation_Load AllControls_Form1_Animation1 "AllControls.avi")
   (dcl_BlockView_PreLoadDwg AllControls_Form1_BlockView1 "AllControls.dwg")
   (dcl_BlockView_DisplayBlockToScale AllControls_Form1_BlockView1 "Block List")
@@ -38,16 +38,16 @@
 
 
 (defun c:AllControls_Form2_OnInitialize (/ parent)
-  (setq parent (dcl_Tree_AddParent AllControls_Form2_TreeControl1 "Tree Control" 0 -1 1))
+  (setq parent (dcl_Tree_AddParent AllControls_Form2_TreeControl1 "Baumstruktur" 0 -1 1))
   (dcl_Tree_AddChild AllControls_Form2_TreeControl1
-    (list (list parent "Child 1" 2) (list parent "Child 2" 2) (list parent "Child 3" 2)))
-  (dcl_Tree_AddParent AllControls_Form2_TreeControl1 '(("Item 2" 0 -1 1) ("Item 3" 0 -1 1)))
+    (list (list parent "Element 1" 2) (list parent "Element 2" 2) (list parent "Element 3" 2)))
+  (dcl_Tree_AddParent AllControls_Form2_TreeControl1 '(("Element 2" 0 -1 1) ("Element 3" 0 -1 1)))
   (dcl_ListView_AddColumns AllControls_Form2_ListView1
-    '(("List View" 0 100) ("Col 2" 0 50) ("Col 3" 0 50)))
+    '(("Liste" 0 100) ("Spalte 2" 0 50) ("Spalte 3" 0 50)))
   (dcl_ListView_AddString AllControls_Form2_ListView1
-    "Item 1\tItem 2\tItem 3")
+    "Element 1\tElement 2\tElement 3")
   (dcl_Grid_AddString AllControls_Form2_Grid1
-    "Item 1\tItem 2\tItem 3")
+    "Element 1\tElement 2\tElement 3")
   (dcl_Animation_Load AllControls_Form2_Animation1 "AllControls.avi")
   (dcl_BlockView_PreLoadDwg AllControls_Form2_BlockView1 "AllControls.dwg")
   (dcl_BlockView_DisplayBlockToScale AllControls_Form2_BlockView1 "Block List")
@@ -88,8 +88,8 @@
   (princ)
 )
 
-(princ "\nALLCONTROLS\n") ; show the user the name of the command that is running
-(C:ALLCONTROLS) ; run the command
-(if dcl_SendString (dcl_SendString "ALLCONTROLS\n")) ; put the command in the command history
+(princ "\nALLCONTROLS\n") ; zeigt dem Anwender den Namen des Befehls an
+(C:ALLCONTROLS) ; Startet das Programm
+(if dcl_SendString (dcl_SendString "ALLCONTROLS\n")) ; Fügt den Befehl zur Liste verwendeter Befehle hinzu.
 
 (princ)
