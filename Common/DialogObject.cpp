@@ -263,6 +263,12 @@ bool CDialogObject::OnApplyBackgroundColor( TPropertyPtr pProp )
 	return true;
 }
 
+bool CDialogObject::OnApplyCaption( TPropertyPtr pProp )
+{
+	mpControlWnd->SetWindowText( pProp->GetStringValue() );
+	return true;
+}
+
 bool CDialogObject::OnApplyResizable( TPropertyPtr pProp )
 {
 	bool bIgnoreSizing = IgnoreSizing();

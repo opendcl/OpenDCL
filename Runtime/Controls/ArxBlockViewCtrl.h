@@ -106,6 +106,7 @@ class CArxBlockViewCtrl : public CArxGsViewCtrl
 
 private:
 	AcDbDatabase* mpSourceDb;
+	bool mbPreloaded;
 	HCURSOR mhSavedCursor;
 	HCURSOR mhArrowCursor;
 	HCURSOR mhZoomCursor;

@@ -247,6 +247,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("BlockView_DisplayDwgToScale"),  BlockView::DisplayDwgToScale},
 	{_T("BlockView_DisplayPaperSpace"),  BlockView::DisplayPaperSpace},
 	{_T("BlockView_GetBlockList"),       BlockView::GetBlockList},
+	//{_T("BlockView_GetBlockSize"),       BlockView::GetBlockSize},
 	{_T("BlockView_GetDwgSize"),         BlockView::GetDwgSize},
 	{_T("BlockView_PreLoadDwg"),         BlockView::PreLoadDwg},
 	{_T("BlockView_RefreshBlock"),       BlockView::RefreshBlock},

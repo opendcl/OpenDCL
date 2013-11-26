@@ -127,6 +127,7 @@ public:
 
 	// handlers for specific properties
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp ); //Prop::BackgroundColor
+	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::TitleBarText
 	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
 	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height

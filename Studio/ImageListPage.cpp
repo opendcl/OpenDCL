@@ -140,7 +140,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			NULL,
 			-1,
 		};
-	mPicList.InsertItem( &lvItem );
+	int idxItem = mPicList.InsertItem( &lvItem );
 	mPicList.Invalidate();
 	return TRUE;
 }

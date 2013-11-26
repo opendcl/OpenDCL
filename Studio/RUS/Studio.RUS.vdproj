@@ -520,13 +520,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3947F083F546403E87C9D22F6A731B9A"
+        "OwnerKey" = "8:_FEEA5E32AC774C15AD759A90AE304E0A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FEEA5E32AC774C15AD759A90AE304E0A"
+        "OwnerKey" = "8:_3947F083F546403E87C9D22F6A731B9A"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -2316,15 +2316,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{1A7921D0-A7DC-4473-A46D-0BD0BD156514}"
-        "PackageCode" = "8:{71FCA31D-A485-4740-B686-7C44A9E71BE8}"
+        "ProductCode" = "8:{0616F3DA-6A19-40FA-AB7E-33CB64BE0419}"
+        "PackageCode" = "8:{5E23B7EC-C42B-4531-8A2C-E858678FFC1B}"
         "UpgradeCode" = "8:{30C0C78D-D3B1-4C36-B37E-357F50E691D3}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:7.0.0101"
+        "ProductVersion" = "8:7.0.0102"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3215,7 +3215,7 @@
                 {
                 "UseDynamicProperties" = "11:TRUE"
                 "IsDependency" = "11:FALSE"
-                "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
+                "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
                     "Properties"
                     {
                         "_7F99C35034194A268768DD7967A8AD4B.0C4E4759A6C24D0EBAE57719C3BCF049"

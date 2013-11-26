@@ -23,6 +23,7 @@ CArxBlockViewCtrl::CArxBlockViewCtrl( TDclControlPtr pTemplate,
 , mDocReactor( this )
 , mEdReactor( this )
 , mpSourceDb( NULL )
+, mbPreloaded( false )
 , mbZooming( false )
 , mbPanning( false )
 , mbOrbiting( false )
@@ -96,9 +97,7 @@ bool CArxBlockViewCtrl::ApplyProperty( TPropertyPtr pProp )
 DROPEFFECT CArxBlockViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
 {
 	DROPEFFECT dwDropEffect = __super::OnBeginDrag( point, SourceData );
-	AcDbDatabase* pDb = mpSourceDb;
-	if( !pDb )
-		pDb = acdbHostApplicationServices()->workingDatabase();
+	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return dwDropEffect;
 	CString sBlockName = mpTemplate->GetStringProperty( Prop::BlockName );
@@ -137,6 +136,7 @@ void CArxBlockViewCtrl::Clear()
 	{
 		delete mpSourceDb;
 		mpSourceDb = NULL;
+		mbPreloaded = false;
 	}
 }
 
@@ -161,7 +161,7 @@ void CArxBlockViewCtrl::DrawOrbitCircles(CDC* pDC /*= NULL*/ )
 {
 	if( mbPanning )
 		return;
-    
+		
 	if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) != 1 )
 		return;
 
@@ -220,10 +220,11 @@ void CArxBlockViewCtrl::DrawOrbitQuadCircle(CDC *pdc, int nX, int nY)
 
 bool CArxBlockViewCtrl::GetDwgSize( AcDbExtents& ext )
 {
-	if( !mpSourceDb )
+	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
+	if( !pDb )
 		return false;
-	AcGePoint3d ptMin = mpSourceDb->extmin();
-	AcGePoint3d ptMax = mpSourceDb->extmax();
+	AcGePoint3d ptMin = pDb->extmin();
+	AcGePoint3d ptMax = pDb->extmax();
 	ext.set( ptMin, ptMax );
 	return true;
 }
@@ -232,10 +233,10 @@ bool CArxBlockViewCtrl::GetBlockSize( LPCTSTR pszBlockName, AcDbExtents& ext )
 {
 	if( !pszBlockName || !*pszBlockName )
 		return false;
-	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
+	AcDbDatabase* pDb = ((mbPreloaded && mpSourceDb)? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return false;
-  AcDbBlockTable* pBlockTable;
+	AcDbBlockTable* pBlockTable;
 	if( Acad::eOk != pDb->getBlockTable( pBlockTable, AcDb::kForRead ) )
 		return false;
 
@@ -270,14 +271,14 @@ void CArxBlockViewCtrl::RefreshBlock()
 	if( !pDb )
 		return;
  
-  AcDbBlockTable* pTab = NULL;
+	AcDbBlockTable* pTab = NULL;
 	Acad::ErrorStatus es = pDb->getBlockTable( pTab, AcDb::kForRead );
 	if( es != Acad::eOk )
 		return;
-  AcDbBlockTableRecord* pRec = NULL;
+	AcDbBlockTableRecord* pRec = NULL;
 	es = pTab->getAt( mpTemplate->GetStringProperty( Prop::BlockName ), pRec, AcDb::kForRead );
-  pTab->close();	
-  if( es != Acad::eOk )
+	pTab->close();	
+	if( es != Acad::eOk )
 		return;
 	UpdateModel( pRec );
 	pRec->close();
@@ -311,6 +312,7 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 		mpSourceDb = NULL;
 		return false;
 	}
+	mbPreloaded = true;
 	return true;			
 }
 
@@ -364,7 +366,7 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, boo
 	{
 		delete mpSourceDb;
 		mpSourceDb = NULL;
-    return false;
+		return false;
 	}
 			
 	mpTemplate->SetStringProperty( Prop::BlockName, ACDB_MODEL_SPACE );
@@ -387,10 +389,10 @@ bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName, double dZoomFactor, 
 		Clear();
 		return false;
 	}
-	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
+	AcDbDatabase* pDb = ((mbPreloaded && mpSourceDb)? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return false;
-    
+		
 	AcDbBlockTable* pBlockTable = NULL;
 	Acad::ErrorStatus es = pDb->getBlockTable( pBlockTable, AcDb::kForRead );
 	if( es != Acad::eOk )    
@@ -407,7 +409,7 @@ bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName, double dZoomFactor, 
 	{
 		delete mpSourceDb;
 		mpSourceDb = NULL;
-    return false;
+		return false;
 	}
 
 	mpTemplate->SetStringProperty( Prop::BlockName, pszBlockName );
@@ -436,8 +438,6 @@ void CArxBlockViewCtrl::EndUIDrag()
 
 bool CArxBlockViewCtrl::CanShowHighlight() const
 {
-	//if( !mpSourceDb )
-	//	return true;
 	return !(mbPanning || mbZooming || mbOrbiting);
 }
 
@@ -589,7 +589,7 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 				RedrawWindow();
 			}
 		}
-  
+	
 		if (mbPanning)
 		{
 			//transform the point from device coordinates to
@@ -612,14 +612,14 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 			int centerX = int(float(nViewportX) / 2.0f) + view_rect.m_min.x;
 			int centerY = int(float(nViewportY) / 2.0f) + view_rect.m_min.y; 
-    
+		
 			const double radius  = min (nViewportX, nViewportY) * 0.4f;
 
 			// compute two vectors from last and new cursor positions:
 
 			AcGeVector3d last_vector ((mStartPt.x - centerX) / radius,
-									  -(mStartPt.y - centerY) / radius,
-									  0.0);
+										-(mStartPt.y - centerY) / radius,
+										0.0);
 
 			if (last_vector.lengthSqrd () > 1.0)     // outside the radius
 				last_vector.normalize  ();

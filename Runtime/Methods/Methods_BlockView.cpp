@@ -188,7 +188,7 @@ ADSRESULT BlockView::GetBlockList()
 		pDb = acdbCurDwg();
 	if( !pDb )
 		return RSRSLT;
-  AcDbBlockTable* pBlockTable;
+	AcDbBlockTable* pBlockTable;
 	if( Acad::eOk != pDb->getBlockTable( pBlockTable, AcDb::kForRead ) )
 		return RSRSLT;
 
