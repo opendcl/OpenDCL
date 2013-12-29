@@ -12,7 +12,6 @@
 
 #undef SubclassWindow
 
-#define WM_SETSELECTEDSTATE (WM_USER + 45)
 #define HDM_SETBITMAPMARGIN (HDM_FIRST + 20)
 
 #ifndef LVS_EX_LABELTIP
@@ -415,6 +414,8 @@ DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sour
 bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 														DROPEFFECT dropEffect )
 {
+	if( dropEffect == DROPEFFECT_NONE )
+		return true;
 	CStringA sTextA;
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( hData )
@@ -480,6 +481,7 @@ bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 		CString sCellText = sText.Tokenize( _T("\t"), nIdxTab );
 		idxInsert = InsertItem( idxInsert, sCellText, nImage );
 		SetItemState( idxInsert, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
+		SetSelectionMark( idxInsert );
 		int idxCol = 1;
 		while( nIdxTab >= 0 )
 		{
@@ -735,11 +737,11 @@ CRect CListViewCtrl::GetCellRect(	int nRow, int nCol, int area /*= LVIR_BOUNDS*/
 BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
-	ON_NOTIFY_REFLECT(LVN_BEGINLABELEDIT, OnBeginlabeledit)
+	ON_NOTIFY_REFLECT(LVN_BEGINLABELEDIT, &CListViewCtrl::OnBeginlabeledit)
+	ON_NOTIFY_REFLECT(LVN_BEGINDRAG, &CListViewCtrl::OnBegindrag)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_WM_LBUTTONDOWN()
 	ON_NOTIFY_REFLECT(LVN_INSERTITEM, &CListViewCtrl::OnLvnInsertitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, &CListViewCtrl::OnLvnDeleteitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, &CListViewCtrl::OnLvnDeleteallitems)
@@ -792,6 +794,37 @@ void CListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+void CListViewCtrl::OnBegindrag(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	if( !mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
+	{
+		*pResult = 1;
+		return;
+	}
+	*pResult = 0;
+
+	mnDragSource = GetSelectionMark();
+	if( mnDragSource < 0 )
+		return;
+
+	POSITION pos = GetFirstSelectedItemPosition();
+	while( pos )
+	{
+		int idxItem = GetNextSelectedItem( pos );
+		if( idxItem != mnDragSource )
+			SetItemState( idxItem, 0, LVIS_SELECTED );
+	}
+	SetItemState( mnDragSource, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
+
+	DWORD dwPos = GetMessagePos();
+	CPoint point( ((int)(short)LOWORD(dwPos)), ((int)(short)HIWORD(dwPos)) );
+	ScreenToClient( &point );
+	DWORD dwDropEffect = BeginDragDrop( point );
+	if( dwDropEffect == DROPEFFECT_MOVE )
+		DeleteItem( mnDragSource );
+	mnDragSource = -1;
+}
+
 void CListViewCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	if( GetFocus() != this ) SetFocus();
@@ -826,49 +859,6 @@ BOOL CListViewCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
-}
-
-void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	__super::OnLButtonDown(nFlags, point);
-	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
-	{
-		UINT nHTFlags = 0;
-		mnDragSource = HitTest( point, &nHTFlags );
-		if( mnDragSource >= 0 )
-		{
-			if( (nFlags & MK_CONTROL) == 0 )
-			{
-				POSITION pos = GetFirstSelectedItemPosition();
-				while( pos )
-				{
-					int idxItem = GetNextSelectedItem( pos );
-					if( idxItem != mnDragSource )
-						SetItemState( mnDragSource, 0, LVIS_SELECTED );
-				}
-			}
-			//bool bWasSelected = (GetItemState( mnDragSource, LVIS_SELECTED ) != 0);
-			SetItemState( mnDragSource, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
-			DWORD dwDropEffect = BeginDragDrop( point );
-			if( dwDropEffect == DROPEFFECT_MOVE )
-				DeleteItem( mnDragSource );
-			//else if( (nFlags & MK_CONTROL) != 0 )
-			//	PostMessage( WM_SETSELECTEDSTATE, (WPARAM)mnDragSource, (LPARAM)bWasSelected );	
-			PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
-			mnDragSource = -1;
-		}
-	}
-}
-
-LRESULT CListViewCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	if( message == WM_SETSELECTEDSTATE )
-	{
-		SetItemState( (int)wParam, lParam? LVIS_SELECTED : 0, LVIS_SELECTED );
-		return 0;
-	}
-
-	return __super::WindowProc(message, wParam, lParam);
 }
 
 void CListViewCtrl::OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult)

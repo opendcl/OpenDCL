@@ -149,6 +149,10 @@ void CPaletteDlg::CloseDialog(int nStatus)
 	mHostPaletteSet.EndModalLoop( nStatus ); //set the status
 	if( hwndTopLevel && ::IsWindow( hwndTopLevel ) )
 		::SendMessage( hwndTopLevel, WM_CLOSE, 0, 0 );
+#ifdef _BRXTARGET
+	assert(::IsWindow( mHostPaletteSet.m_hWnd ));
+	mHostPaletteSet.SendMessage( WM_CLOSE, 0, 0 ); //Bricscad only: the palette set window must be closed explicitly
+#endif
 }
 
 bool CPaletteDlg::CenterDialog()

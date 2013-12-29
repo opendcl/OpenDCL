@@ -88,7 +88,8 @@
   (defun download_msi (lang dev) ; MSI via HTTP herunterladen, Rückgabe Antwort
     (append_status "OpenDCL Studio Installationsdatei herunterladen...")
     ;; Stelle die DownloadURL zusammen und lade die Datei herunter
-    ;; Hinweis: um die Laufzeit MSI herunterzuladen, verwenden Sie die URL http://opendcl.com/go?runtime und ignorieren die Sprache
+    ;; Hinweis: um die Laufzeit MSI herunterzuladen, verwenden Sie
+    ;; die URL http://opendcl.com/go?runtime und ignorieren die Sprache
     (setq url "http://opendcl.com/go?studio")
     (if lang (setq url (strcat url "&" (strcase lang T))))
     (if dev (setq url (strcat url "&dev")))
@@ -256,7 +257,7 @@
   (dcl_Control_SetCaption _MasterDemo_Update_lblVersionAvail curver_string)
 
   ;; Überprüfung, ob die installierte Version aktualisiert werden kann
-  (dcl_Control_SetEnabled _MasterDemo_Update_btnClose T)
+  (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
   (if (<version myver curver)
     (progn
       (append_status "Eine neuere Version von OpenDCL Studio ist verfügbar!")
@@ -273,7 +274,7 @@
 
 (DEFUN c:_MasterDemo_Update_btnUpdate_OnClicked (/ msipath curlang)
   (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate nil)
-  (dcl_Control_SetEnabled _MasterDemo_Update_btnClose nil)
+  (dcl_Control_SetVisible _MasterDemo_Update_btnClose nil)
   (setq msipath
     (write_msi
       (setq curlang (dcl_Control_GetCaption _MasterDemo_Update_lblLanguageAvail))

@@ -923,7 +923,6 @@ CControlBrowser::CControlBrowser( TDclControlPtr pDclControl, CWnd* pParent /*=N
 	, mhtiInitialProp( NULL )
 	, mDescription( *this )
 	, mbClosing( false )
-	, mszPrevious( -1, -1 )
 {
 }
 
@@ -934,7 +933,6 @@ CControlBrowser::CControlBrowser( TPropertyPtr pProp, CWnd* pParent /*=NULL*/ )
 	, mhtiInitialProp( NULL )
 	, mDescription( *this )
 	, mbClosing( false )
-	, mszPrevious( -1, -1 )
 {
 }
 
@@ -967,6 +965,13 @@ void CControlBrowser::NoNavigateBrowser::OnNavigateError(LPCTSTR lpszURL, LPCTST
 	//TODO: Cancel the default error page and display a custom localized error page
 	//assert( pbCancel != NULL );
 	//*pbCancel = TRUE;
+}
+
+void CControlBrowser::NoNavigateBrowser::OnCommandStateChange(long nCommand, BOOL bEnable)
+{
+	mbEnableNavigate = false;
+	__super::OnCommandStateChange( nCommand, bEnable );
+	mBrowser.OnCommandStateChange( nCommand, bEnable );
 }
 
 HTREEITEM CControlBrowser::InsertItem( HTREEITEM hParent, CTreeNode* pItem )
@@ -1054,6 +1059,27 @@ void CControlBrowser::OnDocumentLoaded( bool bClickedLink )
 	}
 }
 
+void CControlBrowser::OnCommandStateChange( long nCommand, BOOL bEnable )
+{
+	switch( nCommand )
+	{
+	case CSC_NAVIGATEBACK:
+		{
+			CWnd* pCtrl = GetDlgItem( IDC_BACK );
+			if( pCtrl )
+				pCtrl->EnableWindow( bEnable );
+			break;
+		}
+	case CSC_NAVIGATEFORWARD:
+		{
+			CWnd* pCtrl = GetDlgItem( IDC_FORWARD );
+			if( pCtrl )
+				pCtrl->EnableWindow( bEnable );
+			break;
+		}
+	}
+}
+
 void CControlBrowser::DoDataExchange(CDataExchange* pDX)
 {
 	CResizableDialog::DoDataExchange(pDX);
@@ -1064,8 +1090,9 @@ void CControlBrowser::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CControlBrowser, CResizableDialog)
 	ON_WM_DESTROY()
-	ON_WM_SIZE()
-	ON_NOTIFY(TVN_SELCHANGED, IDC_CONTROLTREE, CControlBrowser::OnSelchanged)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_CONTROLTREE, &CControlBrowser::OnSelchanged)
+	ON_BN_CLICKED(IDC_BACK, &CControlBrowser::OnBackClicked)
+	ON_BN_CLICKED(IDC_FORWARD, &CControlBrowser::OnForwardClicked)
 END_MESSAGE_MAP()
 
 
@@ -1094,6 +1121,7 @@ void CControlBrowser::OnDestroy()
 BOOL CControlBrowser::OnInitDialog()
 {
 	SetIcon( LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE( IDI_CONTROLBROWSER ) ), FALSE );
+
 	__super::OnInitDialog();
 
 	mImageList.Create( 16, 16, ILC_COLOR | ILC_MASK, 1, 1 );
@@ -1106,8 +1134,21 @@ BOOL CControlBrowser::OnInitDialog()
 	mImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE( IDI_AXOBJECT ) ) );
 	mImageList.SetBkColor( mObjectTree.GetBkColor() );
 	mObjectTree.SetImageList( &mImageList, TVSIL_NORMAL );
+
+	AddAnchor( mObjectTree.m_hWnd, TOP_LEFT, BOTTOM_LEFT ); 
+	AddAnchor( mDescription.m_hWnd, TOP_LEFT, BOTTOM_RIGHT ); 
+	AddAnchor( IDC_METHDEF, TOP_LEFT, TOP_RIGHT ); 
+	AddAnchor( IDC_BACK, TOP_RIGHT ); 
+	AddAnchor( IDC_FORWARD, TOP_RIGHT ); 
+	AddAnchor( IDOK, TOP_RIGHT ); 
 	EnableSaveRestore( _T("ControlBrowser"), _T("Size") );
 
+	CWnd* pCtrl = GetDlgItem( IDC_BACK );
+	if( pCtrl )
+		pCtrl->EnableWindow( FALSE );
+	pCtrl = GetDlgItem( IDC_FORWARD );
+	if( pCtrl )
+		pCtrl->EnableWindow( FALSE );
 	CTreeNode* pMain = NULL;
 	if( mpDclControl->GetType() == _CtlForm )
 		pMain = new CDclFormNode( mpDclControl->GetOwnerForm() );
@@ -1119,63 +1160,10 @@ BOOL CControlBrowser::OnInitDialog()
 		mObjectTree.SelectItem( mhtiInitialProp );
 	else
 		mObjectTree.SelectItem( htiControl );
-
 	ShowSizeGrip( TRUE );
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
-}
-
-void CControlBrowser::OnSize(UINT nType, int cx, int cy)
-{
-
-	if( mszPrevious.cx < 0 )
-	{
-		CRect rcDlg;
-		GetClientRect( &rcDlg );
-		mszPrevious.cx = rcDlg.Width();
-		mszPrevious.cy = rcDlg.Height();
-	}
-	int nDeltaX = cx - mszPrevious.cx;
-	int nDeltaY = cy - mszPrevious.cy;
-	mszPrevious.cx = cx;
-	mszPrevious.cy = cy;
-
-	__super::OnSize(nType, cx, cy);
-
-	if( nType != SIZE_RESTORED || (nDeltaX == 0 && nDeltaY == 0) )
-		return;
-
-	CRect rcCtrl;
-	mObjectTree.GetWindowRect( &rcCtrl );
-	ScreenToClient( &rcCtrl );
-	rcCtrl.bottom += nDeltaY;
-	mObjectTree.MoveWindow( &rcCtrl );
-
-	mDescription.GetWindowRect( &rcCtrl );
-	ScreenToClient( &rcCtrl );
-	rcCtrl.right += nDeltaX;
-	rcCtrl.bottom += nDeltaY;
-	mDescription.MoveWindow( &rcCtrl );
-
-	CWnd* pCtrl = GetDlgItem( IDC_METHDEF );
-	if( pCtrl )
-	{
-		pCtrl->GetWindowRect( &rcCtrl );
-		ScreenToClient( &rcCtrl );
-		rcCtrl.right += nDeltaX;
-		pCtrl->MoveWindow( &rcCtrl );
-	}
-
-	pCtrl = GetDlgItem( IDOK );
-	if( pCtrl )
-	{
-		pCtrl->GetWindowRect( &rcCtrl );
-		ScreenToClient( &rcCtrl );
-		rcCtrl.left += nDeltaX;
-		rcCtrl.right += nDeltaX;
-		pCtrl->MoveWindow( &rcCtrl );
-	}
 }
 
 void CControlBrowser::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -1194,4 +1182,14 @@ void CControlBrowser::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 	}
 	*pResult = 0;
+}
+
+void CControlBrowser::OnBackClicked() 
+{
+	mDescription.GoBack();
+}
+
+void CControlBrowser::OnForwardClicked() 
+{
+	mDescription.GoForward();
 }

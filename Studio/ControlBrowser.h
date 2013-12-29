@@ -18,7 +18,6 @@ class CControlBrowser : public CResizableDialog
 	CImageList mImageList;
 	CTreeCtrl mObjectTree;
 	bool mbClosing;
-	CSize mszPrevious;
 	std::map< CString, CString > mParams;
 	class NoNavigateBrowser : public CHtmlBrowser
 	{
@@ -29,6 +28,7 @@ class CControlBrowser : public CResizableDialog
 	protected:
 		virtual void OnDocumentComplete(LPCTSTR lpszURL);
 		virtual void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel);
+		virtual void OnCommandStateChange(long nCommand, BOOL bEnable);
 	public:
 		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,
 									LPCTSTR lpszTargetFrameName = NULL,
@@ -73,6 +73,7 @@ public:
 	void SetDescription( LPCTSTR pszDescription, const std::map< CString, CString >& params );
 
 	virtual void OnDocumentLoaded( bool bClickedLink );
+	virtual void OnCommandStateChange(long nCommand, BOOL bEnable);
 
 protected:
 	//bool OnBeginClipboardCopy();
@@ -89,4 +90,6 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBackClicked();
+	afx_msg void OnForwardClicked();
 };

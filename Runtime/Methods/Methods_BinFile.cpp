@@ -74,8 +74,8 @@ ADSRESULT BinFile::Open()
 	}
 
 	theArxWorkspace.AddUnknown( *pFile );
-  theArxWorkspace.RetPointer( pFile, odcl::ptrBinFile );
-  return RSRSLT;
+	theArxWorkspace.RetPointer( pFile, odcl::ptrBinFile );
+	return RSRSLT;
 }
 
 ADSRESULT BinFile::Write()
@@ -223,49 +223,49 @@ ADSRESULT BinFile::Read()
 			resbuf* prbNew = NULL;
 			if( type >= 5000 && type <= 5024 )
 			{
-        prbNew = acutNewRb( type );
+				prbNew = acutNewRb( type );
 				switch( type )
 				{
-        case RTLE:
-        case RTLB:
-        case RTNONE:
-        case RTVOID:
-        case RTDOTE:			
-        case RTNIL:
-        case RTT:
-        case RTRESBUF:		
-          break;
-        case RTREAL:
-        case RTANG:
-        case RTORINT:
-          BinFile >> prbNew->resval.rreal;
+				case RTLE:
+				case RTLB:
+				case RTNONE:
+				case RTVOID:
+				case RTDOTE:			
+				case RTNIL:
+				case RTT:
+				case RTRESBUF:		
 					break;
-        case RTPOINT:
+				case RTREAL:
+				case RTANG:
+				case RTORINT:
+					BinFile >> prbNew->resval.rreal;
+					break;
+				case RTPOINT:
 					BinFile >> prbNew->resval.rpoint[X];		
 					BinFile >> prbNew->resval.rpoint[Y];
 					break;
-        case RTSHORT:
+				case RTSHORT:
 					BinFile >> prbNew->resval.rint;
 					break;
-        case RTDXF0:
-        case RTSTR:
+				case RTDXF0:
+				case RTSTR:
 					{
 						CStringW sText;
 						BinFile >> sText;
 						acutNewString( CString( sText ), prbNew->resval.rstring );
 					}
 					break;
-        case RTENAME:
-        case RTPICKS:
+				case RTENAME:
+				case RTPICKS:
 					BinFile >> prbNew->resval.rlname[0];		
 					BinFile >> prbNew->resval.rlname[1];
 					break;
-        case RT3DPOINT:
+				case RT3DPOINT:
 					BinFile >> prbNew->resval.rpoint[X];		
 					BinFile >> prbNew->resval.rpoint[Y];		
 					BinFile >> prbNew->resval.rpoint[Z];
 					break;
-        case RTLONG:
+				case RTLONG:
 					BinFile >> prbNew->resval.rlong;
 					break;
 				default:

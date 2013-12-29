@@ -221,9 +221,9 @@ public:
 	//File I/O
 public:
 	virtual void Serialize(CArchive& ar);
-  IOStatus ReadFromTextFile(std::ifstream &sFile);
-  IOStatus ReadFromTextFile5(std::ifstream &sFile);
-  //IOStatus WriteToTextFile(FILE* pFile) const;
+	IOStatus ReadFromTextFile(std::ifstream &sFile);
+	IOStatus ReadFromTextFile5(std::ifstream &sFile);
+	//IOStatus WriteToTextFile(FILE* pFile) const;
 
 #ifdef _DIAGNOSTIC
 public:

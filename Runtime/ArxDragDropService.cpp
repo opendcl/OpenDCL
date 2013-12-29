@@ -67,8 +67,14 @@ public:
 				break;
 
 			MSG msg;
-			if( GetMessage( &msg, NULL, 0, 0 ) )
+			if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
 			{
+				if( msg.message == WM_QUIT )
+				{
+					PostQuitMessage( msg.wParam );
+					break;
+				}
+
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 
@@ -83,16 +89,16 @@ public:
 
 				// check for drag start transition
 				m_bDragStarted = !m_rectStartDrag.PtInRect(msg.pt);
-			}
-			else
-			{
-				PostQuitMessage( msg.wParam );
-				break;
+				if( m_bDragStarted )
+					break;
 			}
 
 			// if the user sits here long enough, we eventually start the drag
 			if (GetTickCount() - dwLastTick > nDragDelay)
+			{
 				m_bDragStarted = TRUE;
+				break;
+			}
 		}
 		ReleaseCapture();
 

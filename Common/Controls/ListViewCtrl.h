@@ -30,6 +30,36 @@ protected:
 	afx_msg void OnSetfocus();	
 };
 
+class ListviewDropSource : public COleDropSource
+{
+public:
+	ListviewDropSource()
+		: COleDropSource()
+		{}
+	virtual BOOL OnBeginDrag(CWnd* pWnd)
+	{
+		ASSERT_VALID(this);
+
+		m_bDragStarted = TRUE; //listview initiates dragging internally, so just carry on
+
+		// opposite button cancels drag operation
+		m_dwButtonCancel = 0;
+		m_dwButtonDrop = 0;
+		if (GetKeyState(VK_LBUTTON) < 0)
+		{
+			m_dwButtonDrop |= MK_LBUTTON;
+			m_dwButtonCancel |= MK_RBUTTON;
+		}
+		else if (GetKeyState(VK_RBUTTON) < 0)
+		{
+			m_dwButtonDrop |= MK_RBUTTON;
+			m_dwButtonCancel |= MK_LBUTTON;
+		}
+
+		return TRUE;
+	}
+};
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CListViewCtrl window
@@ -40,6 +70,7 @@ class CListViewCtrl : public CListCtrl, public CDialogControl
 	int mnEditSubItem;
 	int mnDragSource;
 	CLVEdit mLVEdit;
+	ListviewDropSource mDropSource;
 
 // Construction
 public:
@@ -56,6 +87,7 @@ public:
 	virtual bool OnApplyForegroundColor( TPropertyPtr pProp );
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	virtual COleDropSource* GetDropSource() { return &mDropSource; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
@@ -81,13 +113,12 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBegindrag(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void PostNcDestroy();
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);

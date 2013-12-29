@@ -86,9 +86,9 @@ public:
 	operator T ()
 		{ return pT; }
 
-  const T operator->() const
+	const T operator->() const
 		{ return pT; }
-  T operator->()
+	T operator->()
 		{ return pT; }
 
 	bool operator ==( const RefCounter<T>& src ) const
@@ -164,7 +164,7 @@ protected:
 
 public:
 	operator T* () const { if( pW ) return *pW; return NULL; }
-  T* operator->() const { if( pW ) return *pW; return NULL; }
+	T* operator->() const { if( pW ) return *pW; return NULL; }
 	bool operator < ( const RefCountedPtr<T,_R>& Right ) const
 		{
 			return ((const T*)(*this) < (const T*)Right);
