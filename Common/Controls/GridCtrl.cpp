@@ -993,6 +993,7 @@ void CGridCtrl::HideEditControls()
 	{
 		CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
 		mpCellEditCtrl = NULL;
+		mbActOnButtonUp = false;
 		NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_ENDLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
 		CWnd* pParent = GetParent();
 		if( pParent )

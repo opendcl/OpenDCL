@@ -45,7 +45,7 @@
 )
 
 ;; Entlade OpenDCL komplett, um die die Installation der Aktualisierungen zu ermöglichen
-(DEFUN *ODCL:Vanish (/ project module)
+(DEFUN *ODCL:Vanish ()
   (foreach project (dcl_GetProjects) (dcl_Project_Unload project T))
   (foreach module (arx)
     (if (wcmatch module "opendcl`.*") (arxunload module))
@@ -137,7 +137,7 @@
                     (setq result
                       (vl-catch-all-apply
                         (function
-                          (lambda (/ element)
+                          (lambda ()
                             (foreach element (vlax-safearray->list (vlax-variant-value result))
                               (vlax-invoke filestream "Write" (chr (+ 256 (logand 255 element))))
                             )

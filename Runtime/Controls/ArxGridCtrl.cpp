@@ -262,6 +262,8 @@ public:
 			}
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
 			CAcUiComboHelper< TAcUiBase >::SetCurSelFromValue( this, pGridCtrl->GetCellImage( nRow, nCol ), sText );
+			SetWindowText( sText );
+			SetEditSel( 0, -1 );
 			mClippingWnd.ShowWindow( SW_SHOW );
 			SetFocus();
 			if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
