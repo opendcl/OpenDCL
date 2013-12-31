@@ -252,6 +252,10 @@
       (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuild T)
       (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuildAvail T)
     )
+    (progn
+      (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuild nil)
+      (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuildAvail nil)
+    )
   )
   (dcl_Control_SetCaption _MasterDemo_Update_lblLanguageAvail curlang)
   (dcl_Control_SetCaption _MasterDemo_Update_lblVersionAvail curver_string)
