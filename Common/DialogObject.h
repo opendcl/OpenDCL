@@ -33,6 +33,9 @@ struct DialogParams
 
 class CDialogObject : public CDialogControl
 {
+public:
+	static const UINT_PTR idUserTimer = 0xdc1; //arbitrary timer ID
+protected:
 	static ULONG mnNextFormId; //constantly incremented unique dialog id
 	int mnNCWidth; //width of non-client window area
 	int mnNCHeight; //height of non-client window area
@@ -106,6 +109,7 @@ public:
 	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
 	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates
 	virtual CRect GetEffectiveClientRect() const; //return control's client rect
+	virtual bool StartTimer( UINT nMilliseconds ) const;
 protected:
 	virtual void GetMinMaxClientSize( CSize& szMin, CSize& szMax ); //returns min/max size in client coordinates
 	virtual void GetMinMaxSize( CSize& szMin, CSize& szMax ); //returns min/max size in window coordinates

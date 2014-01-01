@@ -42,6 +42,7 @@ void COptionsTabDlg::CloseDialog(int nStatus)
 BEGIN_MESSAGE_MAP(COptionsTabDlg, CAcUiTabChildDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_TIMER()
 	ON_WM_SIZE()
 	ON_REGISTERED_MESSAGE(refWM_RECALCLAYOUT(),OnRecalcLayout)
 	ON_WM_ERASEBKGND()
@@ -131,6 +132,19 @@ void COptionsTabDlg::OnDestroy()
 {
 	GetControlPane()->CleanUpControls();
 	CAcUiTabExtension::OnDestroy();
+}
+
+void COptionsTabDlg::OnTimer( UINT_PTR nID )
+{
+	switch( nID )
+	{
+	case CDialogObject::idUserTimer:
+		GetArxServices()->HandleEvent( Prop::FormEventTimer );
+		break;
+	default:
+		__super::OnTimer( nID );
+		break;
+	};
 }
 
 void COptionsTabDlg::OnSize(UINT nType, int cx, int cy)

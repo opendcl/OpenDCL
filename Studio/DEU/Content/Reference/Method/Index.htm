@@ -1,850 +1,952 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="de">
-<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>Methoden</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="de">
+  <link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../../Utility.js"></script>
+  <title>Methoden</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
-                  <img border="0" src="../images/Method.png" width="16" height="16"> Methoden </div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-<div id="content">
-		<p>Methoden f&uuml;hren typischerweise Aktionen auf einem Steuerelement oder einer Dialogbox aus oder initiieren Operationen in AutoCAD. Einige Methoden ver&auml;ndern viele Eigenschaften von Steuerelementen mit einem einzigen Aufruf. Einige allgemeine Methoden k&ouml;nnen auf alle Steuerelemente angewandt werden, andere wiederum nur auf spezielle Steuerelemente. </p>
-<table border="0" cellpadding="5" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
-          <tr>
-            <th valign="top" align="left" width="150"><i>
-            <a name="AxControl" href="../Control/AxControl.htm">ActiveX-Steuerelement</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="AxControl/Get.htm">Get</a></li>
-                <li><a href="AxControl/GetAxObject.htm">GetAxObject</a></li>
-                <li><a href="AxControl/Invoke.htm">Invoke</a></li>
-                <li><a href="AxControl/Put.htm">Put</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-              <ul>
-                <li><a href="AxControl/Get.htm">GetProperty</a></li>
-                <li><a href="AxControl/GetAxObject.htm">GetOleObject</a></li>
-                <li><a href="AxControl/Invoke.htm">DoMethod</a></li>
-                <li><a href="AxControl/Put.htm">SetProperty</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" width="150"><i>
-            <a name="AxObject" href="../DataType/AxObject.htm">ActiveX-Objekt</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="AxObject/Get.htm">Get</a></li>
-                <li><a href="AxObject/Invoke.htm">Invoke</a></li>
-                <li><a href="AxObject/Put.htm">Put</a></li>
-                <li><a href="AxObject/Release.htm">Release</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="AxObject/Get.htm">GetProperty</a></li>
-                <li><a href="AxObject/Invoke.htm">DoMethod</a></li>
-                <li><a href="AxObject/Put.htm">SetProperty</a></li>
-                <li><a href="AxObject/Release.htm">Close</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="Tree" href="../Control/Tree.htm">Baumstruktur</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Tree/AddChild.htm">AddChild</a></li>
-                <li><a href="Tree/AddParent.htm">AddParent</a></li>
-                <li><a href="Tree/AddSibling.htm">AddSibling</a></li>
-                <li><a href="Tree/CancelLabelEdit.htm">CancelLabelEdit</a></li>
-                <li><a href="Tree/Clear.htm">Clear</a></li>
-                <li><a href="Tree/DeleteItem.htm">DeleteItem</a></li>
-                <li><a href="Tree/EnsureVisible.htm">EnsureVisible</a></li>
-                <li><a href="Tree/ExpandItem.htm">ExpandItem</a></li>
-                <li><a href="Tree/GetCount.htm">GetCount</a></li>
-                <li><a href="Tree/GetFirstChildItem.htm">GetFirstChildItem</a></li>
-                <li><a href="Tree/GetFirstVisibleItem.htm">GetFirstVisibleItem</a></li>
-                <li><a href="Tree/GetItemData.htm">GetItemData</a></li>
-                <li><a href="Tree/GetItemHandle.htm">GetItemHandle</a></li>
-                <li><a href="Tree/GetItemImages.htm">GetItemImages</a></li>
-                <li><a href="Tree/GetItemKey.htm">GetItemKey</a></li>
-                <li><a href="Tree/GetItemLabel.htm">GetItemLabel</a></li>
-                <li><a href="Tree/GetNextSiblingItem.htm">GetNextSiblingItem</a></li>
-                <li><a href="Tree/GetNextVisibleItem.htm">GetNextVisibleItem</a></li>
-                <li><a href="Tree/GetParentItem.htm">GetParentItem</a></li>
-                <li><a href="Tree/GetPrevSiblingItem.htm">GetPrevSiblingItem</a></li>
-                <li><a href="Tree/GetPrevVisibleItem.htm">GetPrevVisibleItem</a></li>
-                <li><a href="Tree/GetRootItem.htm">GetRootItem</a></li>
-                <li><a href="Tree/GetSelectedItem.htm">GetSelectedItem</a></li>
-                <li><a href="Tree/GetVisibleCount.htm">GetVisibleCount</a></li>
-                <li><a href="Tree/IsItemExpanded.htm">IsItemExpanded</a></li>
-                <li><a href="Tree/ItemHasChildren.htm">ItemHasChildren</a></li>
-                <li><a href="Tree/SelectItem.htm">SelectItem</a></li>
-                <li><a href="Tree/SelectSetFirstVisible.htm">SelectSetFirstVisible</a></li>
-                <li><a href="Tree/SetItemData.htm">SetItemData</a></li>
-                <li><a href="Tree/SetItemImages.htm">SetItemImages</a></li>
-                <li><a href="Tree/SetItemLabel.htm">SetItemLabel</a></li>
-                <li><a href="Tree/SortChildren.htm">SortChildren</a></li>
-                <li><a href="Tree/StartLabelEdit.htm">StartLabelEdit</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="Tree/CancelLabelEdit.htm">CancelEditLabel</a></li>
-                  <li><a href="Tree/GetCount.htm">CountItems</a></li>
-                  <li><a href="Tree/StartLabelEdit.htm">EditLabel</a></li>
-                  <li><a href="Tree/GetItemImages.htm">GetExpandedImage</a></li>
-                  <li><a href="Tree/GetItemKey.htm">GetItem</a></li>
-                  <li><a href="Tree/GetItemLabel.htm">GetItemText</a></li>
-                  <li><a href="Tree/GetParentItem.htm">GetParent</a></li>
-                  <li><a href="Tree/AddSibling.htm">InsertAfter</a></li>
-                  <li><a href="Tree/SetItemImages.htm">SetExpandedImage</a></li>
-                  <li><a href="Tree/SetItemLabel.htm">SetItemText</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="PictureBox" href="../Control/PictureBox.htm">Bild</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="PictureBox/Clear.htm">Clear</a></li>
-                <li><a href="PictureBox/DrawArc.htm">DrawArc</a></li>
-                <li><a href="PictureBox/DrawCircle.htm">DrawCircle</a></li>
-                <li><a href="PictureBox/DrawEdge.htm">DrawEdge</a></li>
-                <li><a href="PictureBox/DrawFocusRect.htm">DrawFocusRect</a></li>
-                <li><a href="PictureBox/DrawHatchRect.htm">DrawHatchRect</a></li>
-                <li><a href="PictureBox/DrawLine.htm">DrawLine</a></li>
-                <li><a href="PictureBox/DrawPoint.htm">DrawPoint</a></li>
-                <li><a href="PictureBox/DrawRect.htm">DrawRect</a></li>
-                <li><a href="PictureBox/DrawSolidRect.htm">DrawSolidRect</a></li>
-                <li><a href="PictureBox/DrawText.htm">DrawText</a></li>
-                <li><a href="PictureBox/DrawWrappedText.htm">DrawWrappedText</a></li>
-                <li><a href="PictureBox/GetTextExtent.htm">GetTextExtent</a></li>
-                <li><a href="PictureBox/LoadPictureFile.htm">LoadPictureFile</a></li>
-                <li><a href="PictureBox/PaintPicture.htm">PaintPicture</a></li>
-                <li><a href="PictureBox/Refresh.htm">Refresh</a></li>
-                <li><a href="PictureBox/StoreImage.htm">StoreImage</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="PictureBox/DrawSolidRect.htm">DrawFillRect</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" width="150"><i>
-            <a name="BinFile" href="../DataType/BinFile.htm">Bin&auml;rdatei</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="BinFile/Check.htm">Check</a></li>
-                <li><a href="BinFile/Close.htm">Close</a></li>
-                <li><a href="BinFile/Open.htm">Open</a></li>
-                <li><a href="BinFile/Read.htm">Read</a></li>
-                <li><a href="BinFile/Write.htm">Write</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-              <ul>
-                <li><a href="BinFile/Check.htm">CheckBin</a></li>
-                <li><a href="BinFile/Close.htm">CloseBin</a></li>
-                <li><a href="BinFile/Open.htm">OpenBin</a></li>
-                <li><a href="BinFile/Read.htm">ReadBin</a></li>
-                <li><a href="BinFile/Write.htm">WriteBin</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="BlockView" href="../Control/BlockView.htm">Block</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="BlockView/Clear.htm">Clear</a></li>
-                <li><a href="BlockView/DisplayBlock-Camera.htm">DisplayBlock (Camera)</a></li>
-                <li><a href="BlockView/DisplayBlock-View.htm">DisplayBlock (View)</a></li>
-                <li><a href="BlockView/DisplayBlockToScale-Camera.htm"> DisplayBlockToScale (Camera)</a></li>
-                <li><a href="BlockView/DisplayBlockToScale-View.htm"> DisplayBlockToScale (View)</a></li>
-                <li><a href="BlockView/DisplayDwg-Camera.htm">DisplayDwg (Camera)</a></li>
-                <li><a href="BlockView/DisplayDwg-View.htm">DisplayDwg (View)</a></li>
-                <li><a href="BlockView/DisplayDwgToScale-Camera.htm"> DisplayDwgToScale (Camera)</a></li>
-                <li><a href="BlockView/DisplayDwgToScale-View.htm"> DisplayDwgToScale (View)</a></li>
-                <li><a href="BlockView/DisplayPaperSpace.htm">DisplayPaperSpace</a></li>
-                <li><a href="BlockView/GetBlockList.htm">GetBlockList</a></li>
-                <li><a href="BlockView/GetDwgSize.htm">GetDwgSize</a></li>
-                <li><a href="BlockView/PreLoadDwg.htm">PreLoadDwg</a></li>
-                <li><a href="BlockView/RefreshBlock.htm">RefreshBlock</a></li>
-                <li><a href="BlockView/RemoveHighlight.htm">RemoveHighlight</a></li>
-                <li><a href="BlockView/SetHighlight.htm">SetHighlight</a></li>
-                <li><a href="BlockView/Zoom.htm">Zoom</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="BlockView/DisplayDwg-Camera.htm">LoadDwg (Camera)</a></li>
-                  <li><a href="BlockView/DisplayDwg-View.htm">LoadDwg (View)</a></li>
-                  <li><a href="BlockView/DisplayDwgToScale-Camera.htm"> LoadDwgToScale (Camera)</a></li>
-                  <li><a href="BlockView/DisplayDwgToScale-View.htm"> LoadDwgToScale (View)</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" width="150"><i>
-            <a name="BlockList" href="../Control/BlockList.htm">Blockliste</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="BlockList/Arrange.htm">Arrange</a></li>
-                <li><a href="BlockList/GetCount.htm">GetCount</a></li>
-                <li><a href="BlockList/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="BlockList/GetFileName.htm">GetFileName</a></li>
-                <li><a href="BlockList/GetItemText.htm">GetItemText</a></li>
-                <li><a href="BlockList/GetSelCount.htm">GetSelCount</a></li>
-                <li><a href="BlockList/GetSelectedItems.htm">GetSelectedItems</a></li>
-                <li><a href="BlockList/GetSelectedNths.htm">GetSelectedNths</a></li>
-                <li><a href="BlockList/LoadDwg.htm">LoadDWG</a></li>
-                <li><a href="BlockList/Reset.htm">Reset</a></li>
-                <li><a href="BlockList/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="BlockList/SortTextItems.htm">SortTextItems</a></li>
-              </ul>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="FileExplorer" href="../Control/FileExplorer.htm"> Datei-Explorer</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="FileExplorer/GetFileExt.htm">GetFileExt</a></li>
-                <li><a href="FileExplorer/GetFileName.htm">GetFileName</a></li>
-                <li><a href="FileExplorer/GetFileNameList.htm">GetFileNameList</a></li>
-                <li><a href="FileExplorer/GetFileTitle.htm">GetFileTitle</a></li>
-                <li><a href="FileExplorer/GetFolderName.htm">GetFolderName</a></li>
-                <li><a href="FileExplorer/GetFolderPath.htm">GetFolderPath</a></li>
-                <li><a href="FileExplorer/GetPathName.htm">GetPathName</a></li>
-                <li><a href="FileExplorer/GetSelCount.htm">GetSelCount</a></li>
-                <li><a href="FileExplorer/SetOkButtonText.htm">SetOkButtonText</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="FileExplorer/GetFileExt.htm">FileDlg_GetFileExt</a></li>
-                  <li><a href="FileExplorer/GetFileName.htm">FileDlg_GetFileName</a></li>
-                  <li><a href="FileExplorer/GetFileNameList.htm">FileDlg_GetFileNameList</a></li>
-                  <li><a href="FileExplorer/GetFileTitle.htm">FileDlg_GetFileTitle</a></li>
-                  <li><a href="FileExplorer/GetFolderName.htm">FileDlg_GetFolderName</a></li>
-                  <li><a href="FileExplorer/GetFolderPath.htm">FileDlg_GetFolderPath</a></li>
-                  <li><a href="FileExplorer/GetPathName.htm">FileDlg_GetPathName</a></li>
-                  <li><a href="FileExplorer/GetSelCount.htm">FileDlg_GetSelectionCount</a></li>
-                  <li><a href="FileExplorer/SetOkButtonText.htm">FileDlg_SetOkButtonText</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="Grid" href="../Control/Grid.htm">Datenblatt</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Grid/AddColumns.htm">AddColumns</a></li>
-                <li><a href="Grid/AddRow.htm">AddRow</a></li>
-                <li><a href="Grid/AddString.htm">AddString</a></li>
-                <li><a href="Grid/CalcColumnWidth.htm">CalcColumnWidth</a></li>
-                <li><a href="Grid/CancelCellEdit.htm">CancelCellEdit</a></li>
-                <li><a href="Grid/Clear.htm">Clear</a></li>
-                <li><a href="Grid/DeleteColumn.htm">DeleteColumn</a></li>
-                <li><a href="Grid/DeleteRow.htm">DeleteRow</a></li>
-                <li><a href="Grid/FillList.htm">FillList</a></li>
-                <li><a href="Grid/GetCellCheckState.htm">GetCellCheckState</a></li>
-                <li><a href="Grid/GetCellDropList.htm">GetCellDropList</a></li>
-                <li><a href="Grid/GetCellImages.htm">GetCellImages</a></li>
-                <li><a href="Grid/GetCellStyle.htm">GetCellStyle</a></li>
-                <li><a href="Grid/GetCellText.htm">GetCellText</a></li>
-                <li><a href="Grid/GetColumnCells.htm">GetColumnCells</a></li>
-                <li><a href="Grid/GetColumnCount.htm">GetColumnCount</a></li>
-                <li><a href="Grid/GetColumnImage.htm">GetColumnImage</a></li>
-                <li><a href="Grid/GetColumnWidth.htm">GetColumnWidth</a></li>
-                <li><a href="Grid/GetCurCell.htm">GetCurCell</a></li>
-                <li><a href="Grid/GetRowCells.htm">GetRowCells</a></li>
-                <li><a href="Grid/GetRowCount.htm">GetRowCount</a></li>
-                <li><a href="Grid/GetRowData.htm">GetRowData</a></li>
-                <li><a href="Grid/HitPointTest.htm">HitPointTest</a></li>
-                <li><a href="Grid/InsertColumn.htm">InsertColumn</a></li>
-                <li><a href="Grid/InsertRow.htm">InsertRow</a></li>
-                <li><a href="Grid/InsertString.htm">InsertString</a></li>
-                <li><a href="Grid/SetCellCheckState.htm">SetCellCheckState</a></li>
-                <li><a href="Grid/SetCellDropList.htm">SetCellDropList</a></li>
-                <li><a href="Grid/SetCellImages.htm">SetCellImages</a></li>
-                <li><a href="Grid/SetCellStyle.htm">SetCellStyle</a></li>
-                <li><a href="Grid/SetCellText.htm">SetCellText</a></li>
-                <li><a href="Grid/SetColumnImage.htm">SetColumnImage</a></li>
-                <li><a href="Grid/SetColumnWidth.htm">SetColumnWidth</a></li>
-                <li><a href="Grid/SetCurCell.htm">SetCurCell</a></li>
-                <li><a href="Grid/SetRowData.htm">SetRowData</a></li>
-                <li><a href="Grid/SortNumericCells.htm">SortNumericCells</a></li>
-                <li><a href="Grid/SortTextCells.htm">SortTextCells</a></li>
-                <li><a href="Grid/StartCellEdit.htm">StartCellEdit</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="Grid/CalcColumnWidth.htm">CalcColWidth</a></li>
-                  <li><a href="Grid/CancelCellEdit.htm">CancelItemEdit</a></li>
-                  <li><a href="Grid/GetColumnCount.htm">GetColCount</a></li>
-                  <li><a href="Grid/GetColumnImage.htm">GetColImage</a></li>
-                  <li><a href="Grid/GetColumnCells.htm">GetColItems</a></li>
-                  <li><a href="Grid/GetColumnWidth.htm">GetColWidth</a></li>
-                  <li><a href="Grid/GetCurCell.htm">GetCurSel</a></li>
-                  <li><a href="Grid/GetCellCheckState.htm">GetItemCheck</a></li>
-                  <li><a href="Grid/GetRowData.htm">GetItemData</a></li>
-                  <li><a href="Grid/GetCellDropList.htm">GetItemDropList</a></li>
-                  <li><a href="Grid/GetCellImages.htm">GetItemImage</a></li>
-                  <li><a href="Grid/GetCellText.htm">GetItemText</a></li>
-                  <li><a href="Grid/GetRowCells.htm">GetRowItems</a></li>
-                  <li><a href="Grid/SetColumnImage.htm">SetColImage</a></li>
-                  <li><a href="Grid/SetColumnWidth.htm">SetColWidth</a></li>
-                  <li><a href="Grid/SetCurCell.htm">SelCurCel</a>l</li>
-                  <li><a href="Grid/SetCurCell.htm">SelCurRow</a></li>
-                  <li><a href="Grid/SetCellCheckState.htm">SetItemCheck</a></li>
-                  <li><a href="Grid/SetRowData.htm">SetItemData</a></li>
-                  <li><a href="Grid/SetCellDropList.htm">SetItemDropList</a></li>
-                  <li><a href="Grid/SetCellImages.htm">SetItemImage</a></li>
-                  <li><a href="Grid/SetCellStyle.htm">SetItemStyle</a></li>
-                  <li><a href="Grid/SetCellText.htm">SetItemText</a></li>
-                  <li><a href="Grid/SortNumericCells.htm">SortNumericItems</a></li>
-                  <li><a href="Grid/SortTextCells.htm">SortTextItems</a></li>
-                  <li><a href="Grid/StartCellEdit.htm">StartItemEdit</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="SlideView" href="../Control/SlideView.htm">Dia</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="SlideView/Clear.htm">Clear</a></li>
-                <li><a href="SlideView/EndImage.htm">EndImage</a></li>
-                <li><a href="SlideView/FillImage.htm">FillImage</a></li>
-                <li><a href="SlideView/Load.htm">Load</a></li>
-                <li><a href="SlideView/RemoveHighlight.htm">RemoveHighlight</a></li>
-                <li><a href="SlideView/SetHighlight.htm">SetHighlight</a></li>
-                <li><a href="SlideView/SlideImage.htm">SlideImage</a></li>
-                <li><a href="SlideView/VectorImage.htm">VectorImage</a></li>
-            </ul></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="Form" href="../Form/Index.htm">Dialog</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Form/Center.htm">Center</a></li>
-                <li><a href="Form/Close.htm">Close</a></li>
-                <li><a href="Form/Enable.htm">Enable</a></li>
-                <li><a href="Form/GetControlArea.htm">GetControlArea</a></li>
-                <li><a href="Form/GetControls.htm">GetControls</a></li>
-                <li><a href="Form/GetUUID.htm">GetUUID</a></li>
-                <li><a href="Form/Hide.htm">Hide</a></li>
-                <li><a href="Form/IsActive.htm">IsActive</a></li>
-                <li><a href="Form/IsApplyEnabled.htm">IsApplyEnabled</a></li>
-                <li><a href="Form/IsEnabled.htm">IsEnabled</a></li>
-                <li><a href="Form/IsFloating.htm">IsFloating</a></li>
-                <li><a href="Form/IsVisible.htm">IsVisible</a></li>
-                <li><a href="Form/RecalcLayout.htm">RecalcLayout</a></li>
-                <li><a href="Form/Resize.htm">Resize</a></li>
-                <li><a href="Form/SetApplyEnabled.htm">SetApplyEnabled</a></li>
-                <li><a href="Form/SetMinMaxSizes.htm">SetMinMaxSizes</a></li>
-                <li><a href="Form/Show.htm">Show</a></li>
-              </ul>
-              <h4>Diagnostic</h4>
-              <ul>
-                <li><a href="Form/CloseAll.htm">CloseAll</a></li>
-                <li><a href="Form/Dump.htm">Dump</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="Form/IsApplyEnabled.htm">ConfigTab_IsApplyEnabled</a></li>
-                  <li><a href="Form/SetApplyEnabled.htm"> ConfigTab_SetApplyEnabled</a></li>
-                  <li><a href="Control/GetHWND.htm">GetHWND</a></li>
-                  <li><a href="Control/GetPos.htm">GetRectangle</a></li>
-                  <li><a href="../Property/TitleBarText.htm">GetTitleBarText</a></li>
-                  <li><a href="Form/SetMinMaxSizes.htm">SetDialogMinMaxSizes</a></li>
-                  <li><a href="Control/SetFocus.htm">SetFocus</a></li>
-                  <li><a href="Control/SetPos.htm">SetPos</a></li>
-                  <li><a href="../Property/TitleBarText.htm">SetTitleBarText</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="DwgList" href="../Control/DwgList.htm">DWG-Liste</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="DwgList/DeleteItem.htm">DeleteItem</a></li>
-                <li><a href="DwgList/Dir.htm">Dir</a></li>
-                <li><a href="DwgList/GetAnchorIndex.htm">GetAnchorIndex</a></li>
-                <li><a href="DwgList/GetCount.htm">GetCount</a></li>
-                <li><a href="DwgList/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="DwgList/GetDir.htm">GetDir</a></li>
-                <li><a href="DwgList/GetFileName.htm">GetFileName</a></li>
-                <li><a href="DwgList/GetFocusIndex.htm">GetFocusIndex</a></li>
-                <li><a href="DwgList/GetSelCount.htm">GetSelCount</a></li>
-                <li><a href="DwgList/GetSelectedItems.htm">GetSelectedItems</a></li>
-                <li><a href="DwgList/GetSelectedNths.htm">GetSelectedNths</a></li>
-                <li><a href="DwgList/GetText.htm">GetText</a></li>
-                <li><a href="DwgList/GetTopIndex.htm">GetTopIndex</a></li>
-                <li><a href="DwgList/GetType.htm">GetType</a></li>
-                <li><a href="DwgList/IsItemSelected.htm">IsItemSelected</a></li>
-                <li><a href="DwgList/SelectItem.htm">SelectItem</a></li>
-                <li><a href="DwgList/SelItemRange.htm">SelItemRange</a></li>
-                <li><a href="DwgList/SetAnchorIndex.htm">SetAnchorIndex</a></li>
-                <li><a href="DwgList/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="DwgList/SetFocusIndex.htm">SetFocusIndex</a></li>
-                <li><a href="DwgList/SetTopIndex.htm">SetTopIndex</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="DwgList/DeleteItem.htm">DeleteString</a></li>
-                  <li><a href="DwgList/IsItemSelected.htm">GetSel</a></li>
-                  <li><a href="DwgList/SelectItem.htm">SetSel</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="DwgPreview" href="../Control/DwgPreview.htm">DWG-Vorschau</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="DwgPreview/Clear.htm">Clear</a></li>
-                <li><a href="DwgPreview/GetDwgName.htm">GetDwgName</a></li>
-                <li><a href="DwgPreview/LoadDwg.htm">LoadDwg</a></li>
-                <li><a href="DwgPreview/RemoveHighlight.htm">RemoveHighlight</a></li>
-                <li><a href="DwgPreview/SetHighlight.htm">SetHighlight</a></li>
-            </ul></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="Calendar" href="../Control/Calendar.htm">Kalender</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="Calendar/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="Calendar/GetMonthRangeEnd.htm">GetMonthRangeEnd</a></li>
-                <li><a href="Calendar/GetMonthRangeStart.htm">GetMonthRangeStart</a></li>
-                <li><a href="Calendar/GetRangeEnd.htm">GetRangeEnd</a></li>
-                <li><a href="Calendar/GetRangeStart.htm">GetRangeStart</a></li>
-                <li><a href="Calendar/GetSelRangeEnd.htm">GetSelRangeEnd</a></li>
-                <li><a href="Calendar/GetSelRangeStart.htm">GetSelRangeStart</a></li>
-                <li><a href="Calendar/GetToday.htm">GetToday</a></li>
-                <li><a href="Calendar/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="Calendar/SetRange.htm">SetRange</a></li>
-                <li><a href="Calendar/SetSelRange.htm">SetSelRange</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="Calendar/GetCurSel.htm">Month_GetCurSel</a></li>
-                <li><a href="Calendar/GetMonthRangeEnd.htm">Month_GetMonthRangeEnd</a></li>
-                <li><a href="Calendar/GetMonthRangeStart.htm">Month_GetMonthRangeStart</a></li>
-                <li><a href="Calendar/GetRangeEnd.htm">Month_GetRangeEnd</a></li>
-                <li><a href="Calendar/GetRangeStart.htm">Month_GetRangeStart</a></li>
-                <li><a href="Calendar/GetSelRangeEnd.htm">Month_GetSelRangeEnd</a></li>
-                <li><a href="Calendar/GetSelRangeStart.htm">Month_GetSelRangeStart</a></li>
-                <li><a href="Calendar/GetToday.htm">Month_GetToday</a></li>
-                <li><a href="Calendar/SetCurSel.htm">Month_SetCurSel</a></li>
-                <li><a href="Calendar/SetRange.htm">Month_SetRange</a></li>
-                <li><a href="Calendar/SetSelRange.htm">Month_SetSelRange</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="TabStrip" href="../Control/TabStrip.htm">Karteikarten</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="TabStrip/GetControlArea.htm">GetControlArea</a></li>
-                <li><a href="TabStrip/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="TabStrip/GetRowCount.htm">GetRowCount</a></li>
-                <li><a href="TabStrip/HideTab.htm">HideTab</a></li>
-                <li><a href="TabStrip/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="TabStrip/SetTabCaption.htm">SetTabCaption</a></li>
-                <li><a href="TabStrip/ShowTab.htm">ShowTab</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="TabStrip/GetControlArea.htm">Tab_GetControlArea</a></li>
-                  <li><a href="TabStrip/GetCurSel.htm">Tab_GetCurSel</a></li>
-                  <li><a href="TabStrip/GetRowCount.htm">Tab_GetRowCount</a></li>
-                  <li><a href="TabStrip/HideTab.htm">Tab_HideTab</a></li>
-                  <li><a href="TabStrip/SetCurSel.htm">Tab_SetCurSel</a></li>
-                  <li><a href="TabStrip/SetTabCaption.htm">Tab_SetTabText</a></li>
-                  <li><a href="TabStrip/ShowTab.htm">Tab_ShowTab</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="ComboBox" href="../Control/ComboBox.htm">Kombinationsfeld</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="ComboBox/AddColor.htm">AddColor</a></li>
-                <li><a href="ComboBox/AddList.htm">AddList</a></li>
-                <li><a href="ComboBox/AddPath.htm">AddPath</a></li>
-                <li><a href="ComboBox/AddString.htm">AddString</a></li>
-                <li><a href="ComboBox/Clear.htm">Clear</a></li>
-                <li><a href="ComboBox/ClearEdit.htm">ClearEdit</a></li>
-                <li><a href="ComboBox/DeleteItem.htm">DeleteItem</a></li>
-                <li><a href="ComboBox/Dir.htm">Dir</a></li>
-                <li><a href="ComboBox/FindColor.htm">FindColor</a></li>
-                <li><a href="ComboBox/FindLineWeight.htm">FindLineWeight</a></li>
-                <li><a href="ComboBox/FindString.htm">FindString</a></li>
-                <li><a href="ComboBox/FindStringExact.htm">FindStringExact</a></li>
-                <li><a href="ComboBox/GetCount.htm">GetCount</a></li>
-                <li><a href="ComboBox/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="ComboBox/GetDir.htm">GetDir</a></li>
-                <li><a href="ComboBox/GetDroppedWidth.htm">GetDroppedWidth</a></li>
-                <li><a href="ComboBox/GetEBText.htm">GetEBText</a></li>
-                <li><a href="ComboBox/GetEditSel.htm">GetEditSel</a></li>
-                <li><a href="ComboBox/GetItemData.htm">GetItemData</a></li>
-                <li><a href="ComboBox/GetLBText.htm">GetLBText</a></li>
-                <li><a href="ComboBox/GetTopIndex.htm">GetTopIndex</a></li>
-                <li><a href="ComboBox/InsertString.htm">InsertString</a></li>
-                <li><a href="ComboBox/SelectString.htm">SelectString</a></li>
-                <li><a href="ComboBox/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="ComboBox/SetDroppedWidth.htm">SetDroppedWidth</a></li>
-                <li><a href="ComboBox/SetEditSel.htm">SetEditSel</a></li>
-                <li><a href="ComboBox/SetItemData.htm">SetItemData</a></li>
-                <li><a href="ComboBox/SetTopIndex.htm">SetTopIndex</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="ComboBox/DeleteItem.htm">DeleteString</a></li>
-                <li><a href="ComboBox/GetEBText.htm">GetTBText</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="ImageComboBox" href="../Control/ImageComboBox.htm">Kombinationsfeld mit Bildern </a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="ImageComboBox/AddString.htm">AddString</a></li>
-                <li><a href="ImageComboBox/Clear.htm">Clear</a></li>
-                <li><a href="ImageComboBox/ClearEdit.htm">ClearEdit</a></li>
-                <li><a href="ImageComboBox/DeleteItem.htm">DeleteItem</a></li>
-                <li><a href="ImageComboBox/FindString.htm">FindString</a></li>
-                <li><a href="ImageComboBox/FindStringExact.htm">FindStringExact</a></li>
-                <li><a href="ImageComboBox/GetCount.htm">GetCount</a></li>
-                <li><a href="ImageComboBox/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="ImageComboBox/GetDroppedWidth.htm">GetDroppedWidth</a></li>
-                <li><a href="ImageComboBox/GetEBText.htm">GetEBText</a></li>
-                <li><a href="ImageComboBox/GetEditSel.htm">GetEditSel</a></li>
-                <li><a href="ImageComboBox/GetItem.htm">GetItem</a></li>
-                <li><a href="ImageComboBox/GetItemData.htm">GetItemData</a></li>
-                <li><a href="ImageComboBox/GetLBText.htm">GetLBText</a></li>
-                <li><a href="ImageComboBox/GetTopIndex.htm">GetTopIndex</a></li>
-                <li><a href="ImageComboBox/SelectString.htm">SelectString</a></li>
-                <li><a href="ImageComboBox/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="ImageComboBox/SetDroppedWidth.htm">SetDroppedWidth</a></li>
-                <li><a href="ImageComboBox/SetEditSel.htm">SetEditSel</a></li>
-                <li><a href="ImageComboBox/SetItem.htm">SetItem</a></li>
-                <li><a href="ImageComboBox/SetItemData.htm">SetItemData</a></li>
-                <li><a href="ImageComboBox/SetTopIndex.htm">SetTopIndex</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="ImageComboBox/DeleteItem.htm">DeleteString</a></li>
-                <li><a href="ImageComboBox/GetEBText.htm">GetTBText</a></li>
-              </ul>
-              </div>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="ListBox" href="../Control/ListBox.htm">Listenfeld</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="ListBox/AddList.htm">AddList</a></li>
-                <li><a href="ListBox/AddString.htm">AddString</a></li>
-                <li><a href="ListBox/Clear.htm">Clear</a></li>
-                <li><a href="ListBox/DeleteItem.htm">DeleteItem</a></li>
-                <li><a href="ListBox/Dir.htm">Dir</a></li>
-                <li><a href="ListBox/FindString.htm">FindString</a></li>
-                <li><a href="ListBox/FindStringExact.htm">FindStringExact</a></li>
-                <li><a href="ListBox/GetAnchorIndex.htm">GetAnchorIndex</a></li>
-                <li><a href="ListBox/GetCount.htm">GetCount</a></li>
-                <li><a href="ListBox/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="ListBox/GetFocusIndex.htm">GetFocusIndex</a></li>
-                <li><a href="ListBox/GetItemData.htm">GetItemData</a></li>
-                <li><a href="ListBox/GetItemText.htm">GetItemText</a></li>
-                <li><a href="ListBox/GetSelCount.htm">GetSelCount</a></li>
-                <li><a href="ListBox/GetSelectedItems.htm">GetSelectedItems</a></li>
-                <li><a href="ListBox/GetSelectedNths.htm">GetSelectedNths</a></li>
-                <li><a href="ListBox/GetTopIndex.htm">GetTopIndex</a></li>
-                <li><a href="ListBox/HitPointTest.htm">HitPointTest</a></li>
-                <li><a href="ListBox/InsertString.htm">InsertString</a></li>
-                <li><a href="ListBox/IsItemSelected.htm">IsItemSelected</a></li>
-                <li><a href="ListBox/SelectItem.htm">SelectItem</a></li>
-                <li><a href="ListBox/SelectString.htm">SelectString</a></li>
-                <li><a href="ListBox/SelItemRange.htm">SelItemRange</a></li>
-                <li><a href="ListBox/SetAnchorIndex.htm">SetAnchorIndex</a></li>
-                <li><a href="ListBox/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="ListBox/SetFocusIndex.htm">SetFocusIndex</a></li>
-                <li><a href="ListBox/SetItemData.htm">SetItemData</a></li>
-                <li><a href="ListBox/SetTopIndex.htm">SetTopIndex</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="ListBox/DeleteItem.htm">DeleteString</a></li>
-                <li><a href="ListBox/IsItemSelected.htm">GetSel</a></li>
-                <li><a href="ListBox/GetItemText.htm">GetText</a></li>
-                <li><a href="ListBox/SelectItem.htm">SetSel</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="ListView" href="../Control/ListView.htm">Erweiterte Liste </a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="ListView/AddColumns.htm">AddColumns</a></li>
-                <li><a href="ListView/AddItem.htm">AddItem</a></li>
-                <li><a href="ListView/AddString.htm">AddString</a></li>
-                <li><a href="ListView/Arrange.htm">Arrange</a></li>
-                <li><a href="ListView/CalcColumnWidth.htm">CalcColumnWidth</a></li>
-                <li><a href="ListView/CancelLabelEdit.htm">CancelLabelEdit</a></li>
-                <li><a href="ListView/Clear.htm">Clear</a></li>
-                <li><a href="ListView/DeleteColumn.htm">DeleteColumn</a></li>
-                <li><a href="ListView/DeleteColumns.htm">DeleteColumns</a></li>
-                <li><a href="ListView/DeleteItem.htm">DeleteItem</a></li>
-                <li><a href="ListView/DeleteItems.htm">DeleteItems</a></li>
-                <li><a href="ListView/FillList.htm">FillList</a></li>
-                <li><a href="ListView/GetColumnCount.htm">GetColumnCount</a></li>
-                <li><a href="ListView/GetColumnImage.htm">GetColumnImage</a></li>
-                <li><a href="ListView/GetColumnItems.htm">GetColumnItems</a></li>
-                <li><a href="ListView/GetColumnWidth.htm">GetColumnWidth</a></li>
-                <li><a href="ListView/GetCount.htm">GetCount</a></li>
-                <li><a href="ListView/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="ListView/GetItemData.htm">GetItemData</a></li>
-                <li><a href="ListView/GetItemImage.htm">GetItemImage</a></li>
-                <li><a href="ListView/GetItemText.htm">GetItemText</a></li>
-                <li><a href="ListView/GetRowItems.htm">GetRowItems</a></li>
-                <li><a href="ListView/GetSelCount.htm">GetSelCount</a></li>
-                <li><a href="ListView/GetSelectedItems.htm">GetSelectedItems</a></li>
-                <li><a href="ListView/GetSelectedNths.htm">GetSelectedNths</a></li>
-                <li><a href="ListView/HitPointTest.htm">HitPointTest</a></li>
-                <li><a href="ListView/InsertItem.htm">InsertItem</a></li>
-                <li><a href="ListView/SetColumnImage.htm">SetColumnImage</a></li>
-                <li><a href="ListView/SetColumnWidth.htm">SetColumnWidth</a></li>
-                <li><a href="ListView/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="ListView/SetItemData.htm">SetItemData</a></li>
-                <li><a href="ListView/SetItemImage.htm">SetItemImage</a></li>
-                <li><a href="ListView/SetItemText.htm">SetItemText</a></li>
-                <li><a href="ListView/SortNumericItems.htm">SortNumericItems</a></li>
-                <li><a href="ListView/SortTextItems.htm">SortTextItems</a></li>
-                <li><a href="ListView/StartLabelEdit.htm">StartLabelEdit</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="ListView/CalcColumnWidth.htm">CalcColWidth</a></li>
-                <li><a href="ListView/GetCount.htm">CountItems</a></li>
-                <li><a href="ListView/GetColumnWidth.htm">GetColWidth</a></li>
-                <li><a href="ListView/SetColumnWidth.htm">SetColWidth</a></li>
-              </ul>
-              </div>
-           </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="OptionList" href="../Control/OptionList.htm">Optionsfeld</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="OptionList/AddButton.htm">AddButton</a></li>
-                <li><a href="OptionList/AddList.htm">AddList</a></li>
-                <li><a href="OptionList/Clear.htm">Clear</a></li>
-                <li><a href="OptionList/DeleteButton.htm">DeleteButton</a></li>
-                <li><a href="OptionList/GetButtonCaption.htm">GetButtonCaption</a></li>
-                <li><a href="OptionList/GetCount.htm">GetCount</a></li>
-                <li><a href="OptionList/GetCurSel.htm">GetCurSel</a></li>
-                <li><a href="OptionList/GetTopIndex.htm">GetTopIndex</a></li>
-                <li><a href="OptionList/InsertButton.htm">InsertButton</a></li>
-                <li><a href="OptionList/SetButtonEnabled.htm">SetButtonEnabled</a></li>
-                <li><a href="OptionList/SetButtonToolTip.htm">SetButtonToolTip</a></li>
-                <li><a href="OptionList/SetCurSel.htm">SetCurSel</a></li>
-                <li><a href="OptionList/SetTopIndex.htm">SetTopIndex</a></li>
-              </ul>
-              <div style="background-color: silver;">
-              <h4>Veraltet</h4>
-	            <ul>
-                <li><a href="OptionList/AddButton.htm">AddString</a></li>
-                <li><a href="OptionList/DeleteButton.htm">DeleteString</a></li>
-                <li><a href="OptionList/GetButtonCaption.htm">GetTest</a></li>
-                <li><a href="OptionList/InsertButton.htm">InsertString</a></li>
-                <li><a href="OptionList/SetButtonEnabled.htm">SetEnabled</a></li>
-                <li><a href="OptionList/SetButtonToolTip.htm">SetTttTitle</a></li>
-              </ul>
-              </div>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap width="150"><i>
-            <a name="Project" href="../DataType/Project.htm">Projekt</a></i></th>
-            <td valign="top">
-	            <ul>
-                <li><a href="Project/Export.htm">Export</a></li>
-                <li><a href="Project/GetForms.htm">GetForms</a></li>
-                <li><a href="Project/GetPictureSize.htm">GetPictureSize</a></li>
-                <li><a href="Project/Import.htm">Import</a></li>
-                <li><a href="Project/Load.htm">Load</a></li>
-                <li><a href="Project/SaveAs.htm">SaveAs</a></li>
-                <li><a href="Project/Unload.htm">Unload</a></li>
-              </ul>
-	            <h4>Diagnostic</h4>
-                <ul>
-                <li><a href="Project/Dump.htm">Dump</a></li>
-                </ul>
-	        </td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="Hatch" href="../Control/Hatch.htm">Schraffur</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Hatch/Clear.htm">Clear</a></li>
-                <li><a href="Hatch/SetPattern.htm">SetPattern</a></li>
-            </ul></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="Control" href="../Control/Index.htm">Steuerelement</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Control/GetHWND.htm">GetHWND</a></li>
-                <li><a href="Control/GetPos.htm">GetPos</a></li>
-                <li><a href="Control/GetProperties.htm">GetProperties</a></li>
-                <li><a href="Control/GetProperty.htm">GetProperty</a></li>
-                <li><a href="Control/Redraw.htm">Redraw</a></li>
-                <li><a href="Control/SetFocus.htm">SetFocus</a></li>
-                <li><a href="Control/SetPos.htm">SetPos</a></li>
-                <li><a href="Control/SetProperty.htm">SetProperty</a></li>
-                <li><a href="Control/ShowToolTip.htm">ShowToolTip</a></li>
-                <li><a href="Control/ZOrder.htm">ZOrder</a></li>
-              </ul>
-              <h4>Diagnostic</h4>
-              <ul>
-                <li><a href="Control/Dump.htm">Dump</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="Control/GetPos.htm">GetCurPos</a></li>
-                  <li><a href="Control/Redraw.htm">ForceUpdateNow</a></li>
-                  <li><a href="Control/ZOrder.htm">SetZOrder</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="TextBox" href="../Control/TextBox.htm">Textfeld</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="TextBox/GetFilter.htm">GetFilter</a></li>
-                <li><a href="TextBox/GetFirstVisibleLine.htm">GetFirstVisibleLine</a></li>
-                <li><a href="TextBox/GetLine.htm">GetLine</a></li>
-                <li><a href="TextBox/GetLineCount.htm">GetLineCount</a></li>
-                <li><a href="TextBox/GetLineLength.htm">GetLineLength</a></li>
-                <li><a href="TextBox/GetSel.htm">GetSel</a></li>
-                <li><a href="TextBox/IsModified.htm">IsModified</a></li>
-                <li><a href="TextBox/LineScroll.htm">LineScroll</a></li>
-                <li><a href="TextBox/ReplaceSel.htm">ReplaceSel</a></li>
-                <li><a href="TextBox/SetFilter.htm">SetFilter</a></li>
-                <li><a href="TextBox/SetSel.htm">SetSel</a></li>
-                <li><a href="TextBox/SetTabStops.htm">SetTabStops</a></li>
-                <li><a href="TextBox/Undo.htm">Undo</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="TextBox/IsModified.htm">GetModify</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="ProgressBar" href="../Control/ProgressBar.htm">Verlaufsbalken</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="ProgressBar/Reset.htm">Reset</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="../Property/Value.htm">SetPos</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left"><i> <a name="Animation" href="../Control/Animation.htm">Video</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Animation/Close.htm">Close</a></li>
-                <li><a href="Animation/Load.htm">Load</a></li>
-                <li><a href="Animation/Play.htm">Play</a></li>
-                <li><a href="Animation/Seek.htm">Seek</a></li>
-                <li><a href="Animation/Stop.htm">Stop</a></li>
-              </ul>
-              <div style="background-color: silver;">
-                <h4>Veraltet</h4>
-                <ul>
-                  <li><a href="Animation/Close.htm">Animate_Close</a></li>
-                  <li><a href="Animation/Load.htm">Animate_Load</a></li>
-                  <li><a href="Animation/Play.htm">Animate_Play</a></li>
-                  <li><a href="Animation/Seek.htm">Animate_Seek</a></li>
-                  <li><a href="Animation/Stop.htm">Animate_Stop</a></li>
-                </ul>
-            </div></td>
-          </tr>
-          <tr>
-            <th valign="top" align="left" nowrap><i> <a name="Html" href="../Control/Html.htm">Webseite</a></i></th>
-            <td valign="top">
-              <ul>
-                <li><a href="Html/GetBusy.htm">GetBusy</a></li>
-                <li><a href="Html/GetFullName.htm">GetFullName</a></li>
-                <li><a href="Html/GetHtmlDocument.htm">GetHtmlDocument</a></li>
-                <li><a href="Html/GetLocationName.htm">GetLocationName</a></li>
-                <li><a href="Html/GetLocationURL.htm">GetLocationURL</a></li>
-                <li><a href="Html/GetOffline.htm">GetOffline</a></li>
-                <li><a href="Html/GoBack.htm">GoBack</a></li>
-                <li><a href="Html/GoForward.htm">GoForward</a></li>
-                <li><a href="Html/GoHome.htm">GoHome</a></li>
-                <li><a href="Html/GoSearch.htm">GoSearch</a></li>
-                <li><a href="Html/Navigate.htm">Navigate</a></li>
-                <li><a href="Html/Refresh.htm">Refresh</a></li>
-                <li><a href="Html/ReplaceText.htm">ReplaceText</a></li>
-                <li><a href="Html/SetOffline.htm">SetOffline</a></li>
-                <li><a href="Html/Stop.htm">Stop</a></li>
-                <li><a href="Html/UpdateHtmlCode.htm">UpdateHtmlCode</a></li>
-            </ul></td>
-          </tr>
-        </table>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          <img border="0" src="../images/Method.png" width="16" height="16">
+          Methoden
+        </div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+            Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <p>
+      Methoden f&uuml;hren typischerweise Aktionen auf einem Steuerelement oder einer
+      Dialogbox aus oder initiieren Operationen in AutoCAD. Einige Methoden ver&auml;ndern
+      viele Eigenschaften von Steuerelementen mit einem einzigen Aufruf. Einige allgemeine
+      Methoden k&ouml;nnen auf alle Steuerelemente angewandt werden, andere wiederum nur
+      auf spezielle Steuerelemente.
+    </p>
+    <table border="0" cellpadding="5" cellspacing="0" style="border-collapse: collapse"
+      bordercolor="#111111" id="AutoNumber2">
+      <tr>
+        <th valign="top" align="left" width="150">
+          <i><a name="AxControl" href="../Control/AxControl.htm">ActiveX-Steuerelement</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="AxControl/Get.htm">Get</a></li>
+            <li><a href="AxControl/GetAxObject.htm">GetAxObject</a></li>
+            <li><a href="AxControl/Invoke.htm">Invoke</a></li>
+            <li><a href="AxControl/Put.htm">Put</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="AxControl/Get.htm">GetProperty</a></li>
+              <li><a href="AxControl/GetAxObject.htm">GetOleObject</a></li>
+              <li><a href="AxControl/Invoke.htm">DoMethod</a></li>
+              <li><a href="AxControl/Put.htm">SetProperty</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" width="150">
+          <i><a name="AxObject" href="../DataType/AxObject.htm">ActiveX-Objekt</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="AxObject/Get.htm">Get</a></li>
+            <li><a href="AxObject/Invoke.htm">Invoke</a></li>
+            <li><a href="AxObject/Put.htm">Put</a></li>
+            <li><a href="AxObject/Release.htm">Release</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="AxObject/Get.htm">GetProperty</a></li>
+              <li><a href="AxObject/Invoke.htm">DoMethod</a></li>
+              <li><a href="AxObject/Put.htm">SetProperty</a></li>
+              <li><a href="AxObject/Release.htm">Close</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="Tree" href="../Control/Tree.htm">Baumstruktur</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Tree/AddChild.htm">AddChild</a></li>
+            <li><a href="Tree/AddParent.htm">AddParent</a></li>
+            <li><a href="Tree/AddSibling.htm">AddSibling</a></li>
+            <li><a href="Tree/CancelLabelEdit.htm">CancelLabelEdit</a></li>
+            <li><a href="Tree/Clear.htm">Clear</a></li>
+            <li><a href="Tree/DeleteItem.htm">DeleteItem</a></li>
+            <li><a href="Tree/EnsureVisible.htm">EnsureVisible</a></li>
+            <li><a href="Tree/ExpandItem.htm">ExpandItem</a></li>
+            <li><a href="Tree/GetCount.htm">GetCount</a></li>
+            <li><a href="Tree/GetFirstChildItem.htm">GetFirstChildItem</a></li>
+            <li><a href="Tree/GetFirstVisibleItem.htm">GetFirstVisibleItem</a></li>
+            <li><a href="Tree/GetItemData.htm">GetItemData</a></li>
+            <li><a href="Tree/GetItemHandle.htm">GetItemHandle</a></li>
+            <li><a href="Tree/GetItemImages.htm">GetItemImages</a></li>
+            <li><a href="Tree/GetItemKey.htm">GetItemKey</a></li>
+            <li><a href="Tree/GetItemLabel.htm">GetItemLabel</a></li>
+            <li><a href="Tree/GetNextSiblingItem.htm">GetNextSiblingItem</a></li>
+            <li><a href="Tree/GetNextVisibleItem.htm">GetNextVisibleItem</a></li>
+            <li><a href="Tree/GetParentItem.htm">GetParentItem</a></li>
+            <li><a href="Tree/GetPrevSiblingItem.htm">GetPrevSiblingItem</a></li>
+            <li><a href="Tree/GetPrevVisibleItem.htm">GetPrevVisibleItem</a></li>
+            <li><a href="Tree/GetRootItem.htm">GetRootItem</a></li>
+            <li><a href="Tree/GetSelectedItem.htm">GetSelectedItem</a></li>
+            <li><a href="Tree/GetVisibleCount.htm">GetVisibleCount</a></li>
+            <li><a href="Tree/IsItemExpanded.htm">IsItemExpanded</a></li>
+            <li><a href="Tree/ItemHasChildren.htm">ItemHasChildren</a></li>
+            <li><a href="Tree/SelectItem.htm">SelectItem</a></li>
+            <li><a href="Tree/SelectSetFirstVisible.htm">SelectSetFirstVisible</a></li>
+            <li><a href="Tree/SetItemData.htm">SetItemData</a></li>
+            <li><a href="Tree/SetItemImages.htm">SetItemImages</a></li>
+            <li><a href="Tree/SetItemLabel.htm">SetItemLabel</a></li>
+            <li><a href="Tree/SortChildren.htm">SortChildren</a></li>
+            <li><a href="Tree/StartLabelEdit.htm">StartLabelEdit</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="Tree/CancelLabelEdit.htm">CancelEditLabel</a></li>
+              <li><a href="Tree/GetCount.htm">CountItems</a></li>
+              <li><a href="Tree/StartLabelEdit.htm">EditLabel</a></li>
+              <li><a href="Tree/GetItemImages.htm">GetExpandedImage</a></li>
+              <li><a href="Tree/GetItemKey.htm">GetItem</a></li>
+              <li><a href="Tree/GetItemLabel.htm">GetItemText</a></li>
+              <li><a href="Tree/GetParentItem.htm">GetParent</a></li>
+              <li><a href="Tree/AddSibling.htm">InsertAfter</a></li>
+              <li><a href="Tree/SetItemImages.htm">SetExpandedImage</a></li>
+              <li><a href="Tree/SetItemLabel.htm">SetItemText</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="PictureBox" href="../Control/PictureBox.htm">Bild</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="PictureBox/Clear.htm">Clear</a></li>
+            <li><a href="PictureBox/DrawArc.htm">DrawArc</a></li>
+            <li><a href="PictureBox/DrawCircle.htm">DrawCircle</a></li>
+            <li><a href="PictureBox/DrawEdge.htm">DrawEdge</a></li>
+            <li><a href="PictureBox/DrawFocusRect.htm">DrawFocusRect</a></li>
+            <li><a href="PictureBox/DrawHatchRect.htm">DrawHatchRect</a></li>
+            <li><a href="PictureBox/DrawLine.htm">DrawLine</a></li>
+            <li><a href="PictureBox/DrawPoint.htm">DrawPoint</a></li>
+            <li><a href="PictureBox/DrawRect.htm">DrawRect</a></li>
+            <li><a href="PictureBox/DrawSolidRect.htm">DrawSolidRect</a></li>
+            <li><a href="PictureBox/DrawText.htm">DrawText</a></li>
+            <li><a href="PictureBox/DrawWrappedText.htm">DrawWrappedText</a></li>
+            <li><a href="PictureBox/GetTextExtent.htm">GetTextExtent</a></li>
+            <li><a href="PictureBox/LoadPictureFile.htm">LoadPictureFile</a></li>
+            <li><a href="PictureBox/PaintPicture.htm">PaintPicture</a></li>
+            <li><a href="PictureBox/Refresh.htm">Refresh</a></li>
+            <li><a href="PictureBox/StoreImage.htm">StoreImage</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="PictureBox/DrawSolidRect.htm">DrawFillRect</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" width="150">
+          <i><a name="BinFile" href="../DataType/BinFile.htm">Bin&auml;rdatei</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="BinFile/Check.htm">Check</a></li>
+            <li><a href="BinFile/Close.htm">Close</a></li>
+            <li><a href="BinFile/Open.htm">Open</a></li>
+            <li><a href="BinFile/Read.htm">Read</a></li>
+            <li><a href="BinFile/Write.htm">Write</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="BinFile/Check.htm">CheckBin</a></li>
+              <li><a href="BinFile/Close.htm">CloseBin</a></li>
+              <li><a href="BinFile/Open.htm">OpenBin</a></li>
+              <li><a href="BinFile/Read.htm">ReadBin</a></li>
+              <li><a href="BinFile/Write.htm">WriteBin</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="BlockView" href="../Control/BlockView.htm">Block</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="BlockView/Clear.htm">Clear</a></li>
+            <li><a href="BlockView/DisplayBlock-Camera.htm">DisplayBlock (Camera)</a></li>
+            <li><a href="BlockView/DisplayBlock-View.htm">DisplayBlock (View)</a></li>
+            <li><a href="BlockView/DisplayBlockToScale-Camera.htm">DisplayBlockToScale (Camera)</a></li>
+            <li><a href="BlockView/DisplayBlockToScale-View.htm">DisplayBlockToScale (View)</a></li>
+            <li><a href="BlockView/DisplayDwg-Camera.htm">DisplayDwg (Camera)</a></li>
+            <li><a href="BlockView/DisplayDwg-View.htm">DisplayDwg (View)</a></li>
+            <li><a href="BlockView/DisplayDwgToScale-Camera.htm">DisplayDwgToScale (Camera)</a></li>
+            <li><a href="BlockView/DisplayDwgToScale-View.htm">DisplayDwgToScale (View)</a></li>
+            <li><a href="BlockView/DisplayPaperSpace.htm">DisplayPaperSpace</a></li>
+            <li><a href="BlockView/GetBlockList.htm">GetBlockList</a></li>
+            <li><a href="BlockView/GetDwgSize.htm">GetDwgSize</a></li>
+            <li><a href="BlockView/PreLoadDwg.htm">PreLoadDwg</a></li>
+            <li><a href="BlockView/RefreshBlock.htm">RefreshBlock</a></li>
+            <li><a href="BlockView/RemoveHighlight.htm">RemoveHighlight</a></li>
+            <li><a href="BlockView/SetHighlight.htm">SetHighlight</a></li>
+            <li><a href="BlockView/Zoom.htm">Zoom</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="BlockView/DisplayDwg-Camera.htm">LoadDwg (Camera)</a></li>
+              <li><a href="BlockView/DisplayDwg-View.htm">LoadDwg (View)</a></li>
+              <li><a href="BlockView/DisplayDwgToScale-Camera.htm">LoadDwgToScale (Camera)</a></li>
+              <li><a href="BlockView/DisplayDwgToScale-View.htm">LoadDwgToScale (View)</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" width="150">
+          <i><a name="BlockList" href="../Control/BlockList.htm">Blockliste</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="BlockList/Arrange.htm">Arrange</a></li>
+            <li><a href="BlockList/GetCount.htm">GetCount</a></li>
+            <li><a href="BlockList/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="BlockList/GetFileName.htm">GetFileName</a></li>
+            <li><a href="BlockList/GetItemText.htm">GetItemText</a></li>
+            <li><a href="BlockList/GetSelCount.htm">GetSelCount</a></li>
+            <li><a href="BlockList/GetSelectedItems.htm">GetSelectedItems</a></li>
+            <li><a href="BlockList/GetSelectedNths.htm">GetSelectedNths</a></li>
+            <li><a href="BlockList/LoadDwg.htm">LoadDWG</a></li>
+            <li><a href="BlockList/Reset.htm">Reset</a></li>
+            <li><a href="BlockList/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="BlockList/SortTextItems.htm">SortTextItems</a></li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="FileExplorer" href="../Control/FileExplorer.htm">Datei-Explorer</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="FileExplorer/GetFileExt.htm">GetFileExt</a></li>
+            <li><a href="FileExplorer/GetFileName.htm">GetFileName</a></li>
+            <li><a href="FileExplorer/GetFileNameList.htm">GetFileNameList</a></li>
+            <li><a href="FileExplorer/GetFileTitle.htm">GetFileTitle</a></li>
+            <li><a href="FileExplorer/GetFolderName.htm">GetFolderName</a></li>
+            <li><a href="FileExplorer/GetFolderPath.htm">GetFolderPath</a></li>
+            <li><a href="FileExplorer/GetPathName.htm">GetPathName</a></li>
+            <li><a href="FileExplorer/GetSelCount.htm">GetSelCount</a></li>
+            <li><a href="FileExplorer/SetOkButtonText.htm">SetOkButtonText</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="FileExplorer/GetFileExt.htm">FileDlg_GetFileExt</a></li>
+              <li><a href="FileExplorer/GetFileName.htm">FileDlg_GetFileName</a></li>
+              <li><a href="FileExplorer/GetFileNameList.htm">FileDlg_GetFileNameList</a></li>
+              <li><a href="FileExplorer/GetFileTitle.htm">FileDlg_GetFileTitle</a></li>
+              <li><a href="FileExplorer/GetFolderName.htm">FileDlg_GetFolderName</a></li>
+              <li><a href="FileExplorer/GetFolderPath.htm">FileDlg_GetFolderPath</a></li>
+              <li><a href="FileExplorer/GetPathName.htm">FileDlg_GetPathName</a></li>
+              <li><a href="FileExplorer/GetSelCount.htm">FileDlg_GetSelectionCount</a></li>
+              <li><a href="FileExplorer/SetOkButtonText.htm">FileDlg_SetOkButtonText</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="Grid" href="../Control/Grid.htm">Datenblatt</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Grid/AddColumns.htm">AddColumns</a></li>
+            <li><a href="Grid/AddRow.htm">AddRow</a></li>
+            <li><a href="Grid/AddString.htm">AddString</a></li>
+            <li><a href="Grid/CalcColumnWidth.htm">CalcColumnWidth</a></li>
+            <li><a href="Grid/CancelCellEdit.htm">CancelCellEdit</a></li>
+            <li><a href="Grid/Clear.htm">Clear</a></li>
+            <li><a href="Grid/DeleteColumn.htm">DeleteColumn</a></li>
+            <li><a href="Grid/DeleteRow.htm">DeleteRow</a></li>
+            <li><a href="Grid/FillList.htm">FillList</a></li>
+            <li><a href="Grid/GetCellCheckState.htm">GetCellCheckState</a></li>
+            <li><a href="Grid/GetCellDropList.htm">GetCellDropList</a></li>
+            <li><a href="Grid/GetCellImages.htm">GetCellImages</a></li>
+            <li><a href="Grid/GetCellStyle.htm">GetCellStyle</a></li>
+            <li><a href="Grid/GetCellText.htm">GetCellText</a></li>
+            <li><a href="Grid/GetColumnCells.htm">GetColumnCells</a></li>
+            <li><a href="Grid/GetColumnCount.htm">GetColumnCount</a></li>
+            <li><a href="Grid/GetColumnImage.htm">GetColumnImage</a></li>
+            <li><a href="Grid/GetColumnWidth.htm">GetColumnWidth</a></li>
+            <li><a href="Grid/GetCurCell.htm">GetCurCell</a></li>
+            <li><a href="Grid/GetRowCells.htm">GetRowCells</a></li>
+            <li><a href="Grid/GetRowCount.htm">GetRowCount</a></li>
+            <li><a href="Grid/GetRowData.htm">GetRowData</a></li>
+            <li><a href="Grid/HitPointTest.htm">HitPointTest</a></li>
+            <li><a href="Grid/InsertColumn.htm">InsertColumn</a></li>
+            <li><a href="Grid/InsertRow.htm">InsertRow</a></li>
+            <li><a href="Grid/InsertString.htm">InsertString</a></li>
+            <li><a href="Grid/SetCellCheckState.htm">SetCellCheckState</a></li>
+            <li><a href="Grid/SetCellDropList.htm">SetCellDropList</a></li>
+            <li><a href="Grid/SetCellImages.htm">SetCellImages</a></li>
+            <li><a href="Grid/SetCellStyle.htm">SetCellStyle</a></li>
+            <li><a href="Grid/SetCellText.htm">SetCellText</a></li>
+            <li><a href="Grid/SetColumnImage.htm">SetColumnImage</a></li>
+            <li><a href="Grid/SetColumnWidth.htm">SetColumnWidth</a></li>
+            <li><a href="Grid/SetCurCell.htm">SetCurCell</a></li>
+            <li><a href="Grid/SetRowData.htm">SetRowData</a></li>
+            <li><a href="Grid/SortNumericCells.htm">SortNumericCells</a></li>
+            <li><a href="Grid/SortTextCells.htm">SortTextCells</a></li>
+            <li><a href="Grid/StartCellEdit.htm">StartCellEdit</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="Grid/CalcColumnWidth.htm">CalcColWidth</a></li>
+              <li><a href="Grid/CancelCellEdit.htm">CancelItemEdit</a></li>
+              <li><a href="Grid/GetColumnCount.htm">GetColCount</a></li>
+              <li><a href="Grid/GetColumnImage.htm">GetColImage</a></li>
+              <li><a href="Grid/GetColumnCells.htm">GetColItems</a></li>
+              <li><a href="Grid/GetColumnWidth.htm">GetColWidth</a></li>
+              <li><a href="Grid/GetCurCell.htm">GetCurSel</a></li>
+              <li><a href="Grid/GetCellCheckState.htm">GetItemCheck</a></li>
+              <li><a href="Grid/GetRowData.htm">GetItemData</a></li>
+              <li><a href="Grid/GetCellDropList.htm">GetItemDropList</a></li>
+              <li><a href="Grid/GetCellImages.htm">GetItemImage</a></li>
+              <li><a href="Grid/GetCellText.htm">GetItemText</a></li>
+              <li><a href="Grid/GetRowCells.htm">GetRowItems</a></li>
+              <li><a href="Grid/SetColumnImage.htm">SetColImage</a></li>
+              <li><a href="Grid/SetColumnWidth.htm">SetColWidth</a></li>
+              <li><a href="Grid/SetCurCell.htm">SelCurCel</a>l</li>
+              <li><a href="Grid/SetCurCell.htm">SelCurRow</a></li>
+              <li><a href="Grid/SetCellCheckState.htm">SetItemCheck</a></li>
+              <li><a href="Grid/SetRowData.htm">SetItemData</a></li>
+              <li><a href="Grid/SetCellDropList.htm">SetItemDropList</a></li>
+              <li><a href="Grid/SetCellImages.htm">SetItemImage</a></li>
+              <li><a href="Grid/SetCellStyle.htm">SetItemStyle</a></li>
+              <li><a href="Grid/SetCellText.htm">SetItemText</a></li>
+              <li><a href="Grid/SortNumericCells.htm">SortNumericItems</a></li>
+              <li><a href="Grid/SortTextCells.htm">SortTextItems</a></li>
+              <li><a href="Grid/StartCellEdit.htm">StartItemEdit</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="SlideView" href="../Control/SlideView.htm">Dia</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="SlideView/Clear.htm">Clear</a></li>
+            <li><a href="SlideView/EndImage.htm">EndImage</a></li>
+            <li><a href="SlideView/FillImage.htm">FillImage</a></li>
+            <li><a href="SlideView/Load.htm">Load</a></li>
+            <li><a href="SlideView/RemoveHighlight.htm">RemoveHighlight</a></li>
+            <li><a href="SlideView/SetHighlight.htm">SetHighlight</a></li>
+            <li><a href="SlideView/SlideImage.htm">SlideImage</a></li>
+            <li><a href="SlideView/VectorImage.htm">VectorImage</a></li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="Form" href="../Form/Index.htm">Dialog</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Form/Center.htm">Center</a></li>
+            <li><a href="Form/Close.htm">Close</a></li>
+            <li><a href="Form/Enable.htm">Enable</a></li>
+            <li><a href="Form/GetControlArea.htm">GetControlArea</a></li>
+            <li><a href="Form/GetControls.htm">GetControls</a></li>
+            <li><a href="Form/GetUUID.htm">GetUUID</a></li>
+            <li><a href="Form/Hide.htm">Hide</a></li>
+            <li><a href="Form/IsActive.htm">IsActive</a></li>
+            <li><a href="Form/IsApplyEnabled.htm">IsApplyEnabled</a></li>
+            <li><a href="Form/IsEnabled.htm">IsEnabled</a></li>
+            <li><a href="Form/IsFloating.htm">IsFloating</a></li>
+            <li><a href="Form/IsVisible.htm">IsVisible</a></li>
+            <li><a href="Form/RecalcLayout.htm">RecalcLayout</a></li>
+            <li><a href="Form/Resize.htm">Resize</a></li>
+            <li><a href="Form/SetApplyEnabled.htm">SetApplyEnabled</a></li>
+            <li><a href="Form/SetMinMaxSizes.htm">SetMinMaxSizes</a></li>
+            <li><a href="Form/Show.htm">Show</a></li>
+            <li><a href="Form/StartTimer.htm">StartTimer</a></li>
+          </ul>
+          <h4>
+            Diagnostic</h4>
+          <ul>
+            <li><a href="Form/CloseAll.htm">CloseAll</a></li>
+            <li><a href="Form/Dump.htm">Dump</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="Form/IsApplyEnabled.htm">ConfigTab_IsApplyEnabled</a></li>
+              <li><a href="Form/SetApplyEnabled.htm">ConfigTab_SetApplyEnabled</a></li>
+              <li><a href="Control/GetHWND.htm">GetHWND</a></li>
+              <li><a href="Control/GetPos.htm">GetRectangle</a></li>
+              <li><a href="../Property/TitleBarText.htm">GetTitleBarText</a></li>
+              <li><a href="Form/SetMinMaxSizes.htm">SetDialogMinMaxSizes</a></li>
+              <li><a href="Control/SetFocus.htm">SetFocus</a></li>
+              <li><a href="Control/SetPos.htm">SetPos</a></li>
+              <li><a href="../Property/TitleBarText.htm">SetTitleBarText</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="DwgList" href="../Control/DwgList.htm">DWG-Liste</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="DwgList/DeleteItem.htm">DeleteItem</a></li>
+            <li><a href="DwgList/Dir.htm">Dir</a></li>
+            <li><a href="DwgList/GetAnchorIndex.htm">GetAnchorIndex</a></li>
+            <li><a href="DwgList/GetCount.htm">GetCount</a></li>
+            <li><a href="DwgList/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="DwgList/GetDir.htm">GetDir</a></li>
+            <li><a href="DwgList/GetFileName.htm">GetFileName</a></li>
+            <li><a href="DwgList/GetFocusIndex.htm">GetFocusIndex</a></li>
+            <li><a href="DwgList/GetSelCount.htm">GetSelCount</a></li>
+            <li><a href="DwgList/GetSelectedItems.htm">GetSelectedItems</a></li>
+            <li><a href="DwgList/GetSelectedNths.htm">GetSelectedNths</a></li>
+            <li><a href="DwgList/GetText.htm">GetText</a></li>
+            <li><a href="DwgList/GetTopIndex.htm">GetTopIndex</a></li>
+            <li><a href="DwgList/GetType.htm">GetType</a></li>
+            <li><a href="DwgList/IsItemSelected.htm">IsItemSelected</a></li>
+            <li><a href="DwgList/SelectItem.htm">SelectItem</a></li>
+            <li><a href="DwgList/SelItemRange.htm">SelItemRange</a></li>
+            <li><a href="DwgList/SetAnchorIndex.htm">SetAnchorIndex</a></li>
+            <li><a href="DwgList/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="DwgList/SetFocusIndex.htm">SetFocusIndex</a></li>
+            <li><a href="DwgList/SetTopIndex.htm">SetTopIndex</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="DwgList/DeleteItem.htm">DeleteString</a></li>
+              <li><a href="DwgList/IsItemSelected.htm">GetSel</a></li>
+              <li><a href="DwgList/SelectItem.htm">SetSel</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="DwgPreview" href="../Control/DwgPreview.htm">DWG-Vorschau</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="DwgPreview/Clear.htm">Clear</a></li>
+            <li><a href="DwgPreview/GetDwgName.htm">GetDwgName</a></li>
+            <li><a href="DwgPreview/LoadDwg.htm">LoadDwg</a></li>
+            <li><a href="DwgPreview/RemoveHighlight.htm">RemoveHighlight</a></li>
+            <li><a href="DwgPreview/SetHighlight.htm">SetHighlight</a></li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="Calendar" href="../Control/Calendar.htm">Kalender</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Calendar/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="Calendar/GetMonthRangeEnd.htm">GetMonthRangeEnd</a></li>
+            <li><a href="Calendar/GetMonthRangeStart.htm">GetMonthRangeStart</a></li>
+            <li><a href="Calendar/GetRangeEnd.htm">GetRangeEnd</a></li>
+            <li><a href="Calendar/GetRangeStart.htm">GetRangeStart</a></li>
+            <li><a href="Calendar/GetSelRangeEnd.htm">GetSelRangeEnd</a></li>
+            <li><a href="Calendar/GetSelRangeStart.htm">GetSelRangeStart</a></li>
+            <li><a href="Calendar/GetToday.htm">GetToday</a></li>
+            <li><a href="Calendar/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="Calendar/SetRange.htm">SetRange</a></li>
+            <li><a href="Calendar/SetSelRange.htm">SetSelRange</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="Calendar/GetCurSel.htm">Month_GetCurSel</a></li>
+              <li><a href="Calendar/GetMonthRangeEnd.htm">Month_GetMonthRangeEnd</a></li>
+              <li><a href="Calendar/GetMonthRangeStart.htm">Month_GetMonthRangeStart</a></li>
+              <li><a href="Calendar/GetRangeEnd.htm">Month_GetRangeEnd</a></li>
+              <li><a href="Calendar/GetRangeStart.htm">Month_GetRangeStart</a></li>
+              <li><a href="Calendar/GetSelRangeEnd.htm">Month_GetSelRangeEnd</a></li>
+              <li><a href="Calendar/GetSelRangeStart.htm">Month_GetSelRangeStart</a></li>
+              <li><a href="Calendar/GetToday.htm">Month_GetToday</a></li>
+              <li><a href="Calendar/SetCurSel.htm">Month_SetCurSel</a></li>
+              <li><a href="Calendar/SetRange.htm">Month_SetRange</a></li>
+              <li><a href="Calendar/SetSelRange.htm">Month_SetSelRange</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="TabStrip" href="../Control/TabStrip.htm">Karteikarten</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="TabStrip/GetControlArea.htm">GetControlArea</a></li>
+            <li><a href="TabStrip/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="TabStrip/GetRowCount.htm">GetRowCount</a></li>
+            <li><a href="TabStrip/HideTab.htm">HideTab</a></li>
+            <li><a href="TabStrip/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="TabStrip/SetTabCaption.htm">SetTabCaption</a></li>
+            <li><a href="TabStrip/ShowTab.htm">ShowTab</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="TabStrip/GetControlArea.htm">Tab_GetControlArea</a></li>
+              <li><a href="TabStrip/GetCurSel.htm">Tab_GetCurSel</a></li>
+              <li><a href="TabStrip/GetRowCount.htm">Tab_GetRowCount</a></li>
+              <li><a href="TabStrip/HideTab.htm">Tab_HideTab</a></li>
+              <li><a href="TabStrip/SetCurSel.htm">Tab_SetCurSel</a></li>
+              <li><a href="TabStrip/SetTabCaption.htm">Tab_SetTabText</a></li>
+              <li><a href="TabStrip/ShowTab.htm">Tab_ShowTab</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="ComboBox" href="../Control/ComboBox.htm">Kombinationsfeld</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="ComboBox/AddColor.htm">AddColor</a></li>
+            <li><a href="ComboBox/AddList.htm">AddList</a></li>
+            <li><a href="ComboBox/AddPath.htm">AddPath</a></li>
+            <li><a href="ComboBox/AddString.htm">AddString</a></li>
+            <li><a href="ComboBox/Clear.htm">Clear</a></li>
+            <li><a href="ComboBox/ClearEdit.htm">ClearEdit</a></li>
+            <li><a href="ComboBox/DeleteItem.htm">DeleteItem</a></li>
+            <li><a href="ComboBox/Dir.htm">Dir</a></li>
+            <li><a href="ComboBox/FindColor.htm">FindColor</a></li>
+            <li><a href="ComboBox/FindLineWeight.htm">FindLineWeight</a></li>
+            <li><a href="ComboBox/FindString.htm">FindString</a></li>
+            <li><a href="ComboBox/FindStringExact.htm">FindStringExact</a></li>
+            <li><a href="ComboBox/GetCount.htm">GetCount</a></li>
+            <li><a href="ComboBox/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="ComboBox/GetDir.htm">GetDir</a></li>
+            <li><a href="ComboBox/GetDroppedWidth.htm">GetDroppedWidth</a></li>
+            <li><a href="ComboBox/GetEBText.htm">GetEBText</a></li>
+            <li><a href="ComboBox/GetEditSel.htm">GetEditSel</a></li>
+            <li><a href="ComboBox/GetItemData.htm">GetItemData</a></li>
+            <li><a href="ComboBox/GetLBText.htm">GetLBText</a></li>
+            <li><a href="ComboBox/GetTopIndex.htm">GetTopIndex</a></li>
+            <li><a href="ComboBox/InsertString.htm">InsertString</a></li>
+            <li><a href="ComboBox/SelectString.htm">SelectString</a></li>
+            <li><a href="ComboBox/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="ComboBox/SetDroppedWidth.htm">SetDroppedWidth</a></li>
+            <li><a href="ComboBox/SetEditSel.htm">SetEditSel</a></li>
+            <li><a href="ComboBox/SetItemData.htm">SetItemData</a></li>
+            <li><a href="ComboBox/SetTopIndex.htm">SetTopIndex</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="ComboBox/DeleteItem.htm">DeleteString</a></li>
+              <li><a href="ComboBox/GetEBText.htm">GetTBText</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="ImageComboBox" href="../Control/ImageComboBox.htm">Kombinationsfeld mit
+            Bildern </a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="ImageComboBox/AddString.htm">AddString</a></li>
+            <li><a href="ImageComboBox/Clear.htm">Clear</a></li>
+            <li><a href="ImageComboBox/ClearEdit.htm">ClearEdit</a></li>
+            <li><a href="ImageComboBox/DeleteItem.htm">DeleteItem</a></li>
+            <li><a href="ImageComboBox/FindString.htm">FindString</a></li>
+            <li><a href="ImageComboBox/FindStringExact.htm">FindStringExact</a></li>
+            <li><a href="ImageComboBox/GetCount.htm">GetCount</a></li>
+            <li><a href="ImageComboBox/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="ImageComboBox/GetDroppedWidth.htm">GetDroppedWidth</a></li>
+            <li><a href="ImageComboBox/GetEBText.htm">GetEBText</a></li>
+            <li><a href="ImageComboBox/GetEditSel.htm">GetEditSel</a></li>
+            <li><a href="ImageComboBox/GetItem.htm">GetItem</a></li>
+            <li><a href="ImageComboBox/GetItemData.htm">GetItemData</a></li>
+            <li><a href="ImageComboBox/GetLBText.htm">GetLBText</a></li>
+            <li><a href="ImageComboBox/GetTopIndex.htm">GetTopIndex</a></li>
+            <li><a href="ImageComboBox/SelectString.htm">SelectString</a></li>
+            <li><a href="ImageComboBox/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="ImageComboBox/SetDroppedWidth.htm">SetDroppedWidth</a></li>
+            <li><a href="ImageComboBox/SetEditSel.htm">SetEditSel</a></li>
+            <li><a href="ImageComboBox/SetItem.htm">SetItem</a></li>
+            <li><a href="ImageComboBox/SetItemData.htm">SetItemData</a></li>
+            <li><a href="ImageComboBox/SetTopIndex.htm">SetTopIndex</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="ImageComboBox/DeleteItem.htm">DeleteString</a></li>
+              <li><a href="ImageComboBox/GetEBText.htm">GetTBText</a></li>
+            </ul>
+          </div>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="ListBox" href="../Control/ListBox.htm">Listenfeld</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="ListBox/AddList.htm">AddList</a></li>
+            <li><a href="ListBox/AddString.htm">AddString</a></li>
+            <li><a href="ListBox/Clear.htm">Clear</a></li>
+            <li><a href="ListBox/DeleteItem.htm">DeleteItem</a></li>
+            <li><a href="ListBox/Dir.htm">Dir</a></li>
+            <li><a href="ListBox/FindString.htm">FindString</a></li>
+            <li><a href="ListBox/FindStringExact.htm">FindStringExact</a></li>
+            <li><a href="ListBox/GetAnchorIndex.htm">GetAnchorIndex</a></li>
+            <li><a href="ListBox/GetCount.htm">GetCount</a></li>
+            <li><a href="ListBox/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="ListBox/GetFocusIndex.htm">GetFocusIndex</a></li>
+            <li><a href="ListBox/GetItemData.htm">GetItemData</a></li>
+            <li><a href="ListBox/GetItemText.htm">GetItemText</a></li>
+            <li><a href="ListBox/GetSelCount.htm">GetSelCount</a></li>
+            <li><a href="ListBox/GetSelectedItems.htm">GetSelectedItems</a></li>
+            <li><a href="ListBox/GetSelectedNths.htm">GetSelectedNths</a></li>
+            <li><a href="ListBox/GetTopIndex.htm">GetTopIndex</a></li>
+            <li><a href="ListBox/HitPointTest.htm">HitPointTest</a></li>
+            <li><a href="ListBox/InsertString.htm">InsertString</a></li>
+            <li><a href="ListBox/IsItemSelected.htm">IsItemSelected</a></li>
+            <li><a href="ListBox/SelectItem.htm">SelectItem</a></li>
+            <li><a href="ListBox/SelectString.htm">SelectString</a></li>
+            <li><a href="ListBox/SelItemRange.htm">SelItemRange</a></li>
+            <li><a href="ListBox/SetAnchorIndex.htm">SetAnchorIndex</a></li>
+            <li><a href="ListBox/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="ListBox/SetFocusIndex.htm">SetFocusIndex</a></li>
+            <li><a href="ListBox/SetItemData.htm">SetItemData</a></li>
+            <li><a href="ListBox/SetTopIndex.htm">SetTopIndex</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="ListBox/DeleteItem.htm">DeleteString</a></li>
+              <li><a href="ListBox/IsItemSelected.htm">GetSel</a></li>
+              <li><a href="ListBox/GetItemText.htm">GetText</a></li>
+              <li><a href="ListBox/SelectItem.htm">SetSel</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="ListView" href="../Control/ListView.htm">Erweiterte Liste </a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="ListView/AddColumns.htm">AddColumns</a></li>
+            <li><a href="ListView/AddItem.htm">AddItem</a></li>
+            <li><a href="ListView/AddString.htm">AddString</a></li>
+            <li><a href="ListView/Arrange.htm">Arrange</a></li>
+            <li><a href="ListView/CalcColumnWidth.htm">CalcColumnWidth</a></li>
+            <li><a href="ListView/CancelLabelEdit.htm">CancelLabelEdit</a></li>
+            <li><a href="ListView/Clear.htm">Clear</a></li>
+            <li><a href="ListView/DeleteColumn.htm">DeleteColumn</a></li>
+            <li><a href="ListView/DeleteColumns.htm">DeleteColumns</a></li>
+            <li><a href="ListView/DeleteItem.htm">DeleteItem</a></li>
+            <li><a href="ListView/DeleteItems.htm">DeleteItems</a></li>
+            <li><a href="ListView/FillList.htm">FillList</a></li>
+            <li><a href="ListView/GetColumnCount.htm">GetColumnCount</a></li>
+            <li><a href="ListView/GetColumnImage.htm">GetColumnImage</a></li>
+            <li><a href="ListView/GetColumnItems.htm">GetColumnItems</a></li>
+            <li><a href="ListView/GetColumnWidth.htm">GetColumnWidth</a></li>
+            <li><a href="ListView/GetCount.htm">GetCount</a></li>
+            <li><a href="ListView/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="ListView/GetItemData.htm">GetItemData</a></li>
+            <li><a href="ListView/GetItemImage.htm">GetItemImage</a></li>
+            <li><a href="ListView/GetItemText.htm">GetItemText</a></li>
+            <li><a href="ListView/GetRowItems.htm">GetRowItems</a></li>
+            <li><a href="ListView/GetSelCount.htm">GetSelCount</a></li>
+            <li><a href="ListView/GetSelectedItems.htm">GetSelectedItems</a></li>
+            <li><a href="ListView/GetSelectedNths.htm">GetSelectedNths</a></li>
+            <li><a href="ListView/HitPointTest.htm">HitPointTest</a></li>
+            <li><a href="ListView/InsertItem.htm">InsertItem</a></li>
+            <li><a href="ListView/SetColumnImage.htm">SetColumnImage</a></li>
+            <li><a href="ListView/SetColumnWidth.htm">SetColumnWidth</a></li>
+            <li><a href="ListView/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="ListView/SetItemData.htm">SetItemData</a></li>
+            <li><a href="ListView/SetItemImage.htm">SetItemImage</a></li>
+            <li><a href="ListView/SetItemText.htm">SetItemText</a></li>
+            <li><a href="ListView/SortNumericItems.htm">SortNumericItems</a></li>
+            <li><a href="ListView/SortTextItems.htm">SortTextItems</a></li>
+            <li><a href="ListView/StartLabelEdit.htm">StartLabelEdit</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="ListView/CalcColumnWidth.htm">CalcColWidth</a></li>
+              <li><a href="ListView/GetCount.htm">CountItems</a></li>
+              <li><a href="ListView/GetColumnWidth.htm">GetColWidth</a></li>
+              <li><a href="ListView/SetColumnWidth.htm">SetColWidth</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="OptionList" href="../Control/OptionList.htm">Optionsfeld</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="OptionList/AddButton.htm">AddButton</a></li>
+            <li><a href="OptionList/AddList.htm">AddList</a></li>
+            <li><a href="OptionList/Clear.htm">Clear</a></li>
+            <li><a href="OptionList/DeleteButton.htm">DeleteButton</a></li>
+            <li><a href="OptionList/GetButtonCaption.htm">GetButtonCaption</a></li>
+            <li><a href="OptionList/GetCount.htm">GetCount</a></li>
+            <li><a href="OptionList/GetCurSel.htm">GetCurSel</a></li>
+            <li><a href="OptionList/GetTopIndex.htm">GetTopIndex</a></li>
+            <li><a href="OptionList/InsertButton.htm">InsertButton</a></li>
+            <li><a href="OptionList/SetButtonEnabled.htm">SetButtonEnabled</a></li>
+            <li><a href="OptionList/SetButtonToolTip.htm">SetButtonToolTip</a></li>
+            <li><a href="OptionList/SetCurSel.htm">SetCurSel</a></li>
+            <li><a href="OptionList/SetTopIndex.htm">SetTopIndex</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="OptionList/AddButton.htm">AddString</a></li>
+              <li><a href="OptionList/DeleteButton.htm">DeleteString</a></li>
+              <li><a href="OptionList/GetButtonCaption.htm">GetTest</a></li>
+              <li><a href="OptionList/InsertButton.htm">InsertString</a></li>
+              <li><a href="OptionList/SetButtonEnabled.htm">SetEnabled</a></li>
+              <li><a href="OptionList/SetButtonToolTip.htm">SetTttTitle</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap width="150">
+          <i><a name="Project" href="../DataType/Project.htm">Projekt</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Project/Export.htm">Export</a></li>
+            <li><a href="Project/GetForms.htm">GetForms</a></li>
+            <li><a href="Project/GetPictureSize.htm">GetPictureSize</a></li>
+            <li><a href="Project/Import.htm">Import</a></li>
+            <li><a href="Project/Load.htm">Load</a></li>
+            <li><a href="Project/SaveAs.htm">SaveAs</a></li>
+            <li><a href="Project/Unload.htm">Unload</a></li>
+          </ul>
+          <h4>
+            Diagnostic</h4>
+          <ul>
+            <li><a href="Project/Dump.htm">Dump</a></li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="Hatch" href="../Control/Hatch.htm">Schraffur</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Hatch/Clear.htm">Clear</a></li>
+            <li><a href="Hatch/SetPattern.htm">SetPattern</a></li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="Control" href="../Control/Index.htm">Steuerelement</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Control/GetHWND.htm">GetHWND</a></li>
+            <li><a href="Control/GetPos.htm">GetPos</a></li>
+            <li><a href="Control/GetProperties.htm">GetProperties</a></li>
+            <li><a href="Control/GetProperty.htm">GetProperty</a></li>
+            <li><a href="Control/Redraw.htm">Redraw</a></li>
+            <li><a href="Control/SetFocus.htm">SetFocus</a></li>
+            <li><a href="Control/SetPos.htm">SetPos</a></li>
+            <li><a href="Control/SetProperty.htm">SetProperty</a></li>
+            <li><a href="Control/ShowToolTip.htm">ShowToolTip</a></li>
+            <li><a href="Control/ZOrder.htm">ZOrder</a></li>
+          </ul>
+          <h4>
+            Diagnostic</h4>
+          <ul>
+            <li><a href="Control/Dump.htm">Dump</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="Control/GetPos.htm">GetCurPos</a></li>
+              <li><a href="Control/Redraw.htm">ForceUpdateNow</a></li>
+              <li><a href="Control/ZOrder.htm">SetZOrder</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="TextBox" href="../Control/TextBox.htm">Textfeld</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="TextBox/GetFilter.htm">GetFilter</a></li>
+            <li><a href="TextBox/GetFirstVisibleLine.htm">GetFirstVisibleLine</a></li>
+            <li><a href="TextBox/GetLine.htm">GetLine</a></li>
+            <li><a href="TextBox/GetLineCount.htm">GetLineCount</a></li>
+            <li><a href="TextBox/GetLineLength.htm">GetLineLength</a></li>
+            <li><a href="TextBox/GetSel.htm">GetSel</a></li>
+            <li><a href="TextBox/IsModified.htm">IsModified</a></li>
+            <li><a href="TextBox/LineScroll.htm">LineScroll</a></li>
+            <li><a href="TextBox/ReplaceSel.htm">ReplaceSel</a></li>
+            <li><a href="TextBox/SetFilter.htm">SetFilter</a></li>
+            <li><a href="TextBox/SetSel.htm">SetSel</a></li>
+            <li><a href="TextBox/SetTabStops.htm">SetTabStops</a></li>
+            <li><a href="TextBox/Undo.htm">Undo</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="TextBox/IsModified.htm">GetModify</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="ProgressBar" href="../Control/ProgressBar.htm">Verlaufsbalken</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="ProgressBar/Reset.htm">Reset</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="../Property/Value.htm">SetPos</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left">
+          <i><a name="Animation" href="../Control/Animation.htm">Video</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Animation/Close.htm">Close</a></li>
+            <li><a href="Animation/Load.htm">Load</a></li>
+            <li><a href="Animation/Play.htm">Play</a></li>
+            <li><a href="Animation/Seek.htm">Seek</a></li>
+            <li><a href="Animation/Stop.htm">Stop</a></li>
+          </ul>
+          <div style="background-color: silver;">
+            <h4>
+              Veraltet</h4>
+            <ul>
+              <li><a href="Animation/Close.htm">Animate_Close</a></li>
+              <li><a href="Animation/Load.htm">Animate_Load</a></li>
+              <li><a href="Animation/Play.htm">Animate_Play</a></li>
+              <li><a href="Animation/Seek.htm">Animate_Seek</a></li>
+              <li><a href="Animation/Stop.htm">Animate_Stop</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" align="left" nowrap>
+          <i><a name="Html" href="../Control/Html.htm">Webseite</a></i>
+        </th>
+        <td valign="top">
+          <ul>
+            <li><a href="Html/GetBusy.htm">GetBusy</a></li>
+            <li><a href="Html/GetFullName.htm">GetFullName</a></li>
+            <li><a href="Html/GetHtmlDocument.htm">GetHtmlDocument</a></li>
+            <li><a href="Html/GetLocationName.htm">GetLocationName</a></li>
+            <li><a href="Html/GetLocationURL.htm">GetLocationURL</a></li>
+            <li><a href="Html/GetOffline.htm">GetOffline</a></li>
+            <li><a href="Html/GoBack.htm">GoBack</a></li>
+            <li><a href="Html/GoForward.htm">GoForward</a></li>
+            <li><a href="Html/GoHome.htm">GoHome</a></li>
+            <li><a href="Html/GoSearch.htm">GoSearch</a></li>
+            <li><a href="Html/Navigate.htm">Navigate</a></li>
+            <li><a href="Html/Refresh.htm">Refresh</a></li>
+            <li><a href="Html/ReplaceText.htm">ReplaceText</a></li>
+            <li><a href="Html/SetOffline.htm">SetOffline</a></li>
+            <li><a href="Html/Stop.htm">Stop</a></li>
+            <li><a href="Html/UpdateHtmlCode.htm">UpdateHtmlCode</a></li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      Alle Rechte vorbehalten.</p>
+    <p>
+      OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+        OpenDCL Consortium</a>.</p>
+    <p>
+      AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+        target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

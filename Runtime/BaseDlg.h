@@ -56,6 +56,7 @@ protected:
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
+	afx_msg void OnTimer( UINT_PTR nID );
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
   afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);

@@ -108,6 +108,15 @@ CRect CDialogObject::GetEffectiveClientRect() const
 	return rcClient;
 }
 
+bool CDialogObject::StartTimer( UINT nMilliseconds ) const
+{
+	if( !mpControlWnd || !mpControlWnd->m_hWnd )
+		return false;
+	if( nMilliseconds == (UINT)-1 )
+		return (TRUE == mpControlWnd->KillTimer( idUserTimer ));
+	return (mpControlWnd->SetTimer( idUserTimer, nMilliseconds, NULL ) > 0);
+}
+
 void CDialogObject::GetMinMaxClientSize( CSize& szMin, CSize& szMax )
 {
 	szMin.SetSize( mnMinWidth, mnMinHeight );

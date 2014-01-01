@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CMainFileDlg, CDialog)
 	ON_WM_HELPINFO()
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
+	ON_WM_TIMER()
 	ON_WM_SIZING()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_WM_SHOWWINDOW()
@@ -85,6 +86,19 @@ void CMainFileDlg::OnDestroy()
 	GetWindowRect( &rcThis );
 	mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventClose, false, args_NN( rcThis.left, rcThis.top ) );
 	__super::OnDestroy();
+}
+
+void CMainFileDlg::OnTimer( UINT_PTR nID )
+{
+	switch( nID )
+	{
+	case CDialogObject::idUserTimer:
+		mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventTimer );
+		break;
+	default:
+		__super::OnTimer( nID );
+		break;
+	};
 }
 
 void CMainFileDlg::OnSizing(UINT fwSide, LPRECT pRect) 

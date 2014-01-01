@@ -92,6 +92,7 @@ BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_CAPTURECHANGED()
 	ON_WM_SIZE()
 	ON_WM_NCHITTEST()
+	ON_WM_TIMER()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
@@ -195,6 +196,19 @@ void CBaseDlg::OnDestroy()
 	DestroyIcon( SetIcon(NULL, FALSE) );
 	GetControlPane()->CleanUpControls();	
 	__super::OnDestroy();
+}
+
+void CBaseDlg::OnTimer( UINT_PTR nID )
+{
+	switch( nID )
+	{
+	case CDialogObject::idUserTimer:
+		GetArxServices()->HandleEvent( Prop::FormEventTimer );
+		break;
+	default:
+		__super::OnTimer( nID );
+		break;
+	};
 }
 
 void CBaseDlg::OnSizing(UINT fwSide, LPRECT pRect) 

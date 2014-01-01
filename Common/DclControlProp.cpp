@@ -91,6 +91,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddStringProperty( Prop::Name, PropString, pOwnerForm->GetKeyName() );
 		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::VarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		AddControlEvent( pDclControl, Prop::FormEventTimer );
 		TPropertyPtr pProp = pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 		pProp->SetHidden( !pOwnerForm->IsModeless() );
 	}

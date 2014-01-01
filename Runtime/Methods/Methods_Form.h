@@ -23,5 +23,6 @@ ADSRESULT RecalcLayout();
 ADSRESULT Resize();
 ADSRESULT SetApplyEnabled();
 ADSRESULT SetMinMaxSizes();
+ADSRESULT StartTimer();
 ADSRESULT Show();
 };

@@ -1664,6 +1664,10 @@
 					<param name="Local" value="Reference\Method\Form/SetMinMaxSizes.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="StartTimer">
+					<param name="Local" value="Reference\Method\Form/StartTimer.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Show">
 					<param name="Local" value="Reference\Method\Form/Show.htm">
 					</OBJECT>
@@ -3025,6 +3029,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="SplitterMoved">
 				<param name="Local" value="Reference\Event\SplitterMoved.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Timer">
+				<param name="Local" value="Reference\Event\Timer.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="TypeChanged">

@@ -287,8 +287,9 @@ enum Id
 	DragOverFromControl = 261,
 	FormEventMove = 262,
 	EventDocumentComplete = 263,
+	FormEventTimer = 264,
 	_MinId = 1,
-	_MaxId = 263
+	_MaxId = 264
 };
 
 /* property ids in alphabetical order for easy manual lookup
@@ -437,6 +438,7 @@ enum Id
 	FormEventOnOk = 251,
 	FormEventShow = 121,
 	FormEventSize = 120,
+	FormEventTimer = 263,
 	FullRowSelect = 179,
 	GridLines = 178,
 	HasButtons = 132,

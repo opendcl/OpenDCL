@@ -49,11 +49,11 @@ protected:
 	void Initialize();
 
 	static tstring& toLString( tstring& sInput )
-  {
+	{
 		for( tstring::iterator iter = sInput.begin(); iter != sInput.end(); ++iter )
 			*iter = std::tolower( *iter, std::locale() );
 		return sInput;
-  }
+	}
 };
 
 
@@ -273,6 +273,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::FormEventOnOk] = _T("OK");
 	mmapIdToApiName[Prop::FormEventShow] = _T("Show");
 	mmapIdToApiName[Prop::FormEventSize] = _T("Size");
+	mmapIdToApiName[Prop::FormEventTimer] = _T("Timer");
 	mmapIdToApiName[Prop::FullRowSelect] = _T("FullRowSelect");
 	mmapIdToApiName[Prop::VarName] = _T("VarName");
 	mmapIdToApiName[Prop::GridLines] = _T("GridLines");

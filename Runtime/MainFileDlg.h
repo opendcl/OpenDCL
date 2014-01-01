@@ -28,6 +28,7 @@ protected:
 	afx_msg void OnOK();
 	afx_msg void OnCancel();
 	afx_msg void OnDestroy();
+	afx_msg void OnTimer( UINT_PTR nID );
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

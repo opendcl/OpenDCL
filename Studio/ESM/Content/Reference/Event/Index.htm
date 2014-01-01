@@ -1,116 +1,96 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="en-us">
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>Events</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="en-us">
+  <link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../../Utility.js"></script>
+  <title>Events</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
-                  <img border="0" src="../images/Event.png" width="16" height="16"> Events</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-		<p>In OpenDCL, events trigger a call to an AutoLISP event handler 
-        function when the event is enabled. All forms and controls can expose 
-        events. Some events are generic and apply to many control types; 
-        some are unique to certain control types.</p>
-	    <ul>
-          <li><a href="BeginLabelEdit-Item.htm">BeginLabelEdit (Item)</a></li>
-          <li><a href="BeginLabelEdit-Key.htm">BeginLabelEdit 
-                (Key)</a></li><li>
-          <a href="BeginLabelEdit-RowColumn.htm">BeginLabelEdit (Row/Column)</a></li><li>
-          <a href="ButtonClicked-RowColumn.htm">ButtonClicked (Row/Column)</a></li><li>
-          <a href="Cancel.htm">Cancel</a></li><li>
-          <a href="CancelClose.htm">CancelClose</a></li><li>
-          <a href="Changed-Item.htm">Changed (Item)</a></li><li>
-          <a href="Changed-Value.htm">Changed (Value)</a></li><li>
-          <a href="Clicked.htm">Clicked</a></li><li>
-          <a href="Clicked-Item.htm">Clicked (Item)</a></li><li>
-          <a href="Clicked-Value.htm">Clicked (Value)</a></li><li>
-          <a href="Close.htm">Close</a></li><li>
-          <a href="ColumnClick.htm">ColumnClick</a></li><li>
-          <a href="DblClicked.htm">DblClicked</a></li><li>
-          <a href="DblClicked-Item.htm">DblClicked (Item)</a></li><li>
-          <a href="DblClicked-RowColumn.htm">DblClicked (Row/Column)</a></li><li>
-          <a href="DeleteItem-Key.htm">DeleteItem (Key)</a></li><li>
-          <a href="DocActivated.htm">DocActivated</a></li><li>
-          <a href="DocumentComplete.htm">DocumentComplete</a></li><li>
-          <a href="DragnDropBegin.htm">DragnDropBegin</a></li><li>
-          <a href="DragnDropFromControl.htm">DragnDropFromControl</a></li><li>
-          <a href="DragnDropFromOther.htm">DragnDropFromOther</a></li><li>
-          <a href="DragnDropToAutoCAD.htm">DragnDropToAutoCAD</a></li><li>
-          <a href="DropDown.htm">DropDown</a></li><li>
-          <a href="EditChanged.htm">EditChanged</a></li><li>
-          <a href="EndLabelEdit-Item.htm">EndLabelEdit (Item)</a></li><li>
-          <a href="EndLabelEdit-Key.htm">EndLabelEdit (Key)</a></li><li>
-          <a href="EndLabelEdit-RowColumn.htm">EndLabelEdit (Row/Column)</a></li><li>
-          <a href="EnteringNoDocState.htm">EnteringNoDocState</a></li><li>
-          <a href="FolderChanged.htm">FolderChanged</a></li><li>
-          <a href="GetDayState.htm">GetDayState</a></li><li>
-          <a href="Help.htm">Help</a></li><li>
-          <a href="Initialize.htm">Initialize</a></li>
-                <li><a href="ItemExpanded-Key.htm">ItemExpanded (Key)</a></li>
-                <li><a href="ItemExpanding-Key.htm">ItemExpanding (Key)</a></li><li>
-          <a href="KeyDown.htm">KeyDown</a></li><li>
-          <a href="KeyUp.htm">KeyUp</a></li><li>
-          <a href="KillFocus.htm">KillFocus</a></li><li>
-          <a href="MaxText.htm">MaxText</a></li><li>
-          <a href="MouseDblClick.htm">MouseDblClick</a></li><li>
-          <a href="MouseDown.htm">MouseDown</a></li><li>
-          <a href="MouseEntered.htm">MouseEntered</a></li><li>
-          <a href="MouseMove.htm">MouseMove</a></li><li>
-          <a href="MouseMovedOff.htm">MouseMovedOff</a></li><li>
-          <a href="MouseUp.htm">MouseUp</a></li><li>
-          <a href="MouseWheel.htm">MouseWheel</a></li>
-                <li><a href="Move.htm">Move</a></li><li>
-          <a href="NavigationComplete.htm">NavigationComplete</a></li><li>
-          <a href="Ok.htm">Ok</a></li>
-                <li><a href="OptionsApply.htm">OptionsApply</a></li>
-                <li><a href="OptionsCancel.htm">OptionsCancel</a></li>
-                <li><a href="OptionsHelp.htm">OptionsHelp</a></li>
-                <li><a href="OptionsOk.htm">OptionsOk</a></li><li>
-          <a href="Paint.htm">Paint</a></li><li>
-          <a href="RightClick.htm">RightClick</a></li><li>
-          <a href="RightDblClick.htm">RightDblClick</a></li><li>
-          <a href="ReleasedCapture-Value.htm">ReleasedCapture</a></li><li>
-          <a href="ReturnPressed.htm">ReturnPressed</a></li><li>
-          <a href="Scroll.htm">Scroll</a></li><li>
-          <a href="Scrolled.htm">Scrolled</a></li><li>
-          <a href="SelChanged.htm">SelChanged</a></li><li>
-          <a href="SelChanged-CountValue.htm">SelChanged (Count/Value)</a></li><li>
-          <a href="SelChanged-ItemValue.htm">SelChanged (Item/Value)</a></li><li>
-          <a href="SelChanged-Key.htm">SelChanged 
-                (Key)</a></li><li>
-          <a href="SelChanging-Item.htm">SelChanging (Item)</a></li><li>
-          <a href="Select.htm">Select</a></li><li>
-          <a href="SetFocus.htm">SetFocus</a></li><li>
-          <a href="Show.htm">Show</a></li><li>
-          <a href="Size.htm">Size</a></li><li>
-          <a href="SplitterMoved.htm">SplitterMove</a></li><li>
-          <a href="TypeChanged.htm">TypeChanged</a></li><li>
-          <a href="Update.htm">Update</a></li>
-        </ul>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          <img border="0" src="../images/Event.png" width="16" height="16">
+          Events</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
+          <a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <p>
+      In OpenDCL, events trigger a call to an AutoLISP event handler function when the
+      event is enabled. All forms and controls can expose events. Some events are generic
+      and apply to many control types; some are unique to certain control types.</p>
+    <ul>
+      <li><a href="BeginLabelEdit-Item.htm">BeginLabelEdit (Item)</a></li>
+      <li><a href="BeginLabelEdit-Key.htm">BeginLabelEdit (Key)</a></li><li><a href="BeginLabelEdit-RowColumn.htm">
+        BeginLabelEdit (Row/Column)</a></li><li><a href="ButtonClicked-RowColumn.htm">ButtonClicked
+          (Row/Column)</a></li><li><a href="Cancel.htm">Cancel</a></li><li><a href="CancelClose.htm">
+            CancelClose</a></li><li><a href="Changed-Item.htm">Changed (Item)</a></li><li><a
+              href="Changed-Value.htm">Changed (Value)</a></li><li><a href="Clicked.htm">Clicked</a></li><li>
+                <a href="Clicked-Item.htm">Clicked (Item)</a></li><li><a href="Clicked-Value.htm">
+                  Clicked (Value)</a></li><li><a href="Close.htm">Close</a></li><li><a href="ColumnClick.htm">
+                    ColumnClick</a></li><li><a href="DblClicked.htm">DblClicked</a></li><li><a href="DblClicked-Item.htm">
+                      DblClicked (Item)</a></li><li><a href="DblClicked-RowColumn.htm">DblClicked (Row/Column)</a></li><li>
+                        <a href="DeleteItem-Key.htm">DeleteItem (Key)</a></li><li><a href="DocActivated.htm">
+                          DocActivated</a></li><li><a href="DocumentComplete.htm">DocumentComplete</a></li><li>
+                            <a href="DragnDropBegin.htm">DragnDropBegin</a></li><li><a href="DragnDropFromControl.htm">
+                              DragnDropFromControl</a></li><li><a href="DragnDropFromOther.htm">DragnDropFromOther</a></li><li>
+                                <a href="DragnDropToAutoCAD.htm">DragnDropToAutoCAD</a></li><li><a href="DropDown.htm">
+                                  DropDown</a></li><li><a href="EditChanged.htm">EditChanged</a></li><li><a href="EndLabelEdit-Item.htm">
+                                    EndLabelEdit (Item)</a></li><li><a href="EndLabelEdit-Key.htm">EndLabelEdit (Key)</a></li><li>
+                                      <a href="EndLabelEdit-RowColumn.htm">EndLabelEdit (Row/Column)</a></li><li><a href="EnteringNoDocState.htm">
+                                        EnteringNoDocState</a></li><li><a href="FolderChanged.htm">FolderChanged</a></li><li>
+                                          <a href="GetDayState.htm">GetDayState</a></li><li><a href="Help.htm">Help</a></li><li>
+                                            <a href="Initialize.htm">Initialize</a></li>
+      <li><a href="ItemExpanded-Key.htm">ItemExpanded (Key)</a></li>
+      <li><a href="ItemExpanding-Key.htm">ItemExpanding (Key)</a></li><li><a href="KeyDown.htm">
+        KeyDown</a></li><li><a href="KeyUp.htm">KeyUp</a></li><li><a href="KillFocus.htm">
+          KillFocus</a></li><li><a href="MaxText.htm">MaxText</a></li><li><a href="MouseDblClick.htm">
+            MouseDblClick</a></li><li><a href="MouseDown.htm">MouseDown</a></li><li><a href="MouseEntered.htm">
+              MouseEntered</a></li><li><a href="MouseMove.htm">MouseMove</a></li><li><a href="MouseMovedOff.htm">
+                MouseMovedOff</a></li><li><a href="MouseUp.htm">MouseUp</a></li><li><a href="MouseWheel.htm">
+                  MouseWheel</a></li>
+      <li><a href="Move.htm">Move</a></li><li><a href="NavigationComplete.htm">NavigationComplete</a></li><li>
+        <a href="Ok.htm">Ok</a></li>
+      <li><a href="OptionsApply.htm">OptionsApply</a></li>
+      <li><a href="OptionsCancel.htm">OptionsCancel</a></li>
+      <li><a href="OptionsHelp.htm">OptionsHelp</a></li>
+      <li><a href="OptionsOk.htm">OptionsOk</a></li><li><a href="Paint.htm">Paint</a></li><li>
+        <a href="RightClick.htm">RightClick</a></li><li><a href="RightDblClick.htm">RightDblClick</a></li><li>
+          <a href="ReleasedCapture-Value.htm">ReleasedCapture</a></li><li><a href="ReturnPressed.htm">
+            ReturnPressed</a></li><li><a href="Scroll.htm">Scroll</a></li><li><a href="Scrolled.htm">
+              Scrolled</a></li><li><a href="SelChanged.htm">SelChanged</a></li><li><a href="SelChanged-CountValue.htm">
+                SelChanged (Count/Value)</a></li><li><a href="SelChanged-ItemValue.htm">SelChanged
+                  (Item/Value)</a></li><li><a href="SelChanged-Key.htm">SelChanged (Key)</a></li><li>
+                    <a href="SelChanging-Item.htm">SelChanging (Item)</a></li><li><a href="Select.htm">
+                      Select</a></li><li><a href="SetFocus.htm">SetFocus</a></li><li><a href="Show.htm">
+                        Show</a></li><li><a href="Size.htm">Size</a></li><li><a href="SplitterMoved.htm">SplitterMove</a></li><li>
+                          <a href="Timer.htm">Timer</a></li><li><a href="TypeChanged.htm">TypeChanged</a></li><li>
+                            <a href="Update.htm">Update</a></li>
+    </ul>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      All rights reserved.</p>
+    <p>
+      OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL
+        Consortium</a>.</p>
+    <p>
+      AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">
+        Microsoft Corporation</a> in the United States and other countries.</p>
+  </div>
 </body>
 </html>

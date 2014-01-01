@@ -324,6 +324,7 @@ BEGIN_MESSAGE_MAP(CPaletteDlg, CDialog)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_TIMER()
 	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
@@ -381,6 +382,19 @@ void CPaletteDlg::PostNcDestroy()
 		pHostToDelete = &mHostPaletteSet;
 	delete this;
 	delete pHostToDelete;
+}
+
+void CPaletteDlg::OnTimer( UINT_PTR nID )
+{
+	switch( nID )
+	{
+	case CDialogObject::idUserTimer:
+		GetArxServices()->HandleEvent( Prop::FormEventTimer );
+		break;
+	default:
+		__super::OnTimer( nID );
+		break;
+	};
 }
 
 void CPaletteDlg::OnMove(int x, int y)

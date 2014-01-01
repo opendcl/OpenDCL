@@ -411,6 +411,7 @@ Reference\Method\Form\Resize.htm
 Reference\Method\Form\SetApplyEnabled.htm
 Reference\Method\Form\SetMinMaxSizes.htm
 Reference\Method\Form\Show.htm
+Reference\Method\Form\StartTimer.htm
 Reference\Method\Grid\AddColumns.htm
 Reference\Method\Grid\AddRow.htm
 Reference\Method\Grid\AddString.htm
@@ -731,6 +732,7 @@ Reference\Event\SetFocus.htm
 Reference\Event\Show.htm
 Reference\Event\Size.htm
 Reference\Event\SplitterMoved.htm
+Reference\Event\Timer.htm
 Reference\Event\TypeChanged.htm
 Reference\Event\Update.htm
 Reference\Function\Index.htm

@@ -281,6 +281,7 @@ BEGIN_MESSAGE_MAP(CControlBarDlg, CDialog)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_TIMER()
 	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
@@ -334,6 +335,19 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
 
 	return 1;
+}
+
+void CControlBarDlg::OnTimer( UINT_PTR nID )
+{
+	switch( nID )
+	{
+	case CDialogObject::idUserTimer:
+		GetArxServices()->HandleEvent( Prop::FormEventTimer );
+		break;
+	default:
+		__super::OnTimer( nID );
+		break;
+	};
 }
 
 void CControlBarDlg::OnMove(int x, int y)

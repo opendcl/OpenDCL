@@ -448,6 +448,28 @@ ADSRESULT Form::SetMinMaxSizes()
 	return (RSRSLT) ;
 }
 
+ADSRESULT Form::StartTimer()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogObject* pDlgObject = NULL;
+	if( !GetDialogArgument( pArgs, pDlgObject ) )
+		return RSERR; //arguments expected
+
+	long lMilliseconds = -1;
+	GetLongArgument( pArgs, lMilliseconds, true );
+	if( lMilliseconds < 0 )
+		lMilliseconds = -1;
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( pDlgObject->StartTimer( (UINT)lMilliseconds ) )
+		acedRetT();
+
+	return (RSRSLT) ;
+}
+
 ADSRESULT Form::Show()
 {
 	struct resbuf *pArgs =acedGetArgs () ;

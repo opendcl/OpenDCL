@@ -156,6 +156,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Form_SetApplyEnabled"),         Form::SetApplyEnabled},
 	{_T("Form_SetMinMaxSizes"),          Form::SetMinMaxSizes},
 	{_T("Form_Show"),                    Form::Show},
+	{_T("Form_StartTimer"),              Form::StartTimer},
 
 	// General form deprecated methods
 	{_T("ConfigTab_IsApplyEnabled"),     Form::IsApplyEnabled},
