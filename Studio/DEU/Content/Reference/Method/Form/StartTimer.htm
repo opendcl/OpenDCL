@@ -32,8 +32,7 @@
           Funktionsname
         </th>
         <td bgcolor="#CCFF99">
-          dcl_Form_Show
-        </td>
+          dcl_Form_StartTimer</td>
       </tr>
       <tr>
         <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
@@ -69,11 +68,9 @@
       </tr>
     </table>
     <p>
-      This method starts a timer. After the specified number of milliseconds have elapsed,
-      the timer will wait for the dialog to reach an idle state, then fire the <a href="../../Event/Timer.htm">
-        Form_OnTimer</a> event. If Milliseconds is less than zero or not specified, an
-      existing timer is cancelled. The timer is cancelled when the form closes.</p>
-  </div>
+      Diese Methode startet einen Zeitgeber. Nach Ablauf der angegebenen Zeit in Millisekunden wartet der Zeitgeber, bis der Dialog wieder inaktiv wird und l&ouml;st das Ereignis <a href="../../Event/Timer.htm">
+      Form_OnTimer</a> aus. Wird die Angabe der Millisekunden weggelassen oder ist der Wert kleiner 0, wird der existierende Zeitgeber beendet. Er wird auch beim Schlie&szlig;en des Dialogs beendet.</p>
+    </div>
   <hr />
   <div id="footer">
     <p>

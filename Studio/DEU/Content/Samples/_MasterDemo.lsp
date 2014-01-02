@@ -45,7 +45,7 @@
 )
 
 ;; Entlade OpenDCL komplett, um die die Installation der Aktualisierungen zu ermöglichen
-(DEFUN *ODCL:Vanish ()
+(DEFUN *ODCL:Vanish (/ project module)
   (foreach project (dcl_GetProjects) (dcl_Project_Unload project T))
   (foreach module (arx)
     (if (wcmatch module "opendcl`.*") (arxunload module))
@@ -65,7 +65,7 @@
       ((vlax-create-object "WinHttp.WinHttpRequest.5"))
     )
   )
-  (defun request_http (url return / http disp pos location filename) ; HTTP Anfrage ausführen
+  (defun request_http (url return / http disp pos location filename result) ; HTTP Anfrage ausführen
     (setq http (create_http))
     (setq result
       (vl-catch-all-apply
@@ -82,10 +82,10 @@
     (vlax-release-object http)
     (if (vl-catch-all-error-p result)
       (progn (append_status (strcat "  FEHLER: " (vl-catch-all-error-message result))) (setq result nil))
-    )
+    ); if
     result
   )
-  (defun download_msi (lang dev) ; MSI via HTTP herunterladen, Rückgabe Antwort
+  (defun download_msi (lang dev / result) ; MSI via HTTP herunterladen, Rückgabe Antwort
     (append_status "OpenDCL Studio Installationsdatei herunterladen...")
     ;; Stelle die DownloadURL zusammen und lade die Datei herunter
     ;; Hinweis: um die Laufzeit MSI herunterzuladen, verwenden Sie
@@ -93,8 +93,15 @@
     (setq url "http://opendcl.com/go?studio")
     (if lang (setq url (strcat url "&" (strcase lang T))))
     (if dev (setq url (strcat url "&dev")))
-    (request_http url "ResponseBody")
-    (if result (append_status "  Herunterladen erfolgreich!"))
+    (if (and (setq result (request_http url "ResponseBody"))
+             (= (type result) 'VARIANT)
+             (not (zerop (vlax-variant-type result))))
+      (append_status "  Herunterladen erfolgreich!")
+      (progn
+        (append_status "  Die Antwort vom Server ist leer geblieben, ich habe keine Datei heruntergeladen!")
+        (setq result nil)
+      ); progn
+    ); if
     result
   )
   (defun write_msi (lang dev filename / result fso) ; heruntergeladene MSI ins Temp-Verzeichnis speichern, Rückgabe des Dateipfads
@@ -137,7 +144,7 @@
                     (setq result
                       (vl-catch-all-apply
                         (function
-                          (lambda ()
+                          (lambda (/ element)
                             (foreach element (vlax-safearray->list (vlax-variant-value result))
                               (vlax-invoke filestream "Write" (chr (+ 256 (logand 255 element))))
                             )
@@ -279,22 +286,29 @@
 (DEFUN c:_MasterDemo_Update_btnUpdate_OnClicked (/ msipath curlang)
   (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate nil)
   (dcl_Control_SetVisible _MasterDemo_Update_btnClose nil)
-  (setq msipath
-    (write_msi
-      (setq curlang (dcl_Control_GetCaption _MasterDemo_Update_lblLanguageAvail))
-      (dcl_Control_GetVisible _MasterDemo_Update_lblDevBuildAvail)
-      (strcat
-        "OpenDCL.Studio."
-        (strcase curlang)
-        "."
-        (dcl_Control_GetCaption _MasterDemo_Update_lblVersionAvail)
-        ".msi"
-      )
-    )
-  )
-  (dcl_SendString "(*ODCL:Vanish)\n")
-  (startapp (strcat "msiexec.exe /i " msipath))
-  (dcl_Form_Close _MasterDemo_Update 1)
+  (if (setq msipath
+               (write_msi
+                   (setq curlang (dcl_Control_GetCaption _MasterDemo_Update_lblLanguageAvail))
+                   (dcl_Control_GetVisible _MasterDemo_Update_lblDevBuildAvail)
+                   (strcat
+                       "OpenDCL.Studio."
+                       (strcase curlang)
+                       "."
+                       (dcl_Control_GetCaption _MasterDemo_Update_lblVersionAvail)
+                       ".msi"
+                   ); strcat
+               ); write_msi
+      ); setq
+    (progn
+      (dcl_SendString "(*ODCL:Vanish)\n")
+      (startapp (strcat "msiexec.exe /i " msipath))
+      (dcl_Form_Close _MasterDemo_Update 1)
+    ); progn
+    (progn
+      (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate T)
+      (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
+    ); progn
+  ); if
 )
 
 (DEFUN c:_MasterDemo_Main_btnMisc_OnClicked ()
