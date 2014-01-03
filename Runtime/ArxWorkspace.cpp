@@ -267,6 +267,9 @@ void CArxWorkspace::ResetLispSymbol( LPCTSTR pszLispSymbol ) const
 
 	static struct resbuf rbNIL = { NULL, RTNIL };;
 	acedPutSym( pszLispSymbol, &rbNIL );
+	CString sSymbolName = pszLispSymbol;
+	if( sSymbolName.Replace( _T('/'), _T('_') ) > 0 )
+		acedPutSym( sSymbolName, &rbNIL ); //reset the old style name as well for backward compatibility
 
 	TraceFmt( _T("Lisp Symbol %s reset to NIL\r\n"), pszLispSymbol );
 }
@@ -280,6 +283,13 @@ void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, const void* ptr, odcl:
 	rbPtr.resval.rlname[0] = (LONG_PTR)ptr;
 	rbPtr.resval.rlname[1] = type;
 	acedPutSym( pszLispSymbol, &rbPtr );
+
+	if( type == odcl::ptrDclProject || type == odcl::ptrDclControl )
+	{
+		CString sSymbolName = pszLispSymbol;
+		if( sSymbolName.Replace( _T('/'), _T('_') ) > 0 )
+			acedPutSym( sSymbolName, &rbPtr ); //set the old style name as well for backward compatibility
+	}
 
 	TraceFmt( _T("Lisp Symbol %s set to %p\r\n"), pszLispSymbol, ptr );
 }
@@ -407,7 +417,7 @@ TDclControlPtr CArxWorkspace::FindControl( LPCTSTR pszProject, LPCTSTR pszFormNa
 		if( pControl )
 			return pControl;
 	}
-	return pProject->FindControlWithVarName( CString( pszProject ) + _T('_') + pszFormName + _T('_') + pszControl );
+	return pProject->FindControlWithVarName( CString( pszProject ) + _T('/') + pszFormName + _T('/') + pszControl );
 }
 
 TDclFormPtr CArxWorkspace::FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
@@ -418,7 +428,7 @@ TDclFormPtr CArxWorkspace::FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName
 	TDclFormPtr pDclForm = pProject->FindDclForm( pszFormName );
 	if( pDclForm )
 		return pDclForm;
-	return pProject->FindDclFormWithVarName( CString( pszProjectName ) + _T('_') + pszFormName );
+	return pProject->FindDclFormWithVarName( CString( pszProjectName ) + _T('/') + pszFormName );
 }
 
 void CArxWorkspace::AddUnknown( IUnknown* pUnknown )

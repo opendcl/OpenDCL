@@ -93,6 +93,7 @@ void CMainFileDlg::OnTimer( UINT_PTR nID )
 	switch( nID )
 	{
 	case CDialogObject::idUserTimer:
+		mpDlgObject->StartTimer( (UINT)-1 );
 		mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventTimer );
 		break;
 	default:

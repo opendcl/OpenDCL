@@ -64,7 +64,7 @@
       ((vlax-create-object "WinHttp.WinHttpRequest.5"))
     )
   )
-  (defun request_http (url return / http disp pos location filename) ; perform HTTP request
+  (defun request_http (url return / http disp pos location filename result) ; perform HTTP request
     (setq http (create_http))
     (setq result
       (vl-catch-all-apply
@@ -84,15 +84,26 @@
     )
     result
   )
-  (defun download_msi (lang dev) ; download MSI via HTTP, return responsebody
+  (defun download_msi (lang dev / result) ; download MSI via HTTP, return responsebody
     (append_status "Downloading OpenDCL Studio installation file...")
     ;; Construct file download URL and download file
     ;; Note: to download runtime MSI, use http://opendcl.com/go?runtime and ignore language
     (setq url "http://opendcl.com/go?studio")
     (if lang (setq url (strcat url "&" (strcase lang T))))
     (if dev (setq url (strcat url "&dev")))
-    (request_http url "ResponseBody")
+    (setq result (request_http url "ResponseBody"))
     (if result (append_status "  Downloaded successfully!"))
+
+    (if (and (setq result (request_http url "ResponseBody"))
+             (= (type result) 'VARIANT)
+             (not (zerop (vlax-variant-type result))))
+      (append_status "  Downloaded successfully!")
+      (progn
+        (append_status "  ERROR: The server's response did not contain any data!")
+        (setq result nil)
+      );
+    );
+
     result
   )
   (defun write_msi (lang dev filename / result fso) ; write downloaded MSI to temp folder, return file path
@@ -290,9 +301,14 @@
       )
     )
   )
-  (dcl_SendString "(*ODCL:Vanish)\n")
-  (startapp (strcat "msiexec.exe /i " msipath))
-  (dcl_Form_Close _MasterDemo_Update 1)
+  (if msipath
+    (progn
+      (dcl_SendString "(*ODCL:Vanish)\n")
+      (startapp (strcat "msiexec.exe /i " msipath))
+      (dcl_Form_Close _MasterDemo_Update 1)
+    )
+    (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
+  )
 )
 
 (DEFUN c:_MasterDemo_Main_btnMisc_OnClicked ()

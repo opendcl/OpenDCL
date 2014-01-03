@@ -606,7 +606,7 @@ protected:
 			params[_T("{TITLE}")] = sName;
 			CString sOb = prop()->GetOwnerControl()->GetVarName();
 			CString sFunctionName;
-			sFunctionName.Format( _T("c:%s_On%s"), (LPCTSTR)sOb, (LPCTSTR)sName );
+			sFunctionName.Format( _T("c:%s#On%s"), (LPCTSTR)sOb, (LPCTSTR)sName );
 			params[_T("{FUNCTIONNAME}")] = sFunctionName;
 			CString sEventResultList = eventResultList().Trim();
 			CString sType;

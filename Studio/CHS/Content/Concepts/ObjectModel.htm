@@ -1,107 +1,115 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="en-us">
-<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>Object Model</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="en-us">
+  <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../Utility.js"></script>
+  <title>Object Model</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Object Model</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-		<p>The AutoLISP interface exposed by OpenDCL Runtime employs concepts 
-        borrowed from object oriented programming, but strictly speaking, 
-        AutoLISP is not object oriented. Nevertheless, there is an underlying 
-        OpenDCL object model, and it's helpful to understand this model when 
-        programming for OpenDCL. The convention used by OpenDCL for calling 
-        object methods is to specify the object instance as the first argument 
-        to the method function.</p>
-		<p>OpenDCL objects are represented in AutoLISP as entity names (an 
-        entity name is just a memory pointer that points to the object 
-        instance). When an OpenDCL project is loaded, OpenDCL automatically sets 
-        AutoLISP symbols for each form defined in the project. While a form is 
-        active, OpenDCL sets AutoLISP symbols for each control on the form. The
-        <a href="../Reference/Property/VarName.htm">VarName</a> property of 
-        forms and controls determines the name of the AutoLISP symbol used to 
-        reference the object. For example, showing a form is accomplished by 
-        calling the <a href="../Reference/Method/Form/Show.htm">Form_Show</a> 
-        method with the form handle as the first argument:</p>
-	    <pre>(<a href="../Reference/Method/Form/Show.htm">dcl_Form_Show</a> Project1_Form1)</pre>
-        <p>In this example, Project1_Form1 is an AutoLISP symbol that is 
-        automatically set by OpenDCL to point to the form when the project is 
-        loaded.</p>
-        <h4>OpenDCL Object Model</h4>
-		<p>The basic OpenDCL object type exposed to AutoLISP is the
-        <a href="../Reference/DataType/Control.htm">control</a>. Internally, 
-        forms are a special type of control, so control methods typically apply 
-        to forms as well. The other fundamental object exposed by OpenDCL is the
-        <a href="../Reference/DataType/Project.htm">project</a>. OpenDCL also 
-        exposes specialized objects like the
-        <a href="../Reference/DataType/ImageList.htm">ImageList</a>,
-        <a href="../Reference/DataType/BinFile.htm">BinFile</a>, and
-        <a href="../Reference/DataType/AxObject.htm">AxObject</a>. Each of these 
-        object types have their own methods that can be called using the 
-        following calling format:</p>
-	    <pre>(dcl_METHODNAME &lt;OBJECT&gt; ARGUMENTS)</pre>
-        <p>Every control contains a list of
-        <a href="../Reference/Property/Index.htm">properties</a>. Different 
-        types of controls contain different properties, but all controls of a 
-        given type contain the same properties. Some controls, like ActiveX 
-        controls, may contain additional properties that are exposed separately 
-        from the built in OpenDCL properties. Properties are not exposed as 
-        independent objects; instead they are accessed through their owning 
-        control by name, using the following convention (where PROPERTYNAME is 
-        the property API name):</p>
-        <pre>(dcl_Control_GetPROPERTYNAME &lt;CONTROL&gt;)
-(dcl_Control_SetPROPERTYNAME &lt;CONTROL&gt; NEWVALUE)</pre>
-        <p>Alternatively, properties can be accessed via the generic
-        <a href="../Reference/Method/Control/GetProperty.htm">
-        Control_GetProperty</a> and
-        <a href="../Reference/Method/Control/SetProperty.htm">
-        Control_SetProperty</a> methods.</p>
-		<h4>OpenDCL Project Structure</h4>
-		<p>As the following hierarchy diagram shows, an OpenDCL project contains 
-        forms and pictures. Forms contain properties and controls. Controls also 
-        contain properties. OpenDCL Runtime is designed to allow an unlimited 
-        number of projects to be loaded simultaneously, so that multiple 
-        independent OpenDCL applications can function inside AutoCAD without 
-        interfering with each other.</p>
-		<p><img border="0" src="ProjectStructure.png" width="554" height="438"></p>
-		<h4>OpenDCL Control Handles</h4>
-		<p>Controls (and forms) are referenced in AutoLISP code by AutoLISP 
-        symbols that contain a <a href="../Reference/DataType/Control.htm">
-        handle for the control</a>. These symbols are automatically created in 
-        the AutoLISP namespace of every AutoCAD drawing when an instance of a 
-        form is active. The default AutoLISP symbol name for this handle is 
-        constructed by concatenating the project key, form name, and control 
-        name, all separated by an underscore character, as follows:</p>
-        <blockquote>
-          <pre>ProjectKey_FormName_ControlName</pre>
-        </blockquote>
-        <p>This default symbol name can be overridden by setting the control's
-        <a href="../Reference/Property/VarName.htm">VarName property</a>, but 
-        using the default naming convention is recommended to minimize the risk 
-        of symbol name collisions between applications.</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          Object Model</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
+          <a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <p>
+      The AutoLISP interface exposed by OpenDCL Runtime employs concepts borrowed from
+      object oriented programming, but strictly speaking, AutoLISP is not object oriented.
+      Nevertheless, there is an underlying OpenDCL object model, and it's helpful to understand
+      this model when programming for OpenDCL. The convention used by OpenDCL for calling
+      object methods is to specify the object instance as the first argument to the method
+      function.</p>
+    <p>
+      OpenDCL objects are represented in AutoLISP as entity names (an entity name is just
+      a memory pointer that points to the object instance). When an OpenDCL project is
+      loaded, OpenDCL automatically sets AutoLISP symbols for each form defined in the
+      project. While a form is active, OpenDCL sets AutoLISP symbols for each control
+      on the form. The <a href="../Reference/Property/VarName.htm">VarName</a> property
+      of forms and controls determines the name of the AutoLISP symbol used to reference
+      the object. For example, showing a form is accomplished by calling the <a href="../Reference/Method/Form/Show.htm">
+        Form-Show</a> method with the form handle as the first argument:</p>
+    <pre>(<a href="../Reference/Method/Form/Show.htm">dcl-Form-Show</a> Project1/Form1)</pre>
+    <p>
+      In this example, Project1/Form1 is an AutoLISP symbol that is automatically set
+      by OpenDCL to point to the form when the project is loaded.</p>
+    <h4>
+      OpenDCL Object Model</h4>
+    <p>
+      The basic OpenDCL object type exposed to AutoLISP is the <a href="../Reference/DataType/Control.htm">
+        control</a>. Internally, forms are a special type of control, so control methods
+      typically apply to forms as well. The other fundamental object exposed by OpenDCL
+      is the <a href="../Reference/DataType/Project.htm">project</a>. OpenDCL also exposes
+      specialized objects like the <a href="../Reference/DataType/ImageList.htm">ImageList</a>,
+      <a href="../Reference/DataType/BinFile.htm">BinFile</a>, and <a href="../Reference/DataType/AxObject.htm">
+        AxObject</a>. Each of these object types have their own methods that can be called
+      using the following calling format:</p>
+    <pre>(dcl-METHODNAME &lt;OBJECT&gt; ARGUMENTS)</pre>
+    <p>
+      Every control contains a list of <a href="../Reference/Property/Index.htm">properties</a>.
+      Different types of controls contain different properties, but all controls of a
+      given type contain the same properties. Some controls, like ActiveX controls, may
+      contain additional properties that are exposed separately from the built in OpenDCL
+      properties. Properties are not exposed as independent objects; instead they are
+      accessed through their owning control by name, using the following convention (where
+      PROPERTYNAME is the property API name):</p>
+    <pre>(dcl-Control-GetPROPERTYNAME &lt;CONTROL&gt;)
+(dcl-Control-SetPROPERTYNAME &lt;CONTROL&gt; NEWVALUE)</pre>
+    <p>
+      Alternatively, properties can be accessed via the generic <a href="../Reference/Method/Control/GetProperty.htm">
+        Control-GetProperty</a> and <a href="../Reference/Method/Control/SetProperty.htm">
+          Control-SetProperty</a> methods.</p>
+    <h4>
+      OpenDCL Project Structure</h4>
+    <p>
+      As the following hierarchy diagram shows, an OpenDCL project contains forms and
+      pictures. Forms contain properties and controls. Controls also contain properties.
+      OpenDCL Runtime is designed to allow an unlimited number of projects to be loaded
+      simultaneously, so that multiple independent OpenDCL applications can function inside
+      AutoCAD without interfering with each other.</p>
+    <p>
+      <img border="0" src="ProjectStructure.png" width="554" height="438"></p>
+    <h4>
+      OpenDCL Control Handles</h4>
+    <p>
+      Controls (and forms) are referenced in AutoLISP code by AutoLISP symbols that contain
+      a <a href="../Reference/DataType/Control.htm">handle for the control</a>. These
+      symbols are automatically created in the AutoLISP namespace of every AutoCAD drawing
+      when an instance of a form is active. The default AutoLISP symbol name for this
+      handle is constructed by concatenating the project key, form name, and control name,
+      all separated by a forward slash character, as follows:</p>
+    <blockquote>
+      <pre>ProjectKey/FormName/ControlName</pre>
+    </blockquote>
+    <p>
+      This default symbol name can be overridden by setting the control's <a href="../Reference/Property/VarName.htm">
+        VarName property</a>
+    , but using the default naming convention is recommended to minimize the risk of
+    symbol name collisions between applications.</div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      All rights reserved.</p>
+    <p>
+      OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL
+        Consortium</a>.</p>
+    <p>
+      AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">
+        Microsoft Corporation</a> in the United States and other countries.</p>
+  </div>
 </body>
 </html>

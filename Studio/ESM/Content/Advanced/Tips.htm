@@ -71,24 +71,24 @@
         property), then saves the modified project data to a new file.</p>
 	    <blockquote>
           <pre>(defun SetOdclFontSizeUnscaled (odclfile password newodclpath / project props fontsize)
-  (setq project (<a href="../Reference/Method/Project/Load.htm">dcl_Project_Load</a> odclfile))
+  (setq project (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> odclfile))
   (if (not project) (exit))
   (foreach
-    form (<a href="../Reference/Method/Project/GetForms.htm">dcl_Project_GetForms</a> project)
+    form (<a href="../Reference/Method/Project/GetForms.htm">dcl-Project-GetForms</a> project)
     (foreach
-      control (<a href="../Reference/Method/Form/GetControls.htm">dcl_Form_GetControls</a> form)
-      (progn (setq props (<a href="../Reference/Method/Control/GetProperties.htm">dcl_Control_GetProperties</a> control))
+      control (<a href="../Reference/Method/Form/GetControls.htm">dcl-Form-GetControls</a> form)
+      (progn (setq props (<a href="../Reference/Method/Control/GetProperties.htm">dcl-Control-GetProperties</a> control))
         (if (member &quot;FontSize&quot; props)
-          (progn (setq fontsize (<a href="../Reference/Method/Control/GetProperty.htm">dcl_Control_GetProperty</a> control &quot;FontSize&quot;))
+          (progn (setq fontsize (<a href="../Reference/Method/Control/GetProperty.htm">dcl-Control-GetProperty</a> control &quot;FontSize&quot;))
             (if (&gt; fontsize 0)
-              (<a href="../Reference/Method/Control/SetProperty.htm">dcl_Control_SetProperty</a> control &quot;FontSize&quot; (- 0 fontsize))))))))
-  (<a href="../Reference/Method/Project/SaveAs.htm">dcl_Project_SaveAs</a> project newodclpath password)
+              (<a href="../Reference/Method/Control/SetProperty.htm">dcl-Control-SetProperty</a> control &quot;FontSize&quot; (- 0 fontsize))))))))
+  (<a href="../Reference/Method/Project/SaveAs.htm">dcl-Project-SaveAs</a> project newodclpath password)
 )</pre>
         </blockquote>
 	</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

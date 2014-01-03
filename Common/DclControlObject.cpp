@@ -918,7 +918,7 @@ void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ 
 	CString sParentName = pszParentName;
 	if( sParentName.IsEmpty() )
 		sParentName = mpOwner->GetKeyPath();
-	CString sControlName = sParentName + _T('_') + GetKeyName();
+	CString sControlName = sParentName + _T('/') + GetKeyName();
 	AddStringProperty( Prop::VarName, PropString, sControlName, true );
 }
 
@@ -940,7 +940,7 @@ void CDclControlObject::ResetEventNames()
 				if( !pProp->GetStringValue().IsEmpty() )
 				{
 					CString sEventName;
-					sEventName.Format( _T("c:%s_On%s"), GetVarName(), pProp->GetName() );
+					sEventName.Format( _T("c:%s#On%s"), GetVarName(), pProp->GetName() );
 					pProp->SetStringValue( sEventName );
 				}
 			}
@@ -1358,7 +1358,7 @@ CString CDclControlObject::GetKeyPath() const
 	{
 		sPath = mpOwner->GetKeyPath();
 		if( mType != _CtlForm )
-			sPath += _T('_') + GetKeyName();
+			sPath += _T('/') + GetKeyName();
 	}
 	else
 		sPath = GetKeyName();

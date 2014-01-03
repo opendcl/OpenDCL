@@ -457,7 +457,8 @@ ADSRESULT Form::StartTimer()
 		return RSERR; //arguments expected
 
 	long lMilliseconds = -1;
-	GetLongArgument( pArgs, lMilliseconds, true );
+	if( !GetLongArgument( pArgs, lMilliseconds, true ) )
+		GetNilArgument( pArgs, true );
 	if( lMilliseconds < 0 )
 		lMilliseconds = -1;
 

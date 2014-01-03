@@ -137,6 +137,7 @@
     <ClCompile Include="..\LinetypeDlg.cpp" />
     <ClCompile Include="..\LineWeightDlg.cpp" />
     <ClCompile Include="..\MainFileDlg.cpp" />
+    <ClCompile Include="..\Methods\Methods_Project.cpp" />
     <ClCompile Include="..\ModalDlg.cpp" />
     <ClCompile Include="..\ModelessDlg.cpp" />
     <ClCompile Include="..\OptionsTabDlg.cpp" />
@@ -332,6 +333,7 @@
     <ClInclude Include="..\LinetypeDlg.h" />
     <ClInclude Include="..\LineWeightDlg.h" />
     <ClInclude Include="..\MainFileDlg.h" />
+    <ClInclude Include="..\Methods\Methods_Project.h" />
     <ClInclude Include="..\ModalDlg.h" />
     <ClInclude Include="..\ModelessDlg.h" />
     <ClInclude Include="..\OptionsTabDlg.h" />

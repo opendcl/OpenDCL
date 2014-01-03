@@ -98,7 +98,7 @@
              (not (zerop (vlax-variant-type result))))
       (append_status "  Herunterladen erfolgreich!")
       (progn
-        (append_status "  Die Antwort vom Server ist leer geblieben, ich habe keine Datei heruntergeladen!")
+        (append_status "  FEHLER: Die Antwort vom Server ist leer geblieben, ich habe keine Datei heruntergeladen!")
         (setq result nil)
       ); progn
     ); if
@@ -144,7 +144,7 @@
                     (setq result
                       (vl-catch-all-apply
                         (function
-                          (lambda (/ element)
+                          (lambda ()
                             (foreach element (vlax-safearray->list (vlax-variant-value result))
                               (vlax-invoke filestream "Write" (chr (+ 256 (logand 255 element))))
                             )
@@ -286,29 +286,27 @@
 (DEFUN c:_MasterDemo_Update_btnUpdate_OnClicked (/ msipath curlang)
   (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate nil)
   (dcl_Control_SetVisible _MasterDemo_Update_btnClose nil)
-  (if (setq msipath
-               (write_msi
-                   (setq curlang (dcl_Control_GetCaption _MasterDemo_Update_lblLanguageAvail))
-                   (dcl_Control_GetVisible _MasterDemo_Update_lblDevBuildAvail)
-                   (strcat
-                       "OpenDCL.Studio."
-                       (strcase curlang)
-                       "."
-                       (dcl_Control_GetCaption _MasterDemo_Update_lblVersionAvail)
-                       ".msi"
-                   ); strcat
-               ); write_msi
-      ); setq
+  (setq msipath
+    (write_msi
+      (setq curlang (dcl_Control_GetCaption _MasterDemo_Update_lblLanguageAvail))
+      (dcl_Control_GetVisible _MasterDemo_Update_lblDevBuildAvail)
+      (strcat
+        "OpenDCL.Studio."
+        (strcase curlang)
+        "."
+        (dcl_Control_GetCaption _MasterDemo_Update_lblVersionAvail)
+        ".msi"
+      ); strcat
+    ); write_msi
+  ); setq
+  (if msipath
     (progn
       (dcl_SendString "(*ODCL:Vanish)\n")
       (startapp (strcat "msiexec.exe /i " msipath))
       (dcl_Form_Close _MasterDemo_Update 1)
     ); progn
-    (progn
-      (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate T)
-      (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
-    ); progn
-  ); if
+    (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
+  )
 )
 
 (DEFUN c:_MasterDemo_Main_btnMisc_OnClicked ()

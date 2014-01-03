@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
@@ -23,64 +23,64 @@
 	<hr />
 	<div id="content">
 		<p>There are several different error handling situations encountered in 
-        OpenDCL programming: standard AutoLISP error handling, user input error 
-        handling, and OpenDCL Runtime error handling. Handling standard AutoLISP 
-        errors is not covered here.</p>
+				OpenDCL programming: standard AutoLISP error handling, user input error 
+				handling, and OpenDCL Runtime error handling. Handling standard AutoLISP 
+				errors is not covered here.</p>
 		<h4>User Input Error Handling</h4>
 		<p>A properly designed graphical user interface design should, to the 
-        extent possible, prevent user input errors from occurring in the first 
-        place. OpenDCL allows controls to be dynamically disabled (or hidden) at 
-        runtime, which makes it possible to reconfigure inter-dependent controls 
-        as conditions change to ensure that only valid user input is possible. 
-        The user interface should be the first line of defense against invalid 
-        input.</p>
+				extent possible, prevent user input errors from occurring in the first 
+				place. OpenDCL allows controls to be dynamically disabled (or hidden) at 
+				runtime, which makes it possible to reconfigure inter-dependent controls 
+				as conditions change to ensure that only valid user input is possible. 
+				The user interface should be the first line of defense against invalid 
+				input.</p>
 		<p>Handling user input errors in OpenDCL forms must be done via event 
-        handlers for individual controls or for the form as a whole. Some 
-        controls, such as the text box control, support input filters to prevent 
-        erroneous input from being entered into the text box. Using controls 
-        like dropdown combo boxes or option buttons can limit the user's input 
-        to predetermined values. For forms that support it, the
-        <a href="../Reference/Event/CancelClose.htm">CancelClose</a> event can 
-        be used to check input on the form and prevent the dialog from closing 
-        if invalid input is found.</p>
+				handlers for individual controls or for the form as a whole. Some 
+				controls, such as the text box control, support input filters to prevent 
+				erroneous input from being entered into the text box. Using controls 
+				like dropdown combo boxes or option buttons can limit the user's input 
+				to predetermined values. For forms that support it, the
+				<a href="../Reference/Event/CancelClose.htm">CancelClose</a> event can 
+				be used to check input on the form and prevent the dialog from closing 
+				if invalid input is found.</p>
 		<p>Following is a typical usage scenario for the 
-        <a href="../Reference/Event/CancelClose.htm">CancelClose</a> event:</p>
-	    <pre>(defun HighlightFormErrors () <span class="codecomment">; Return T if there was an error, NIL otherwise</span>
-  (if (CheckForFormInputErrors) <span class="codecomment">; Call function that does the checking</span>
-    (progn
-      <span class="codecomment">;; Here you can highlight the error, display a message box with more information,</span>
-      <span class="codecomment">;; or do something to fix the error (then return NIL if the error is fixed!)</span>
-      (<a href="../Reference/Function/MessageBox.htm">dcl_MessageBox</a> &quot;Form contains invalid input!&quot; &quot;Error&quot; 2 4)
-      T <span class="codecomment">; Signal error found and not resolved by returning T</span>
-    )
-  )
-  <span class="codecomment">; Note that this function returns NIL if no errors were found</span>
+				<a href="../Reference/Event/CancelClose.htm">CancelClose</a> event:</p>
+			<pre>(defun HighlightFormErrors () <span class="codecomment">; Return T if there was an error, NIL otherwise</span>
+	(if (CheckForFormInputErrors) <span class="codecomment">; Call function that does the checking</span>
+		(progn
+			<span class="codecomment">;; Here you can highlight the error, display a message box with more information,</span>
+			<span class="codecomment">;; or do something to fix the error (then return NIL if the error is fixed!)</span>
+			(<a href="../Reference/Function/MessageBox.htm">dcl-MessageBox</a> &quot;Form contains invalid input!&quot; &quot;Error&quot; 2 4)
+			T <span class="codecomment">; Signal error found and not resolved by returning T</span>
+		)
+	)
+	<span class="codecomment">; Note that this function returns NIL if no errors were found</span>
 )
 
-(defun <a href="../Reference/Event/CancelClose.htm">c:Project1_Form1_OnCancelClose</a>( Canceling /)
-  <span class="codecomment">;; Return T to prevent form closing if not canceling, and unresolved errors found</span>
-  (and (/= 1 Canceling) (HighlightFormErrors)) <span class="codecomment">; Always allow form to close when canceling</span>
+(defun <a href="../Reference/Event/CancelClose.htm">c:Project1/Form1#OnCancelClose</a>( Canceling /)
+	<span class="codecomment">;; Return T to prevent form closing if not canceling, and unresolved errors found</span>
+	(and (/= 1 Canceling) (HighlightFormErrors)) <span class="codecomment">; Always allow form to close when canceling</span>
 )</pre>
-        <h4>OpenDCL Runtime Errors</h4>
-        <p>Calling OpenDCL Runtime functions can result in two types of error 
-        conditions: exceptions and function failures.</p>
-        <p>Exceptions indicate a bug in your code, such as passing an incorrect 
-        argument type, or an argument with an illegal value. Unless OpenDCL 
-        messages are suppressed (see
-        <a href="../Reference/Function/SuppressMessages.htm">SuppressMessages</a>), 
-        exceptions result in a message box that describes the location and 
-        nature of the exception, followed by an AutoLISP error that causes the 
-        program to stop running. Argument processing exceptions display the 
-        function name and zero-based argument index where the exception 
-        occurred.</p>
-        <p>Function failures are normally indicated by the function returning 
-        NIL. For example, attempting to set the current selection of a list box 
-        to a nonexistent list item results in a return value of NIL. These types 
-        of errors can be handled in code if desired, or in some cases simply 
-        ignored.</div>
+				<h4>OpenDCL Runtime Errors</h4>
+				<p>Calling OpenDCL Runtime functions can result in two types of error 
+				conditions: exceptions and function failures.</p>
+				<p>Exceptions indicate a bug in your code, such as passing an incorrect 
+				argument type, or an argument with an illegal value. Unless OpenDCL 
+				messages are suppressed (see
+				<a href="../Reference/Function/SuppressMessages.htm">SuppressMessages</a>), 
+				exceptions result in a message box that describes the location and 
+				nature of the exception, followed by an AutoLISP error that causes the 
+				program to stop running. Argument processing exceptions display the 
+				function name and zero-based argument index where the exception 
+				occurred.</p>
+				<p>Function failures are normally indicated by the function returning 
+				NIL. For example, attempting to set the current selection of a list box 
+				to a nonexistent list item results in a return value of NIL. These types 
+				of errors can be handled in code if desired, or in some cases simply 
+				ignored.</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="de">
@@ -27,14 +27,14 @@
 		<p>Das hat zur Folge, dass nichtmodale Dialoge nur verwaltet werden k&ouml;nnen, wenn sichergestellt ist, dass die Ereignisse in jeder neuen Zeichnung definiert sind. In der Praxis muss die LSP-, FAS- oder VLX-Datei der Applikation mit der acaddoc.lsp oder einer &auml;hnlichen Methode als Teil der Zeichnungsinitialisierung geladen werden. </p>
 	    <p>Zudem muss beim &Ouml;ffnen einer weiteren Zeichnung auf einen bereits ge&ouml;ffneten nichtmodalen Dialog reagiert werden. Liest beispielsweise die Applikation einige initialisierende Einstellungen aus der Windows-Registrierung, sollte dies nur geschehen, wenn der Dialog tats&auml;chlich erstmals aufgerufen wird. Eine derartige Initialisierung kann zum Beispiel in dem <a href="../Reference/Event/Initialize.htm">OnInitialize</a>-Ereignis Anwendung finden, dann wird es nur einmal ausgef&uuml;hrt, wenn der Dialog eingeblendet wird. Mit dem folgenden beispielhaften Ausdruck pr&uuml;fen Sie, ob der Dialog zur Laufzeit bereits aktiv ist: </p>
 		<blockquote>
-          <pre>(and (MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
+          <pre>(and (MyProject-MyForm (dcl-Form-IsActive MyProject-MyForm))</pre>
         </blockquote>
       <p>Zus&auml;tzlich zum Programmstart muss der Programmablauf auch mit mehreren Zeichnungen umgehen k&ouml;nnen und auf den Zustand reagieren, wenn alle Zeichnungen geschlossen werden (sogenannter &quot;NoDocState&quot;) oder wenn der Anwender zwischen mehreren offenen Zeichnungen hin- und herschaltet. Enth&auml;lt der nichtmodale Dialog zeichnungsabh&auml;ngige Einstellungen und Eigenschaften, sollten diese in den Ereignisfunktionen der aktivierten Ereignisse <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> und <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> aktualisiert und auf die neue Zeichnung hin angepasst werden.
-      <p>Die Ereignisse nichtmodaler Dialoge werden normalerweise im Kontext der AutoCAD-Anwendung aufgerufen statt im Kontext der Zeichnungsdatei. AutoLISP-Code, der im Kontext der AutoCAD-Anwendung aufgerufen wird, kann nicht jede dokumentenabh&auml;ngige Funktion (wie die AutoLISP-Funktion (command)) aufrufen. Um dieses Problem zu umgehen, kann die Eigenschaft <a href="../Reference/Property/EventInvoke.htm">Event Invoke</a> des Steuerelements verwendet werden, damit die Ereignisfunktion asynchron im Kontext der Zeichnungsdatei aufgerufen wird, was es dann letztlich erlaubt, AutoLISP-Funktionen, wie (command) erfolgreich auszuf&uuml;hren. Alternativ kann die Ereignisfunktion synchron aufgerufen werden, statt jedoch die dokumentenabh&auml;ngigen Funktionen innerhalb der Ereignisfunktion zu verwenden, kann diese einfach einen Befehl mit Hilfe der OpenDCL-Funktion <a href="../Reference/Function/SendString.htm">(dcl_SendString)</a> im Kontext der Zeichnungsdatei aufrufen. 
+      <p>Die Ereignisse nichtmodaler Dialoge werden normalerweise im Kontext der AutoCAD-Anwendung aufgerufen statt im Kontext der Zeichnungsdatei. AutoLISP-Code, der im Kontext der AutoCAD-Anwendung aufgerufen wird, kann nicht jede dokumentenabh&auml;ngige Funktion (wie die AutoLISP-Funktion (command)) aufrufen. Um dieses Problem zu umgehen, kann die Eigenschaft <a href="../Reference/Property/EventInvoke.htm">Event Invoke</a> des Steuerelements verwendet werden, damit die Ereignisfunktion asynchron im Kontext der Zeichnungsdatei aufgerufen wird, was es dann letztlich erlaubt, AutoLISP-Funktionen, wie (command) erfolgreich auszuf&uuml;hren. Alternativ kann die Ereignisfunktion synchron aufgerufen werden, statt jedoch die dokumentenabh&auml;ngigen Funktionen innerhalb der Ereignisfunktion zu verwenden, kann diese einfach einen Befehl mit Hilfe der OpenDCL-Funktion <a href="../Reference/Function/SendString.htm">(dcl-SendString)</a> im Kontext der Zeichnungsdatei aufrufen. 
 </div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		Alle Rechte vorbehalten.</p>
 		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

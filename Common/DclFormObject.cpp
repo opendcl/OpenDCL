@@ -257,7 +257,7 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 	CString sRootName = pszRootName;
 	if( sRootName.IsEmpty() )
 		sRootName = mpProject->GetKeyName();
-	CString sFormName = sRootName + _T('_') + GetKeyName();
+	CString sFormName = sRootName + _T('/') + GetKeyName();
 	GetControlProperties()->AddStringProperty( Prop::VarName, PropString, sFormName, true );
 	if( !bUpdateChildren )
 		return;
@@ -572,18 +572,18 @@ void CDclFormObject::ClearControls()
 
 IOStatus CDclFormObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
-  CString sObject;
-  if (readLine(sFile) != "CDclFormObject") return statInvalidFormat;
-  int iVersion;
-  if (!readInt(sFile, iVersion)) return statInvalidFormat;
+	CString sObject;
+	if (readLine(sFile) != "CDclFormObject") return statInvalidFormat;
+	int iVersion;
+	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  switch (iVersion) {
-    case 4 : 
-      return ReadFromTextFile4(sFile, fileName);
-      break;
+	switch (iVersion) {
+		case 4 : 
+			return ReadFromTextFile4(sFile, fileName);
+			break;
 	}
 
-  return statInvalidFormat;
+	return statInvalidFormat;
 }
 
 IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &fileName)
@@ -591,48 +591,48 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 	OnModified();
 	// Get this dcl form's name and type from archive
 	CStringA sNameDiscard;
-  if (!readString(sFile, sNameDiscard)) return statInvalidFormat;
+	if (!readString(sFile, sNameDiscard)) return statInvalidFormat;
 	long lType;
-  if (!readLong(sFile, lType)) return statInvalidFormat;
-  if (lType < -1)
+	if (!readLong(sFile, lType)) return statInvalidFormat;
+	if (lType < -1)
 		mType = _FrmInvalid;
 	else
 		mType = (FormType)lType;
 	CStringA sUniqueName;
-  if (!readString(sFile, sUniqueName)) return statInvalidFormat;
+	if (!readString(sFile, sUniqueName)) return statInvalidFormat;
 	msUniqueName = sUniqueName;
 	CStringA sParentName;
-  if (!readString(sFile, sParentName)) return statInvalidFormat;
+	if (!readString(sFile, sParentName)) return statInvalidFormat;
 	SetParentForm( CString( sParentName ) );
-  if (!readShort(sFile, mnTabIndex)) return statInvalidFormat;
+	if (!readShort(sFile, mnTabIndex)) return statInvalidFormat;
 	CStringA sUUID;
-  if (!readString(sFile, sUUID)) return statInvalidFormat;
+	if (!readString(sFile, sUUID)) return statInvalidFormat;
 	msUUID = sUUID;
 	BOOL bUsesClientRect;
-  if (!readBOOL(sFile, bUsesClientRect)) return statInvalidFormat;
+	if (!readBOOL(sFile, bUsesClientRect)) return statInvalidFormat;
 
-  // get counter for arx controls
-  int nCount;
-  if (!readInt(sFile, nCount)) return statInvalidFormat;
+	// get counter for arx controls
+	int nCount;
+	if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  ClearControls();;
+	ClearControls();;
 
-  while (nCount-- > 0)
-  {
-    TDclControlPtr pControl = new CDclControlObject( this );
+	while (nCount-- > 0)
+	{
+		TDclControlPtr pControl = new CDclControlObject( this );
 
 		IOStatus stat = pControl->ReadFromTextFile(sFile, fileName);
-    if (stat != statOK) return stat;
+		if (stat != statOK) return stat;
 
 		AddDefaultProperties( pControl );
-    AddControl(pControl);
+		AddControl(pControl);
 
-    if (mType == FrmModalDlg)
+		if (mType == FrmModalDlg)
 			pControl->RemoveProperty(Prop::EventInvoke);
-  }
+	}
 
 	int ctImageLists;
-  if (!readInt(sFile, ctImageLists)) return statInvalidFormat;
+	if (!readInt(sFile, ctImageLists)) return statInvalidFormat;
 	std::vector< CImageListObject* > rImageLists;
 	for( size_t idx = 0; idx < (size_t)ctImageLists; ++idx )
 	{
@@ -642,7 +642,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 			continue;
 		CImageListObject* pImageList = new CImageListObject;
 		IOStatus stat = pImageList->ReadFromTextFile( sFile, fileName );
-    if (stat != statOK)
+		if (stat != statOK)
 		{
 			delete pImageList;
 			size_t idx = rImageLists.size();
@@ -655,9 +655,9 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 	if( !rImageLists.empty() )
 		MoveImageListsToControls( rImageLists, this ); //moving all control image lists to the individual controls
 
-  if( !mDclControls.empty() )
-  {
-    TDclControlPtr pControl = GetControlProperties();		
+	if( !mDclControls.empty() )
+	{
+		TDclControlPtr pControl = GetControlProperties();		
 
 		switch (mType)
 		{
@@ -678,19 +678,19 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		//	pControl->RemoveProperty( Prop::MaxDialogHeight );
 		//	break;		
 		}
-  }
+	}
 	return statOK;
 }
 
 UUID CDclFormObject::GetUUID() const
 {
-  UUID uuid;
+	UUID uuid;
 #ifdef _UNICODE
-  UuidFromString((RPC_WSTR)(LPCWSTR)msUUID, &uuid);
+	UuidFromString((RPC_WSTR)(LPCWSTR)msUUID, &uuid);
 #else
-  UuidFromString((RPC_CSTR)(LPCSTR)msUUID, &uuid);
+	UuidFromString((RPC_CSTR)(LPCSTR)msUUID, &uuid);
 #endif
-  return uuid;
+	return uuid;
 }
 
 CString CDclFormObject::GetKeyName() const
@@ -712,7 +712,7 @@ CString CDclFormObject::GetKeyName() const
 
 CString CDclFormObject::GetKeyPath() const
 {
-	return mpProject->GetKeyName() + _T('_') + GetKeyName();
+	return mpProject->GetKeyName() + _T('/') + GetKeyName();
 }
 
 CString CDclFormObject::GetVarName() const

@@ -589,6 +589,9 @@
     <ClCompile Include="..\Methods\Methods_Tree.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Methods\Methods_Project.cpp">
+      <Filter>Methods\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -1315,6 +1318,9 @@
     </ClInclude>
     <ClInclude Include="..\Methods\Methods_Tree.h">
       <Filter>Methods\Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Methods\Methods_Project.h">
+      <Filter>Include Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -389,6 +389,7 @@ void CPaletteDlg::OnTimer( UINT_PTR nID )
 	switch( nID )
 	{
 	case CDialogObject::idUserTimer:
+		StartTimer( (UINT)-1 );
 		GetArxServices()->HandleEvent( Prop::FormEventTimer );
 		break;
 	default:

@@ -1,60 +1,134 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="de">
-<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>Objektmodell</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="de">
+  <link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../Utility.js"></script>
+  <title>Objektmodell</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Objektmodell</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-<div id="content">
-	<p>Die AutoLISP-Schnittstelle, die durch die OpenDCL-Laufzeitumgebung geladen wird, lehnt sich an objektorientierte Entwicklungsumgebungen an, w&auml;hrend AutoLISP selbst - genau genommen - nicht objektorientiert arbeitet. Nichts desto trotz verwendet OpenDCL ein eigenes Objektmodell, und es ist hilfreich, das Objektmodell zu kennen und zu verstehen, wenn mit OpenDCL programmiert wird. Eine der Konventionen ist, dass beim Aufruf von Methoden oder Abfragen bzw. Zuweisen von Eigenschaften zur Laufzeit das erste Argument immer die Objektinstanz ist, auf die eine Methode angewandt oder an der Eigenschaften ge&auml;ndert werden k&ouml;nnen. </p>
-		<p>Die OpenDCL-Objekte stehen im AutoLISP als Entities zur Verf&uuml;gung (Entity: ein Objektzeiger, der auf die Objektinstanz verweist). Wenn ein OpenDCL-Projekt geladen wird, belegt OpenDCL automatisch AutoLISP-Symbole f&uuml;r jeden Dialog der Projektdatei. Wird ein Dialog aufgerufen, werden automatisch Instanzen der Steuerelemente erstellt und OpenDCL belegt f&uuml;r jedes Steuerelement der Dialogbox AutoLISP-Symbole. Die Namen der AutoLISP-Symbole f&uuml;r Steuerelemente und Dialogboxen werden durch den Inhalt der Eigenschaft <a href="../Reference/Property/VarName.htm">VarName</a> bestimmt und dienen der eineindeutigen Zuordnung der Objekte. So wird beispielsweise ein Dialog angezeigt, indem die Methode <a href="../Reference/Method/Form/Show.htm">Form_Show</a> auf das Dialogobjekt (als erstes Argument der Funktion) angewandt wird:</p>
-		<pre>(<a href="../Reference/Method/Form/Show.htm">dcl_Form_Show</a> Project1_Form1)</pre>
-    <p>In diesem Beispiel ist Project1_Form1 ein AutoLISP-Symbol, das automatisch durch OpenDCL belegt wurde, um nach dem Laden des Projekts auf das Dialogobjekt zugreifen zu k&ouml;nnen. In diesem Fall hei&szlig;t die Projektdatei Projekt1.odcl und der Dialog in der Projektdatei tr&auml;gt den Namen &quot;Form1&quot;. Selbstverst&auml;ndlich k&ouml;nnen Sie die Namen der Projektdatei und des Dialog jederzeit &auml;ndern. </p>
-        <h4>OpenDCL Objektmodell</h4>
-	<p>Ein OpenDCL-Basisobjekt, das in AutoCAD erstellt wird, ist das <a href="../Reference/DataType/Control.htm">Steuerelement</a>. Dialoge sind intern besondere Steuerelemente, so dass Methoden der Steuerelemente auch auf Dialoge angewandt werden k&ouml;nnen. Ein anderes Basisobjekt von OpenDCL ist das <a href="../Reference/DataType/Project.htm">Projekt</a>. OpenDCL erzeugt zudem besondere Objekte wie <a href="../Reference/DataType/ImageList.htm">ImageList</a>,
-          <a href="../Reference/DataType/BinFile.htm">BinFile</a> und
-        <a href="../Reference/DataType/AxObject.htm">AxObject</a>. Jedes dieser Objekte verwendet eigene Methoden und kann mit folgender Syntax angesprochen werden: </p>
-		<pre>(dcl_METHODENNAME &lt;OBJEKT&gt; ARGUMENTE)</pre>
-    <p>Jedes Steuerelement enth&auml;lt eine Liste von <a href="../Reference/Property/Index.htm">Eigenschaften</a>. Verschiedene Steuerelemente verf&uuml;gen &uuml;ber verschiedene Eigenschaften, daf&uuml;r haben alle gleichen Steuerelemente die selben Eigenschaften. Einige Steuerelemente, wie ActiveX-Steuerelemente, haben neben den standardm&auml;&szlig;ig zur Verf&uuml;gung stehenden OpenDCL-Eigenschaften zus&auml;tzliche Eigenschaften. Die Eigenschaften werden nicht als unabh&auml;ngige Objekte abgebildet; der Zugriff erfolgt &uuml;ber die Eigent&uuml;merobjekte sowie ihren Namen entsprechend der nachfolgenden Konvention, wobei der Eigenschaftsname der Name in der API und nicht der lokale Name (&quot;sprechende Name&quot;) ist:</p>
-        <pre>(dcl_Control_GetEIGENSCHAFT &lt;CONTROL&gt;)
-(dcl_Control_SetEIGENSCHAFT &lt;CONTROL&gt; NEUERWERT)</pre>
-        <p>Alternativ kann der Zugriff auf die Eigenschaften mit Hilfe der generischen Methoden <a href="../Reference/Method/Control/GetProperty.htm">
-        Control_GetProperty</a> und
-        <a href="../Reference/Method/Control/SetProperty.htm">
-        Control_SetProperty</a> erfolgen.</p>
-		<h4>OpenDCL Projektstruktur</h4>
-	<p>Wie Sie aus dem folgenden Strukturdiagramm entnehmen k&ouml;nnen, enth&auml;lt ein OpenDCL-Projekt Dialoge und Bilder (Symbole, Icons). Dialoge verf&uuml;gen &uuml;ber Eigenschaften und enthalten Steuerelemente, die ihrerseits &uuml;ber Eigenschaften verf&uuml;gen. Die Laufzeitumgebung von OpenDCL kann beliebig viele Projekte parallel laden, so dass mehrere voneinander unabh&auml;ngige OpenDCL-Applikationen innerhalb von AutoCAD arbeiten k&ouml;nnen, ohne sich gegenseitig zu st&ouml;ren. </p>
-		<p><img border="0" src="ProjectStructure.png" width="554" height="438"></p>
-		<h4>OpenDCL Steuerelemente </h4>
-	<p>Der Zugriff auf Steuerelemente und Dialoge in AutoLISP erfolgt &uuml;ber AutoLISP-Symbole, die den Objektzeiger f&uuml;r das jeweilige <a href="../Reference/DataType/Control.htm">Steuerelement</a> enthalten. Diese Symbole werden automatisch im Namensraum jeder Zeichnung erstellt und belegt, sobald eine Instanz des Dialogs aktiv ist. Standardm&auml;&szlig;ig setzt sich der AutoLISP-Symbolname f&uuml;r das Steuerelement aus dem Projektnamen, dem Dialognamen und dem Namen des Steuerelements zusammen, getrennt durch einen liegenden Bindestrich (_), wie nachfolgendes Beispiel zeigt.</p>
-		<blockquote>
-          <pre>ProjectKey_FormName_ControlName</pre>
-        </blockquote>
-    <p>Der Symbolname k&ouml;nnen Sie &uuml;berschreiben, indem Sie den Wert der Eigenschaft <a href="../Reference/Property/VarName.htm">VarName</a> des Steuerelements anpassen. Um das Risiko von Doppeltbelegungen zwischen den Applikationen zu vermeiden, empfehlen wir dringend die vorgabem&auml;&szlig;ige Namensgebung beizubehalten.
-</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          Objektmodell</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+            Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <p>
+      Die AutoLISP-Schnittstelle, die durch die OpenDCL-Laufzeitumgebung geladen wird,
+      lehnt sich an objektorientierte Entwicklungsumgebungen an, w&auml;hrend AutoLISP
+      selbst - genau genommen - nicht objektorientiert arbeitet. Nichts desto trotz verwendet
+      OpenDCL ein eigenes Objektmodell, und es ist hilfreich, das Objektmodell zu kennen
+      und zu verstehen, wenn mit OpenDCL programmiert wird. Eine der Konventionen ist,
+      dass beim Aufruf von Methoden oder Abfragen bzw. Zuweisen von Eigenschaften zur
+      Laufzeit das erste Argument immer die Objektinstanz ist, auf die eine Methode angewandt
+      oder an der Eigenschaften ge&auml;ndert werden k&ouml;nnen.
+    </p>
+    <p>
+      Die OpenDCL-Objekte stehen im AutoLISP als Entities zur Verf&uuml;gung (Entity:
+      ein Objektzeiger, der auf die Objektinstanz verweist). Wenn ein OpenDCL-Projekt
+      geladen wird, belegt OpenDCL automatisch AutoLISP-Symbole f&uuml;r jeden Dialog
+      der Projektdatei. Wird ein Dialog aufgerufen, werden automatisch Instanzen der Steuerelemente
+      erstellt und OpenDCL belegt f&uuml;r jedes Steuerelement der Dialogbox AutoLISP-Symbole.
+      Die Namen der AutoLISP-Symbole f&uuml;r Steuerelemente und Dialogboxen werden durch
+      den Inhalt der Eigenschaft <a href="../Reference/Property/VarName.htm">VarName</a>
+      bestimmt und dienen der eineindeutigen Zuordnung der Objekte. So wird beispielsweise
+      ein Dialog angezeigt, indem die Methode <a href="../Reference/Method/Form/Show.htm">
+        Form-Show</a> auf das Dialogobjekt (als erstes Argument der Funktion) angewandt
+      wird:</p>
+    <pre>(<a href="../Reference/Method/Form/Show.htm">dcl-Form-Show</a> Project1/Form1)</pre>
+    <p>
+      In diesem Beispiel ist Project1/Form1 ein AutoLISP-Symbol, das automatisch durch
+      OpenDCL belegt wurde, um nach dem Laden des Projekts auf das Dialogobjekt zugreifen
+      zu k&ouml;nnen. In diesem Fall hei&szlig;t die Projektdatei Projekt1.odcl und der
+      Dialog in der Projektdatei tr&auml;gt den Namen &quot;Form1&quot;. Selbstverst&auml;ndlich
+      k&ouml;nnen Sie die Namen der Projektdatei und des Dialog jederzeit &auml;ndern.
+    </p>
+    <h4>
+      OpenDCL Objektmodell</h4>
+    <p>
+      Ein OpenDCL-Basisobjekt, das in AutoCAD erstellt wird, ist das <a href="../Reference/DataType/Control.htm">
+        Steuerelement</a>. Dialoge sind intern besondere Steuerelemente, so dass Methoden
+      der Steuerelemente auch auf Dialoge angewandt werden k&ouml;nnen. Ein anderes Basisobjekt
+      von OpenDCL ist das <a href="../Reference/DataType/Project.htm">Projekt</a>. OpenDCL
+      erzeugt zudem besondere Objekte wie <a href="../Reference/DataType/ImageList.htm">
+        ImageList</a>, <a href="../Reference/DataType/BinFile.htm">BinFile</a> und <a href="../Reference/DataType/AxObject.htm">
+          AxObject</a>. Jedes dieser Objekte verwendet eigene Methoden und kann mit folgender
+      Syntax angesprochen werden:
+    </p>
+    <pre>(dcl-METHODENNAME &lt;OBJEKT&gt; ARGUMENTE)</pre>
+    <p>
+      Jedes Steuerelement enth&auml;lt eine Liste von <a href="../Reference/Property/Index.htm">
+        Eigenschaften</a>. Verschiedene Steuerelemente verf&uuml;gen &uuml;ber verschiedene
+      Eigenschaften, daf&uuml;r haben alle gleichen Steuerelemente die selben Eigenschaften.
+      Einige Steuerelemente, wie ActiveX-Steuerelemente, haben neben den standardm&auml;&szlig;ig
+      zur Verf&uuml;gung stehenden OpenDCL-Eigenschaften zus&auml;tzliche Eigenschaften.
+      Die Eigenschaften werden nicht als unabh&auml;ngige Objekte abgebildet; der Zugriff
+      erfolgt &uuml;ber die Eigent&uuml;merobjekte sowie ihren Namen entsprechend der
+      nachfolgenden Konvention, wobei der Eigenschaftsname der Name in der API und nicht
+      der lokale Name (&quot;sprechende Name&quot;) ist:</p>
+    <pre>(dcl-Control-GetEIGENSCHAFT &lt;CONTROL&gt;)
+(dcl-Control-SetEIGENSCHAFT &lt;CONTROL&gt; NEUERWERT)</pre>
+    <p>
+      Alternativ kann der Zugriff auf die Eigenschaften mit Hilfe der generischen Methoden
+      <a href="../Reference/Method/Control/GetProperty.htm">Control-GetProperty</a> und
+      <a href="../Reference/Method/Control/SetProperty.htm">Control-SetProperty</a> erfolgen.</p>
+    <h4>
+      OpenDCL Projektstruktur</h4>
+    <p>
+      Wie Sie aus dem folgenden Strukturdiagramm entnehmen k&ouml;nnen, enth&auml;lt ein
+      OpenDCL-Projekt Dialoge und Bilder (Symbole, Icons). Dialoge verf&uuml;gen &uuml;ber
+      Eigenschaften und enthalten Steuerelemente, die ihrerseits &uuml;ber Eigenschaften
+      verf&uuml;gen. Die Laufzeitumgebung von OpenDCL kann beliebig viele Projekte parallel
+      laden, so dass mehrere voneinander unabh&auml;ngige OpenDCL-Applikationen innerhalb
+      von AutoCAD arbeiten k&ouml;nnen, ohne sich gegenseitig zu st&ouml;ren.
+    </p>
+    <p>
+      <img border="0" src="ProjectStructure.png" width="554" height="438"></p>
+    <h4>
+      OpenDCL Steuerelemente
+    </h4>
+    <p>
+      Der Zugriff auf Steuerelemente und Dialoge in AutoLISP erfolgt &uuml;ber AutoLISP-Symbole,
+      die den Objektzeiger f&uuml;r das jeweilige <a href="../Reference/DataType/Control.htm">
+        Steuerelement</a> enthalten. Diese Symbole werden automatisch im Namensraum jeder
+      Zeichnung erstellt und belegt, sobald eine Instanz des Dialogs aktiv ist. Standardm&auml;&szlig;ig
+      setzt sich der AutoLISP-Symbolname f&uuml;r das Steuerelement aus dem Projektnamen,
+      dem Dialognamen und dem Namen des Steuerelements zusammen, getrennt durch einen
+      Schrägstrich (/), wie nachfolgendes Beispiel zeigt.</p>
+    <blockquote>
+      <pre>ProjectKey/FormName/ControlName</pre>
+    </blockquote>
+    <p>
+      Der Symbolname k&ouml;nnen Sie &uuml;berschreiben, indem Sie den Wert der Eigenschaft
+      <a href="../Reference/Property/VarName.htm">VarName</a>
+    des Steuerelements anpassen. Um das Risiko von Doppeltbelegungen zwischen den Applikationen
+    zu vermeiden, empfehlen wir dringend die vorgabem&auml;&szlig;ige Namensgebung beizubehalten.
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      Alle Rechte vorbehalten.</p>
+    <p>
+      OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+        OpenDCL Consortium</a>.</p>
+    <p>
+      AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+        target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

@@ -1,43 +1,44 @@
 ;;;
-;;; Miscellaneous Sample
+;;; Splash Sample
 ;;;
-;;; This sample demonstrates miscellaneous controls.
+;;; This sample demonstrates the timer event with a splash screen.
 ;;;
 
 ;; Main program
 (defun c:Splash (/ cmdecho)
 
-	;; Ensure OpenDCL Runtime is (quietly) loaded
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  ;; Ensure OpenDCL Runtime is (quietly) loaded
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
-	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Splash.odcl"))
+  ;; Load the project
+  (dcl-Project-Load (*ODCL:Samples:FindFile "Splash.odcl"))
 
-	;; Show the main form
-	(dcl_Form_Show splash_Form1)
-	;; This is a modeless form, so (dcl_Form_Show) returns immediately,
-	;; leaving the event handlers to manage the form.
+  ;; Show the main form
+  (dcl-Form-Show Splash/Form1)
 
-	(setq *Count* 4)
-	(C:CloseSplash)
+  ;; This is a modeless form, so (dcl-Form-Show) returns immediately,
+  ;; leaving the event handlers to manage the form.
 
-	(princ)
-)
+  (setq *Count* 4)
+  (c:splash/Form1#OnTimer)
 
-(defun C:CloseSplash ()
-	(dcl_Control_SetCaption splash_Form1_Label1 (strcat "Loading..." (itoa *Count*)))
-	(setq *Count* (1- *Count*))
-	(if (/= *Count* -1)
-		(dcl_DelayedInvoke 1000 "C:CloseSplash")
-		(dcl_Form_close splash_Form1)
-	)
-	(princ)
+  (princ)
 )
 
 ;|<<OpenDCL Event Handlers>>|;
+
+(defun c:splash/Form1#OnTimer ()
+  (dcl-Control-SetCaption Splash/Form1/Label1 (strcat "Loading..." (itoa *Count*)))
+  (setq *Count* (1- *Count*))
+  (if (/= *Count* -1)
+    (dcl-Form-StartTimer Splash/Form1 1000)
+    (dcl-Form-Close Splash/Form1)
+  )
+  (princ)
+)
 
 (princ)
 
@@ -52,57 +53,57 @@
 ;;; are used throughout the samples.
 ;;;
 (or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
-		(setq *ODCL:Prefix
-			(cond
-				(	*ODCL:Prefix
-				) ;_ already defined
-				(	(vl-registry-read
-						 "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						 "SamplesFolder"
-					)
-				) ;_ 32-bit location
-				(	(vl-registry-read
-						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						 "SamplesFolder"
-					)
-				) ;_ 32-bit location
-				(	(vl-registry-read
-						 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						 "SamplesFolder"
-					)
-				) ;_ 64-bit location
-				(	(vl-registry-read
-						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						 "SamplesFolder"
-					)
-				) ;_ 64-bit location
-			)
-		)
-		(cond
-			((findfile file)) ; check the support path first
-			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-			(file)
-		)
-	)
+  (defun *ODCL:Samples:FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ already defined
+        (	(vl-registry-read
+             "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 32-bit location
+        (	(vl-registry-read
+             "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 32-bit location
+        (	(vl-registry-read
+             "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 64-bit location
+        (	(vl-registry-read
+             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 64-bit location
+      )
+    )
+    (cond
+      ((findfile file)) ; check the support path first
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
 )
 
 ;; If master demo is active, run the main function immediately; otherwise
 ;; display a banner. The extra gymnastics allow the sample name to be
 ;; specified in only one place, thus making it easier to reuse this code.
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
-			(progn
-				(princ (strcat "'" demoname "\n"))
-				(apply (read (strcat "C:" demoname)) nil)
-			)
-			(progn
-				(princ (strcat "\n" demoname " OpenDCL sample loaded"))
-				(princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
-			)
-		)
-	)
-	"Splash"
+    (if *ODCL:MasterDemo
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL sample loaded"))
+        (princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
+      )
+    )
+  )
+  "Splash"
 )
 (princ)
 

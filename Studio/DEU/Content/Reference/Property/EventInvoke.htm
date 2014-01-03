@@ -44,12 +44,12 @@
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Funktion
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(getprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="getprop">(dcl_Control_GetEventInvoke <i>&lt;CONTROL&gt;</i>)</code></td>
+<td bgcolor="#CCFF99"><code id="getprop">(dcl-Control-GetEventInvoke <i>&lt;CONTROL&gt;</i>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Funktion
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetEventInvoke <i>&lt;CONTROL&gt;</i>
+<td bgcolor="#CCFF99"><code id="setprop">(dcl-Control-SetEventInvoke <i>&lt;CONTROL&gt;</i>
             <font color="#FF0000">intNewValue [als <a href="../DataType/Integer.htm">
             Integer</a>]</font>)</code></td>
           </tr>
@@ -76,9 +76,9 @@
             <td>asynchron</td>
           </tr>
         </table>
-		<p>Synchron ausgef&uuml;hrte Ereignisfunktionen k&ouml;nnen nur eingeschr&auml;nkt agieren, weil sie in einem verschobenen Zustand zum Programmablauf des Dialogs ablaufen und AutoCAD keine Befehle abarbeiten kann. So kann beispielsweise die AutoLISP-Funktion (command) nicht sicher ausgef&uuml;hrt werden. Das Erstellen und &Auml;ndern (auch via ActiveX) von Objekten und Sachdaten (als EED, LData und XRecordData) bleibt gegebenenfalls ohne Wirkung. In besonderen F&auml;llen k&ouml;nnen Sie innerhalb synchron ausgef&uuml;hrter Ereignisfunktionen von nichtmodalen Dialogen einen Befehl an der AutoCAD-Befehlszeile erzwingen, indem Sie ihn mit der Funktion <a href="../Function/SendString.htm">(dcl_sendstring)</a> aufrufen lassen. </p>
+		<p>Synchron ausgef&uuml;hrte Ereignisfunktionen k&ouml;nnen nur eingeschr&auml;nkt agieren, weil sie in einem verschobenen Zustand zum Programmablauf des Dialogs ablaufen und AutoCAD keine Befehle abarbeiten kann. So kann beispielsweise die AutoLISP-Funktion (command) nicht sicher ausgef&uuml;hrt werden. Das Erstellen und &Auml;ndern (auch via ActiveX) von Objekten und Sachdaten (als EED, LData und XRecordData) bleibt gegebenenfalls ohne Wirkung. In besonderen F&auml;llen k&ouml;nnen Sie innerhalb synchron ausgef&uuml;hrter Ereignisfunktionen von nichtmodalen Dialogen einen Befehl an der AutoCAD-Befehlszeile erzwingen, indem Sie ihn mit der Funktion <a href="../Function/SendString.htm">(dcl-sendstring)</a> aufrufen lassen. </p>
 		<blockquote>
-		  <pre>(dcl_sendstring &quot;MeinBefehl\n&quot;) <span class="codecomment">;; Mit dem Sonderzeichen \n initiieren Sie das Bet&auml;tigen der ENTER-Taste</span></pre>
+		  <pre>(dcl-sendstring &quot;MeinBefehl\n&quot;) <span class="codecomment">;; Mit dem Sonderzeichen \n initiieren Sie das Bet&auml;tigen der ENTER-Taste</span></pre>
   </blockquote>
 		<p>Asynchron ausgef&uuml;hrte Ereignisfunktionen werden in den meisten F&auml;llen solange nicht ausgef&uuml;hrt, bis das ausl&ouml;sende Ereignis beendet ist, daf&uuml;r kann das Ereignis die AutoLISP-Funktion (command) sicher aufrufen, um AutoLISP-Befehle abzuarbeiten. Verwendet ein Steuerelement in einem nichtmodalen Dialog die AutoLISP-Funktion (command), muss die Eigenschaft Event Invoke des Steuerelement auf 1 gesetzt werden. Bitte beachten Sie, dass die Funktionsnamen und ihre Argumente von asynchron ausgef&uuml;hrten Ereignisfunktionen im Stapel der in AutoCAD zuletzt ausgef&uuml;hrten Befehle erscheinen.</p>
 		<p>Ereignisse, die definitionsgem&auml;&szlig; einen R&uuml;ckgabewert von der Ereignisfunktion abfangen, werden grunds&auml;tzlich synchron ausgef&uuml;hrt, sonst w&uuml;rde ja der R&uuml;ckgabewert verlorengehen. Ereignisse der modalen Dialoge werden immer synchron ausgef&uuml;hrt, da sie naturgem&auml;&szlig; 
@@ -88,7 +88,7 @@
 	</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		Alle Rechte vorbehalten.</p>
 		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

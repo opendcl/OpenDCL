@@ -536,6 +536,6 @@ CString CEventsTabPane::GetEvent( size_t idxProp )
 		++iterProp;
 	CString sEventName = (*iterProp)->GetStringValue();
 	if( sEventName.IsEmpty() )
-		sEventName.Format( _T("c:%s_On%s"), mpDclControl->GetVarName(), (*iterProp)->GetName() );
+		sEventName.Format( _T("c:%s#On%s"), mpDclControl->GetVarName(), (*iterProp)->GetName() );
 	return sEventName;
 }

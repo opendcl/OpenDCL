@@ -1,308 +1,625 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="de">
-<link rel="StyleSheet" href="../../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../../Utility.js"></script>
-<title>Grid_SetCellStyle</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content="de">
+	<link rel="StyleSheet" href="../../../WinHelp.css" type="text/css" media="screen,print">
+	<script type="text/javascript" src="../../../Utility.js"></script>
+	<title>Grid-SetCellStyle</title>
 </head>
 <body>
 	<table width="100%">
 		<tr>
 			<td nowrap>
 				<div id="title">
-                  <img border="0" src="../../images/Method.png" width="16" height="16"> 
-                  Grid_SetCellStyle</div>
+					<img border="0" src="../../images/Method.png" width="16" height="16">
+					Grid-SetCellStyle</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+				<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+						Übersetzung melden</a><br />
 					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
 				</div>
 			</td>
 		</tr>
 	</table>
 	<hr />
-<div id="content">
-        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
-            <td bgcolor="#CCFF99">dcl_Grid_SetCellStyle</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
-&nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="syntax">(dcl_Grid_SetCellStyle <i>
-            <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i><font color="#FF0000"> intRow [als <a href="../../DataType/Long.htm">Long</a>] intColumn [als <a href="../../DataType/Long.htm">Long</a>] intStyle [als <a href="../../DataType/Integer.htm">Integer</a>]</font>)</code></td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T, wenn erfolgreich, ansonsten NIL)</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
-            <td bgcolor="#CCFF99">
-      <a href="../../Control/Grid.htm">Grid</a></td>
-          </tr>
-        </table>
-		<p>Diese Methode setzt den Stil der angegebenen Zelle. Jede Zelle einer neuen Zeile verwendet zun&auml;chst den Stil aus der Vorgabe der Spaltendefinition. Mit der Methode SelCellStyle kann die Vorgabe &uuml;berschrieben werden. Mit dem Wert -1 f&uuml;r den Stil setzen Sie den Stil auf die Vorgabe der Spaltendefinition zur&uuml;ck.  </p>
-		<p>Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld (Stil 9 und 39). Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt. Die Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert. </p>
-		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
-          <tr>
-            <th nowrap>Stil</th>
-            <th nowrap>Beschreibung</th>
-          </tr>
-          <tr>
-            <td>-1</td>
-            <td>Vorgabewert aus der Spaltendefinition </td>
-          </tr>
-          <tr>
-            <td>0</td>
-            <td>Nicht editierbar</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>Kontrollk&auml;stchen</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Optionsfelder</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Schaltbare Bilder</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>Schaltfl&auml;chen</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Auswahl-Schaltfl&auml;chen</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Texte</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>Winkel</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>Ganzzahlen</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>Dezimalzahlen<br> 
-            (durch Systemvariable DIMZIN beeinflusst) </td>
-          </tr>
-          <tr>
-            <td>10</td>
-            <td>Gro&szlig;buchstaben</td>
-          </tr>
-          <tr>
-            <td>11</td>
-            <td>Kleinbuchstaben</td>
-          </tr>
-          <tr>
-            <td>12</td>
-            <td>Passwort</td>
-          </tr>
-          <tr>
-            <td>13</td>
-            <td>Mehrzeiliger Text</td>
-          </tr>
-          <tr>
-            <td>14</td>
-            <td>W&auml;hrung</td>
-          </tr>
-          <tr>
-            <td>15</td>
-            <td>Datum</td>
-          </tr>
-          <tr>
-            <td>16</td>
-            <td>Zeit</td>
-          </tr>
-          <tr>
-            <td>17</td>
-            <td>Prozent</td>
-          </tr>
-          <tr>
-            <td>18</td>
-            <td>Auswahlliste</td>
-          </tr>
-          <tr>
-            <td>19</td>
-            <td>Pfeilspitzen</td>
-          </tr>
-          <tr>
-            <td>20</td>
-            <td>ACI-Farbenliste</td>
-          </tr>
-          <tr>
-            <td>21</td>
-            <td>Textstile</td>
-          </tr>
-          <tr>
-            <td>22</td>
-            <td>Plotstilnamen</td>
-          </tr>
-          <tr>
-            <td>23</td>
-            <td>Plotstiltabellen</td>
-          </tr>
-          <tr>
-            <td>24</td>
-            <td>Plotter</td>
-          </tr>
-          <tr>
-            <td>25</td>
-            <td>Schriftartenliste</td>
-          </tr>
-          <tr>
-            <td>26</td>
-            <td>Laufwerke</td>
-          </tr>
-          <tr>
-            <td>27</td>
-            <td>Layer</td>
-          </tr>
-          <tr>
-            <td>28</td>
-            <td>Bema&szlig;ungsstile</td>
-          </tr>
-          <tr>
-            <td>29</td>
-            <td>Bilderliste</td>
-          </tr>
-          <tr>
-            <td>30</td>
-            <td>ACI-Farben</td>
-          </tr>
-          <tr>
-            <td>31</td>
-            <td>RGB-Farben</td>
-          </tr>
-          <tr>
-            <td>32</td>
-            <td>Linienst&auml;rken</td>
-          </tr>
-          <tr>
-            <td>33</td>
-            <td>Linientypen</td>
-          </tr>
-          <tr>
-            <td>34</td>
-            <td>Ordner</td>
-          </tr>
-          <tr>
-            <td>35</td>
-            <td>Dateien</td>
-          </tr>
-          <tr>
-            <td>36</td>
-            <td>Text-Kombinationsfeld</td>
-          </tr>
-          <tr>
-            <td>37</td>
-            <td>Winkel-Kombinationsfeld</td>
-          </tr>
-          <tr>
-            <td>38</td>
-            <td>Ganzzahlen-Kombinationsfeld</td>
-          </tr>
-          <tr>
-            <td>39</td>
-            <td>Dezimalzahlen-Kombinationsfeld<br>(durch Systemvariable DIMZIN beeinflusst) </td>
-          </tr>
-          <tr>
-            <td>40</td>
-            <td>Gro&szlig;buchstaben-Kombinationsfeld</td>
-          </tr>
-          <tr>
-            <td>41</td>
-            <td>Kleinbuchstaben-Kombinationsfeld</td>
-          </tr>
-          <tr>
-            <td>42</td>
-            <td>Symbolnamen</td>
-          </tr>
-          <tr>
-            <td>43</td>
-            <td>Symbolnamen-Kombinationsfeld</td>
-          </tr>
-        </table>
-	    <p><strong>Hinweise:</strong></p>
-	    <table width="100%" noborder cellspacing="5" v>
-          <tr align="left">
-            <th width="25" scope="col">Stil</th>
-            <th width="126" scope="col">Bezeichnung</th>
-            <th scope="col">Hinweis</th>
-          </tr>
-          <tr valign="top">
-            <th scope="row">3</th>
-            <td>Schaltbare Bilder </td>
-            <td>Schaltbare Bilder &uuml;bergeben Sie die Argumente intData1 und intData2 f&uuml;r die beiden Bilder der Bildliste zwischen denen geschalten werden soll. Dieser Zellenstil verh&auml;lt sich &auml;hnlich dem Kontrollk&auml;stchen: mit den Methoden <a href="GetCellCheckState.htm">GetCellCheckState</a> und <a href="SetCellCheckState.htm">SetCellCheckState</a> k&ouml;nnen Sie den aktuellen Zustand einstellen. Generell sichtbar ist sonst das Bild des Arguments intData1.</td>
-          </tr>
-          <tr valign="top">
-            <th scope="row">15</th>
-            <td>Datum</td>
-            <td>Als Datum k&ouml;nnen Sie die beiden Argumente intData1 und intData2 f&uuml;r das Datumsformat &uuml;bergeben. G&uuml;ltige Werte sind 0 bis 9.</td>
-          </tr>
-          <tr valign="top">
-            <th scope="row">16</th>
-            <td>Zeit</td>
-            <td>F&uuml;r die Zeit &uuml;bergeben Sie das Argument intData1 f&uuml;r das Format der Zeit. G&uuml;ltige Werte sind 0 bis 5.</td>
-          </tr>
-          <tr valign="top">
-            <th scope="row">35</th>
-            <td>Dateien</td>
-            <td>&Uuml;bergeben Sie das Argument strString f&uuml;r die Dateierweiterung, nach der gesucht wird. Andernfalls wird &quot;dwg;dxf&quot; verwendet.</td>
-          </tr>
-          <tr valign="top">
-            <th colspan="2" rowspan="2" scope="row"><div align="left">Alle Zellenstile</div></th>
-            <td>Der Stil der Zelle oder Spalte regelt nur das Verhalten der Zelle, und was geschieht, wenn der Benutzer auf die Zelle klickt.</td>
-          </tr>
-          <tr valign="top">
-            <td><table width="100%" cellspacing="5" noborder v>
-              <tr align="left">
-                <th width="25" scope="col">Stil</th>
-                <th width="126" scope="col">Bezeichnung</th>
-                <th scope="col">Hinweis</th>
-              </tr>
-              <tr valign="top">
-                <th scope="row">31</th>
-                <td>RGB-Farben</td>
-                <td>Um die richtigen Farben im Symbol sehen zu k&ouml;nnen, &uuml;bergeben Sie die ACI-Farben 1 bis 7 als Texte, also rot, gelb, gr&uuml;n usw. Die Farben 0 (VonBlock), 256 (VonLayer), 257 (VonObjekt) und 200 (keine, siehe Schraffurhintergrundfarbe ab AutoCAD 2011), geben Sie den tats&auml;chlichen Namen ein. Die Voransicht ist dann immer schwarz. RGB-Farben geben Sie als kommagetrennte Werte ein, z.B. 123,234,245. Lassen Sie das Pr&auml;fix RGB: weg. Farben aus Farbb&uuml;chern geben Sie in dem Format Farbbuchname$Farbname ein. Anschlie&szlig;end wenden Sie die Funktion <a href="SetCellImages.htm">SetCellImages</a> an und &uuml;bergeben den Wert -2 als Argument intImageIndex, um die korrekte Farbe anzuzeigen. </td>
-              </tr>
-              <tr valign="top">
-                <th scope="row">33</th>
-                <td>Linientypen</td>
-                <td>Die &uuml;bergebene Auswahl f&uuml;r den Linientyp muss in den Methoden <a href="AddString.htm">AddString</a>, <a href="AddRow.htm">AddRow</a>, <a href="InsertRow.htm">InsertRow</a> und <a href="InsertString.htm">InsertString</a> richtig gesetzt werden, d.h. in diesem Fall muss der Linientyp existieren. M&ouml;glicherweise ist sonst das dargestellte Ergebnis nicht korrekt.</td>
-              </tr>
-              <tr valign="top">
-                <th scope="row">38</th>
-                <td>Ganzzahlen-Kombinationsfeld</td>
-                <td>Alle Elemente der &uuml;bergebenen Liste m&uuml;ssen Texte sein. Das gilt auch f&uuml;r die Methode <a href="SetCellDropList.htm">SetCellDropList</a>. </td>
-              </tr>
-            </table></td>
-          </tr>
-        </table>
-	    <p>&nbsp;</p>
-	    <p>&nbsp;</p>
-	    <p>Zum Beispiel: Haben Sie den Stil 33 - Linientyp f&uuml;r die Zelle gew&auml;hlt, dann muss die &uuml;bergebene Auswahl f&uuml;r den Linientyp in den Methoden AddString oder AddRow richtig gesetzt werden, d.h. in diesem Fall muss der Linientyp existieren. M&ouml;glicherweise ist sonst das dargestellte Ergebnis nicht korrekt.</p>
-        <p>Zum Beispiel: Haben Sie den Stil 38 - Ganzzahlen-Kombinationsfeld f&uuml;r die Zelle gew&auml;hlt, m&uuml;ssen alle Elemente der &uuml;bergebenen Liste Texte sein. <br>
-        </p>
-</div>
+	<div id="content">
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
+			bordercolor="#111111" id="AutoNumber2">
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Funktionsname
+				</th>
+				<td bgcolor="#CCFF99">
+					dcl-Grid-SetCellStyle
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Syntax &nbsp;
+					<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);"
+						style="width: 22px; height: 20px">
+						<img src="../../images/Clipboard.png" width="15" height="13" /></button>
+				</th>
+				<td bgcolor="#CCFF99">
+					<code id="syntax">(dcl-Grid-SetCellStyle <i><a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i><font
+						color="#FF0000"> intRow [als <a href="../../DataType/Long.htm">Long</a>] intColumn
+						[als <a href="../../DataType/Long.htm">Long</a>] intStyle [als <a href="../../DataType/Integer.htm">
+							Integer</a>]</font>)</code>
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Rückgabewert
+				</th>
+				<td bgcolor="#CCFF99">
+					<a href="../../DataType/Boolean.htm">Boolean</a> (T, wenn erfolgreich, ansonsten
+					NIL)
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Anwendbar auf
+				</th>
+				<td bgcolor="#CCFF99">
+					<a href="../../Control/Grid.htm">Grid</a>
+				</td>
+			</tr>
+		</table>
+		<p>
+			Diese Methode setzt den Stil der angegebenen Zelle. Jede Zelle einer neuen Zeile
+			verwendet zun&auml;chst den Stil aus der Vorgabe der Spaltendefinition. Mit der
+			Methode SelCellStyle kann die Vorgabe &uuml;berschrieben werden. Mit dem Wert -1
+			f&uuml;r den Stil setzen Sie den Stil auf die Vorgabe der Spaltendefinition zur&uuml;ck.
+		</p>
+		<p>
+			Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld
+			(Stil 9 und 39). Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt.
+			Die Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert.
+		</p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
+			bordercolor="#111111" id="AutoNumber3">
+			<tr>
+				<th nowrap>
+					Stil
+				</th>
+				<th nowrap>
+					Beschreibung
+				</th>
+			</tr>
+			<tr>
+				<td>
+					-1
+				</td>
+				<td>
+					Vorgabewert aus der Spaltendefinition
+				</td>
+			</tr>
+			<tr>
+				<td>
+					0
+				</td>
+				<td>
+					Nicht editierbar
+				</td>
+			</tr>
+			<tr>
+				<td>
+					1
+				</td>
+				<td>
+					Kontrollk&auml;stchen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					2
+				</td>
+				<td>
+					Optionsfelder
+				</td>
+			</tr>
+			<tr>
+				<td>
+					3
+				</td>
+				<td>
+					Schaltbare Bilder
+				</td>
+			</tr>
+			<tr>
+				<td>
+					4
+				</td>
+				<td>
+					Schaltfl&auml;chen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					5
+				</td>
+				<td>
+					Auswahl-Schaltfl&auml;chen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					6
+				</td>
+				<td>
+					Texte
+				</td>
+			</tr>
+			<tr>
+				<td>
+					7
+				</td>
+				<td>
+					Winkel
+				</td>
+			</tr>
+			<tr>
+				<td>
+					8
+				</td>
+				<td>
+					Ganzzahlen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					9
+				</td>
+				<td>
+					Dezimalzahlen<br>
+					(durch Systemvariable DIMZIN beeinflusst)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					10
+				</td>
+				<td>
+					Gro&szlig;buchstaben
+				</td>
+			</tr>
+			<tr>
+				<td>
+					11
+				</td>
+				<td>
+					Kleinbuchstaben
+				</td>
+			</tr>
+			<tr>
+				<td>
+					12
+				</td>
+				<td>
+					Passwort
+				</td>
+			</tr>
+			<tr>
+				<td>
+					13
+				</td>
+				<td>
+					Mehrzeiliger Text
+				</td>
+			</tr>
+			<tr>
+				<td>
+					14
+				</td>
+				<td>
+					W&auml;hrung
+				</td>
+			</tr>
+			<tr>
+				<td>
+					15
+				</td>
+				<td>
+					Datum
+				</td>
+			</tr>
+			<tr>
+				<td>
+					16
+				</td>
+				<td>
+					Zeit
+				</td>
+			</tr>
+			<tr>
+				<td>
+					17
+				</td>
+				<td>
+					Prozent
+				</td>
+			</tr>
+			<tr>
+				<td>
+					18
+				</td>
+				<td>
+					Auswahlliste
+				</td>
+			</tr>
+			<tr>
+				<td>
+					19
+				</td>
+				<td>
+					Pfeilspitzen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					20
+				</td>
+				<td>
+					ACI-Farbenliste
+				</td>
+			</tr>
+			<tr>
+				<td>
+					21
+				</td>
+				<td>
+					Textstile
+				</td>
+			</tr>
+			<tr>
+				<td>
+					22
+				</td>
+				<td>
+					Plotstilnamen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					23
+				</td>
+				<td>
+					Plotstiltabellen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					24
+				</td>
+				<td>
+					Plotter
+				</td>
+			</tr>
+			<tr>
+				<td>
+					25
+				</td>
+				<td>
+					Schriftartenliste
+				</td>
+			</tr>
+			<tr>
+				<td>
+					26
+				</td>
+				<td>
+					Laufwerke
+				</td>
+			</tr>
+			<tr>
+				<td>
+					27
+				</td>
+				<td>
+					Layer
+				</td>
+			</tr>
+			<tr>
+				<td>
+					28
+				</td>
+				<td>
+					Bema&szlig;ungsstile
+				</td>
+			</tr>
+			<tr>
+				<td>
+					29
+				</td>
+				<td>
+					Bilderliste
+				</td>
+			</tr>
+			<tr>
+				<td>
+					30
+				</td>
+				<td>
+					ACI-Farben
+				</td>
+			</tr>
+			<tr>
+				<td>
+					31
+				</td>
+				<td>
+					RGB-Farben
+				</td>
+			</tr>
+			<tr>
+				<td>
+					32
+				</td>
+				<td>
+					Linienst&auml;rken
+				</td>
+			</tr>
+			<tr>
+				<td>
+					33
+				</td>
+				<td>
+					Linientypen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					34
+				</td>
+				<td>
+					Ordner
+				</td>
+			</tr>
+			<tr>
+				<td>
+					35
+				</td>
+				<td>
+					Dateien
+				</td>
+			</tr>
+			<tr>
+				<td>
+					36
+				</td>
+				<td>
+					Text-Kombinationsfeld
+				</td>
+			</tr>
+			<tr>
+				<td>
+					37
+				</td>
+				<td>
+					Winkel-Kombinationsfeld
+				</td>
+			</tr>
+			<tr>
+				<td>
+					38
+				</td>
+				<td>
+					Ganzzahlen-Kombinationsfeld
+				</td>
+			</tr>
+			<tr>
+				<td>
+					39
+				</td>
+				<td>
+					Dezimalzahlen-Kombinationsfeld<br>
+					(durch Systemvariable DIMZIN beeinflusst)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					40
+				</td>
+				<td>
+					Gro&szlig;buchstaben-Kombinationsfeld
+				</td>
+			</tr>
+			<tr>
+				<td>
+					41
+				</td>
+				<td>
+					Kleinbuchstaben-Kombinationsfeld
+				</td>
+			</tr>
+			<tr>
+				<td>
+					42
+				</td>
+				<td>
+					Symbolnamen
+				</td>
+			</tr>
+			<tr>
+				<td>
+					43
+				</td>
+				<td>
+					Symbolnamen-Kombinationsfeld
+				</td>
+			</tr>
+		</table>
+		<p>
+			<strong>Hinweise:</strong></p>
+		<table width="100%" noborder cellspacing="5" v>
+			<tr align="left">
+				<th width="25" scope="col">
+					Stil
+				</th>
+				<th width="126" scope="col">
+					Bezeichnung
+				</th>
+				<th scope="col">
+					Hinweis
+				</th>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
+					3
+				</th>
+				<td>
+					Schaltbare Bilder
+				</td>
+				<td>
+					Schaltbare Bilder &uuml;bergeben Sie die Argumente intData1 und intData2 f&uuml;r
+					die beiden Bilder der Bildliste zwischen denen geschalten werden soll. Dieser Zellenstil
+					verh&auml;lt sich &auml;hnlich dem Kontrollk&auml;stchen: mit den Methoden <a href="GetCellCheckState.htm">
+						GetCellCheckState</a> und <a href="SetCellCheckState.htm">SetCellCheckState</a>
+					k&ouml;nnen Sie den aktuellen Zustand einstellen. Generell sichtbar ist sonst das
+					Bild des Arguments intData1.
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
+					15
+				</th>
+				<td>
+					Datum
+				</td>
+				<td>
+					Als Datum k&ouml;nnen Sie die beiden Argumente intData1 und intData2 f&uuml;r das
+					Datumsformat &uuml;bergeben. G&uuml;ltige Werte sind 0 bis 9.
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
+					16
+				</th>
+				<td>
+					Zeit
+				</td>
+				<td>
+					F&uuml;r die Zeit &uuml;bergeben Sie das Argument intData1 f&uuml;r das Format der
+					Zeit. G&uuml;ltige Werte sind 0 bis 5.
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
+					35
+				</th>
+				<td>
+					Dateien
+				</td>
+				<td>
+					&Uuml;bergeben Sie das Argument strString f&uuml;r die Dateierweiterung, nach der
+					gesucht wird. Andernfalls wird &quot;dwg;dxf&quot; verwendet.
+				</td>
+			</tr>
+			<tr valign="top">
+				<th colspan="2" rowspan="2" scope="row">
+					<div align="left">
+						Alle Zellenstile</div>
+				</th>
+				<td>
+					Der Stil der Zelle oder Spalte regelt nur das Verhalten der Zelle, und was geschieht,
+					wenn der Benutzer auf die Zelle klickt.
+				</td>
+			</tr>
+			<tr valign="top">
+				<td>
+					<table width="100%" cellspacing="5" noborder v>
+						<tr align="left">
+							<th width="25" scope="col">
+								Stil
+							</th>
+							<th width="126" scope="col">
+								Bezeichnung
+							</th>
+							<th scope="col">
+								Hinweis
+							</th>
+						</tr>
+						<tr valign="top">
+							<th scope="row">
+								31
+							</th>
+							<td>
+								RGB-Farben
+							</td>
+							<td>
+								Um die richtigen Farben im Symbol sehen zu k&ouml;nnen, &uuml;bergeben Sie die ACI-Farben
+								1 bis 7 als Texte, also rot, gelb, gr&uuml;n usw. Die Farben 0 (VonBlock), 256 (VonLayer),
+								257 (VonObjekt) und 200 (keine, siehe Schraffurhintergrundfarbe ab AutoCAD 2011),
+								geben Sie den tats&auml;chlichen Namen ein. Die Voransicht ist dann immer schwarz.
+								RGB-Farben geben Sie als kommagetrennte Werte ein, z.B. 123,234,245. Lassen Sie
+								das Pr&auml;fix RGB: weg. Farben aus Farbb&uuml;chern geben Sie in dem Format Farbbuchname$Farbname
+								ein. Anschlie&szlig;end wenden Sie die Funktion <a href="SetCellImages.htm">SetCellImages</a>
+								an und &uuml;bergeben den Wert -2 als Argument intImageIndex, um die korrekte Farbe
+								anzuzeigen.
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row">
+								33
+							</th>
+							<td>
+								Linientypen
+							</td>
+							<td>
+								Die &uuml;bergebene Auswahl f&uuml;r den Linientyp muss in den Methoden <a href="AddString.htm">
+									AddString</a>, <a href="AddRow.htm">AddRow</a>, <a href="InsertRow.htm">InsertRow</a>
+								und <a href="InsertString.htm">InsertString</a> richtig gesetzt werden, d.h. in
+								diesem Fall muss der Linientyp existieren. M&ouml;glicherweise ist sonst das dargestellte
+								Ergebnis nicht korrekt.
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row">
+								38
+							</th>
+							<td>
+								Ganzzahlen-Kombinationsfeld
+							</td>
+							<td>
+								Alle Elemente der &uuml;bergebenen Liste m&uuml;ssen Texte sein. Das gilt auch f&uuml;r
+								die Methode <a href="SetCellDropList.htm">SetCellDropList</a>.
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<p>
+			&nbsp;</p>
+		<p>
+			&nbsp;</p>
+		<p>
+			Zum Beispiel: Haben Sie den Stil 33 - Linientyp f&uuml;r die Zelle gew&auml;hlt,
+			dann muss die &uuml;bergebene Auswahl f&uuml;r den Linientyp in den Methoden AddString
+			oder AddRow richtig gesetzt werden, d.h. in diesem Fall muss der Linientyp existieren.
+			M&ouml;glicherweise ist sonst das dargestellte Ergebnis nicht korrekt.</p>
+		<p>
+			Zum Beispiel: Haben Sie den Stil 38 - Ganzzahlen-Kombinationsfeld f&uuml;r die Zelle
+			gew&auml;hlt, m&uuml;ssen alle Elemente der &uuml;bergebenen Liste Texte sein.
+			<br>
+		</p>
+	</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+		<p>
+			Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+			Alle Rechte vorbehalten.</p>
+		<p>
+			OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+				OpenDCL Consortium</a>.</p>
+		<p>
+			AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+				target="_blank">Autodesk, Inc.</a></p>
+		<p>
+			Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+				target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>

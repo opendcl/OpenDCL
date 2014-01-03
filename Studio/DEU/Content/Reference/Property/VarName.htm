@@ -1,71 +1,114 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="de">
-<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>VarName</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content="de">
+	<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+	<script type="text/javascript" src="../../Utility.js"></script>
+	<title>VarName</title>
 </head>
 <body>
 	<table width="100%">
 		<tr>
 			<td nowrap>
 				<div id="title">
-                  <img border="0" src="../images/Property.png" width="16" height="16"> 
-                  VarName</div>
+					<img border="0" src="../images/Property.png" width="16" height="16">
+					VarName</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+				<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+						Übersetzung melden</a><br />
 					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
 				</div>
 			</td>
 		</tr>
 	</table>
 	<hr />
-<div id="content">
-        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Lokaler Name</th>
-            <td bgcolor="#CCFF99">VarName</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>API Name</th>
-            <td bgcolor="#CCFF99">VarName</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Datentyp</th>
-            <td bgcolor="#CCFF99"><a href="../DataType/String.htm">String</a></td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Gültigkeit</th>
-            <td bgcolor="#CCFF99">&nbsp;</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Funktion</th>
-            <td bgcolor="#CCFF99">N/A</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Funktion</th>
-            <td bgcolor="#CCFF99">N/A</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
-            <td bgcolor="#CCFF99">Alle
-            <a href="../Control/Index.htm">Steuerelemente</a> 
-            und
-            <a href="../Form/Index.htm">Dialoge</a></td>
-          </tr>
-        </table>
-	<p>Wird eine Instanz eines Dialogs oder Steuerelements erzeugt wird, belegt OpenDCL den Wert einer AutoLISP-Variable f&uuml;r dieses Steuerelement oder diesen Dialog. Diese AutoLISP-Variable dient dem Zugriff auf das Steuerelement, wenn OpenDCL-Funktionen aufgerufen werden. Ist der Wert der Eigenschaft VarName nicht leer, wird der Inhalt als AutoCAD-Variablenname verwendet. Ist der Wert f&uuml;r VarName leer, wird der AutoLISP-Variablenname automatisch in der Form <code>&lt;project-key&gt;_&lt;form-name&gt;_&lt;control-name&gt;</code> generiert, um sicherzustellen, dass der Symbolname eindeutig ist. </p>
+	<div id="content">
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
+			bordercolor="#111111" id="AutoNumber2">
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Lokaler Name
+				</th>
+				<td bgcolor="#CCFF99">
+					VarName
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					API Name
+				</th>
+				<td bgcolor="#CCFF99">
+					VarName
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Datentyp
+				</th>
+				<td bgcolor="#CCFF99">
+					<a href="../DataType/String.htm">String</a>
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Gültigkeit
+				</th>
+				<td bgcolor="#CCFF99">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Get Funktion
+				</th>
+				<td bgcolor="#CCFF99">
+					N/A
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Set Funktion
+				</th>
+				<td bgcolor="#CCFF99">
+					N/A
+				</td>
+			</tr>
+			<tr>
+				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+					Anwendbar auf
+				</th>
+				<td bgcolor="#CCFF99">
+					Alle <a href="../Control/Index.htm">Steuerelemente</a> und <a href="../Form/Index.htm">
+						Dialoge</a>
+				</td>
+			</tr>
+		</table>
+		<p>
+			Wird eine Instanz eines Dialogs oder Steuerelements erzeugt wird, belegt OpenDCL
+			den Wert einer AutoLISP-Variable f&uuml;r dieses Steuerelement oder diesen Dialog.
+			Diese AutoLISP-Variable dient dem Zugriff auf das Steuerelement, wenn OpenDCL-Funktionen
+			aufgerufen werden. Ist der Wert der Eigenschaft VarName nicht leer, wird der Inhalt
+			als AutoCAD-Variablenname verwendet. Ist der Wert f&uuml;r VarName leer, wird der
+			AutoLISP-Variablenname automatisch in der Form <code>&lt;project-key&gt;/&lt;form-name&gt;/&lt;control-name&gt;</code>
+			generiert, um sicherzustellen, dass der Symbolname eindeutig ist.
+		</p>
 	</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+		<p>
+			Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+			Alle Rechte vorbehalten.</p>
+		<p>
+			OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+				OpenDCL Consortium</a>.</p>
+		<p>
+			AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+				target="_blank">Autodesk, Inc.</a></p>
+		<p>
+			Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+				target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>

@@ -50,6 +50,7 @@
 #include "Methods_OptionList.h"
 #include "Methods_PictureBox.h"
 #include "Methods_ProgressBar.h"
+#include "Methods_Project.h"
 #include "Methods_SlideView.h"
 #include "Methods_TabStrip.h"
 #include "Methods_TextBox.h"
@@ -68,14 +69,38 @@
 #include "AcadColorTable.h"
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
-#include "Base64.h"
 #include "UpdateCheck.h"
 
 
 //-----------------------------------------------------------------------------
 #define szRDS _RXST("dcl")
 #define ADSFUNCBASE 1000 //the externally defined ADS functions will be defined starting at this function index
-#define ADSPROPFUNCBASE 2000 //the property functions will be defined starting at this function index
+#define ADSPROPFUNCBASE 4000 //the property functions will be defined starting at this function index
+
+// Custom ADS function macros that register function names with a dcl- prefix, and also register the old-style name with dcl_ prefix.
+#ifdef _ZRXTARGET
+	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
+		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_##name = { _RXST("dcl-") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
+		extern "C" __declspec(allocate("ZDSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_##name = &__ZdsSymbolMap_##name ; \
+		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(name) \
+		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_old##name = { _RXST("dcl_") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
+		extern "C" __declspec(allocate("ZDSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_old##name = &__ZdsSymbolMap_old##name ; \
+		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(old##name)
+#elif _BRXTARGET
+	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(T_CLASS,T_NAME,T_REGISTERFUNCTION) \
+		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,ACRX_T("dcl-") ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
+		const bool __adsRegisteredFunction_##T_CLASS##T_NAME = __adsRegisteredSymbol_##T_NAME.registerFunction(); \
+		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_old##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,ACRX_T("dcl_") ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
+		const bool __adsRegisteredFunction_##T_CLASSold##T_NAME = __adsRegisteredSymbol_old##T_NAME.registerFunction();
+#else
+	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
+		__declspec(selectany) _ADSSYMBOL_ENTRY __AdsSymbolMap_##name = { _RXST("dcl-") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
+		extern "C" __declspec(allocate("ADSSYMBOL$__m")) __declspec(selectany) _ADSSYMBOL_ENTRY* const __pAdsSymbolMap_##name = &__AdsSymbolMap_##name ; \
+		ACED_ADSSYMBOL_ENTRY_PRAGMA(name) \
+		__declspec(selectany) _ADSSYMBOL_ENTRY __AdsSymbolMap_old##name = { _RXST("dcl_") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
+		extern "C" __declspec(allocate("ADSSYMBOL$__m")) __declspec(selectany) _ADSSYMBOL_ENTRY* const __pAdsSymbolMap_old##name = &__AdsSymbolMap_old##name ; \
+		ACED_ADSSYMBOL_ENTRY_PRAGMA(old##name)
+#endif
 
 #ifdef _BRXTARGET
 #define theRxApp singleInstanceEpObject
@@ -103,121 +128,130 @@ static int DumpControl(void);
 static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHandler) (); } grAdsFunctionTable[] =
 {
 #ifdef _DIAGNOSTIC
-	{_T("Project_Dump"),                 DumpProject},
-	{_T("Form_Dump"),                    DumpForm},
-	{_T("Control_Dump"),                 DumpControl},
+	{_T("Project-Dump"),                 DumpProject},
+	{_T("Form-Dump"),                    DumpForm},
+	{_T("Control-Dump"),                 DumpControl},
 #endif //_DIAGNOSTIC
 
 	// General control methods
-	{_T("Control_GetHWND"),              Control::GetHWND},
-	{_T("Control_GetName"),              Control::GetName},
-	{_T("Control_GetProperties"),        Control::GetProperties},
-	{_T("Control_GetProperty"),          Control::GetProperty}, //used to get any property of any control
-	{_T("Control_GetPos"),               Control::GetPos},
-	{_T("Control_Redraw"),               Control::Redraw},
-	{_T("Control_SetFocus"),             Control::SetFocus},
-	{_T("Control_SetPos"),               Control::SetPos},
-	{_T("Control_SetProperty"),          Control::SetProperty}, //used to set any property of any control
-	{_T("Control_ShowToolTip"),          Control::ShowToolTip},
-	{_T("Control_ZOrder"),               Control::ZOrder},
+	{_T("Control-GetHWND"),              Control::GetHWND},
+	{_T("Control-GetName"),              Control::GetName},
+	{_T("Control-GetProperties"),        Control::GetProperties},
+	{_T("Control-GetProperty"),          Control::GetProperty}, //used to get any property of any control
+	{_T("Control-GetPos"),               Control::GetPos},
+	{_T("Control-Redraw"),               Control::Redraw},
+	{_T("Control-SetFocus"),             Control::SetFocus},
+	{_T("Control-SetPos"),               Control::SetPos},
+	{_T("Control-SetProperty"),          Control::SetProperty}, //used to set any property of any control
+	{_T("Control-ShowToolTip"),          Control::ShowToolTip},
+	{_T("Control-ZOrder"),               Control::ZOrder},
 
 	// General control deprecated methods
-	{_T("Control_GetCurPos"),            Control::GetPos},
-	{_T("Control_ForceUpdateNow"),       Control::Redraw},
+	{_T("Control-GetCurPos"),            Control::GetPos},
+	{_T("Control-ForceUpdateNow"),       Control::Redraw},
 
 	// Property get/set deprecated methods
-	{_T("Control_GetAlternateColor"),    T_GetCtrlProperty< Prop::AlternatingColor >},
-	{_T("Control_SetAlternateColor"),    T_SetCtrlProperty< Prop::AlternatingColor >},
-	{_T("Control_GetLimitText"),         T_GetCtrlProperty< Prop::TextLimit >},
-	{_T("Control_SetLimitText"),         T_SetCtrlProperty< Prop::TextLimit >},
-	{_T("Control_GetEditLabel"),         T_GetCtrlProperty< Prop::EditLabels >},
-	{_T("Control_SetEditLabel"),         T_SetCtrlProperty< Prop::EditLabels >},
-	{_T("Control_GetURLAddress"),        T_GetCtrlProperty< Prop::Hyperlink >},
-	{_T("Control_SetURLAddress"),        T_SetCtrlProperty< Prop::Hyperlink >},
-	{_T("Control_GetSingleExpanded"),    T_GetCtrlProperty< Prop::SingleClickExpand >},
-	{_T("Control_SetSingleExpanded"),    T_SetCtrlProperty< Prop::SingleClickExpand >},
+	{_T("Control-GetAlternateColor"),    T_GetCtrlProperty< Prop::AlternatingColor >},
+	{_T("Control-SetAlternateColor"),    T_SetCtrlProperty< Prop::AlternatingColor >},
+	{_T("Control-GetLimitText"),         T_GetCtrlProperty< Prop::TextLimit >},
+	{_T("Control-SetLimitText"),         T_SetCtrlProperty< Prop::TextLimit >},
+	{_T("Control-GetEditLabel"),         T_GetCtrlProperty< Prop::EditLabels >},
+	{_T("Control-SetEditLabel"),         T_SetCtrlProperty< Prop::EditLabels >},
+	{_T("Control-GetURLAddress"),        T_GetCtrlProperty< Prop::Hyperlink >},
+	{_T("Control-SetURLAddress"),        T_SetCtrlProperty< Prop::Hyperlink >},
+	{_T("Control-GetSingleExpanded"),    T_GetCtrlProperty< Prop::SingleClickExpand >},
+	{_T("Control-SetSingleExpanded"),    T_SetCtrlProperty< Prop::SingleClickExpand >},
 
 	// General form methods
-	{_T("Form_Center"),                  Form::Center},
-	{_T("Form_Close"),                   Form::Close},
-	{_T("Form_CloseAll"),                Form::CloseAll},
-	{_T("Form_Enable"),                  Form::Enable},
-	{_T("Form_GetControlArea"),          Form::GetControlArea},
-	{_T("Form_GetControls"),             Form::GetControls},
-	{_T("Form_GetUUID"),                 Form::GetUUID},
-	{_T("Form_Hide"),                    Form::Hide},
-	{_T("Form_IsActive"),                Form::IsActive},
-	{_T("Form_IsApplyEnabled"),          Form::IsApplyEnabled},
-	{_T("Form_IsEnabled"),               Form::IsEnabled},
-	{_T("Form_IsFloating"),              Form::IsFloating},
-	{_T("Form_IsVisible"),               Form::IsVisible},
-	{_T("Form_RecalcLayout"),            Form::RecalcLayout},
-	{_T("Form_Resize"),                  Form::Resize},
-	{_T("Form_SetApplyEnabled"),         Form::SetApplyEnabled},
-	{_T("Form_SetMinMaxSizes"),          Form::SetMinMaxSizes},
-	{_T("Form_Show"),                    Form::Show},
-	{_T("Form_StartTimer"),              Form::StartTimer},
+	{_T("Form-Center"),                  Form::Center},
+	{_T("Form-Close"),                   Form::Close},
+	{_T("Form-CloseAll"),                Form::CloseAll},
+	{_T("Form-Enable"),                  Form::Enable},
+	{_T("Form-GetControlArea"),          Form::GetControlArea},
+	{_T("Form-GetControls"),             Form::GetControls},
+	{_T("Form-GetUUID"),                 Form::GetUUID},
+	{_T("Form-Hide"),                    Form::Hide},
+	{_T("Form-IsActive"),                Form::IsActive},
+	{_T("Form-IsApplyEnabled"),          Form::IsApplyEnabled},
+	{_T("Form-IsEnabled"),               Form::IsEnabled},
+	{_T("Form-IsFloating"),              Form::IsFloating},
+	{_T("Form-IsVisible"),               Form::IsVisible},
+	{_T("Form-RecalcLayout"),            Form::RecalcLayout},
+	{_T("Form-Resize"),                  Form::Resize},
+	{_T("Form-SetApplyEnabled"),         Form::SetApplyEnabled},
+	{_T("Form-SetMinMaxSizes"),          Form::SetMinMaxSizes},
+	{_T("Form-Show"),                    Form::Show},
+	{_T("Form-StartTimer"),              Form::StartTimer},
 
 	// General form deprecated methods
-	{_T("ConfigTab_IsApplyEnabled"),     Form::IsApplyEnabled},
-	{_T("ConfigTab_SetApplyEnabled"),    Form::SetApplyEnabled},
+	{_T("ConfigTab-IsApplyEnabled"),     Form::IsApplyEnabled},
+	{_T("ConfigTab-SetApplyEnabled"),    Form::SetApplyEnabled},
 	{_T("FlushGraphicButtons"),          Form::RecalcLayout},
-	{_T("Form_GetHWND"),                 Control::GetHWND},
-	{_T("Form_GetRectangle"),            Control::GetPos},
-	{_T("Form_GetTitleBarText"),         T_GetCtrlProperty< Prop::TitleBarText >},
-	{_T("Form_SetDialogMinMaxSizes"),    Form::SetMinMaxSizes},
-	{_T("Form_SetFocus"),                Control::SetFocus},
-	{_T("Form_SetPos"),                  Control::SetPos},
-	{_T("Form_SetTitleBarText"),         T_SetCtrlProperty< Prop::TitleBarText >},
+	{_T("Form-GetHWND"),                 Control::GetHWND},
+	{_T("Form-GetRectangle"),            Control::GetPos},
+	{_T("Form-GetTitleBarText"),         T_GetCtrlProperty< Prop::TitleBarText >},
+	{_T("Form-SetDialogMinMaxSizes"),    Form::SetMinMaxSizes},
+	{_T("Form-SetFocus"),                Control::SetFocus},
+	{_T("Form-SetPos"),                  Control::SetPos},
+	{_T("Form-SetTitleBarText"),         T_SetCtrlProperty< Prop::TitleBarText >},
+
+	// General project methods
+	{_T("Project-Export"),               Project::Export},
+	{_T("Project-GetForms"),             Project::GetForms},
+	{_T("Project-GetPictureSize"),       Project::GetPictureSize},
+	{_T("Project-Import"),               Project::Import},
+	{_T("Project-Load"),                 Project::Load},
+	{_T("Project-SaveAs"),               Project::SaveAs},
+	{_T("Project-Unload"),               Project::Unload},
 
 	// Animation control methods
-	{_T("Animation_Close"),              Animation::Close},
-	{_T("Animation_Load"),               Animation::Load},
-	{_T("Animation_Play"),               Animation::Play},
-	{_T("Animation_Seek"),               Animation::Seek},
-	{_T("Animation_Stop"),               Animation::Stop},
+	{_T("Animation-Close"),              Animation::Close},
+	{_T("Animation-Load"),               Animation::Load},
+	{_T("Animation-Play"),               Animation::Play},
+	{_T("Animation-Seek"),               Animation::Seek},
+	{_T("Animation-Stop"),               Animation::Stop},
 
 	// Animation control deprecated methods
-	{_T("Animate_Close"),                Animation::Close},
-	{_T("Animate_Load"),                 Animation::Load},
-	{_T("Animate_Play"),                 Animation::Play},
-	{_T("Animate_Seek"),                 Animation::Seek},
-	{_T("Animate_Stop"),                 Animation::Stop},
+	{_T("Animate-Close"),                Animation::Close},
+	{_T("Animate-Load"),                 Animation::Load},
+	{_T("Animate-Play"),                 Animation::Play},
+	{_T("Animate-Seek"),                 Animation::Seek},
+	{_T("Animate-Stop"),                 Animation::Stop},
 
 	// ActiveX Control methods
-	{_T("AxControl_Get"),                AxControl::Get},
-	{_T("AxControl_GetAxObject"),        AxControl::GetAxObject},
-	{_T("AxControl_Invoke"),             AxControl::Invoke},
-	{_T("AxControl_Put"),                AxControl::Put},
+	{_T("AxControl-Get"),                AxControl::Get},
+	{_T("AxControl-GetAxObject"),        AxControl::GetAxObject},
+	{_T("AxControl-Invoke"),             AxControl::Invoke},
+	{_T("AxControl-Put"),                AxControl::Put},
 
 	// ActiveX Control deprecated methods
-	{_T("AxControl_GetProperty"),        AxControl::Get},
-	{_T("AxControl_SetProperty"),        AxControl::Put},
-	{_T("AxControl_DoMethod"),           AxControl::Invoke},
-	{_T("AxControl_GetOleObject"),       AxControl::GetAxObject},
+	{_T("AxControl-GetProperty"),        AxControl::Get},
+	{_T("AxControl-SetProperty"),        AxControl::Put},
+	{_T("AxControl-DoMethod"),           AxControl::Invoke},
+	{_T("AxControl-GetOleObject"),       AxControl::GetAxObject},
 
 	// ActiveX general functions
 	{_T("GetOlePictureFromId"),          AxGeneral::GetOlePictureFromId},
 	{_T("GetOlePictureFromFile"),        AxGeneral::GetOlePictureFromFile},
 
 	// ActiveX Object methods
-	{_T("AxObject_Get"),                 AxObject::Get},
-	{_T("AxObject_Invoke"),              AxObject::Invoke},
-	{_T("AxObject_Put"),                 AxObject::Put},
-	{_T("AxObject_Release"),             AxObject::Release},
+	{_T("AxObject-Get"),                 AxObject::Get},
+	{_T("AxObject-Invoke"),              AxObject::Invoke},
+	{_T("AxObject-Put"),                 AxObject::Put},
+	{_T("AxObject-Release"),             AxObject::Release},
 
 	// ActiveX Object deprecated methods
-	{_T("AxObject_Close"),               AxObject::Release},
-	{_T("AxObject_DoMethod"),            AxObject::Invoke},
-	{_T("AxObject_GetProperty"),         AxObject::Get},
-	{_T("AxObject_SetProperty"),         AxObject::Put},
+	{_T("AxObject-Close"),               AxObject::Release},
+	{_T("AxObject-DoMethod"),            AxObject::Invoke},
+	{_T("AxObject-GetProperty"),         AxObject::Get},
+	{_T("AxObject-SetProperty"),         AxObject::Put},
 
 	// Binary File methods
-	{_T("BinFile_Check"),                BinFile::Check},						
-	{_T("BinFile_Close"),                BinFile::Close},						
-	{_T("BinFile_Open"),                 BinFile::Open},
-	{_T("BinFile_Read"),                 BinFile::Read},
-	{_T("BinFile_Write"),                BinFile::Write},
+	{_T("BinFile-Check"),                BinFile::Check},						
+	{_T("BinFile-Close"),                BinFile::Close},						
+	{_T("BinFile-Open"),                 BinFile::Open},
+	{_T("BinFile-Read"),                 BinFile::Read},
+	{_T("BinFile-Write"),                BinFile::Write},
 
 	// Binary File deprecated methods
 	{_T("CheckBin"),                     BinFile::Check},						
@@ -227,499 +261,499 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("WriteBin"),                     BinFile::Write},
 
 	// Block List control methods
-	{_T("BlockList_Arrange"),            BlockList::Arrange},
-	{_T("BlockList_GetCount"),           BlockList::GetCount},
-	{_T("BlockList_GetCurSel"),          BlockList::GetCurSel},
-	{_T("BlockList_GetFileName"),        BlockList::GetFileName},
-	{_T("BlockList_GetItemText"),        BlockList::GetItemText},
-	{_T("BlockList_GetSelCount"),        BlockList::GetSelCount},
-	{_T("BlockList_GetSelectedItems"),   BlockList::GetSelectedItems},
-	{_T("BlockList_GetSelectedNths"),    BlockList::GetSelectedNths},
-	{_T("BlockList_LoadDwg"),            BlockList::LoadDwg},
-	{_T("BlockList_Reset"),              BlockList::Reset},
-	{_T("BlockList_SetCurSel"),          BlockList::SetCurSel},
-	{_T("BlockList_SortTextItems"),      BlockList::SortTextItems},
+	{_T("BlockList-Arrange"),            BlockList::Arrange},
+	{_T("BlockList-GetCount"),           BlockList::GetCount},
+	{_T("BlockList-GetCurSel"),          BlockList::GetCurSel},
+	{_T("BlockList-GetFileName"),        BlockList::GetFileName},
+	{_T("BlockList-GetItemText"),        BlockList::GetItemText},
+	{_T("BlockList-GetSelCount"),        BlockList::GetSelCount},
+	{_T("BlockList-GetSelectedItems"),   BlockList::GetSelectedItems},
+	{_T("BlockList-GetSelectedNths"),    BlockList::GetSelectedNths},
+	{_T("BlockList-LoadDwg"),            BlockList::LoadDwg},
+	{_T("BlockList-Reset"),              BlockList::Reset},
+	{_T("BlockList-SetCurSel"),          BlockList::SetCurSel},
+	{_T("BlockList-SortTextItems"),      BlockList::SortTextItems},
 
 	// Block View control methods
-	{_T("BlockView_Clear"),              BlockView::Clear},
-	{_T("BlockView_DisplayBlock"),       BlockView::DisplayBlock},
-	{_T("BlockView_DisplayBlockToScale"),BlockView::DisplayBlockToScale},
-	{_T("BlockView_DisplayDwg"),         BlockView::DisplayDwg},
-	{_T("BlockView_DisplayDwgToScale"),  BlockView::DisplayDwgToScale},
-	{_T("BlockView_DisplayPaperSpace"),  BlockView::DisplayPaperSpace},
-	{_T("BlockView_GetBlockList"),       BlockView::GetBlockList},
-	//{_T("BlockView_GetBlockSize"),       BlockView::GetBlockSize},
-	{_T("BlockView_GetDwgSize"),         BlockView::GetDwgSize},
-	{_T("BlockView_PreLoadDwg"),         BlockView::PreLoadDwg},
-	{_T("BlockView_RefreshBlock"),       BlockView::RefreshBlock},
-	{_T("BlockView_RemoveHighlight"),    BlockView::RemoveHighlight},
-	{_T("BlockView_SetHighlight"),       BlockView::SetHighlight},
-	{_T("BlockView_Zoom"),               BlockView::Zoom},
+	{_T("BlockView-Clear"),              BlockView::Clear},
+	{_T("BlockView-DisplayBlock"),       BlockView::DisplayBlock},
+	{_T("BlockView-DisplayBlockToScale"),BlockView::DisplayBlockToScale},
+	{_T("BlockView-DisplayDwg"),         BlockView::DisplayDwg},
+	{_T("BlockView-DisplayDwgToScale"),  BlockView::DisplayDwgToScale},
+	{_T("BlockView-DisplayPaperSpace"),  BlockView::DisplayPaperSpace},
+	{_T("BlockView-GetBlockList"),       BlockView::GetBlockList},
+	//{_T("BlockView-GetBlockSize"),       BlockView::GetBlockSize},
+	{_T("BlockView-GetDwgSize"),         BlockView::GetDwgSize},
+	{_T("BlockView-PreLoadDwg"),         BlockView::PreLoadDwg},
+	{_T("BlockView-RefreshBlock"),       BlockView::RefreshBlock},
+	{_T("BlockView-RemoveHighlight"),    BlockView::RemoveHighlight},
+	{_T("BlockView-SetHighlight"),       BlockView::SetHighlight},
+	{_T("BlockView-Zoom"),               BlockView::Zoom},
 
 	// Block View control deprecated methods
-	{_T("BlockView_LoadDwg"),            BlockView::DisplayDwg},
-	{_T("BlockView_LoadDwgToScale"),     BlockView::DisplayDwgToScale},
+	{_T("BlockView-LoadDwg"),            BlockView::DisplayDwg},
+	{_T("BlockView-LoadDwgToScale"),     BlockView::DisplayDwgToScale},
 
 	// Calendar control methods
-	{_T("Calendar_GetCurSel"),           Calendar::GetCurSel},
-	{_T("Calendar_GetMonthRangeEnd"),    Calendar::GetMonthRangeEnd},
-	{_T("Calendar_GetMonthRangeStart"),  Calendar::GetMonthRangeStart},
-	{_T("Calendar_GetRangeEnd"),         Calendar::GetRangeEnd},
-	{_T("Calendar_GetRangeStart"),       Calendar::GetRangeStart},
-	{_T("Calendar_GetSelRangeEnd"),      Calendar::GetSelRangeEnd},
-	{_T("Calendar_GetSelRangeStart"),    Calendar::GetSelRangeStart},
-	{_T("Calendar_GetToday"),            Calendar::GetToday},
-	{_T("Calendar_SetCurSel"),           Calendar::SetCurSel},
-	{_T("Calendar_SetRange"),            Calendar::SetRange},
-	{_T("Calendar_SetSelRange"),         Calendar::SetSelRange},
+	{_T("Calendar-GetCurSel"),           Calendar::GetCurSel},
+	{_T("Calendar-GetMonthRangeEnd"),    Calendar::GetMonthRangeEnd},
+	{_T("Calendar-GetMonthRangeStart"),  Calendar::GetMonthRangeStart},
+	{_T("Calendar-GetRangeEnd"),         Calendar::GetRangeEnd},
+	{_T("Calendar-GetRangeStart"),       Calendar::GetRangeStart},
+	{_T("Calendar-GetSelRangeEnd"),      Calendar::GetSelRangeEnd},
+	{_T("Calendar-GetSelRangeStart"),    Calendar::GetSelRangeStart},
+	{_T("Calendar-GetToday"),            Calendar::GetToday},
+	{_T("Calendar-SetCurSel"),           Calendar::SetCurSel},
+	{_T("Calendar-SetRange"),            Calendar::SetRange},
+	{_T("Calendar-SetSelRange"),         Calendar::SetSelRange},
 
 	// Calendar control deprecated methods
-	{_T("Month_GetCurSel"),              Calendar::GetCurSel},
-	{_T("Month_GetMonthRangeEnd"),       Calendar::GetMonthRangeEnd},
-	{_T("Month_GetMonthRangeStart"),     Calendar::GetMonthRangeStart},
-	{_T("Month_GetRangeEnd"),            Calendar::GetRangeEnd},
-	{_T("Month_GetRangeStart"),          Calendar::GetRangeStart},
-	{_T("Month_GetSelRangeEnd"),         Calendar::GetSelRangeEnd},
-	{_T("Month_GetSelRangeStart"),       Calendar::GetSelRangeStart},
-	{_T("Month_GetToday"),               Calendar::GetToday},
-	{_T("Month_SetCurSel"),              Calendar::SetCurSel},
-	{_T("Month_SetRange"),               Calendar::SetRange},
-	{_T("Month_SetSelRange"),            Calendar::SetSelRange},
+	{_T("Month-GetCurSel"),              Calendar::GetCurSel},
+	{_T("Month-GetMonthRangeEnd"),       Calendar::GetMonthRangeEnd},
+	{_T("Month-GetMonthRangeStart"),     Calendar::GetMonthRangeStart},
+	{_T("Month-GetRangeEnd"),            Calendar::GetRangeEnd},
+	{_T("Month-GetRangeStart"),          Calendar::GetRangeStart},
+	{_T("Month-GetSelRangeEnd"),         Calendar::GetSelRangeEnd},
+	{_T("Month-GetSelRangeStart"),       Calendar::GetSelRangeStart},
+	{_T("Month-GetToday"),               Calendar::GetToday},
+	{_T("Month-SetCurSel"),              Calendar::SetCurSel},
+	{_T("Month-SetRange"),               Calendar::SetRange},
+	{_T("Month-SetSelRange"),            Calendar::SetSelRange},
 
 	// Combo Box control methods
-	{_T("ComboBox_AddColor"),            ComboBox::AddColor},
-	{_T("ComboBox_AddList"),             ComboBox::AddList},
-	{_T("ComboBox_AddPath"),             ComboBox::AddPath},											
-	{_T("ComboBox_AddString"),           ComboBox::AddString},
-	{_T("ComboBox_Clear"),               ComboBox::Clear},
-	{_T("ComboBox_ClearEdit"),           ComboBox::ClearEdit},
-	{_T("ComboBox_DeleteItem"),          ComboBox::DeleteItem},
-	{_T("ComboBox_Dir"),                 ComboBox::Dir},
-	{_T("ComboBox_FindColor"),           ComboBox::FindColor},
-	{_T("ComboBox_FindLineWeight"),      ComboBox::FindLineWeight},
-	{_T("ComboBox_FindString"),          ComboBox::FindString},											
-	{_T("ComboBox_FindStringExact"),     ComboBox::FindStringExact},
-	{_T("ComboBox_GetCount"),            ComboBox::GetCount},
-	{_T("ComboBox_GetCurSel"),           ComboBox::GetCurSel},
-	{_T("ComboBox_GetDir"),              ComboBox::GetDir},
-	{_T("ComboBox_GetDroppedWidth"),     ComboBox::GetDroppedWidth},
-	{_T("ComboBox_GetEBText"),           ComboBox::GetEBText},
-	{_T("ComboBox_GetEditSel"),          ComboBox::GetEditSel},
-	{_T("ComboBox_GetItemData"),         ComboBox::GetItemData},
-	{_T("ComboBox_GetLBText"),           ComboBox::GetLBText},
-	{_T("ComboBox_GetTopIndex"),         ComboBox::GetTopIndex},
-	{_T("ComboBox_InsertString"),        ComboBox::InsertString},
-	{_T("ComboBox_SelectString"),        ComboBox::SelectString},
-	{_T("ComboBox_SetCurSel"),           ComboBox::SetCurSel},
-	{_T("ComboBox_SetDroppedWidth"),     ComboBox::SetDroppedWidth},
-	{_T("ComboBox_SetEditSel"),          ComboBox::SetEditSel},
-	{_T("ComboBox_SetItemData"),         ComboBox::SetItemData},
-	{_T("ComboBox_SetTopIndex"),         ComboBox::SetTopIndex},
+	{_T("ComboBox-AddColor"),            ComboBox::AddColor},
+	{_T("ComboBox-AddList"),             ComboBox::AddList},
+	{_T("ComboBox-AddPath"),             ComboBox::AddPath},											
+	{_T("ComboBox-AddString"),           ComboBox::AddString},
+	{_T("ComboBox-Clear"),               ComboBox::Clear},
+	{_T("ComboBox-ClearEdit"),           ComboBox::ClearEdit},
+	{_T("ComboBox-DeleteItem"),          ComboBox::DeleteItem},
+	{_T("ComboBox-Dir"),                 ComboBox::Dir},
+	{_T("ComboBox-FindColor"),           ComboBox::FindColor},
+	{_T("ComboBox-FindLineWeight"),      ComboBox::FindLineWeight},
+	{_T("ComboBox-FindString"),          ComboBox::FindString},											
+	{_T("ComboBox-FindStringExact"),     ComboBox::FindStringExact},
+	{_T("ComboBox-GetCount"),            ComboBox::GetCount},
+	{_T("ComboBox-GetCurSel"),           ComboBox::GetCurSel},
+	{_T("ComboBox-GetDir"),              ComboBox::GetDir},
+	{_T("ComboBox-GetDroppedWidth"),     ComboBox::GetDroppedWidth},
+	{_T("ComboBox-GetEBText"),           ComboBox::GetEBText},
+	{_T("ComboBox-GetEditSel"),          ComboBox::GetEditSel},
+	{_T("ComboBox-GetItemData"),         ComboBox::GetItemData},
+	{_T("ComboBox-GetLBText"),           ComboBox::GetLBText},
+	{_T("ComboBox-GetTopIndex"),         ComboBox::GetTopIndex},
+	{_T("ComboBox-InsertString"),        ComboBox::InsertString},
+	{_T("ComboBox-SelectString"),        ComboBox::SelectString},
+	{_T("ComboBox-SetCurSel"),           ComboBox::SetCurSel},
+	{_T("ComboBox-SetDroppedWidth"),     ComboBox::SetDroppedWidth},
+	{_T("ComboBox-SetEditSel"),          ComboBox::SetEditSel},
+	{_T("ComboBox-SetItemData"),         ComboBox::SetItemData},
+	{_T("ComboBox-SetTopIndex"),         ComboBox::SetTopIndex},
 
 	// Combo Box control deprecated methods
-	{_T("ComboBox_DeleteString"),        ComboBox::DeleteItem},
-	{_T("ComboBox_GetTBText"),           ComboBox::GetEBText},
+	{_T("ComboBox-DeleteString"),        ComboBox::DeleteItem},
+	{_T("ComboBox-GetTBText"),           ComboBox::GetEBText},
 
 	// DWG List control methods
-	{_T("DwgList_DeleteItem"),           DwgList::DeleteItem},
-	{_T("DwgList_Dir"),                  DwgList::Dir},
-	{_T("DwgList_GetAnchorIndex"),       DwgList::GetAnchorIndex},
-	{_T("DwgList_GetCount"),             DwgList::GetCount},
-	{_T("DwgList_GetCurSel"),            DwgList::GetCurSel},
-	{_T("DwgList_GetDir"),               DwgList::GetDir},
-	{_T("DwgList_GetFileName"),          DwgList::GetFileName},
-	{_T("DwgList_GetFocusIndex"),        DwgList::GetFocusIndex},
-	{_T("DwgList_GetSelCount"),          DwgList::GetSelCount},
-	{_T("DwgList_GetSelectedItems"),     DwgList::GetSelectedItems},	
-	{_T("DwgList_GetSelectedNths"),      DwgList::GetSelectedNths},	
-	{_T("DwgList_GetText"),              DwgList::GetText},
-	{_T("DwgList_GetTopIndex"),          DwgList::GetTopIndex},
-	{_T("DwgList_GetType"),              DwgList::GetType},
-	{_T("DwgList_IsItemSelected"),       DwgList::IsItemSelected},
-	{_T("DwgList_SelectItem"),           DwgList::SelectItem},
-	{_T("DwgList_SelItemRange"),         DwgList::SelItemRange},
-	{_T("DwgList_SetAnchorIndex"),       DwgList::SetAnchorIndex},
-	{_T("DwgList_SetCurSel"),            DwgList::SetCurSel},
-	{_T("DwgList_SetFocusIndex"),        DwgList::SetFocusIndex},
-	{_T("DwgList_SetTopIndex"),          DwgList::SetTopIndex},
+	{_T("DwgList-DeleteItem"),           DwgList::DeleteItem},
+	{_T("DwgList-Dir"),                  DwgList::Dir},
+	{_T("DwgList-GetAnchorIndex"),       DwgList::GetAnchorIndex},
+	{_T("DwgList-GetCount"),             DwgList::GetCount},
+	{_T("DwgList-GetCurSel"),            DwgList::GetCurSel},
+	{_T("DwgList-GetDir"),               DwgList::GetDir},
+	{_T("DwgList-GetFileName"),          DwgList::GetFileName},
+	{_T("DwgList-GetFocusIndex"),        DwgList::GetFocusIndex},
+	{_T("DwgList-GetSelCount"),          DwgList::GetSelCount},
+	{_T("DwgList-GetSelectedItems"),     DwgList::GetSelectedItems},	
+	{_T("DwgList-GetSelectedNths"),      DwgList::GetSelectedNths},	
+	{_T("DwgList-GetText"),              DwgList::GetText},
+	{_T("DwgList-GetTopIndex"),          DwgList::GetTopIndex},
+	{_T("DwgList-GetType"),              DwgList::GetType},
+	{_T("DwgList-IsItemSelected"),       DwgList::IsItemSelected},
+	{_T("DwgList-SelectItem"),           DwgList::SelectItem},
+	{_T("DwgList-SelItemRange"),         DwgList::SelItemRange},
+	{_T("DwgList-SetAnchorIndex"),       DwgList::SetAnchorIndex},
+	{_T("DwgList-SetCurSel"),            DwgList::SetCurSel},
+	{_T("DwgList-SetFocusIndex"),        DwgList::SetFocusIndex},
+	{_T("DwgList-SetTopIndex"),          DwgList::SetTopIndex},
 
 	// DWG List control deprecated methods
-	{_T("DwgList_DeleteString"),         DwgList::DeleteItem},
-	{_T("DwgList_GetSel"),               DwgList::IsItemSelected},
-	{_T("DwgList_SetSel"),               DwgList::SelectItem},
+	{_T("DwgList-DeleteString"),         DwgList::DeleteItem},
+	{_T("DwgList-GetSel"),               DwgList::IsItemSelected},
+	{_T("DwgList-SetSel"),               DwgList::SelectItem},
 
 	// DWG Preview control methods
-	{_T("DwgPreview_Clear"),             DwgPreview::Clear},
-	{_T("DwgPreview_GetDwgName"),        DwgPreview::GetDwgName},
-	{_T("DwgPreview_LoadDwg"),           DwgPreview::LoadDwg},
-	{_T("DwgPreview_RemoveHighlight"),   DwgPreview::RemoveHighlight},
-	{_T("DwgPreview_SetHighlight"),      DwgPreview::SetHighlight},
+	{_T("DwgPreview-Clear"),             DwgPreview::Clear},
+	{_T("DwgPreview-GetDwgName"),        DwgPreview::GetDwgName},
+	{_T("DwgPreview-LoadDwg"),           DwgPreview::LoadDwg},
+	{_T("DwgPreview-RemoveHighlight"),   DwgPreview::RemoveHighlight},
+	{_T("DwgPreview-SetHighlight"),      DwgPreview::SetHighlight},
 
 	// File Explorer control methods
-	{_T("FileExplorer_GetFileExt"),      FileExplorer::GetFileExt},
-	{_T("FileExplorer_GetFileName"),     FileExplorer::GetFileName},
-	{_T("FileExplorer_GetFileNameList"), FileExplorer::GetFileNameList},
-	{_T("FileExplorer_GetFileTitle"),    FileExplorer::GetFileTitle},
-	{_T("FileExplorer_GetFolderName"),   FileExplorer::GetFolderName},
-	{_T("FileExplorer_GetFolderPath"),   FileExplorer::GetFolderPath},
-	{_T("FileExplorer_GetPathName"),     FileExplorer::GetPathName},
-	{_T("FileExplorer_GetSelCount"),     FileExplorer::GetSelCount},
-	{_T("FileExplorer_SetOkButtonText"), FileExplorer::SetOkButtonText},
+	{_T("FileExplorer-GetFileExt"),      FileExplorer::GetFileExt},
+	{_T("FileExplorer-GetFileName"),     FileExplorer::GetFileName},
+	{_T("FileExplorer-GetFileNameList"), FileExplorer::GetFileNameList},
+	{_T("FileExplorer-GetFileTitle"),    FileExplorer::GetFileTitle},
+	{_T("FileExplorer-GetFolderName"),   FileExplorer::GetFolderName},
+	{_T("FileExplorer-GetFolderPath"),   FileExplorer::GetFolderPath},
+	{_T("FileExplorer-GetPathName"),     FileExplorer::GetPathName},
+	{_T("FileExplorer-GetSelCount"),     FileExplorer::GetSelCount},
+	{_T("FileExplorer-SetOkButtonText"), FileExplorer::SetOkButtonText},
 
 	// File Explorer control deprecated methods
-	{_T("FileDlg_GetFileExt"),           FileExplorer::GetFileExt},
-	{_T("FileDlg_GetFileName"),          FileExplorer::GetFileName},
-	{_T("FileDlg_GetFileNameList"),      FileExplorer::GetFileNameList},
-	{_T("FileDlg_GetFileTitle"),         FileExplorer::GetFileTitle},
-	{_T("FileDlg_GetFolderName"),        FileExplorer::GetFolderName},
-	{_T("FileDlg_GetFolderPath"),        FileExplorer::GetFolderPath},
-	{_T("FileDlg_GetPathName"),          FileExplorer::GetPathName},
-	{_T("FileDlg_GetSelectionCount"),    FileExplorer::GetSelCount},
-	{_T("FileDlg_SetOkButtonText"),      FileExplorer::SetOkButtonText},
+	{_T("FileDlg-GetFileExt"),           FileExplorer::GetFileExt},
+	{_T("FileDlg-GetFileName"),          FileExplorer::GetFileName},
+	{_T("FileDlg-GetFileNameList"),      FileExplorer::GetFileNameList},
+	{_T("FileDlg-GetFileTitle"),         FileExplorer::GetFileTitle},
+	{_T("FileDlg-GetFolderName"),        FileExplorer::GetFolderName},
+	{_T("FileDlg-GetFolderPath"),        FileExplorer::GetFolderPath},
+	{_T("FileDlg-GetPathName"),          FileExplorer::GetPathName},
+	{_T("FileDlg-GetSelectionCount"),    FileExplorer::GetSelCount},
+	{_T("FileDlg-SetOkButtonText"),      FileExplorer::SetOkButtonText},
 
 	// Grid control methods
-	{_T("Grid_AddColumns"),              Grid::AddColumns},
-	{_T("Grid_AddRow"),                  Grid::AddRow},
-	{_T("Grid_AddString"),               Grid::AddString},
-	{_T("Grid_CalcColumnWidth"),         Grid::CalcColumnWidth},
-	{_T("Grid_CancelCellEdit"),          Grid::CancelCellEdit},
-	{_T("Grid_Clear"),                   Grid::Clear},
-	{_T("Grid_DeleteColumn"),            Grid::DeleteColumn},
-	{_T("Grid_DeleteRow"),               Grid::DeleteRow},
-	{_T("Grid_FillList"),                Grid::FillList},
-	{_T("Grid_GetCellCheckState"),       Grid::GetCellCheckState},
-	{_T("Grid_GetCellDropList"),         Grid::GetCellDropList},
-	{_T("Grid_GetCellImages"),           Grid::GetCellImages},
-	{_T("Grid_GetCellStyle"),            Grid::GetCellStyle},
-	{_T("Grid_GetCellText"),             Grid::GetCellText},
-	{_T("Grid_GetColumnCaption"),        Grid::GetColumnCaption},
-	{_T("Grid_GetColumnCells"),          Grid::GetColumnCells},
-	{_T("Grid_GetColumnCount"),          Grid::GetColumnCount},
-	{_T("Grid_GetColumnImage"),          Grid::GetColumnImage},
-	{_T("Grid_GetColumnWidth"),          Grid::GetColumnWidth},
-	{_T("Grid_GetCurCell"),              Grid::GetCurCell},	
-	{_T("Grid_GetRowCells"),             Grid::GetRowCells},
-	{_T("Grid_GetRowCount"),             Grid::GetRowCount},
-	{_T("Grid_GetRowData"),              Grid::GetRowData},
-	{_T("Grid_HitPointTest"),            Grid::HitPointTest},
-	{_T("Grid_InsertColumn"),            Grid::InsertColumn},
-	{_T("Grid_InsertRow"),               Grid::InsertRow},
-	{_T("Grid_InsertString"),            Grid::InsertString},
-	{_T("Grid_SetCellCheckState"),       Grid::SetCellCheckState},
-	{_T("Grid_SetCellDropList"),         Grid::SetCellDropList},
-	{_T("Grid_SetCellImages"),           Grid::SetCellImages},
-	{_T("Grid_SetCellStyle"),            Grid::SetCellStyle},											
-	{_T("Grid_SetCellText"),             Grid::SetCellText},
-	{_T("Grid_SetColumnCaption"),        Grid::SetColumnCaption},
-	{_T("Grid_SetColumnImage"),          Grid::SetColumnImage},
-	{_T("Grid_SetColumnWidth"),          Grid::SetColumnWidth},
-	{_T("Grid_SetCurCell"),              Grid::SetCurCell},
-	{_T("Grid_SetRowData"),              Grid::SetRowData},
-	{_T("Grid_SortNumericCells"),        Grid::SortNumericCells},											
-	{_T("Grid_SortTextCells"),           Grid::SortTextCells},
-	{_T("Grid_StartCellEdit"),           Grid::StartCellEdit},
+	{_T("Grid-AddColumns"),              Grid::AddColumns},
+	{_T("Grid-AddRow"),                  Grid::AddRow},
+	{_T("Grid-AddString"),               Grid::AddString},
+	{_T("Grid-CalcColumnWidth"),         Grid::CalcColumnWidth},
+	{_T("Grid-CancelCellEdit"),          Grid::CancelCellEdit},
+	{_T("Grid-Clear"),                   Grid::Clear},
+	{_T("Grid-DeleteColumn"),            Grid::DeleteColumn},
+	{_T("Grid-DeleteRow"),               Grid::DeleteRow},
+	{_T("Grid-FillList"),                Grid::FillList},
+	{_T("Grid-GetCellCheckState"),       Grid::GetCellCheckState},
+	{_T("Grid-GetCellDropList"),         Grid::GetCellDropList},
+	{_T("Grid-GetCellImages"),           Grid::GetCellImages},
+	{_T("Grid-GetCellStyle"),            Grid::GetCellStyle},
+	{_T("Grid-GetCellText"),             Grid::GetCellText},
+	{_T("Grid-GetColumnCaption"),        Grid::GetColumnCaption},
+	{_T("Grid-GetColumnCells"),          Grid::GetColumnCells},
+	{_T("Grid-GetColumnCount"),          Grid::GetColumnCount},
+	{_T("Grid-GetColumnImage"),          Grid::GetColumnImage},
+	{_T("Grid-GetColumnWidth"),          Grid::GetColumnWidth},
+	{_T("Grid-GetCurCell"),              Grid::GetCurCell},	
+	{_T("Grid-GetRowCells"),             Grid::GetRowCells},
+	{_T("Grid-GetRowCount"),             Grid::GetRowCount},
+	{_T("Grid-GetRowData"),              Grid::GetRowData},
+	{_T("Grid-HitPointTest"),            Grid::HitPointTest},
+	{_T("Grid-InsertColumn"),            Grid::InsertColumn},
+	{_T("Grid-InsertRow"),               Grid::InsertRow},
+	{_T("Grid-InsertString"),            Grid::InsertString},
+	{_T("Grid-SetCellCheckState"),       Grid::SetCellCheckState},
+	{_T("Grid-SetCellDropList"),         Grid::SetCellDropList},
+	{_T("Grid-SetCellImages"),           Grid::SetCellImages},
+	{_T("Grid-SetCellStyle"),            Grid::SetCellStyle},											
+	{_T("Grid-SetCellText"),             Grid::SetCellText},
+	{_T("Grid-SetColumnCaption"),        Grid::SetColumnCaption},
+	{_T("Grid-SetColumnImage"),          Grid::SetColumnImage},
+	{_T("Grid-SetColumnWidth"),          Grid::SetColumnWidth},
+	{_T("Grid-SetCurCell"),              Grid::SetCurCell},
+	{_T("Grid-SetRowData"),              Grid::SetRowData},
+	{_T("Grid-SortNumericCells"),        Grid::SortNumericCells},											
+	{_T("Grid-SortTextCells"),           Grid::SortTextCells},
+	{_T("Grid-StartCellEdit"),           Grid::StartCellEdit},
 
 	// Grid control deprecated methods
-	{_T("Grid_CalcColWidth"),            Grid::CalcColumnWidth},
-	{_T("Grid_CancelItemEdit"),          Grid::CancelCellEdit},
-	{_T("Grid_GetColCount"),             Grid::GetColumnCount},
-	{_T("Grid_GetColImage"),             Grid::GetColumnImage},
-	{_T("Grid_GetColItems"),             Grid::GetColumnCells},
-	{_T("Grid_GetColWidth"),             Grid::GetColumnWidth},
-	{_T("Grid_GetCurSel"),               Grid::GetCurCell},	
-	{_T("Grid_GetItemCheck"),            Grid::GetCellCheckState},
-	{_T("Grid_GetItemData"),             Grid::GetRowData},
-	{_T("Grid_GetItemDropList"),         Grid::GetCellDropList},
-	{_T("Grid_GetItemImage"),            Grid::GetCellImages},
-	{_T("Grid_GetItemText"),             Grid::GetCellText},
-	{_T("Grid_GetRowItems"),             Grid::GetRowCells},
-	{_T("Grid_SetColImage"),             Grid::SetColumnImage},
-	{_T("Grid_SetColWidth"),             Grid::SetColumnWidth},
-	{_T("Grid_SelCurCell"),              Grid::SetCurCell},
-	{_T("Grid_SelCurRow"),               Grid::SetCurCell},
-	{_T("Grid_SetItemCheck"),            Grid::SetCellCheckState},
-	{_T("Grid_SetItemData"),             Grid::SetRowData},
-	{_T("Grid_SetItemDropList"),         Grid::SetCellDropList},
-	{_T("Grid_SetItemImage"),            Grid::SetCellImages},
-	{_T("Grid_SetItemStyle"),            Grid::SetCellStyle},											
-	{_T("Grid_SetItemText"),             Grid::SetCellText},
-	{_T("Grid_SortNumericItems"),        Grid::SortNumericCells},											
-	{_T("Grid_SortTextItems"),           Grid::SortTextCells},
-	{_T("Grid_StartItemEdit"),           Grid::StartCellEdit},
+	{_T("Grid-CalcColWidth"),            Grid::CalcColumnWidth},
+	{_T("Grid-CancelItemEdit"),          Grid::CancelCellEdit},
+	{_T("Grid-GetColCount"),             Grid::GetColumnCount},
+	{_T("Grid-GetColImage"),             Grid::GetColumnImage},
+	{_T("Grid-GetColItems"),             Grid::GetColumnCells},
+	{_T("Grid-GetColWidth"),             Grid::GetColumnWidth},
+	{_T("Grid-GetCurSel"),               Grid::GetCurCell},	
+	{_T("Grid-GetItemCheck"),            Grid::GetCellCheckState},
+	{_T("Grid-GetItemData"),             Grid::GetRowData},
+	{_T("Grid-GetItemDropList"),         Grid::GetCellDropList},
+	{_T("Grid-GetItemImage"),            Grid::GetCellImages},
+	{_T("Grid-GetItemText"),             Grid::GetCellText},
+	{_T("Grid-GetRowItems"),             Grid::GetRowCells},
+	{_T("Grid-SetColImage"),             Grid::SetColumnImage},
+	{_T("Grid-SetColWidth"),             Grid::SetColumnWidth},
+	{_T("Grid-SelCurCell"),              Grid::SetCurCell},
+	{_T("Grid-SelCurRow"),               Grid::SetCurCell},
+	{_T("Grid-SetItemCheck"),            Grid::SetCellCheckState},
+	{_T("Grid-SetItemData"),             Grid::SetRowData},
+	{_T("Grid-SetItemDropList"),         Grid::SetCellDropList},
+	{_T("Grid-SetItemImage"),            Grid::SetCellImages},
+	{_T("Grid-SetItemStyle"),            Grid::SetCellStyle},											
+	{_T("Grid-SetItemText"),             Grid::SetCellText},
+	{_T("Grid-SortNumericItems"),        Grid::SortNumericCells},											
+	{_T("Grid-SortTextItems"),           Grid::SortTextCells},
+	{_T("Grid-StartItemEdit"),           Grid::StartCellEdit},
 
 	// Hatch control methods
-	{_T("Hatch_Clear"),                  Hatch::Clear},
-	{_T("Hatch_SetPattern"),             Hatch::SetPattern},
+	{_T("Hatch-Clear"),                  Hatch::Clear},
+	{_T("Hatch-SetPattern"),             Hatch::SetPattern},
 
 	// Html control methods
-	{_T("Html_GetBusy"),                 Html::GetBusy},
-	{_T("Html_GetFullName"),             Html::GetFullName},
-	{_T("Html_GetHtmlDocument"),         Html::GetHtmlDocument},
-	{_T("Html_GetLocationName"),         Html::GetLocationName},
-	{_T("Html_GetLocationURL"),          Html::GetLocationURL},
-	{_T("Html_GetOffline"),              Html::GetOffline},
-	{_T("Html_GoBack"),                  Html::GoBack},
-	{_T("Html_GoForward"),               Html::GoForward},
-	{_T("Html_GoHome"),                  Html::GoHome},
-	{_T("Html_GoSearch"),                Html::GoSearch},
-	{_T("Html_Navigate"),                Html::Navigate},
-	{_T("Html_Refresh"),                 Html::Refresh},
-	{_T("Html_ReplaceText"),             Html::ReplaceText},
-	{_T("Html_SetOffline"),              Html::SetOffline},
-	{_T("Html_Stop"),                    Html::Stop},
-	{_T("Html_UpdateHtmlCode"),          Html::UpdateHtmlCode},
+	{_T("Html-GetBusy"),                 Html::GetBusy},
+	{_T("Html-GetFullName"),             Html::GetFullName},
+	{_T("Html-GetHtmlDocument"),         Html::GetHtmlDocument},
+	{_T("Html-GetLocationName"),         Html::GetLocationName},
+	{_T("Html-GetLocationURL"),          Html::GetLocationURL},
+	{_T("Html-GetOffline"),              Html::GetOffline},
+	{_T("Html-GoBack"),                  Html::GoBack},
+	{_T("Html-GoForward"),               Html::GoForward},
+	{_T("Html-GoHome"),                  Html::GoHome},
+	{_T("Html-GoSearch"),                Html::GoSearch},
+	{_T("Html-Navigate"),                Html::Navigate},
+	{_T("Html-Refresh"),                 Html::Refresh},
+	{_T("Html-ReplaceText"),             Html::ReplaceText},
+	{_T("Html-SetOffline"),              Html::SetOffline},
+	{_T("Html-Stop"),                    Html::Stop},
+	{_T("Html-UpdateHtmlCode"),          Html::UpdateHtmlCode},
 
 	// Image Combo Box control methods
-	{_T("ImageComboBox_AddString"),      ImageComboBox::AddString},
-	{_T("ImageComboBox_Clear"),          ImageComboBox::Clear},
-	{_T("ImageComboBox_ClearEdit"),      ImageComboBox::ClearEdit},
-	{_T("ImageComboBox_DeleteItem"),     ImageComboBox::DeleteItem},
-	{_T("ImageComboBox_FindString"),     ImageComboBox::FindString},											
-	{_T("ImageComboBox_FindStringExact"), ImageComboBox::FindStringExact},
-	{_T("ImageComboBox_GetCount"),       ImageComboBox::GetCount},
-	{_T("ImageComboBox_GetCurSel"),      ImageComboBox::GetCurSel},
-	{_T("ImageComboBox_GetDroppedWidth"), ImageComboBox::GetDroppedWidth},
-	{_T("ImageComboBox_GetEBText"),      ImageComboBox::GetEBText},
-	{_T("ImageComboBox_GetEditSel"),     ImageComboBox::GetEditSel},
-	{_T("ImageComboBox_GetItem"),        ImageComboBox::GetItem},
-	{_T("ImageComboBox_GetItemData"),    ImageComboBox::GetItemData},
-	{_T("ImageComboBox_GetLBText"),      ImageComboBox::GetLBText},
-	{_T("ImageComboBox_GetTopIndex"),    ImageComboBox::GetTopIndex},
-	{_T("ImageComboBox_SelectString"),   ImageComboBox::SelectString},
-	{_T("ImageComboBox_SetCurSel"),      ImageComboBox::SetCurSel},
-	{_T("ImageComboBox_SetDroppedWidth"), ImageComboBox::SetDroppedWidth},
-	{_T("ImageComboBox_SetEditSel"),     ImageComboBox::SetEditSel},
-	{_T("ImageComboBox_SetItem"),        ImageComboBox::SetItem},
-	{_T("ImageComboBox_SetItemData"),    ImageComboBox::SetItemData},
-	{_T("ImageComboBox_SetTopIndex"),    ImageComboBox::SetTopIndex},
+	{_T("ImageComboBox-AddString"),      ImageComboBox::AddString},
+	{_T("ImageComboBox-Clear"),          ImageComboBox::Clear},
+	{_T("ImageComboBox-ClearEdit"),      ImageComboBox::ClearEdit},
+	{_T("ImageComboBox-DeleteItem"),     ImageComboBox::DeleteItem},
+	{_T("ImageComboBox-FindString"),     ImageComboBox::FindString},											
+	{_T("ImageComboBox-FindStringExact"), ImageComboBox::FindStringExact},
+	{_T("ImageComboBox-GetCount"),       ImageComboBox::GetCount},
+	{_T("ImageComboBox-GetCurSel"),      ImageComboBox::GetCurSel},
+	{_T("ImageComboBox-GetDroppedWidth"), ImageComboBox::GetDroppedWidth},
+	{_T("ImageComboBox-GetEBText"),      ImageComboBox::GetEBText},
+	{_T("ImageComboBox-GetEditSel"),     ImageComboBox::GetEditSel},
+	{_T("ImageComboBox-GetItem"),        ImageComboBox::GetItem},
+	{_T("ImageComboBox-GetItemData"),    ImageComboBox::GetItemData},
+	{_T("ImageComboBox-GetLBText"),      ImageComboBox::GetLBText},
+	{_T("ImageComboBox-GetTopIndex"),    ImageComboBox::GetTopIndex},
+	{_T("ImageComboBox-SelectString"),   ImageComboBox::SelectString},
+	{_T("ImageComboBox-SetCurSel"),      ImageComboBox::SetCurSel},
+	{_T("ImageComboBox-SetDroppedWidth"), ImageComboBox::SetDroppedWidth},
+	{_T("ImageComboBox-SetEditSel"),     ImageComboBox::SetEditSel},
+	{_T("ImageComboBox-SetItem"),        ImageComboBox::SetItem},
+	{_T("ImageComboBox-SetItemData"),    ImageComboBox::SetItemData},
+	{_T("ImageComboBox-SetTopIndex"),    ImageComboBox::SetTopIndex},
 
 	// Image Combo Box control deprecated methods
-	{_T("ImageComboBox_DeleteString"),   ImageComboBox::DeleteItem},
-	{_T("ImageComboBox_GetTBText"),      ImageComboBox::GetEBText},
+	{_T("ImageComboBox-DeleteString"),   ImageComboBox::DeleteItem},
+	{_T("ImageComboBox-GetTBText"),      ImageComboBox::GetEBText},
 
 	// List Box control methods
-	{_T("ListBox_AddList"),              ListBox::AddList},		
-	{_T("ListBox_AddString"),            ListBox::AddString},
-	{_T("ListBox_Clear"),                ListBox::Clear},											
-	{_T("ListBox_DeleteItem"),           ListBox::DeleteItem},
-	{_T("ListBox_Dir"),                  ListBox::Dir},
-	{_T("ListBox_FindString"),           ListBox::FindString},
-	{_T("ListBox_FindStringExact"),      ListBox::FindStringExact},
-	{_T("ListBox_GetAnchorIndex"),       ListBox::GetAnchorIndex},
-	{_T("ListBox_GetCount"),             ListBox::GetCount},
-	{_T("ListBox_GetCurSel"),            ListBox::GetCurSel},
-	{_T("ListBox_GetFocusIndex"),        ListBox::GetFocusIndex},
-	{_T("ListBox_GetItemData"),          ListBox::GetItemData},
-	{_T("ListBox_GetItemText"),          ListBox::GetItemText},
-	{_T("ListBox_GetSelCount"),          ListBox::GetSelCount},
-	{_T("ListBox_GetSelectedItems"),     ListBox::GetSelectedItems},	
-	{_T("ListBox_GetSelectedNths"),      ListBox::GetSelectedNths},	
-	{_T("ListBox_GetTopIndex"),          ListBox::GetTopIndex},
-	{_T("ListBox_HitPointTest"),         ListBox::HitPointTest},
-	{_T("ListBox_InsertString"),         ListBox::InsertString},
-	{_T("ListBox_IsItemSelected"),       ListBox::IsItemSelected},
-	{_T("ListBox_SelectItem"),           ListBox::SelectItem},
-	{_T("ListBox_SelectString"),         ListBox::SelectString},
-	{_T("ListBox_SelItemRange"),         ListBox::SelItemRange},
-	{_T("ListBox_SetAnchorIndex"),       ListBox::SetAnchorIndex},
-	{_T("ListBox_SetCurSel"),            ListBox::SetCurSel},
-	{_T("ListBox_SetFocusIndex"),        ListBox::SetFocusIndex},
-	{_T("ListBox_SetItemData"),          ListBox::SetItemData},
-	{_T("ListBox_SetTopIndex"),          ListBox::SetTopIndex},
+	{_T("ListBox-AddList"),              ListBox::AddList},		
+	{_T("ListBox-AddString"),            ListBox::AddString},
+	{_T("ListBox-Clear"),                ListBox::Clear},											
+	{_T("ListBox-DeleteItem"),           ListBox::DeleteItem},
+	{_T("ListBox-Dir"),                  ListBox::Dir},
+	{_T("ListBox-FindString"),           ListBox::FindString},
+	{_T("ListBox-FindStringExact"),      ListBox::FindStringExact},
+	{_T("ListBox-GetAnchorIndex"),       ListBox::GetAnchorIndex},
+	{_T("ListBox-GetCount"),             ListBox::GetCount},
+	{_T("ListBox-GetCurSel"),            ListBox::GetCurSel},
+	{_T("ListBox-GetFocusIndex"),        ListBox::GetFocusIndex},
+	{_T("ListBox-GetItemData"),          ListBox::GetItemData},
+	{_T("ListBox-GetItemText"),          ListBox::GetItemText},
+	{_T("ListBox-GetSelCount"),          ListBox::GetSelCount},
+	{_T("ListBox-GetSelectedItems"),     ListBox::GetSelectedItems},	
+	{_T("ListBox-GetSelectedNths"),      ListBox::GetSelectedNths},	
+	{_T("ListBox-GetTopIndex"),          ListBox::GetTopIndex},
+	{_T("ListBox-HitPointTest"),         ListBox::HitPointTest},
+	{_T("ListBox-InsertString"),         ListBox::InsertString},
+	{_T("ListBox-IsItemSelected"),       ListBox::IsItemSelected},
+	{_T("ListBox-SelectItem"),           ListBox::SelectItem},
+	{_T("ListBox-SelectString"),         ListBox::SelectString},
+	{_T("ListBox-SelItemRange"),         ListBox::SelItemRange},
+	{_T("ListBox-SetAnchorIndex"),       ListBox::SetAnchorIndex},
+	{_T("ListBox-SetCurSel"),            ListBox::SetCurSel},
+	{_T("ListBox-SetFocusIndex"),        ListBox::SetFocusIndex},
+	{_T("ListBox-SetItemData"),          ListBox::SetItemData},
+	{_T("ListBox-SetTopIndex"),          ListBox::SetTopIndex},
 
 	// List Box control deprecated methods
-	{_T("ListBox_DeleteString"),         ListBox::DeleteItem},
-	{_T("ListBox_GetSel"),               ListBox::IsItemSelected},
-	{_T("ListBox_GetText"),              ListBox::GetItemText},
-	{_T("ListBox_SetSel"),               ListBox::SelectItem},
+	{_T("ListBox-DeleteString"),         ListBox::DeleteItem},
+	{_T("ListBox-GetSel"),               ListBox::IsItemSelected},
+	{_T("ListBox-GetText"),              ListBox::GetItemText},
+	{_T("ListBox-SetSel"),               ListBox::SelectItem},
 
 	// List View control methods
-	{_T("ListView_AddColumns"),          ListView::AddColumns},
-	{_T("ListView_AddItem"),             ListView::AddItem},
-	{_T("ListView_AddString"),           ListView::AddString},
-	{_T("ListView_Arrange"),             ListView::Arrange},
-	{_T("ListView_CalcColumnWidth"),     ListView::CalcColumnWidth},
-	{_T("ListView_CancelLabelEdit"),     ListView::CancelLabelEdit},
-	{_T("ListView_Clear"),               ListView::Clear},
-	{_T("ListView_DeleteColumn"),        ListView::DeleteColumn},
-	{_T("ListView_DeleteColumns"),       ListView::DeleteColumns},
-	{_T("ListView_DeleteItem"),          ListView::DeleteItem},
-	{_T("ListView_DeleteItems"),         ListView::DeleteItems},
-	{_T("ListView_FillList"),            ListView::FillList},
-	{_T("ListView_GetColumnCount"),      ListView::GetColumnCount},
-	{_T("ListView_GetColumnImage"),      ListView::GetColumnImage},
-	{_T("ListView_GetColumnItems"),      ListView::GetColumnItems},
-	{_T("ListView_GetColumnWidth"),      ListView::GetColumnWidth},
-	{_T("ListView_GetCount"),            ListView::GetCount},
-	{_T("ListView_GetCurSel"),           ListView::GetCurSel},
-	{_T("ListView_GetItemData"),         ListView::GetItemData},
-	{_T("ListView_GetItemImage"),        ListView::GetItemImage},
-	{_T("ListView_GetItemText"),         ListView::GetItemText},
-	{_T("ListView_GetRowItems"),         ListView::GetRowItems},
-	{_T("ListView_GetSelCount"),         ListView::GetSelCount},
-	{_T("ListView_GetSelectedItems"),    ListView::GetSelectedItems},	
-	{_T("ListView_GetSelectedNths"),     ListView::GetSelectedNths},
-	{_T("ListView_HitPointTest"),        ListView::HitPointTest},
-	{_T("ListView_InsertItem"),          ListView::InsertItem},
-	{_T("ListView_SetColumnImage"),      ListView::SetColumnImage},
-	{_T("ListView_SetColumnWidth"),      ListView::SetColumnWidth},
-	{_T("ListView_SetCurSel"),           ListView::SetCurSel},
-	{_T("ListView_SetItemData"),         ListView::SetItemData},
-	{_T("ListView_SetItemImage"),        ListView::SetItemImage},
-	{_T("ListView_SetItemText"),         ListView::SetItemText},
-	{_T("ListView_SortNumericItems"),    ListView::SortNumericItems},
-	{_T("ListView_SortTextItems"),       ListView::SortTextItems},
-	{_T("ListView_StartLabelEdit"),      ListView::StartLabelEdit},
+	{_T("ListView-AddColumns"),          ListView::AddColumns},
+	{_T("ListView-AddItem"),             ListView::AddItem},
+	{_T("ListView-AddString"),           ListView::AddString},
+	{_T("ListView-Arrange"),             ListView::Arrange},
+	{_T("ListView-CalcColumnWidth"),     ListView::CalcColumnWidth},
+	{_T("ListView-CancelLabelEdit"),     ListView::CancelLabelEdit},
+	{_T("ListView-Clear"),               ListView::Clear},
+	{_T("ListView-DeleteColumn"),        ListView::DeleteColumn},
+	{_T("ListView-DeleteColumns"),       ListView::DeleteColumns},
+	{_T("ListView-DeleteItem"),          ListView::DeleteItem},
+	{_T("ListView-DeleteItems"),         ListView::DeleteItems},
+	{_T("ListView-FillList"),            ListView::FillList},
+	{_T("ListView-GetColumnCount"),      ListView::GetColumnCount},
+	{_T("ListView-GetColumnImage"),      ListView::GetColumnImage},
+	{_T("ListView-GetColumnItems"),      ListView::GetColumnItems},
+	{_T("ListView-GetColumnWidth"),      ListView::GetColumnWidth},
+	{_T("ListView-GetCount"),            ListView::GetCount},
+	{_T("ListView-GetCurSel"),           ListView::GetCurSel},
+	{_T("ListView-GetItemData"),         ListView::GetItemData},
+	{_T("ListView-GetItemImage"),        ListView::GetItemImage},
+	{_T("ListView-GetItemText"),         ListView::GetItemText},
+	{_T("ListView-GetRowItems"),         ListView::GetRowItems},
+	{_T("ListView-GetSelCount"),         ListView::GetSelCount},
+	{_T("ListView-GetSelectedItems"),    ListView::GetSelectedItems},	
+	{_T("ListView-GetSelectedNths"),     ListView::GetSelectedNths},
+	{_T("ListView-HitPointTest"),        ListView::HitPointTest},
+	{_T("ListView-InsertItem"),          ListView::InsertItem},
+	{_T("ListView-SetColumnImage"),      ListView::SetColumnImage},
+	{_T("ListView-SetColumnWidth"),      ListView::SetColumnWidth},
+	{_T("ListView-SetCurSel"),           ListView::SetCurSel},
+	{_T("ListView-SetItemData"),         ListView::SetItemData},
+	{_T("ListView-SetItemImage"),        ListView::SetItemImage},
+	{_T("ListView-SetItemText"),         ListView::SetItemText},
+	{_T("ListView-SortNumericItems"),    ListView::SortNumericItems},
+	{_T("ListView-SortTextItems"),       ListView::SortTextItems},
+	{_T("ListView-StartLabelEdit"),      ListView::StartLabelEdit},
 
 	// List View control deprecated methods
-	{_T("ListView_CalcColWidth"),        ListView::CalcColumnWidth},
-	{_T("ListView_CountItems"),          ListView::GetCount},
-	{_T("ListView_GetColWidth"),         ListView::GetColumnWidth},
-	{_T("ListView_SetColWidth"),         ListView::SetColumnWidth},
+	{_T("ListView-CalcColWidth"),        ListView::CalcColumnWidth},
+	{_T("ListView-CountItems"),          ListView::GetCount},
+	{_T("ListView-GetColWidth"),         ListView::GetColumnWidth},
+	{_T("ListView-SetColWidth"),         ListView::SetColumnWidth},
 
 	// Option List control methods
-	{_T("OptionList_AddButton"),         OptionList::AddButton},
-	{_T("OptionList_AddList"),           OptionList::AddList},
-	{_T("OptionList_Clear"),             OptionList::Clear},
-	{_T("OptionList_DeleteButton"),      OptionList::DeleteButton},
-	{_T("OptionList_GetButtonCaption"),  OptionList::GetButtonCaption},
-	{_T("OptionList_GetCount"),          OptionList::GetCount},
-	{_T("OptionList_GetCurSel"),         OptionList::GetCurSel},
-	{_T("OptionList_GetTopIndex"),       OptionList::GetTopIndex},
-	{_T("OptionList_InsertButton"),      OptionList::InsertButton},
-	{_T("OptionList_SetButtonEnabled"),  OptionList::SetButtonEnabled},
-	{_T("OptionList_SetButtonTooltip"),  OptionList::SetButtonTooltip},
-	{_T("OptionList_SetCurSel"),         OptionList::SetCurSel},
-	{_T("OptionList_SetTopIndex"),       OptionList::SetTopIndex},
+	{_T("OptionList-AddButton"),         OptionList::AddButton},
+	{_T("OptionList-AddList"),           OptionList::AddList},
+	{_T("OptionList-Clear"),             OptionList::Clear},
+	{_T("OptionList-DeleteButton"),      OptionList::DeleteButton},
+	{_T("OptionList-GetButtonCaption"),  OptionList::GetButtonCaption},
+	{_T("OptionList-GetCount"),          OptionList::GetCount},
+	{_T("OptionList-GetCurSel"),         OptionList::GetCurSel},
+	{_T("OptionList-GetTopIndex"),       OptionList::GetTopIndex},
+	{_T("OptionList-InsertButton"),      OptionList::InsertButton},
+	{_T("OptionList-SetButtonEnabled"),  OptionList::SetButtonEnabled},
+	{_T("OptionList-SetButtonTooltip"),  OptionList::SetButtonTooltip},
+	{_T("OptionList-SetCurSel"),         OptionList::SetCurSel},
+	{_T("OptionList-SetTopIndex"),       OptionList::SetTopIndex},
 
 	// Option List control deprecated methods
-	{_T("OptionList_AddString"),         OptionList::AddButton},
-	{_T("OptionList_DeleteString"),      OptionList::DeleteButton},
-	{_T("OptionList_GetText"),           OptionList::GetButtonCaption},
-	{_T("OptionList_InsertString"),      OptionList::InsertButton},
-	{_T("OptionList_SetEnabled"),        OptionList::SetButtonEnabled},
-	{_T("OptionList_SetTttTitle"),       OptionList::SetButtonTooltip},
+	{_T("OptionList-AddString"),         OptionList::AddButton},
+	{_T("OptionList-DeleteString"),      OptionList::DeleteButton},
+	{_T("OptionList-GetText"),           OptionList::GetButtonCaption},
+	{_T("OptionList-InsertString"),      OptionList::InsertButton},
+	{_T("OptionList-SetEnabled"),        OptionList::SetButtonEnabled},
+	{_T("OptionList-SetTttTitle"),       OptionList::SetButtonTooltip},
 
 	// Picture Box control methods
-	{_T("PictureBox_Clear"),             PictureBox::Clear},
-	{_T("PictureBox_DrawArc"),           PictureBox::DrawArc},
-	{_T("PictureBox_DrawCircle"),        PictureBox::DrawCircle},
-	{_T("PictureBox_DrawEdge"),          PictureBox::DrawEdge},
-	{_T("PictureBox_DrawFocusRect"),     PictureBox::DrawFocusRect},
-	{_T("PictureBox_DrawHatchRect"),     PictureBox::DrawHatchRect},
-	{_T("PictureBox_DrawLine"),          PictureBox::DrawLine},
-	{_T("PictureBox_DrawPoint"),         PictureBox::DrawPoint},
-	{_T("PictureBox_DrawRect"),          PictureBox::DrawRect},
-	{_T("PictureBox_DrawSolidRect"),     PictureBox::DrawSolidRect},
-	{_T("PictureBox_DrawText"),          PictureBox::DrawText},
-	{_T("PictureBox_DrawWrappedText"),   PictureBox::DrawWrappedText},
-	{_T("PictureBox_GetTextExtent"),     PictureBox::GetTextExtent},
-	{_T("PictureBox_LoadPictureFile"),   PictureBox::LoadPictureFile},
-	{_T("PictureBox_PaintPicture"),      PictureBox::PaintPicture},
-	{_T("PictureBox_Refresh"),           PictureBox::Refresh},
-	{_T("PictureBox_StoreImage"),        PictureBox::StoreImage},
+	{_T("PictureBox-Clear"),             PictureBox::Clear},
+	{_T("PictureBox-DrawArc"),           PictureBox::DrawArc},
+	{_T("PictureBox-DrawCircle"),        PictureBox::DrawCircle},
+	{_T("PictureBox-DrawEdge"),          PictureBox::DrawEdge},
+	{_T("PictureBox-DrawFocusRect"),     PictureBox::DrawFocusRect},
+	{_T("PictureBox-DrawHatchRect"),     PictureBox::DrawHatchRect},
+	{_T("PictureBox-DrawLine"),          PictureBox::DrawLine},
+	{_T("PictureBox-DrawPoint"),         PictureBox::DrawPoint},
+	{_T("PictureBox-DrawRect"),          PictureBox::DrawRect},
+	{_T("PictureBox-DrawSolidRect"),     PictureBox::DrawSolidRect},
+	{_T("PictureBox-DrawText"),          PictureBox::DrawText},
+	{_T("PictureBox-DrawWrappedText"),   PictureBox::DrawWrappedText},
+	{_T("PictureBox-GetTextExtent"),     PictureBox::GetTextExtent},
+	{_T("PictureBox-LoadPictureFile"),   PictureBox::LoadPictureFile},
+	{_T("PictureBox-PaintPicture"),      PictureBox::PaintPicture},
+	{_T("PictureBox-Refresh"),           PictureBox::Refresh},
+	{_T("PictureBox-StoreImage"),        PictureBox::StoreImage},
 
 	// Picture Box control deprecated methods
-	{_T("PictureBox_DrawFillRect"),      PictureBox::DrawSolidRect},
+	{_T("PictureBox-DrawFillRect"),      PictureBox::DrawSolidRect},
 
 	// Progress Bar control methods
-	{_T("ProgressBar_Reset"),            ProgressBar::Reset},
+	{_T("ProgressBar-Reset"),            ProgressBar::Reset},
 
 	// Progress Bar control deprecated methods
-	{_T("ProgressBar_SetPos"),           ProgressBar::SetPos},
+	{_T("ProgressBar-SetPos"),           ProgressBar::SetPos},
 
 	// Slide View control methods
-	{_T("SlideView_Clear"),              SlideView::Clear},
-	{_T("SlideView_EndImage"),           SlideView::EndImage},
-	{_T("SlideView_FillImage"),          SlideView::FillImage},
-	{_T("SlideView_Load"),               SlideView::Load},
-	{_T("SlideView_RemoveHighlight"),    SlideView::RemoveHighlight},
-	{_T("SlideView_SetHighlight"),       SlideView::SetHighlight},
-	{_T("SlideView_SlideImage"),         SlideView::SlideImage},											
-	{_T("SlideView_VectorImage"),        SlideView::VectorImage},
+	{_T("SlideView-Clear"),              SlideView::Clear},
+	{_T("SlideView-EndImage"),           SlideView::EndImage},
+	{_T("SlideView-FillImage"),          SlideView::FillImage},
+	{_T("SlideView-Load"),               SlideView::Load},
+	{_T("SlideView-RemoveHighlight"),    SlideView::RemoveHighlight},
+	{_T("SlideView-SetHighlight"),       SlideView::SetHighlight},
+	{_T("SlideView-SlideImage"),         SlideView::SlideImage},											
+	{_T("SlideView-VectorImage"),        SlideView::VectorImage},
 
 	// Tab Strip control methods
-	{_T("TabStrip_GetControlArea"),      TabStrip::GetControlArea},
-	{_T("TabStrip_GetCurSel"),           TabStrip::GetCurSel},
-	{_T("TabStrip_GetRowCount"),         TabStrip::GetRowCount},
-	{_T("TabStrip_HideTab"),             TabStrip::HideTab},
-	{_T("TabStrip_SetCurSel"),           TabStrip::SetCurSel},
-	{_T("TabStrip_SetTabCaption"),       TabStrip::SetTabCaption},
-	{_T("TabStrip_ShowTab"),             TabStrip::ShowTab},
+	{_T("TabStrip-GetControlArea"),      TabStrip::GetControlArea},
+	{_T("TabStrip-GetCurSel"),           TabStrip::GetCurSel},
+	{_T("TabStrip-GetRowCount"),         TabStrip::GetRowCount},
+	{_T("TabStrip-HideTab"),             TabStrip::HideTab},
+	{_T("TabStrip-SetCurSel"),           TabStrip::SetCurSel},
+	{_T("TabStrip-SetTabCaption"),       TabStrip::SetTabCaption},
+	{_T("TabStrip-ShowTab"),             TabStrip::ShowTab},
 
 	// Tab Strip deprecated control methods
-	{_T("Tab_GetControlArea"),           TabStrip::GetControlArea},
-	{_T("Tab_GetCurSel"),                TabStrip::GetCurSel},
-	{_T("Tab_GetRowCount"),              TabStrip::GetRowCount},
-	{_T("Tab_HideTab"),                  TabStrip::HideTab},
-	{_T("Tab_SetCurSel"),                TabStrip::SetCurSel},
-	{_T("Tab_SetTabText"),               TabStrip::SetTabCaption},
-	{_T("Tab_ShowTab"),                  TabStrip::ShowTab},
+	{_T("Tab-GetControlArea"),           TabStrip::GetControlArea},
+	{_T("Tab-GetCurSel"),                TabStrip::GetCurSel},
+	{_T("Tab-GetRowCount"),              TabStrip::GetRowCount},
+	{_T("Tab-HideTab"),                  TabStrip::HideTab},
+	{_T("Tab-SetCurSel"),                TabStrip::SetCurSel},
+	{_T("Tab-SetTabText"),               TabStrip::SetTabCaption},
+	{_T("Tab-ShowTab"),                  TabStrip::ShowTab},
 
 	// Text Box control methods
-	{_T("TextBox_GetFilter"),            TextBox::GetFilter},
-	{_T("TextBox_GetFirstVisibleLine"),  TextBox::GetFirstVisibleLine},
-	{_T("TextBox_GetLine"),              TextBox::GetLine},
-	{_T("TextBox_GetLineCount"),         TextBox::GetLineCount},
-	{_T("TextBox_GetLineLength"),        TextBox::GetLineLength},
-	{_T("TextBox_IsModified"),           TextBox::IsModified},
-	{_T("TextBox_GetSel"),               TextBox::GetSel},
-	{_T("TextBox_LineScroll"),           TextBox::LineScroll},
-	{_T("TextBox_ReplaceSel"),           TextBox::ReplaceSel},
-	{_T("TextBox_SetFilter"),            TextBox::SetFilter},
-	{_T("TextBox_SetSel"),               TextBox::SetSel},
-	{_T("TextBox_SetTabStops"),          TextBox::SetTabStops},
-	{_T("TextBox_Undo"),                 TextBox::Undo},
+	{_T("TextBox-GetFilter"),            TextBox::GetFilter},
+	{_T("TextBox-GetFirstVisibleLine"),  TextBox::GetFirstVisibleLine},
+	{_T("TextBox-GetLine"),              TextBox::GetLine},
+	{_T("TextBox-GetLineCount"),         TextBox::GetLineCount},
+	{_T("TextBox-GetLineLength"),        TextBox::GetLineLength},
+	{_T("TextBox-IsModified"),           TextBox::IsModified},
+	{_T("TextBox-GetSel"),               TextBox::GetSel},
+	{_T("TextBox-LineScroll"),           TextBox::LineScroll},
+	{_T("TextBox-ReplaceSel"),           TextBox::ReplaceSel},
+	{_T("TextBox-SetFilter"),            TextBox::SetFilter},
+	{_T("TextBox-SetSel"),               TextBox::SetSel},
+	{_T("TextBox-SetTabStops"),          TextBox::SetTabStops},
+	{_T("TextBox-Undo"),                 TextBox::Undo},
 
 	// Text Box control deprecated methods
-	{_T("TextBox_GetModify"),            TextBox::IsModified},
+	{_T("TextBox-GetModify"),            TextBox::IsModified},
 
 	// Tree control methods
-	{_T("Tree_AddChild"),                Tree::AddChild},
-	{_T("Tree_AddParent"),               Tree::AddParent},
-	{_T("Tree_AddSibling"),              Tree::AddSibling},
-	{_T("Tree_CancelLabelEdit"),         Tree::CancelLabelEdit},
-	{_T("Tree_Clear"),                   Tree::Clear},
-	{_T("Tree_DeleteItem"),              Tree::DeleteItem},
-	{_T("Tree_EnsureVisible"),           Tree::EnsureVisible},
-	{_T("Tree_ExpandItem"),              Tree::ExpandItem},
-	{_T("Tree_GetCount"),                Tree::GetCount},
-	{_T("Tree_GetFirstChildItem"),       Tree::GetFirstChildItem},
-	{_T("Tree_GetFirstVisibleItem"),     Tree::GetFirstVisibleItem},
-	{_T("Tree_GetItemData"),             Tree::GetItemData},
-	{_T("Tree_GetItemHandle"),           Tree::GetItemHandle},
-	{_T("Tree_GetItemImages"),           Tree::GetItemImages},
-	{_T("Tree_GetItemKey"),              Tree::GetItemKey},
-	{_T("Tree_GetItemLabel"),            Tree::GetItemLabel},
-	{_T("Tree_GetNextSiblingItem"),      Tree::GetNextSiblingItem},
-	{_T("Tree_GetNextVisibleItem"),      Tree::GetNextVisibleItem},
-	{_T("Tree_GetParentItem"),           Tree::GetParentItem},
-	{_T("Tree_GetPrevSiblingItem"),      Tree::GetPrevSiblingItem},
-	{_T("Tree_GetPrevVisibleItem"),      Tree::GetPrevVisibleItem},
-	{_T("Tree_GetRootItem"),             Tree::GetRootItem},
-	{_T("Tree_GetSelectedItem"),         Tree::GetSelectedItem},
-	{_T("Tree_GetVisibleCount"),         Tree::GetVisibleCount},
-	{_T("Tree_IsItemExpanded"),          Tree::IsItemExpanded},
-	{_T("Tree_ItemHasChildren"),         Tree::ItemHasChildren},
-	{_T("Tree_SelectItem"),              Tree::SelectItem},
-	{_T("Tree_SelectSetFirstVisible"),   Tree::SelectSetFirstVisible},
-	{_T("Tree_SetItemData"),             Tree::SetItemData},
-	{_T("Tree_SetItemImages"),           Tree::SetItemImages},
-	{_T("Tree_SetItemLabel"),            Tree::SetItemLabel},
-	{_T("Tree_SortChildren"),            Tree::SortChildren},
-	{_T("Tree_StartLabelEdit"),          Tree::StartLabelEdit},
+	{_T("Tree-AddChild"),                Tree::AddChild},
+	{_T("Tree-AddParent"),               Tree::AddParent},
+	{_T("Tree-AddSibling"),              Tree::AddSibling},
+	{_T("Tree-CancelLabelEdit"),         Tree::CancelLabelEdit},
+	{_T("Tree-Clear"),                   Tree::Clear},
+	{_T("Tree-DeleteItem"),              Tree::DeleteItem},
+	{_T("Tree-EnsureVisible"),           Tree::EnsureVisible},
+	{_T("Tree-ExpandItem"),              Tree::ExpandItem},
+	{_T("Tree-GetCount"),                Tree::GetCount},
+	{_T("Tree-GetFirstChildItem"),       Tree::GetFirstChildItem},
+	{_T("Tree-GetFirstVisibleItem"),     Tree::GetFirstVisibleItem},
+	{_T("Tree-GetItemData"),             Tree::GetItemData},
+	{_T("Tree-GetItemHandle"),           Tree::GetItemHandle},
+	{_T("Tree-GetItemImages"),           Tree::GetItemImages},
+	{_T("Tree-GetItemKey"),              Tree::GetItemKey},
+	{_T("Tree-GetItemLabel"),            Tree::GetItemLabel},
+	{_T("Tree-GetNextSiblingItem"),      Tree::GetNextSiblingItem},
+	{_T("Tree-GetNextVisibleItem"),      Tree::GetNextVisibleItem},
+	{_T("Tree-GetParentItem"),           Tree::GetParentItem},
+	{_T("Tree-GetPrevSiblingItem"),      Tree::GetPrevSiblingItem},
+	{_T("Tree-GetPrevVisibleItem"),      Tree::GetPrevVisibleItem},
+	{_T("Tree-GetRootItem"),             Tree::GetRootItem},
+	{_T("Tree-GetSelectedItem"),         Tree::GetSelectedItem},
+	{_T("Tree-GetVisibleCount"),         Tree::GetVisibleCount},
+	{_T("Tree-IsItemExpanded"),          Tree::IsItemExpanded},
+	{_T("Tree-ItemHasChildren"),         Tree::ItemHasChildren},
+	{_T("Tree-SelectItem"),              Tree::SelectItem},
+	{_T("Tree-SelectSetFirstVisible"),   Tree::SelectSetFirstVisible},
+	{_T("Tree-SetItemData"),             Tree::SetItemData},
+	{_T("Tree-SetItemImages"),           Tree::SetItemImages},
+	{_T("Tree-SetItemLabel"),            Tree::SetItemLabel},
+	{_T("Tree-SortChildren"),            Tree::SortChildren},
+	{_T("Tree-StartLabelEdit"),          Tree::StartLabelEdit},
 
 	// Tree control deprecated methods
-	{_T("Tree_CancelEditLabel"),         Tree::CancelLabelEdit},
-	{_T("Tree_CountItems"),              Tree::GetCount},
-	{_T("Tree_EditLabel"),               Tree::StartLabelEdit},
-	{_T("Tree_GetExpandedImage"),        Tree::GetExpandedImage},
-	{_T("Tree_GetItem"),                 Tree::GetItem},
-	{_T("Tree_GetItemText"),             Tree::GetItemLabel},
-	{_T("Tree_GetParent"),               Tree::GetParentItem},
-	{_T("Tree_InsertAfter"),             Tree::AddSibling},
-	{_T("Tree_SetExpandedImage"),        Tree::SetExpandedImage},
-	{_T("Tree_SetItemText"),             Tree::SetItemLabel},
+	{_T("Tree-CancelEditLabel"),         Tree::CancelLabelEdit},
+	{_T("Tree-CountItems"),              Tree::GetCount},
+	{_T("Tree-EditLabel"),               Tree::StartLabelEdit},
+	{_T("Tree-GetExpandedImage"),        Tree::GetExpandedImage},
+	{_T("Tree-GetItem"),                 Tree::GetItem},
+	{_T("Tree-GetItemText"),             Tree::GetItemLabel},
+	{_T("Tree-GetParent"),               Tree::GetParentItem},
+	{_T("Tree-InsertAfter"),             Tree::AddSibling},
+	{_T("Tree-SetExpandedImage"),        Tree::SetExpandedImage},
+	{_T("Tree-SetItemText"),             Tree::SetItemLabel},
 };
 
 
@@ -852,20 +886,53 @@ public:
 	CString GetCurrentFunctionName() const
 		{
 			int nFunctionCode = acedGetFunCode();
-			if( nFunctionCode >= ADSFUNCBASE && nFunctionCode < (ADSFUNCBASE + _elements(grAdsFunctionTable)) )
-				return (dclPrefix() + grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pszFunctionName);
-			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
+			if( nFunctionCode >= ADSFUNCBASE )
 			{
-				LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - ADSPROPFUNCBASE) );
-				if( pszPropName && *pszPropName != _T('(') )
-					return (controlGetPrefix() + pszPropName);
+				int nFuncEnd = (ADSFUNCBASE + _elements(grAdsFunctionTable));
+				if (nFunctionCode < nFuncEnd )
+					return (dclPrefix() + grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pszFunctionName);
+				if (nFunctionCode < (nFuncEnd + _elements(grAdsFunctionTable)) )
+				{
+					CString sFunctionName = (dclPrefix() + grAdsFunctionTable[nFunctionCode - nFuncEnd].pszFunctionName);
+					sFunctionName.Replace( _T('-'), _T('_') );
+					return sFunctionName;
+				}
 			}
-			else if( nFunctionCode >= (ADSPROPFUNCBASE + Prop::_MaxId) &&
-							 nFunctionCode < (ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId) )
+			if( nFunctionCode >= ADSPROPFUNCBASE )
 			{
-				LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - (ADSPROPFUNCBASE + Prop::_MaxId)) );
-				if( pszPropName && *pszPropName != _T('(') )
-					return (controlSetPrefix() + pszPropName);
+				int nFuncEnd = (ADSPROPFUNCBASE + Prop::_MaxId);
+				if( nFunctionCode < nFuncEnd )
+				{
+					LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - ADSPROPFUNCBASE) );
+					if( pszPropName && *pszPropName != _T('(') )
+						return (controlGetPrefix() + pszPropName);
+				}
+				else if( nFunctionCode < (nFuncEnd + Prop::_MaxId) )
+				{
+					LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - nFuncEnd) );
+					if( pszPropName && *pszPropName != _T('(') )
+						return (controlSetPrefix() + pszPropName);
+				}
+				else if( nFunctionCode < (nFuncEnd + Prop::_MaxId + Prop::_MaxId) )
+				{
+					LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - nFuncEnd - Prop::_MaxId) );
+					if( pszPropName && *pszPropName != _T('(') )
+					{
+						CString sFunctionName = (controlSetPrefix() + pszPropName);
+						sFunctionName.Replace( _T('-'), _T('_') );
+						return sFunctionName;
+					}
+				}
+				else if( nFunctionCode < (nFuncEnd + Prop::_MaxId + Prop::_MaxId + Prop::_MaxId) )
+				{
+					LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - nFuncEnd - Prop::_MaxId - Prop::_MaxId) );
+					if( pszPropName && *pszPropName != _T('(') )
+					{
+						CString sFunctionName = (controlSetPrefix() + pszPropName);
+						sFunctionName.Replace( _T('-'), _T('_') );
+						return sFunctionName;
+					}
+				}
 			}
 			else
 			{
@@ -898,17 +965,17 @@ protected:
 	static int ads_dcl_SetCtrlProperty(void);
 	static const CString& dclPrefix()
 		{
-			static const CString sPrefix = _T("dcl_");
+			static const CString sPrefix = _T("dcl-");
 			return sPrefix;
 		}
 	static const CString& controlGetPrefix()
 		{
-			static const CString sPrefix = dclPrefix() + _T("Control_Get");
+			static const CString sPrefix = dclPrefix() + _T("Control-Get");
 			return sPrefix;
 		}
 	static const CString& controlSetPrefix()
 		{
-			static const CString sPrefix = dclPrefix() + _T("Control_Set");
+			static const CString sPrefix = dclPrefix() + _T("Control-Set");
 			return sPrefix;
 		}
 
@@ -980,24 +1047,52 @@ public:
 		if( retCode == AcRx::kRetOK )
 		{
 			int nFunctionCode = acedGetFunCode();
-			if( nFunctionCode >= ADSFUNCBASE && nFunctionCode < ADSFUNCBASE + _elements(grAdsFunctionTable) )
+			if( nFunctionCode >= ADSFUNCBASE )
 			{
-				if( RTNORM != grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pfHandler() )
-					return AcRx::kRetError;
-				return AcRx::kRetOK;
+				int nFuncEnd = (ADSFUNCBASE + _elements(grAdsFunctionTable));
+				if( nFunctionCode < nFuncEnd )
+				{
+					if( RSRSLT != grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pfHandler() )
+						return AcRx::kRetError;
+					return AcRx::kRetOK;
+				}
+				if( nFunctionCode < nFuncEnd + _elements(grAdsFunctionTable) )
+				{
+					if( RSRSLT != grAdsFunctionTable[nFunctionCode - nFuncEnd].pfHandler() )
+						return AcRx::kRetError;
+					return AcRx::kRetOK;
+				}
 			}
-			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
+			if( nFunctionCode >= ADSPROPFUNCBASE )
 			{
-				if( !GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) ) )
-					return AcRx::kRetError;
-				return AcRx::kRetOK;
-			}
-			int nSetPropertyBase = ADSPROPFUNCBASE + Prop::_MaxId;
-			if( nFunctionCode >= nSetPropertyBase && nFunctionCode < nSetPropertyBase + Prop::_MaxId )
-			{
-				if( !SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) ) )
-					return AcRx::kRetError;
-				return AcRx::kRetOK;
+				int nGetPropertyEnd = (ADSPROPFUNCBASE + Prop::_MaxId);
+				if( nFunctionCode < nGetPropertyEnd )
+				{
+					if( !GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) ) )
+						return AcRx::kRetError;
+					return AcRx::kRetOK;
+				}
+				int nSetPropertyEnd = nGetPropertyEnd + Prop::_MaxId;
+				if( nFunctionCode < nSetPropertyEnd )
+				{
+					if( !SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nGetPropertyEnd) ) )
+						return AcRx::kRetError;
+					return AcRx::kRetOK;
+				}
+				int nOldGetPropertyEnd = nSetPropertyEnd + Prop::_MaxId;
+				if( nFunctionCode < nOldGetPropertyEnd )
+				{
+					if( !SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyEnd) ) )
+						return AcRx::kRetError;
+					return AcRx::kRetOK;
+				}
+				int nOldSetPropertyEnd = nOldGetPropertyEnd + Prop::_MaxId;
+				if( nFunctionCode < nOldSetPropertyEnd )
+				{
+					if( !SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nOldGetPropertyEnd) ) )
+						return AcRx::kRetError;
+					return AcRx::kRetOK;
+				}
 			}
 		}
 		return (retCode) ;
@@ -1021,8 +1116,14 @@ public:
 			for( int idxFunction = 0; idxFunction < _elements(grAdsFunctionTable); ++idxFunction )
 			{
 				const AdsFunctionTableEntry& Entry = grAdsFunctionTable[idxFunction];
-				acedDefun( dclPrefix() + Entry.pszFunctionName, ADSFUNCBASE + idxFunction );
+				CString sFunctionName = dclPrefix() + Entry.pszFunctionName;
+				acedDefun( sFunctionName, ADSFUNCBASE + idxFunction );
 				acedRegFunc( Entry.pfHandler, ADSFUNCBASE + idxFunction );
+				if( sFunctionName.Replace( _T('-'), _T('_') ) > 0 )
+				{
+					acedDefun( sFunctionName, ADSFUNCBASE + _elements(grAdsFunctionTable) + idxFunction ); //register using the old name convention
+					acedRegFunc( Entry.pfHandler, ADSFUNCBASE + _elements(grAdsFunctionTable) + idxFunction );
+				}
 			}
 
 			//register general property get and set functions
@@ -1032,10 +1133,22 @@ public:
 				LPCTSTR pszPropName = GetPropertyApiName( id );
 				if( pszPropName && *pszPropName != _T('(') )
 				{
-					acedDefun( controlGetPrefix() + pszPropName, ADSPROPFUNCBASE + id );
-					acedDefun( controlSetPrefix() + pszPropName, ADSPROPFUNCBASE + id + Prop::_MaxId );
+					CString sGetFunctionName = controlGetPrefix() + pszPropName;
+					acedDefun( sGetFunctionName, ADSPROPFUNCBASE + id );
 					acedRegFunc( ads_dcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
+					if( sGetFunctionName.Replace( _T('-'), _T('_') ) > 0 )
+					{
+						acedDefun( sGetFunctionName, ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId + id ); //register using the old name convention
+						acedRegFunc( ads_dcl_GetCtrlProperty, ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId + id );
+					}
+					CString sSetFunctionName = controlSetPrefix() + pszPropName;
+					acedDefun( sSetFunctionName, ADSPROPFUNCBASE + id + Prop::_MaxId );
 					acedRegFunc( ads_dcl_SetCtrlProperty, ADSPROPFUNCBASE + id + Prop::_MaxId );
+					if( sSetFunctionName.Replace( _T('-'), _T('_') ) > 0 )
+					{
+						acedDefun( sSetFunctionName, ADSPROPFUNCBASE + id + Prop::_MaxId + Prop::_MaxId + Prop::_MaxId ); //register using the old name convention
+						acedRegFunc( ads_dcl_SetCtrlProperty, ADSPROPFUNCBASE + id + Prop::_MaxId + Prop::_MaxId + Prop::_MaxId );
+					}
 				}
 			}
 
@@ -1109,13 +1222,13 @@ public:
 	// ----- ads_loadproject symbol (do not rename)
 	static int ads_dcl_loadproject(void)
 	{
-		return ads_dcl_project_load();
+		return Project::Load();
 	}
 
 	// ----- ads_dcl_load_dialog symbol (do not rename)
 	static int ads_dcl_load_dialog(void)
 	{
-		return ads_dcl_project_load () ;
+		return Project::Load();
 	}
 
 	// ----- ads_dcl_sendstring symbol (do not rename)
@@ -1247,7 +1360,7 @@ public:
 	// ----- ads_dcl_unload_dialog symbol (do not rename)
 	static int ads_dcl_unload_dialog(void)
 	{
-		return ads_dcl_project_unload();
+		return Project::Unload();
 	}
 
 	// ----- ads_dcl_done_dialog symbol (do not rename)
@@ -2979,39 +3092,7 @@ public:
 	// ----- ads_dcl_getpicturesize symbol (do not rename)
 	static int ads_dcl_getpicturesize(void)
 	{
-		return ads_dcl_project_getpicturesize();
-	}
-
-	// ----- ads_dcl_project_getpicturesize symbol (do not rename)
-	static int ads_dcl_project_getpicturesize(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		TArxProjectPtr pProject;
-		if( !GetProjectArgument( pArgs, pProject ) )
-			return RSERR; //invalid argument
-
-		long id = -1;
-		if( !GetLongArgument( pArgs, id ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		if (!pProject)
-			return RSRSLT; //project not found
-
-		CSize sizePicture;
-		if (!pProject->GetPictureSize (id, sizePicture))
-			return RSRSLT; //no picture with that id
-
-		resbuf rbHeight = {NULL, RTSHORT};
-		rbHeight.resval.rint = sizePicture.cy;
-		resbuf rbWidth = {&rbHeight, RTSHORT};
-		rbWidth.resval.rint = sizePicture.cx;
-		acedRetList(&rbWidth);
-
-		return (RSRSLT) ;
+		return Project::GetPictureSize();
 	}
 
 	// ----- ads_dcl_setcmdbarfocus symbol (do not rename)
@@ -3228,196 +3309,6 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_dcl_project_load symbol (do not rename)
-	static int ads_dcl_project_load(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CString sPath;
-		if( !GetStringArgument( pArgs, sPath ) )
-			return RSERR; //invalid argument
-
-		//optional arguments
-		bool bReload = false;
-		CString sKeyName;
-		if( GetBoolArgument( pArgs, bReload, true ) )
-		{
-			if( !GetStringArgument( pArgs, sKeyName, true ) )
-				GetNilArgument( pArgs, true );
-		}
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		if( sPath.IsEmpty() )
-			return RSERR; //invalid argument
-
-		TArxProjectPtr pProject = theArxWorkspace.LoadProjectFile( sPath, sKeyName, bReload );
-		if( !pProject )
-		{
-			CString sFmt = theWorkspace.LoadResourceString( IDS_PROJECTLOADFAILURE );
-			if( !sFmt.IsEmpty() )
-			{
-				CString sAlertMsg;
-				sAlertMsg.Format( sFmt, (LPCTSTR)sPath );
-				theWorkspace.DisplayAlert( sAlertMsg );
-			}
-			return RSRSLT; 
-		}
-		acedRetStr( pProject->GetKeyName() );
-
-		return (RSRSLT) ;
-	}
-
-	// ----- ads_dcl_project_unload symbol (do not rename)
-	static int ads_dcl_project_unload(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		TArxProjectPtr pProject;
-		if( !GetProjectArgument( pArgs, pProject ) )
-			return RSERR; //wrong argument type
-
-		//optional arguments
-		bool bForce = false;
-		GetBoolArgument( pArgs, bForce, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		if( !pProject )
-			return RSERR; //too many arguments
-
-		if( theArxWorkspace.UnloadProject( pProject, bForce ) )
-			acedRetT();
-
-		return (RSRSLT) ;
-	}
-
-	// ----- ads_dcl_project_saveas symbol (do not rename)
-	static int ads_dcl_project_saveas(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		TArxProjectPtr pProject;
-		if( !GetProjectArgument( pArgs, pProject ) )
-			return RSERR; //wrong argument type
-
-		CString sFilename;
-		if( !GetStringArgument( pArgs, sFilename ) )
-			return RSERR; //wrong argument type
-
-		//optional arguments
-		CString sPassword;
-		GetStringArgument( pArgs, sPassword, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		if( !pProject )
-			return RSERR; //too many arguments
-
-		if( pProject->GetPassword() != sPassword )
-			return RSRSLT; //wrong password
-
-		if (pProject->WriteToFile( sFilename ) == statOK)
-			acedRetT();
-
-		return (RSRSLT) ;
-	}
-
-	// ----- ads_dcl_project_import symbol (do not rename)
-	static int ads_dcl_project_import(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CString sRawDataIn;
-		PropVal::TCStringArray rsRawData;
-		if( pArgs->restype == RTLB )
-		{ //we expect a list of strings
-			if( !GetStringArrayArgument( pArgs, rsRawData ) )
-				return RSERR; //wrong argument type
-			for( size_t idx = 0; idx < rsRawData.size(); ++idx )
-				sRawDataIn += rsRawData[idx];
-		}
-		else
-		{ //otherwise it must be a single string
-			if( !GetStringArgument( pArgs, sRawDataIn ) )
-				return RSERR; //wrong argument type
-		}
-
-		//optional arguments
-		CString sPassword;
-		CString sProjectKey;
-		if( GetStringArgument( pArgs, sPassword, true ) )
-			GetStringArgument( pArgs, sProjectKey, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		TArxProjectPtr pProject;
-		std::string sRawData;
-	#ifdef _UNICODE
-		CStringA sRawDataA( sRawDataIn );
-		sRawData = (LPCSTR)sRawDataA;
-	#else
-		sRawData = sRawDataIn;
-	#endif
-		try
-		{
-			std::string sDecodedData = base64_decode( sRawData );
-			CMemFile Data( (BYTE*)sDecodedData.c_str(), sDecodedData.length() );
-			pProject = theArxWorkspace.ImportProject( Data, sProjectKey );
-			if (pProject)
-			{
-				if( !sPassword.IsEmpty() )
-					pProject->SetPassword( sPassword );
-				acedRetStr( pProject->GetKeyName() );
-			}
-		}
-		catch( ... )
-		{
-			return RSERR; 
-		}
-
-		return (RSRSLT) ;
-	}
-
-	// ----- ads_dcl_project_export symbol (do not rename)
-	static int ads_dcl_project_export(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		TArxProjectPtr pProject;
-		if( !GetProjectArgument( pArgs, pProject ) )
-			return RSERR; //wrong argument type
-
-		//optional arguments
-		CString sPassword;
-		GetStringArgument( pArgs, sPassword, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		if( !pProject )
-			return RSERR; //too many arguments
-
-		if( pProject->GetPassword() != sPassword )
-			return RSRSLT; //wrong password
-
-		CMemFile bufData( 0x10000 );
-		if (theArxWorkspace.ExportProject(pProject, bufData))
-		{
-			UINT cbData = (UINT)bufData.GetLength();
-			BYTE* pbData = bufData.Detach();
-			CString sRawData = base64_encode( pbData, cbData ).c_str();
-			bufData.Attach( pbData, cbData );
-			acedRetStr(sRawData);
-		}
-
-		return (RSRSLT) ;
-	}
-
 	// ----- ads_dcl_updatecheck symbol (do not rename)
 	static int ads_dcl_updatecheck(void)
 	{
@@ -3485,48 +3376,6 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_dcl_project_getforms symbol (do not rename)
-	static int ads_dcl_project_getforms(void)
-	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		TArxProjectPtr pProject;
-		if( !GetProjectArgument( pArgs, pProject ) )
-			return RSERR; //wrong argument type
-
-		//optional arguments
-		CString sPassword;
-		GetStringArgument( pArgs, sPassword, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		if( !pProject )
-			return RSERR; //too many arguments
-
-		if( pProject->GetPassword() != sPassword )
-			return RSRSLT; //wrong password
-
-		resbuf* prbForms = NULL;
-		resbuf* prbTail = NULL;
-		const TDclFormList& Forms = pProject->GetDclFormList();
-		for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
-		{
-			resbuf* prbForm = acutNewRb( RTENAME );
-			prbForm->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter)->GetControlProperties();
-			prbForm->resval.rlname[1] = odcl::ptrDclControl;
-			if( prbTail )
-				prbTail->rbnext = prbForm;
-			else
-				prbForms = prbForm;
-			prbTail = prbForm;
-		}
-		acedRetList( prbForms );
-		acutRelRb( prbForms );
-
-		return (RSRSLT) ;
-	}
-
 	// ----- ads_opendcl_init_ui symbol (do not rename)
 	static int ads_opendcl_init_ui(void)
 	{
@@ -3590,10 +3439,19 @@ int CARXApp::ads_dcl_GetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
-	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode > ADSPROPFUNCBASE + Prop::_MaxId )
-		return RSERR;
-	GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) );
-	return RSRSLT;
+	if( nFunctionCode >= ADSPROPFUNCBASE )
+	{
+		if( nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
+			GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) );
+		else if( nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId )
+			return RSERR;
+		else if( nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId + Prop::_MaxId )
+			GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - Prop::_MaxId - Prop::_MaxId - ADSPROPFUNCBASE) );
+		else
+			return RSERR;
+		return RSRSLT;
+	}
+	return RSERR;
 }
 
 //static
@@ -3602,10 +3460,19 @@ int CARXApp::ads_dcl_SetCtrlProperty(void)
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
 	int nSetPropertyBase = ADSPROPFUNCBASE + Prop::_MaxId;
-	if( nFunctionCode < nSetPropertyBase || nFunctionCode > nSetPropertyBase + Prop::_MaxId )
-		return RSERR;
-	SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) );
-	return RSRSLT;
+	if( nFunctionCode >= nSetPropertyBase )
+	{
+		if( nFunctionCode < nSetPropertyBase + Prop::_MaxId )
+			SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) );
+		else if( nFunctionCode < nSetPropertyBase + Prop::_MaxId + Prop::_MaxId )
+			return RSERR;
+		else if( nFunctionCode < nSetPropertyBase + Prop::_MaxId + Prop::_MaxId + Prop::_MaxId )
+			SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - Prop::_MaxId -  Prop::_MaxId - nSetPropertyBase) );
+		else
+			return RSERR;
+		return RSRSLT;
+	}
+	return RSERR;
 }
 
 
@@ -3686,76 +3553,69 @@ static int DumpControl(void)
 #endif //_DIAGNOSTIC
 
 ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCL, OpenDCL, ACRX_CMD_TRANSPARENT, NULL)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getversion, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getversionex, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_loadproject, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_load_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_sendstring, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_invokefunc, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_invoke, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_new_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_unload_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_done_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_start_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_start_list, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_add_list, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_end_list, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_action_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_set_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_mode_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_get_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_get_attr, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_start_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_vector_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_fill_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_dimx_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_dimy_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_end_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_slide_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getlinetype, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_selectlinetype, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getlineweight, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_selectlineweight, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getscreensize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_messagebox, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getharddrivesize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getfocus, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_hideerrormsgbox, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_showerrormsgbox, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_suppressmessages, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getblocksize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_navigatetourl, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_activateemail, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_browsefolder, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_selectfolder, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_insert, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_insertblock, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_loadxref, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_attachxref, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_updatevarnames, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_forcedwgredraw, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getmousecoords, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getdwgmousecoords, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_multifiledialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_selectfiles, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getpicturesize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_getpicturesize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setcmdbarfocus, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_delayedinvoke, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xtwipstopixels, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ytwipstopixels, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xpixelstotwips, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ypixelstotwips, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getolecolorvalue, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_registeractivexctrl, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_dirfiles, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_load, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_unload, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_saveas, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_import, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_export, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_updatecheck, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setautoupdatecheck, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getprojects, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_getforms, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getversion, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getversionex, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, loadproject, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, load_dialog, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, sendstring, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, invokefunc, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, invoke, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, new_dialog, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, unload_dialog, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, done_dialog, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, start_dialog, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, start_list, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, add_list, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, end_list, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, action_tile, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, set_tile, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, mode_tile, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, get_tile, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, get_attr, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, start_image, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, vector_image, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, fill_image, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dimx_tile, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dimy_tile, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, end_image, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, slide_image, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getlinetype, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, selectlinetype, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getlineweight, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, selectlineweight, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getscreensize, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, messagebox, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getharddrivesize, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getfocus, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, hideerrormsgbox, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, showerrormsgbox, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, suppressmessages, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getblocksize, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, navigatetourl, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, activateemail, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, browsefolder, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, selectfolder, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, insert, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, insertblock, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, loadxref, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, attachxref, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, updatevarnames, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, forcedwgredraw, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getmousecoords, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getdwgmousecoords, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, multifiledialog, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, selectfiles, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getpicturesize, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, setcmdbarfocus, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, delayedinvoke, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, xtwipstopixels, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, ytwipstopixels, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, xpixelstotwips, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, ypixelstotwips, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getolecolorvalue, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, registeractivexctrl, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dirfiles, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, updatecheck, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, setautoupdatecheck, true)
+ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getprojects, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, opendcl_init_ui, true)

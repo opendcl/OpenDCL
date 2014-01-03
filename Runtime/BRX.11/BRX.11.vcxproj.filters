@@ -592,6 +592,9 @@
     <ClCompile Include="..\..\Common\Controls\XPStyleButtonST.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="..\Methods\Methods_Project.cpp">
+      <Filter>Methods\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -1318,6 +1321,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Common\Controls\XPStyleButtonST.h">
       <Filter>Common\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Methods\Methods_Project.h">
+      <Filter>Methods\Include Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

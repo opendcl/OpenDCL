@@ -1,115 +1,206 @@
-<html>
+﻿<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="de">
-<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>Filter Style</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="de">
+  <link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../../Utility.js"></script>
+  <title>Filter Style</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
-                  <img border="0" src="../images/Property.png" width="16" height="16"> 
-                  Filter Style</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Lokaler Name</th>
-            <td bgcolor="#CCFF99">Filter Style</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>API Name</th>
-            <td bgcolor="#CCFF99">FilterStyle</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Datentyp</th>
-            <td bgcolor="#CCFF99">Integer</td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Gültigkeit</th>
-            <td bgcolor="#CCFF99">G&uuml;ltige Werte sind Ganzzahlen von 0 bis 8 </td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Funktion
-&nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(getprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="getprop">(dcl_Control_GetFilterStyle <i>&lt;CONTROL&gt;</i>)</code></td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Funktion
-&nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetFilterStyle <i>&lt;CONTROL&gt;</i>
-            <font color="#FF0000">intNewValue [als <a href="../DataType/Integer.htm">
-            Integer</a>]</font>)</code></td>
-          </tr>
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
-            <td bgcolor="#CCFF99"><a href="../Control/TextBox.htm">Textfeld</a></td>
-          </tr>
-        </table>
-		<p>Diese Eigenschaft bestimmt den vordefinierten Filter eines Eingabefelds. Bitte beachten Sie, dass Sie einen benutzerspezifischen Filter mit der Methode <a href="../Method/TextBox/SetFilter.htm"> TextBox_SetFilter</a> nur zuweisen k&ouml;nnen, wenn der Vorgabefilterstil auf 0 gesetzt ist. Die Zuweisung benutzerspezifischer Filter werden ignoriert, wenn dem Textfeld ein anderer Vorgabefilterstil zugewiesen wurde. </p>
-		<p>Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld. Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt. Die Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert. </p>
-		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
-          <tr>
-            <th nowrap>Stil</th>
-            <th nowrap>Beschreibung</th>
-          </tr>
-          <tr>
-            <td>0</td>
-            <td>Kein oder benutzerspezifischer Filter </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>Winkel</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Ganzzahlen (ohne f&uuml;hrende Nullen) </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Realzahlen (durch Systemvariable DIMZIN beeinflusst) </td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>Symbolnamen (z.B. Layernamen) </td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Gro&szlig;buchstaben</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Kleinbuchstaben</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>Passwort (verstackt den eingegebenen Text) </td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>Mehrzeiliger Text; es sind alle Zeichen einschlie&szlig;lich dem Enter zul&auml;ssig. </td>
-          </tr>
-      </table>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2013 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          <img border="0" src="../images/Property.png" width="16" height="16">
+          Filter Style</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+            Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
+      bordercolor="#111111" id="AutoNumber2">
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Lokaler Name
+        </th>
+        <td bgcolor="#CCFF99">
+          Filter Style
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          API Name
+        </th>
+        <td bgcolor="#CCFF99">
+          FilterStyle
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Datentyp
+        </th>
+        <td bgcolor="#CCFF99">
+          Integer
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Gültigkeit
+        </th>
+        <td bgcolor="#CCFF99">
+          G&uuml;ltige Werte sind Ganzzahlen von 0 bis 8
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Get Funktion &nbsp;
+          <button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(getprop);"
+            style="width: 22px; height: 20px">
+            <img src="../images/Clipboard.png" width="15" height="13" /></button>
+        </th>
+        <td bgcolor="#CCFF99">
+          <code id="getprop">(dcl-Control-GetFilterStyle <i>&lt;CONTROL&gt;</i>)</code>
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Set Funktion &nbsp;
+          <button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(setprop);"
+            style="width: 22px; height: 20px">
+            <img src="../images/Clipboard.png" width="15" height="13" /></button>
+        </th>
+        <td bgcolor="#CCFF99">
+          <code id="setprop">(dcl-Control-SetFilterStyle <i>&lt;CONTROL&gt;</i> <font color="#FF0000">
+            intNewValue [als <a href="../DataType/Integer.htm">Integer</a>]</font>)</code>
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Anwendbar auf
+        </th>
+        <td bgcolor="#CCFF99">
+          <a href="../Control/TextBox.htm">Textfeld</a>
+        </td>
+      </tr>
+    </table>
+    <p>
+      Diese Eigenschaft bestimmt den vordefinierten Filter eines Eingabefelds. Bitte beachten
+      Sie, dass Sie einen benutzerspezifischen Filter mit der Methode <a href="../Method/TextBox/SetFilter.htm">
+        SetFilter</a> nur zuweisen k&ouml;nnen, wenn der Vorgabefilterstil auf 0 gesetzt
+      ist. Die Zuweisung benutzerspezifischer Filter werden ignoriert, wenn dem Textfeld
+      ein anderer Vorgabefilterstil zugewiesen wurde.
+    </p>
+    <p>
+      Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld.
+      Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt. Die
+      Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert.
+    </p>
+    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
+      bordercolor="#111111" id="AutoNumber3">
+      <tr>
+        <th nowrap>
+          Stil
+        </th>
+        <th nowrap>
+          Beschreibung
+        </th>
+      </tr>
+      <tr>
+        <td>
+          0
+        </td>
+        <td>
+          Kein oder benutzerspezifischer Filter
+        </td>
+      </tr>
+      <tr>
+        <td>
+          1
+        </td>
+        <td>
+          Winkel
+        </td>
+      </tr>
+      <tr>
+        <td>
+          2
+        </td>
+        <td>
+          Ganzzahlen (ohne f&uuml;hrende Nullen)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          3
+        </td>
+        <td>
+          Realzahlen (durch Systemvariable DIMZIN beeinflusst)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          4
+        </td>
+        <td>
+          Symbolnamen (z.B. Layernamen)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          5
+        </td>
+        <td>
+          Gro&szlig;buchstaben
+        </td>
+      </tr>
+      <tr>
+        <td>
+          6
+        </td>
+        <td>
+          Kleinbuchstaben
+        </td>
+      </tr>
+      <tr>
+        <td>
+          7
+        </td>
+        <td>
+          Passwort (verstackt den eingegebenen Text)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          8
+        </td>
+        <td>
+          Mehrzeiliger Text; es sind alle Zeichen einschlie&szlig;lich dem Enter zul&auml;ssig.
+        </td>
+      </tr>
+    </table>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      Alle Rechte vorbehalten.</p>
+    <p>
+      OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+        OpenDCL Consortium</a>.</p>
+    <p>
+      AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+        target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>
