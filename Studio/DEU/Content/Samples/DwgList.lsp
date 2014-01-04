@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "DwgList.odcl") T)
+	(dcl-Project-Load (*ODCL:Samples:FindFile "DwgList.odcl") T)
 
 	;; Dialog anzeigen
-	(dcl_Form_Show DwgList_DwgListForm)
+	(dcl-Form-Show DwgList/DwgListForm)
 
-	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
+	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl-Form-Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
 	;; der Dialog aktiv ist.
 	;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen
@@ -31,22 +31,22 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DwgListForm_DwgList1_OnDblClicked ()
-	(if (and (Setq fileName (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
+	(if (and (Setq fileName (dcl-DWGList-GetFileName DwgList/DwgListForm/DwgList1))
                  (equal (strcase (substr fileName (- (strlen fileName) 3) 4)) ".DWG"))
-		(progn                                    ;(dcl_SetCmdBarFocus)
-			(dcl_sendstring (strcat "_-INSERT " fileName "\n"))
+		(progn                                    ;(dcl-SetCmdBarFocus)
+			(dcl-sendstring (strcat "_-INSERT " fileName "\n"))
 		)
 	)
 	(princ)
 )
 
-(defun c:DwgList_DwgListForm_cmdUP_OnClicked (/)
-	(setq sPath (strcat (dcl_ComboBox_GetDir DwgList_DwgListForm_ComboBox1)
+(defun c:DwgList/DwgListForm/cmdUP#OnClicked (/)
+	(setq sPath (strcat (dcl-ComboBox-GetDir DwgList/DwgListForm/ComboBox1)
 						"\\.."
 				)
 	)
-	(dcl_ComboBox_Dir DwgList_DwgListForm_ComboBox1 sPath)
-	(dcl_DwgList_Dir DwgList_DwgListForm_DwgList1 sPath)
+	(dcl-ComboBox-Dir DwgList/DwgListForm/ComboBox1 sPath)
+	(dcl-DWGList-Dir DwgList/DwgListForm/DwgList1 sPath)
 	(princ)
 )
 

@@ -2,7 +2,7 @@
 ;;; Dialogpositionierung Beispiel
 ;;;
 ;;; Dieses Beispiel demonstriert die Dialogpositionierung und -bewegung zur Laufzeit.
-;;; Für die zeitliche Verzögerung kommt (dcl_DelayedInvoke) zum Einsatz, um einen
+;;; Für die zeitliche Verzögerung kommt (dcl-DelayedInvoke) zum Einsatz, um einen
 ;;; animierten Effekt zu erzielen.
 
 ;; Hauptprogramm
@@ -15,15 +15,15 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "FormMover.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "FormMover.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show FormMover_Form1)
-	(dcl_Form_Resize FormMover_Form1 300 200)
-	(dcl_Form_Center FormMover_Form1)
-	(c:FormMover_Form1_GraphicButton1_OnClicked)
+	(dcl-Form-Show FormMover/Form1)
+	(dcl-Form-Resize FormMover/Form1 300 200)
+	(dcl-Form-Center FormMover/Form1)
+	(c:FormMover/Form1/GraphicButton1#OnClicked)
 
-	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
+	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl-Form-Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
 	;; der Dialog aktiv ist.
 	;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen
@@ -34,95 +34,95 @@
 
 ;; Diese Funktion bewegt den Dialog zu den 4 Bildschirmecken und abschließend in die Bildschirmmitte.
 (defun C:FormMover ( / ce FormSize delay wd ht ScreenSize ScreenX ScreenY)
-	(Setq FormSize (dcl_Form_GetRectangle FormMover_Form1))
+	(Setq FormSize (dcl-Form-GetRectangle FormMover/Form1))
 	(setq wd (caddr FormSize))
 	(setq ht (cadddr FormSize))
-	(setq ScreenSize (dcl_GetScreenSize))
+	(setq ScreenSize (dcl-GetScreenSize))
 	(setq ScreenX (car ScreenSize))
 	(setq ScreenY (cadr ScreenSize))
 
 	(cond
 		(	(= *FormPos* 0)
-			(dcl_Form_SetPos FormMover_Form1 0 0);_TL
+			(dcl-Form-SetPos FormMover/Form1 0 0);_TL
 		)
 		(	(= *FormPos* 1)
-			(dcl_Form_SetPos FormMover_Form1 0 (- ScreenY ht));_ BL
+			(dcl-Form-SetPos FormMover/Form1 0 (- ScreenY ht));_ BL
 		)
 		(	(= *FormPos* 2)
-			(dcl_Form_SetPos FormMover_Form1 (- ScreenX wd) (- ScreenY ht));_ BR
+			(dcl-Form-SetPos FormMover/Form1 (- ScreenX wd) (- ScreenY ht));_ BR
 		)
 		(	(= *FormPos* 3)
-			(dcl_Form_SetPos FormMover_Form1 (- ScreenX wd) 0);_ TR
+			(dcl-Form-SetPos FormMover/Form1 (- ScreenX wd) 0);_ TR
 		)
 		(	(= *FormPos* 4)
-			(dcl_Form_Center FormMover_Form1)
+			(dcl-Form-Center FormMover/Form1)
 		)
 	);_ cond
 
 	(setq *FormPos* (1+ *FormPos*));_ bump the form position count
 	(if (<= *FormPos* 4)
-		(dcl_DelayedInvoke 800 "C:FormMover");_ repeat
+		(dcl-DelayedInvoke 800 "C:FormMover");_ repeat
 	)
 	(princ)
 )
 
 ;; Diese Funktion bewegt den Dialog zur linken unteren Bildschirmecke und skaliert ihn dabei.
 (defun C:FormMinMax ( / FormSize lf tp wd ht ScreenSize ScreenX ScreenY)
-	(Setq FormSize (dcl_Form_GetRectangle FormMover_Form1))
+	(Setq FormSize (dcl-Form-GetRectangle FormMover/Form1))
 	(setq lf (car FormSize))
 	(setq tp (cadr FormSize))
 	(setq wd (caddr FormSize))
 	(setq ht (cadddr FormSize))
-	(setq ScreenSize (dcl_GetScreenSize))
+	(setq ScreenSize (dcl-GetScreenSize))
 	(setq ScreenX (car ScreenSize))
 	(setq ScreenY (cadr ScreenSize))
 
-	(if (/= (dcl_Control_GetCaption FormMover_Form1_cmdMin) "_")
+	(if (/= (dcl-Control-GetCaption FormMover/Form1/cmdMin) "_")
 		(progn
-			(dcl_Control_SetVisible FormMover_Form1_Label1 nil)
+			(dcl-Control-SetVisible FormMover/Form1/Label1 nil)
 			(if (< lf (- *CtrLf* *offsetX*))
-				(dcl_Form_SetPos FormMover_Form1 (+ lf *offsetX*) (- tp *offsetY*) (+ wd *WdOffset*) (+ ht *HtOffset*));_ MAX
+				(dcl-Form-SetPos FormMover/Form1 (+ lf *offsetX*) (- tp *offsetY*) (+ wd *WdOffset*) (+ ht *HtOffset*));_ MAX
 				(progn
 					(setq *DONE* T)
-					(dcl_Control_SetCaption FormMover_Form1_cmdMin "_")
-					(dcl_Form_Resize FormMover_Form1 *MaxWd* *MaxHt*)
-					(dcl_Form_Center FormMover_Form1)
+					(dcl-Control-SetCaption FormMover/Form1/cmdMin "_")
+					(dcl-Form-Resize FormMover/Form1 *MaxWd* *MaxHt*)
+					(dcl-Form-Center FormMover/Form1)
 				);_ progn
 			);_ if
 		);_ progn
 		(progn
 			(if (>= lf *offsetX*)
-				(dcl_Form_SetPos FormMover_Form1 (- lf *offsetX*) (+ tp *offsetY*) (- wd *WdOffset*) (- ht *HtOffset*));_ MIN
+				(dcl-Form-SetPos FormMover/Form1 (- lf *offsetX*) (+ tp *offsetY*) (- wd *WdOffset*) (- ht *HtOffset*));_ MIN
 				(progn
 					(setq *DONE* T)
-					(dcl_Control_SetVisible FormMover_Form1_Label1 T)
-					(dcl_Control_SetCaption FormMover_Form1_cmdMin "[  ]")
-					(dcl_Form_SetPos FormMover_Form1 0 (- ScreenY *MinHt*) *MinWd* *MinHt*)
+					(dcl-Control-SetVisible FormMover/Form1/Label1 T)
+					(dcl-Control-SetCaption FormMover/Form1/cmdMin "[  ]")
+					(dcl-Form-SetPos FormMover/Form1 0 (- ScreenY *MinHt*) *MinWd* *MinHt*)
 				);_ progn
 			);_ if
 		);_ progn
 	);_ if
 
 	(if (null *DONE*)
-		(dcl_DelayedInvoke 50 "C:FormMinMax");_ repeat
+		(dcl-DelayedInvoke 50 "C:FormMinMax");_ repeat
 	)
 	(princ)
 )
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:FormMover_Form1_GraphicButton1_OnClicked ( /)
+(defun c:FormMover/Form1/GraphicButton1#OnClicked ( /)
 	(setq *FormPos* 0)
 	(C:FormMover)
 )
 
-(defun c:FormMover_Form1_cmdMin_OnClicked ( /  FormSize lf tp wd ht ScreenSize ScreenX ScreenY);_ MIN/MAX
-	(Setq FormSize (dcl_Form_GetRectangle FormMover_Form1))
+(defun c:FormMover/Form1/cmdMin#OnClicked ( /  FormSize lf tp wd ht ScreenSize ScreenX ScreenY);_ MIN/MAX
+	(Setq FormSize (dcl-Form-GetRectangle FormMover/Form1))
 	(setq lf (car FormSize))
 	(setq tp (cadr FormSize))
 	(setq wd (caddr FormSize))
 	(setq ht (cadddr FormSize))
-	(setq ScreenSize (dcl_GetScreenSize))
+	(setq ScreenSize (dcl-GetScreenSize))
 	(setq ScreenX (car ScreenSize))
 	(setq ScreenY (cadr ScreenSize))
 
@@ -145,20 +145,20 @@
 	(C:FormMinMax)
 )
 
-(defun c:FormMover_Form1_cmdClose_OnClicked ( /); Schließen
-	(dcl_Form_Close FormMover_Form1)
+(defun c:FormMover/Form1/cmdClose#OnClicked ( /); Schließen
+	(dcl-Form-Close FormMover/Form1)
 )
 
 ;; Erweitern oder Verkleinern
-(defun c:FormMover_Form1_cmdExpand_OnClicked ( / ); Erweitern
-	(if (= (Car (dcl_Form_GetControlArea FormMover_Form1)) 300)
+(defun c:FormMover/Form1/cmdExpand#OnClicked ( / ); Erweitern
+	(if (= (Car (dcl-Form-GetControlArea FormMover/Form1)) 300)
 		(progn
-			(dcl_Form_Resize FormMover_Form1 500 200)
-			(dcl_Control_SetPicture FormMover_Form1_cmdExpand 101)
+			(dcl-Form-Resize FormMover/Form1 500 200)
+			(dcl-Control-SetPicture FormMover/Form1/cmdExpand 101)
 		);_ progn
 		(progn
-			(dcl_Form_Resize FormMover_Form1 300 200)
-			(dcl_Control_SetPicture FormMover_Form1_cmdExpand 100)
+			(dcl-Form-Resize FormMover/Form1 300 200)
+			(dcl-Control-SetPicture FormMover/Form1/cmdExpand 100)
 		);_ progn
 	);_ if
 )

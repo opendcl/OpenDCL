@@ -33,8 +33,8 @@
     ;;
     ;;  2.  DistSample.odcl (OpenDCL project) saved as DistSample.odcl.lsp
     ;;      (Base64 encoded stream wrapped in lisp). Said project has a form
-    ;;      varnamed DistSample_MainForm with a child button varnamed
-    ;;      DistSample_MainForm_OkButtonOkButton with the event OnClick enabled.
+    ;;      varnamed DistSample/MainForm with a child button varnamed
+    ;;      DistSample/MainForm/OkButtonOkButton with the event OnClick enabled.
     ;;      The project is not passworded.
     ;;
     ;;--------------------------------------------------------------------------
@@ -104,32 +104,22 @@
         ;;  length so it looks tidy.
 
         (setq project
-            '(
-                "YWt6A20SAADAoypBBuKTKTUSKztmgFDDvn83WlYjKwzT3hP22gg0l0u45lXk1sPKQLS8Mz0RRSxX"
-                "U3/a5uamutpQoubmSue6e3VKT29h8/G6K5281uP71Qg9adp1MnsXSdh364+FmaKgDbHKexIeP7xy"
-                "DbCC8YeBEYC5l5s/Cb3fwshgOkEwn0oguW9iuXdy3nFnfgESeFwv7L+JkEI0Fj1R5M5hUxa47SLD"
-                "okO7I3VxkfmYkHabeRY8BhOaiz8v0ffqiOwskqb3uxjKLNn5jGxLjUKtlZOZg5d9oveTSLSlwjuv"
-                "FZjQ+yRDQq80EfRESwY+8hguYMv2TKbOMi9qa9en8T/C9l/imkvdIc8dJyAo8iA9aCtdBEFPhlmP"
-                "OEVshMK2ATIW0YEDPoFurqF7iiycMXqv+abCMol0gyaUdDPVm1f5eAqeXuA5RYlZt0e7dcC9I7c1"
-                "hdanvdn6K+BHYfpisI6KJ8BLF8+t9gP2ADWHBRZLAaMmb7b4migRDGmD9TO16eziOuF4iuf+gGdl"
-                "1fz+lhxeYXCWlX8DSDOFPNY/R9UFKWo8efDfvnbjmGKcQyhV+nP2VDeUNtCpVorY6sfzUZ4PeMzh"
-                "uNwR/IyHSDaRqP5gMiekKBreDSI5Z5h/sGKtRP7JLiMIBZqiJh4ZGVwBKZaw+sBaitX/gtHqIToF"
-                "bIcf72E0lj08wWzqEwU+aX2Em/44WPNJIxgLySkYoybvxln8RiprnC/fydt03d/62c8gIbxnGu1z"
-                "LtE658osigsu9ml8hNX+gIxo+0EuxzEyYXWWneuFG4Dvsa8uXgFF3kF0giPTukPYEVqEQAABeZnR"
-                "KkA5T8NFRgFTv11xoQbcX7O50HZkETVF3aKdFQVHoMkUw9SRkcIiRiV3JlLRFLM/0haz+aEeZzbE"
-                "DSJZlkyAXBThmoYlR7aKkMUF84Ut/JEUjokd2aan5aJZEpojNkmMTecKXQUHK51A9AqdAP5FrsaX"
-                "OAOaCOUZ6zqh2isJGyjKlCMTU5GBWNNLwfCojEhvgavQvzWTZwS3DBCZ2kfJu0EbavTTGzWMEJ6F"
-                "R9CToA7Hji3LJkM4gkHy8rpR56IyMjIenJx6mAGB4kH7GtYG7NbT0zsjI2OUlZWvpqb20NBQavU7"
-                "anR7mo0H8sKZrqeXjnfYntAmgkwLcy3pUZ2dUVBOmxwzDWdQdREi8lSMagc0BlAor5oVEEqH5AKT"
-                "nB34Aj3AXx+2SbDl/Fuh7BG3yRomjGMXOaQnEaiHJRZQvTtgR3w3V8dlh7re9j8vpz1ceDty9GZq"
-                "T1Ycjk73P2/9XHg7cvRmQgocLrre9j9v/Vx4O3n0RmoPVvG9u6mNNhpkULWbnFVt9dgNMznkOEvP"
-                "hk4u1sevutz3u/n7RkoPFpyuOAZQcGsPFhyuut73PzzZ9z1t/Vh4VYmYrfnuAJwXtZ8rYO8vPMVG"
-                "qooT9reu1999PTL4wHP7+DjybyVQMPmJM0CDZYRJilFXTIoR+jFy+GbyDUATD1jKiVC2WsPoZlKD"
-                "JxzNuh+XsdkoDk546EbSnp67AsQHtmz1W2g1buhwA3du9Zs/NVs1+FtoV3VVJuZtNVIonJ/PNks2"
-                "aPJRWzly8GZiT0YcDrqetfdmUk9GHA66Hve/6WZPRhwOup72v299Mw3vMXLwZmJPRlWBL99zZA1C"
-                "ltbay5r2BwqcPRL18Jhphk0KCQkdBgZm3d3dZmVlvZqaWri5uU9DQ/Pn52eysLAcEBBwdXV1JiIi"
-                "uoIL+Y2ZsM/x290Drw3HhlstJgIazSfp02QVA1+oZImEB2nygQUAFxe3UyvzhZmR4cHpsGn0segJ"
-                "jDCBFPYBxvLSDwxjswy5uQG0K+fe"
+            '(  "YWt6AxkbAADwrWUpBuKTJkUxai9qgPiZezdaVvf77Fv+PCr8wk+4Zjpt63shz85fzv5etTx+b1U3"
+                "UlKS01JTA1hAbDVVk4J/SAhY9CSn1tKhx83NzQ1obzs7vKK348ehQ/EFsUOZ5aeSmJocbNcgovsv"
+                "Mh14Ga7xDzJc8F9GfiBrfDsC9CwLeRwWuV5krvwYShxRhV45hUYU2B91+EeU2cLzmEypsMdfSi/R"
+                "/xamNByQ3DePpvYolHIuYN0YeRN404FwFaO474YQ2cKjBGrDOPDk10s+9SjQqDrjIhJs2cwdpci/"
+                "RraPbjtYNLMvWg5qbeYc9phldCwcOTKzU/sZawDwAnG1s8IojLV0aUY/gju3mWpINIF7tMKD2XxP"
+                "2e/58hjQhH/BmwfkTGGhaIctYSWDuXRBL4bvvCGDizoe0N2uvf381Xw5os4qczsu9SAKn07ER+Cc"
+                "skptDvfd5utwLw3+CTfFol1IN2+yrATwsR8cjy35BObp/4vIUssgYcxsI5U5C+BdJVbHoNeQt1Tq"
+                "IPLf7UXin0s/Qdha7takZogdG1WJP4XUnDL8GW/ZIPJM96aa1bqhKfsPKZ8FdKGHN9+4rScKj+a8"
+                "nZeND0A1azNWhzv7EdaLaKyZmZw7IaEos3kbgUAjO1DQKIhhg4Mmh2w6tv+P2ObRCgSVeml6rOcB"
+                "ekUnNt0y/gfelo0u6wnPvPf+2exWrWMfYR+knMJcUv1GUF7tCEscCS2HV4mbKXrhio9lv9nqgiMe"
+                "I+ZkIQAwmkNAkG8CPK/IJZ/WvLlr+G2iEe4YpQHJprNQC3BnOmI/9PbM7O4vlmNaHC9JKWbOGZPT"
+                "29aGMdcdXSb4ROGoXwtMwGEIhQeXjiMHeMtsttyoqM0y3eo4+gPsVwyhlr3IXqIJA/zbLoGJ9omy"
+                "oaH8hIDr9eGjAELk9mt2bI/+bVrc61E9ujR69wZzAf72P5yTJleP6F60TKrVDiwNDsGcx0aok86i"
+                "jAbrjJw/WFWTIyQZyksbWbEkiD2S26gRumvqXNWzTX7RNbW6VZenYKkp5XGdcZ2hvo9ZKaeoBIHV"
+                "EzdHfNHFf4MsIZWD0cj7j/mP+Y/5j/mP+Y/5j/mP+Y8R0oZF3XktXQd4gUsOgfbmgf+bgY6dgUXO"
+                "SfQ3"
             )
         )
 

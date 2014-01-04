@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Animation.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Animation.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show Animation_Form1)
+	(dcl-Form-Show Animation/Form1)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -28,31 +28,31 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:Animation_Form1_OnInitialize (/ fn avi)
-	(dcl_Animate_Load Animation_Form1_Animation1 (*ODCL:Samples:FindFile "Clock.avi"))
+(defun c:Animation/Form1#OnInitialize (/ fn avi)
+	(dcl-Animation-Load Animation/Form1/Animation1 (*ODCL:Samples:FindFile "Clock.avi"))
 	(princ)
 )
 
-(defun c:Animation_Form1_cmdRestart_OnClicked (/)
-	(dcl_Animate_Play Animation_Form1_Animation1)
+(defun c:Animation/Form1/cmdRestart#OnClicked (/)
+	(dcl-Animation-Play Animation/Form1/Animation1)
 	(princ)
 )
 
-(defun c:Animation_Form1_cmdStop_OnClicked (/)
-	(dcl_Animate_Stop Animation_Form1_Animation1)
+(defun c:Animation/Form1/cmdStop#OnClicked (/)
+	(dcl-Animation-Stop Animation/Form1/Animation1)
 	(princ)
 )
 
-(defun c:Animation_Form1_cboFrame_OnSelChanged (nSelection sSelText /)
-	(if (zerop (dcl_OptionList_GetCurSel Animation_Form1_optSeekType))
-		(dcl_Animate_Seek Animation_Form1_Animation1 nSelection)
-		(dcl_Animate_Play Animation_Form1_Animation1 nSelection)
+(defun c:Animation/Form1/cboFrame#OnSelChanged (nSelection sSelText /)
+	(if (zerop (dcl-OptionList-GetCurSel Animation/Form1/optSeekType))
+		(dcl-Animation-Seek Animation/Form1/Animation1 nSelection)
+		(dcl-Animation-Play Animation/Form1/Animation1 nSelection)
 	)
 	(princ)
 )
 
-(defun c:Animation_Form1_cmdClose_OnClicked (/)
-	(dcl_Form_Close Animation_Form1)
+(defun c:Animation/Form1/cmdClose#OnClicked (/)
+	(dcl-Form-Close Animation/Form1)
 	(princ)
 )
 

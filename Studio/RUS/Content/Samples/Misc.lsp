@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Misc.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Misc.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show Misc_DemoModal)
+	(dcl-Form-Show Misc/DemoModal)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -35,34 +35,34 @@
 		(	(= nSelIndex 1) (AddBlocksToListBox))
 		;; cond tab 2
 		(	(= nSelIndex 2)
-			(SETQ nCount (dcl_TREE_COUNTITEMS Misc_DemoModal_TreeControl1))
+			(SETQ nCount (dcl-Tree-COUNTITEMS Misc/DemoModal/TreeControl1))
 			(IF (= nCount 0)
 				(PROGN
-					(dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide1" "t1")
-					(dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide library" "t2")
-					(dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide3" "t3")
-					(dcl_TREE_ADDCHILD Misc_DemoModal_TreeControl1
+					(dcl-Tree-ADDPARENT Misc/DemoModal/TreeControl1 "slide1" "t1")
+					(dcl-Tree-ADDPARENT Misc/DemoModal/TreeControl1 "slide library" "t2")
+					(dcl-Tree-ADDPARENT Misc/DemoModal/TreeControl1 "slide3" "t3")
+					(dcl-Tree-ADDCHILD Misc/DemoModal/TreeControl1
 									'(	("t2" "Child1" "C1")
 										("t2" "Child2" "C2")
 										("t2" "Child3" "C3")
 									 )
 					)
-					(dcl_TREE_SELECTITEM Misc_DemoModal_TreeControl1 "t1")
+					(dcl-Tree-SELECTITEM Misc/DemoModal/TreeControl1 "t1")
 				)
 			)
 		)
 		;; cond tab 3
-		((= nSelIndex 3) (dcl_COMBOBOX_ADDCOLOR Misc_DemoModal_ComboBox4 156))
+		((= nSelIndex 3) (dcl-ComboBox-ADDCOLOR Misc/DemoModal/ComboBox4 156))
 	)
 )
 
 
-(defun c:Misc_DemoModal_cmdRun_OnClicked (/ cnt wait)
+(defun c:Misc/DemoModal/cmdRun#OnClicked (/ cnt wait)
 	(setq cnt 0)
 	(while (< cnt 100)
 		(setq wait 10000)
 		(while (> (setq wait (1- wait)) 0))
-		(dcl_Control_SetValue Misc_DemoModal_ProgressBar1 (setq cnt (1+ cnt)))
+		(dcl-Control-SetValue Misc/DemoModal/ProgressBar1 (setq cnt (1+ cnt)))
 	)
 	(princ)
 )
@@ -71,20 +71,20 @@
 
 ;; this function gets fired when the BlockNameList selection is changed
 (DEFUN c:DemoModal_BlockNameList_SelectionChanged (nSelCount sSelText /)
-	(dcl_CONTROL_SETBLOCKNAME Misc_DemoModal_BlockView sSelText)
+	(dcl-Control-SETBLOCKNAME Misc/DemoModal/BlockView sSelText)
 )
 
 ;; this function gets fired when the TreeControl selection is changed
 (DEFUN c:DemoModal_TreeControl1_SelectionChanged (sSelText sSelKey / sParent FileName Path)
 	;; get the parent info
-	(SETQ sParent (dcl_TREE_GETPARENT Misc_DemoModal_TreeControl1 sSelKey))
+	(SETQ sParent (dcl-Tree-GETPARENT Misc/DemoModal/TreeControl1 sSelKey))
 	(setq FileName (strcat
 					*ODCL:Prefix
 					(IF (NULL sParent)
 						(strcat sSelText ".sld")
 						;; else
 						(strcat
-							(dcl_TREE_GETITEMTEXT Misc_DemoModal_TreeControl1
+							(dcl-Tree-GETITEMTEXT Misc/DemoModal/TreeControl1
 													sParent
 							)
 							".slb"
@@ -93,7 +93,7 @@
 				)
 	)
 	(IF (FINDFILE FileName)
-		(dcl_SLIDEVIEW_LOAD Misc_DemoModal_SlideView1
+		(dcl-SlideView-LOAD Misc/DemoModal/SlideView1
 							FileName
 							(IF (NULL sParent)
 								""
@@ -101,13 +101,13 @@
 							)
 		)
 		;; else
-		(dcl_SLIDEVIEW_CLEAR Misc_DemoModal_SlideView1)
+		(dcl-SlideView-CLEAR Misc/DemoModal/SlideView1)
 	)
 )
 
 
 (DEFUN c:DemoModal_BrowseFolders_Clicked (/ path)
-	(IF (SETQ path (dcl_SELECTFOLDER "Select a folder" nil nil 81))
+	(IF (SETQ path (dcl-SELECTFOLDER "Select a folder" nil nil 81))
 		(ALERT path)
 	)
 )
@@ -115,7 +115,7 @@
 
 ;; this function retrieves all the blocks and adds their names to the BlockName ListBox
 (DEFUN AddBlocksToListBox (/ BlockInfo BlkLst Blk)
-	(dcl_LISTBOX_CLEAR Misc_DemoModal_BlockNameList)
+	(dcl-ListBox-CLEAR Misc/DemoModal/BlockNameList)
 	(SETQ BlockInfo (TBLNEXT "BLOCK" T))
 	;; get the first block in the block table record
 	;; loop through all block records
@@ -131,24 +131,24 @@
 		(SETQ BlockInfo (TBLNEXT "BLOCK"))
 	)
 	(IF (NULL BlkLst)
-		(dcl_CONTROL_SETVISIBLE Misc_DemoModal_lblNoBlocks T)
-		(dcl_CONTROL_SETVISIBLE Misc_DemoModal_lblNoBlocks nil)
+		(dcl-Control-SETVISIBLE Misc/DemoModal/lblNoBlocks T)
+		(dcl-Control-SETVISIBLE Misc/DemoModal/lblNoBlocks nil)
 	)
-	(dcl_LISTBOX_ADDLIST Misc_DemoModal_BlockNameList BlkLst)
+	(dcl-ListBox-ADDLIST Misc/DemoModal/BlockNameList BlkLst)
 	;;
 	;;_ alternate method adding one string at a time to the BlockList
 ;;;	; get the first block in the block table record
 ;;;	(setq BlockInfo (tblnext "BLOCK" T))
 ;;;	; add the first item to the BlockName ListBox with Add String
 ;;;	(if BlockInfo
-;;;		(dcl_ListBox_AddString Misc_DemoModal_BlockNameList (cdr (assoc 2 BlockInfo)))
+;;;		(dcl-ListBox-AddString Misc/DemoModal/BlockNameList (cdr (assoc 2 BlockInfo)))
 ;;;	);_ if
 ;;;	; do loop until all the blocks have been added
 ;;;	(while BlockInfo
 ;;;		(setq BlockInfo (tblnext "BLOCK"))
 ;;;		; add the item to the BlockName ListBox
 ;;;		(if BlockInfo
-;;;			(dcl_ListBox_AddString Misc_DemoModal_BlockNameList (cdr (assoc 2 BlockInfo)))
+;;;			(dcl-ListBox-AddString Misc/DemoModal/BlockNameList (cdr (assoc 2 BlockInfo)))
 ;;;		);_ if
 ;;;	);_ while
 	(PRINC)

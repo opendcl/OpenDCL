@@ -30,8 +30,8 @@
     ;;
     ;;  1.  AutoCAD 2004+, OpenDCL 5.0 oder neuer.
     ;;
-    ;;  2.  DistSample.odcl | .lsp. mit einem Dialog in der Variable DistSample_MainForm
-    ;;      und einer darin enthaltenen Schaltfläche in der Variable DistSample_MainForm_OkButton,
+    ;;  2.  DistSample.odcl | .lsp. mit einem Dialog in der Variable DistSample/MainForm
+    ;;      und einer darin enthaltenen Schaltfläche in der Variable DistSample/MainForm/OkButton,
     ;;      das das OnClick-Ereignis abfängt. Das Projekt ist nicht passwortgeschützt.
     ;;
     ;;  3.  Wird die LSP-Datei des Beispiels verwendet, wird erwartet, dass die DistSample.odcl
@@ -53,7 +53,7 @@
 
         ;;  Lokale Variablen
 
-        c:DistSample_MainForm_OkButton_OnClicked
+        c:DistSample/MainForm/OkButton#OnClicked
         _Load_ODCL_Runtime
         _Load_ODCL_Embedded_Project
         _Load_ODCL_File_Project
@@ -67,7 +67,7 @@
 
             ;;  OpenDCL ist bereits geladen, mit T beenden
 
-            dcl_getversionex
+            dcl-getversionex
 
             ;;  Ist das Laden nach Bedarf aktiviert (DEMANDLOAD), nutze das OPENDCL-Kommando
             ;;  um die OpenDCL-Laufzeitumgebung zu laden. Ist das Laden nach Bedarf deaktiviert,
@@ -85,7 +85,7 @@
 
                 ;;  Und prüfe, ob die Funktionen nun geladen sind
 
-                dcl_getversionex
+                dcl-getversionex
             )
 
             ;;  Konnte oder sollte die Laufzeitumgebung nicht geladen werden
@@ -94,7 +94,7 @@
             (princ "\nFehler: OpenDCL-Laufzeitumgebung konnte nicht geladen werden.\n")
         )
 
-        dcl_getversion
+        dcl-getversion
 
     ) ;;------------------------------------------------------------------------
 
@@ -112,7 +112,7 @@
             ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
             ;;  So oder so, an dieser Stell gehts nicht weiter...
 
-            (	(null dcl_project_import)
+            (	(null dcl-project-import)
 
                 (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
 
@@ -143,7 +143,7 @@
             ;;  Mit dcl_project_load wird das Projekt geladen und der Rückgabewert
             ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
 
-            (	(dcl_project_import bytes password alias)  )
+            (	(dcl-project-import bytes password alias)  )
         )
 
     ) ;;------------------------------------------------------------------------
@@ -161,7 +161,7 @@
             ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
             ;;  So oder so, an dieser Stell gehts nicht weiter...
 
-            (	(null dcl_project_load)
+            (	(null dcl-project-load)
 
                 (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
 
@@ -171,7 +171,7 @@
             ;;  Mit dcl_project_load wird das Projekt geladen und der Rückgabewert
             ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
 
-            (	(dcl_project_load projname reload password alias)  )
+            (	(dcl-project-load projname reload password alias)  )
 
             ;;  Da diese Datei neben anderen Beispieldateien installiert wurde und
             ;;	dieser normalerweise nicht in den AutoCAD-Supportpfade eingetragen
@@ -205,17 +205,17 @@
                     )
                 )
 
-                (dcl_project_load (strcat samples projname) reload password alias)
+                (dcl-project-load (strcat samples projname) reload password alias)
             )
         )
 
     ) ;;------------------------------------------------------------------------
 
-    (defun c:DistSample_MainForm_OkButton_OnClicked ( )
+    (defun c:DistSample/MainForm/OkButton#OnClicked ( )
 
-        (dcl_MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
+        (dcl-MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
 
-        (dcl_form_close DistSample_MainForm)
+        (dcl-form-close DistSample/MainForm)
 
     ) ;;------------------------------------------------------------------------
 
@@ -251,10 +251,10 @@
 
             (if
                 (null
-                    (dcl_Form_Show DistSample_MainForm)
+                    (dcl-Form-Show DistSample/MainForm)
                 )
 
-                (princ "\nKann den Dialog nicht anzeigen: DistSample_MainForm\n")
+                (princ "\nKann den Dialog nicht anzeigen: DistSample/MainForm\n")
             )
         )
 

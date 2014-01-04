@@ -17,16 +17,16 @@
               point_selection object_selection
 
               ;; lokale Ereignisse
-              ;; da Funktionen mit modalen Dialogen an der Stelle (dcl_form_show ...)
+              ;; da Funktionen mit modalen Dialogen an der Stelle (dcl-Form-show ...)
               ;; angehalten werden, werden die Ereignisse nur in dieser Funktion
               ;; benötigt und können daher lokal definiert werden
 
-              c:Selections_Form_OnInitialize
-              c:Selections_Form_Close_OnClicked
-              c:Selections_Form_PickPointButton_OnClicked
-              c:Selections_Form_PickObjectButton_OnClicked
-              c:Selections_Form_PointListBox_OnDblClicked
-              c:Selections_Form_ObjectListBox_OnDblClicked
+              c:Selections/Form#OnInitialize
+              c:Selections/Form/Close#OnClicked
+              c:Selections/Form/PickPointButton#OnClicked
+              c:Selections/Form/PickObjectButton#OnClicked
+              c:Selections/Form/PointListBox#OnDblClicked
+              c:Selections/Form/ObjectListBox#OnDblClicked
               )
 
     
@@ -137,85 +137,85 @@
     ;; Das Ereignis OnInitialize wird bei jedem Mal aufgerufen,
     ;; wenn der Dialog angezeigt werden soll
     
-    (defun c:Selections_Form_OnInitialize (/)
+    (defun c:Selections/Form#OnInitialize (/)
         
         ;; Bereinigung, falls nötig
-        (dcl_ListBox_Clear Selections_Form_PointListBox)
-        (dcl_ListBox_Clear Selections_Form_ObjectListBox)
+        (dcl-ListBox-Clear Selections/Form/PointListBox)
+        (dcl-ListBox-Clear Selections/Form/ObjectListBox)
 
         ;; Punktliste füllen
         (if lstPoints
-            (dcl_ListBox_AddList Selections_Form_PointListBox lstPoints)
+            (dcl-ListBox-AddList Selections/Form/PointListBox lstPoints)
         ); if
 
         ;; Objektliste füllen
         (if lstObjects
-            (dcl_ListBox_AddList Selections_Form_ObjectListBox lstObjects)
+            (dcl-ListBox-AddList Selections/Form/ObjectListBox lstObjects)
         ); if
         
-    ); c:Selections_Form_OnInitialize
+    ); c:Selections/Form#OnInitialize
 
     
     
     ;; Das Ereignis wird ausgelöst, drückt der Anwender auf die Schaltfläche Schließen
-    ;; Dabei wird der Wert 1 zurückgegeben, der als Rückgabewert von dcl_form_show
+    ;; Dabei wird der Wert 1 zurückgegeben, der als Rückgabewert von dcl-Form-show
     ;; dient (siehe dort)
     
-    (defun c:Selections_Form_Close_OnClicked (/)
-        (dcl_form_close Selections_Form 1)
-    ); c:Selections_Form_Close_OnClicked
+    (defun c:Selections/Form/Close#OnClicked (/)
+        (dcl-Form-close Selections/Form 1)
+    ); c:Selections/Form/Close#OnClicked
 
     
     
     ;; Das Ereignis wird ausgelöst, drückt der Anwender auf die Schaltfläche Punktwahl
-    ;; Dabei wird der Wert 3 zurückgegeben, der als Rückgabewert von dcl_form_show
+    ;; Dabei wird der Wert 3 zurückgegeben, der als Rückgabewert von dcl-Form-show
     ;; dient (siehe dort)
     
-    (defun c:Selections_Form_PickPointButton_OnClicked (/)
-        (dcl_form_close Selections_Form 3)
-    ); c:Selections_Form_PickPointButton_OnClicked
+    (defun c:Selections/Form/PickPointButton#OnClicked (/)
+        (dcl-Form-close Selections/Form 3)
+    ); c:Selections/Form/PickPointButton#OnClicked
 
     
     
     ;; Das Ereignis wird ausgelöst, drückt der Anwender auf die Schaltfläche Objektwahl
-    ;; Dabei wird der Wert 4 zurückgegeben, der als Rückgabewert von dcl_form_show
+    ;; Dabei wird der Wert 4 zurückgegeben, der als Rückgabewert von dcl-Form-show
     ;; dient (siehe dort)
     
-    (defun c:Selections_Form_PickObjectButton_OnClicked (/)
-        (dcl_form_close Selections_Form 4)
-    ); c:Selections_Form_PickObjectButton_OnClicked
+    (defun c:Selections/Form/PickObjectButton#OnClicked (/)
+        (dcl-Form-close Selections/Form 4)
+    ); c:Selections/Form/PickObjectButton#OnClicked
 
     
     
     ;; Das Ereignis wird ausgelöst, klickt der Anwender einen Listeneintrag doppelt
     
-    (defun c:Selections_Form_PointListBox_OnDblClicked (/ intRow)
-        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_PointListBox))))
+    (defun c:Selections/Form/PointListBox#OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl-ListBox-GetCurSel Selections/Form/PointListBox))))
             (progn
                 
                 ;; Element aus Liste und Listenfeld löschen
                 
-                (setq lstPoints (vl-remove (dcl_ListBox_GetItemText Selections_Form_PointListBox intRow) lstPoints))
-                (dcl_ListBox_DeleteItem Selections_Form_PointListBox intRow)
+                (setq lstPoints (vl-remove (dcl-ListBox-GetItemText Selections/Form/PointListBox intRow) lstPoints))
+                (dcl-ListBox-DeleteItem Selections/Form/PointListBox intRow)
             ); progn
         ); if
-    ); c:Selections_Form_PointListBox_OnDblClicked
+    ); c:Selections/Form/PointListBox#OnDblClicked
 
     
     
     ;; Das Ereignis wird ausgelöst, klickt der Anwender einen Listeneintrag doppelt
     
-    (defun c:Selections_Form_ObjectListBox_OnDblClicked (/ intRow)
-        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_ObjectListBox))))
+    (defun c:Selections/Form/ObjectListBox#OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl-ListBox-GetCurSel Selections/Form/ObjectListBox))))
             (progn
 
                 ;; Element aus Liste und Listenfeld löschen
                 
-                (setq lstObjects (vl-remove (dcl_ListBox_GetItemText Selections_Form_ObjectListBox intRow) lstObjects))
-                (dcl_ListBox_DeleteItem Selections_Form_ObjectListBox intRow)
+                (setq lstObjects (vl-remove (dcl-ListBox-GetItemText Selections/Form/ObjectListBox intRow) lstObjects))
+                (dcl-ListBox-DeleteItem Selections/Form/ObjectListBox intRow)
             ); progn
         ); if
-    ); c:Selections_Form_ObjectListBox_OnDblClicked
+    ); c:Selections/Form/ObjectListBox#OnDblClicked
 
     ;; COM laden
     (vl-load-com)
@@ -227,7 +227,7 @@
     (setvar "CMDECHO" cmdecho)
 
     ;; Projekt laden
-    (dcl_Project_Load (*ODCL:Samples:FindFile "Selections.odcl"))
+    (dcl-Project-Load (*ODCL:Samples:FindFile "Selections.odcl"))
 
     ;; Der wiederholte Aufruf einer modalen Dialogbox wird mit Hilfe einer
     ;; while-Schleife am einfachsten erreicht
@@ -241,11 +241,11 @@
 
         ;; wird der Dialog geschlossen, gibt die Funktion einen Wert zurück
         ;; Dies ist entweder 1 für OK, 2 für ESC oder Abbruch oder aber der
-        ;; Wert, dem der Funktion dcl_form_close mitgegeben wurde.
-        (setq intResult (dcl_form_show Selections_Form))
+        ;; Wert, dem der Funktion dcl-Form-close mitgegeben wurde.
+        (setq intResult (dcl-Form-show Selections/Form))
 
         ;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-        ;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+        ;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
         ;; bis der modale Dialog geschlosswen wird.
         ;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 

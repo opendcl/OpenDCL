@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "ListBox.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "ListBox.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show listbox_form1)
+	(dcl-Form-Show ListBox/Form1)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -30,8 +30,8 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 ;;----------------------------------------------------
-(DEFUN c:listbox_form1_selectfiles_onclicked (/ bs_filelist fn)
-	(SETQ bs_filelist (dcl_multifiledialog "Zeichnungsdateien (*.dwg)|*.dwg||" ; Filter
+(DEFUN c:ListBox/Form1/SelectFiles#OnClicked (/ bs_filelist fn)
+	(SETQ bs_filelist (dcl-multifiledialog "Zeichnungsdateien (*.dwg)|*.dwg||" ; Filter
 										   "Dateien auswählen" ; Titel
 										   (IF g:lastfolder
 											   g:lastfolder
@@ -43,31 +43,31 @@
 		(PROGN
 			(SETQ g:lastfolder (VL-FILENAME-DIRECTORY (CAR bs_filelist)))
 			(FOREACH fn bs_filelist
-				(IF (< (DCL_LISTBOX_FINDSTRINGEXACT ListBox_Form1_ListBox fn) 0)
-					(DCL_LISTBOX_ADDSTRING ListBox_Form1_ListBox fn)
+				(IF (< (dcl-ListBox-FINDSTRINGEXACT ListBox/Form1/ListBox fn) 0)
+					(dcl-ListBox-ADDSTRING ListBox/Form1/ListBox fn)
 				)
 			)
 		)
 	)
 )
 ;;----------------------------------------------------
-(DEFUN c:listbox_form1_clearlist_onclicked (/)
-	(DCL_LISTBOX_CLEAR listbox_form1_listbox)
+(DEFUN c:ListBox/Form1/ClearList#OnClicked (/)
+	(dcl-ListBox-CLEAR ListBox/Form1/ListBox)
 )
 ;;----------------------------------------------------
-(DEFUN c:listbox_form1_remove_onclicked (/ rsel item)
-	(IF (SETQ rsel (DCL_LISTBOX_GETSELECTEDNTHS ListBox_Form1_ListBox))
+(DEFUN c:ListBox/Form1/Remove#OnClicked (/ rsel item)
+	(IF (SETQ rsel (dcl-ListBox-GETSELECTEDNTHS ListBox/Form1/ListBox))
 		(PROGN
 			(FOREACH item (REVERSE rsel)
-				(DCL_LISTBOX_DELETEITEM ListBox_Form1_ListBox item)
+				(dcl-ListBox-DELETEITEM ListBox/Form1/ListBox item)
 			)
 			(SETQ g:bs_filelist '())
-			(SETQ item (DCL_LISTBOX_GETCOUNT ListBox_Form1_ListBox))
+			(SETQ item (dcl-ListBox-GETCOUNT ListBox/Form1/ListBox))
 			(WHILE (>= (SETQ item (1- item)) 0)
 				(SETQ
 					g:bs_filelist
 					(CONS
-						(DCL_LISTBOX_GETITEMTEXT ListBox_Form1_ListBox item)
+						(dcl-ListBox-GETITEMTEXT ListBox/Form1/ListBox item)
 						g:bs_filelist
 					)
 				)
@@ -76,7 +76,7 @@
 	)
 )
 ;;----------------------------------------------------
-(DEFUN c:listbox_form1_exitdialog_onclicked (/) (DCL_FORM_CLOSE listbox_form1))
+(DEFUN c:ListBox/Form1/ExitDialog#OnClicked (/) (dcl-Form-CLOSE ListBox/Form1))
 
 (princ)
 

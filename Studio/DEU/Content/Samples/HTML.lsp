@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "HTML.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "HTML.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show HTML_Dcl1)
+	(dcl-Form-Show HTML/Dcl1)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -29,93 +29,93 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:HTML_Dcl1_OnInitialize (/)               ; Zu einer neuen Webseite navigieren
-	(dcl_Html_Navigate HTML_Dcl1_Html "http://www.opendcl.com")
+(defun c:HTML/Dcl1#OnInitialize (/)               ; Zu einer neuen Webseite navigieren
+	(dcl-Html-Navigate HTML/Dcl1/Html "http://www.opendcl.com")
 )
 
 ;; Zur eingegebenen Webseite navigieren
-(defun c:HTML_Dcl1_TB_Go_OnClicked (/ url)
+(defun c:HTML/Dcl1/TB_Go#OnClicked (/ url)
 	;; URL aus dem Textfeld auslesen
-	(Setq url (dcl_Control_GetText HTML_Dcl1_TB_URL))
+	(Setq url (dcl-Control-GetText HTML/Dcl1/TB_URL))
 	;; Zur eingegebenen Webseite navigieren
-	(dcl_Html_Navigate HTML_Dcl1_Html url)
+	(dcl-Html-Navigate HTML/Dcl1/Html url)
 )
 
-(defun c:HTML_Dcl1_TB_GetDocument_OnClicked (/ htmlCode)
+(defun c:HTML/Dcl1/TB_GetDocument#OnClicked (/ htmlCode)
 	;; HTML-Code des Dokuments auslesen
-	(Setq htmlCode (dcl_Html_GetHtmlDocument HTML_Dcl1_Html))
+	(Setq htmlCode (dcl-Html-GetHtmlDocument HTML/Dcl1/Html))
 	(princ htmlCode)
 	(alert "HTML-Code wurde in die Befehlszeile geschrieben")
 )
 
-(defun c:HTML_Dcl1_TB-GetOffline_OnClicked (/ status info)
+(defun c:HTML/Dcl1/TB-GetOffline#OnClicked (/ status info)
 	;; Online-Status des Browsers prüfen
-	(Setq status (dcl_Html_GetOffline HTML_Dcl1_Html)
+	(Setq status (dcl-Html-GetOffline HTML/Dcl1/Html)
 		  info   (if status
 					 "Browser OFFLINE"
 					 "Browser ONLINE"
 				 )                                ; T - offline, NIL - online
 	)
-	(dcl_MessageBox info "Online-Status" 0 2)
+	(dcl-MessageBox info "Online-Status" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-SetEnables_OnClicked ()
+(defun c:HTML/Dcl1/TB-SetEnables#OnClicked ()
 	;; Aktiviere HTML-Steuerelement
-	(dcl_Control_SetEnabled HTML_Dcl1_Html T)
+	(dcl-Control-SetEnabled HTML/Dcl1/Html T)
 )
 
-(defun c:HTML_Dcl1_TB-SetDisabled_OnClicked ()
+(defun c:HTML/Dcl1/TB-SetDisabled#OnClicked ()
 	;; Deaktiviere HTML-Steuerelement
-	(dcl_Control_SetEnabled HTML_Dcl1_Html nil)
+	(dcl-Control-SetEnabled HTML/Dcl1/Html nil)
 )
 
-(defun c:HTML_Dcl1_TB-GetFullName_OnClicked ()    ; Kompletten Namen auslesen
-	(dcl_MessageBox (dcl_Html_GetFullName HTML_Dcl1_Html) "Kompletter Name" 0 2)
+(defun c:HTML/Dcl1/TB-GetFullName#OnClicked ()    ; Kompletten Namen auslesen
+	(dcl-MessageBox (dcl-Html-GetFullName HTML/Dcl1/Html) "Kompletter Name" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-LoadingStatus_OnClicked (/ status info)
+(defun c:HTML/Dcl1/TB-LoadingStatus#OnClicked (/ status info)
 	;; Ladestatus
-	(Setq status (dcl_Html_GetBusy HTML_Dcl1_Html)
+	(Setq status (dcl-Html-GetBusy HTML/Dcl1/Html)
 		  info   (if status
 					 "Seite wird geladen"
 					 "------------------"
 				 )
 	)
-	(dcl_MessageBox info "Status" 0 2)
+	(dcl-MessageBox info "Status" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-PageTitle_OnClicked ()
+(defun c:HTML/Dcl1/TB-PageTitle#OnClicked ()
 	;; Titel der Webseite auslesen
-	(dcl_MessageBox (dcl_Html_GetLocationName HTML_Dcl1_Html) "Webseiten-Titel" 0 2)
+	(dcl-MessageBox (dcl-Html-GetLocationName HTML/Dcl1/Html) "Webseiten-Titel" 0 2)
 )
 
-(defun c:HTML_Dcl1_RB-GoBack_OnClicked ()
+(defun c:HTML/Dcl1/RB-GoBack#OnClicked ()
 	;; Zurück zur vorherigen Webseite
-	(dcl_Html_GoBack HTML_Dcl1_Html)
+	(dcl-Html-GoBack HTML/Dcl1/Html)
 )
 
-(defun c:HTML_Dcl1_TB-Home_OnClicked ()
+(defun c:HTML/Dcl1/TB-Home#OnClicked ()
 	;; Zur Startseite wechseln
-	(dcl_Html_GoHome HTML_Dcl1_Html)
+	(dcl-Html-GoHome HTML/Dcl1/Html)
 )
 
-(defun c:HTML_Dcl1_TB-GetUrl_OnClicked ()
+(defun c:HTML/Dcl1/TB-GetUrl#OnClicked ()
 	;; URL der aktuellen Webseite ausgeben
-	(dcl_MessageBox (dcl_Html_GetLocationURL HTML_Dcl1_Html) "URL" 0 2)
+	(dcl-MessageBox (dcl-Html-GetLocationURL HTML/Dcl1/Html) "URL" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-UpdateHtml_OnClicked ()
+(defun c:HTML/Dcl1/TB-UpdateHtml#OnClicked ()
 	;; Neuen HTML-Code zuweisen
-	(dcl_Html_UpdateHtmlCode HTML_Dcl1_Html "<b>Neuer HTML-Code....</b>")
+	(dcl-Html-UpdateHtmlCode HTML/Dcl1/Html "<b>Neuer HTML-Code....</b>")
 )
 
 ;; Auslösen, wenn die Webseite geladen ist
-(defun c:HTML_Dcl1_Html_OnNavigationComplete (sUrl)
+(defun c:HTML/Dcl1/Html#OnNavigationComplete (sUrl)
 	(princ (strcat "\nSeietnaufbau abgeschlossen, URL: " sUrl))
 )
 
-(defun c:HTML_Dcl1_TB_Close_OnClicked ()
-	(dcl_Form_Close HTML_Dcl1)                    ; Dialog schließen
+(defun c:HTML/Dcl1/TB_Close#OnClicked ()
+	(dcl-Form-Close HTML/Dcl1)                    ; Dialog schließen
 )
 
 (princ)

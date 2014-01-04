@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "ViewDwg.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "ViewDwg.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show ViewDWG_DwgPreview)
+	(dcl-Form-Show ViewDWG/DwgPreview)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -30,17 +30,17 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DwgPreview_Cancel_Clicked ()
-	(dcl_Form_Close ViewDWG_DwgPreview)
+	(dcl-Form-Close ViewDWG/DwgPreview)
 )
 
 (defun c:DwgPreview_Browse_Clicked ( / )
 	(setq sFileName (GetFiled "Zeichnungsdatei wählen" "" "dwg" 8)); wählt eine Zeichnungsdatei
 	(if sFileName
 		(progn
-			(dcl_DwgPreview_LoadDwg ViewDWG_DwgPreview_ViewDwg sFileName); Lädt das DWG-Vorschaubild in die DWG-Vorschau
-			(dcl_BlockView_LoadDwg ViewDWG_DwgPreview_BlockView1 sFileName); Lädt die DWG in die Blockvorschau
-			(dcl_Control_SetCaption ViewDWG_DwgPreview_Label1 (dcl_DwgPreview_GetDwgName ViewDWG_DwgPreview_ViewDwg)); Gibt den Pfad der Datei aus
-			(dcl_Control_SetFocus ViewDWG_DwgPreview_BlockView1)
+			(dcl-DWGPreview-LoadDwg ViewDWG/DwgPreview/ViewDwg sFileName); Lädt das DWG-Vorschaubild in die DWG-Vorschau
+			(dcl-BlockView-LoadDwg ViewDWG/DwgPreview/BlockView1 sFileName); Lädt die DWG in die Blockvorschau
+			(dcl-Control-SetCaption ViewDWG/DwgPreview/Label1 (dcl-DWGPreview-GetDwgName ViewDWG/DwgPreview/ViewDwg)); Gibt den Pfad der Datei aus
+			(dcl-Control-SetFocus ViewDWG/DwgPreview/BlockView1)
 		)
 	)
 )

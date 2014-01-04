@@ -32,8 +32,8 @@
     ;;
     ;;  2.  Das OpenDCL-Projekt DistSample.odcl wurde als DistSample.odcl.lsp
     ;;      (Base64-codierter Datenstrom, umgebrochen als Lisp-Quelle) gespeichert.
-    ;;      Das Projekt beinhaltet einen Dialog in der Variable DistSample_MainForm
-    ;;      und einer darin enthaltenen Schaltfläche in der Variable DistSample_MainForm_OkButton,
+    ;;      Das Projekt beinhaltet einen Dialog in der Variable DistSample/MainForm
+    ;;      und einer darin enthaltenen Schaltfläche in der Variable DistSample/MainForm/OkButton,
     ;;      das das OnClick-Ereignis abfängt. Das Projekt ist nicht passwortgeschützt.
     ;;
     ;;--------------------------------------------------------------------------
@@ -49,7 +49,7 @@
 
         ;;  Lokale Variablen
 
-        c:DistSample_MainForm_OkButton_OnClicked
+        c:DistSample/MainForm/OkButton#OnClicked
         _Load_ODCL_Runtime
         _Load_ODCL_Stream
         _Main
@@ -62,7 +62,7 @@
 
             ;;  OpenDCL ist bereits geladen, mit T beenden
 
-            dcl_getversionex
+            dcl-getversionex
 
             ;;  Ist das Laden nach Bedarf aktiviert (DEMANDLOAD), nutze das OPENDCL-Kommando
             ;;  um die OpenDCL-Laufzeitumgebung zu laden. Ist das Laden nach Bedarf deaktiviert,
@@ -80,7 +80,7 @@
 
                 ;;  Und prüfe, ob die Funktionen nun geladen sind
 
-                dcl_getversionex
+                dcl-getversionex
             )
 
             ;;  Konnte oder sollte die Laufzeitumgebung nicht geladen werden
@@ -89,7 +89,7 @@
             (princ "\nFehler: OpenDCL-Laufzeitumgebung konnte nicht geladen werden.\n")
         )
 
-        dcl_getversion
+        dcl-getversion
 
     ) ;;------------------------------------------------------------------------
 
@@ -100,22 +100,22 @@
         ;;  einheitliche Länge gebracht wurden
 
         (setq project
-            '("YWt6AykbAACPzuumBuKTJjUxLT9qgFBxx173ev1VMzR6v9Z6B2gd9j8cPiU+MvYPPd5TjFa7XoYm"
-	      "N5y8+wUpUCOEMgJaUCOXsGGeuOP33NKi1qqRshMFkUM7NI5vdwnkxwnARxmwskmZr9jFrNUXzili"
-	      "uX6Y7jx8oxY8bOkPt7KJHPSde+K9ZhhH6dr4e54TZy6wyVarC1/4TpwWOEWkrvxdkg/w8AyquPuT"
-	      "5p4W8owwUOnHTplsFtsgTa/677oecO1o9VOW3rBGm08UCA8zoqaRTNVFR2ylH7S9uNyWyw6qONMP"
-	      "0JaeENOqV7gwT1RZSBNxEnU7JzrvY9uYavfhXIMHLMoh3URVsVakvVb/2adJIv1hBiDFpLuJOoC8"
-	      "uziB57yxawDUjgkJQW+myS7ouw+/hQNqZHmX6XpXipxaXMLyX2znvUqZGJbH7t9pXORMgOOZBvoE"
-	      "mQ0NaYdgGSGeOeCIZeGDoxW7vlaMUNCvGw//XYV5CBo39nGSxXQhL4ZrNEPaH8EtjNV0AS2G5GFl"
-	      "uWldnbu9B/BhmpOKHq/O6LYhtY87zg0wZwqXY2rCvRGQfvNb8mWcmBfpJICdQyg/ijpHxzyf6rEA"
-	      "G+qpYRzh2otaQV/ERTepB/3RIKijLwgUIocLvz1QAFGG0uwBipN1xaDr8fYCvrt9/LHWnvNWYiuG"
-	      "yrzOgpmLeaGg83uhVoyip96Qv23g7fxVA5+sZr1PEghR5zdPh+yq9S/oHnKm8SoGQC6G37yJddo9"
-	      "TLm5v010sZiGJyHbVrNXh8q8yasAtccFCY7U1RGQkc0kgVcp6mIi2agBD7Fdce3w3F9Xt9Fm6/Cb"
-	      "b6CMxveTkgNpNDYxayBvvFvHdQ2a4PozX1EfZYTG9y1zG6V3zdvtxF94/0YM7N0AQJlHVddZqw+v"
-	      "0jfmruZLpEylipGsg9u1FCcDiar24z2QU5aK6dWN2IHOmzGBdO9pDMVwbSNQ6qV1+PfZwqq8ISAQ"
-	      "nHHqaQFHp8mvaiFdYqlXVgMoID+H1Xu+ksEwfyanOn9OSJ+CvFY4AbrMWj01Lrtxs9sVsy0kMcpd"
-	      "zS6g85JZptXyn+5d1jwgJYwKZI+f84rToOhujrGI/oGInVHiAdkRi+iICJ/amXSK06B8gH+B/gG+"
-	      "QZ5hjnGGeYJ9gKX1ATHKRU3syYEhfZnx9dsh0oJhAIOBerXL8IY="
+            '("YWt6AzUbAABgsXpTBuKTJkUxai9qgDggaVrvHjZSSid8djhbtmV1He5mLmhubRwSdpJQjCa+XobW"
+              "Ws/OzsnMyornhjZS08qNeaam51YUG93MAJmwsLCwJzpqa3cNWQmYAIlCkEOZ4BEYzUUstVfaBTdp"
+              "WA5/jUbzbzKdQuw2vn+O1HZWmC3q1EVuPUWcFj515K/2/ZIP8HAPqjK9aPIPSjwHZbMb0OMNd0ov"
+              "0f8WsjQckNxXj6b2KJTyLGDdGHkTnKgB+csQnTYCyS2gEEP0IF05s6pk2ztVKRXcMGDI9S2nzxPF"
+              "HmISjW47WDSzd7KeRhhPuW6zSWrYu/Dm5CV0ISqGR3RCUkmNJLdRV4I7n7V0wT7HycGKOLNejO+r"
+              "sitB3smy6VeJjxPvQYvPqwHSjm37YVcilnrJGmqAlJE5crMLagdGUMZU7pzEAKgz/FeQvE+KjM54"
+              "5pYnMgwQ9Otrz5fxbrdNPyd6PapF7edFuZlWhUJRx+Xpf4FFKdSvH5piEuNhmyfwEh+aBydA7i1m"
+              "g6IjWWiS1M2KHTR9eStpvR/SE5sfFiEr4ucfSOyq9S/oHqAy/7SMAytmCWvA2Y7j4WoYTA0UUOAs"
+              "BkTtYZnNKqvS7DFUAj3Tyeq34fXpAwMlW2Hqg4Uyq8bGJKcBiokdm1VuHWXySbuNtGKRQL/7v52i"
+              "tX02pkzypcUH3jaLLmsL97xNfwHbL2AE+gPioOzCXFL4WjVL5fJLHAkth9eOmyl6cYaG854tNIBQ"
+              "zlAy81FhbAfh8YV64SoakCtG1I53+596iWVapZChUwct1YzuO7kP2pdWVXdbL9GXJqK1azgT0MPL"
+              "al+BV/8SetVulq1YWi6oKbsQQUFtwFWxXKZyDHYopbM9D6GgDDIdiPYi1DsmTozgZZnW+YlHsHQL"
+              "mhPAHhNsyPLY08iyqIFDBECN3SYsobB0j82h8SStKyzrM6k/WTapbNIwqTR6lwRzAf7QPwSQJ1VD"
+              "Kd6tVHqTCKwNDsGOB5aXCybqh8K0Bk/v1zQF6ahnEzOlt83wg1YF54tlD3sbthf1cr6VrMyPJATQ"
+              "ubOraL2GvYbJDoLXC8jzoIEEJTQsngtJ3iGUZcOBi8hOgE6AToBOgE6AToBOgE6AToDTawEZijYE"
+              "WrGewXiQYW/1Qc6CYQCCAXkdxe4a"
 	    )
         )
 
@@ -126,26 +126,26 @@
             ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
             ;;  So oder so, an dieser Stell gehts nicht weiter...
 
-            (	(null dcl_project_import)
+            (	(null dcl-project-import)
 
                 (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
 
                 nil
             )
 
-            ;;  Mit dcl_project_load wird das Projekt geladen und der Rückgabewert
+            ;;  Mit dcl-project-load wird das Projekt geladen und der Rückgabewert
             ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
 
-            (	(dcl_project_import project password alias)   )
+            (	(dcl-project-import project password alias)   )
         )
 
     ) ;;------------------------------------------------------------------------
 
-    (defun c:DistSample_MainForm_OkButton_OnClicked ( )
+    (defun c:DistSample/MainForm/OkButton#OnClicked ( )
 
-        (dcl_MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
+        (dcl-MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
 
-        (dcl_form_close DistSample_MainForm)
+        (dcl-form-close DistSample/MainForm)
 
     ) ;;------------------------------------------------------------------------
 
@@ -168,10 +168,10 @@
 
             (if
                 (null
-                    (dcl_Form_Show DistSample_MainForm)
+                    (dcl-Form-Show DistSample/MainForm)
                 )
 
-                (princ "\nKann den Dialog nicht anzeigen: DistSample_MainForm\n")
+                (princ "\nKann den Dialog nicht anzeigen: DistSample/MainForm\n")
             )
         )
 

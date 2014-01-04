@@ -14,15 +14,15 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "OptionsTab.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "OptionsTab.odcl"))
 
 	;; Options tabs are registered when the project loads. All registered
 	;; options tabs will be created automatically when the OPTIONS dialog
 	;; opens.
-	(dcl_messagebox "Navigate to the \"OpenDCL Demo\" tab" "OpenDCL Options Tab Demo")
+	(dcl-messagebox "Navigate to the \"OpenDCL Demo\" tab" "OpenDCL Options Tab Demo")
 	(command "._OPTIONS") ; open the options dialog
 
-	;; This is a modeless form, so (dcl_Form_Show) returns immediately,
+	;; This is a modeless form, so (dcl-Form-Show) returns immediately,
 	;; leaving the event handlers to manage the form.
 
 	(princ)
@@ -32,9 +32,9 @@
 
 (defun c:OptionsTab_OptionsTabDemo_OnOK (/)
 	(princ "\n[OpenDCL Options Tab Demo] You entered \"")
-	(princ (dcl_Control_GetText OptionsTab_OptionsTabDemo_txtOptTabDemo))
+	(princ (dcl-Control-GetText OptionsTab/OptionsTabDemo/txtOptTabDemo))
 	(princ "\" and left the check box ")
-	(if (eq 1 (dcl_Control_GetValue OptionsTab_OptionsTabDemo_chkOptTabDemo))
+	(if (eq 1 (dcl-Control-GetValue OptionsTab/OptionsTabDemo/chkOptTabDemo))
 		(princ "CHECKED")
 		(princ "UNCHECKED")
 	)

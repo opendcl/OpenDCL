@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "HTML.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "HTML.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show HTML_Dcl1)
+	(dcl-Form-Show HTML/Dcl1)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -28,93 +28,93 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:HTML_Dcl1_OnInitialize (/)               ;navigate to new url on HTML control
-	(dcl_Html_Navigate HTML_Dcl1_Html "http://www.opendcl.com")
+(defun c:HTML/Dcl1#OnInitialize (/)               ;navigate to new url on HTML control
+	(dcl-Html-Navigate HTML/Dcl1/Html "http://www.opendcl.com")
 )
 
 ;;Navigate to entred URL
-(defun c:HTML_Dcl1_TB_Go_OnClicked (/ url)
+(defun c:HTML/Dcl1/TB_Go#OnClicked (/ url)
 	;;get url from textBox
-	(Setq url (dcl_Control_GetText HTML_Dcl1_TB_URL))
+	(Setq url (dcl-Control-GetText HTML/Dcl1/TB_URL))
 	;;navigate to new url on HTML control
-	(dcl_Html_Navigate HTML_Dcl1_Html url)
+	(dcl-Html-Navigate HTML/Dcl1/Html url)
 )
 
-(defun c:HTML_Dcl1_TB_GetDocument_OnClicked (/ htmlCode)
+(defun c:HTML/Dcl1/TB_GetDocument#OnClicked (/ htmlCode)
 	;;Get HTML code of document
-	(Setq htmlCode (dcl_Html_GetHtmlDocument HTML_Dcl1_Html))
+	(Setq htmlCode (dcl-Html-GetHtmlDocument HTML/Dcl1/Html))
 	(princ htmlCode)
 	(alert "HTML code has been printed in command bar")
 )
 
-(defun c:HTML_Dcl1_TB-GetOffline_OnClicked (/ status info)
+(defun c:HTML/Dcl1/TB-GetOffline#OnClicked (/ status info)
 	;;Check browser status
-	(Setq status (dcl_Html_GetOffline HTML_Dcl1_Html)
+	(Setq status (dcl-Html-GetOffline HTML/Dcl1/Html)
 		  info   (if status
 					 "Browser OFFLINE"
 					 "Browser ONLINE"
 				 )                                ; T - offline, NIL - online
 	)
-	(dcl_MessageBox info "Browser status" 0 2)
+	(dcl-MessageBox info "Browser status" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-SetEnables_OnClicked ()
+(defun c:HTML/Dcl1/TB-SetEnables#OnClicked ()
 	;;Set html control enabled
-	(dcl_Control_SetEnabled HTML_Dcl1_Html T)
+	(dcl-Control-SetEnabled HTML/Dcl1/Html T)
 )
 
-(defun c:HTML_Dcl1_TB-SetDisabled_OnClicked ()
+(defun c:HTML/Dcl1/TB-SetDisabled#OnClicked ()
 	;;Set html control disabled
-	(dcl_Control_SetEnabled HTML_Dcl1_Html nil)
+	(dcl-Control-SetEnabled HTML/Dcl1/Html nil)
 )
 
-(defun c:HTML_Dcl1_TB-GetFullName_OnClicked ()    ;Get Full Name
-	(dcl_MessageBox (dcl_Html_GetFullName HTML_Dcl1_Html) "Full Name" 0 2)
+(defun c:HTML/Dcl1/TB-GetFullName#OnClicked ()    ;Get Full Name
+	(dcl-MessageBox (dcl-Html-GetFullName HTML/Dcl1/Html) "Full Name" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-LoadingStatus_OnClicked (/ status info)
+(defun c:HTML/Dcl1/TB-LoadingStatus#OnClicked (/ status info)
 	;;get loading status
-	(Setq status (dcl_Html_GetBusy HTML_Dcl1_Html)
+	(Setq status (dcl-Html-GetBusy HTML/Dcl1/Html)
 		  info   (if status
 					 "Page is loading"
 					 "-----------"
 				 )
 	)
-	(dcl_MessageBox info "Info" 0 2)
+	(dcl-MessageBox info "Info" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-PageTitle_OnClicked ()
+(defun c:HTML/Dcl1/TB-PageTitle#OnClicked ()
 	;; get title of website
-	(dcl_MessageBox (dcl_Html_GetLocationName HTML_Dcl1_Html) "Page title" 0 2)
+	(dcl-MessageBox (dcl-Html-GetLocationName HTML/Dcl1/Html) "Page title" 0 2)
 )
 
-(defun c:HTML_Dcl1_RB-GoBack_OnClicked ()
+(defun c:HTML/Dcl1/RB-GoBack#OnClicked ()
 	;; go back to previous website
-	(dcl_Html_GoBack HTML_Dcl1_Html)
+	(dcl-Html-GoBack HTML/Dcl1/Html)
 )
 
-(defun c:HTML_Dcl1_TB-Home_OnClicked ()
+(defun c:HTML/Dcl1/TB-Home#OnClicked ()
 	;; navigate to home website
-	(dcl_Html_GoHome HTML_Dcl1_Html)
+	(dcl-Html-GoHome HTML/Dcl1/Html)
 )
 
-(defun c:HTML_Dcl1_TB-GetUrl_OnClicked ()
+(defun c:HTML/Dcl1/TB-GetUrl#OnClicked ()
 	;; get url of current loaded website
-	(dcl_MessageBox (dcl_Html_GetLocationURL HTML_Dcl1_Html) "URL" 0 2)
+	(dcl-MessageBox (dcl-Html-GetLocationURL HTML/Dcl1/Html) "URL" 0 2)
 )
 
-(defun c:HTML_Dcl1_TB-UpdateHtml_OnClicked ()
+(defun c:HTML/Dcl1/TB-UpdateHtml#OnClicked ()
 	;; update html code
-	(dcl_Html_UpdateHtmlCode HTML_Dcl1_Html "<b>New code....</b>")
+	(dcl-Html-UpdateHtmlCode HTML/Dcl1/Html "<b>New code....</b>")
 )
 
 ;; triger when website is loaded
-(defun c:HTML_Dcl1_Html_OnNavigationComplete (sUrl)
+(defun c:HTML/Dcl1/Html#OnNavigationComplete (sUrl)
 	(princ (strcat "\nNavigation completed, URL: " sUrl))
 )
 
-(defun c:HTML_Dcl1_TB_Close_OnClicked ()
-	(dcl_Form_Close HTML_Dcl1)                    ; close the form now
+(defun c:HTML/Dcl1/TB_Close#OnClicked ()
+	(dcl-Form-Close HTML/Dcl1)                    ; close the form now
 )
 
 (princ)

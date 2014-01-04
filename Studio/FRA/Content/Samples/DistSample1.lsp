@@ -31,8 +31,8 @@
     ;;
     ;;  1.  AutoCAD 2004+, OpenDCL 5.0 or newer.
     ;;
-    ;;  2.  DistSample.odcl | .lsp. With a form varnamed DistSample_MainForm
-    ;;      with a child button varnamed DistSample_MainForm_OkButton
+    ;;  2.  DistSample.odcl | .lsp. With a form varnamed DistSample/MainForm
+    ;;      with a child button varnamed DistSample/MainForm/OkButton
     ;;      with the event OnClick enabled. The project is not passworded.
     ;;
     ;;  3.  If run as a .lsp file expects to find DistSample.odcl in the
@@ -54,7 +54,7 @@
 
         ;;  Locals.
 
-        c:DistSample_MainForm_OkButton_OnClicked
+        c:DistSample/MainForm/OkButton#OnClicked
         _Load_ODCL_Runtime
         _Load_ODCL_Embedded_Project
         _Load_ODCL_File_Project
@@ -68,7 +68,7 @@
 
             ;;  Already loaded, vacate now (return t to caller).
 
-            dcl_getversionex
+            dcl-getversionex
 
             ;;  If demand loading is enabled, use the OPENDCL command
             ;;  to induce the loading of the OpenDCL Runtime. If demand
@@ -88,7 +88,7 @@
 
                 ;;  Is core OpenDCL functionality now defined?
 
-                dcl_getversionex
+                dcl-getversionex
             )
 
             ;;  If we got here the opendcl runtime was not loaded.
@@ -97,7 +97,7 @@
             (princ "Error: OpenDCL Runtime could not be loaded.\n")
         )
 
-        dcl_getversion
+        dcl-getversion
 
     ) ;;------------------------------------------------------------------------
 
@@ -116,7 +116,7 @@
             ;;  inappropriately called) or older OpenDCL runtimes
             ;;  have been loaded. Either way alert and bail.
 
-            (	(null dcl_project_import)
+            (	(null dcl-project-import)
 
                 (princ "OpenDCL version 5.0 or newer is required.\n")
 
@@ -144,10 +144,10 @@
 
             )
 
-            ;;  Call dcl_project_import and return the result to the
+            ;;  Call dcl-project-import and return the result to the
             ;;  caller if successful ...
 
-            (	(dcl_project_import bytes password alias)  )
+            (	(dcl-project-import bytes password alias)  )
         )
 
     ) ;;------------------------------------------------------------------------
@@ -166,7 +166,7 @@
             ;;  inappropriately called) or older OpenDCL runtimes
             ;;  have been loaded. Either way alert and bail.
 
-            (	(null dcl_project_load)
+            (	(null dcl-project-load)
 
                 (princ "OpenDCL version 5 or later is required.\n")
 
@@ -176,7 +176,7 @@
             ;;  Call dcl_project_load and return the result to the
             ;;  caller if successful ...
 
-            (	(dcl_project_load projname reload password alias)  )
+            (	(dcl-project-load projname reload password alias)  )
 
             ;;  Since this file is installed along with the other
             ;;  OpenDCL samples, and since the samples folder is not
@@ -210,17 +210,17 @@
                     )
                 )
 
-                (dcl_project_load (strcat samples projname) reload password alias)
+                (dcl-project-load (strcat samples projname) reload password alias)
             )
         )
 
     ) ;;------------------------------------------------------------------------
 
-    (defun c:DistSample_MainForm_OkButton_OnClicked ( )
+    (defun c:DistSample/MainForm/OkButton#OnClicked ( )
 
-        (dcl_MessageBox "Press [Ok] to terminate ..." "About to exit ...")
+        (dcl-MessageBox "Press [Ok] to terminate ..." "About to exit ...")
 
-        (dcl_form_close DistSample_MainForm)
+        (dcl-form-close DistSample/MainForm)
 
     ) ;;------------------------------------------------------------------------
 
@@ -254,10 +254,10 @@
 
             (if
                 (null
-                    (dcl_Form_Show DistSample_MainForm)
+                    (dcl-Form-Show DistSample/MainForm)
                 )
 
-                (princ "Failed to show form: DistSample_MainForm\n")
+                (princ "Failed to show form: DistSample/MainForm\n")
             )
         )
 

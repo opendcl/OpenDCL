@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Grid.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Grid.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show GRID_Dcl-1)
+	(dcl-Form-Show Grid/Dcl-1)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -29,7 +29,7 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 ;;;******************************************************************
-(defun c:Project1_Dcl-1_TB-Close_OnClicked () (dcl_Form_Close GRID_Dcl-1))
+(defun c:Project1_Dcl-1_TB-Close_OnClicked () (dcl-Form-Close Grid/Dcl-1))
 
 
 ;;;******************************************************************
@@ -37,19 +37,19 @@
 	   (/ GridCellTypeList ImageComboBoxList x nRow)
 	(defun AddListImageComboBox ($ItemList $CTRL)
 		(foreach x $ItemList
-			(dcl_ImageComboBox_AddString $CTRL (nth 0 x) (nth 1 x))
+			(dcl-ImageComboBox-AddString $CTRL (nth 0 x) (nth 1 x))
 		)
 	)
 	(defun FillColCountList (/ cnt ColCnt)
 										;Add total number of colums to ComboBox
-		(setq ColCnt (dcl_Grid_GetColumnCount GRID_Dcl-1_grid1))
+		(setq ColCnt (dcl-Grid-GetColumnCount Grid/Dcl-1/grid1))
 		(setq cnt 1)
-		(dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridColCount)
+		(dcl-ComboBox-Clear Grid/Dcl-1/CBx-GridColCount)
 		(while (< cnt ColCnt)
-			(dcl_ComboBox_AddString GRID_Dcl-1_CBx-GridColCount (itoa cnt))
+			(dcl-ComboBox-AddString Grid/Dcl-1/CBx-GridColCount (itoa cnt))
 			(setq cnt (1+ cnt))
 		) ;_ while
-		(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridColCount (- ColCnt 2))
+		(dcl-ComboBox-SetCurSel Grid/Dcl-1/CBx-GridColCount (- ColCnt 2))
 	)
 	(setq GridCellTypeList '(
 								(-1 . "Undefined")
@@ -100,88 +100,88 @@
 							)
 	      ImageComboBoxList (list '("---" 100) '("Star" 0) '("Feet" 1) '("Hand" 2) '("Moon" 3))) ; Add list to the ComboBox
 
-	(dcl_ComboBox_Clear GRID_Dcl-1_CBx-GridCellType)
+	(dcl-ComboBox-Clear Grid/Dcl-1/CBx-GridCellType)
 
         (foreach lstItem GridCellTypeList
-            (setq nRow (dcl_ComboBox_AddString GRID_Dcl-1_CBx-GridCellType (strcat (itoa (car lstItem)) " - " (cdr lstItem))))
-            (dcl_combobox_setitemdata GRID_Dcl-1_CBx-GridCellType nRow (car lstItem))
+            (setq nRow (dcl-ComboBox-AddString Grid/Dcl-1/CBx-GridCellType (strcat (itoa (car lstItem)) " - " (cdr lstItem))))
+            (dcl-ComboBox-setitemdata Grid/Dcl-1/CBx-GridCellType nRow (car lstItem))
         ); foreach
 
-	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridCellType 0)			; Show first element from the list
+	(dcl-ComboBox-SetCurSel Grid/Dcl-1/CBx-GridCellType 0)			; Show first element from the list
 
-	(AddListImageComboBox ImageComboBoxList GRID_Dcl-1_IC-Images)		; Add list elements to ImageComboBox
+	(AddListImageComboBox ImageComboBoxList Grid/Dcl-1/IC-Images)		; Add list elements to ImageComboBox
 
-	(dcl_ImageComboBox_SetCurSel GRID_Dcl-1_IC-Images 0)			; Show first element from the list
+	(dcl-ImageComboBox-SetCurSel Grid/Dcl-1/IC-Images 0)			; Show first element from the list
 
-	(AddListImageComboBox ImageComboBoxList GRID_Dcl-1_IC-ColImages)	; Add list elements to ImageComboBox
+	(AddListImageComboBox ImageComboBoxList Grid/Dcl-1/IC-ColImages)	; Add list elements to ImageComboBox
 
-	(dcl_ImageComboBox_SetCurSel GRID_Dcl-1_IC-ColImages 0)			; Show first element from the list
+	(dcl-ImageComboBox-SetCurSel Grid/Dcl-1/IC-ColImages 0)			; Show first element from the list
 
-	(dcl_ComboBox_SetCurSel GRID_Dcl-1_CBx-GridColJust 0)			; Show first element from the list
+	(dcl-ComboBox-SetCurSel Grid/Dcl-1/CBx-GridColJust 0)			; Show first element from the list
 
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1
 								   (strcat "0\t \tCheck Boxes")
 			   )
 	)
-	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 0)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 1)
+	(dcl-Grid-SetItemImage Grid/Dcl-1/grid1 nRow 1 0)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 1)
 
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1
 								   (strcat "1\t \tOption Buttons")
 			   )
 	)
-	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 1)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 2)
+	(dcl-Grid-SetItemImage Grid/Dcl-1/grid1 nRow 1 1)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 2)
 
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1
 								   (strcat "2\t \tEllipses Buttons")
 			   )
 	)
-	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 2)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 4)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
+	(dcl-Grid-SetItemImage Grid/Dcl-1/grid1 nRow 1 2)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 4)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)
 
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1 
 								   (strcat "3\t \tPick Buttons")
 			   )
 	)
-	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 1 3)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 5)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
+	(dcl-Grid-SetItemImage Grid/Dcl-1/grid1 nRow 1 3)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 5)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)
 									
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "4\t \tItem1"))
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 18)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)		
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2 '("Item1" "Item2" "Item3" "Item4"))
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "5\t \tStar"))
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 29)
-	(dcl_Grid_SetItemImage GRID_Dcl-1_grid1 nRow 2 0)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1 "4\t \tItem1"))
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 18)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)		
+	(dcl-Grid-SetItemDropList Grid/Dcl-1/grid1 nRow 2 '("Item1" "Item2" "Item3" "Item4"))
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1 "5\t \tStar"))
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 29)
+	(dcl-Grid-SetItemImage Grid/Dcl-1/grid1 nRow 2 0)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)
+	(dcl-Grid-SetItemDropList Grid/Dcl-1/grid1 nRow 2
 							  '("Star" "Feet" "Hand" "Moon")
 							  '(0 1 2 3))
 							 
           
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "6\t \tStringCombo"))
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1 "6\t \tStringCombo"))
 							
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 36)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 36)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)
+	(dcl-Grid-SetItemDropList Grid/Dcl-1/grid1 nRow 2
                                '("Item1" "Item2" "Item3" "Item4"))
 
 
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "7\t \t0"))
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 37)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1 "7\t \t0"))
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 37)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)
 
-	(dcl_Grid_SetItemDropList GRID_Dcl-1_grid1 nRow 2 '("0" "90" "180" "270"))
+	(dcl-Grid-SetItemDropList Grid/Dcl-1/grid1 nRow 2 '("0" "90" "180" "270"))
 										
-	(Setq nRow (dcl_Grid_AddString GRID_Dcl-1_grid1 "8\t \tSwitchable Images"))
+	(Setq nRow (dcl-Grid-AddString Grid/Dcl-1/grid1 "8\t \tSwitchable Images"))
 										
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 3 1 2)
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 3 1 2)
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)
 	(FillColCountList)
-	(dcl_ListBox_Clear Grid_Dcl-1_LB-Status)
+	(dcl-ListBox-Clear Grid/Dcl-1/LB-Status)
 	(princ)
 )
 
@@ -189,44 +189,44 @@
 ;;;******************************************************************************************************************************
 (defun c:Project1_Dcl-1_TB-AddRow_OnClicked
 	   (/ GRIDCELLIMAGEINT GRIDCELLTYPEINT GRIDCOLUMNVALUE GRIDROWCOUNT NROW)
-	(setq GridCellTypeInt  (dcl_ComboBox_GetCurSel GRID_Dcl-1_CBx-GridCellType)
-              GridCellTypeVal  (dcl_combobox_getitemdata GRID_Dcl-1_CBx-GridCellType GridCellTypeInt)
-              GridCellImageInt (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images)
-              GridColumnValue  (dcl_Control_GetText GRID_Dcl-1_TB-Value)
-              GridRowCount     (dcl_Grid_GetRowCount GRID_Dcl-1_grid1)
+	(setq GridCellTypeInt  (dcl-ComboBox-GetCurSel Grid/Dcl-1/CBx-GridCellType)
+              GridCellTypeVal  (dcl-ComboBox-getitemdata Grid/Dcl-1/CBx-GridCellType GridCellTypeInt)
+              GridCellImageInt (dcl-ImageComboBox-GetCurSel Grid/Dcl-1/IC-Images)
+              GridColumnValue  (dcl-Control-GetText Grid/Dcl-1/TB-Value)
+              GridRowCount     (dcl-Grid-GetRowCount Grid/Dcl-1/grid1)
 	)
 
-	(Setq nRow (dcl_Grid_AddString
-				   GRID_Dcl-1_grid1
+	(Setq nRow (dcl-Grid-AddString
+				   Grid/Dcl-1/grid1
 				   (strcat (itoa GridRowCount) "\t \t" GridColumnValue)
 				) ; \t - separates columns"
 	)
 
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 1 1)			; Set the new grid cell style for column 1
-	(dcl_Grid_SetItemCheck GRID_Dcl-1_grid1 nRow 1 0)			; Check off the new grid cell
-	(dcl_Grid_SetItemStyle GRID_Dcl-1_grid1 nRow 2 GridCellTypeVal)		; Set the new grid cell style for column 2
-	(if (> (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images) 0)		; Set the new image to cell for column 2
-		(dcl_Grid_SetItemImage
-			GRID_Dcl-1_grid1
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 1 1)			; Set the new grid cell style for column 1
+	(dcl-Grid-SetItemCheck Grid/Dcl-1/grid1 nRow 1 0)			; Check off the new grid cell
+	(dcl-Grid-SetItemStyle Grid/Dcl-1/grid1 nRow 2 GridCellTypeVal)		; Set the new grid cell style for column 2
+	(if (> (dcl-ImageComboBox-GetCurSel Grid/Dcl-1/IC-Images) 0)		; Set the new image to cell for column 2
+		(dcl-Grid-SetItemImage
+			Grid/Dcl-1/grid1
 			nRow
 			2
-			(1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-Images))
+			(1- (dcl-ImageComboBox-GetCurSel Grid/Dcl-1/IC-Images))
 		)
 	)
 )
 
 
-(defun c:grid_Dcl-1_TB-AddCol_OnClicked (/ txt cWidth cImg)
-	(setq txt (dcl_Control_GetText GRID_Dcl-1_TB-ColTitle))
-	(setq cImg (1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-ColImages)))
-	(Setq cWidth (+ (dcl_Grid_CalcColWidth GRID_Dcl-1_grid1 txt) (if (>= cImg 0) 48 12)))
-	(dcl_Grid_InsertColumn
-		GRID_Dcl-1_grid1
-		(dcl_Grid_GetColumnCount GRID_Dcl-1_grid1)
+(defun c:Grid/Dcl-1/TB-AddCol#OnClicked (/ txt cWidth cImg)
+	(setq txt (dcl-Control-GetText Grid/Dcl-1/TB-ColTitle))
+	(setq cImg (1- (dcl-ImageComboBox-GetCurSel Grid/Dcl-1/IC-ColImages)))
+	(Setq cWidth (+ (dcl-Grid-CalcColWidth Grid/Dcl-1/grid1 txt) (if (>= cImg 0) 48 12)))
+	(dcl-Grid-InsertColumn
+		Grid/Dcl-1/grid1
+		(dcl-Grid-GetColumnCount Grid/Dcl-1/grid1)
 		(list txt
-			  (dcl_ComboBox_GetCurSel GRID_Dcl-1_CBx-GridColJust)
+			  (dcl-ComboBox-GetCurSel Grid/Dcl-1/CBx-GridColJust)
 			  cWidth
-			  (1- (dcl_ImageComboBox_GetCurSel GRID_Dcl-1_IC-ColImages))
+			  (1- (dcl-ImageComboBox-GetCurSel Grid/Dcl-1/IC-ColImages))
 		)
 	)
 	(FillColCountList)
@@ -234,9 +234,9 @@
 )
 
 
-(defun c:grid_Dcl-1_TB-DeleteColumn_OnClicked (/ DelCol)
-	(Setq DelCol (1+ (dcl_ComboBox_GetCurSel GRID_Dcl-1_CBx-GridColCount)))
-	(dcl_Grid_DeleteColumn GRID_Dcl-1_grid1 DelCol)
+(defun c:Grid/Dcl-1/TB-DeleteColumn#OnClicked (/ DelCol)
+	(Setq DelCol (1+ (dcl-ComboBox-GetCurSel Grid/Dcl-1/CBx-GridColCount)))
+	(dcl-Grid-DeleteColumn Grid/Dcl-1/grid1 DelCol)
 	(FillColCountList)
 	(princ)
 )
@@ -245,28 +245,28 @@
 
 ;;;******************************************************************************************************************************
 (defun c:Project1_Dcl-1_TB-SelectAll_OnClicked (/ GridRowCount)
-	(setq GridRowCount (dcl_Grid_GetRowCount GRID_Dcl-1_grid1))
+	(setq GridRowCount (dcl-Grid-GetRowCount Grid/Dcl-1/grid1))
 	(while (>= GridRowCount 0)
-		(dcl_Grid_SetItemCheck GRID_Dcl-1_grid1 GridRowCount 1 1)
+		(dcl-Grid-SetItemCheck Grid/Dcl-1/grid1 GridRowCount 1 1)
 		(setq GridRowCount (1- GridRowCount))
 	)
 )
 
 ;;;******************************************************************************************************************************
 (defun c:Project1_Dcl-1_TB-ClearAll_OnClicked ()
-	(setq GridRowCount (dcl_Grid_GetRowCount GRID_Dcl-1_grid1))
+	(setq GridRowCount (dcl-Grid-GetRowCount Grid/Dcl-1/grid1))
 	(while (>= GridRowCount 0)
-		(dcl_Grid_SetItemCheck GRID_Dcl-1_grid1 GridRowCount 1 0)
+		(dcl-Grid-SetItemCheck Grid/Dcl-1/grid1 GridRowCount 1 0)
 		(setq GridRowCount (1- GridRowCount))
 	)
 )
 
 ;;;******************************************************************************************************************************
 (defun c:Project1_Dcl-1_TB-DeleteRows_OnClicked ()
-	(setq GridRowCount (dcl_Grid_GetRowCount GRID_Dcl-1_grid1))
+	(setq GridRowCount (dcl-Grid-GetRowCount Grid/Dcl-1/grid1))
 	(while (>= GridRowCount 0)
-		(if (= (dcl_Grid_GetCellCheckState GRID_Dcl-1_grid1 GridRowCount 1) 1)
-			(dcl_Grid_DeleteRow GRID_Dcl-1_grid1 GridRowCount)
+		(if (= (dcl-Grid-GetCellCheckState Grid/Dcl-1/grid1 GridRowCount 1) 1)
+			(dcl-Grid-DeleteRow Grid/Dcl-1/grid1 GridRowCount)
 		)
 		(setq GridRowCount (1- GridRowCount))
 	)
@@ -274,57 +274,57 @@
 
 
 
-(defun c:Grid_Dcl-1_grid1_OnBeginLabelEdit (nRow nCol / newValue)
+(defun c:Grid/Dcl-1/grid1#OnBeginLabelEdit (nRow nCol / newValue)
 	(setq newValue (strcat "Event: OnBeginLabelEdit
 Arguments: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
+	(dcl-ListBox-SetTopIndex Grid/Dcl-1/LB-Status (dcl-ListBox-AddString Grid/Dcl-1/LB-Status newValue))
 )
 
 
 
 
-(defun c:Grid_Dcl-1_grid1_OnButtonClicked (nRow nCol / newValue)
+(defun c:Grid/Dcl-1/grid1#OnButtonClicked (nRow nCol / newValue)
 	(setq newValue (strcat "Event: OnButtonClicked
 Arguments: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
+	(dcl-ListBox-SetTopIndex Grid/Dcl-1/LB-Status (dcl-ListBox-AddString Grid/Dcl-1/LB-Status newValue))
 )
 
-(defun c:Grid_Dcl-1_grid1_OnSelChanged (nRow nCol / newValue)
+(defun c:Grid/Dcl-1/grid1#OnSelChanged (nRow nCol / newValue)
 	(setq newValue (strcat "Event: OnSelChanged
 Arguments: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
+	(dcl-ListBox-SetTopIndex Grid/Dcl-1/LB-Status (dcl-ListBox-AddString Grid/Dcl-1/LB-Status newValue))
 )
 
 
-(defun c:Grid_Dcl-1_grid1_OnEndLabelEdit (nRow nCol / newValue)
+(defun c:Grid/Dcl-1/grid1#OnEndLabelEdit (nRow nCol / newValue)
 	(setq newValue (strcat "Event: OnEndLabelEdit
 Arguments: nRow: "         (itoa nRow)
 						   " ; nCol: "
 						   (itoa nCol)
 				   )
 	)
-	(if Grid_Dcl-1_LB-Status (dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue)))
+	(if Grid/Dcl-1/LB-Status (dcl-ListBox-SetTopIndex Grid/Dcl-1/LB-Status (dcl-ListBox-AddString Grid/Dcl-1/LB-Status newValue)))
 )
 
 
-(defun c:Grid_Dcl-1_grid1_OnColumnClick (nColumn / newValue)
+(defun c:Grid/Dcl-1/grid1#OnColumnClick (nColumn / newValue)
 	(setq newValue (strcat "Event: OnColumnClick
 Arguments: nColumn: "      (itoa nColumn)
 				   )
 	)
-	(dcl_ListBox_SetTopIndex Grid_Dcl-1_LB-Status (dcl_ListBox_AddString Grid_Dcl-1_LB-Status newValue))
+	(dcl-ListBox-SetTopIndex Grid/Dcl-1/LB-Status (dcl-ListBox-AddString Grid/Dcl-1/LB-Status newValue))
 )
 
 (princ)

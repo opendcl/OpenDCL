@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Hatches.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Hatches.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show Hatches_Hatch)
+	(dcl-Form-Show Hatches/Hatch)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -28,30 +28,30 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:Hatches_Hatch_OnInitialize (/ scale idx)
-	(setq scale (rtos (dcl_Control_GetHatchScale Hatches_Hatch_Hatch1) 2 0))
-	(setq idx (dcl_ComboBox_FindString Hatches_Hatch_ComboBox2 scale))
+(defun c:Hatches/Hatch#OnInitialize (/ scale idx)
+	(setq scale (rtos (dcl-Control-GetHatchScale Hatches/Hatch/Hatch1) 2 0))
+	(setq idx (dcl-ComboBox-FindString Hatches/Hatch/ComboBox2 scale))
 	(if (< idx 0) (setq idx 0))
-	(dcl_ComboBox_SetCurSel Hatches_Hatch_ComboBox2 idx)
+	(dcl-ComboBox-SetCurSel Hatches/Hatch/ComboBox2 idx)
 )
 
-(defun c:Hatches_Hatch_ComboBox1_OnSelChanged (nSelection sSelText /)
-	(dcl_hatch_setpattern Hatches_Hatch_Hatch1 sSelText)
-	(dcl_hatch_setpattern Hatches_Hatch_Hatch2 sSelText)
+(defun c:Hatches/Hatch/ComboBox1#OnSelChanged (nSelection sSelText /)
+	(dcl-Hatch-setpattern Hatches/Hatch/Hatch1 sSelText)
+	(dcl-Hatch-setpattern Hatches/Hatch/Hatch2 sSelText)
 )
 
-(defun c:Hatches_Hatch_ComboBox2_OnSelChanged (nSelection sSelText / hatpat)
+(defun c:Hatches/Hatch/ComboBox2#OnSelChanged (nSelection sSelText / hatpat)
 	;; set the selected scale for each hatch display tile
-	(dcl_Control_SetHatchScale Hatches_Hatch_Hatch1 (atof sSelText))
-	(dcl_Control_SetHatchScale Hatches_Hatch_Hatch2 (atof sSelText))
+	(dcl-Control-SetHatchScale Hatches/Hatch/Hatch1 (atof sSelText))
+	(dcl-Control-SetHatchScale Hatches/Hatch/Hatch2 (atof sSelText))
 	;; get the current hatch pattern name from the ComboBox
-	(setq hatpat (dcl_ComboBox_GetLBText
-					 Hatches_Hatch_ComboBox1
-					 (dcl_ComboBox_GetCurSel Hatches_Hatch_ComboBox1)
+	(setq hatpat (dcl-ComboBox-GetLBText
+					 Hatches/Hatch/ComboBox1
+					 (dcl-ComboBox-GetCurSel Hatches/Hatch/ComboBox1)
 				 )
 	) 
 	;; Use the previously defined function to re-draw the patterns
-	(c:Hatches_Hatch_ComboBox1_OnSelChanged nil hatpat)
+	(c:Hatches/Hatch/ComboBox1#OnSelChanged nil hatpat)
 )
 
 (princ)

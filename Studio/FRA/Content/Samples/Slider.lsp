@@ -22,12 +22,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Slider.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Slider.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show Slider_Form1)
+	(dcl-Form-Show Slider/Form1)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -43,7 +43,7 @@
 (defun slider_get_percent (intPos / intBorder intButtonHeight intHeight)
 	(setq intBorder (slider_get_border_size))
 	(setq intButtonHeight (slider_get_button_height))
-	(setq intHeight (- (dcl_Control_GetHeight Slider_Form1_pic_slider) intBorder intButtonHeight 1))
+	(setq intHeight (- (dcl-Control-GetHeight Slider/Form1/pic_slider) intBorder intButtonHeight 1))
 	(cond
 		((<= intHeight 0) 0)
 		((>= intPos intHeight) 0)
@@ -61,7 +61,7 @@
 (defun slider_get_pos (intPercent / intBorder intButtonHeight intHeight)
 	(setq intBorder (slider_get_border_size))
 	(setq intButtonHeight (slider_get_button_height))
-	(setq intHeight (- (dcl_Control_GetHeight Slider_Form1_pic_slider) intBorder intButtonHeight 1))
+	(setq intHeight (- (dcl-Control-GetHeight Slider/Form1/pic_slider) intBorder intButtonHeight 1))
 	(cond
 		((<= intHeight 0) 0)
 		((<= intPercent 0) intHeight)
@@ -81,10 +81,10 @@
 		((< intPercent 0) (setq intPercent 0))
 		((> intPercent 100) (setq intPercent 100))
 	); cond
-	(if (/= intPercent(atoi (dcl_Control_GetText Slider_Form1_edt_percent)))
+	(if (/= intPercent(atoi (dcl-Control-GetText Slider/Form1/edt_percent)))
 		(progn
-			(dcl_Control_SetText Slider_Form1_edt_percent (itoa intPercent))
-			(dcl_Control_Redraw Slider_Form1_pic_slider)
+			(dcl-Control-SetText Slider/Form1/edt_percent (itoa intPercent))
+			(dcl-Control-Redraw Slider/Form1/pic_slider)
 		); progn
 	); if
 ); slider_change_percent
@@ -96,7 +96,7 @@
 ;; Returns: <unused>
 
 (defun slider_start_dragging ()
-	(dcl_Control_SetProperty Slider_Form1_pic_slider "MouseMove" "c:Slider_Form1_pic_slider_OnMouseMove")
+	(dcl-Control-SetProperty Slider/Form1/pic_slider "MouseMove" "c:Slider_Form1_pic_slider_OnMouseMove")
 ); slider_start_dragging
 
 
@@ -106,7 +106,7 @@
 ;; Returns: <unused>
 
 (defun slider_stop_dragging ()
-	(dcl_Control_SetProperty Slider_Form1_pic_slider "MouseMove" "")
+	(dcl-Control-SetProperty Slider/Form1/pic_slider "MouseMove" "")
 ); slider_stop_dragging
 
 
@@ -116,7 +116,7 @@
 ;; Returns: large increment as integer
 
 (defun slider_get_large_increment (/ intVal)
-	(setq intVal (atoi (dcl_ComboBox_GetEBText Slider_Form1_cbb_large)))
+	(setq intVal (atoi (dcl-ComboBox-GetEBText Slider/Form1/cbb_large)))
 	(cond
 		((<= intVal 5) 5)
 		((>= intVal 50) 50)
@@ -131,7 +131,7 @@
 ;; Returns: small increment as integer
 
 (defun slider_get_small_increment (/ intVal)
-	(setq intVal (atoi (dcl_ComboBox_GetEBText Slider_Form1_cbb_small)))
+	(setq intVal (atoi (dcl-ComboBox-GetEBText Slider/Form1/cbb_small)))
 	(cond
 		((<= intVal 1) 1)
 		((>= intVal 20) 20)
@@ -146,7 +146,7 @@
 ;; Returns: button height as integer
 
 (defun slider_get_button_height (/ intButtonStyle)
-	(setq intButtonStyle (dcl_ComboBox_GetCurSel Slider_Form1_cbb_style))
+	(setq intButtonStyle (dcl-ComboBox-GetCurSel Slider/Form1/cbb_style))
 	(cond
 		((member intButtonStyle '(-1 0 1)) 12)
 		((= intButtonStyle 3) 3)
@@ -162,7 +162,7 @@
 ;; Returns: border size as integer
 
 (defun slider_get_border_size (/ intBorderStyle)
-	(setq intBorderStyle (dcl_Control_GetBorderStyle Slider_Form1_pic_slider))
+	(setq intBorderStyle (dcl-Control-GetBorderStyle Slider/Form1/pic_slider))
 	(cond
 		((= intBorderStyle 0) 0)
 		((= intBorderStyle 1) 4)
@@ -178,8 +178,8 @@
 ;; Returns: <unused>
 
 (defun slider_log_event (strLine)
-	(if (= 1 (dcl_Control_GetValue Slider_Form1_chb_event))
-		(dcl_ListBox_SetTopIndex Slider_Form1_lbx_eventlog (1- (dcl_ListBox_AddString Slider_Form1_lbx_eventlog strLine)))
+	(if (= 1 (dcl-Control-GetValue Slider/Form1/chb_event))
+		(dcl-ListBox-SetTopIndex Slider/Form1/lbx_eventlog (1- (dcl-ListBox-AddString Slider/Form1/lbx_eventlog strLine)))
 	); if
 ); slider_log_event
 
@@ -187,22 +187,22 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 ;; --------------------------------------------------------------------------------------
-;; Event desc.: Called when dcl_form_show is executed. Sets initial values for the form and its controls
+;; Event desc.: Called when dcl-Form-show is executed. Sets initial values for the form and its controls
 ;; Arguments: none
 ;; Returns: <unused>
 
-(defun c:Slider_Form1_OnInitialize (/)
+(defun c:Slider/Form1#OnInitialize (/)
 ;|
 	;; Uncomment this code to reset the increment combos every time the form is shown
-	(mapcar 'dcl_ComboBox_Clear (list Slider_Form1_cbb_small Slider_Form1_cbb_large))
-	(dcl_ComboBox_AddList Slider_Form1_cbb_small (list "1" "2" "5"))
-	(dcl_ComboBox_AddList Slider_Form1_cbb_large (list "5" "10" "20"))
-	(dcl_ComboBox_SetCurSel Slider_Form1_cbb_small 0)
-	(dcl_ComboBox_SetCurSel Slider_Form1_cbb_large 0)
+	(mapcar 'dcl-ComboBox-Clear (list Slider/Form1/cbb_small Slider/Form1/cbb_large))
+	(dcl-ComboBox-AddList Slider/Form1/cbb_small (list "1" "2" "5"))
+	(dcl-ComboBox-AddList Slider/Form1/cbb_large (list "5" "10" "20"))
+	(dcl-ComboBox-SetCurSel Slider/Form1/cbb_small 0)
+	(dcl-ComboBox-SetCurSel Slider/Form1/cbb_large 0)
 |;
-	(dcl_ListBox_Clear Slider_Form1_lbx_eventlog)
-	(dcl_ComboBox_SetCurSel Slider_Form1_cbb_border (dcl_Control_GetBorderStyle Slider_Form1_pic_slider))
-); c:Slider_Form1_OnInitialize
+	(dcl-ListBox-Clear Slider/Form1/lbx_eventlog)
+	(dcl-ComboBox-SetCurSel Slider/Form1/cbb_border (dcl-Control-GetBorderStyle Slider/Form1/pic_slider))
+); c:Slider/Form1#OnInitialize
 
 
 ;; --------------------------------------------------------------------------------------
@@ -210,10 +210,10 @@
 ;; Arguments: intIsESC = reason of closing as integer; 0, when Return was pressed in the textbox
 ;; Returns: boole, T to prevent the form from closing
 
-(defun c:Slider_Form1_OnCancelClose (intIsESC /)
+(defun c:Slider/Form1#OnCancelClose (intIsESC /)
 	(slider_log_event (strcat "OnCancelClose / " (vl-prin1-to-string intIsESC)))
 	(/= intIsESC 1)
-); c:Slider_Form1_OnCancelClose
+); c:Slider/Form1#OnCancelClose
 
 
 ;; --------------------------------------------------------------------------------------
@@ -221,15 +221,15 @@
 ;; Arguments: strNewValue = new textbox content as string
 ;; Returns: <unused>
 
-(defun c:Slider_Form1_edt_percent_OnEditChanged (strNewValue / intPercent)
+(defun c:Slider/Form1/edt_percent#OnEditChanged (strNewValue / intPercent)
 	(slider_log_event (strcat "OnEditChanged / " strNewValue))
 	(setq intPercent (atoi strNewValue))
 	(cond
-		((< intPercent 0) (dcl_Control_SetText Slider_Form1_edt_percent "0"))
-		((> intPercent 100) (dcl_Control_SetText Slider_Form1_edt_percent "100"))
+		((< intPercent 0) (dcl-Control-SetText Slider/Form1/edt_percent "0"))
+		((> intPercent 100) (dcl-Control-SetText Slider/Form1/edt_percent "100"))
 	); cond
-	(dcl_PictureBox_Refresh Slider_Form1_pic_slider)
-); c:Slider_Form1_edt_percent_OnEditChanged
+	(dcl-PictureBox-Refresh Slider/Form1/pic_slider)
+); c:Slider/Form1/edt_percent#OnEditChanged
 
 
 ;; --------------------------------------------------------------------------------------
@@ -238,9 +238,9 @@
 ;;  strValue = text value of selected item
 ;; Returns: <unused>
 
-(defun c:Slider_Form1_cbb_style_OnSelChanged (intStyle strValue /)
-	(dcl_PictureBox_Refresh Slider_Form1_pic_slider)
-); c:Slider_Form1_cbb_style_OnSelChanged
+(defun c:Slider/Form1/cbb_style#OnSelChanged (intStyle strValue /)
+	(dcl-PictureBox-Refresh Slider/Form1/pic_slider)
+); c:Slider/Form1/cbb_style#OnSelChanged
 
 
 ;; --------------------------------------------------------------------------------------
@@ -249,9 +249,9 @@
 ;;  strValue = text value of selected item
 ;; Returns: <unused>
 
-(defun c:Slider_Form1_cbb_border_OnSelChanged (intBorder strValue /)
-	(dcl_Control_SetBorderStyle Slider_Form1_pic_slider intBorder)
-); c:Slider_Form1_cbb_border_OnSelChanged
+(defun c:Slider/Form1/cbb_border#OnSelChanged (intBorder strValue /)
+	(dcl-Control-SetBorderStyle Slider/Form1/pic_slider intBorder)
+); c:Slider/Form1/cbb_border#OnSelChanged
 
 
 ;; --------------------------------------------------------------------------------------
@@ -259,42 +259,42 @@
 ;; Arguments: isHasFocus = boole, T id picturebox has focus
 ;; Returns: <unused>
 
-(defun c:Slider_Form1_pic_slider_OnPaint (isHasFocus / intPos intStyle lstPos lstLines intLeft)
+(defun c:Slider/Form1/pic_slider#OnPaint (isHasFocus / intPos intStyle lstPos lstLines intLeft)
 	(slider_log_event (strcat "OnPaint / " (vl-prin1-to-string isHasFocus)))
-	(setq intPos (slider_get_pos (atoi (dcl_Control_GetText Slider_Form1_edt_percent))))
-	(setq lstPos (dcl_Control_GetPos Slider_Form1_pic_slider))
-	(setq intStyle (dcl_ComboBox_GetCurSel Slider_Form1_cbb_style))
+	(setq intPos (slider_get_pos (atoi (dcl-Control-GetText Slider/Form1/edt_percent))))
+	(setq lstPos (dcl-Control-GetPos Slider/Form1/pic_slider))
+	(setq intStyle (dcl-ComboBox-GetCurSel Slider/Form1/cbb_style))
 	(cond
 		(	(or (not intStyle) (<= intStyle 0)) ; scroll bar
-			(dcl_PictureBox_PaintPicture Slider_Form1_pic_slider (list (list 0 intPos 100 T nil))))
+			(dcl-PictureBox-PaintPicture Slider/Form1/pic_slider (list (list 0 intPos 100 T nil))))
 
 	(	(= intStyle 1) ; solid rectangle
-		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
+		(dcl-PictureBox-DrawSolidRect Slider/Form1/pic_slider
 			(list
 				(list 0 intPos (caddr lstPos) 2 0)
 				(list 0 (+ intPos 2) (caddr lstPos) 8 171)
 				(list 0 (+ intPos 10) (caddr lstPos) 2 0))))
 
 	(	(= intStyle 2) ; solid fill
-		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
+		(dcl-PictureBox-DrawSolidRect Slider/Form1/pic_slider
 			(list (list 0 intPos (caddr lstPos) (- (cadddr lstPos) intPos) 171))))
 
 	(	(= intStyle 3) ; solid triangle
 		(repeat (1+ (setq intLen (1- (caddr lstPos))))
 			(setq lstLines (cons (list 0 (last lstPos) (setq intLen (1- intLen)) 0 163) lstLines))
 		); repeat
-		(dcl_PictureBox_DrawLine Slider_Form1_pic_slider lstLines)
-		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
+		(dcl-PictureBox-DrawLine Slider/Form1/pic_slider lstLines)
+		(dcl-PictureBox-DrawSolidRect Slider/Form1/pic_slider
 			(list (list 0 intPos (caddr lstPos) 4 0))))
 
 	(	(= intStyle 4) ; bullet
 		(setq intLeft (/ (caddr lstPos) 2))
-		(dcl_PictureBox_DrawSolidRect Slider_Form1_pic_slider
+		(dcl-PictureBox-DrawSolidRect Slider/Form1/pic_slider
 			(list (list intLeft 0 1 (last lstPos) 8)))
-		(dcl_PictureBox_PaintPicture Slider_Form1_pic_slider
+		(dcl-PictureBox-PaintPicture Slider/Form1/pic_slider
 			(list (list (- intLeft 8) intPos 101 T nil))))
 	); cond
-); c:Slider_Form1_pic_slider_OnPaint
+); c:Slider/Form1/pic_slider#OnPaint
 
 
 ;; --------------------------------------------------------------------------------------
@@ -303,9 +303,9 @@
 ;; Returns: <unused>
 ;; Notes: To make sure that picturebox has focus for OnKeyPressed event and mousewheel
 
-(defun c:Slider_Form1_pic_slider_OnMouseEntered (/)
-	(dcl_Control_SetFocus Slider_Form1_pic_slider)
-); c:Slider_Form1_pic_slider_OnMouseEntered
+(defun c:Slider/Form1/pic_slider#OnMouseEntered (/)
+	(dcl-Control-SetFocus Slider/Form1/pic_slider)
+); c:Slider/Form1/pic_slider#OnMouseEntered
 
 
 ;; --------------------------------------------------------------------------------------
@@ -323,9 +323,9 @@
 ;;  Left mousebutton on the scrollbar button = move directly to destination
 ;;  Right mousebutton anywhere = move directly to destination
 
-(defun c:Slider_Form1_pic_slider_OnMouseDown (intButton intFlags intX intY / intPercent intTop intButtonHeight)
+(defun c:Slider/Form1/pic_slider#OnMouseDown (intButton intFlags intX intY / intPercent intTop intButtonHeight)
 	(slider_log_event (strcat "OnMouseDown / " (vl-prin1-to-string (list intButton intFlags intX intY))))
-	(setq intPercent (atoi (dcl_Control_GetText Slider_Form1_edt_percent)))
+	(setq intPercent (atoi (dcl-Control-GetText Slider/Form1/edt_percent)))
 	(setq intTop (slider_get_pos intPercent))
 	(setq intButtonHeight (slider_get_button_height))
 	(cond
@@ -338,7 +338,7 @@
 		(T
 			(slider_change_percent (- intPercent (slider_get_large_increment))))
 	); cond
-); c:Slider_Form1_pic_slider_OnMouseDown
+); c:Slider/Form1/pic_slider#OnMouseDown
 
 
 ;; --------------------------------------------------------------------------------------
@@ -349,10 +349,10 @@
 ;;  intY = client y coordinate of mouseposition as integer
 ;; Returns: <unused>
 
-(defun c:Slider_Form1_pic_slider_OnMouseUp (intButton intFlags intX intY / intPercent intTop intButtonHeight)
+(defun c:Slider/Form1/pic_slider#OnMouseUp (intButton intFlags intX intY / intPercent intTop intButtonHeight)
 	(slider_log_event (strcat "OnMouseUp / " (vl-prin1-to-string (list intButton intFlags intX intY))))
 	(slider_stop_dragging)
-); c:Slider_Form1_pic_slider_OnMouseUp
+); c:Slider/Form1/pic_slider#OnMouseUp
 
 
 ;; --------------------------------------------------------------------------------------
@@ -383,12 +383,12 @@
 ;;  Scrolling up = small step up
 ;;  Pressing Shift-Key while scrolling uses large step instead of small steps
 
-(defun c:Slider_Form1_pic_slider_OnMouseWheel (intFlags intZDelta intX intY / intPercent intInc)
+(defun c:Slider/Form1/pic_slider#OnMouseWheel (intFlags intZDelta intX intY / intPercent intInc)
 	(slider_log_event (strcat "OnMouseWheel / " (vl-prin1-to-string (list intFlags intZDelta intX intY))))
 	(setq intInc (if (zerop (logand intFlags 4)) (slider_get_small_increment) (slider_get_large_increment)))
-	(setq intPercent (atoi (dcl_Control_GetText Slider_Form1_edt_percent)))
+	(setq intPercent (atoi (dcl-Control-GetText Slider/Form1/edt_percent)))
 	(slider_change_percent (+ intPercent (fix (* intZDelta intInc 0.01))))
-); c:Slider_Form1_pic_slider_OnMouseWheel
+); c:Slider/Form1/pic_slider#OnMouseWheel
 
 
 ;; --------------------------------------------------------------------------------------
@@ -404,10 +404,10 @@
 ;;  Left or Up = small step up
 ;;  Right or Down = small step down
 
-(defun c:Slider_Form1_pic_slider_OnKeyDown (strCharacter intRepeatCount intFlags / intChar intSmall intLarge)
+(defun c:Slider/Form1/pic_slider#OnKeyDown (strCharacter intRepeatCount intFlags / intChar intSmall intLarge)
 	(setq intChar (ascii strCharacter))
 	(slider_log_event (strcat "OnKeyDown / " strCharacter "{" (itoa intChar) "} " (itoa intFlags)))
-	(setq intPercent (atoi (dcl_Control_GetText Slider_Form1_edt_percent)))
+	(setq intPercent (atoi (dcl-Control-GetText Slider/Form1/edt_percent)))
 	(if (= (logand intFlags 256) 256)
 		(cond
 			((= intChar 33) (slider_log_event " \=> Page Up") (slider_change_percent (+ intPercent (slider_get_large_increment))))
@@ -420,7 +420,7 @@
 			((= intChar 40) (slider_log_event " \=> Down") (slider_change_percent (- intPercent (slider_get_small_increment))))
 		); cond
 	); if
-); c:Slider_Form1_pic_slider_OnKeyDown
+); c:Slider/Form1/pic_slider#OnKeyDown
 
 
 ;; --------------------------------------------------------------------------------------

@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "ListView.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "ListView.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show ListView_ListViewDlg)
+	(dcl-Form-Show ListView/ListViewDlg)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -33,13 +33,13 @@
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
     
 	;; Spaltenbreite von einem Text ableiten
-	(setq Col0Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 0     ")
-		  Col1Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 1     ")
-		  Col2Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 2     ")
-		  Col3Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 3     ")
+	(setq Col0Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 0     ")
+		  Col1Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 1     ")
+		  Col2Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 2     ")
+		  Col3Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 3     ")
 	)
 	;; Spalten mit der berechneten Breite hinzufügen
-	(dcl_ListView_AddColumns ListView_ListViewDlg_ListView1
+	(dcl-ListView-AddColumns ListView/ListViewDlg/ListView1
 							  (list (list "Spalte 0" 0 Col0Width)
 									(list "Spalte 1" 0 Col1Width)
 									(list "Spalte 2" 0 Col2Width)
@@ -47,8 +47,8 @@
 							  )
 	)
 	;; Bereinigen und Füllen der Liste
-	(dcl_ListView_FillList
-		ListView_ListViewDlg_ListView1
+	(dcl-ListView-FillList
+		ListView/ListViewDlg/ListView1
 		(list ;; Elemente der Zeile 1
 			  (list "Zelle 1a" 0 "Zelle 2a" 0 "Zelle 3a" 0 "Zelle 4a" 0)
 			  ;; Elemente der Zeile 2
@@ -61,8 +61,8 @@
 
 ;;-----------------------------------------------------------
 
-(defun c:ListView_ListViewDlg_ListView1_OnClicked (nRow nCol /)
-	 (dcl_MessageBox (strcat "Spalte " (itoa nCol) ", Zeile " (itoa nRow))
+(defun c:ListView/ListViewDlg/ListView1#OnClicked (nRow nCol /)
+	 (dcl-MessageBox (strcat "Spalte " (itoa nCol) ", Zeile " (itoa nRow))
 					  "Geklickte Zelle"
 	 )
 )
@@ -70,7 +70,7 @@
 ;;-----------------------------------------------------------
 
 ;; Hat der Anwender die Schließen-Schaltfläche geklickt, wird der Dialog geschlossen
-(defun c:ListViewDlg_Close_Clicked () (dcl_Form_Close ListView_ListViewDlg))
+(defun c:ListViewDlg_Close_Clicked () (dcl-Form-Close ListView/ListViewDlg))
 
 (princ)
 

@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Modeless.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Modeless.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show Modeless_DemoModeless)
-	(dcl_Form_Enable Modeless_DemoModeless T)
+	(dcl-Form-Show Modeless/DemoModeless)
+	(dcl-Form-Enable Modeless/DemoModeless T)
 
-	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
+	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl-Form-Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
 	;; der Dialog aktiv ist.
 	;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen
@@ -35,9 +35,9 @@
 ;; Option "Als Befehl ausführen" gewählt sein.
 
 (defun c:DemoModeless_cmdDrawLine_OnClicked ( / strOldText ptStart ptEnde)
-  (setq strOldText (dcl_Control_GetCaption Modeless_DemoModeless_Label1))
-  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 "Picken Sie jetzt zwei Punkt am Bildschirm. Der Dialog bleibt geöffnet, ist jedoch inaktiv!")
-  (dcl_Form_Enable Modeless_DemoModeless nil)
+  (setq strOldText (dcl-Control-GetCaption Modeless/DemoModeless/Label1))
+  (dcl-Control-SetCaption Modeless/DemoModeless/Label1 "Picken Sie jetzt zwei Punkt am Bildschirm. Der Dialog bleibt geöffnet, ist jedoch inaktiv!")
+  (dcl-Form-Enable Modeless/DemoModeless nil)
   (if (and (setq ptStart (vl-catch-all-apply 'getpoint (list "\nStartpunkt: ")))
            (not (vl-catch-all-error-p ptStart))
            (setq ptEnde (vl-catch-all-apply 'getpoint (list ptStart "\nZielpunkt: ")))
@@ -47,8 +47,8 @@
       (command "_ZOOM" "_W" ptStart ptEnde)
     ); progn
   ); if
-  (dcl_Form_Enable Modeless_DemoModeless T)
-  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 strOldText)
+  (dcl-Form-Enable Modeless/DemoModeless T)
+  (dcl-Control-SetCaption Modeless/DemoModeless/Label1 strOldText)
   (princ)
 )
 
@@ -63,7 +63,7 @@
 )
 
 (defun c:DemoModeless_CloseButton_Clicked ()
-	(dcl_Form_Close Modeless_DemoModeless)
+	(dcl-Form-Close Modeless/DemoModeless)
 	(princ)
 )
 

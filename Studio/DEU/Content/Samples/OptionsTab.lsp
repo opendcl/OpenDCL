@@ -14,15 +14,15 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "OptionsTab.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "OptionsTab.odcl"))
 
 	;; Karteikarten in den Optionen werden registriert, wenn das Projekt geladen wird.
 	;; Alle registrierten zusätzlichen Karteikarten werden automatisch angezeigt, wenn
 	;; die AutoCAD-Optionen aufgerufen werden.
-	(dcl_messagebox "Aktivieren Sie die Karteikarte \"OpenDCL Beispiel\"!" "OpenDCL - Zusätzliche Karteikarten in den Optionen")
+	(dcl-messagebox "Aktivieren Sie die Karteikarte \"OpenDCL Beispiel\"!" "OpenDCL - Zusätzliche Karteikarten in den Optionen")
 	(command "._OPTIONS") ; Startet die AutoCAD-Optionen
 
-	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
+	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl-Form-Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
 	;; der Dialog aktiv ist.
 	;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen
@@ -35,9 +35,9 @@
 
 (defun c:OptionsTab_OptionsTabDemo_OnOK (/)
 	(princ "\n[OpenDCL - Zusätzliche Karteikarten in den Optionen] Ihre Eingabe: \"")
-	(princ (dcl_Control_GetText OptionsTab_OptionsTabDemo_txtOptTabDemo))
+	(princ (dcl-Control-GetText OptionsTab/OptionsTabDemo/txtOptTabDemo))
 	(princ "\"; Status des Kontrollkästchens ")
-	(if (eq 1 (dcl_Control_GetValue OptionsTab_OptionsTabDemo_chkOptTabDemo))
+	(if (eq 1 (dcl-Control-GetValue OptionsTab/OptionsTabDemo/chkOptTabDemo))
 		(princ "EIN")
 		(princ "AUS")
 	)

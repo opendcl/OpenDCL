@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Modeless.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Modeless.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show Modeless_DemoModeless)
+	(dcl-Form-Show Modeless/DemoModeless)
 
-	;; This is a modeless form, so (dcl_Form_Show) returns immediately,
+	;; This is a modeless form, so (dcl-Form-Show) returns immediately,
 	;; leaving the event handlers to manage the form.
 
 	(princ)
@@ -28,9 +28,9 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DemoModeless_cmdDrawLine_OnClicked ( / strOldText ptStart ptEnd)
-  (setq strOldText (dcl_Control_GetCaption Modeless_DemoModeless_Label1))
-  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 "Pick two points in the drawing. The form will stay open but it will be disabled!")
-  (dcl_Form_Enable Modeless_DemoModeless nil)
+  (setq strOldText (dcl-Control-GetCaption Modeless/DemoModeless/Label1))
+  (dcl-Control-SetCaption Modeless/DemoModeless/Label1 "Pick two points in the drawing. The form will stay open but it will be disabled!")
+  (dcl-Form-Enable Modeless/DemoModeless nil)
   (if (and (setq ptStart (vl-catch-all-apply 'getpoint (list "\nStart point: ")))
            (not (vl-catch-all-error-p ptStart))
            (setq ptEnd (vl-catch-all-apply 'getpoint (list ptStart "\nDestination point: ")))
@@ -40,8 +40,8 @@
       (command "_ZOOM" "_W" ptStart ptEnd)
     ); progn
   ); if
-  (dcl_Form_Enable Modeless_DemoModeless T)
-  (dcl_Control_SetCaption Modeless_DemoModeless_Label1 strOldText)
+  (dcl-Form-Enable Modeless/DemoModeless T)
+  (dcl-Control-SetCaption Modeless/DemoModeless/Label1 strOldText)
   (princ)
 )
 
@@ -56,7 +56,7 @@
 )
 
 (defun c:DemoModeless_CloseButton_Clicked ()
-	(dcl_Form_Close Modeless_DemoModeless)
+	(dcl-Form-Close Modeless/DemoModeless)
 	(princ)
 )
 

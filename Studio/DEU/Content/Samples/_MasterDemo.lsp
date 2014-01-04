@@ -10,8 +10,8 @@
   (DEFUN *error* (msg)
     (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
     ;; do error stuff
-    (IF (DCL_FORM_ISACTIVE _MasterDemo_Main)
-      (DCL_FORM_CLOSE _MasterDemo_Main)
+    (IF (dcl-Form-ISACTIVE _MasterDemo/Main)
+      (dcl-Form-CLOSE _MasterDemo/Main)
     )
     (PRINC
       (STRCAT "\nAnwendungsfehler: " (ITOA (GETVAR "errno")) " :- " msg)
@@ -27,10 +27,10 @@
   (SETVAR "CMDECHO" cmdecho)
 
   ;; Lädt das Projekt
-  (DCL_PROJECT_LOAD (*ODCL:Samples:FindFile "_MasterDemo.odcl"))
+  (dcl-Project-LOAD (*ODCL:Samples:FindFile "_MasterDemo.odcl"))
 
   ;; Zeig den Dialog an.
-  (DCL_FORM_SHOW _MasterDemo_Main)
+  (dcl-Form-SHOW _MasterDemo/Main)
   ;; Die Ereignisfunktionen steuern an dieser Stelle den Dialog.
   (PRINC)
 )
@@ -46,7 +46,7 @@
 
 ;; Entlade OpenDCL komplett, um die die Installation der Aktualisierungen zu ermöglichen
 (DEFUN *ODCL:Vanish (/ project module)
-  (foreach project (dcl_GetProjects) (dcl_Project_Unload project T))
+  (foreach project (dcl-GetProjects) (dcl-Project-Unload project T))
   (foreach module (arx)
     (if (wcmatch module "opendcl`.*") (arxunload module))
   )
@@ -227,28 +227,28 @@
     )
   )
   (defun append_status (status) ; Status zur Listbox hinzufügen
-    (dcl_ListBox_AddString _MasterDemo_Update_lbxStatus status)
-    (dcl_Control_Redraw _MasterDemo_Update)
+    (dcl-ListBox-AddString _MasterDemo/Update/lbxStatus status)
+    (dcl-Control-Redraw _MasterDemo/Update)
   )
 
-  (dcl_Form_Show _MasterDemo_Update)
+  (dcl-Form-Show _MasterDemo/Update)
   (princ)
 )
 
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(DEFUN c:_MasterDemo_Update_OnInitialize (/ curlang myver myver_string curver curver_string)
-  (dcl_ListBox_Clear _MasterDemo_Update_lbxStatus)
-  (dcl_Control_SetVisible _MasterDemo_Update_btnUpdate nil)
+(DEFUN c:_MasterDemo/Update#OnInitialize (/ curlang myver myver_string curver curver_string)
+  (dcl-ListBox-Clear _MasterDemo/Update/lbxStatus)
+  (dcl-Control-SetVisible _MasterDemo/Update/btnUpdate nil)
 
   (append_status "Ich suche Aktualisierungen. Bitte warten Sie...")
 
   ;; Installierte OpenDCL-Version anzeigen
   (setq curlang (get_curlang))
-  (setq myver (parse_version (setq myver_string (DCL_GETVERSIONEX))))
-  (dcl_Control_SetCaption _MasterDemo_Update_lblLanguage curlang)
-  (dcl_Control_SetCaption _MasterDemo_Update_lblVersion myver_string)
+  (setq myver (parse_version (setq myver_string (dcl-GETVERSIONEX))))
+  (dcl-Control-SetCaption _MasterDemo/Update/lblLanguage curlang)
+  (dcl-Control-SetCaption _MasterDemo/Update/lblVersion myver_string)
 
   ;; Letzte verfügbare OpenDCL-Version anzeigen
   (setq curver (parse_version (setq curver_string (get_curver nil))))
@@ -256,160 +256,160 @@
     (progn
       (setq curver_string (get_curver T)) ; Build-Version abfragen
       (setq curver (parse_version curver_string))
-      (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuild T)
-      (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuildAvail T)
+      (dcl-Control-SetVisible _MasterDemo/Update/lblDevBuild T)
+      (dcl-Control-SetVisible _MasterDemo/Update/lblDevBuildAvail T)
     )
     (progn
-      (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuild nil)
-      (dcl_Control_SetVisible _MasterDemo_Update_lblDevBuildAvail nil)
+      (dcl-Control-SetVisible _MasterDemo/Update/lblDevBuild nil)
+      (dcl-Control-SetVisible _MasterDemo/Update/lblDevBuildAvail nil)
     )
   )
-  (dcl_Control_SetCaption _MasterDemo_Update_lblLanguageAvail curlang)
-  (dcl_Control_SetCaption _MasterDemo_Update_lblVersionAvail curver_string)
+  (dcl-Control-SetCaption _MasterDemo/Update/lblLanguageAvail curlang)
+  (dcl-Control-SetCaption _MasterDemo/Update/lblVersionAvail curver_string)
 
   ;; Überprüfung, ob die installierte Version aktualisiert werden kann
-  (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
+  (dcl-Control-SetVisible _MasterDemo/Update/btnClose T)
   (if (<version myver curver)
     (progn
       (append_status "Eine neuere Version von OpenDCL Studio ist verfügbar!")
-      (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate T)
-      (dcl_Control_SetVisible _MasterDemo_Update_btnUpdate T)
+      (dcl-Control-SetEnabled _MasterDemo/Update/btnUpdate T)
+      (dcl-Control-SetVisible _MasterDemo/Update/btnUpdate T)
     )
     (append_status "OpenDCL Studio ist aktuell!")
   )
 )
 
-(DEFUN c:_MasterDemo_Update_btnClose_OnClicked (/)
-  (dcl_Form_Close _MasterDemo_Update 2)
+(DEFUN c:_MasterDemo/Update/btnClose#OnClicked (/)
+  (dcl-Form-Close _MasterDemo/Update 2)
 )
 
-(DEFUN c:_MasterDemo_Update_btnUpdate_OnClicked (/ msipath curlang)
-  (dcl_Control_SetEnabled _MasterDemo_Update_btnUpdate nil)
-  (dcl_Control_SetVisible _MasterDemo_Update_btnClose nil)
+(DEFUN c:_MasterDemo/Update/btnUpdate#OnClicked (/ msipath curlang)
+  (dcl-Control-SetEnabled _MasterDemo/Update/btnUpdate nil)
+  (dcl-Control-SetVisible _MasterDemo/Update/btnClose nil)
   (setq msipath
     (write_msi
-      (setq curlang (dcl_Control_GetCaption _MasterDemo_Update_lblLanguageAvail))
-      (dcl_Control_GetVisible _MasterDemo_Update_lblDevBuildAvail)
+      (setq curlang (dcl-Control-GetCaption _MasterDemo/Update/lblLanguageAvail))
+      (dcl-Control-GetVisible _MasterDemo/Update/lblDevBuildAvail)
       (strcat
         "OpenDCL.Studio."
         (strcase curlang)
         "."
-        (dcl_Control_GetCaption _MasterDemo_Update_lblVersionAvail)
+        (dcl-Control-GetCaption _MasterDemo/Update/lblVersionAvail)
         ".msi"
       ); strcat
     ); write_msi
   ); setq
   (if msipath
     (progn
-      (dcl_SendString "(*ODCL:Vanish)\n")
+      (dcl-SendString "(*ODCL:Vanish)\n")
       (startapp (strcat "msiexec.exe /i " msipath))
-      (dcl_Form_Close _MasterDemo_Update 1)
+      (dcl-Form-Close _MasterDemo/Update 1)
     ); progn
-    (dcl_Control_SetVisible _MasterDemo_Update_btnClose T)
+    (dcl-Control-SetVisible _MasterDemo/Update/btnClose T)
   )
 )
 
-(DEFUN c:_MasterDemo_Main_btnMisc_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnMisc#OnClicked ()
   (*ODCL:RunSample "Misc.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnMethods_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnMethods#OnClicked ()
   (*ODCL:RunSample "Methods.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnEventHandling_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnEventHandling#OnClicked ()
   (*ODCL:RunSample "EventHandling.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnMessageBox_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnMessageBox#OnClicked ()
   (*ODCL:RunSample "MessageBox.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnTree_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnTree#OnClicked ()
   (*ODCL:RunSample "Tree.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnViewDwg_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnViewDwg#OnClicked ()
   (*ODCL:RunSample "ViewDwg.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnModeless_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnModeless#OnClicked ()
   (*ODCL:RunSample "Modeless.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnAllControls_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnAllControls#OnClicked ()
   (*ODCL:RunSample "AllControls.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnHTML_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnHTML#OnClicked ()
   (*ODCL:RunSample "HTML.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnGrid_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnGrid#OnClicked ()
   (*ODCL:RunSample "GRID.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnAnimation_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnAnimation#OnClicked ()
   (*ODCL:RunSample "Animation.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnHatches_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnHatches#OnClicked ()
   (*ODCL:RunSample "Hatches.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnToolTip_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnToolTip#OnClicked ()
   (*ODCL:RunSample "ToolTip.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnDragNDrop_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnDragNDrop#OnClicked ()
   (*ODCL:RunSample "DragNDrop.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnSelections_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnSelections#OnClicked ()
   (*ODCL:RunSample "Selections.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnListView_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnListView#OnClicked ()
   (*ODCL:RunSample "ListView.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnListBoxCopyPaste_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnListBoxCopyPaste#OnClicked ()
   (*ODCL:RunSample "ListBoxCopyPaste.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnSplitter_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnSplitter#OnClicked ()
   (*ODCL:RunSample "Splitter.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnDwgList_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnDwgList#OnClicked ()
   (*ODCL:RunSample "DwgList.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnListBox_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnListBox#OnClicked ()
   (*ODCL:RunSample "ListBox.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnDistSample_OnClicked (/ readme)
+(DEFUN c:_MasterDemo/Main/btnDistSample#OnClicked (/ readme)
   (SETQ readme (*ODCL:Samples:FindFile "DistSampleReadMe.txt"))
   (IF readme
     (STARTAPP "notepad" readme)
@@ -418,27 +418,27 @@
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnOptionsTab_OnClicked ()
+(DEFUN c:_MasterDemo/Main/btnOptionsTab#OnClicked ()
   (*ODCL:RunSample "OptionsTab.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnSplash_OnClicked (/)
+(DEFUN c:_MasterDemo/Main/btnSplash#OnClicked (/)
   (*ODCL:RunSample "Splash.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnFormMover_OnClicked (/)
+(DEFUN c:_MasterDemo/Main/btnFormMover#OnClicked (/)
   (*ODCL:RunSample "FormMover.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnSlider_OnClicked (/)
+(DEFUN c:_MasterDemo/Main/btnSlider#OnClicked (/)
   (*ODCL:RunSample "Slider.lsp")
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnReadme_OnClicked (/ readme)
+(DEFUN c:_MasterDemo/Main/btnReadme#OnClicked (/ readme)
   (SETQ readme (*ODCL:Samples:FindFile "_ReadME.txt"))
   (IF readme
     (STARTAPP "notepad" readme)
@@ -447,8 +447,8 @@
   (PRINC)
 )
 
-(DEFUN c:_MasterDemo_Main_btnUpdateCheck_OnClicked ()
-  (DCL_SENDSTRING "(*ODCL:UpdateCheck)\n")
+(DEFUN c:_MasterDemo/Main/btnUpdateCheck#OnClicked ()
+  (dcl-SENDSTRING "(*ODCL:UpdateCheck)\n")
   (PRINC)
 )
 

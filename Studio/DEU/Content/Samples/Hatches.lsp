@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Hatches.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Hatches.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show Hatches_Hatch)
+	(dcl-Form-Show Hatches/Hatch)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -29,31 +29,31 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:Hatches_Hatch_OnInitialize (/ scale idx)
-	(setq scale (rtos (dcl_Control_GetHatchScale Hatches_Hatch_Hatch1) 2 0))
-	(setq idx (dcl_ComboBox_FindString Hatches_Hatch_ComboBox2 scale))
+(defun c:Hatches/Hatch#OnInitialize (/ scale idx)
+	(setq scale (rtos (dcl-Control-GetHatchScale Hatches/Hatch/Hatch1) 2 0))
+	(setq idx (dcl-ComboBox-FindString Hatches/Hatch/ComboBox2 scale))
 	(if (< idx 0) (setq idx 0))
-	(dcl_ComboBox_SetCurSel Hatches_Hatch_ComboBox2 idx)
+	(dcl-ComboBox-SetCurSel Hatches/Hatch/ComboBox2 idx)
 )
 
-(defun c:Hatches_Hatch_ComboBox1_OnSelChanged (nSelection sSelText /)
-	(dcl_hatch_setpattern Hatches_Hatch_Hatch1 sSelText)
-	(dcl_hatch_setpattern Hatches_Hatch_Hatch2 sSelText)
+(defun c:Hatches/Hatch/ComboBox1#OnSelChanged (nSelection sSelText /)
+	(dcl-Hatch-setpattern Hatches/Hatch/Hatch1 sSelText)
+	(dcl-Hatch-setpattern Hatches/Hatch/Hatch2 sSelText)
 )
 
-(defun c:Hatches_Hatch_ComboBox2_OnSelChanged (nSelection sSelText / hatpat)
+(defun c:Hatches/Hatch/ComboBox2#OnSelChanged (nSelection sSelText / hatpat)
 	;; Ausgewählten Skalierfaktor beiden Voransichten zuweisen
-	(dcl_Control_SetHatchScale Hatches_Hatch_Hatch1 (atof sSelText))
-	(dcl_Control_SetHatchScale Hatches_Hatch_Hatch2 (atof sSelText))
+	(dcl-Control-SetHatchScale Hatches/Hatch/Hatch1 (atof sSelText))
+	(dcl-Control-SetHatchScale Hatches/Hatch/Hatch2 (atof sSelText))
     
 	;; Gewählten Schraffurnamen aus der Auswahlliste abfragen
-	(setq hatpat (dcl_ComboBox_GetLBText
-					 Hatches_Hatch_ComboBox1
-					 (dcl_ComboBox_GetCurSel Hatches_Hatch_ComboBox1)
+	(setq hatpat (dcl-ComboBox-GetLBText
+					 Hatches/Hatch/ComboBox1
+					 (dcl-ComboBox-GetCurSel Hatches/Hatch/ComboBox1)
 				 )
 	) 
 	;; Ereignisfunktion zur Aktualisierung der Voransichten ausführen
-	(c:Hatches_Hatch_ComboBox1_OnSelChanged nil hatpat)
+	(c:Hatches/Hatch/ComboBox1#OnSelChanged nil hatpat)
 )
 
 (princ)

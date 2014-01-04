@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "DragNDrop.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "DragNDrop.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show DragNDrop_Form1)
+	(dcl-Form-Show DragNDrop/Form1)
 
-	;; This is a modeless form, so (dcl_Form_Show) returns immediately,
+	;; This is a modeless form, so (dcl-Form-Show) returns immediately,
 	;; leaving the event handlers to manage the form.
 
 	(princ)
@@ -27,9 +27,9 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:DragNDrop_Form1_ListView1_OnDragnDropToAutoCAD (3dPoint Viewport / rValue)
-	(Setq rValue (dcl_ListView_GetSelectedItems DragNDrop_Form1_ListView1))
-	(dcl_MessageBox (strcat "You dropped \""
+(defun c:DragNDrop/Form1/ListView1#OnDragnDropToAutoCAD (3dPoint Viewport / rValue)
+	(Setq rValue (dcl-ListView-GetSelectedItems DragNDrop/Form1/ListView1))
+	(dcl-MessageBox (strcat "You dropped \""
 							(car rValue)
 							"\" at ("
 							(rtos (car 3dPoint) 2 4)
@@ -46,9 +46,9 @@
 	(princ)
 )
 
-(defun c:DragNDrop_Form1_OnInitialize (/)
-	(dcl_ListView_AddColumns DragNDrop_Form1_ListView1 (list "Column 1" 0 140))
-	(dcl_ListView_FillList DragNDrop_Form1_ListView1
+(defun c:DragNDrop/Form1#OnInitialize (/)
+	(dcl-ListView-AddColumns DragNDrop/Form1/ListView1 (list "Column 1" 0 140))
+	(dcl-ListView-FillList DragNDrop/Form1/ListView1
 						   '(("List 1a" 0) ("List 2a" 1) ("List 3a" 2))
 	)
 	(princ)

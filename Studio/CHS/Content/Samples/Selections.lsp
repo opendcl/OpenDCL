@@ -17,16 +17,16 @@
 
               ;; local Sub Event handlers for Modal Form.
               ;; Commands and functions, which show modal form, won't continue after the line
-              ;; (dcl_form_show ...) until the form will be closed. That's why the event
+              ;; (dcl-Form-show ...) until the form will be closed. That's why the event
               ;; functions are only needed in this command. Therefore the event function
               ;; can be defined as local sub functions.
 
-              c:Selections_Form_OnInitialize
-              c:Selections_Form_Close_OnClicked
-              c:Selections_Form_PickPointButton_OnClicked
-              c:Selections_Form_PickObjectButton_OnClicked
-              c:Selections_Form_PointListBox_OnDblClicked
-              c:Selections_Form_ObjectListBox_OnDblClicked
+              c:Selections/Form#OnInitialize
+              c:Selections/Form/Close#OnClicked
+              c:Selections/Form/PickPointButton#OnClicked
+              c:Selections/Form/PickObjectButton#OnClicked
+              c:Selections/Form/PointListBox#OnDblClicked
+              c:Selections/Form/ObjectListBox#OnDblClicked
               )
 
     
@@ -137,23 +137,23 @@
     ;; The event OnInitialize will be called each time
     ;; the form is going to be shown
     
-    (defun c:Selections_Form_OnInitialize (/)
+    (defun c:Selections/Form#OnInitialize (/)
         
         ;; clean if necessary
-        (dcl_ListBox_Clear Selections_Form_PointListBox)
-        (dcl_ListBox_Clear Selections_Form_ObjectListBox)
+        (dcl-ListBox-Clear Selections/Form/PointListBox)
+        (dcl-ListBox-Clear Selections/Form/ObjectListBox)
 
         ;; fill pointlist
         (if lstPoints
-            (dcl_ListBox_AddList Selections_Form_PointListBox lstPoints)
+            (dcl-ListBox-AddList Selections/Form/PointListBox lstPoints)
         ); if
 
         ;; fill objectlist
         (if lstObjects
-            (dcl_ListBox_AddList Selections_Form_ObjectListBox lstObjects)
+            (dcl-ListBox-AddList Selections/Form/ObjectListBox lstObjects)
         ); if
         
-    ); c:Selections_Form_OnInitialize
+    ); c:Selections/Form#OnInitialize
 
     
     
@@ -161,9 +161,9 @@
     ;; In that case the value 1 is given to close method as an argument.
     ;; This is the return value for the show method (see there).
     
-    (defun c:Selections_Form_Close_OnClicked (/)
-        (dcl_form_close Selections_Form 1)
-    ); c:Selections_Form_Close_OnClicked
+    (defun c:Selections/Form/Close#OnClicked (/)
+        (dcl-Form-close Selections/Form 1)
+    ); c:Selections/Form/Close#OnClicked
 
     
     
@@ -171,9 +171,9 @@
     ;; In that case the value 3 is given to close method as an argument.
     ;; This is the return value for the show method (see there).
     
-    (defun c:Selections_Form_PickPointButton_OnClicked (/)
-        (dcl_form_close Selections_Form 3)
-    ); c:Selections_Form_PickPointButton_OnClicked
+    (defun c:Selections/Form/PickPointButton#OnClicked (/)
+        (dcl-Form-close Selections/Form 3)
+    ); c:Selections/Form/PickPointButton#OnClicked
 
     
     
@@ -181,41 +181,41 @@
     ;; In that case the value 14is given to close method as an argument.
     ;; This is the return value for the show method (see there).
     
-    (defun c:Selections_Form_PickObjectButton_OnClicked (/)
-        (dcl_form_close Selections_Form 4)
-    ); c:Selections_Form_PickObjectButton_OnClicked
+    (defun c:Selections/Form/PickObjectButton#OnClicked (/)
+        (dcl-Form-close Selections/Form 4)
+    ); c:Selections/Form/PickObjectButton#OnClicked
 
     
     
     ;; This event will be called when the user doubleclicks an item
     
-    (defun c:Selections_Form_PointListBox_OnDblClicked (/ intRow)
-        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_PointListBox))))
+    (defun c:Selections/Form/PointListBox#OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl-ListBox-GetCurSel Selections/Form/PointListBox))))
             (progn
                 
                 ;; remove an item from the lists
                 
-                (setq lstPoints (vl-remove (dcl_ListBox_GetItemText Selections_Form_PointListBox intRow) lstPoints))
-                (dcl_ListBox_DeleteItem Selections_Form_PointListBox intRow)
+                (setq lstPoints (vl-remove (dcl-ListBox-GetItemText Selections/Form/PointListBox intRow) lstPoints))
+                (dcl-ListBox-DeleteItem Selections/Form/PointListBox intRow)
             ); progn
         ); if
-    ); c:Selections_Form_PointListBox_OnDblClicked
+    ); c:Selections/Form/PointListBox#OnDblClicked
 
     
     
     ;; This event will be called when the user doubleclicks an item
     
-    (defun c:Selections_Form_ObjectListBox_OnDblClicked (/ intRow)
-        (if (not (minusp (setq intRow (dcl_ListBox_GetCurSel Selections_Form_ObjectListBox))))
+    (defun c:Selections/Form/ObjectListBox#OnDblClicked (/ intRow)
+        (if (not (minusp (setq intRow (dcl-ListBox-GetCurSel Selections/Form/ObjectListBox))))
             (progn
 
                 ;; remove an item from the lists
                 
-                (setq lstObjects (vl-remove (dcl_ListBox_GetItemText Selections_Form_ObjectListBox intRow) lstObjects))
-                (dcl_ListBox_DeleteItem Selections_Form_ObjectListBox intRow)
+                (setq lstObjects (vl-remove (dcl-ListBox-GetItemText Selections/Form/ObjectListBox intRow) lstObjects))
+                (dcl-ListBox-DeleteItem Selections/Form/ObjectListBox intRow)
             ); progn
         ); if
-    ); c:Selections_Form_ObjectListBox_OnDblClicked
+    ); c:Selections/Form/ObjectListBox#OnDblClicked
 
     ;; load COM
     (vl-load-com)
@@ -227,22 +227,22 @@
     (setvar "CMDECHO" cmdecho)
 
     ;; Load the project
-    (dcl_Project_Load (*ODCL:Samples:FindFile "Selections.odcl"))
+    (dcl-Project-Load (*ODCL:Samples:FindFile "Selections.odcl"))
 
     ;; The repeating calls to show the modal form can be easily achieved
     ;; by a while loop
     (setq doContinue T)
     (while doContinue
         ;; However, to avoid an endless loop, the condition for repeating the loop, must negate at first
-        ;; The condition will be "activated" again after dcl_form_show for some cases.
+        ;; The condition will be "activated" again after dcl-Form-show for some cases.
         (setq doContinue nil)
 
         ;; if the dialog get closed, the function returns a value
         ;; This is 1 for OK (reserved value), 2 for ESC or Cancel (reserved value)
-        ;; or the value, which was given to dcl_form_close
-        (setq intResult (dcl_form_show Selections_Form))
+        ;; or the value, which was given to dcl-Form-close
+        (setq intResult (dcl-Form-show Selections/Form))
 
-        ;; This is a modal form, so (dcl_Form_Show) does not return until
+        ;; This is a modal form, so (dcl-Form-Show) does not return until
         ;; the modal form is closed. In the meantime, the event handlers
         ;; manage the form.
 

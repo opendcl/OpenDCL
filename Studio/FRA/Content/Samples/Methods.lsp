@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Methods.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Methods.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show Methods_Main)
+	(dcl-Form-Show Methods/Main)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -27,38 +27,38 @@
 )
 
 (defun PopulateManipulationTabFields (/ curPos tabSize)
-	(setq curPos           (dcl_Control_GetPos Methods_Main_SampleControl)
+	(setq curPos           (dcl-Control-GetPos Methods/Main/SampleControl)
 		  nLeft            (car curPos)
 		  nTop             (cadr curPos)
 		  nWidth           (caddr curPos)
 		  nHeight          (cadddr curPos)
-		  tabSize          (dcl_Tab_GetControlArea Methods_Main_TabControl)
+		  tabSize          (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  BottomFromBottom (- (cadr tabSize) nTop nHeight)
 		  RightFromRight   (- (car tabSize) nLeft nWidth)
 		  TopFromBottom    (- (cadr tabSize) nTop)
 		  LeftFromRight    (- (car tabSize) nLeft)
 	)
-	(dcl_Control_SetText Methods_Main_BottomFromBottom
+	(dcl-Control-SetText Methods/Main/BottomFromBottom
 						 (itoa BottomFromBottom)
 	)
-	(dcl_Control_SetText Methods_Main_RightFromRight
+	(dcl-Control-SetText Methods/Main/RightFromRight
 						 (itoa RightFromRight)
 	)
-	(dcl_Control_SetText Methods_Main_TopFromBottom (itoa TopFromBottom))
-	(dcl_Control_SetText Methods_Main_LeftFromRight (itoa LeftFromRight))
-	(dcl_Control_SetText Methods_Main_LeftBox (itoa nLeft))
-	(dcl_Control_SetText Methods_Main_TopBox (itoa nTop))
-	(dcl_Control_SetText Methods_Main_WidthBox (itoa nWidth))
-	(dcl_Control_SetText Methods_Main_HeightBox (itoa nHeight))
+	(dcl-Control-SetText Methods/Main/TopFromBottom (itoa TopFromBottom))
+	(dcl-Control-SetText Methods/Main/LeftFromRight (itoa LeftFromRight))
+	(dcl-Control-SetText Methods/Main/LeftBox (itoa nLeft))
+	(dcl-Control-SetText Methods/Main/TopBox (itoa nTop))
+	(dcl-Control-SetText Methods/Main/WidthBox (itoa nWidth))
+	(dcl-Control-SetText Methods/Main/HeightBox (itoa nHeight))
 )
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:Methods_Main_cmdClose_OnClicked (/)
-	(dcl_Form_Close Methods_Main)
+(defun c:Methods/Main/cmdClose#OnClicked (/)
+	(dcl-Form-Close Methods/Main)
 )
 
-(defun c:Methods_Main_TabControl_OnChanged (nSelIndex /
+(defun c:Methods/Main/TabControl#OnChanged (nSelIndex /
 											BottomFromBottom
 											RightFromRight  TopFromBottom
 											LeftFromRight   nLeft
@@ -66,29 +66,29 @@
 											nHeight
 										   )
 	(if (= nSelIndex 1) ;_ Sliders Tab
-		(progn (dcl_Control_SetValue
-				   Methods_Main_AngleSlider1
-				   (atoi (dcl_Control_GetText Methods_Main_AngleBox))
+		(progn (dcl-Control-SetValue
+				   Methods/Main/AngleSlider1
+				   (atoi (dcl-Control-GetText Methods/Main/AngleBox))
 			   )
-			   (dcl_Control_SetValue
-				   Methods_Main_ScrollBar1
-				   (atoi (dcl_Control_GetText Methods_Main_VScrollLabel))
+			   (dcl-Control-SetValue
+				   Methods/Main/ScrollBar1
+				   (atoi (dcl-Control-GetText Methods/Main/VScrollLabel))
 			   )
-			   (dcl_Control_SetValue
-				   Methods_Main_SliderBar1
-				   (atoi (dcl_Control_GetText Methods_Main_VSliderLabel))
+			   (dcl-Control-SetValue
+				   Methods/Main/SliderBar1
+				   (atoi (dcl-Control-GetText Methods/Main/VSliderLabel))
 			   )
-			   (dcl_Control_SetValue
-				   Methods_Main_ScrollBar2
-				   (atoi (dcl_Control_GetText Methods_Main_HScrollLabel))
+			   (dcl-Control-SetValue
+				   Methods/Main/ScrollBar2
+				   (atoi (dcl-Control-GetText Methods/Main/HScrollLabel))
 			   )
-			   (dcl_Control_SetValue
-				   Methods_Main_SliderBar2
-				   (atoi (dcl_Control_GetText Methods_Main_HSliderLabel))
+			   (dcl-Control-SetValue
+				   Methods/Main/SliderBar2
+				   (atoi (dcl-Control-GetText Methods/Main/HSliderLabel))
 			   )
-			   (dcl_Control_SetText
-				   Methods_Main_SpinnedBox
-				   (itoa (dcl_Control_GetValue Methods_Main_SpinButton1))
+			   (dcl-Control-SetText
+				   Methods/Main/SpinnedBox
+				   (itoa (dcl-Control-GetValue Methods/Main/SpinButton1))
 			   )
 		)
 	) ;_ if
@@ -99,9 +99,9 @@
 
 ;; ------------------- PictureBox Tab -------------------------------
 
-(defun c:Methods_Main_DrawText_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawText Methods_Main_PictureBox
+(defun c:Methods/Main/DrawText#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawText Methods/Main/PictureBox
 							 (List (List 10 10 -19 20 "Line 1" "TL")
 								   (List 10 25 -19 30 "Line 2" "TL")
 								   (List 10 40 -19 40 "Line 3" "TL")
@@ -111,10 +111,10 @@
 	)
 )
 
-(defun c:Methods_Main_DrawWrappedText_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawWrappedText
-		Methods_Main_PictureBox
+(defun c:Methods/Main/DrawWrappedText#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawWrappedText
+		Methods/Main/PictureBox
 		'((10
 		   10
 		   220
@@ -140,9 +140,9 @@
 	)
 )
 
-(defun c:Methods_Main_DrawLine_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawLine Methods_Main_PictureBox
+(defun c:Methods/Main/DrawLine#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawLine Methods/Main/PictureBox
 							 '((10 10 230 10 248)
 							   (10 20 230 20 249)
 							   (10 30 230 30 250)
@@ -154,8 +154,8 @@
 							  )
 	)
 )
-(defun c:Methods_Main_DrawArc_OnClicked (/ nBoundingLeft nBoundingTop)
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
+(defun c:Methods/Main/DrawArc#OnClicked (/ nBoundingLeft nBoundingTop)
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
 	(setq nBoundingLeft 50)
 	(setq nBoundingTop 50)
 	;; OpenDCLARX is requires larger lists to be created in a  certain format, ensure you create list in the manor shown below
@@ -182,19 +182,19 @@
 							 )
 					   )
 	)
-	(dcl_PictureBox_DrawArc Methods_Main_PictureBox ArgumentList)
+	(dcl-PictureBox-DrawArc Methods/Main/PictureBox ArgumentList)
 )
 
-(defun c:Methods_Main_DrawCircle_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawCircle Methods_Main_PictureBox
+(defun c:Methods/Main/DrawCircle#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawCircle Methods/Main/PictureBox
 							   '((10 10 140 140 1) (10 160 140 40 2))
 	)
 )
 
-(defun c:Methods_Main_DrawHatchRect_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawHatchRect Methods_Main_PictureBox
+(defun c:Methods/Main/DrawHatchRect#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawHatchRect Methods/Main/PictureBox
 								  '((10 10 40 40 1 1)
 									(10 60 40 40 2 2)
 									(60 10 40 40 3 3)
@@ -204,9 +204,9 @@
 	)
 )
 
-(defun c:Methods_Main_DrawFillRect_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawFillRect Methods_Main_PictureBox
+(defun c:Methods/Main/DrawFillRect#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawFillRect Methods/Main/PictureBox
 								 '((10 10 40 40 1)
 								   (10 60 40 40 2)
 								   (60 10 40 40 3)
@@ -216,8 +216,8 @@
 	)
 )
 
-(defun c:Methods_Main_PaintPicture_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
+(defun c:Methods/Main/PaintPicture#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
 	(setq PictureList (list (list 10 10 102 T T)
 							(list 10 50 105 T T)
 							(list 10 90 106 T T)
@@ -225,20 +225,20 @@
 							(list 10 170 108 T T)
 					  )
 	)
-	(dcl_PictureBox_PaintPicture Methods_Main_PictureBox PictureList)
+	(dcl-PictureBox-PaintPicture Methods/Main/PictureBox PictureList)
 )
 
-(defun c:Methods_Main_DrawPoints_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawPoint Methods_Main_PictureBox 14 10 1)
-	(dcl_PictureBox_DrawPoint Methods_Main_PictureBox 18 10 2)
-	(dcl_PictureBox_DrawPoint Methods_Main_PictureBox 22 10 3)
-	(dcl_PictureBox_DrawPoint Methods_Main_PictureBox 26 10 4)
+(defun c:Methods/Main/DrawPoints#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawPoint Methods/Main/PictureBox 14 10 1)
+	(dcl-PictureBox-DrawPoint Methods/Main/PictureBox 18 10 2)
+	(dcl-PictureBox-DrawPoint Methods/Main/PictureBox 22 10 3)
+	(dcl-PictureBox-DrawPoint Methods/Main/PictureBox 26 10 4)
 )
 
-(defun c:Methods_Main_DrawEdge_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
-	(dcl_PictureBox_DrawEdge Methods_Main_PictureBox
+(defun c:Methods/Main/DrawEdge#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
+	(dcl-PictureBox-DrawEdge Methods/Main/PictureBox
 							 '((10 10 40 40 1)
 							   (60 10 40 40 2)
 							   (10 60 40 40 3)
@@ -251,216 +251,216 @@
 	)
 )
 
-(defun c:Methods_Main_LoadPictureFile_OnClicked (/ sFileName)
+(defun c:Methods/Main/LoadPictureFile#OnClicked (/ sFileName)
 	(setq sFileName
 			 (GetFiled "Select a picture file" "" "bmp;ico;jpg;gif;wmf" 8)
 	)
 	(if (/= sFileName nil)
-		(dcl_PictureBox_LoadPictureFile Methods_Main_PictureBox
+		(dcl-PictureBox-LoadPictureFile Methods/Main/PictureBox
 										sFileName
 		)
-		(dcl_PictureBox_StoreImage Methods_Main_PictureBox)
+		(dcl-PictureBox-StoreImage Methods/Main/PictureBox)
 	)
 )
 
-(defun c:Methods_Main_StoreImage_OnClicked ()
-	(dcl_PictureBox_StoreImage Methods_Main_PictureBox)
+(defun c:Methods/Main/StoreImage#OnClicked ()
+	(dcl-PictureBox-StoreImage Methods/Main/PictureBox)
 )
 
-(defun c:Methods_Main_Clear_OnClicked ()
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
+(defun c:Methods/Main/Clear#OnClicked ()
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
 )
 
-(defun c:Methods_Main_PictureBox_OnMouseDblClick (Button Flags X Y /)
-	(dcl_PictureBox_Clear Methods_Main_PictureBox)
+(defun c:Methods/Main/PictureBox#OnMouseDblClick (Button Flags X Y /)
+	(dcl-PictureBox-Clear Methods/Main/PictureBox)
 )
 
 ;; ------------------- Sliders Tab -------------------------------
 
-(defun c:Methods_Main_ScrollBar1_OnScroll (nValue /)
-	(dcl_Control_SetText Methods_Main_VScrollLabel (itoa nValue))
+(defun c:Methods/Main/ScrollBar1#OnScroll (nValue /)
+	(dcl-Control-SetText Methods/Main/VScrollLabel (itoa nValue))
 )
 
-(defun c:Methods_Main_ScrollBar2_OnScroll (nValue /)
-	(dcl_Control_SetText Methods_Main_HScrollLabel (itoa nValue))
+(defun c:Methods/Main/ScrollBar2#OnScroll (nValue /)
+	(dcl-Control-SetText Methods/Main/HScrollLabel (itoa nValue))
 )
 
-(defun c:Methods_Main_AngleSlider1_OnScroll (nValue /)
-	(dcl_Control_SetText Methods_Main_AngleBox (itoa nValue))
+(defun c:Methods/Main/AngleSlider1#OnScroll (nValue /)
+	(dcl-Control-SetText Methods/Main/AngleBox (itoa nValue))
 )
 
-(defun c:Methods_Main_SliderBar2_OnReleasedCapture (nValue /)
-	(dcl_Control_SetText Methods_Main_HSliderLabel (itoa nValue))
+(defun c:Methods/Main/SliderBar2#OnReleasedCapture (nValue /)
+	(dcl-Control-SetText Methods/Main/HSliderLabel (itoa nValue))
 )
 
-(defun c:Methods_Main_SliderBar1_OnReleasedCapture (nValue /)
-	(dcl_Control_SetText Methods_Main_VSliderLabel (itoa nValue))
+(defun c:Methods/Main/SliderBar1#OnReleasedCapture (nValue /)
+	(dcl-Control-SetText Methods/Main/VSliderLabel (itoa nValue))
 )
 
-(defun c:Methods_Main_SpinButton1_OnChanged (nValue nDelta/)
-	(dcl_Control_SetText Methods_Main_SpinnedBox (itoa nValue))
+(defun c:Methods/Main/SpinButton1#OnChanged (nValue nDelta/)
+	(dcl-Control-SetText Methods/Main/SpinnedBox (itoa nValue))
 )
 
-(defun c:Methods_Main_AngleBox_OnEditChanged (sText /)
-	(dcl_Control_SetValue Methods_Main_AngleSlider1 (atoi sText))
+(defun c:Methods/Main/AngleBox#OnEditChanged (sText /)
+	(dcl-Control-SetValue Methods/Main/AngleSlider1 (atoi sText))
 )
 
-(defun c:Methods_Main_VScrollLabel_OnEditChanged (sText /)
-	(dcl_Control_SetValue Methods_Main_ScrollBar1 (atoi sText))
+(defun c:Methods/Main/VScrollLabel#OnEditChanged (sText /)
+	(dcl-Control-SetValue Methods/Main/ScrollBar1 (atoi sText))
 )
 
-(defun c:Methods_Main_VSliderLabel_OnEditChanged (sText /)
-	(dcl_Control_SetValue Methods_Main_SliderBar1 (atoi sText))
+(defun c:Methods/Main/VSliderLabel#OnEditChanged (sText /)
+	(dcl-Control-SetValue Methods/Main/SliderBar1 (atoi sText))
 )
 
-(defun c:Methods_Main_HScrollLabel_OnEditChanged (sText /)
-	(dcl_Control_SetValue Methods_Main_ScrollBar2 (atoi sText))
+(defun c:Methods/Main/HScrollLabel#OnEditChanged (sText /)
+	(dcl-Control-SetValue Methods/Main/ScrollBar2 (atoi sText))
 )
 
-(defun c:Methods_Main_HSliderLabel_OnEditChanged (sText /)
-	(dcl_Control_SetValue Methods_Main_SliderBar2 (atoi sText))
+(defun c:Methods/Main/HSliderLabel#OnEditChanged (sText /)
+	(dcl-Control-SetValue Methods/Main/SliderBar2 (atoi sText))
 )
 
 
-(defun c:Methods_Main_SpinnedBox_OnEditChanged (sText /)
-	(dcl_Control_SetValue Methods_Main_SpinButton1 (atoi sText))
+(defun c:Methods/Main/SpinnedBox#OnEditChanged (sText /)
+	(dcl-Control-SetValue Methods/Main/SpinButton1 (atoi sText))
 )
 
 
 ;; ------------------- Manipulation Tab -------------------------------
 
-(defun c:Methods_Main_LeftBox_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/LeftBox#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetLeft Methods_Main_SampleControl nVal)
-	(dcl_Control_SetLeftFromRight Methods_Main_SampleControl
+	(dcl-Control-SetLeft Methods/Main/SampleControl nVal)
+	(dcl-Control-SetLeftFromRight Methods/Main/SampleControl
 								  (setq nVal (- (car tabSize) nVal))
 	)
-	(dcl_Control_SetText Methods_Main_LeftFromRight nVal)
+	(dcl-Control-SetText Methods/Main/LeftFromRight nVal)
 )
 
-(defun c:Methods_Main_TopBox_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/TopBox#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetTop Methods_Main_SampleControl nVal)
-	(dcl_Control_SetTopFromBottom Methods_Main_SampleControl
+	(dcl-Control-SetTop Methods/Main/SampleControl nVal)
+	(dcl-Control-SetTopFromBottom Methods/Main/SampleControl
 								  (setq nVal (- (cadr tabSize) nVal))
 	)
-	(dcl_Control_SetText Methods_Main_TopFromBottom nVal)
+	(dcl-Control-SetText Methods/Main/TopFromBottom nVal)
 )
 
-(defun c:Methods_Main_WidthBox_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/WidthBox#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetWidth Methods_Main_SampleControl nVal)
-	(dcl_Control_SetRightFromRight
-		Methods_Main_SampleControl
+	(dcl-Control-SetWidth Methods/Main/SampleControl nVal)
+	(dcl-Control-SetRightFromRight
+		Methods/Main/SampleControl
 		(setq nVal (- (car tabSize) nVal (car curPos)))
 	)
-	(dcl_Control_SetText Methods_Main_RightFromRight nVal)
+	(dcl-Control-SetText Methods/Main/RightFromRight nVal)
 )
 
-(defun c:Methods_Main_HeightBox_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/HeightBox#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetHeight Methods_Main_SampleControl nVal)
-	(dcl_Control_SetBottomFromBottom
-		Methods_Main_SampleControl
+	(dcl-Control-SetHeight Methods/Main/SampleControl nVal)
+	(dcl-Control-SetBottomFromBottom
+		Methods/Main/SampleControl
 		(setq nVal (- (cadr tabSize) nVal (cadr curPos)))
 	)
-	(dcl_Control_SetText Methods_Main_BottomFromBottom nVal)
+	(dcl-Control-SetText Methods/Main/BottomFromBottom nVal)
 )
 
-(defun c:Methods_Main_VisibleCheck_OnClicked (nValue /)
-	(dcl_Control_SetVisible Methods_Main_SampleControl
+(defun c:Methods/Main/VisibleCheck#OnClicked (nValue /)
+	(dcl-Control-SetVisible Methods/Main/SampleControl
 							(not (zerop nValue))
 	)
 )
 
-(defun c:Methods_Main_EnableOption_OnClicked (nValue /)
-	(dcl_Control_SetEnabled Methods_Main_SampleControl T)
+(defun c:Methods/Main/EnableOption#OnClicked (nValue /)
+	(dcl-Control-SetEnabled Methods/Main/SampleControl T)
 )
 
-(defun c:Methods_Main_DisableOption_OnClicked (nValue /)
-	(dcl_Control_SetEnabled Methods_Main_SampleControl nil)
+(defun c:Methods/Main/DisableOption#OnClicked (nValue /)
+	(dcl-Control-SetEnabled Methods/Main/SampleControl nil)
 )
 
-(defun c:Methods_Main_LeftCheck_OnClicked (nValue /)
-	(dcl_Control_SetUseLeftFromRight Methods_Main_SampleControl nValue)
+(defun c:Methods/Main/LeftCheck#OnClicked (nValue /)
+	(dcl-Control-SetUseLeftFromRight Methods/Main/SampleControl nValue)
 )
 
-(defun c:Methods_Main_TopCheck_OnClicked (nValue /)
-	(dcl_Control_SetUseTopFromBottom Methods_Main_SampleControl nValue)
+(defun c:Methods/Main/TopCheck#OnClicked (nValue /)
+	(dcl-Control-SetUseTopFromBottom Methods/Main/SampleControl nValue)
 )
 
-(defun c:Methods_Main_RightCheck_OnClicked (nValue /)
-	(dcl_Control_SetUseRightFromRight Methods_Main_SampleControl nValue)
+(defun c:Methods/Main/RightCheck#OnClicked (nValue /)
+	(dcl-Control-SetUseRightFromRight Methods/Main/SampleControl nValue)
 )
 
-(defun c:Methods_Main_BottomCheck_OnClicked (nValue /)
-	(dcl_Control_SetUseBottomFromBottom Methods_Main_SampleControl
+(defun c:Methods/Main/BottomCheck#OnClicked (nValue /)
+	(dcl-Control-SetUseBottomFromBottom Methods/Main/SampleControl
 										nValue
 	)
 )
 
-(defun c:Methods_Main_LeftFromRight_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/LeftFromRight#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetLeftFromRight Methods_Main_SampleControl nVal)
-	(dcl_Control_SetLeft Methods_Main_SampleControl
+	(dcl-Control-SetLeftFromRight Methods/Main/SampleControl nVal)
+	(dcl-Control-SetLeft Methods/Main/SampleControl
 						 (setq nVal (- (car tabSize) nVal))
 	)
-	(dcl_Control_SetText Methods_Main_LeftBox nVal)
+	(dcl-Control-SetText Methods/Main/LeftBox nVal)
 )
 
-(defun c:Methods_Main_TopFromBottom_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/TopFromBottom#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetTopFromBottom Methods_Main_SampleControl nVal)
-	(dcl_Control_SetTop Methods_Main_SampleControl
+	(dcl-Control-SetTopFromBottom Methods/Main/SampleControl nVal)
+	(dcl-Control-SetTop Methods/Main/SampleControl
 						(setq nVal (- (cadr tabSize) nVal))
 	)
-	(dcl_Control_SetText Methods_Main_TopBox nVal)
+	(dcl-Control-SetText Methods/Main/TopBox nVal)
 )
 
-(defun c:Methods_Main_RightFromRight_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/RightFromRight#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetRightFromRight Methods_Main_SampleControl nVal)
-	(dcl_Control_SetWidth Methods_Main_SampleControl
+	(dcl-Control-SetRightFromRight Methods/Main/SampleControl nVal)
+	(dcl-Control-SetWidth Methods/Main/SampleControl
 						  (setq nVal (- (car tabSize) nVal (car curPos)))
 	)
-	(dcl_Control_SetText Methods_Main_WidthBox nVal)
+	(dcl-Control-SetText Methods/Main/WidthBox nVal)
 )
 
-(defun c:Methods_Main_BottomFromBottom_OnEditChanged (sText / curPos tabSize nVal)
-	(setq curPos  (dcl_Control_GetCurPos Methods_Main_SampleControl)
-		  tabSize (dcl_Tab_GetControlArea Methods_Main_TabControl)
+(defun c:Methods/Main/BottomFromBottom#OnEditChanged (sText / curPos tabSize nVal)
+	(setq curPos  (dcl-Control-GetCurPos Methods/Main/SampleControl)
+		  tabSize (dcl-TabStrip-GetControlArea Methods/Main/TabControl)
 		  nVal    (atoi sText)
 	)
-	(dcl_Control_SetBottomFromBottom Methods_Main_SampleControl nVal)
-	(dcl_Control_SetHeight Methods_Main_SampleControl
+	(dcl-Control-SetBottomFromBottom Methods/Main/SampleControl nVal)
+	(dcl-Control-SetHeight Methods/Main/SampleControl
 						   (setq nVal (- (cadr tabSize) nVal (cadr curPos)))
 	)
-	(dcl_Control_SetText Methods_Main_HeightBox nVal)
+	(dcl-Control-SetText Methods/Main/HeightBox nVal)
 )
 
-(defun c:Methods_Main_OnSize (nWidth nHeight /)
-	(if (= 2 (dcl_TabStrip_GetCurSel Methods_Main_TabControl))
+(defun c:Methods/Main#OnSize (nWidth nHeight /)
+	(if (= 2 (dcl-TabStrip-GetCurSel Methods/Main/TabControl))
 		(PopulateManipulationTabFields)
 	)
 )

@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "DwgList.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "DwgList.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show DwgList_DwgListForm)
+	(dcl-Form-Show DwgList/DwgListForm)
 
-	;; This is a modeless form, so (dcl_Form_Show) returns immediately,
+	;; This is a modeless form, so (dcl-Form-Show) returns immediately,
 	;; leaving the event handlers to manage the form.
 
 	(princ)
@@ -28,20 +28,20 @@
 ;|<<OpenDCL Event Handlers>>|;
 
 (defun c:DwgListForm_DwgList1_OnDblClicked (/ filename)
-	(if (and (Setq filename (dcl_DwgList_GetFileName DwgList_DwgListForm_DwgList1))
+	(if (and (Setq filename (dcl-DWGList-GetFileName DwgList/DwgListForm/DwgList1))
                  (equal (strcase (substr filename (- (strlen filename) 3) 4)) ".DWG"))
-		(dcl_sendstring (strcat "_-INSERT " filename "\n"))
+		(dcl-sendstring (strcat "_-INSERT " filename "\n"))
 	)
 	(princ)
 )
 
-(defun c:DwgList_DwgListForm_cmdUP_OnClicked (/)
-	(setq sPath (strcat (dcl_ComboBox_GetDir DwgList_DwgListForm_ComboBox1)
+(defun c:DwgList/DwgListForm/cmdUP#OnClicked (/)
+	(setq sPath (strcat (dcl-ComboBox-GetDir DwgList/DwgListForm/ComboBox1)
 						"\\.."
 				)
 	)
-	(dcl_ComboBox_Dir DwgList_DwgListForm_ComboBox1 sPath)
-	(dcl_DwgList_Dir DwgList_DwgListForm_DwgList1 sPath)
+	(dcl-ComboBox-Dir DwgList/DwgListForm/ComboBox1 sPath)
+	(dcl-DWGList-Dir DwgList/DwgListForm/DwgList1 sPath)
 	(princ)
 )
 

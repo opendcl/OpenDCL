@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Misc.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Misc.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show Misc_DemoModal)
+	(dcl-Form-Show Misc/DemoModal)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -36,33 +36,33 @@
 		(	(= nSelIndex 1) (AddBlocksToListBox))
 		;; cond Karteikarte 2
 		(	(= nSelIndex 2)
-			(IF (zerop (dcl_TREE_COUNTITEMS Misc_DemoModal_TreeControl1))
+			(IF (zerop (dcl-Tree-COUNTITEMS Misc/DemoModal/TreeControl1))
 				(PROGN
-					(dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "Dia 1" "Slide1.sld")
-					(dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "Diabibliothek" "Slide Library.slb")
-					(dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "Dia 3" "Slide3.sld")
-					(dcl_TREE_ADDCHILD Misc_DemoModal_TreeControl1
+					(dcl-Tree-ADDPARENT Misc/DemoModal/TreeControl1 "Dia 1" "Slide1.sld")
+					(dcl-Tree-ADDPARENT Misc/DemoModal/TreeControl1 "Diabibliothek" "Slide Library.slb")
+					(dcl-Tree-ADDPARENT Misc/DemoModal/TreeControl1 "Dia 3" "Slide3.sld")
+					(dcl-Tree-ADDCHILD Misc/DemoModal/TreeControl1
 									'(	("Slide Library.slb" "Element 1" "Child1")
 										("Slide Library.slb" "Element 2" "Child2")
 										("Slide Library.slb" "Element 3" "Child3")
 									 )
 					)
-					(dcl_TREE_SELECTITEM Misc_DemoModal_TreeControl1 "Slide1.sld")
+					(dcl-Tree-SELECTITEM Misc/DemoModal/TreeControl1 "Slide1.sld")
 				)
 			)
 		)
 		;; cond Karteikarte 3
-		((= nSelIndex 3) (dcl_COMBOBOX_ADDCOLOR Misc_DemoModal_ComboBox4 156))
+		((= nSelIndex 3) (dcl-ComboBox-ADDCOLOR Misc/DemoModal/ComboBox4 156))
 	)
 )
 
 
-(defun c:Misc_DemoModal_cmdRun_OnClicked (/ cnt wait)
+(defun c:Misc/DemoModal/cmdRun#OnClicked (/ cnt wait)
 	(setq cnt 0)
 	(while (< cnt 100)
 		(setq wait 10000)
 		(while (> (setq wait (1- wait)) 0))
-		(dcl_Control_SetValue Misc_DemoModal_ProgressBar1 (setq cnt (1+ cnt)))
+		(dcl-Control-SetValue Misc/DemoModal/ProgressBar1 (setq cnt (1+ cnt)))
 	)
 	(princ)
 )
@@ -71,30 +71,30 @@
 
 ;; Diese Funktion wird ausgeführt, wenn sich die Auswahl in der Liste der Blocknamen ändert
 (DEFUN c:DemoModal_BlockNameList_SelectionChanged (nSelCount sSelText /)
-	(dcl_CONTROL_SETBLOCKNAME Misc_DemoModal_BlockView sSelText)
+	(dcl-Control-SETBLOCKNAME Misc/DemoModal/BlockView sSelText)
 )
 
 ;; Diese Funktion wird ausgeführt, wenn sich die Auswahl in der Baumstruktur ändert
 (DEFUN c:DemoModal_TreeControl1_SelectionChanged (sSelText sSelKey / strParent strFile Path)
 
     ;; Elternobjekt abfragen
-    (if (setq strParent (dcl_TREE_GETPARENT Misc_DemoModal_TreeControl1 sSelKey))
+    (if (setq strParent (dcl-Tree-GETPARENT Misc/DemoModal/TreeControl1 sSelKey))
         (if (setq strFile (findfile (strcat *ODCL:Prefix strParent)))
-            (dcl_SlideView_Load Misc_DemoModal_SlideView1 strFile sSelKey)
-            (dcl_SlideView_Clear Misc_DemoModal_SlideView1)
+            (dcl-SlideView-Load Misc/DemoModal/SlideView1 strFile sSelKey)
+            (dcl-SlideView-Clear Misc/DemoModal/SlideView1)
         ); if
 
         (if (setq strFile (findfile (strcat *ODCL:Prefix sSelKey)))
-            (dcl_SlideView_Load Misc_DemoModal_SlideView1 strFile "")
-            (dcl_SlideView_Clear Misc_DemoModal_SlideView1)
+            (dcl-SlideView-Load Misc/DemoModal/SlideView1 strFile "")
+            (dcl-SlideView-Clear Misc/DemoModal/SlideView1)
         ); if
     ); if
-    (dcl_Control_Redraw Misc_DemoModal_SlideView1)
+    (dcl-Control-Redraw Misc/DemoModal/SlideView1)
 ); c:DemoModal_TreeControl1_SelectionChanged
 
 
 (DEFUN c:DemoModal_BrowseFolders_Clicked (/ path)
-	(IF (SETQ path (dcl_SELECTFOLDER "Verzeichnis wählen" nil nil 81))
+	(IF (SETQ path (dcl-SELECTFOLDER "Verzeichnis wählen" nil nil 81))
 		(ALERT path)
 	)
 )
@@ -102,7 +102,7 @@
 
 ;; Diese Funktion listet alle Blöcke der aktuellen Zeichnungsdatei auf
 (DEFUN AddBlocksToListBox (/ BlockInfo BlkLst Blk)
-	(dcl_LISTBOX_CLEAR Misc_DemoModal_BlockNameList)
+	(dcl-ListBox-CLEAR Misc/DemoModal/BlockNameList)
 	;; Hole den ersten Block in der Blocktabelle
 	;; Durchlaufe die Liste der Blockdefinitionen
 	;; Holen den Blocknamen
@@ -119,10 +119,10 @@
 	)
 	(setq BlkLst (reverse BlkLst))
 	(IF (NULL BlkLst)
-		(dcl_CONTROL_SETVISIBLE Misc_DemoModal_lblNoBlocks T)
-		(dcl_CONTROL_SETVISIBLE Misc_DemoModal_lblNoBlocks nil)
+		(dcl-Control-SETVISIBLE Misc/DemoModal/lblNoBlocks T)
+		(dcl-Control-SETVISIBLE Misc/DemoModal/lblNoBlocks nil)
 	)
-	(dcl_LISTBOX_ADDLIST Misc_DemoModal_BlockNameList BlkLst)
+	(dcl-ListBox-ADDLIST Misc/DemoModal/BlockNameList BlkLst)
 	;;
 	;; alternative Methode mit wiederkehrendem AddString
 	;; statt eine Liste zu füllen, wird der Eintrag ergänzt.
@@ -132,7 +132,7 @@
 	;; (WHILE BlockInfo
 	;; 	(SETQ blk (CDR (ASSOC 2 BlockInfo)))
 	;; 	(IF (NOT (WCMATCH blk "`*U*,`*D*,`*X*,`*T*,_*,*|*,A$*"))
-	;; 		(dcl_ListBox_AddString Misc_DemoModal_BlockNameList blk)
+	;; 		(dcl-ListBox-AddString Misc/DemoModal/BlockNameList blk)
 	;; 	)
 	;; 	(SETQ BlockInfo (TBLNEXT "BLOCK"))
 	;; )

@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Tree.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Tree.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show Tree_Main)
+	(dcl-Form-Show Tree/Main)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -28,229 +28,229 @@
 )
 
 (defun Tree_LogEvent (event)
-	(if Tree_Main_lbxLog
-		(dcl_ListBox_SetTopIndex Tree_Main_lbxLog (1- (dcl_ListBox_AddString Tree_Main_lbxLog event)))
+	(if Tree/Main/lbxLog
+		(dcl-ListBox-SetTopIndex Tree/Main/lbxLog (1- (dcl-ListBox-AddString Tree/Main/lbxLog event)))
 	)
 )
 
 (defun Tree_IsTracking (/)
-	(and Tree_Main_chkTrack (= 1 (dcl_Control_GetValue Tree_Main_chkTrack)))
+	(and Tree/Main/chkTrack (= 1 (dcl-Control-GetValue Tree/Main/chkTrack)))
 )
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:Tree_Main_OnInitialize	(/ P1 P2)
-	(setq P1 (dcl_Tree_AddParent Tree_Main_tree "Erste Gruppe" 0 -1 1))
-	(dcl_Tree_AddChild Tree_Main_tree
+(defun c:Tree/Main#OnInitialize	(/ P1 P2)
+	(setq P1 (dcl-Tree-AddParent Tree/Main/tree "Erste Gruppe" 0 -1 1))
+	(dcl-Tree-AddChild Tree/Main/tree
 		(list
 			(list P1 "Element 1" 2 3)
 			(list P1 "Element 2" 2 3)
 			(list P1 "Element 3" 2 3)
 		)
 	)
-	(setq P2 (dcl_Tree_AddParent Tree_Main_tree "Zweite Gruppe" 0 -1 8))
-	(dcl_Tree_AddChild Tree_Main_tree
+	(setq P2 (dcl-Tree-AddParent Tree/Main/tree "Zweite Gruppe" 0 -1 8))
+	(dcl-Tree-AddChild Tree/Main/tree
 		(list
 			(list P2 "Element C" 4 5)
 			(list P2 "Element B" 4 5)
 			(list P2 "Element A" 4 5)
 		)
 	)
-	(dcl_Tree_AddParent Tree_Main_tree
+	(dcl-Tree-AddParent Tree/Main/tree
 		'(	("Dritte Gruppe" 0 -1 1)
 			("Vierte Gruppe" 0 -1 1)
 		)
 	)
-	(dcl_Tree_SelectItem Tree_Main_tree P1)
-	(dcl_ListBox_Clear Tree_Main_lbxLog)
+	(dcl-Tree-SelectItem Tree/Main/tree P1)
+	(dcl-ListBox-Clear Tree/Main/lbxLog)
 )
 
 
-(defun c:Tree_Main_chkHasButtons_OnClicked (Value /)
-	(dcl_Control_SetHasButtons Tree_Main_tree (= Value 1))
+(defun c:Tree/Main/chkHasButtons#OnClicked (Value /)
+	(dcl-Control-SetHasButtons Tree/Main/tree (= Value 1))
 )
 
 
-(defun c:Tree_Main_chkHasLines_OnClicked (Value /)
-	(dcl_Control_SetHasLines Tree_Main_tree (= Value 1))
+(defun c:Tree/Main/chkHasLines#OnClicked (Value /)
+	(dcl-Control-SetHasLines Tree/Main/tree (= Value 1))
 )
 
 
-(defun c:Tree_Main_chkSingleClickExpand_OnClicked (Value /)
-	(dcl_Control_SetSingleClickExpand Tree_Main_tree (= Value 1))
+(defun c:Tree/Main/chkSingleClickExpand#OnClicked (Value /)
+	(dcl-Control-SetSingleClickExpand Tree/Main/tree (= Value 1))
 )
 
 
-(defun c:Tree_Main_chkTrack_OnClicked (Value /)
-	(setq CurSel (if (= 1 Value) (dcl_Tree_GetSelectedItem Tree_Main_tree)))
+(defun c:Tree/Main/chkTrack#OnClicked (Value /)
+	(setq CurSel (if (= 1 Value) (dcl-Tree-GetSelectedItem Tree/Main/tree)))
 	(if CurSel
 		(progn
-			(dcl_Control_SetText Tree_Main_tbxLabel (dcl_Tree_GetItemLabel Tree_Main_tree CurSel))
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree CurSel))
-			(dcl_ImageComboBox_SetCurSel Tree_Main_cbxImage (1+ (car Images)))
-			(dcl_ImageComboBox_SetCurSel Tree_Main_cbxSelImage (1+ (cadr Images)))
-			(dcl_ImageComboBox_SetCurSel Tree_Main_cbxExpImage (1+ (caddr Images)))
+			(dcl-Control-SetText Tree/Main/tbxLabel (dcl-Tree-GetItemLabel Tree/Main/tree CurSel))
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree CurSel))
+			(dcl-ImageComboBox-SetCurSel Tree/Main/cbxImage (1+ (car Images)))
+			(dcl-ImageComboBox-SetCurSel Tree/Main/cbxSelImage (1+ (cadr Images)))
+			(dcl-ImageComboBox-SetCurSel Tree/Main/cbxExpImage (1+ (caddr Images)))
 		)
 	)
 )
 
 
-(defun c:Tree_Main_tbxLabel_OnEditChanged (NewValue / CurSel)
-	(setq CurSel (if (Tree_IsTracking) (dcl_Tree_GetSelectedItem Tree_Main_tree)))
+(defun c:Tree/Main/tbxLabel#OnEditChanged (NewValue / CurSel)
+	(setq CurSel (if (Tree_IsTracking) (dcl-Tree-GetSelectedItem Tree/Main/tree)))
 	(if CurSel
-		(dcl_Tree_SetItemLabel Tree_Main_tree CurSel NewValue)
+		(dcl-Tree-SetItemLabel Tree/Main/tree CurSel NewValue)
 	)
 )
 
 
-(defun c:Tree_Main_cbxImage_OnSelChanged (ItemIndex Value / CurSel Images)
-	(setq CurSel (if (Tree_IsTracking) (dcl_Tree_GetSelectedItem Tree_Main_tree)))
+(defun c:Tree/Main/cbxImage#OnSelChanged (ItemIndex Value / CurSel Images)
+	(setq CurSel (if (Tree_IsTracking) (dcl-Tree-GetSelectedItem Tree/Main/tree)))
 	(if CurSel
 		(progn
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree CurSel))
-			(dcl_Tree_SetItemImages Tree_Main_tree CurSel (1- ItemIndex) (cadr Images) (caddr Images))
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree CurSel))
+			(dcl-Tree-SetItemImages Tree/Main/tree CurSel (1- ItemIndex) (cadr Images) (caddr Images))
 		)
 	)
 )
 
 
-(defun c:Tree_Main_cbxSelImage_OnSelChanged (ItemIndex Value / CurSel Images)
-	(setq CurSel (if (Tree_IsTracking) (dcl_Tree_GetSelectedItem Tree_Main_tree)))
+(defun c:Tree/Main/cbxSelImage#OnSelChanged (ItemIndex Value / CurSel Images)
+	(setq CurSel (if (Tree_IsTracking) (dcl-Tree-GetSelectedItem Tree/Main/tree)))
 	(if CurSel
 		(progn
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree CurSel))
-			(dcl_Tree_SetItemImages Tree_Main_tree CurSel (car Images) (1- ItemIndex) (caddr Images))
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree CurSel))
+			(dcl-Tree-SetItemImages Tree/Main/tree CurSel (car Images) (1- ItemIndex) (caddr Images))
 		)
 	)
 )
 
 
-(defun c:Tree_Main_cbxExpImage_OnSelChanged (ItemIndex Value / CurSel Images)
-	(setq CurSel (if (Tree_IsTracking) (dcl_Tree_GetSelectedItem Tree_Main_tree)))
+(defun c:Tree/Main/cbxExpImage#OnSelChanged (ItemIndex Value / CurSel Images)
+	(setq CurSel (if (Tree_IsTracking) (dcl-Tree-GetSelectedItem Tree/Main/tree)))
 	(if CurSel
 		(progn
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree CurSel))
-			(dcl_Tree_SetItemImages Tree_Main_tree CurSel (car Images) (cadr Images) (1- ItemIndex))
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree CurSel))
+			(dcl-Tree-SetItemImages Tree/Main/tree CurSel (car Images) (cadr Images) (1- ItemIndex))
 		)
 	)
 )
 
 
-(defun c:Tree_Main_btnAddParent_OnClicked (/)
-	(dcl_Tree_AddParent Tree_Main_tree
-		(dcl_Control_GetText Tree_Main_tbxLabel)
-		(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxImage))
-		(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxSelImage))
-		(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxExpImage))
+(defun c:Tree/Main/btnAddParent#OnClicked (/)
+	(dcl-Tree-AddParent Tree/Main/tree
+		(dcl-Control-GetText Tree/Main/tbxLabel)
+		(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxImage))
+		(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxSelImage))
+		(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxExpImage))
 	)
 )
 
 
-(defun c:Tree_Main_btnAddChild_OnClicked (/ CurSel Images)
-	(setq CurSel (dcl_Tree_GetSelectedItem Tree_Main_tree))
+(defun c:Tree/Main/btnAddChild#OnClicked (/ CurSel Images)
+	(setq CurSel (dcl-Tree-GetSelectedItem Tree/Main/tree))
 	(if CurSel
 		(progn
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree CurSel))
-			(dcl_Tree_AddChild Tree_Main_tree CurSel
-				(dcl_Control_GetText Tree_Main_tbxLabel)
-				(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxImage))
-				(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxSelImage))
-				(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxExpImage))
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree CurSel))
+			(dcl-Tree-AddChild Tree/Main/tree CurSel
+				(dcl-Control-GetText Tree/Main/tbxLabel)
+				(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxImage))
+				(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxSelImage))
+				(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxExpImage))
 			)
 		)
 	)
 )
 
 
-(defun c:Tree_Main_btnAddSibling_OnClicked (/ CurSel Images)
-	(setq CurSel (dcl_Tree_GetSelectedItem Tree_Main_tree))
+(defun c:Tree/Main/btnAddSibling#OnClicked (/ CurSel Images)
+	(setq CurSel (dcl-Tree-GetSelectedItem Tree/Main/tree))
 	(if CurSel
 		(progn
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree CurSel))
-			(dcl_Tree_AddSibling Tree_Main_tree CurSel
-				(dcl_Control_GetText Tree_Main_tbxLabel)
-				(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxImage))
-				(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxSelImage))
-				(1- (dcl_ImageComboBox_GetCurSel Tree_Main_cbxExpImage))
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree CurSel))
+			(dcl-Tree-AddSibling Tree/Main/tree CurSel
+				(dcl-Control-GetText Tree/Main/tbxLabel)
+				(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxImage))
+				(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxSelImage))
+				(1- (dcl-ImageComboBox-GetCurSel Tree/Main/cbxExpImage))
 			)
 		)
 	)
 )
 
 
-(defun c:Tree_Main_btnDelete_OnClicked (/ CurSel)
-	(setq CurSel (dcl_Tree_GetSelectedItem Tree_Main_tree))
+(defun c:Tree/Main/btnDelete#OnClicked (/ CurSel)
+	(setq CurSel (dcl-Tree-GetSelectedItem Tree/Main/tree))
 	(if CurSel
-		(dcl_Tree_DeleteItem Tree_Main_tree CurSel)
+		(dcl-Tree-DeleteItem Tree/Main/tree CurSel)
 	)
 )
 
 
-(defun c:Tree_Main_btnSortChildren_OnClicked (/ CurSel)
-	(setq CurSel (dcl_Tree_GetSelectedItem Tree_Main_tree))
+(defun c:Tree/Main/btnSortChildren#OnClicked (/ CurSel)
+	(setq CurSel (dcl-Tree-GetSelectedItem Tree/Main/tree))
 	(if CurSel
-		(dcl_Tree_SortChildren Tree_Main_tree CurSel)
+		(dcl-Tree-SortChildren Tree/Main/tree CurSel)
 	)
 )
 
 
-(defun c:Tree_Main_btnExpand_OnClicked (/ CurSel)
-	(setq CurSel (dcl_Tree_GetSelectedItem Tree_Main_tree))
+(defun c:Tree/Main/btnExpand#OnClicked (/ CurSel)
+	(setq CurSel (dcl-Tree-GetSelectedItem Tree/Main/tree))
 	(if CurSel
-		(dcl_Tree_ExpandItem Tree_Main_tree CurSel 0)
+		(dcl-Tree-ExpandItem Tree/Main/tree CurSel 0)
 	)
 )
 
 
-(defun c:Tree_Main_btnEditLabel_OnClicked (/ CurSel)
-	(setq CurSel (dcl_Tree_GetSelectedItem Tree_Main_tree))
+(defun c:Tree/Main/btnEditLabel#OnClicked (/ CurSel)
+	(setq CurSel (dcl-Tree-GetSelectedItem Tree/Main/tree))
 	(if CurSel
-		(dcl_Tree_StartLabelEdit Tree_Main_tree CurSel)
+		(dcl-Tree-StartLabelEdit Tree/Main/tree CurSel)
 	)
 )
 
 
-(defun c:Tree_Main_btnClear_OnClicked (/)
-	(dcl_Tree_Clear Tree_Main_tree)
+(defun c:Tree/Main/btnClear#OnClicked (/)
+	(dcl-Tree-Clear Tree/Main/tree)
 )
 
 
-(defun c:Tree_Main_Tree_OnBeginLabelEdit (Key /)
-	(Tree_LogEvent (strcat "OnBeginLabelEdit (" (dcl_Tree_GetItemLabel Tree_Main_tree Key) ")"))
+(defun c:Tree/Main/tree#OnBeginLabelEdit (Key /)
+	(Tree_LogEvent (strcat "OnBeginLabelEdit (" (dcl-Tree-GetItemLabel Tree/Main/tree Key) ")"))
 )
 
 
-(defun c:Tree_Main_Tree_OnClicked (/)
+(defun c:Tree/Main/tree#OnClicked (/)
 	(Tree_LogEvent "OnClicked")
 )
 
 
-(defun c:Tree_Main_Tree_OnDblClicked (/)
+(defun c:Tree/Main/tree#OnDblClicked (/)
 	(Tree_LogEvent "OnDblClicked")
 )
 
 
-(defun c:Tree_Main_Tree_OnDeleteItem (Label Key /)
+(defun c:Tree/Main/tree#OnDeleteItem (Label Key /)
 	(Tree_LogEvent (strcat "OnDeleteItem (" Label ")"))
 )
 
 
-(defun c:Tree_Main_Tree_OnDragnDropBegin (/)
+(defun c:Tree/Main/tree#OnDragnDropBegin (/)
 	(Tree_LogEvent "OnDragnDropBegin")
 )
 
 
-(defun c:Tree_Main_Tree_OnDragnDropFromControl (ProjectName FormName ControlName DropPoint /)
+(defun c:Tree/Main/tree#OnDragnDropFromControl (ProjectName FormName ControlName DropPoint /)
 	(Tree_LogEvent "OnDragnDropFromControl")
 )
 
 
-(defun c:Tree_Main_Tree_OnDragnDropFromOther (DropPoint /)
+(defun c:Tree/Main/tree#OnDragnDropFromOther (DropPoint /)
 	(Tree_LogEvent "OnDragnDropFromOther")
 )
 
 
-(defun c:Tree_Main_Tree_OnDragnDropToAutoCAD (DropPoint Viewport /)
+(defun c:Tree/Main/tree#OnDragnDropToAutoCAD (DropPoint Viewport /)
 	(Tree_LogEvent "OnDragnDropToAutoCAD")
 )
 
@@ -261,19 +261,19 @@
 )
 
 
-(defun c:Tree_Main_Tree_OnEndLabelEdit (NewValue Key /)
+(defun c:Tree/Main/tree#OnEndLabelEdit (NewValue Key /)
 	(Tree_LogEvent (strcat "OnEndLabelEdit (" NewValue ")"))
 	(if (Tree_IsTracking)
-		(dcl_Control_SetText Tree_Main_tbxLabel NewValue)
+		(dcl-Control-SetText Tree/Main/tbxLabel NewValue)
 	)
 )
 
 
-(defun c:Tree_Main_Tree_OnItemExpanded (Label Key /)
+(defun c:Tree/Main/tree#OnItemExpanded (Label Key /)
 	(Tree_LogEvent
 		(strcat
 			"Element "
-			(if (dcl_Tree_IsItemExpanded Tree_Main_tree Key) "erweitert" "zusammengeklappt")
+			(if (dcl-Tree-IsItemExpanded Tree/Main/tree Key) "erweitert" "zusammengeklappt")
 			" ("
 			Label
 			")"
@@ -282,11 +282,11 @@
 )
 
 
-(defun c:Tree_Main_Tree_OnItemExpanding (Label Key /)
+(defun c:Tree/Main/tree#OnItemExpanding (Label Key /)
 	(Tree_LogEvent
 		(strcat
 			"Element "
-			(if (dcl_Tree_IsItemExpanded Tree_Main_tree Key) "zusammenklappen" "erweitern")
+			(if (dcl-Tree-IsItemExpanded Tree/Main/tree Key) "zusammenklappen" "erweitern")
 			" ("
 			Label
 			")"
@@ -295,57 +295,57 @@
 )
 
 
-(defun c:Tree_Main_Tree_OnKeyDown (Character RepeatCount Flags /)
+(defun c:Tree/Main/tree#OnKeyDown (Character RepeatCount Flags /)
 	(Tree_LogEvent (strcat "OnKeyDown (" (itoa (ascii Character)) " " (itoa RepeatCount) " " (itoa Flags) ")"))
 )
 
 
-(defun c:Tree_Main_Tree_OnKeyUp (Character RepeatCount Flags /)
+(defun c:Tree/Main/tree#OnKeyUp (Character RepeatCount Flags /)
 	(Tree_LogEvent (strcat "OnKeyUp (" (itoa (ascii Character)) " " (itoa RepeatCount) " " (itoa Flags) ")"))
 )
 
 
-(defun c:Tree_Main_Tree_OnKillFocus (/)
+(defun c:Tree/Main/tree#OnKillFocus (/)
 	(Tree_LogEvent "OnKillFocus")
 )
 
 
-(defun c:Tree_Main_Tree_OnMouseMove (Flags X Y /)
+(defun c:Tree/Main/tree#OnMouseMove (Flags X Y /)
 	; wurde auskommentiert, um den Protokollierungsaufwand zu reduzieren
 	NIL ;(Tree_LogEvent (strcat "OnMouseMove (" (itoa Flags) " " (itoa X) " " (itoa Y) ")"))
 )
 
 
-(defun c:Tree_Main_Tree_OnReturnPressed (/)
+(defun c:Tree/Main/tree#OnReturnPressed (/)
 	(Tree_LogEvent "OnReturnPressed")
 )
 
 
-(defun c:Tree_Main_Tree_OnRightClick (/)
+(defun c:Tree/Main/tree#OnRightClick (/)
 	(Tree_LogEvent "OnRightClick")
 )
 
 
-(defun c:Tree_Main_Tree_OnRightDblClick (/)
+(defun c:Tree/Main/tree#OnRightDblClick (/)
 	(Tree_LogEvent "OnRightDblClick")
 )
 
 
-(defun c:Tree_Main_Tree_OnSelChanged (Label Key / Images)
+(defun c:Tree/Main/tree#OnSelChanged (Label Key / Images)
 	(Tree_LogEvent (strcat "OnSelChanged (" Label ")"))
 	(if (Tree_IsTracking)
 		(progn
-			(dcl_Control_SetText Tree_Main_tbxLabel Label)
-			(setq Images (dcl_Tree_GetItemImages Tree_Main_tree Key))
-			(dcl_ImageComboBox_SetCurSel Tree_Main_cbxImage (1+ (car Images)))
-			(dcl_ImageComboBox_SetCurSel Tree_Main_cbxSelImage (1+ (cadr Images)))
-			(dcl_ImageComboBox_SetCurSel Tree_Main_cbxExpImage (1+ (caddr Images)))
+			(dcl-Control-SetText Tree/Main/tbxLabel Label)
+			(setq Images (dcl-Tree-GetItemImages Tree/Main/tree Key))
+			(dcl-ImageComboBox-SetCurSel Tree/Main/cbxImage (1+ (car Images)))
+			(dcl-ImageComboBox-SetCurSel Tree/Main/cbxSelImage (1+ (cadr Images)))
+			(dcl-ImageComboBox-SetCurSel Tree/Main/cbxExpImage (1+ (caddr Images)))
 		)
 	)
 )
 
 
-(defun c:Tree_Main_Tree_OnSetFocus (/)
+(defun c:Tree/Main/tree#OnSetFocus (/)
 	(Tree_LogEvent "OnSetFocus")
 )
 

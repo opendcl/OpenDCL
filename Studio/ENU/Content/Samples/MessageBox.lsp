@@ -1,7 +1,7 @@
 ;;;
 ;;; Message Box Sample
 ;;;
-;;; This sample demonstrates the (dcl_MessageBox) function.
+;;; This sample demonstrates the (dcl-MessageBox) function.
 ;;;
 
 ;; Main program
@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "MessageBox.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "MessageBox.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show MessageBox_MessageBoxes)
+	(dcl-Form-Show MessageBox/MessageBoxes)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -28,29 +28,29 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:MessageBox_MessageBoxes_ShowMessageBox_OnClicked
+(defun c:MessageBox/MessageBoxes/ShowMessageBox#OnClicked
 		(/ OptIconCSel OptButtonCSel msg title ButtonFlag IconFlag HelpFlag)
 	(Setq OptIconCSel
-			 (dcl_OptionList_GetCurSel MessageBox_MessageBoxes_optIcons)
+			 (dcl-OptionList-GetCurSel MessageBox/MessageBoxes/optIcons)
 	)
-	(Setq OptButtonCSel (dcl_OptionList_GetCurSel
-							MessageBox_MessageBoxes_optButtons
+	(Setq OptButtonCSel (dcl-OptionList-GetCurSel
+							MessageBox/MessageBoxes/optButtons
 						)
 	)
 	(setq HelpFlag
-			(= 1 (dcl_Control_GetValue MessageBox_MessageBoxes_HelpButton))
+			(= 1 (dcl-Control-GetValue MessageBox/MessageBoxes/HelpButton))
 	)
-	(Setq msg (dcl_Control_GetText MessageBox_MessageBoxes_MsgText))
-	(Setq Title (dcl_Control_GetText MessageBox_MessageBoxes_MsgTitle))
-	(dcl_MessageBox msg title (1+ OptButtonCSel) OptIconCSel HelpFlag)
+	(Setq msg (dcl-Control-GetText MessageBox/MessageBoxes/MsgText))
+	(Setq Title (dcl-Control-GetText MessageBox/MessageBoxes/MsgTitle))
+	(dcl-MessageBox msg title (1+ OptButtonCSel) OptIconCSel HelpFlag)
 )
 
-(defun c:MessageBox_MessageBoxes_cmdClose_OnClicked ()
-	(dcl_Form_Close MessageBox_MessageBoxes)
+(defun c:MessageBox/MessageBoxes/cmdClose#OnClicked ()
+	(dcl-Form-Close MessageBox/MessageBoxes)
 )
 
-(defun c:MessageBox_MessageBoxes_OnHelp (/)
-	(dcl_MessageBox
+(defun c:MessageBox/MessageBoxes#OnHelp (/)
+	(dcl-MessageBox
 		(strcat
 			"You requested help for this form!\r\n\r\n"
 			"Note that pressing the [Help] button in a child message box generates "

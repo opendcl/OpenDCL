@@ -14,20 +14,20 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "EventHandling.odcl") T)
+	(dcl-Project-Load (*ODCL:Samples:FindFile "EventHandling.odcl") T)
 
 	;; Dialog anzeigen
-	(setq result (dcl_Form_Show EventHandling_Main))
+	(setq result (dcl-Form-Show EventHandling/Main))
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
-	;; Der Rückgabewert von (dcl_Form_Show) wird verwendet, um die nächste Aktion
+	;; Der Rückgabewert von (dcl-Form-Show) wird verwendet, um die nächste Aktion
 	;; zu bestimmen.
 
 	(if (= result 10)
-		(dcl_Form_Show EventHandling_Congrats)
+		(dcl-Form-Show EventHandling/Congrats)
 	)
 
 	(princ)
@@ -38,7 +38,7 @@
 (defun EventHandling_PromptClose (/)
 	(=
 		6 ; 'Ja' Ergebnis
-		(dcl_MessageBox
+		(dcl-MessageBox
 			"Sind Sie sicher, dass Sie abbrechen wollen?"
 			"OpenDCL Beispiel"
 			15 ; Ja/Nein mit 'Nein' als Vorgabe/Fokus
@@ -49,32 +49,32 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:EventHandling_Main_OnInitialize (/)
-	(dcl_Control_SetText EventHandling_Main_txtPassword "")
+(defun c:EventHandling/Main#OnInitialize (/)
+	(dcl-Control-SetText EventHandling/Main/txtPassword "")
 	(princ)
 )
 
-(defun c:EventHandling_Main_txtPassword_OnEditChanged (sText /)
+(defun c:EventHandling/Main/txtPassword#OnEditChanged (sText /)
 	(if (= (strcase sText) "TON")
-		(dcl_Form_Close EventHandling_Main 10) ; 10 zurückgeben im Falle einer korrekten Antwort
+		(dcl-Form-Close EventHandling/Main 10) ; 10 zurückgeben im Falle einer korrekten Antwort
 	)
 	(princ)
 )
 
-(defun c:EventHandling_Main_btnGiveUp_OnClicked ()
+(defun c:EventHandling/Main/btnGiveUp#OnClicked ()
 	(if (EventHandling_PromptClose)
-		(dcl_Form_Close EventHandling_Main)
+		(dcl-Form-Close EventHandling/Main)
 	)
 	(princ)
 )
 
-(defun c:EventHandling_Main_OnCancelClose (Canceling /)
+(defun c:EventHandling/Main#OnCancelClose (Canceling /)
 	;; Gibt die Ereignisfunktion den Wert T zurück, wird der Dialog nicht geschlossen
 	(not (EventHandling_PromptClose))
 )
 
-(defun c:EventHandling_Congrats_btnExit_OnClicked ()
-	(dcl_Form_Close EventHandling_Congrats)
+(defun c:EventHandling/Congrats/btnExit#OnClicked ()
+	(dcl-Form-Close EventHandling/Congrats)
 	(princ)
 )
 

@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "ListView.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "ListView.odcl"))
 
 	;; Show the main form
-	(dcl_Form_Show ListView_ListViewDlg)
+	(dcl-Form-Show ListView/ListViewDlg)
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
 	;; manage the form.
 
@@ -31,13 +31,13 @@
 ;; This function will run everytime the form is loaded into AutoCAD
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
 	;; calculate the required column widths
-	(setq Col0Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 0     ")
-		  Col1Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 1     ")
-		  Col2Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 2     ")
-		  Col3Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 3     ")
+	(setq Col0Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Column 0     ")
+		  Col1Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Column 1     ")
+		  Col2Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Column 2     ")
+		  Col3Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Column 3     ")
 	)
 	;; add columns of the calculated widths
-	(dcl_ListView_AddColumns ListView_ListViewDlg_ListView1
+	(dcl-ListView-AddColumns ListView/ListViewDlg/ListView1
 							  (list (list "Column 0" 0 Col0Width)
 									(list "Column 1" 0 Col1Width)
 									(list "Column 2" 0 Col2Width)
@@ -45,8 +45,8 @@
 							  )
 	)
 	;; clear and fill the list
-	(dcl_ListView_FillList
-		ListView_ListViewDlg_ListView1
+	(dcl-ListView-FillList
+		ListView/ListViewDlg/ListView1
 		(list ;; add row 1 items
 			  (list "List 1a" 0 "List 2a" 0 "List 3a" 0 "List 4a" 0)
 			  ;; add row 2 items
@@ -59,8 +59,8 @@
 
 ;;-----------------------------------------------------------
 
-(defun c:ListView_ListViewDlg_ListView1_OnClicked (nRow nCol /)
-	 (dcl_MessageBox (strcat "Column " (itoa nCol) ", Row " (itoa nRow))
+(defun c:ListView/ListViewDlg/ListView1#OnClicked (nRow nCol /)
+	 (dcl-MessageBox (strcat "Column " (itoa nCol) ", Row " (itoa nRow))
 					  "Clicked Location"
 	 )
 )
@@ -68,7 +68,7 @@
 ;;-----------------------------------------------------------
 
 ;; the user has clicked the "Close" button, so lets close the dialog now.
-(defun c:ListViewDlg_Close_Clicked () (dcl_Form_Close ListView_ListViewDlg))
+(defun c:ListViewDlg_Close_Clicked () (dcl-Form-Close ListView/ListViewDlg))
 
 (princ)
 

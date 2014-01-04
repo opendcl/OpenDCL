@@ -19,7 +19,7 @@
   ;; Dialog anzeigen
   (dcl-Form-Show Splash/Form1)
     
-  ;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
+  ;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl-Form-Show)
   ;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
   ;; der Dialog aktiv ist.
   ;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen

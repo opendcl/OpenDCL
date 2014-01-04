@@ -14,18 +14,18 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl_Project_Load (*ODCL:Samples:FindFile "EventHandling.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "EventHandling.odcl"))
 
 	;; Show the main form
-	(setq result (dcl_Form_Show EventHandling_Main))
+	(setq result (dcl-Form-Show EventHandling/Main))
 
-	;; This is a modal form, so (dcl_Form_Show) does not return until
+	;; This is a modal form, so (dcl-Form-Show) does not return until
 	;; the modal form is closed. In the meantime, the event handlers
-	;; manage the form. The return value from (dcl_Form_Show) is used
+	;; manage the form. The return value from (dcl-Form-Show) is used
 	;; to determine what action to take next.
 
 	(if (= result 10)
-		(dcl_Form_Show EventHandling_Congrats)
+		(dcl-Form-Show EventHandling/Congrats)
 	)
 
 	(princ)
@@ -36,7 +36,7 @@
 (defun EventHandling_PromptClose (/)
 	(=
 		6 ; 'Yes' result
-		(dcl_MessageBox
+		(dcl-MessageBox
 			"Here's a hint: the answer has three letters. Still want to give up?"
 			"OpenDCL Samples"
 			15 ; Yes/No with 'No' as default
@@ -47,32 +47,32 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:EventHandling_Main_OnInitialize (/)
-	(dcl_Control_SetText EventHandling_Main_txtPassword "")
+(defun c:EventHandling/Main#OnInitialize (/)
+	(dcl-Control-SetText EventHandling/Main/txtPassword "")
 	(princ)
 )
 
-(defun c:EventHandling_Main_txtPassword_OnEditChanged (sText /)
+(defun c:EventHandling/Main/txtPassword#OnEditChanged (sText /)
 	(if (= (strcase sText) "TON")
-		(dcl_Form_Close EventHandling_Main 10) ; return 10 to signal a correct answer
+		(dcl-Form-Close EventHandling/Main 10) ; return 10 to signal a correct answer
 	)
 	(princ)
 )
 
-(defun c:EventHandling_Main_btnGiveUp_OnClicked ()
+(defun c:EventHandling/Main/btnGiveUp#OnClicked ()
 	(if (EventHandling_PromptClose)
-		(dcl_Form_Close EventHandling_Main)
+		(dcl-Form-Close EventHandling/Main)
 	)
 	(princ)
 )
 
-(defun c:EventHandling_Main_OnCancelClose (Canceling /)
+(defun c:EventHandling/Main#OnCancelClose (Canceling /)
 	;; if this event handler returns T, the dialog will not close
 	(not (EventHandling_PromptClose))
 )
 
-(defun c:EventHandling_Congrats_btnExit_OnClicked ()
-	(dcl_Form_Close EventHandling_Congrats)
+(defun c:EventHandling/Congrats/btnExit#OnClicked ()
+	(dcl-Form-Close EventHandling/Congrats)
 	(princ)
 )
 

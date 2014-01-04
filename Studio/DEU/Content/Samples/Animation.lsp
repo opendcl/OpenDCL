@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "Animation.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "Animation.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show Animation_Form1)
+	(dcl-Form-Show Animation/Form1)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -29,31 +29,31 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:Animation_Form1_OnInitialize (/ fn avi)
-	(dcl_Animate_Load Animation_Form1_Animation1 (*ODCL:Samples:FindFile "Clock.avi"))
+(defun c:Animation/Form1#OnInitialize (/ fn avi)
+	(dcl-Animation-Load Animation/Form1/Animation1 (*ODCL:Samples:FindFile "Clock.avi"))
 	(princ)
 )
 
-(defun c:Animation_Form1_cmdRestart_OnClicked (/)
-	(dcl_Animate_Play Animation_Form1_Animation1)
+(defun c:Animation/Form1/cmdRestart#OnClicked (/)
+	(dcl-Animation-Play Animation/Form1/Animation1)
 	(princ)
 )
 
-(defun c:Animation_Form1_cmdStop_OnClicked (/)
-	(dcl_Animate_Stop Animation_Form1_Animation1)
+(defun c:Animation/Form1/cmdStop#OnClicked (/)
+	(dcl-Animation-Stop Animation/Form1/Animation1)
 	(princ)
 )
 
-(defun c:Animation_Form1_cboFrame_OnSelChanged (nSelection sSelText /)
-	(if (zerop (dcl_OptionList_GetCurSel Animation_Form1_optSeekType))
-		(dcl_Animate_Seek Animation_Form1_Animation1 nSelection)
-		(dcl_Animate_Play Animation_Form1_Animation1 nSelection)
+(defun c:Animation/Form1/cboFrame#OnSelChanged (nSelection sSelText /)
+	(if (zerop (dcl-OptionList-GetCurSel Animation/Form1/optSeekType))
+		(dcl-Animation-Seek Animation/Form1/Animation1 nSelection)
+		(dcl-Animation-Play Animation/Form1/Animation1 nSelection)
 	)
 	(princ)
 )
 
-(defun c:Animation_Form1_cmdClose_OnClicked (/)
-	(dcl_Form_Close Animation_Form1)
+(defun c:Animation/Form1/cmdClose#OnClicked (/)
+	(dcl-Form-Close Animation/Form1)
 	(princ)
 )
 

@@ -14,12 +14,12 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "DragNDrop.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "DragNDrop.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show DragNDrop_Form1)
+	(dcl-Form-Show DragNDrop/Form1)
 
-	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl_Form_Show)
+	;; Dies ist ein nicht-modaler Dialog. Das bedeutet, dass (dcl-Form-Show)
 	;; sofort die Kontrolle zurückgibt und das Programm weiterläuft, während
 	;; der Dialog aktiv ist.
 	;; Die Ereignisfunktionen übernehmen erst nachher die Kontrolle und müssen
@@ -30,9 +30,9 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:DragNDrop_Form1_ListView1_OnDragnDropToAutoCAD (3dPoint Viewport / rValue)
-	(Setq rValue (dcl_ListView_GetSelectedItems DragNDrop_Form1_ListView1))
-	(dcl_MessageBox (strcat "Sie schoben \""
+(defun c:DragNDrop/Form1/ListView1#OnDragnDropToAutoCAD (3dPoint Viewport / rValue)
+	(Setq rValue (dcl-ListView-GetSelectedItems DragNDrop/Form1/ListView1))
+	(dcl-MessageBox (strcat "Sie schoben \""
 							(car rValue)
 							"\" zum Punkt ("
 							(rtos (car 3dPoint) 2 4)
@@ -49,9 +49,9 @@
 	(princ)
 )
 
-(defun c:DragNDrop_Form1_OnInitialize (/)
-	(dcl_ListView_AddColumns DragNDrop_Form1_ListView1 (list "Spalte 1" 0 140))
-	(dcl_ListView_FillList DragNDrop_Form1_ListView1
+(defun c:DragNDrop/Form1#OnInitialize (/)
+	(dcl-ListView-AddColumns DragNDrop/Form1/ListView1 (list "Spalte 1" 0 140))
+	(dcl-ListView-FillList DragNDrop/Form1/ListView1
 						   '(("Element 1a" 0) ("Element 2a" 1) ("Element 3a" 2))
 	)
 	(princ)

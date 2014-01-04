@@ -14,13 +14,13 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Projekt laden
-	(dcl_Project_Load (*ODCL:Samples:FindFile "ToolTip.odcl"))
+	(dcl-Project-Load (*ODCL:Samples:FindFile "ToolTip.odcl"))
 
 	;; Dialog anzeigen
-	(dcl_Form_Show ToolTip_dclToolTip)
+	(dcl-Form-Show ToolTip/dclToolTip)
 
 	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl_Form_Show) solange keinen Wert zurückgibt,
+	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
 	;; bis der modale Dialog geschlosswen wird.
 	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
@@ -29,37 +29,37 @@
 
 ;|<<OpenDCL Event Handlers>>|;
 
-(defun c:ToolTip_dclToolTip_OnInitialize ( /)
-    (dcl_ComboBox_SetCurSel ToolTip_dclToolTip_cboColor 1)
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "<Kein>" -1 -1)
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Frage" 1 1)	;; das sind vorgegebene Bilder
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Information" 0 0)	;; das sind vorgegebene Bilder
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Achtung" 2 2)	;; das sind vorgegebene Bilder
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Fehler" 3 3)	;; das sind vorgegebene Bilder
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Bild" 4 4)		;; das sind Bilder der projektinternen Bilder- und Symbolliste
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Ordner" 5 5)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Foto" 6 6)		;; das sind Bilder der projektinternen Bilder- und Symbolliste
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Sound" 7 7)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
-    (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Video" 8 8)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
-    (dcl_ImageComboBox_SetCurSel ToolTip_dclToolTip_cboIcon 0)
-    (dcl_Control_SetText ToolTip_dclToolTip_txtMain "Das ist ein <b>ToolTip</b>.\r\nDas ist die zweite Zeile.")
+(defun c:ToolTip/dclToolTip#OnInitialize ( /)
+    (dcl-ComboBox-SetCurSel ToolTip/dclToolTip/cboColor 1)
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "<Kein>" -1 -1)
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Frage" 1 1)	;; das sind vorgegebene Bilder
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Information" 0 0)	;; das sind vorgegebene Bilder
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Achtung" 2 2)	;; das sind vorgegebene Bilder
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Fehler" 3 3)	;; das sind vorgegebene Bilder
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Bild" 4 4)		;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Ordner" 5 5)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Foto" 6 6)		;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Sound" 7 7)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl-ImageComboBox-AddString ToolTip/dclToolTip/cboIcon "Video" 8 8)	;; das sind Bilder der projektinternen Bilder- und Symbolliste
+    (dcl-ImageComboBox-SetCurSel ToolTip/dclToolTip/cboIcon 0)
+    (dcl-Control-SetText ToolTip/dclToolTip/txtMain "Das ist ein <b>ToolTip</b>.\r\nDas ist die zweite Zeile.")
 )
 
 
-(defun c:ToolTip_dclToolTip_cmdOK_OnClicked ( / intPos)
+(defun c:ToolTip/dclToolTip/cmdOK#OnClicked ( / intPos)
 
-	(dcl_Control_SetToolTipTitle ToolTip_dclToolTip_cmdOK (dcl_Control_GetText ToolTip_dclToolTip_txtTitle))
-	(dcl_Control_SetToolTipMainText ToolTip_dclToolTip_cmdOK (dcl_Control_GetText ToolTip_dclToolTip_txtMain))
-	(dcl_Control_SetToolTipLine ToolTip_dclToolTip_cmdOK (= 1 (dcl_Control_GetValue ToolTip_dclToolTip_chkLine)))
-	(dcl_Control_SetToolTipTitleColor ToolTip_dclToolTip_cmdOK
-                                          (dcl_ComboBox_GetItemData ToolTip_dclToolTip_cboColor
-                                                                    (dcl_ComboBox_GetCurSel ToolTip_dclToolTip_cboColor)))
-	(if (< (abs (setq intPos (dcl_ImageComboBox_GetCurSel ToolTip_dclToolTip_cboIcon))) 5)
-            (dcl_Control_SetToolTipPicture ToolTip_dclToolTip_cmdOK (- intPos))    ;; das sind vorgegebene Bilder (-1 -2 -3 -4)
-            (dcl_Control_SetToolTipPicture ToolTip_dclToolTip_cmdOK (+ 96 intPos)) ;; das sind Bilder der projektinternen Bilder- und Symbolliste
+	(dcl-Control-SetToolTipTitle ToolTip/dclToolTip/cmdOK (dcl-Control-GetText ToolTip/dclToolTip/txtTitle))
+	(dcl-Control-SetToolTipMainText ToolTip/dclToolTip/cmdOK (dcl-Control-GetText ToolTip/dclToolTip/txtMain))
+	(dcl-Control-SetToolTipLine ToolTip/dclToolTip/cmdOK (= 1 (dcl-Control-GetValue ToolTip/dclToolTip/chkLine)))
+	(dcl-Control-SetToolTipTitleColor ToolTip/dclToolTip/cmdOK
+                                          (dcl-ComboBox-GetItemData ToolTip/dclToolTip/cboColor
+                                                                    (dcl-ComboBox-GetCurSel ToolTip/dclToolTip/cboColor)))
+	(if (< (abs (setq intPos (dcl-ImageComboBox-GetCurSel ToolTip/dclToolTip/cboIcon))) 5)
+            (dcl-Control-SetToolTipPicture ToolTip/dclToolTip/cmdOK (- intPos))    ;; das sind vorgegebene Bilder (-1 -2 -3 -4)
+            (dcl-Control-SetToolTipPicture ToolTip/dclToolTip/cmdOK (+ 96 intPos)) ;; das sind Bilder der projektinternen Bilder- und Symbolliste
         ); if
-	(dcl_Control_SetToolTipBalloon ToolTip_dclToolTip_cmdOK (= 1 (dcl_Control_GetValue ToolTip_dclToolTip_chkBalloon)))
-	(dcl_Control_ShowToolTip ToolTip_dclToolTip_cmdOK)
+	(dcl-Control-SetToolTipBalloon ToolTip/dclToolTip/cmdOK (= 1 (dcl-Control-GetValue ToolTip/dclToolTip/chkBalloon)))
+	(dcl-Control-ShowToolTip ToolTip/dclToolTip/cmdOK)
 )
 
 (princ)
