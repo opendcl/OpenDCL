@@ -172,8 +172,14 @@ protected:
 					CStdioFile fFont( sFontPath + _T("\\") + sFilename, CFile::modeRead | CFile::typeText );
 					CString sLine1;
 					fFont.ReadString( sLine1 );
-					if( sLine1 == _T("AutoCAD-86 unifont 1.0") /*|| sLine1 == _T("AutoCAD-86 shapes 1.0")*/ )
+					if( sLine1 == _T("AutoCAD-86 unifont 1.0") )
 						AddFont( sFilename, 6 );
+					//else if( sLine1 == _T("AutoCAD-86 shapes 1.0") )
+					//{
+					// TODO: figure out how to distinguish between font shape files and non-font shape files
+					// as AutoCAD does (e.g. dim.shx is displayed in the STYLE dropdown, genltshp.shx is not.)
+					//	AddFont( sFilename, 6 );
+					//}
 				}
 				CATCH( CFileException, e ) {} END_CATCH
 			}

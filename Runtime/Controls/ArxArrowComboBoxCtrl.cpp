@@ -45,10 +45,10 @@ DWORD CArxArrowComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 	dwStyle |= (WS_VSCROLL | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT);
-	if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
-		dwStyle |= CBS_SORT;
-	else
-		dwStyle &= ~(DWORD)CBS_SORT;
+	//if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
+	//	dwStyle |= CBS_SORT;
+	//else
+	//	dwStyle &= ~(DWORD)CBS_SORT;
 	return dwStyle;
 }
 
@@ -67,26 +67,67 @@ bool CArxArrowComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 		LimitText( pProp->GetLongValue() );
 		break;
 	case Prop::Sorted:
-		if( pProp->GetBooleanValue() )
-			ModifyStyle( 0, CBS_SORT, SWP_FRAMECHANGED );
-		else
-			ModifyStyle( CBS_SORT, 0, SWP_FRAMECHANGED );
+		//if( pProp->GetBooleanValue() )
+		//	ModifyStyle( 0, CBS_SORT, SWP_FRAMECHANGED );
+		//else
+		//	ModifyStyle( CBS_SORT, 0, SWP_FRAMECHANGED );
 		break;
 	}
 	return !bFailed;
+}
+
+bool CArxArrowComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+#if (_ACADTARGET >= 17 && !defined(_BRXTARGET) && !defined(_ZRXTARGET))
+	static bool bVistaOrLater = (LOBYTE(LOWORD(GetVersion())) >= 6);
+	if( bVistaOrLater )
+	{
+	#if (_ACADTARGET == 17)
+		bool bThemeEnabled = GetTheme().IsThemeActive();
+	#else
+		bool bThemeEnabled = IsVistaTheme();
+	#endif
+		if( bThemeEnabled )
+		{
+			if( !pProp->GetBooleanValue() )
+				return false; //AcUi combos don't display correctly when theme is active but disabled for the control
+		}
+	}
+#endif
+	return __super::OnApplyUseVisualStyle( pProp );
 }
 
 BEGIN_MESSAGE_MAP(CArxArrowComboBoxCtrl, CAcUiArrowHeadComboBox)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnCbnDropdown)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CComboBoxCtrl message handlers
+
+LRESULT CArxArrowComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+		case CB_SELECTSTRING:
+		case CB_SETCURSEL:
+			{
+				CString sText;
+				int nCurSel = GetCurSel();
+				if( nCurSel >= 0 )
+					GetLBText( nCurSel, sText );
+				if( sText != mpTemplate->GetStringProperty( Prop::Text ) )
+					mpTemplate->SetStringProperty( Prop::Text, sText );
+			}
+			break;
+	}
+	return lResult;
+}
 
 BOOL CArxArrowComboBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
@@ -103,7 +144,10 @@ void CArxArrowComboBoxCtrl::PostNcDestroy()
 void CArxArrowComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
-	SetEditSel( 0 , -1 );	//combobox is gaining focus, highlight text in edit control
+#if (_ACADTARGET == 17)
+	if( GetTheme().IsThemeActive() )
+		Invalidate();
+#endif
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
@@ -119,7 +163,7 @@ void CArxArrowComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 }
 
-void CArxArrowComboBoxCtrl::OnSelchange()
+void CArxArrowComboBoxCtrl::OnCbnSelchange()
 {
 	int nCurSel = GetCurSel();
 	CString sText;
@@ -128,7 +172,7 @@ void CArxArrowComboBoxCtrl::OnSelchange()
 	mpTemplate->SetStringProperty( Prop::Text, sText );
 }
 
-void CArxArrowComboBoxCtrl::OnDropdown()
+void CArxArrowComboBoxCtrl::OnCbnDropdown()
 {
 	__super::OnDropDown();
 	GetArxServices()->HandleEvent( Prop::EventDropDown );

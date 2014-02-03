@@ -8,11 +8,7 @@
 class CInputFilter;
 
 #ifndef _TComboBase
-	#ifdef __ACADTARGET
-		#define _TComboBase CComboBox
-	#else
-		#define _TComboBase CComboBox
-	#endif //__ACADTARGET
+	#define _TComboBase CComboBox
 #endif //_TComboBase
 
 

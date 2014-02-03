@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DA08ABD2-86B4-4233-BAFB-751DB70D96F0}</ProjectGuid>
     <RootNamespace>StudioResRUS</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

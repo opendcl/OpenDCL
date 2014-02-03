@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AF84D9B-53AA-4ACB-A44A-B0159A12992E}</ProjectGuid>
     <RootNamespace>OpenDCL Studio</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -279,6 +280,8 @@
     <ResourceCompile Include="Studio.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\ThemeAPI.h" />
+    <ClInclude Include="..\Common\UxThemeVI.h" />
     <ClInclude Include="ButtonStyles.h" />
     <ClInclude Include="ChmLib.h" />
     <ClInclude Include="ColorListBox.h" />
@@ -478,6 +481,7 @@
     <ClInclude Include="..\Common\Controls\XPStyleButtonST.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\ThemeAPI.cpp" />
     <ClCompile Include="ButtonStyles.cpp" />
     <ClCompile Include="ChmLib.cpp" />
     <ClCompile Include="ColorListBox.cpp" />

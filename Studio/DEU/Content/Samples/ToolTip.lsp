@@ -7,27 +7,27 @@
 ;; Hauptprogramm
 (defun c:ToolTip (/ cmdecho)
 
-	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
-	;; Projekt laden
-	(dcl-Project-Load (*ODCL:Samples:FindFile "ToolTip.odcl"))
+  ;; Projekt laden
+  (dcl-Project-Load (*ODCL:Samples-FindFile "ToolTip.odcl"))
 
-	;; Dialog anzeigen
-	(dcl-Form-Show ToolTip/dclToolTip)
+  ;; Dialog anzeigen
+  (dcl-Form-Show ToolTip/dclToolTip)
 
-	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
-	;; bis der modale Dialog geschlosswen wird.
-	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
+  ;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+  ;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
+  ;; bis der modale Dialog geschlosswen wird.
+  ;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
-	(princ)
+  (princ)
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|«OpenDCL Event Handlers»|;
 
 (defun c:ToolTip/dclToolTip#OnInitialize ( /)
     (dcl-ComboBox-SetCurSel ToolTip/dclToolTip/cboColor 1)
@@ -48,66 +48,61 @@
 
 (defun c:ToolTip/dclToolTip/cmdOK#OnClicked ( / intPos)
 
-	(dcl-Control-SetToolTipTitle ToolTip/dclToolTip/cmdOK (dcl-Control-GetText ToolTip/dclToolTip/txtTitle))
-	(dcl-Control-SetToolTipMainText ToolTip/dclToolTip/cmdOK (dcl-Control-GetText ToolTip/dclToolTip/txtMain))
-	(dcl-Control-SetToolTipLine ToolTip/dclToolTip/cmdOK (= 1 (dcl-Control-GetValue ToolTip/dclToolTip/chkLine)))
-	(dcl-Control-SetToolTipTitleColor ToolTip/dclToolTip/cmdOK
+  (dcl-Control-SetToolTipTitle ToolTip/dclToolTip/cmdOK (dcl-Control-GetText ToolTip/dclToolTip/txtTitle))
+  (dcl-Control-SetToolTipMainText ToolTip/dclToolTip/cmdOK (dcl-Control-GetText ToolTip/dclToolTip/txtMain))
+  (dcl-Control-SetToolTipLine ToolTip/dclToolTip/cmdOK (= 1 (dcl-Control-GetValue ToolTip/dclToolTip/chkLine)))
+  (dcl-Control-SetToolTipTitleColor ToolTip/dclToolTip/cmdOK
                                           (dcl-ComboBox-GetItemData ToolTip/dclToolTip/cboColor
                                                                     (dcl-ComboBox-GetCurSel ToolTip/dclToolTip/cboColor)))
-	(if (< (abs (setq intPos (dcl-ImageComboBox-GetCurSel ToolTip/dclToolTip/cboIcon))) 5)
+  (if (< (abs (setq intPos (dcl-ImageComboBox-GetCurSel ToolTip/dclToolTip/cboIcon))) 5)
             (dcl-Control-SetToolTipPicture ToolTip/dclToolTip/cmdOK (- intPos))    ;; das sind vorgegebene Bilder (-1 -2 -3 -4)
             (dcl-Control-SetToolTipPicture ToolTip/dclToolTip/cmdOK (+ 96 intPos)) ;; das sind Bilder der projektinternen Bilder- und Symbolliste
         ); if
-	(dcl-Control-SetToolTipBalloon ToolTip/dclToolTip/cmdOK (= 1 (dcl-Control-GetValue ToolTip/dclToolTip/chkBalloon)))
-	(dcl-Control-ShowToolTip ToolTip/dclToolTip/cmdOK)
+  (dcl-Control-SetToolTipBalloon ToolTip/dclToolTip/cmdOK (= 1 (dcl-Control-GetValue ToolTip/dclToolTip/chkBalloon)))
+  (dcl-Control-ShowToolTip ToolTip/dclToolTip/cmdOK)
 )
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
 ;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
 ;;; durch das Installationsprogramm in der Registry eingetragen wurde.
-;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
 ;;; werden in allen Beispieldateien verwendet.
 ;;;
-(or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
-		(setq *ODCL:Prefix
-			(cond
-				(	*ODCL:Prefix
-				) ;_ Bereits definiert
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 32-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					 )
-				) ;_ 32-bit Variante alle Nutzer
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante alle Nutzer
-			)
-		)
-		(cond
-			((findfile file)) ; überprüfe zunächst den Supportpfad
-			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-			(file)
-		)
-	)
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
 )
 
 ;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
@@ -116,18 +111,18 @@
 ;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
 
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
-			(progn
-				(princ (strcat "'" demoname "\n"))
-				(apply (read (strcat "C:" demoname)) nil)
-			)
-			(progn
-				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
-				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
-			)
-		)
-	)
-	"ToolTip"
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "ToolTip"
 )
 (princ)
 

@@ -13,38 +13,40 @@
 
 (defun C:ALLCONTROLS (/ cmdecho)
 
-	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
-	;; Projekt laden
-	(dcl-Project-Load (*ODCL:Samples:FindFile "AllControls.odcl"))
+  ;; Projekt laden
+  (dcl-Project-Load (*ODCL:Samples-FindFile "AllControls.odcl"))
 
-	;; Dialog anzeigen
-	(dcl-Form-Show AllControls/Form1)
+  ;; Dialog anzeigen
+  (dcl-Form-Show AllControls/Form1)
 
-	(princ)
+  (princ)
 )
 
 (defun C:ALLCONTROLS2 (/ cmdecho)
 
-	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
-	;; Projekt laden und Dialog anzeigen
-	(and
-		(dcl-Project-Load (*ODCL:Samples:FindFile "AllControls.odcl"))
-		(not (dcl-Form-IsActive AllControls/Form2))
-		(dcl-Form-show AllControls/Form2)
-	)
+  ;; Projekt laden und Dialog anzeigen
+  (and
+    (dcl-Project-Load (*ODCL:Samples-FindFile "AllControls.odcl"))
+    (not (dcl-Form-IsActive AllControls/Form2))
+    (dcl-Form-show AllControls/Form2)
+  )
 
-	(princ)
+  (princ)
 )
+
+;|«OpenDCL Event Handlers»|;
 
 (defun c:AllControls/Form1#OnInitialize (/ parent)
   (setq parent (dcl-Tree-AddParent AllControls/Form1/TreeControl1 "Baumstruktur" 0 -1 1))
@@ -57,14 +59,14 @@
     "Element 1\tElement  2\tElement  3")
   (dcl-Grid-AddString AllControls/Form1/Grid1
     "Element 1\tElement 2\tElement 3")
-  (dcl-Animation-Load AllControls/Form1/Animation1 (*ODCL:Samples:FindFile "AllControls.avi"))
-  (dcl-BlockView-PreLoadDwg AllControls/Form1/BlockView1 (*ODCL:Samples:FindFile "AllControls.dwg"))
+  (dcl-Animation-Load AllControls/Form1/Animation1 (*ODCL:Samples-FindFile "AllControls.avi"))
+  (dcl-BlockView-PreLoadDwg AllControls/Form1/BlockView1 (*ODCL:Samples-FindFile "AllControls.dwg"))
   (dcl-BlockView-DisplayBlockToScale AllControls/Form1/BlockView1 "Block List")
-  (dcl-SlideView-Load AllControls/Form1/SlideView1 (*ODCL:Samples:FindFile "AllControls.sld"))
+  (dcl-SlideView-Load AllControls/Form1/SlideView1 (*ODCL:Samples-FindFile "AllControls.sld"))
   (dcl-Html-UpdateHtmlCode AllControls/Form1/Html1
     "<HTML><HEAD></HEAD><BODY><h4>Html</h4></BODY></HTML>")
-  (dcl-DWGPreview-LoadDwg AllControls/Form1/DwgPreview1 (*ODCL:Samples:FindFile "AllControls.dwg"))
-  (dcl-BlockList-LoadDwg AllControls/Form1/BlockList1 (*ODCL:Samples:FindFile "AllControls.dwg"))
+  (dcl-DWGPreview-LoadDwg AllControls/Form1/DwgPreview1 (*ODCL:Samples-FindFile "AllControls.dwg"))
+  (dcl-BlockList-LoadDwg AllControls/Form1/BlockList1 (*ODCL:Samples-FindFile "AllControls.dwg"))
   (dcl-Hatch-SetPattern AllControls/Form1/Hatch1 "LINE")
   (princ)
 )
@@ -80,64 +82,59 @@
     "Element 1\tElement 2\tElement 3")
   (dcl-Grid-AddString AllControls/Form2/Grid1
     "Element 1\tElement 2\tElement 3")
-  (dcl-Animation-Load AllControls/Form2/Animation1 (*ODCL:Samples:FindFile "AllControls.avi"))
-  (dcl-BlockView-PreLoadDwg AllControls/Form2/BlockView1 (*ODCL:Samples:FindFile "AllControls.dwg"))
+  (dcl-Animation-Load AllControls/Form2/Animation1 (*ODCL:Samples-FindFile "AllControls.avi"))
+  (dcl-BlockView-PreLoadDwg AllControls/Form2/BlockView1 (*ODCL:Samples-FindFile "AllControls.dwg"))
   (dcl-BlockView-DisplayBlockToScale AllControls/Form2/BlockView1 "Block List")
-  (dcl-SlideView-Load AllControls/Form2/SlideView1 (*ODCL:Samples:FindFile "AllControls.sld"))
+  (dcl-SlideView-Load AllControls/Form2/SlideView1 (*ODCL:Samples-FindFile "AllControls.sld"))
   (dcl-Html-UpdateHtmlCode AllControls/Form2/Html1
     "<HTML><HEAD></HEAD><BODY><h4>Html</h4></BODY></HTML>")
-  (dcl-DWGPreview-LoadDwg AllControls/Form2/DwgPreview1 (*ODCL:Samples:FindFile "AllControls.dwg"))
-  (dcl-BlockList-LoadDwg AllControls/Form2/BlockList1 (*ODCL:Samples:FindFile "AllControls.dwg"))
+  (dcl-DWGPreview-LoadDwg AllControls/Form2/DwgPreview1 (*ODCL:Samples-FindFile "AllControls.dwg"))
+  (dcl-BlockList-LoadDwg AllControls/Form2/BlockList1 (*ODCL:Samples-FindFile "AllControls.dwg"))
   (dcl-Hatch-SetPattern AllControls/Form2/Hatch1 "LINE")
   (princ)
 )
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
 ;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
 ;;; durch das Installationsprogramm in der Registry eingetragen wurde.
-;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
 ;;; werden in allen Beispieldateien verwendet.
 ;;;
-(or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
-		(setq *ODCL:Prefix
-			(cond
-				(	*ODCL:Prefix
-				) ;_ Bereits definiert
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 32-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					 )
-				) ;_ 32-bit Variante alle Nutzer
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante alle Nutzer
-			)
-		)
-		(cond
-			((findfile file)) ; überprüfe zunächst den Supportpfad
-			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-			(file)
-		)
-	)
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
 )
 
 ;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
@@ -146,18 +143,18 @@
 ;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
 
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
-			(progn
-				(princ (strcat "'" demoname "\n"))
-				(apply (read (strcat "C:" demoname)) nil)
-			)
-			(progn
-				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
-				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
-			)
-		)
-	)
-	"AllControls"
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "AllControls"
 )
 (princ)
 

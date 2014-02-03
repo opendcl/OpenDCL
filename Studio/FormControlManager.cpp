@@ -171,7 +171,7 @@ void CFormControlManager::OnLButtonDown(UINT nFlags, CPoint point)
 			if( mbSnapTracker )
 			{
 				mpDlgObject->SnapToGrid( m_rect.BottomRight() );
-				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect );
+				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect, true, false );
 			}
 			else if( !ActivateControlsInRect( m_rect ) )
 				theStudioWorkspace.ActivateDclControl( GetTemplate(), true );
@@ -407,7 +407,7 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 			{
 				mpDlgObject->SnapToGrid( m_rect.TopLeft() );
 				mpDlgObject->SnapToGrid( m_rect.BottomRight() );
-				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect );
+				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect, true, false );
 			}
 			else if( !ActivateControlsInRect( m_rect ) )
 				theStudioWorkspace.ActivateDclControl( GetTemplate() );

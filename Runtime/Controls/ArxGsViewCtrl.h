@@ -78,7 +78,7 @@ protected:
 							
 					CRect rect;
 					mpCtrl->GetClientRect( &rect);
-					mpDevice->onSize( rect.Width(), rect.Height() );   
+					onSize( rect.Width(), rect.Height() );   
 					//a simple view
 					mpView = mpFactory->createView();
 					mpModel = mpManager->createAutoCADModel(); //a model with open/close protocol
@@ -156,6 +156,8 @@ protected:
 			}
 		void onSize( int cx, int cy )
 			{
+				if( cx <= 0 || cy <= 0 )
+					return;
 				if( mpDevice )
 					mpDevice->onSize( cx, cy );
 			}

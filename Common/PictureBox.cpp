@@ -750,14 +750,14 @@ void CPictureBox::OnPaint()
 		return;
 	}
 	CDC memdc;
-  memdc.CreateCompatibleDC( &dc );
-  CBitmap* pBmpSave = memdc.SelectObject( CBitmap::FromHandle( mhbmMem ) );
+	memdc.CreateCompatibleDC( &dc );
+	CBitmap* pBmpSave = memdc.SelectObject( CBitmap::FromHandle( mhbmMem ) );
 
-  // Copy (BitBlt) bitmap from memory DC to screen DC
+	// Copy (BitBlt) bitmap from memory DC to screen DC
 	CRect rcClient;
 	GetClientRect( &rcClient );
-  dc.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &memdc, 0, 0, SRCCOPY );
-  memdc.SelectObject( pBmpSave );
+	dc.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &memdc, 0, 0, SRCCOPY );
+	memdc.SelectObject( pBmpSave );
 }
 
 void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 

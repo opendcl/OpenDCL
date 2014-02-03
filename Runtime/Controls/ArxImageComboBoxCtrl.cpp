@@ -31,8 +31,8 @@ bool CArxImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 }
 
 BEGIN_MESSAGE_MAP(CArxImageComboBoxCtrl, CImageComboBoxCtrl)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnCbnDropdown)
 	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
 	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CArxImageComboBoxCtrl::OnEditchange)
@@ -53,7 +53,7 @@ BOOL CArxImageComboBoxCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CArxImageComboBoxCtrl::OnSelchange() 
+void CArxImageComboBoxCtrl::OnCbnSelchange() 
 {
 	CString sText;
 	int nCurSel = GetCurSel();
@@ -95,7 +95,7 @@ void CArxImageComboBoxCtrl::OnSelchange()
 		GetArxServices()->HandleEvent( sEvent, args_NS( nCurSel, sText ) );
 }
 
-void CArxImageComboBoxCtrl::OnDropdown() 
+void CArxImageComboBoxCtrl::OnCbnDropdown() 
 {
 	GetArxServices()->HandleEvent( Prop::EventDropDown );	
 }

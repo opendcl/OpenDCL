@@ -13,6 +13,7 @@
 #include "UndoManager.h"
 #include "DragDropService.h"
 #include "DialogObject.h"
+#include "ThemeAPI.h"
 #include <algorithm>
 
 
@@ -40,16 +41,27 @@ CDialogControl::~CDialogControl()
 		mpTemplate->SetControlInstance( NULL );
 }
 
-CThemeHelperST* CDialogControl::GetThemeHelper()
-{
-	return (mpControlPane? mpControlPane->GetThemeHelper() : NULL);
-}
-
 ControlType CDialogControl::GetControlType() const
 {
 	if( mpTemplate )
 		return mpTemplate->GetType();
 	return _CtlInvalid;
+}
+
+const WndTheme& CDialogControl::GetTheme() const
+{
+	OnThemeRequested( const_cast< CDialogControl* >(this)->mWndTheme );
+	return mWndTheme;
+}
+
+void CDialogControl::OnThemeChanged()
+{
+	mWndTheme.Close();
+}
+
+void CDialogControl::OnThemeRequested( WndTheme& Theme ) const
+{
+	Theme.Attach( NULL, GetHWnd() );
 }
 
 HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
@@ -215,6 +227,8 @@ bool CDialogControl::IsAsyncEvents() const
 {
 	if( mpControlPane && mpControlPane->IsModal() )
 		return false; // force controls on modal forms to handle events synchronously
+	if( mpControlPane && mpControlPane->IsClosing() )
+		return true;
 	if( mpTemplate )
 		return (mpTemplate->GetLongProperty(Prop::EventInvoke) == 1);
 	return false;
@@ -749,14 +763,10 @@ bool CDialogControl::OnApplyHScrollBar( TPropertyPtr pProp )
 
 bool CDialogControl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 {
-	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
-	if( !pThemeHelper || !pThemeHelper->IsThemeActive() )
-		return false; //visual styles not supported
-	HWND hwnd = mpControlWnd->m_hWnd;
 	if( pProp->GetBooleanValue() )
-		pThemeHelper->SetWindowTheme( hwnd, NULL, NULL );
+		GetTheme().SetWindowTheme( NULL, NULL );
 	else
-		pThemeHelper->SetWindowTheme( hwnd, L"", L"" );
+		GetTheme().SetWindowTheme( L"", L"" );
 	OnNeedRepaint();
 	return true;
 }

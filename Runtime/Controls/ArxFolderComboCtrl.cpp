@@ -62,10 +62,11 @@ bool CArxFolderComboCtrl::ApplyProperty( TPropertyPtr pProp )
 }
 
 BEGIN_MESSAGE_MAP(CArxFolderComboCtrl, CFolderComboCtrl)
-	ON_REGISTERED_MESSAGE(CFolderTreeCtrl::refWM_SELCHANGE(), OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
-	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnCbnDropdown)
+	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCbnCloseup)
+	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnCbnKillfocus)
+	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnCbnSetfocus)
 	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
@@ -83,16 +84,16 @@ BOOL CArxFolderComboCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
+void CArxFolderComboCtrl::OnCbnSelchange()
 {
-	__super::OnSelchange( wParam, lParam );
+	CString sPath = GetSelectedPath();
+	if( sPath.CompareNoCase( mpTemplate->GetStringProperty( Prop::Text ) ) != 0 )
+	{
+		mpTemplate->SetStringProperty( Prop::Text, sPath );
 
-	HTREEITEM hItem = (HTREEITEM)lParam;
-	CString sPath = GetItemPath(hItem);
-	mpTemplate->SetStringProperty( Prop::Text, sPath );
-
-	if( mpDwgList )
-		mpDwgList->Dir( sPath );
+		if( mpDwgList )
+			mpDwgList->Dir( sPath );
+	}
 
 	CString sEvent = mpTemplate->GetStringProperty(Prop::EventSelChanged);
 	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
@@ -114,12 +115,22 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 	}
 	else if( !sEvent.IsEmpty() )
 		GetArxServices()->HandleEvent( sEvent, args_NS( GetCurSel(), sPath ) );
-	return 0;
 }
 
-void CArxFolderComboCtrl::OnDropdown() 
+void CArxFolderComboCtrl::OnCbnDropdown() 
 {
 	GetArxServices()->HandleEvent( Prop::EventDropDown );	
+}
+
+void CArxFolderComboCtrl::OnCbnCloseup() 
+{
+	CString sPath = GetSelectedPath();
+	if( sPath != mpTemplate->GetStringProperty( Prop::Text ) )
+	{
+		mpTemplate->SetStringProperty( Prop::Text, sPath );
+		if( mpDwgList )
+			mpDwgList->Dir( sPath );
+	}
 }
 
 void CArxFolderComboCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -128,12 +139,12 @@ void CArxFolderComboCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
-void CArxFolderComboCtrl::OnKillfocus() 
+void CArxFolderComboCtrl::OnCbnKillfocus() 
 {
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
-void CArxFolderComboCtrl::OnSetfocus() 
+void CArxFolderComboCtrl::OnCbnSetfocus() 
 {
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }

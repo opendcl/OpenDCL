@@ -29,5 +29,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
  
 protected:
-	afx_msg void OnSelchange();
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg void OnCbnSelchange();
 };

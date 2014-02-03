@@ -120,7 +120,7 @@ bool CButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
-				SetThemeHelper( mpControlPane->GetThemeHelper() );
+				SetThemeHelper( &mThemeHelper );
 				break;
 			default:
 				mbUsingPresetGraphic = false;

@@ -6,6 +6,9 @@
 #include "Resource.h"
 #include "Workspace.h"
 #include "FolderComboBox.h"
+#include <shellapi.h>
+#include <comdef.h>
+#include <vector>
 
 // multi-monitor stubs to fake support for multiple monitors in Win95 and WinNT
 //#define COMPILE_MULTIMON_STUBS //stubs are already defined by PPToolTip.cpp
@@ -13,34 +16,22 @@
 
 #undef SubclassWindow
 
-#define FOLDER_ICON			0
-#define FOLDER_EXPAND_ICON	1
-#define NETWORK_ICON		2
-#define DESKTOP_ICON		3
-#define MYCOMPUTER_ICON		4
-#define FLOPPY_ICON			5
-#define HARDDRIVE_ICON		6
-#define CDROM_ICON			7
-#define CONTROLPANEL_ICON	8
-#define MY_DOCUMENT_ICON	9
+#ifndef WM_ACAD_KEEPFOCUS
+#define WM_ACAD_KEEPFOCUS (0x0400+0x6D01)
+#endif
 
-class CFolder  
+enum _Icons
 {
-public:
-	CFolder() : mnImg( -1 ), mnImgExpanded( -1 ) {}
-	CFolder( LPCTSTR pszDisplayName, LPCTSTR pszPath, int nImg = 0, int nImgExpanded = 1 )
-		: mnImg( nImg )
-		, mnImgExpanded( nImgExpanded )
-		, msDisplayName( pszDisplayName )
-		, msPath( pszPath )
-		{}
-	virtual ~CFolder() {}
-
-public:
-	int mnImg;
-	int mnImgExpanded;
-	CString msDisplayName;
-	CString msPath;
+	FOLDER_ICON = 0,
+	FOLDER_OPEN_ICON = 1,
+	NETWORK_ICON = 2,
+	DESKTOP_ICON = 3,
+	MYCOMPUTER_ICON = 4,
+	FLOPPY_ICON = 5,
+	HARDDRIVE_ICON = 6,
+	CDROM_ICON = 7,
+	CONTROLPANEL_ICON = 8,
+	MY_DOCUMENT_ICON = 9,
 };
 
 
@@ -49,12 +40,15 @@ public:
 
 CFolderTreeCtrl::CFolderTreeCtrl()
 : mhtiSelected( NULL )
+, mdwLastCharTime( 0 )
 , mpFolderCombo( NULL )
+, mbTracking( true )
+, mpActiveWnd( NULL )
 {
-	CBitmap bitmap;
-	bitmap.LoadBitmap( IDB_FOLDER );
-	mImageList.Create( 16, 16, ILC_COLOR24, 10, 5 );
-	mImageList.Add( &bitmap, RGB(0,0,0) );
+	CBitmap bmpIList;
+	bmpIList.LoadBitmap( IDB_FOLDER ); //161 x 18, 24-bit
+	mImageList.Create( 16, 16, ILC_MASK | ILC_COLOR24, 10, 5 );
+	mImageList.Add( &bmpIList, RGB(255,255,255) );
 }
 
 CFolderTreeCtrl::~CFolderTreeCtrl()
@@ -70,8 +64,8 @@ bool CFolderTreeCtrl::Create( CFolderComboBox* pFolderCombo, const CRect& rectWn
 	INITCOMMONCONTROLSEX ICC = { sizeof(INITCOMMONCONTROLSEX), ICC_TREEVIEW_CLASSES };
 	InitCommonControlsEx( &ICC );
 	HWND hwndTreeCtrl =
-		::CreateWindow( _T("SysTreeView32"), _T(""), dwStyle, rectWnd.left, rectWnd.top, rectWnd.Width(), rectWnd.Height(),
-										pFolderCombo->GetParent()->m_hWnd, NULL, theWorkspace.GetThisModule(), NULL );
+		::CreateWindowEx( WS_EX_TOOLWINDOW | WS_EX_TOPMOST, _T("SysTreeView32"), _T(""), WS_CHILDWINDOW | dwStyle, rectWnd.left, rectWnd.top, rectWnd.Width(), rectWnd.Height(),
+											pFolderCombo->m_hWnd, NULL, theWorkspace.GetThisModule(), NULL );
 	if( !hwndTreeCtrl )
 		return false;
 #ifdef _UNICODE
@@ -84,178 +78,122 @@ bool CFolderTreeCtrl::Create( CFolderComboBox* pFolderCombo, const CRect& rectWn
 		return false;
 
 	SetImageList( &mImageList, TVSIL_NORMAL );
-	EnumFolders();
+
+	CoInitialize( NULL );
+	AddMyComputer();
+	CoUninitialize();
 	return true;
 }
 
-//static
-const UINT& CFolderTreeCtrl::refWM_SELCHANGE()
-{
-	static const UINT WM_SELCHANGE = RegisterWindowMessage( _T("OpenDCL.FolderTree.SelChange") );
-	return WM_SELCHANGE;
-}
-
-void CFolderTreeCtrl::FreeMemory()
-{	
-	FreeMemory(GetRootItem());
-	DeleteAllItems();
-}
-
-HTREEITEM CFolderTreeCtrl::FreeMemory(HTREEITEM hItem)
-{
-	if(!hItem)
-		return NULL;
-	if( !m_hWnd )
-		return NULL;
-
-	CFolder* folder = (CFolder*)GetItemData(hItem);
-	if (folder!=NULL)
-		delete folder;
-	
-	HTREEITEM hRet = NULL;
-	if (ItemHasChildren(hItem))
-		hRet = FreeMemory(GetChildItem(hItem));
-
-	if(hRet == NULL)
-		hRet = FreeMemory(GetNextSiblingItem(hItem));
-
-	return hRet;
-}
-
-void CFolderTreeCtrl::Hide()
-{
-	ShowWindow(SW_HIDE);
-	if( mpFolderCombo )
-		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_CLOSEUP), (LPARAM)m_hWnd );
-	// collapse the child when selected the parent?
-	// Expand(m_selectedItem, TVE_COLLAPSE);
-}
-
-void CFolderTreeCtrl::Inform()
-{
-	if( mpFolderCombo )
-	{
-		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_SELENDOK), (LPARAM)m_hWnd );
-		mpFolderCombo->SendMessage( refWM_SELCHANGE(), 0, (LPARAM)mhtiSelected );
-	}
-}
-
-HTREEITEM CFolderTreeCtrl::GetSelectedItem()
+HTREEITEM CFolderTreeCtrl::GetSelectedItem() const
 {
 	return mhtiSelected;
 }
 
-BOOL CFolderTreeCtrl::SelectItem(HTREEITEM item)
+BOOL CFolderTreeCtrl::SelectItem( HTREEITEM hItem )
 {
-	mhtiSelected = item;
-	return __super::SelectItem(item);
+	if( !__super::SelectItem( hItem ) )
+		return FALSE;
+	Expand( hItem, TVE_EXPAND );
+	CommitCurrentItem();
+	return TRUE;
 }
 
-CString CFolderTreeCtrl::GetItemDisplayName(HTREEITEM item)
+CString CFolderTreeCtrl::GetItemDisplayName( HTREEITEM hItem ) const
 {
-	if( !m_hWnd )
-		return CString();
-	CFolder* pFolder = (CFolder*)GetItemData( item );
-	if( !pFolder )
-		return CString();
-	return pFolder->msDisplayName;
+	CString sName;
+	if( hItem && m_hWnd )
+		sName = GetItemText( hItem );
+	return sName;
 }
 
-CString CFolderTreeCtrl::GetItemPath(HTREEITEM item)
+CString CFolderTreeCtrl::GetItemPath( HTREEITEM hItem ) const
 {
-	if( !m_hWnd )
-		return CString();
-	CFolder* pFolder = (CFolder*)GetItemData( item );
-	if( !pFolder )
-		return CString();
-	return pFolder->msPath;
+	CString sPath;
+	if( hItem && m_hWnd )
+	{
+		CString* pCString = (CString*)GetItemData( hItem );
+		if( pCString )
+			sPath = *pCString;
+	}
+	return sPath;
 }
 
-int CFolderTreeCtrl::GetItemImageIndex(HTREEITEM item)
+int CFolderTreeCtrl::GetItemImageIndex( HTREEITEM hItem ) const
 {
-	if( !m_hWnd )
+	if( !hItem || !m_hWnd )
 		return -1;
-	CFolder* pFolder = (CFolder*)GetItemData( item );
-	if( !pFolder )
-		return -1;
-	return pFolder->mnImg;
+	int idxNormal = -1;
+	int idxSelected = -1;
+	GetItemImage( hItem, idxNormal, idxSelected );
+	return idxNormal;
 }
 
 
-HTREEITEM CFolderTreeCtrl::AddFolder(CFolder* folder, HTREEITEM parent, bool bCurrentDir)
+HTREEITEM CFolderTreeCtrl::AddFolder( LPCTSTR pszDisplayName, LPCTSTR pszPath, int nImg, int nImgExpanded, HTREEITEM htiParent )
 {
-	if (folder == NULL)
+	if (!pszDisplayName || !*pszDisplayName)
 		return NULL;
 
-	int imageIndex = folder->mnImg;
-
-	if (bCurrentDir)
-		imageIndex = 1;
-	HTREEITEM item = InsertItem(folder->msDisplayName, 
-							imageIndex, imageIndex, parent);
-	SetItemData(item, (DWORD_PTR)folder);
-	return item;
+	HTREEITEM htiNewFolder = InsertItem( pszDisplayName, nImg, nImgExpanded, htiParent );
+	if( htiNewFolder && pszPath && *pszPath )
+		SetItemData(htiNewFolder, (DWORD_PTR)new CString(pszPath));
+	return htiNewFolder;
 }
 
-void CFolderTreeCtrl::AddPath( LPCTSTR pszPath )
+HTREEITEM CFolderTreeCtrl::AddPath( LPCTSTR pszPath )
 {
-	HTREEITEM item, parent;
-	CStringArray foldersArray, foldersDescArray;
-	CString desc, tmp, str;
-
-	CString dir = pszPath;
-	
-	int len = dir.GetLength();
-	if (len > 0 && dir[len-1] != _T('\\'))
-		dir = dir + _T("\\");
-
-	int n = dir.Find(_T('\\'));
-	while (n != -1)
-	{	desc = dir.Left(n);
-		str = str + desc + _T("\\");
-		tmp = str;
-		if (str.GetLength()>0 && foldersArray.GetSize()>0)
-			tmp = str.Left(str.GetLength()-1);
-		foldersArray.Add(tmp);
-		foldersDescArray.Add(desc);
-		dir = dir.Mid(n+1);
-		n = dir.Find(_T('\\'));
+	if( !pszPath || !pszPath[0] )
+	{
+		CoInitialize( NULL );
+		HTREEITEM htiNew = AddMyComputer();
+		CoUninitialize();
+		CommitCurrentItem();
+		return htiNew;
 	}
-
-	int cnt = foldersArray.GetSize();
-	if (cnt <= 0)
-		return;
-
-	item = GetRootItem();
-	item = SearchPath(item, foldersArray.GetAt(0));
-	parent = item;
-	int i = 0;
-	while (item && i<cnt)
-	{	item = SearchChildOneLevel(item, foldersArray.GetAt(i));
-		if (item != NULL)
-		{	parent = item;
-			item = GetChildItem(item);
+	if( *pszPath == _T('\\') && !pszPath[1] )
+	{
+		CoInitialize( NULL );
+		HTREEITEM htiNew = AddDesktop();
+		CoUninitialize();
+		CommitCurrentItem();
+		return htiNew;
+	}
+	TCHAR szFullPath[MAX_PATH] = _T("");
+	GetFullPathName( pszPath, MAX_PATH, szFullPath, NULL );
+	CString sPathRemaining = szFullPath;
+	CString sPathPrefix;
+	HTREEITEM htiFolder = NULL;
+	while( !sPathRemaining.IsEmpty() )
+	{
+		CString sFolder = sPathRemaining.SpanExcluding(_T("\\/"));
+		sPathRemaining = sPathRemaining.Mid( sFolder.GetLength() ).TrimLeft(_T("\\/"));
+		if( !sPathPrefix.IsEmpty() && sPathPrefix.GetAt( sPathPrefix.GetLength() - 1 ) != _T('\\') )
+			sPathPrefix += _T('\\');
+		else if( sFolder.GetLength() == 2 && sFolder.GetAt(1) == _T(':') )
+			sFolder += _T('\\');
+		sPathPrefix += sFolder;
+		HTREEITEM htiSubFolder = NULL;
+		if( !htiFolder )
+		{
+			htiFolder = GetRootItem();
+			htiSubFolder = SearchPath( htiFolder, sFolder );
 		}
-		else 
-			break;
-		i++;
-	}
-
-	cnt = foldersArray.GetSize();
-	while (i < cnt)
-	{	
-		if (i == cnt -1)
-			parent = AddFolder(new CFolder(foldersDescArray.GetAt(i), foldersArray.GetAt(i)), parent, true);
 		else
-			parent = AddFolder(new CFolder(foldersDescArray.GetAt(i), foldersArray.GetAt(i)), parent);
-		i++;
+			htiSubFolder = SearchChildOneLevel( htiFolder, sPathPrefix );
+		if( htiSubFolder )
+			htiFolder = htiSubFolder;
+		else
+		{
+			htiFolder = AddFolder( sFolder, sPathPrefix, FOLDER_ICON, FOLDER_OPEN_ICON, htiFolder );
+			if( htiFolder )
+				Expand( htiFolder, TVE_EXPAND );
+		}
 	}
-	
-	item = parent;
-	SelectItem(item);
+	return htiFolder;
 }
 
-HTREEITEM CFolderTreeCtrl::SearchPath( HTREEITEM hItem, LPCTSTR pszPath )
+HTREEITEM CFolderTreeCtrl::SearchPath( HTREEITEM hItem, LPCTSTR pszPath, bool bExactMatch /*= true*/ ) const
 {
 	if( hItem == TVI_ROOT )
 		hItem = GetRootItem();
@@ -263,80 +201,56 @@ HTREEITEM CFolderTreeCtrl::SearchPath( HTREEITEM hItem, LPCTSTR pszPath )
 		return NULL;
 	if( !m_hWnd )
 		return NULL;
-	CFolder* pFolder = (CFolder*)GetItemData( hItem );
-	if( pFolder && pFolder->msPath.CompareNoCase( pszPath ) == 0 )
-		return hItem;
-	hItem = GetNextItem( hItem, TVGN_CHILD );
-	while( hItem )
+	CString sPath = pszPath;
+	sPath = sPath.TrimRight(_T("\\/"));
+	if( sPath.GetLength() == 2 && sPath.GetAt(1) == _T(':') )
+		sPath += _T('\\');
+	CString* pCString = (CString*)GetItemData( hItem );
+	if( pCString && pCString->GetLength() >= sPath.GetLength() )
 	{
-		HTREEITEM htiFound = SearchPath( hItem, pszPath );
-		if( htiFound )
-			return htiFound;
-		hItem = GetNextSiblingItem( hItem );
-	}
-	return NULL;
-}
-
-HTREEITEM CFolderTreeCtrl::SearchFolder( HTREEITEM hItem, LPCTSTR pszFolderName )
-{
-	if( hItem == TVI_ROOT )
-		hItem = GetRootItem();
-	if( !hItem )
-		return NULL;
-	if( !m_hWnd )
-		return NULL;
-	CFolder* pFolder = (CFolder*)GetItemData( hItem );
-	if( pFolder && pFolder->msDisplayName.CompareNoCase( pszFolderName ) == 0 )
-		return hItem;
-	hItem = GetNextItem( hItem, TVGN_CHILD );
-	while( hItem )
-	{
-		HTREEITEM htiFound = SearchFolder( hItem, pszFolderName );
-		if( htiFound )
-			return htiFound;
-		hItem = GetNextSiblingItem( hItem );
-	}
-	return NULL;
-}
-
-HTREEITEM CFolderTreeCtrl::SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath )
-{
-	if( !m_hWnd )
-		return NULL;
-	CFolder* folder;
-	while (hItem)
-	{	
-		folder = (CFolder*)GetItemData(hItem);
-		if (folder!=NULL && folder->msPath.CompareNoCase(pszPath)==0) 
+		CString sCompare = (bExactMatch? *pCString : pCString->Left(sPath.GetLength()));
+		if( sCompare.CompareNoCase( sPath ) == 0 )
 			return hItem;
-
-		hItem = GetNextSiblingItem(hItem);		
+	}
+	hItem = GetNextItem( hItem, TVGN_CHILD );
+	while( hItem )
+	{
+		HTREEITEM htiFound = SearchPath( hItem, sPath, bExactMatch );
+		if( htiFound )
+			return htiFound;
+		hItem = GetNextSiblingItem( hItem );
 	}
 	return NULL;
 }
 
-CString CFolderTreeCtrl::GetSelectedDisplayName()
+HTREEITEM CFolderTreeCtrl::SearchChildOneLevel( HTREEITEM hItem, LPCTSTR pszPath ) const
 {
-	CString sPath;
-	if( m_hWnd && mhtiSelected )
-	{
-		CFolder* pFolder = (CFolder*)GetItemData( mhtiSelected );
-		if( pFolder )
-			sPath = pFolder->msDisplayName;
+	if( !hItem )
+		return NULL;
+	if( !m_hWnd )
+		return NULL;
+	hItem = GetChildItem( hItem );
+	while( hItem )
+	{	
+		CString* pCString = (CString*)GetItemData( hItem );
+		if( pCString && pCString->CompareNoCase( pszPath ) == 0 )
+			return hItem;
+		hItem = GetNextSiblingItem( hItem );		
 	}
-	return sPath;
+	return NULL;
 }
 
-CString CFolderTreeCtrl::GetSelectedPath()
+CString CFolderTreeCtrl::GetSelectedDisplayName() const
 {
-	CString sPath;
+	CString sName;
 	if( m_hWnd && mhtiSelected )
-	{
-		CFolder* pFolder = (CFolder*)GetItemData( mhtiSelected );
-		if( pFolder )
-			sPath = pFolder->msPath;
-	}
-	return sPath;
+		sName = GetItemText( mhtiSelected );
+	return sName;
+}
+
+CString CFolderTreeCtrl::GetSelectedPath() const
+{
+	return GetItemPath( mhtiSelected );
 }
 
 bool CFolderTreeCtrl::SelectPath( LPCTSTR pszPath )
@@ -346,225 +260,321 @@ bool CFolderTreeCtrl::SelectPath( LPCTSTR pszPath )
 	return (hti != NULL);
 }
 
-bool CFolderTreeCtrl::SelectFolder( LPCTSTR pszFolderName )
+//Machinery to map CSIDL to absolute PIDL in order to map special fodlers to icons in the tree control's image list
+typedef int CSIDL;
+typedef int ICONINDEX;
+struct T_data
 {
-	HTREEITEM hti = SearchFolder( TVI_ROOT, pszFolderName );
-	SelectItem( hti );
-	return (hti != NULL);
-}
-
-void CFolderTreeCtrl::AddDrives(HTREEITEM myComputer)
+	LPITEMIDLIST pidl;
+	ICONINDEX iconNormal;
+	ICONINDEX iconOpened;
+	T_data() : pidl(NULL), iconNormal(-1), iconOpened(-1) {}
+	T_data(LPITEMIDLIST _pidl, ICONINDEX _iconNormal, ICONINDEX _iconOpened)
+		: pidl(_pidl), iconNormal(_iconNormal), iconOpened(_iconOpened)
+		{}
+};
+class SpecialFolderIconMap
 {
-	// load drives
-	DWORD drives = GetLogicalDrives();
-	if (drives != 0)
-	{	
-		CString str;
-		CString driveDesc;
-		int iconID = HARDDRIVE_ICON;
-		TCHAR driveName[] = _T("A:\\");
-		char driveLetter = _T('A');
-		long bits = 1;
-		SHFILEINFO sfi;
-		UINT flags = SHGFI_DISPLAYNAME;
-		int size = sizeof(drives) * 8;
-		for (int i=0; i<size; i++)
-		{			
-			driveName[0] = driveLetter;
-			driveDesc.Format(_T("Drive (%c:)"), driveLetter);
-						 
-			if (SHGetFileInfo(driveName, 0, &sfi, sizeof(sfi), flags))
-				driveDesc = sfi.szDisplayName;
-			if (GetDriveType(driveName)==DRIVE_REMOVABLE)
-				iconID = FLOPPY_ICON;
-			else if (GetDriveType(driveName)==DRIVE_CDROM)
-				iconID = CDROM_ICON;
-			else
-				iconID = HARDDRIVE_ICON;
-
-			if (drives & bits)
-				AddFolder(new CFolder(driveDesc, driveName, iconID, iconID), myComputer);
-			bits = bits << 1;
-			driveLetter += 1;
-		}
-	}
-}
-
-void CFolderTreeCtrl::EnumFolders()
-{
-	HTREEITEM myComputer;
-		LPMALLOC pMalloc;
-		LPITEMIDLIST pidlItems = NULL;
-		IShellFolder *psfDeskTop = NULL;
-		LPENUMIDLIST ppenum = NULL;
-		ULONG celtFetched;
-		HRESULT hr;
-		STRRET strDispName;
-		TCHAR pszDisplayName[MAX_PATH];
-		ULONG uAttr;
-	LPITEMIDLIST pidl = NULL;
-		CString sMyComputer;
-	CString sRecycle;
-	CString sMyDocuments;
-	CString sSharedDocuments;
-	CString sNetwork;
-
-		CoInitialize( NULL );
-
-	
-	hr = SHGetMalloc(&pMalloc);
-
-	hr = SHGetDesktopFolder(&psfDeskTop);
-	
-	hr = psfDeskTop->GetDisplayNameOf(NULL, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-
-	TCHAR szPath[MAX_PATH] = _T("");
-	CComQIPtr<IPersistFolder2> ipf2_desktop(psfDeskTop);
-	if( ipf2_desktop )
+	IShellFolder* mpSfRoot;
+	typedef std::vector< T_data > T_map;
+	T_map mMap;
+public:
+	SpecialFolderIconMap(IShellFolder* pSfRoot) : mpSfRoot( pSfRoot )
 	{
-		LPITEMIDLIST pidlDesktop = NULL;
-		if (SUCCEEDED(ipf2_desktop->GetCurFolder( &pidlDesktop )))
-			SHGetPathFromIDList( pidlDesktop, szPath );
+		add(CSIDL_DESKTOP, DESKTOP_ICON);
+		add(CSIDL_PERSONAL, MY_DOCUMENT_ICON);
+		add(CSIDL_BITBUCKET, FOLDER_ICON, FOLDER_OPEN_ICON);
+		add(CSIDL_DRIVES, MYCOMPUTER_ICON);
+		add(CSIDL_COMMON_DOCUMENTS, FOLDER_ICON, FOLDER_OPEN_ICON);
+		add(CSIDL_NETWORK, NETWORK_ICON);
 	}
-	if( !szPath[0] )
-		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-
-	HTREEITEM desktop = AddFolder(new CFolder(pszDisplayName, szPath, DESKTOP_ICON, DESKTOP_ICON));
-			
-		psfDeskTop->Release();
-
-	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_PERSONAL, &pidl);
-	
-	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-
-	sMyDocuments = pszDisplayName;
-	
-	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
-		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-	
-	AddFolder(new CFolder(pszDisplayName, szPath, MY_DOCUMENT_ICON, MY_DOCUMENT_ICON), desktop);		
-
-	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_BITBUCKET , &pidl);
-	
-	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-
-	sRecycle = pszDisplayName;
-	
-		hr = psfDeskTop->EnumObjects(NULL,SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &ppenum);
-	
-
-	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_DRIVES, &pidl);
-				
-	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-	
-	sMyComputer = pszDisplayName;
-	
-	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
-		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-	
-	myComputer = AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), desktop);
-	
-	AddDrives(myComputer);
-
-
-	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_COMMON_DOCUMENTS , &pidl);
-	
-	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-	
-	sSharedDocuments = pszDisplayName;
-	
-	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
-		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-	
-	AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), myComputer);
-
-
-	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_PERSONAL, &pidl);
-	
-	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-	
-	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
-		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-	
-	AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), myComputer);
-
-
-	SHGetSpecialFolderLocation(this->m_hWnd, CSIDL_NETWORK, &pidl);
-	
-	hr = psfDeskTop->GetDisplayNameOf(pidl, SHGDN_NORMAL, &strDispName);
-	StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-
-	sNetwork = pszDisplayName;
-	
-	if (!SUCCEEDED(SHGetPathFromIDList( pidl, szPath )))
-		lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-
-	AddFolder(new CFolder(pszDisplayName, szPath, NETWORK_ICON, NETWORK_ICON), desktop);	
-
-	
-	
-	// look through the enum list and extract the appropriate directory names.
-		while( (hr = ppenum->Next(1, &pidlItems, &celtFetched), hr) == S_OK && celtFetched == 1)
+	~SpecialFolderIconMap()
+	{
+		for( T_map::iterator iter = mMap.begin(); iter != mMap.end(); ++iter )
 		{
-				psfDeskTop->GetDisplayNameOf(pidlItems, SHGDN_INFOLDER, &strDispName);
-				StrRetToBuf(&strDispName, pidlItems, pszDisplayName, MAX_PATH);
-
-		uAttr = SFGAO_FOLDER;
-				psfDeskTop->GetAttributesOf(1, (LPCITEMIDLIST *) &pidlItems, &uAttr);
-				if(uAttr & SFGAO_FOLDER)
-				{
-			if (pszDisplayName != sMyComputer &&
-				pszDisplayName != sRecycle &&
-				pszDisplayName != sMyDocuments &&
-				pszDisplayName != sSharedDocuments &&
-				pszDisplayName != sNetwork)
-			{
-	
-				if (!SUCCEEDED(SHGetPathFromIDList( pidlItems, szPath )))
-					lstrcpyn( szPath, pszDisplayName, MAX_PATH );
-				AddFolder(new CFolder(pszDisplayName, szPath, FOLDER_ICON, FOLDER_EXPAND_ICON), desktop);
-			}
-			}
-				
-		pMalloc->Free(pidlItems);
+			LPITEMIDLIST pidl = iter->pidl;
+			if( pidl )
+				CoTaskMemFree( pidl );
 		}
+	}
+	CSIDL lookupIcons(const LPITEMIDLIST pidl, int& iconNormal, int& iconOpened) const
+	{
+		iconNormal = -1;
+		iconOpened = -1;
+		if( !mpSfRoot )
+			return -1;
+		CSIDL csidl = 0;
+		for( T_map::const_iterator iter = mMap.begin(); iter != mMap.end(); ++iter, ++csidl )
+		{
+			LPITEMIDLIST pidlTest = iter->pidl;
+			if( pidl )
+			{
+				HRESULT hr = mpSfRoot->CompareIDs( 0, pidl, pidlTest );
+				if( HRESULT_CODE(hr) == 0 )
+				{
+					iconNormal = iter->iconNormal;
+					iconOpened = iter->iconOpened;
+					return csidl;
+				}
+			}
+		}
+		return -1;
+	}
+protected:
+	HRESULT add(CSIDL csidl, int idxNormalIcon, int idxOpenedIcon = -1)
+	{
+		if( csidl < 0 )
+			return E_INVALIDARG;
+		LPITEMIDLIST pidl;
+		HRESULT hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
+		if( FAILED(hr) )
+			return hr;
+		if( mMap.size() <= T_map::size_type(csidl) )
+			mMap.resize( T_map::size_type(csidl) + 1 );
+		mMap[csidl] = T_data( pidl, idxNormalIcon, idxOpenedIcon >= 0? idxOpenedIcon : idxNormalIcon );
+		return S_OK;
+	}
+};
 
-		
-		ppenum->Release();
-	
-		CoUninitialize();
-	
-	Expand(desktop, TVE_EXPAND);
-	Expand(myComputer, TVE_EXPAND);
-	
-	SelectItem(desktop);
+HRESULT CFolderTreeCtrl::AddSubfolders( IShellFolder* pSfRoot, IShellFolder* pSfParent, HTREEITEM htiParent )
+{
+	CComPtr< IEnumIDList > pEidlSubfolders;
+	HRESULT hr = pSfParent->EnumObjects( NULL, SHCONTF_FOLDERS, &pEidlSubfolders );
+	if( FAILED(hr) )
+		return hr;
+	if( !pEidlSubfolders )
+		return S_OK;
+
+	static SpecialFolderIconMap IconMap( pSfRoot );
+
+	while( 1 )
+	{
+		ULONG ctFetched = 0;
+		LPITEMIDLIST pidlRelSubfolder = NULL;
+		hr = pEidlSubfolders->Next( 1, &pidlRelSubfolder, &ctFetched );
+		if( FAILED(hr) )
+			return hr;
+		if( hr == S_FALSE || ctFetched == 0 )
+			break;
+
+		CComPtr< IShellFolder > pSfSubfolder;
+		hr = pSfParent->BindToObject( pidlRelSubfolder, NULL, IID_IShellFolder, (void**)&pSfSubfolder );
+		if( SUCCEEDED(hr) )
+		{
+			STRRET strDisplayName;
+			hr = pSfParent->GetDisplayNameOf( pidlRelSubfolder, SHGDN_NORMAL, &strDisplayName );
+			if( SUCCEEDED(hr) )
+			{
+				STRRET strFolderPath;
+				hr = pSfParent->GetDisplayNameOf( pidlRelSubfolder, SHGDN_FORPARSING, &strFolderPath );
+				if( SUCCEEDED(hr) )
+				{
+					LPTSTR pszSubfolderPath = NULL;
+					hr = StrRetToStr( &strFolderPath, NULL, &pszSubfolderPath );
+					if( SUCCEEDED(hr) )
+					{
+						if( SUCCEEDED(hr) )
+						{
+							CComQIPtr< IPersistFolder2 > pPfSubfolder( pSfSubfolder );
+							if( pPfSubfolder )
+							{
+								LPITEMIDLIST pidlAbsSubfolder = NULL;
+								hr = pPfSubfolder->GetCurFolder( &pidlAbsSubfolder );
+								if( SUCCEEDED(hr) )
+								{
+									int idxNormalIcon = -1;
+									int idxOpenIcon = -1;
+									CSIDL csidl = IconMap.lookupIcons(pidlAbsSubfolder, idxNormalIcon, idxOpenIcon);
+									CoTaskMemFree(pidlAbsSubfolder);
+									if( csidl < 0 )
+									{
+										switch( GetDriveType(pszSubfolderPath) )
+										{
+										case DRIVE_UNKNOWN:
+										case DRIVE_NO_ROOT_DIR:
+											break;
+										case DRIVE_REMOVABLE:
+											idxNormalIcon = FLOPPY_ICON;
+											idxOpenIcon = FLOPPY_ICON;
+											break;
+										case DRIVE_CDROM:
+											idxNormalIcon = CDROM_ICON;
+											idxOpenIcon = CDROM_ICON;
+											break;
+										default:
+											idxNormalIcon = HARDDRIVE_ICON;
+											idxOpenIcon = HARDDRIVE_ICON;
+											break;
+										}
+									}
+									if( idxNormalIcon < 0 )
+										idxNormalIcon = 0;
+									if( idxOpenIcon < 0 )
+										idxOpenIcon = 1;
+
+									LPTSTR pszSubfolderName;
+									hr = StrRetToStr( &strDisplayName, NULL, &pszSubfolderName );
+									if( SUCCEEDED(hr) )
+									{
+										HTREEITEM htiSubfolder = AddFolder( pszSubfolderName, pszSubfolderPath, idxNormalIcon, idxOpenIcon, htiParent );
+										CoTaskMemFree( pszSubfolderName );
+										if( htiSubfolder )
+										{
+											switch( csidl )
+											{
+											case CSIDL_DRIVES:
+												hr = AddSubfolders( pSfRoot, pSfSubfolder, htiSubfolder );
+												Expand(htiSubfolder, TVE_EXPAND);
+												break;
+											}
+										}
+									}
+								}
+							}
+						}
+						CoTaskMemFree( pszSubfolderPath );
+					}
+				}
+			}
+		}
+		CoTaskMemFree( pidlRelSubfolder );
+	};
+	return S_OK;
 }
 
-void CFolderTreeCtrl::SelectNextItem(BOOL selectNext)
+HTREEITEM CFolderTreeCtrl::AddMyComputer()
 {
-	HTREEITEM item = GetSelectedItem();
-	if (selectNext)
-		item = GetNextVisibleItem(item);
-	else
-		item = GetPrevVisibleItem(item);
-	if (item != NULL)
+	CComPtr< IShellFolder > pSfDeskTop;
+	HRESULT hr = SHGetDesktopFolder( &pSfDeskTop );
+	if( FAILED(hr) )
+		return NULL;
+
+	LPITEMIDLIST pidlMyComputer;
+	hr = SHGetSpecialFolderLocation(NULL, CSIDL_DRIVES, &pidlMyComputer);
+	if( FAILED(hr) )
+		return NULL;
+
+	CComPtr< IShellFolder > pSfMyComputer;
+	hr = pSfDeskTop->BindToObject( pidlMyComputer, NULL, IID_IShellFolder, (void**)&pSfMyComputer );
+	if( FAILED(hr) )
+	 return NULL;
+
+	STRRET strDisplayName;
+	hr = pSfDeskTop->GetDisplayNameOf( pidlMyComputer, SHGDN_NORMAL, &strDisplayName );
+	if( FAILED(hr) )
+		return NULL;
+
+	STRRET strPath;
+	hr = pSfDeskTop->GetDisplayNameOf( pidlMyComputer, SHGDN_FORPARSING, &strPath );
+	if( FAILED(hr) )
 	{
-		SelectItem(item);
-		Inform();
-		mpFolderCombo->SetFocus();
+		CoTaskMemFree( strDisplayName.pOleStr );
+		return NULL;
+	}
+
+	LPTSTR pszDisplayName;
+	hr = StrRetToStr( &strDisplayName, NULL, &pszDisplayName );
+	CoTaskMemFree( strDisplayName.pOleStr );
+	if( FAILED(hr) )
+	{
+		CoTaskMemFree( strPath.pOleStr );
+		return NULL;
+	}
+
+	HTREEITEM htiMyComputer = NULL;
+
+	LPTSTR pszPath;
+	hr = StrRetToStr( &strPath, NULL, &pszPath );
+	CoTaskMemFree( strPath.pOleStr );
+	if( SUCCEEDED(hr) )
+	{
+		htiMyComputer = AddFolder( pszDisplayName, pszPath, MYCOMPUTER_ICON, MYCOMPUTER_ICON, TVI_ROOT );
+		if( htiMyComputer )
+		{
+			hr = AddSubfolders( pSfDeskTop, pSfMyComputer, htiMyComputer );
+			Expand( htiMyComputer, TVE_EXPAND );
+			__super::SelectItem( htiMyComputer );
+		}
+		CoTaskMemFree( pszPath );
+	}
+	CoTaskMemFree( pszDisplayName );
+
+	return htiMyComputer;
+}
+
+HTREEITEM CFolderTreeCtrl::AddDesktop()
+{
+	CComPtr< IShellFolder > pSfDeskTop;
+	HRESULT hr = SHGetDesktopFolder( &pSfDeskTop );
+	if( FAILED(hr) )
+		return NULL;
+
+	STRRET strDisplayName;
+	hr = pSfDeskTop->GetDisplayNameOf( NULL, SHGDN_NORMAL, &strDisplayName );
+	if( FAILED(hr) )
+		return NULL;
+
+	STRRET strPath;
+	hr = pSfDeskTop->GetDisplayNameOf( NULL, SHGDN_FORPARSING, &strPath );
+	if( FAILED(hr) )
+	{
+		CoTaskMemFree( strDisplayName.pOleStr );
+		return NULL;
+	}
+
+	LPTSTR pszDisplayName;
+	hr = StrRetToStr( &strDisplayName, NULL, &pszDisplayName );
+	CoTaskMemFree( strDisplayName.pOleStr );
+	if( FAILED(hr) )
+	{
+		CoTaskMemFree( strPath.pOleStr );
+		return NULL;
+	}
+
+	HTREEITEM htiDesktop = NULL;
+
+	LPTSTR pszPath;
+	hr = StrRetToStr( &strPath, NULL, &pszPath );
+	CoTaskMemFree( strPath.pOleStr );
+	if( SUCCEEDED(hr) )
+	{
+		htiDesktop = AddFolder( pszDisplayName, pszPath, DESKTOP_ICON, DESKTOP_ICON, TVI_ROOT );
+		if( htiDesktop )
+		{
+			hr = AddSubfolders( pSfDeskTop, pSfDeskTop, htiDesktop );
+			Expand( htiDesktop, TVE_EXPAND );
+			__super::SelectItem( htiDesktop );
+		}
+		CoTaskMemFree( pszPath );
+	}
+	CoTaskMemFree( pszDisplayName );
+
+	return htiDesktop;
+}
+
+void CFolderTreeCtrl::CommitCurrentItem()
+{
+	mhtiSelected = __super::GetSelectedItem();
+	if( mpFolderCombo )
+		mpFolderCombo->Invalidate();
+}
+
+void CFolderTreeCtrl::NotifySelChange() const
+{
+	if( mpFolderCombo )
+	{
+		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_SELENDOK), (LPARAM)mpFolderCombo->m_hWnd );
+		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_SELCHANGE), (LPARAM)mpFolderCombo->m_hWnd );
 	}
 }
 
-void CFolderTreeCtrl::Display( const CRect& rcTree )
+void CFolderTreeCtrl::Open()
 {
 	__super::SelectItem(mhtiSelected);
-	CRect rc( rcTree );
+	msAutoSearch.Empty();
+	mdwLastCharTime = 0;
+	CRect rc;
+	GetWindowRect( &rc );
 	HMONITOR hDisplay = ::MonitorFromWindow( m_hWnd, MONITOR_DEFAULTTONEAREST );
 	MONITORINFO DisplayInfo = { sizeof(MONITORINFO) };
 	if( ::GetMonitorInfo( hDisplay, &DisplayInfo ) )
@@ -575,24 +585,45 @@ void CFolderTreeCtrl::Display( const CRect& rcTree )
 		if( rc.bottom > rectDisplay.bottom )
 			rc.bottom = rectDisplay.bottom;
 	}
-	SetWindowPos(&wndTopMost, rc.left, rc.top, rc.Width(), rc.Height(), SWP_SHOWWINDOW);
+	mpActiveWnd = GetActiveWindow();
 
-	CWnd* pTopParent = GetParent()->GetParentOwner();
-	if (pTopParent != NULL)
+	typedef BOOL (WINAPI *F_AnimateWindow)(HWND,DWORD,DWORD);
+	F_AnimateWindow pfAnimateWindow = NULL;;
+	BOOL bComboBoxAnimation = FALSE;
+	SystemParametersInfo( 0x1004/*SPI_GETCOMBOBOXANIMATION*/, 0, &bComboBoxAnimation, 0 );
+	if( bComboBoxAnimation )
+		pfAnimateWindow = (F_AnimateWindow)GetProcAddress(GetModuleHandle(_T("USER32.DLL")), "AnimateWindow");
+	if( pfAnimateWindow )
 	{
-		pTopParent->SendMessage( WM_NCACTIVATE, TRUE );
-		pTopParent->SetRedraw( TRUE );
+		bool bDown = true;
+		if( mpFolderCombo )
+		{
+			CRect rcCombo;
+			mpFolderCombo->GetWindowRect( &rcCombo );
+			bDown = (rc.top >= rcCombo.bottom);
+		}
+		SetWindowPos(&wndTopMost, rc.left, rc.top, rc.Width(), rc.Height(), 0);
+		pfAnimateWindow( m_hWnd, 200, 0x20000/*AW_ACTIVATE*/ | 0x40000/*AW_SLIDE*/ | (bDown? 0x4/*AW_VER_POSITIVE*/ : 0x8/*AW_VER_NEGATIVE*/) );
 	}
+	else
+		SetWindowPos(&wndTopMost, rc.left, rc.top, rc.Width(), rc.Height(), SWP_SHOWWINDOW);
+	EnsureVisible(mhtiSelected);
+	if( mpFolderCombo )
+		mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_DROPDOWN), (LPARAM)mpFolderCombo->m_hWnd );
 }
 
 
 BEGIN_MESSAGE_MAP(CFolderTreeCtrl, CTreeCtrl)
 	ON_WM_MOUSEMOVE()
-	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDED, OnItemexpanded)
+	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDED, &CFolderTreeCtrl::OnItemexpanded)
+	ON_NOTIFY_REFLECT(TVN_DELETEITEM, &CFolderTreeCtrl::OnDeleteitem)
 	ON_WM_LBUTTONDOWN()
-	ON_NOTIFY_REFLECT(NM_KILLFOCUS, OnKillFocus)
-	ON_WM_DESTROY()
+	ON_WM_LBUTTONUP()
 	ON_WM_ERASEBKGND()
+	ON_WM_SHOWWINDOW()
+	ON_MESSAGE(WM_ACAD_KEEPFOCUS, &CFolderTreeCtrl::OnAcadKeepFocus)
+	ON_WM_ACTIVATE()
+	ON_WM_NCACTIVATE()
 END_MESSAGE_MAP()
 
 
@@ -601,11 +632,14 @@ END_MESSAGE_MAP()
 
 void CFolderTreeCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	UINT flags ;
-	HTREEITEM item = HitTest(point, &flags);
-	if (item != NULL)
-		__super::SelectItem(item);
-		
+	if( mbTracking )
+	{
+		UINT flags ;
+		HTREEITEM item = HitTest(point, &flags);
+		if (item != NULL)
+			__super::SelectItem(item);
+	}
+
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -613,64 +647,173 @@ void CFolderTreeCtrl::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 
-	HTREEITEM hti = pNMTreeView->itemNew.hItem;
-	int imageIndex = 0;
-	int imageIndexExpanded = 1;
-	CFolder* folder = (CFolder*) GetItemData(hti);
-	if (folder != NULL)
-	{	
-		imageIndex = folder->mnImg;
-		imageIndexExpanded = folder->mnImgExpanded;
-	}
-	if (pNMTreeView->action == TVE_EXPAND)
-		SetItemImage(hti, imageIndexExpanded, imageIndexExpanded);
-	else
-		SetItemImage(hti, imageIndex, imageIndex);
+	switch( pNMTreeView->itemNew.iImage )
+	{
+	case FOLDER_ICON:
+	case FOLDER_OPEN_ICON:
+		{
+			int idxIcon = (pNMTreeView->action == TVE_EXPAND? FOLDER_OPEN_ICON : FOLDER_ICON);
+			SetItemImage( pNMTreeView->itemNew.hItem, idxIcon, idxIcon );
+		}
+		break;
+	};
 	
+	*pResult = 0;
+}
+
+void CFolderTreeCtrl::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
+
+	if( pNMTreeView->itemOld.mask & TVIF_PARAM )
+		delete (CString*)pNMTreeView->itemOld.lParam;
+	if( pNMTreeView->itemOld.hItem == mhtiSelected )
+	{
+		__super::SelectItem( NULL );
+		CommitCurrentItem();
+	}
 	*pResult = 0;
 }
 
 void CFolderTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {	
-	UINT flags;
-	HTREEITEM item = HitTest( point, &flags );
-	if( flags != TVHT_ONITEMBUTTON )
+	if( mbTracking )
 	{
-		mhtiSelected = item;
-		if( !item )
-			mhtiSelected = __super::GetSelectedItem();
-		Hide();
-		Inform();
-		return;
+		UINT flags ;
+		HTREEITEM item = HitTest(point, &flags);
+		if (item != NULL)
+			__super::SelectItem(item);
+		if( flags & TVHT_ONITEMBUTTON )
+			mbTracking = false;
+		__super::OnLButtonDown(nFlags, point);
 	}
-	__super::OnLButtonDown(nFlags, point);
 }
 
-void CFolderTreeCtrl::OnKillFocus(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	Hide();
+void CFolderTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+{	
+	if( mbTracking )
+	{
+		UINT flags;
+		HTREEITEM hti = HitTest( point, &flags );
+		if( flags & (TVHT_ONITEM | TVHT_ONITEMINDENT | TVHT_ONITEMRIGHT) )
+		{
+			if( hti )
+				__super::SelectItem(hti);
+			ShowWindow(SW_HIDE);
+			if( hti )
+			{
+				CommitCurrentItem();
+				NotifySelChange();
+			}
+			return;
+		}
+	}
+	else
+		mbTracking = true;
 }
 
 BOOL CFolderTreeCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE &&
-		pMsg->hwnd == m_hWnd)
+	switch( pMsg->message )
 	{
-		ShowWindow(SW_HIDE);
-		return TRUE;
-	}
-	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->hwnd == m_hWnd)
-	{
-		mhtiSelected = __super::GetSelectedItem();
-		Hide();
-		Inform();
-		return TRUE;
+	case WM_CHAR:
+		if( pMsg->wParam > 32 && pMsg->wParam < 128 )
+		{
+			int nDelay = 3;
+			SystemParametersInfo( SPI_GETKEYBOARDDELAY, 0, &nDelay, 0 );
+			DWORD nDelayMilliseconds = 250 + (nDelay * 250);
+			if( mdwLastCharTime == 0 || ((pMsg->time > mdwLastCharTime? (pMsg->time - mdwLastCharTime) : (pMsg->time + (DWORD(-1) - mdwLastCharTime))) > nDelayMilliseconds) )
+				msAutoSearch = (CHAR)pMsg->wParam;
+			else
+				msAutoSearch += (CHAR)pMsg->wParam;
+			mdwLastCharTime = pMsg->time;
+			HTREEITEM htiFound = SearchPath( TVI_ROOT, msAutoSearch, false );
+			if( htiFound )
+			{
+				SelectItem( htiFound );
+				NotifySelChange();
+			}
+			return TRUE;
+		}
+		break;
+	case WM_KEYDOWN:
+		switch( pMsg->wParam )
+		{
+		//case VK_DOWN:
+		//	CommitNextItem( true, false );
+		//	return TRUE;
+		//case VK_RIGHT:
+		//	CommitNextItem( true, true );
+		//	return TRUE;
+		//case VK_UP:
+		//	CommitNextItem( false, false );
+		//	return TRUE;
+		//case VK_LEFT:
+		//	CommitNextItem( false, true );
+		//	return TRUE;
+		case VK_RETURN:
+			ShowWindow(SW_HIDE);
+			CommitCurrentItem();
+			NotifySelChange();
+			return TRUE;
+		case VK_ESCAPE:
+			ShowWindow(SW_HIDE);
+			return TRUE;
+		case VK_TAB:
+			ShowWindow(SW_HIDE);
+			if( mpActiveWnd )
+			{
+				pMsg->hwnd = ::GetParent(m_hWnd);
+				mpActiveWnd->IsDialogMessage(pMsg);
+			}
+			return TRUE;
+		}
+		break;
 	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CFolderTreeCtrl::OnDestroy() 
+void CFolderTreeCtrl::OnShowWindow(BOOL bShow, UINT nStatus)
 {
-	FreeMemory();
-	__super::OnDestroy();
+	__super::OnShowWindow(bShow, nStatus);
+	if( !bShow )
+	{
+		if( mpFolderCombo )
+			mpFolderCombo->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_CLOSEUP), (LPARAM)mpFolderCombo->m_hWnd );
+	}
+}
+
+LRESULT CFolderTreeCtrl::OnAcadKeepFocus(WPARAM wParam, LPARAM lParam)
+{
+	return (LRESULT)TRUE;
+}
+
+void CFolderTreeCtrl::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+{
+	__super::OnActivate(nState, pWndOther, bMinimized);
+
+	switch( nState )
+	{
+		case WA_ACTIVE:
+		case WA_CLICKACTIVE:
+			if( mpActiveWnd && pWndOther == mpActiveWnd )
+				mpActiveWnd->SendMessage( WM_NCACTIVATE, (WPARAM)TRUE, NULL );
+			mpFolderCombo->Invalidate();
+			break;
+		case WA_INACTIVE:
+			if( mpActiveWnd && pWndOther != mpActiveWnd )
+				mpActiveWnd->SendMessage( WM_NCACTIVATE, (WPARAM)FALSE, NULL );
+			break;
+	};
+}
+
+BOOL CFolderTreeCtrl::OnNcActivate(BOOL bActive)
+{
+	if( !bActive )
+	{
+		ShowWindow(SW_HIDE);
+		return TRUE;
+	}
+
+	return __super::OnNcActivate(bActive);
 }

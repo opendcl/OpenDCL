@@ -65,7 +65,7 @@ HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	if( hbrBackground )
 		return hbrBackground;
 	return NULL;
-	if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	if( GetTheme().GetWindowTheme() )
 		return NULL; //when using visual style, transparent brush causes class background to be used
 	return CAcadColorService::GetTransparentBrush();
 }

@@ -30,11 +30,10 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
-	afx_msg void OnDestroy();	
-	afx_msg void OnKillfocus();
-	afx_msg void OnSetfocus();
-	afx_msg void OnEditchange();
+	afx_msg void OnCbnSelchange();
+	afx_msg void OnCbnDropdown();
+	afx_msg void OnCbnKillfocus();
+	afx_msg void OnCbnSetfocus();
+	afx_msg void OnCbnEditchange();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

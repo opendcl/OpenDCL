@@ -67,7 +67,9 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 		if( !sLanguage.IsEmpty() )
 			sLanguageDir += _T('\\');
 	#ifdef _DEBUG
-		//when running under the debugger, use the build project's language resource module
+		//when running under the debugger, use the build project's language resource module (and default to ENU)
+		if( sLanguage.IsEmpty() )
+			sLanguage = _T("ENU");
 	#ifdef EDITOR
 		CString sResRootDbg = sResRoot;
 		int cchBuildFolder = sResRootDbg.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();

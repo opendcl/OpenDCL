@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B8AE1599-687F-46B6-9019-5B612CBDFE3C}</ProjectGuid>
     <RootNamespace>RuntimeResRUS</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

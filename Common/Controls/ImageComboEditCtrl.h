@@ -146,7 +146,7 @@ protected:
 			{
 				ON_WM_MEASUREITEM_REFLECT()
 				ON_CONTROL_REFLECT(CBN_KILLFOCUS, &CImageComboEditCtrlBase::OnKillFocus)
-				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboEditCtrlBase::OnCloseUp)
+				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboEditCtrlBase::OnCbnCloseup)
 				{0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 },
 			};
 			static const AFX_MSGMAP messageMap =  { &__super::GetThisMessageMap, &_messageEntries[0] };
@@ -177,7 +177,7 @@ protected:
 			mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 			//mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
 		}
-	afx_msg void OnCloseUp()
+	afx_msg void OnCbnCloseup()
 		{
 			if( GetFocus() == GetComboBoxCtrl() && (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
 				mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );

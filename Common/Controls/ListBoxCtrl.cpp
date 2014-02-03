@@ -361,7 +361,7 @@ void CListBoxCtrl::OnListChanged()
 BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnSelchange)
+	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnCbnSelchange)
 	ON_MESSAGE(LB_ADDSTRING, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_DELETESTRING, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_DIR, &CListBoxCtrl::OnModifyContent)
@@ -387,7 +387,7 @@ BOOL CListBoxCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CListBoxCtrl::OnSelchange() 
+void CListBoxCtrl::OnCbnSelchange() 
 {
 	int nCurSel = GetCurSel();
 	if( mnPrevSel >= 0 && nCurSel != mnPrevSel)

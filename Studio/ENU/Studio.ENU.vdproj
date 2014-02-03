@@ -87,6 +87,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2B090C9604EB462A8012BB6405615362"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_31145D127C8C4DE48BF0145324A396A9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -196,6 +202,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6658FE26170D43BFBBD521157EA496EF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6830858BDD1E429CBFC224FD8EC4EE8C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -321,6 +333,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_99D5B4A0ED374C92971181144C3BC0C1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9F5679F763AF4B488B3606AE3B8CB778"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -334,6 +352,12 @@
         "Entry"
         {
         "MsmKey" = "8:_A0E1257CAB794B44820DFB1EDE90F062"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A6180410269E4AF4917451D806C2F17C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -411,12 +435,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D324D7C6D0544628B6B21EFA665017C8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D7A9965E8E1BD4199FC3E265A2D0BA0C"
         "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
@@ -465,12 +483,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EB391961EEA6449FAD6A102C9F96F365"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_EC34106BA7694A17BEDD894CB05541A3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -503,24 +515,6 @@
         {
         "MsmKey" = "8:_FEE18642980E4E63B030EEA196B05DB3"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_53A1A8A71D7042B6B42EDC07F2FAB7A0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F4D4B152270642FBB20E368AE5F2E3DA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -606,14 +600,6 @@
         {
             "LaunchCondition"
             {
-                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_BF0196E4AFE64A53A7494C3513868889"
-                {
-                "Name" = "8:.NET Framework"
-                "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:ANY"
-                "AllowLaterVersions" = "11:FALSE"
-                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=131000"
-                }
             }
         }
         "File"
@@ -842,6 +828,26 @@
             {
             "SourcePath" = "8:Content\\Samples\\AllControls.odcl"
             "TargetName" = "8:AllControls.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_B44394338A014BF988D294A022074113"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B090C9604EB462A8012BB6405615362"
+            {
+            "SourcePath" = "8:Content\\Samples\\ComboBoxLab.odcl"
+            "TargetName" = "8:ComboBoxLab.odcl"
             "Tag" = "8:"
             "Folder" = "8:_B44394338A014BF988D294A022074113"
             "Condition" = "8:"
@@ -1182,6 +1188,26 @@
             {
             "SourcePath" = "8:Content\\Samples\\Splash.odcl"
             "TargetName" = "8:Splash.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_B44394338A014BF988D294A022074113"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6830858BDD1E429CBFC224FD8EC4EE8C"
+            {
+            "SourcePath" = "8:Content\\Samples\\@AllSamples.lsp"
+            "TargetName" = "8:@AllSamples.lsp"
             "Tag" = "8:"
             "Folder" = "8:_B44394338A014BF988D294A022074113"
             "Condition" = "8:"
@@ -1598,6 +1624,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99D5B4A0ED374C92971181144C3BC0C1"
+            {
+            "SourcePath" = "8:Content\\Samples\\ComboBoxLab.lsp"
+            "TargetName" = "8:ComboBoxLab.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_B44394338A014BF988D294A022074113"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9F5679F763AF4B488B3606AE3B8CB778"
             {
             "SourcePath" = "8:Content\\Samples\\Selections.odcl"
@@ -1642,6 +1688,26 @@
             {
             "SourcePath" = "8:Content\\Samples\\DwgList.odcl"
             "TargetName" = "8:DwgList.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_B44394338A014BF988D294A022074113"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A6180410269E4AF4917451D806C2F17C"
+            {
+            "SourcePath" = "8:Content\\Samples\\@AllSamples.odcl"
+            "TargetName" = "8:@AllSamples.odcl"
             "Tag" = "8:"
             "Folder" = "8:_B44394338A014BF988D294A022074113"
             "Condition" = "8:"
@@ -1878,26 +1944,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D324D7C6D0544628B6B21EFA665017C8"
-            {
-            "SourcePath" = "8:Content\\Samples\\_MasterDemo.lsp"
-            "TargetName" = "8:_MasterDemo.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_B44394338A014BF988D294A022074113"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D7A9965E8E1BD4199FC3E265A2D0BA0C"
             {
             "SourcePath" = "8:COMDLG32.dll"
@@ -2042,26 +2088,6 @@
             {
             "SourcePath" = "8:Content\\Samples\\HTML.lsp"
             "TargetName" = "8:HTML.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_B44394338A014BF988D294A022074113"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EB391961EEA6449FAD6A102C9F96F365"
-            {
-            "SourcePath" = "8:Content\\Samples\\_MasterDemo.odcl"
-            "TargetName" = "8:_MasterDemo.odcl"
             "Tag" = "8:"
             "Folder" = "8:_B44394338A014BF988D294A022074113"
             "Condition" = "8:"
@@ -2311,7 +2337,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
         "ProductCode" = "8:{821F6C5F-672F-428C-AD99-948E51AD0912}"
-        "PackageCode" = "8:{78193748-9EB9-43D5-8DE5-C60429EE9B0D}"
+        "PackageCode" = "8:{8BF7909D-766E-477E-887D-804AE5BE2500}"
         "UpgradeCode" = "8:{F8AB94DC-2F57-4C29-8842-E2BB5F898E6C}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

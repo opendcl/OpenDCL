@@ -9,6 +9,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{16A00CD2-853B-4877-BA77-CD5202C25AA2}</ProjectGuid>
     <RootNamespace>HTMLHelp.RUS</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <Keyword>MakeFileProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

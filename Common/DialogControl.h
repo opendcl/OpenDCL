@@ -9,6 +9,7 @@
 
 #include "PPToolTip.h"
 #include "DclControlObject.h"
+#include "ThemeAPI.h"
 #include <list>
 #include <vector>
 
@@ -99,6 +100,7 @@ protected:
 	TDclControlPtr mpTemplate;
 	CControlPane* mpControlPane;
 	CWnd* mpControlWnd;
+	WndTheme mWndTheme;
 	CControlManager* mpControlManager;
 
 private:		
@@ -120,8 +122,8 @@ public:
 	CControlPane* GetControlPane() { return mpControlPane; }
 	const CPPToolTip& GetToolTipCtrl() const { const_cast< CDialogControl* >(this)->CreateTooltip(); return mToolTip; }
 	CPPToolTip& GetToolTipCtrl() { CreateTooltip(); return mToolTip; }
+	const WndTheme& GetTheme() const;
 	virtual CAcadColorService* GetColorService() { return NULL; }
-	virtual CThemeHelperST* GetThemeHelper();
 	virtual const CWnd* GetControlWnd() const { return mpControlWnd; }
 	virtual CWnd* GetControlWnd() { return mpControlWnd; }
 	virtual CWnd* GetTopLevelWnd();
@@ -166,11 +168,14 @@ public:
 	// Services
 public:
 	CAxContainerCtrl* GetActiveXCtrl() const;
+
 private:
 	void CreateTooltip() { if( !mToolTip.m_hWnd ) mToolTip.Create( mpControlWnd ); }
 
 	// Windows painting helpers
 public:
+	void OnThemeChanged(); //relay WM_THEMECHANGED message (only required if derived class provides a theme)
+	virtual void OnThemeRequested( WndTheme& Theme ) const; //derived class can supply a theme; default is no theme
 	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
 	virtual BOOL HandleEraseBkgnd( CDC* pDC );
 

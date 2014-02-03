@@ -308,7 +308,7 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_HSCROLL()
-	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
+	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnCbnSelchange)
 	ON_WM_NCHITTEST()
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
@@ -399,7 +399,7 @@ void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	ResetTooltips();
 }
 
-void CTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult ) 
+void CTabStripCtrl::OnCbnSelchange( NMHDR* pNMHDR, LRESULT* pResult ) 
 {
 	ResetTooltips();
 	*pResult = 0;
@@ -438,7 +438,7 @@ void CTabStripCtrl::PostNcDestroy()
 HBRUSH CTabStripCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
-	if( mpControlPane->GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	if( GetTheme().GetWindowTheme() )
 	{
 		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
 		return mColorService.GetBackgroundBrush();

@@ -174,8 +174,7 @@ BOOL COptionsTabDlg::OnEraseBkgnd(CDC* pDC)
 
 HBRUSH COptionsTabDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
-	if( pThemeHelper && pThemeHelper->IsThemeActive() )
+	if( GetTheme().GetWindowTheme() )
 	{
 		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
 		return mColorService.GetBackgroundBrush();

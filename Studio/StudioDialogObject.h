@@ -59,7 +59,7 @@ public:
 	virtual void OnUpdateZOrder() { GetControlPane()->ApplyZOrder(); }
 	virtual void OnActivateDclControl( TDclControlPtr pDclControl ) { SelectControl( pDclControl ); }
 	virtual UINT HitTest( const CPoint& point ) const;
-	virtual TDclControlPtr InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow = true );
+	virtual TDclControlPtr InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow = true, bool bToTopOfZOrder = true );
 	virtual void OnControlDeleted( TDclControlPtr pDclControl );
 
 // Implementation

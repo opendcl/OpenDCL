@@ -3,19 +3,8 @@
 #include <Windows.h>
 #include <Winuser.h>
 
-//#if(WINVER >= 0x0501)
-#ifdef	THEMEAPI
-#include <tmschema.h>
-#else
-#define	NO_THEMEAPI_FOUND
+//Also requires constants defined in UxThemeVI.h [ORW:2014-01-27]
 
-#define	BP_PUSHBUTTON	0x00000001
-#define	PBS_NORMAL		0x00000001
-#define	PBS_HOT			0x00000002
-#define	PBS_PRESSED		0x00000003
-#define	PBS_DISABLED	0x00000004
-#define	PBS_DEFAULTED	0x00000005
-#endif
 
 #ifdef _DEBUG
 #undef THIS_FILE

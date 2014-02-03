@@ -83,11 +83,32 @@ bool CFolderComboCtrl::ApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CFolderComboCtrl, CFolderComboBox)
 	ON_WM_ERASEBKGND()
+	ON_NOTIFY_REFLECT(NM_THEMECHANGED, &CFolderComboCtrl::OnNMThemeChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderComboCtrl message handlers
+
+LRESULT CFolderComboCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+		case CB_SELECTSTRING:
+		case CB_SETCURSEL:
+			{
+				CString sText;
+				int nCurSel = GetCurSel();
+				if( nCurSel >= 0 )
+					GetLBText( nCurSel, sText );
+				if( sText != mpTemplate->GetStringProperty( Prop::Text ) )
+					mpTemplate->SetStringProperty( Prop::Text, sText );
+			}
+			break;
+	}
+	return lResult;
+}
 
 BOOL CFolderComboCtrl::PreTranslateMessage(MSG* pMsg) 
 {
@@ -100,6 +121,12 @@ BOOL CFolderComboCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CFolderComboCtrl::OnNMThemeChanged(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	OnThemeChanged();
+	*pResult = 0;
 }
 
 void CFolderComboCtrl::PostNcDestroy() 

@@ -14,7 +14,7 @@
 	(setvar "CMDECHO" cmdecho)
 
 	;; Load the project
-	(dcl-Project-Load (*ODCL:Samples:FindFile "Misc.odcl"))
+	(dcl-Project-Load (*ODCL:Samples-FindFile "Misc.odcl"))
 
 	;; Show the main form
 	(dcl-Form-Show Misc/DemoModal)
@@ -26,7 +26,7 @@
 	(princ)
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|«OpenDCL Event Handlers»|;
 
 ;; this function gets fired when a tab gets changed
 (DEFUN c:DemoModal_TabControl1_Changed (nSelIndex / nCount)
@@ -156,18 +156,18 @@
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; The following section of code is designed to locate OpenDCL Studio
 ;;; sample files in the samples folder by prefixing the filename with
 ;;; the path prefix that was saved in the registry by the installer.
-;;; The global *ODCL:Prefix and function *ODCL:Samples:FindFile
+;;; The global *ODCL:Prefix and function *ODCL:Samples-FindFile
 ;;; are used throughout the samples.
 ;;;
-(or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
+(or *ODCL:Samples-FindFile
+	(defun *ODCL:Samples-FindFile (file)
 		(setq *ODCL:Prefix
 			(cond
 				(	*ODCL:Prefix
@@ -183,11 +183,6 @@
 					)
 				) ;_ 32-bit location
 				(	(vl-registry-read
-						 "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						 "SamplesFolder"
-					)
-				) ;_ 64-bit location
-				(	(vl-registry-read
 						 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
 						 "SamplesFolder"
 					)
@@ -202,11 +197,11 @@
 	)
 )
 
-;; If master demo is active, run the main function immediately; otherwise
+;; If AllSamples is active, run the main function immediately; otherwise
 ;; display a banner. The extra gymnastics allow the sample name to be
 ;; specified in only one place, thus making it easier to reuse this code.
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
+		(if *ODCL:AllSamples
 			(progn
 				(princ (strcat "'" demoname "\n"))
 				(apply (read (strcat "C:" demoname)) nil)

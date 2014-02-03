@@ -30,7 +30,7 @@ CArxMonthCtrl::~CArxMonthCtrl()
 BEGIN_MESSAGE_MAP(CArxMonthCtrl, CMonthCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_NOTIFY_REFLECT(MCN_GETDAYSTATE, OnGetdaystate)
-	ON_NOTIFY_REFLECT(MCN_SELCHANGE, OnSelchange)
+	ON_NOTIFY_REFLECT(MCN_SELCHANGE, OnCbnSelchange)
 	ON_NOTIFY_REFLECT(MCN_SELECT, OnSelect)
 END_MESSAGE_MAP()
 
@@ -121,7 +121,7 @@ void CArxMonthCtrl::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CArxMonthCtrl::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxMonthCtrl::OnCbnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	GetArxServices()->HandleEvent( Prop::EventSelChanged );
 	*pResult = 0;

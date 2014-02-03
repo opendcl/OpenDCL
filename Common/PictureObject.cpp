@@ -79,56 +79,56 @@ BOOL AFXAPI _AfxIsSameUnknownObject(REFIID iid, LPUNKNOWN pUnk1, LPUNKNOWN pUnk2
 //Utility functions
 
 static void LoadPicture(CArchive& ar, COleVariant& varSrc) {
-  LPVARIANT pSrc = &varSrc;
-  ar >> pSrc->vt;
+	LPVARIANT pSrc = &varSrc;
+	ar >> pSrc->vt;
 
-  switch (pSrc->vt) {
-  case VT_DISPATCH:
-  case VT_UNKNOWN:
-    {
-      LPPERSISTSTREAM pPersistStream = NULL;
-      CArchiveStream stm(&ar);
+	switch (pSrc->vt) {
+	case VT_DISPATCH:
+	case VT_UNKNOWN:
+		{
+			LPPERSISTSTREAM pPersistStream = NULL;
+			CArchiveStream stm(&ar);
 
-      // Retrieve the CLSID (GUID) and create an instance
-      CLSID clsid;
-      ar >> clsid.Data1;
-      ar >> clsid.Data2;
-      ar >> clsid.Data3;
-      ar.Read(&clsid.Data4[0], sizeof clsid.Data4);
+			// Retrieve the CLSID (GUID) and create an instance
+			CLSID clsid;
+			ar >> clsid.Data1;
+			ar >> clsid.Data2;
+			ar >> clsid.Data3;
+			ar.Read(&clsid.Data4[0], sizeof clsid.Data4);
 
-      CPictureHolder hPicture;
-      hPicture.CreateEmpty();
-      pSrc->punkVal = hPicture.GetPictureDispatch();
-      TRY
-      {
-        // QI for IPersistStream or IPeristStreamInit
-        SCODE sc = pSrc->punkVal->QueryInterface(
-          IID_IPersistStream, (void**)&pPersistStream);
+			CPictureHolder hPicture;
+			hPicture.CreateEmpty();
+			pSrc->punkVal = hPicture.GetPictureDispatch();
+			TRY
+			{
+				// QI for IPersistStream or IPeristStreamInit
+				SCODE sc = pSrc->punkVal->QueryInterface(
+					IID_IPersistStream, (void**)&pPersistStream);
 #ifndef _AFX_NO_OCC_SUPPORT
-        if (FAILED(sc))
-          sc = pSrc->punkVal->QueryInterface(
-          IID_IPersistStreamInit, (void**)&pPersistStream);
+				if (FAILED(sc))
+					sc = pSrc->punkVal->QueryInterface(
+					IID_IPersistStreamInit, (void**)&pPersistStream);
 #endif
 
-        AfxCheckError(sc);
+				AfxCheckError(sc);
 
-        // Always assumes object is dirty
-        AfxCheckError(pPersistStream->Load(&stm));
-      }
-      CATCH_ALL(e)
-      {
-        // Clean up
-        if (pPersistStream != NULL)
-          pPersistStream->Release();
+				// Always assumes object is dirty
+				AfxCheckError(pPersistStream->Load(&stm));
+			}
+			CATCH_ALL(e)
+			{
+				// Clean up
+				if (pPersistStream != NULL)
+					pPersistStream->Release();
 
-        pSrc->punkVal->Release();
-        THROW_LAST();
-      }
-      END_CATCH_ALL;
+				pSrc->punkVal->Release();
+				THROW_LAST();
+			}
+			END_CATCH_ALL;
 
 			pPersistStream->Release();
-    }
-  }
+		}
+	}
 }
 
 
@@ -555,14 +555,14 @@ bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 
 void CPictureObject::Serialize(CArchive& ar)
 {
-  if (ar.IsStoring())
-  {
-    ar << GetCurrentSaveVersion();
+	if (ar.IsStoring())
+	{
+		ar << GetCurrentSaveVersion();
 
-    ar << unsigned long(mnID);
+		ar << unsigned long(mnID);
 
-    short nPictureType = m_hPicture.GetType();
-    ar << nPictureType;
+		short nPictureType = m_hPicture.GetType();
+		ar << nPictureType;
 
 		switch( nPictureType )
 		{
@@ -588,29 +588,29 @@ void CPictureObject::Serialize(CArchive& ar)
 				break;
 			}
 		}
-  }
-  else	
-  {
-    unsigned long nThisVersion;
-    ar >> nThisVersion;
+	}
+	else	
+	{
+		unsigned long nThisVersion;
+		ar >> nThisVersion;
 
 		if( nThisVersion > GetCurrentSaveVersion() )
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
 		unsigned long ulID;
-    ar >> ulID;
+		ar >> ulID;
 		mnID = ulID;
-    if (nThisVersion == 1)
-    {
-      CImageList tempImage;
-      tempImage.Read(&ar);
-      if (tempImage.m_hImageList != NULL)
-      {				
-        HICON hIcon = tempImage.ExtractIcon(0);
-        m_hPicture.CreateFromIcon(hIcon, TRUE);			
-        tempImage.DeleteImageList();
-      }
-    }
+		if (nThisVersion == 1)
+		{
+			CImageList tempImage;
+			tempImage.Read(&ar);
+			if (tempImage.m_hImageList != NULL)
+			{				
+				HICON hIcon = tempImage.ExtractIcon(0);
+				m_hPicture.CreateFromIcon(hIcon, TRUE);			
+				tempImage.DeleteImageList();
+			}
+		}
 		if( nThisVersion < 8 )
 		{ //discarding saved width and height, and recalculating with current device metrics
 			int iHeight;
@@ -621,11 +621,11 @@ void CPictureObject::Serialize(CArchive& ar)
 		if( nThisVersion == 1 )
 			return;
 
-    short nPictureType = 0;
-    if (nThisVersion == 3 || nThisVersion == 4 || nThisVersion == 6 )
+		short nPictureType = 0;
+		if (nThisVersion == 3 || nThisVersion == 4 || nThisVersion == 6 )
 		{
 			int nDuplicatePictureType;
-      ar >> nDuplicatePictureType;
+			ar >> nDuplicatePictureType;
 			ar >> nPictureType;
 			if( nPictureType != nDuplicatePictureType )
 				nPictureType = nDuplicatePictureType;
@@ -635,13 +635,13 @@ void CPictureObject::Serialize(CArchive& ar)
 
 		if( nPictureType < 0 )
 		{
-      mnID = -1;
+			mnID = -1;
 			return;
 		}
 		
-    if( nThisVersion == 2 || nThisVersion == 3 || nThisVersion >= 6 )
-    {
-      switch( nPictureType )
+		if( nThisVersion == 2 || nThisVersion == 3 || nThisVersion >= 6 )
+		{
+			switch( nPictureType )
 			{
 			case PICTYPE_BITMAP:
 			case PICTYPE_METAFILE:
@@ -671,9 +671,9 @@ void CPictureObject::Serialize(CArchive& ar)
 				}
 			}
 		}
-    else if( nThisVersion == 4 || nThisVersion == 5 )
-    {
-      switch( nPictureType )
+		else if( nThisVersion == 4 || nThisVersion == 5 )
+		{
+			switch( nPictureType )
 			{
 			case PICTYPE_BITMAP:
 			case PICTYPE_METAFILE:
@@ -705,60 +705,60 @@ void CPictureObject::Serialize(CArchive& ar)
 
 IOStatus CPictureObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
-  CString sObject;
-  if (readLine(sFile) != "CPictureObject") return statInvalidFormat;
-  int iVersion;
-  if (!readInt(sFile, iVersion)) return statInvalidFormat;
+	CString sObject;
+	if (readLine(sFile) != "CPictureObject") return statInvalidFormat;
+	int iVersion;
+	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  switch (iVersion) {
-    case 3 : 
-      return ReadFromTextFile3(sFile, fileName);
-      break;
-  }
+	switch (iVersion) {
+		case 3 : 
+			return ReadFromTextFile3(sFile, fileName);
+			break;
+	}
 	CalcLogicalSize();
-  return statInvalidFormat;
+	return statInvalidFormat;
 }
 
 IOStatus CPictureObject::ReadFromTextFile3(std::ifstream &sFile, const CString &fileName)
 {
-  try
-  {
+	try
+	{
 		int nID;
-    if (!readInt(sFile, nID)) return statInvalidFormat;
+		if (!readInt(sFile, nID)) return statInvalidFormat;
 		mnID = nID;
 		int iHeight;
-    if (!readInt(sFile, iHeight)) return statInvalidFormat;
+		if (!readInt(sFile, iHeight)) return statInvalidFormat;
 		int iWidth;
-    if (!readInt(sFile, iWidth)) return statInvalidFormat;
+		if (!readInt(sFile, iWidth)) return statInvalidFormat;
 
-    int iPicType;
-    if (!readInt(sFile, iPicType)) return statInvalidFormat;
+		int iPicType;
+		if (!readInt(sFile, iPicType)) return statInvalidFormat;
 
-    //if (iPicType == PICTYPE_BITMAP) {
-    //  CImage img;
-    //  if (!readImage(sFile, fileName, img)) return statInvalidFormat;
-    //  HBITMAP hBitmap = img.Detach();
-    //  m_hPicture.CreateFromBitmap(hBitmap);
-    //} else if (iPicType == PICTYPE_METAFILE 
-    //           || iPicType == PICTYPE_ENHMETAFILE) {
-    //  //Currently not handled
-    //} else if (iPicType == PICTYPE_ICON) {
-    //  CImageList il;
-    //  if (!readImageList(sFile, fileName, il)) return statInvalidFormat;
-    //  if (il.m_hImageList != NULL)
-    //  {
-    //    HICON hIcon = il.ExtractIcon(0);
-    //    m_hPicture.CreateFromIcon(hIcon, TRUE);			
-    //    il.DeleteImageList();
-    //  }
-    //}
-  }
-  catch(...)
-  {
-    // do nothing
-  }
+		//if (iPicType == PICTYPE_BITMAP) {
+		//  CImage img;
+		//  if (!readImage(sFile, fileName, img)) return statInvalidFormat;
+		//  HBITMAP hBitmap = img.Detach();
+		//  m_hPicture.CreateFromBitmap(hBitmap);
+		//} else if (iPicType == PICTYPE_METAFILE 
+		//           || iPicType == PICTYPE_ENHMETAFILE) {
+		//  //Currently not handled
+		//} else if (iPicType == PICTYPE_ICON) {
+		//  CImageList il;
+		//  if (!readImageList(sFile, fileName, il)) return statInvalidFormat;
+		//  if (il.m_hImageList != NULL)
+		//  {
+		//    HICON hIcon = il.ExtractIcon(0);
+		//    m_hPicture.CreateFromIcon(hIcon, TRUE);			
+		//    il.DeleteImageList();
+		//  }
+		//}
+	}
+	catch(...)
+	{
+		// do nothing
+	}
 
-  return statOK;
+	return statOK;
 }
 
 BOOL AFX_CDECL CPictureObject::PX_IUnknown2(CPropExchange* pPX, LPCTSTR pszPropName, LPUNKNOWN& pUnk,
@@ -929,7 +929,7 @@ BOOL CPictureObject::ExchangePersistentProp(CArchive& ar,
 
 	// throw exception in case of unthrown errors
 	if (!bResult)
-    AfxThrowArchiveException(CArchiveException::badClass);
+		AfxThrowArchiveException(CArchiveException::badClass);
 
 	return TRUE;
 }

@@ -27,16 +27,18 @@ public:
 	virtual CRect GetWndRect() const;
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyProperty( TPropertyPtr pProp );
+	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 
 protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
+	afx_msg void OnCbnSelchange();
+	afx_msg void OnCbnDropdown();
 };

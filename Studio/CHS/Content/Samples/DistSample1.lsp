@@ -198,11 +198,6 @@
                             )
                         ) ;_ 32-bit location
                         (	(vl-registry-read
-                                "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ;_ 64-bit location
-                        (	(vl-registry-read
                                 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
                                 "SamplesFolder"
                             )

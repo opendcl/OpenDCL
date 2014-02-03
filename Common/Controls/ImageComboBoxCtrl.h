@@ -46,12 +46,13 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	afx_msg void OnDropdown();
-	afx_msg void OnCloseUp();
+	afx_msg void OnCbnDropdown();
+	afx_msg void OnCbnCloseup();
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

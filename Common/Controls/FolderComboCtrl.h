@@ -27,13 +27,16 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	virtual void OnThemeRequested( WndTheme& Theme ) const { if( !Theme ) Theme.Attach( GetFolderComboBoxTheme(), GetHWnd() ); }
 
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnNMThemeChanged(NMHDR *pNMHDR, LRESULT *pResult);
 };

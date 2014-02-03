@@ -650,7 +650,7 @@ void CArxDwgListCtrl::Dir(CString sDir)
 
 BEGIN_MESSAGE_MAP(CArxDwgListCtrl, CListBoxCtrl)
 	ON_CONTROL_REFLECT(LBN_DBLCLK, OnDblclk)
-	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnSelchange)
+	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnCbnSelchange)
 	ON_WM_DESTROY()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
@@ -874,9 +874,9 @@ void CArxDwgListCtrl::OnKillFocus(CWnd* pNewWnd)
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
-void CArxDwgListCtrl::OnSelchange() 
+void CArxDwgListCtrl::OnCbnSelchange() 
 {
-	__super::OnSelchange();
+	__super::OnCbnSelchange();
 
 	int nSelCount = GetSelCount();
 	

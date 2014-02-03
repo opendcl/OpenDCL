@@ -193,11 +193,6 @@
                             )
                         ) ; 32-bit Variante alle Nutzer
                         (	(vl-registry-read
-                                "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ; 64-bit Variante aktueller Nutzer
-                        (	(vl-registry-read
                                 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
                                 "SamplesFolder"
                             )

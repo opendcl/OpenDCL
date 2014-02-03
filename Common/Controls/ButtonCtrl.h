@@ -7,6 +7,7 @@
 #include "XPStyleButtonST.h"
 #include "DialogControl.h"
 #include "AcadColorService.h"
+#include "ThemeHelperST.h"
 
 class CProject;
 
@@ -71,6 +72,7 @@ class CButtonCtrl : public CXPStyleButtonST, public CDialogControl
 {
 	CButtonAcadColorService mColorService;
 	bool mbUsingPresetGraphic;
+	CThemeHelperST mThemeHelper;
 
 public:
 	CButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );

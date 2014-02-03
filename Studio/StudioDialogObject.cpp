@@ -179,7 +179,7 @@ bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
 	SetControlManager( new CFormControlManager( this ) );
 
 	//CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
-	//if( pThemeHelper && pThemeHelper->IsThemeActive() )
+	//if( pThemeHelper )
 	//	pThemeHelper->SetWindowTheme( m_hWnd, L"", L"" );
 
 	if( bSuccess )
@@ -301,14 +301,14 @@ CDialogControl* CStudioDialogObject::GetControlAtPoint( const CPoint& pt )
 	return NULL;
 }
 
-TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow /*= true*/ )
+TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow /*= true*/, bool bToTopOfZOrder /*= true*/ )
 {
 	AutoUndoGroup UndoGroup( mpSourceForm->GetUndoManager(), IDS_UNDO_ADDCONTROL );
 	TDclControlPtr pDclControl = NULL;
 	switch( type )
 	{
 	case CtlFileExplorer:
-		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlSimpleName( CtlFileExplorer ), rcControl );
+		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlSimpleName( CtlFileExplorer ), rcControl, bToTopOfZOrder );
 		break;
 	case CtlActiveX:
 		{
@@ -316,7 +316,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 			CString sLicenseKey;
 			CString sFilename;
 			theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo( clsid, sLicenseKey, sFilename );
-			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( clsid ) ), rcControl );
+			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( clsid ) ), rcControl, bToTopOfZOrder );
 			if( pDclControl )
 				pDclControl->SetAxCtrlInfo( clsid, sLicenseKey );
 		}
@@ -325,7 +325,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		assert( mpSourceForm->GetType() != FrmTabPage ); //can't nest tab pages
 		if( mpSourceForm->GetType() == FrmTabPage )
 			return NULL;
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( CtlTabStrip ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( CtlTabStrip ) ), rcControl, bToTopOfZOrder );
 		if( pDclControl )
 		{
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
@@ -344,7 +344,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		}
 		break;
 	default:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( type ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( type ) ), rcControl, bToTopOfZOrder );
 		break;
 	}
 	assert( pDclControl != NULL );
@@ -643,7 +643,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 		else
 		{
 			CRect rcFileCtrl( 0, 0, 556, 386 );
-			InsertControl( CtlFileExplorer, rcFileCtrl, false );
+			InsertControl( CtlFileExplorer, rcFileCtrl, false, true );
 		}
 	}
 	if( pUndoManager )
@@ -802,7 +802,9 @@ void CStudioDialogObject::OnEditPaste()
 				//{
 				//	TDclFormPtr pChildForm = new CDclFormObject( mpSourceForm->GetProject() );
 				//	pChildForm->Serialize( ClipboardArchive );
-				//	ChildForms.push_back( pChildForm );
+				//	pChildForm->SetUniqueName( mpSourceForm->GetUniqueName() );
+				//	pChildForm->SetParentForm( mpSourceForm );
+				//	mpSourceForm->GetProject()->AddInitializedForm( pChildForm );
 				//}
 				bool bDuplicate = (mpSourceForm->FindControl( pDclControl->GetKeyName() ) != NULL);
 				switch( pDclControl->GetType() )
@@ -837,7 +839,8 @@ void CStudioDialogObject::OnEditPaste()
 					if( sOldName == sCaption )
 						pDclControl->SetStringProperty( Prop::Caption, sNewName );
 				}
-				mpSourceForm->AddControl( pDclControl, true );
+				bool bDuplicateID = (mpSourceForm->FindControl( pDclControl->GetID(), false ) != NULL);
+				mpSourceForm->AddControl( pDclControl, bDuplicateID, false );
 				mNewControls.push_back( pDclControl );
 			}
 			for( TDclControlList::iterator iter = mNewControls.begin(); iter != mNewControls.end(); ++iter )
@@ -887,7 +890,7 @@ void CStudioDialogObject::OnEditCopy()
 	CMemFile ClipboardMem( 4096 );
 	CArchive ClipboardArchive( &ClipboardMem, CArchive::store );
 	size_t ctControls = 0;
-	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	for( TDclControlList::const_reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		TDclControlPtr pDclControl = *iter;
 		if( pDclControl->GetType() == _CtlForm )
@@ -909,14 +912,14 @@ void CStudioDialogObject::OnEditCopy()
 			if( pDlgControl->GetChildPanes( Children ) )
 			{
 				ClipboardArchive << Children.size();
-				for( std::list< const CControlPane* >::const_iterator iter = Children.begin();
-						 iter != Children.end();
-						 ++iter )
-				{
-					const CControlPane* pChildPane = (*iter);
-					TDclFormPtr pChildForm = pChildPane->GetSourceForm();
-					pChildForm->Serialize( ClipboardArchive );
-				}
+				//for( std::list< const CControlPane* >::const_iterator iter = Children.begin();
+				//		 iter != Children.end();
+				//		 ++iter )
+				//{
+				//	const CControlPane* pChildPane = (*iter);
+				//	TDclFormPtr pChildForm = pChildPane->GetSourceForm();
+				//	pChildForm->Serialize( ClipboardArchive );
+				//}
 			}
 			else
 				ClipboardArchive << size_t(0);
@@ -1217,7 +1220,7 @@ HBRUSH CStudioDialogObject::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	LRESULT lResult;
 	if (pWnd->SendChildNotifyLastMsg(&lResult))
 		return (HBRUSH)lResult;     // eat it
-	if( mpControlPane->GetThemeHelper() )
+	if( GetTheme().IsThemeActive() )
 	{
 		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
 		if( pParentForm )
@@ -1242,7 +1245,7 @@ BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)
 	COLORREF crBackground = mColorService.IsBackgroundTransparent()?
 														mColorService.GetForegroundColor() :
 														mColorService.GetBackgroundColor();
-	if( mpControlPane->GetThemeHelper() )
+	if( GetTheme().IsThemeActive() )
 	{
 		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
 		if( pParentForm )

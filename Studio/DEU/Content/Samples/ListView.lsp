@@ -7,64 +7,64 @@
 ;; Hauptprogramm
 (defun c:ListView (/ cmdecho)
 
-	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
-	;; Projekt laden
-	(dcl-Project-Load (*ODCL:Samples:FindFile "ListView.odcl"))
+  ;; Projekt laden
+  (dcl-Project-Load (*ODCL:Samples-FindFile "ListView.odcl"))
 
-	;; Dialog anzeigen
-	(dcl-Form-Show ListView/ListViewDlg)
+  ;; Dialog anzeigen
+  (dcl-Form-Show ListView/ListViewDlg)
 
-	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
-	;; bis der modale Dialog geschlosswen wird.
-	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
+  ;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+  ;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
+  ;; bis der modale Dialog geschlosswen wird.
+  ;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
-	(princ)
+  (princ)
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|«OpenDCL Event Handlers»|;
 
 ;; Diese Funktion wird automatisch ausgeführt, wenn der Dialog geladen wird.
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
     
-	;; Spaltenbreite von einem Text ableiten
-	(setq Col0Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 0     ")
-		  Col1Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 1     ")
-		  Col2Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 2     ")
-		  Col3Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 3     ")
-	)
-	;; Spalten mit der berechneten Breite hinzufügen
-	(dcl-ListView-AddColumns ListView/ListViewDlg/ListView1
-							  (list (list "Spalte 0" 0 Col0Width)
-									(list "Spalte 1" 0 Col1Width)
-									(list "Spalte 2" 0 Col2Width)
-									(list "Spalte 3" 0 Col3Width)
-							  )
-	)
-	;; Bereinigen und Füllen der Liste
-	(dcl-ListView-FillList
-		ListView/ListViewDlg/ListView1
-		(list ;; Elemente der Zeile 1
-			  (list "Zelle 1a" 0 "Zelle 2a" 0 "Zelle 3a" 0 "Zelle 4a" 0)
-			  ;; Elemente der Zeile 2
-			  (list "Zelle 1b" 1 "Zelle 2b" 1 "Zelle 3b" 1 "Zelle 4b" 1)
-			  ;; Elemente der Zeile 3
-			  (list "Zelle 1c" 2 "Zelle 2c" 2 "Zelle 3c" 2 "Zelle 4c" 2)
-		)
-	)
+  ;; Spaltenbreite von einem Text ableiten
+  (setq Col0Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 0     ")
+      Col1Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 1     ")
+      Col2Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 2     ")
+      Col3Width (dcl-ListView-CalcColWidth ListView/ListViewDlg/ListView1 "Spalte 3     ")
+  )
+  ;; Spalten mit der berechneten Breite hinzufügen
+  (dcl-ListView-AddColumns ListView/ListViewDlg/ListView1
+                (list (list "Spalte 0" 0 Col0Width)
+                  (list "Spalte 1" 0 Col1Width)
+                  (list "Spalte 2" 0 Col2Width)
+                  (list "Spalte 3" 0 Col3Width)
+                )
+  )
+  ;; Bereinigen und Füllen der Liste
+  (dcl-ListView-FillList
+    ListView/ListViewDlg/ListView1
+    (list ;; Elemente der Zeile 1
+        (list "Zelle 1a" 0 "Zelle 2a" 0 "Zelle 3a" 0 "Zelle 4a" 0)
+        ;; Elemente der Zeile 2
+        (list "Zelle 1b" 1 "Zelle 2b" 1 "Zelle 3b" 1 "Zelle 4b" 1)
+        ;; Elemente der Zeile 3
+        (list "Zelle 1c" 2 "Zelle 2c" 2 "Zelle 3c" 2 "Zelle 4c" 2)
+    )
+  )
 )
 
 ;;-----------------------------------------------------------
 
 (defun c:ListView/ListViewDlg/ListView1#OnClicked (nRow nCol /)
-	 (dcl-MessageBox (strcat "Spalte " (itoa nCol) ", Zeile " (itoa nRow))
-					  "Geklickte Zelle"
-	 )
+   (dcl-MessageBox (strcat "Spalte " (itoa nCol) ", Zeile " (itoa nRow))
+            "Geklickte Zelle"
+   )
 )
 
 ;;-----------------------------------------------------------
@@ -74,50 +74,45 @@
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
 ;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
 ;;; durch das Installationsprogramm in der Registry eingetragen wurde.
-;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
 ;;; werden in allen Beispieldateien verwendet.
 ;;;
-(or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
-		(setq *ODCL:Prefix
-			(cond
-				(	*ODCL:Prefix
-				) ;_ Bereits definiert
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 32-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					 )
-				) ;_ 32-bit Variante alle Nutzer
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante alle Nutzer
-			)
-		)
-		(cond
-			((findfile file)) ; überprüfe zunächst den Supportpfad
-			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-			(file)
-		)
-	)
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
 )
 
 ;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
@@ -126,18 +121,18 @@
 ;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
 
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
-			(progn
-				(princ (strcat "'" demoname "\n"))
-				(apply (read (strcat "C:" demoname)) nil)
-			)
-			(progn
-				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
-				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
-			)
-		)
-	)
-	"ListView"
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "ListView"
 )
 (princ)
 

@@ -915,14 +915,14 @@ static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCt
 }
 
 
-static CString GetDisplayablePropertyValue( TPropertyPtr pProperty, ControlType type = _CtlInvalid )
+static CString GetDisplayablePropertyValue( TPropertyPtr pProperty )
 {
 	switch( pProperty->GetType() )
 	{
 	case PropEnum:
 		{
 			long nVal = pProperty->GetLongValue();
-			const TEnumNames& Names = GetPropEnumNames( pProperty->GetID(), type );
+			const TEnumNames& Names = GetPropEnumNames( pProperty->GetID(), pProperty->GetOwnerControl()->GetType() );
 			assert( nVal >= 0 && nVal < (long)Names.size() );
 			if( nVal < 0 || nVal >= (long)Names.size() )
 				return pProperty->GetStringValue();
@@ -1259,7 +1259,7 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 		mrPropIndex.push_back( sPropName );
 		InsertItem( idxProp, sPropName );
 		TPropertyPtr pFirstProp = PropSet.front();
-		CString sPropVal = ::GetDisplayablePropertyValue( pFirstProp, pDclControl->GetType() );
+		CString sPropVal = ::GetDisplayablePropertyValue( pFirstProp );
 		UINT nState = 0;
 		if( IsBooleanProperty( pFirstProp ) )
 		{
@@ -1271,7 +1271,7 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 				 iterProp != PropSet.end();
 				 ++iterProp )
 		{
-			if( sPropVal == GetDisplayablePropertyValue( *iterProp, pDclControl->GetType() ) )
+			if( sPropVal == GetDisplayablePropertyValue( *iterProp ) )
 				continue;
 			//found one property with a different value, so display indeterminate
 			nState = PGIS_INDETERMINATE;
@@ -1451,12 +1451,12 @@ CString CPropertyGridCtrl::GetDisplayableValue( size_t idxCell )
 	if( PropSet.empty() )
 		return NULL;
 	TPropertyPtr pFirstProp = PropSet.front();
-	CString sPropVal = GetDisplayablePropertyValue( pFirstProp, pFirstProp->GetOwnerControl()->GetType() );
+	CString sPropVal = GetDisplayablePropertyValue( pFirstProp );
 	for( TPropertySet::const_iterator iterProp = PropSet.begin() + 1;
 			 iterProp != PropSet.end();
 			 ++iterProp )
 	{
-		if( sPropVal == GetDisplayablePropertyValue( *iterProp, (*iterProp)->GetOwnerControl()->GetType() ) )
+		if( sPropVal == GetDisplayablePropertyValue( *iterProp ) )
 			continue;
 		//found one property with a different value, so display indeterminate
 		sPropVal = theWorkspace.LoadResourceString( IDS_VARIES );

@@ -192,17 +192,13 @@ bool CImageComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyUseVisualStyle( pProp ) )
 		return false;
-	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
-	if( !pThemeHelper || !pThemeHelper->IsThemeActive() )
-		return false; //visual styles not supported
 	CComboBox* pComboCtrl = GetComboBoxCtrl();
 	if( !pComboCtrl )
 		return false;
-	HWND hwnd = pComboCtrl->m_hWnd;
 	if( pProp->GetBooleanValue() )
-		pThemeHelper->SetWindowTheme( hwnd, NULL, NULL );
+		GetTheme().SetWindowTheme( NULL, NULL );
 	else
-		pThemeHelper->SetWindowTheme( hwnd, L"", L"" );
+		GetTheme().SetWindowTheme( L"", L"" );
 	return true;
 }
 
@@ -297,8 +293,8 @@ void CImageComboBoxCtrl::OnListChanged()
 
 BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CImageComboBoxCtrl::OnDropdown)
-	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboBoxCtrl::OnCloseUp)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CImageComboBoxCtrl::OnCbnDropdown)
+	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboBoxCtrl::OnCbnCloseup)
 	ON_MESSAGE(CB_ADDSTRING, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_DELETESTRING, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_DIR, &CImageComboBoxCtrl::OnModifyContent)
@@ -311,6 +307,26 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageComboBoxCtrl message handlers
+
+LRESULT CImageComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+		case CB_SELECTSTRING:
+		case CB_SETCURSEL:
+			{
+				CString sText;
+				int nCurSel = GetCurSel();
+				if( nCurSel >= 0 )
+					GetLBText( nCurSel, sText );
+				if( sText != mpTemplate->GetStringProperty( Prop::Text ) )
+					mpTemplate->SetStringProperty( Prop::Text, sText );
+			}
+			break;
+	}
+	return lResult;
+}
 
 BOOL CImageComboBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
@@ -349,11 +365,11 @@ void CImageComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		lpMeasureItemStruct->itemHeight = nItemHeight;
 }
 
-void CImageComboBoxCtrl::OnDropdown()
+void CImageComboBoxCtrl::OnCbnDropdown()
 {
 }
 
-void CImageComboBoxCtrl::OnCloseUp()
+void CImageComboBoxCtrl::OnCbnCloseup()
 {
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )

@@ -33,26 +33,6 @@
 #include "Resource.h"
 #include <algorithm>
 
-#define BP_PUSHBUTTON			0x00000001
-#define BP_RADIOBUTTON			0x00000002
-#define BP_CHECKBOX				0x00000003
-
-#define PBS_NORMAL				0x00000001
-#define PBS_HOT					0x00000002
-#define PBS_PRESSED				0x00000003
-#define PBS_DISABLED			0x00000004
-#define PBS_DEFAULTED			0x00000005
-
-#define RBS_UNCHECKEDNORMAL		0x00000001
-#define RBS_UNCHECKEDHOT		0x00000002
-#define RBS_UNCHECKEDPRESSED	0x00000003
-#define RBS_UNCHECKEDDISABLED	0x00000004
-#define RBS_CHECKEDNORMAL		0x00000005
-#define RBS_CHECKEDHOT			0x00000006
-#define RBS_CHECKEDPRESSED		0x00000007
-#define RBS_CHECKEDDISABLED		0x00000008
-
-#define HP_HEADERITEM			0x00000001
 
 #if (_WIN32_WINNT < 0x501)
 typedef struct tagNMLVSCROLL
@@ -1232,26 +1212,22 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 			cdc.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
 			cdc.SetTextColor( ::GetSysColor( COLOR_BTNTEXT ) );
 			CRect rcHeader = rcBounds;
-			HTHEME hTheme = NULL;
-			CThemeHelperST* pTheme = GetThemeHelper();
-			if( pTheme )
-				hTheme = pTheme->OpenThemeData( GetSafeHwnd(), L"HEADER" );
-			if( !hTheme )
-			{			
-				CBrush br( ::GetSysColor( COLOR_BTNFACE ) );
-				cdc.FillRect( &rcHeader, &br );
-				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
-			}    
-			else
+			WndTheme HeaderTheme( GetSafeHwnd(), VSCLASS_HEADER );
+			if( HeaderTheme )
 			{
-				pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
-				pTheme->CloseThemeData( hTheme );
+				HeaderTheme.DrawThemeBackground( cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
 				CPen penHighlight( PS_SOLID, 1, ::GetSysColor( COLOR_BTNHIGHLIGHT ) );
 				CPen* pOldPen = cdc.SelectObject( &penHighlight );
 				cdc.MoveTo( rcHeader.left, rcHeader.top );
 				cdc.LineTo( rcHeader.right, rcHeader.top );
 				cdc.SelectObject( pOldPen );
 			}
+			else
+			{			
+				CBrush br( ::GetSysColor( COLOR_BTNFACE ) );
+				cdc.FillRect( &rcHeader, &br );
+				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
+			}    
 			cdc.SetBkColor( crBackground );
 			cdc.SetTextColor( mColorService.GetForegroundColor() ); 
 		}
@@ -1537,14 +1513,9 @@ void CGridCtrl::DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool
 	rc.bottom = rc.top + 14;
 	if( rc.bottom > rcIcon.bottom )
 		rc.bottom = rcIcon.bottom;
-	CThemeHelperST* pTheme = GetThemeHelper();
-	HTHEME hTheme = pTheme? pTheme->OpenThemeData(GetSafeHwnd(), L"BUTTON") : NULL;
-	if( hTheme )
-	{
-		pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), BP_CHECKBOX,
-																 (bPressed? RBS_CHECKEDNORMAL : RBS_UNCHECKEDNORMAL), &rc, NULL );
-		pTheme->CloseThemeData( hTheme );
-	}
+	WndTheme ButtonTheme( GetSafeHwnd(), L"BUTTON" );
+	if( ButtonTheme )
+		ButtonTheme.DrawThemeBackground( cdc.GetSafeHdc(), BP_CHECKBOX, (bPressed? RBS_CHECKEDNORMAL : RBS_UNCHECKEDNORMAL), &rc, NULL );
 	else
 	{
 		cdc.DrawEdge( &rc, EDGE_SUNKEN, BF_RECT );

@@ -83,7 +83,7 @@ DWORD CArxFontComboBoxCtrl::GetWndStyle() const
 
 
 BEGIN_MESSAGE_MAP(CArxFontComboBoxCtrl, CArxComboBoxCtrl)
-	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCloseUp)
+	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCbnCloseup)
 	ON_WM_TIMER()
 	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
 END_MESSAGE_MAP()
@@ -92,10 +92,17 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxFontComboBoxCtrl message handlers
 
-void CArxFontComboBoxCtrl::OnCloseUp()
+LRESULT CArxFontComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_CTLCOLORLISTBOX )
+		mhwndList = (HWND)lParam;
+	return __super::WindowProc(message, wParam, lParam);
+}
+
+void CArxFontComboBoxCtrl::OnCbnCloseup()
 {
 	mwndTip.ShowWindow( SW_HIDE );
-	__super::OnCloseUp();
+	__super::OnCbnCloseup();
 }
 
 void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent) 
@@ -151,11 +158,4 @@ void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent)
 void CArxFontComboBoxCtrl::OnKillfocus() 
 {
 	mwndTip.ShowWindow( SW_HIDE );
-}
-
-LRESULT CArxFontComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	if( message == WM_CTLCOLORLISTBOX )
-		mhwndList = (HWND)lParam;
-	return __super::WindowProc(message, wParam, lParam);
 }

@@ -29,7 +29,7 @@ protected:
  
 protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	afx_msg void OnCloseUp();
+	afx_msg void OnCbnCloseup();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKillfocus();
 };

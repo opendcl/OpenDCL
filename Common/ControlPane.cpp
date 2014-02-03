@@ -230,6 +230,13 @@ bool CControlPane::IsModal() const
 	return !pTopLevelForm->IsModeless();
 }
 
+bool CControlPane::IsClosing() const
+{
+	if( !mpDlgObject )
+		return false;
+	return mpDlgObject->IsClosing();
+}
+
 void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 {
 	if( !pDclControl || !pDclControl->IsZOrderAllowed() )
@@ -255,13 +262,14 @@ void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 
 void CControlPane::CleanUpControls() 
 {	
-	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	TDialogControls Controls = mControls;
+	mControls.clear();
+	for( TDialogControls::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
 		CWnd* pControl = (*iter)->GetControlWnd();
 		if( pControl )
 			pControl->DestroyWindow();
 	}
-	mControls.clear();
 }
 
 void CControlPane::ApplyZOrder()

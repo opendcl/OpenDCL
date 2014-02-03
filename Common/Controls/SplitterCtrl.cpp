@@ -79,16 +79,6 @@ CRect CSplitterCtrl::ValidatePosition( const CRect& rcProposed ) const
 	return rcValid;
 }
 
-void CSplitterCtrl::ApplyPosition()
-{
-	CRect rcNew = ValidatePosition( GetWndRect() );
-	if( mbVertical )
-		SetPosLeft( rcNew.left );
-	else
-		SetPosTop( rcNew.top );
-	__super::ApplyPosition();
-}
-
 bool CSplitterCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -101,6 +91,34 @@ bool CSplitterCtrl::ApplyProperty( TPropertyPtr pProp )
 		break;
 	}
 	return !bFailed;
+}
+
+bool CSplitterCtrl::OnApplyLeft( TPropertyPtr pProp )
+{
+	if( mbVertical )
+	{
+		CRect rcNew = ValidatePosition( GetWndRect() );
+		if( pProp->GetLongValue() != rcNew.left )
+		{
+			pProp->SetLongValue( rcNew.left );
+			SyncPosLeft();
+		}
+	}
+	return __super::OnApplyLeft( pProp );
+}
+
+bool CSplitterCtrl::OnApplyTop( TPropertyPtr pProp )
+{
+	if( !mbVertical )
+	{
+		CRect rcNew = ValidatePosition( GetWndRect() );
+		if( pProp->GetLongValue() != rcNew.top )
+		{
+			pProp->SetLongValue( rcNew.top );
+			SyncPosTop();
+		}
+	}
+	return __super::OnApplyTop( pProp );
 }
 
 bool CSplitterCtrl::OnApplyWidth( TPropertyPtr pProp )

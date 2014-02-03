@@ -57,7 +57,6 @@ DWORD CComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 	dwStyle |= (CBS_NOINTEGRALHEIGHT);
-	dwStyle |= GetComboStyle();
 	const CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
 	{
@@ -224,8 +223,8 @@ void CComboBoxCtrl::OnListChanged()
 
 BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboBoxCtrl::OnDropdown)
-	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboBoxCtrl::OnCloseUp)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboBoxCtrl::OnCbnDropdown)
+	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboBoxCtrl::OnCbnCloseup)
 	ON_MESSAGE(CB_ADDSTRING, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_DELETESTRING, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_DIR, &CComboBoxCtrl::OnModifyContent)
@@ -238,6 +237,26 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CComboBoxCtrl message handlers
+
+LRESULT CComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+		case CB_SELECTSTRING:
+		case CB_SETCURSEL:
+			{
+				CString sText;
+				int nCurSel = GetCurSel();
+				if( nCurSel >= 0 )
+					GetLBText( nCurSel, sText );
+				if( sText != mpTemplate->GetStringProperty( Prop::Text ) )
+					mpTemplate->SetStringProperty( Prop::Text, sText );
+			}
+			break;
+	}
+	return lResult;
+}
 
 BOOL CComboBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
@@ -275,11 +294,11 @@ void CComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		lpMeasureItemStruct->itemHeight = nItemHeight;
 }
 
-void CComboBoxCtrl::OnDropdown()
+void CComboBoxCtrl::OnCbnDropdown()
 {
 }
 
-void CComboBoxCtrl::OnCloseUp()
+void CComboBoxCtrl::OnCbnCloseup()
 {
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )

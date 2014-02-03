@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E269D8E5-9F92-4813-BF00-85FF38F548C1}</ProjectGuid>
     <RootNamespace>OpenDCL.x64.13</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -114,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Common\ThemeAPI.cpp" />
     <ClCompile Include="..\AcadBlockInsertDropTarget.cpp" />
     <ClCompile Include="..\AcadDockBarHost.cpp" />
     <ClCompile Include="..\AcadPaletteHost.cpp" />
@@ -310,6 +312,8 @@
     <ResourceCompile Include="..\ARX.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Common\ThemeAPI.h" />
+    <ClInclude Include="..\..\Common\UxThemeVI.h" />
     <ClInclude Include="..\AcadBlockInsertDropTarget.h" />
     <ClInclude Include="..\AcadDockBarHost.h" />
     <ClInclude Include="..\AcadPaletteHost.h" />

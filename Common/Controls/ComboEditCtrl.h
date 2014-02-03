@@ -114,7 +114,7 @@ protected:
 			{
 				ON_WM_MEASUREITEM_REFLECT()
 				ON_CONTROL_REFLECT(CBN_KILLFOCUS, &CComboEditCtrlBase::OnKillFocus)
-				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboEditCtrlBase::OnCloseUp)
+				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboEditCtrlBase::OnCbnCloseup)
 				{0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 },
 			};
 			static const AFX_MSGMAP messageMap =  { &__super::GetThisMessageMap, &_messageEntries[0] };
@@ -145,7 +145,7 @@ protected:
 			mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 			//mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
 		}
-	afx_msg void OnCloseUp()
+	afx_msg void OnCbnCloseup()
 		{
 			if( mpHandler )
 				mpHandler->OnDropdownClose( this );

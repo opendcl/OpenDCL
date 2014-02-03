@@ -31,8 +31,8 @@ protected:
 
 protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
+	afx_msg void OnCbnSelchange();
+	afx_msg void OnCbnDropdown();
 	afx_msg void OnDestroy();	
 	afx_msg void OnKillfocus();
 	afx_msg void OnSetfocus();

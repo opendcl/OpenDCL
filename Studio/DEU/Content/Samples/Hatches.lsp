@@ -7,101 +7,96 @@
 ;; Hauptprogramm
 (defun c:Hatches (/ cmdecho)
 
-	;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
-	(setq cmdecho (getvar "CMDECHO"))
-	(setvar "CMDECHO" 0)
-	(command "_OPENDCL")
-	(setvar "CMDECHO" cmdecho)
+  ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
-	;; Projekt laden
-	(dcl-Project-Load (*ODCL:Samples:FindFile "Hatches.odcl"))
+  ;; Projekt laden
+  (dcl-Project-Load (*ODCL:Samples-FindFile "Hatches.odcl"))
 
-	;; Dialog anzeigen
-	(dcl-Form-Show Hatches/Hatch)
+  ;; Dialog anzeigen
+  (dcl-Form-Show Hatches/Hatch)
 
-	;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
-	;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
-	;; bis der modale Dialog geschlosswen wird.
-	;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
+  ;; Dies ist eine modale Dialogbox. Das bedeutet, dass das Programm an dieser
+  ;; Zeile stehen bleibt und (dcl-Form-Show) solange keinen Wert zurückgibt,
+  ;; bis der modale Dialog geschlosswen wird.
+  ;; In der Zwischenzeit übernehmen die Ereignisfunktionen die Dialogsteuerung.
 
-	(princ)
+  (princ)
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|«OpenDCL Event Handlers»|;
 
 (defun c:Hatches/Hatch#OnInitialize (/ scale idx)
-	(setq scale (rtos (dcl-Control-GetHatchScale Hatches/Hatch/Hatch1) 2 0))
-	(setq idx (dcl-ComboBox-FindString Hatches/Hatch/ComboBox2 scale))
-	(if (< idx 0) (setq idx 0))
-	(dcl-ComboBox-SetCurSel Hatches/Hatch/ComboBox2 idx)
+  (setq scale (rtos (dcl-Control-GetHatchScale Hatches/Hatch/Hatch1) 2 0))
+  (setq idx (dcl-ComboBox-FindString Hatches/Hatch/ComboBox2 scale))
+  (if (< idx 0) (setq idx 0))
+  (dcl-ComboBox-SetCurSel Hatches/Hatch/ComboBox2 idx)
 )
 
 (defun c:Hatches/Hatch/ComboBox1#OnSelChanged (nSelection sSelText /)
-	(dcl-Hatch-setpattern Hatches/Hatch/Hatch1 sSelText)
-	(dcl-Hatch-setpattern Hatches/Hatch/Hatch2 sSelText)
+  (dcl-Hatch-setpattern Hatches/Hatch/Hatch1 sSelText)
+  (dcl-Hatch-setpattern Hatches/Hatch/Hatch2 sSelText)
 )
 
 (defun c:Hatches/Hatch/ComboBox2#OnSelChanged (nSelection sSelText / hatpat)
-	;; Ausgewählten Skalierfaktor beiden Voransichten zuweisen
-	(dcl-Control-SetHatchScale Hatches/Hatch/Hatch1 (atof sSelText))
-	(dcl-Control-SetHatchScale Hatches/Hatch/Hatch2 (atof sSelText))
+  ;; Ausgewählten Skalierfaktor beiden Voransichten zuweisen
+  (dcl-Control-SetHatchScale Hatches/Hatch/Hatch1 (atof sSelText))
+  (dcl-Control-SetHatchScale Hatches/Hatch/Hatch2 (atof sSelText))
     
-	;; Gewählten Schraffurnamen aus der Auswahlliste abfragen
-	(setq hatpat (dcl-ComboBox-GetLBText
-					 Hatches/Hatch/ComboBox1
-					 (dcl-ComboBox-GetCurSel Hatches/Hatch/ComboBox1)
-				 )
-	) 
-	;; Ereignisfunktion zur Aktualisierung der Voransichten ausführen
-	(c:Hatches/Hatch/ComboBox1#OnSelChanged nil hatpat)
+  ;; Gewählten Schraffurnamen aus der Auswahlliste abfragen
+  (setq hatpat (dcl-ComboBox-GetLBText
+           Hatches/Hatch/ComboBox1
+           (dcl-ComboBox-GetCurSel Hatches/Hatch/ComboBox1)
+         )
+  ) 
+  ;; Ereignisfunktion zur Aktualisierung der Voransichten ausführen
+  (c:Hatches/Hatch/ComboBox1#OnSelChanged nil hatpat)
 )
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
 ;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
 ;;; durch das Installationsprogramm in der Registry eingetragen wurde.
-;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
 ;;; werden in allen Beispieldateien verwendet.
 ;;;
-(or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
-		(setq *ODCL:Prefix
-			(cond
-				(	*ODCL:Prefix
-				) ;_ Bereits definiert
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 32-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					 )
-				) ;_ 32-bit Variante alle Nutzer
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante alle Nutzer
-			)
-		)
-		(cond
-			((findfile file)) ; überprüfe zunächst den Supportpfad
-			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-			(file)
-		)
-	)
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
 )
 
 ;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
@@ -110,18 +105,18 @@
 ;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
 
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
-			(progn
-				(princ (strcat "'" demoname "\n"))
-				(apply (read (strcat "C:" demoname)) nil)
-			)
-			(progn
-				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
-				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
-			)
-		)
-	)
-	"Hatches"
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "Hatches"
 )
 (princ)
 

@@ -34,8 +34,9 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CRect ValidatePosition( const CRect& rcProposed ) const;
-	virtual void ApplyPosition(); //move control window to new position
 	virtual bool ApplyProperty( TPropertyPtr pProp );
+	virtual bool OnApplyLeft( TPropertyPtr pProp ); //Prop::Left
+	virtual bool OnApplyTop( TPropertyPtr pProp ); //Prop::Top
 	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
 	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
 	virtual CAcadColorService* GetColorService() { return &mColorService; }

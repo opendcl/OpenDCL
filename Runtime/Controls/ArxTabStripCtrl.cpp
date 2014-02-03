@@ -256,7 +256,7 @@ void CArxTabStripCtrl::SetFirstControlFocus( CTabPageDlg* pTabPage )
 
 
 BEGIN_MESSAGE_MAP(CArxTabStripCtrl, CTabStripCtrl)
-	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
+	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnCbnSelchange)
 	ON_NOTIFY_REFLECT(TCN_SELCHANGING, OnSelchanging)	
 	ON_WM_KILLFOCUS()
 	ON_WM_SETFOCUS()
@@ -266,11 +266,11 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxTabStripCtrl message handlers
 
-void CArxTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult ) 
+void CArxTabStripCtrl::OnCbnSelchange( NMHDR* pNMHDR, LRESULT* pResult ) 
 {
 	ActivateTabPage( GetTabPageAt( GetCurTabPage() ), true );
 	*pResult = 0;
-	__super::OnSelchange( pNMHDR, pResult );
+	__super::OnCbnSelchange( pNMHDR, pResult );
 }
 
 void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult ) 

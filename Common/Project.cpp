@@ -88,9 +88,9 @@ CProject::~CProject()
 
 void CProject::Initialize()
 {
-  msPassword.Empty();
-  msLispFileName.Empty();	
-  mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
+	msPassword.Empty();
+	msLispFileName.Empty();	
+	mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
 }
 
 void CProject::OnModified()
@@ -304,20 +304,20 @@ TDclFormPtr CProject::FindDclForm( LPCTSTR pszDclFormName ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    if( (*iterForm)->GetKeyName().CompareNoCase( pszDclFormName ) == 0 )
-      return (*iterForm);
+		if( (*iterForm)->GetKeyName().CompareNoCase( pszDclFormName ) == 0 )
+			return (*iterForm);
 	}
-  return NULL;
+	return NULL;
 }
 
 TDclFormPtr CProject::FindDclFormWithVarName( LPCTSTR pszVarName ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    if( (*iterForm)->GetVarName().CompareNoCase( pszVarName ) == 0 )
-      return (*iterForm);
+		if( (*iterForm)->GetVarName().CompareNoCase( pszVarName ) == 0 )
+			return (*iterForm);
 	}
-  return NULL;
+	return NULL;
 }
 
 TDclControlPtr CProject::FindControlWithVarName( LPCTSTR pszVarName ) const
@@ -325,30 +325,30 @@ TDclControlPtr CProject::FindControlWithVarName( LPCTSTR pszVarName ) const
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
 		TDclControlPtr pControl = (*iterForm)->FindControlWithVarName( pszVarName );
-    if( pControl )
-      return pControl;
+		if( pControl )
+			return pControl;
 	}
-  return NULL;
+	return NULL;
 }
 
 TDclFormPtr CProject::FindParentDclForm( LPCTSTR pszParentUniqueName ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    if( (*iterForm)->GetUniqueName() == pszParentUniqueName )
-      return (*iterForm);
+		if( (*iterForm)->GetUniqueName() == pszParentUniqueName )
+			return (*iterForm);
 	}
-  return NULL;
+	return NULL;
 }
 
 TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentUniqueName, size_t nTabIndex ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    if ((*iterForm)->GetParentName() == pszParentUniqueName && (*iterForm)->GetTabIndex() == nTabIndex)
-      return (*iterForm);
+		if ((*iterForm)->GetParentName() == pszParentUniqueName && (*iterForm)->GetTabIndex() == nTabIndex)
+			return (*iterForm);
 	}
-  return NULL;
+	return NULL;
 }
 
 HBITMAP CProject::CloneBitmap( UINT nID, CSize &sz ) const
@@ -593,33 +593,33 @@ class CArxControlObject : public CDclControlObject
 
 void CProject::Serialize(CArchive& ar)
 {
-  BYTE nThisVersion = GetCurrentSaveVersion();
+	BYTE nThisVersion = GetCurrentSaveVersion();
 
-  if (ar.IsStoring())
-  {
-    ar << nThisVersion;
-    ar << msPassword;
-    ar << msLispFileName;
-    ar << msKeyName; //project key
+	if (ar.IsStoring())
+	{
+		ar << nThisVersion;
+		ar << msPassword;
+		ar << msLispFileName;
+		ar << msKeyName; //project key
 
-    ar << unsigned long(mDclForms.size());
-    ar << mnAutoCADVersion;
+		ar << unsigned long(mDclForms.size());
+		ar << mnAutoCADVersion;
 
 		for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
-    {
-      (*iter)->Serialize(ar);
+		{
+			(*iter)->Serialize(ar);
 		#ifdef _DEBUG
 			(*iter)->dumpDebugger( false );
 		#endif
-    }
+		}
 
-    ar << unsigned long(mPictures.size());
+		ar << unsigned long(mPictures.size());
 		for( TPictureMap::const_iterator iter = mPictures.begin(); iter != mPictures.end(); ++iter )
 			iter->second->Serialize( ar );
-  }
-  else
-  {		
-    ar >> nThisVersion;
+	}
+	else
+	{		
+		ar >> nThisVersion;
 		if( nThisVersion <= 14 )
 		{
 			BYTE bSkip;
@@ -641,11 +641,11 @@ void CProject::Serialize(CArchive& ar)
 			if (nThisVersion != 2 && nThisVersion != 3)
 				msPassword.Empty();
 		}
-    ar >> msPassword;		
-    ar >> msLispFileName;
+		ar >> msPassword;		
+		ar >> msLispFileName;
 
-    // lets check here if we need to add the lisp file extension
-    CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
+		// lets check here if we need to add the lisp file extension
+		CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
 		if (!msLispFileName.IsEmpty())
 		{
 			if (msLispFileName == sNone ||
@@ -657,9 +657,9 @@ void CProject::Serialize(CArchive& ar)
 		}
 
 		CString sKeyName;
-    if (nThisVersion >= 10)
-      ar >> sKeyName; //this is the project key name
-    else
+		if (nThisVersion >= 10)
+			ar >> sKeyName; //this is the project key name
+		else
 		{
 			if (nThisVersion >= 5)
 				ar >> sKeyName; //this is the full project file path as saved
@@ -677,7 +677,7 @@ void CProject::Serialize(CArchive& ar)
 			ar >> sDistFileName; //discard
 		}
 
-    // get counter for dcl forms
+		// get counter for dcl forms
 		unsigned long ctForms = 0;
 		if( nThisVersion < 11 )
 		{
@@ -694,17 +694,17 @@ void CProject::Serialize(CArchive& ar)
 			ar >> nPurchaseState; //discard
 		}
 
-    if (nThisVersion >= 4)
-      ar >> mnAutoCADVersion;
-    else
-      // otherwise set the default to release nDeAcadVersion
-      mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
+		if (nThisVersion >= 4)
+			ar >> mnAutoCADVersion;
+		else
+			// otherwise set the default to release nDeAcadVersion
+			mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
 
-    // do loop to navigate dcl forms
-    while (ctForms-- > 0)
-    {
-      TDclFormPtr pDclForm = new CDclFormObject( this );
-      pDclForm->Serialize(ar);
+		// do loop to navigate dcl forms
+		while (ctForms-- > 0)
+		{
+			TDclFormPtr pDclForm = new CDclFormObject( this );
+			pDclForm->Serialize(ar);
 
 			if( pDclForm->GetType() == FrmTabPage )
 			{
@@ -737,9 +737,9 @@ void CProject::Serialize(CArchive& ar)
 		#ifdef _DEBUG
 			pDclForm->dumpDebugger( false );
 		#endif
-    }
+		}
 
-    if (nThisVersion >= 7)
+		if (nThisVersion >= 7)
 		{
 			if( nThisVersion <= 9 )
 			{
@@ -758,7 +758,7 @@ void CProject::Serialize(CArchive& ar)
 			}
 		}
 
-    if( nThisVersion >= 8 )
+		if( nThisVersion >= 8 )
 		{
 			if( nThisVersion <= 9 )
 			{
@@ -779,8 +779,8 @@ void CProject::Serialize(CArchive& ar)
 			}
 		}
 
-    mPictures.clear();
-    if( nThisVersion < 9 )
+		mPictures.clear();
+		if( nThisVersion < 9 )
 		{
 			try
 			{
@@ -803,7 +803,7 @@ void CProject::Serialize(CArchive& ar)
 			catch(...) {}
 		}
 		else
-    {
+		{
 			unsigned long nCount = 0;
 			if( nThisVersion < 10 )
 			{
@@ -814,14 +814,14 @@ void CProject::Serialize(CArchive& ar)
 			else
 				ar >> nCount;
 
-      while( nCount-- > 0 )
-      {
-        TPicturePtr pPict = new CPictureObject( -1 );
-        pPict->Serialize( ar );
-        mPictures[pPict->GetID()] = pPict;							
-      }
-    }
-  }
+			while( nCount-- > 0 )
+			{
+				TPicturePtr pPict = new CPictureObject( -1 );
+				pPict->Serialize( ar );
+				mPictures[pPict->GetID()] = pPict;							
+			}
+		}
+	}
 }
 
 IOStatus CProject::ReadFromTextFile( LPCTSTR lpszFilePath ) 
@@ -853,33 +853,33 @@ IOStatus CProject::ReadFromTextFile( LPCTSTR lpszFilePath )
 
 IOStatus CProject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
-  //Init the globals before reading anything from the file.
-  InitFilerGlobals();
+	//Init the globals before reading anything from the file.
+	InitFilerGlobals();
 
-  if (readLine(sFile) != "OpenDCL Project") return statInvalidFormat;
+	if (readLine(sFile) != "OpenDCL Project") return statInvalidFormat;
 
-  int nThisVersion;
-  if (!readInt(sFile, nThisVersion)) return statInvalidFormat;
+	int nThisVersion;
+	if (!readInt(sFile, nThisVersion)) return statInvalidFormat;
 
-  switch (nThisVersion) {
-    case 9 : return ReadFromTextFile9(sFile, fileName);
-  }
-  return statInvalidFormat;
+	switch (nThisVersion) {
+		case 9 : return ReadFromTextFile9(sFile, fileName);
+	}
+	return statInvalidFormat;
 }
 
 IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileName)
 {
-  int nCount;
+	int nCount;
 
 	BOOL bHasPassword;
-  if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat; //discard
+	if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat; //discard
 	CStringA sPassword;
-  if (!readString(sFile, sPassword)) return statInvalidFormat;
+	if (!readString(sFile, sPassword)) return statInvalidFormat;
 	msPassword = sPassword;
 	CStringA sLispFileName;
-  if (!readString(sFile, sLispFileName)) return statInvalidFormat;
+	if (!readString(sFile, sLispFileName)) return statInvalidFormat;
 	msLispFileName = sLispFileName;
-  CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
+	CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
 	if (!msLispFileName.IsEmpty())
 	{
 		if (msLispFileName == sNone ||
@@ -890,9 +890,9 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 			msLispFileName += _T(".lsp");
 	}
 
-  // this is the original project file path; use it to construct the project key
+	// this is the original project file path; use it to construct the project key
 	CStringA sKeyNameA;
-  if (!readString(sFile, sKeyNameA)) return statInvalidFormat;
+	if (!readString(sFile, sKeyNameA)) return statInvalidFormat;
 	if (!sKeyNameA.IsEmpty())
 	{
 		CString sKeyName( sKeyNameA );
@@ -901,73 +901,73 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 		SetKeyName( sKeyName );
 	}
 
-  // this is used for a distribution file with multiple projects in it.
+	// this is used for a distribution file with multiple projects in it.
 	CStringA sDistFileName;
-  if (!readString(sFile, sDistFileName)) return statInvalidFormat; //discard
+	if (!readString(sFile, sDistFileName)) return statInvalidFormat; //discard
 
-  // get counter for dcl forms
-  if (!readInt(sFile, nCount)) return statInvalidFormat;
+	// get counter for dcl forms
+	if (!readInt(sFile, nCount)) return statInvalidFormat;
 	int nPurchaseState;
-  if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
+	if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
 
-  if (!readInt(sFile, (int&)mnAutoCADVersion)) return statInvalidFormat;
+	if (!readInt(sFile, (int&)mnAutoCADVersion)) return statInvalidFormat;
 
-  // do loop to navigate dcl forms
-  while (nCount-- > 0)
-  {
-    // get current Dcl form
-    TDclFormPtr pDclForm = new CDclFormObject( this );
+	// do loop to navigate dcl forms
+	while (nCount-- > 0)
+	{
+		// get current Dcl form
+		TDclFormPtr pDclForm = new CDclFormObject( this );
 
-    // get dcl form into archive
+		// get dcl form into archive
 		IOStatus stat = pDclForm->ReadFromTextFile(sFile, fileName);
-    if (stat != statOK) return stat;
+		if (stat != statOK) return stat;
 
-    // add this dcl form to the list object
-    mDclForms.push_back(pDclForm);
+		// add this dcl form to the list object
+		mDclForms.push_back(pDclForm);
 
-  }	
+	}	
 
-  int iCount;
-  if (!readInt(sFile, iCount)) return statInvalidFormat;
-  for (int i = 0; i < iCount; i++) {
-    CStringA str;
-    if (!readString(sFile, str)) return statInvalidFormat;
-  }
+	int iCount;
+	if (!readInt(sFile, iCount)) return statInvalidFormat;
+	for (int i = 0; i < iCount; i++) {
+		CStringA str;
+		if (!readString(sFile, str)) return statInvalidFormat;
+	}
 
-  if (!readInt(sFile, iCount)) return statInvalidFormat;
-  CDclControlObject* pOleControl = new CDclControlObject( NULL );
-  for (int i = 0; i < iCount; i++) {
+	if (!readInt(sFile, iCount)) return statInvalidFormat;
+	CDclControlObject* pOleControl = new CDclControlObject( NULL );
+	for (int i = 0; i < iCount; i++) {
 		IOStatus stat = pOleControl->ReadFromTextFile(sFile, fileName);
-    if (stat != statOK) return stat;
-    delete pOleControl;
-  }
+		if (stat != statOK) return stat;
+		delete pOleControl;
+	}
 
-  // set counter
-  if (!readInt(sFile, nCount)) return statInvalidFormat;
+	// set counter
+	if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  mPictures.clear();
-  // do loop to navigate images
-  while (nCount-- > 0)
-  {
-    // get current images
-    TPicturePtr pPict = new CPictureObject( -1 );
+	mPictures.clear();
+	// do loop to navigate images
+	while (nCount-- > 0)
+	{
+		// get current images
+		TPicturePtr pPict = new CPictureObject( -1 );
 		if( !pPict )
 			continue;
-    try
-    {	
-      // get image into archive
+		try
+		{	
+			// get image into archive
 			IOStatus stat = pPict->ReadFromTextFile(sFile, fileName);
-      if (stat != statOK) return stat;
+			if (stat != statOK) return stat;
 
-      // add this image to the list object
-      mPictures[pPict->GetID()] = pPict;
-    }
-    catch(...)
-    {
-      // do nothing
-    }
-  }
-  return statOK;
+			// add this image to the list object
+			mPictures[pPict->GetID()] = pPict;
+		}
+		catch(...)
+		{
+			// do nothing
+		}
+	}
+	return statOK;
 }
 
 

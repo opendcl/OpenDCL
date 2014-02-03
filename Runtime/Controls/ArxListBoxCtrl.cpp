@@ -74,7 +74,7 @@ BEGIN_MESSAGE_MAP(CArxListBoxCtrl, CListBoxCtrl)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnSelchange)
+	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnCbnSelchange)
 	ON_CONTROL_REFLECT(LBN_DBLCLK, OnDblclk)
 	ON_CONTROL_REFLECT(LBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(LBN_SETFOCUS, OnSetfocus)
@@ -91,7 +91,7 @@ void CArxListBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 }
 
-void CArxListBoxCtrl::OnSelchange() 
+void CArxListBoxCtrl::OnCbnSelchange() 
 {
 	int nSelCount = GetSelCount();
 

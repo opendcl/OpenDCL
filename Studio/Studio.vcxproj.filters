@@ -617,6 +617,12 @@
     <ClInclude Include="..\Common\Controls\XPStyleButtonST.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\ThemeAPI.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UxThemeVI.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonStyles.cpp">
@@ -1083,6 +1089,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\Controls\XPStyleButtonST.cpp">
       <Filter>Common\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\ThemeAPI.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

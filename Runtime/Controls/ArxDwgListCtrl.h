@@ -127,5 +127,5 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnSelchange();
+	afx_msg void OnCbnSelchange();
 };

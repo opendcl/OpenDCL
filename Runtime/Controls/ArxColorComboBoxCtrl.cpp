@@ -83,17 +83,58 @@ bool CArxColorComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CArxColorComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+#if (_ACADTARGET >= 17 && !defined(_BRXTARGET) && !defined(_ZRXTARGET))
+	static bool bVistaOrLater = (LOBYTE(LOWORD(GetVersion())) >= 6);
+	if( bVistaOrLater )
+	{
+	#if (_ACADTARGET == 17)
+		bool bThemeEnabled = GetTheme().IsThemeActive();
+	#else
+		bool bThemeEnabled = IsVistaTheme();
+	#endif
+		if( bThemeEnabled )
+		{
+			if( !pProp->GetBooleanValue() )
+				return false; //AcUi combos don't display correctly when theme is active but disabled for the control
+		}
+	}
+#endif
+	return __super::OnApplyUseVisualStyle( pProp );
+}
+
 BEGIN_MESSAGE_MAP(CArxColorComboBoxCtrl, CAcUiColorComboBox)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxColorComboBoxCtrl::OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CArxColorComboBoxCtrl::OnDropdown)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxColorComboBoxCtrl::OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CArxColorComboBoxCtrl::OnCbnDropdown)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CComboBoxCtrl message handlers
+
+LRESULT CArxColorComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+		case CB_SELECTSTRING:
+		case CB_SETCURSEL:
+			{
+				CString sText;
+				int nCurSel = GetCurSel();
+				if( nCurSel >= 0 )
+					GetLBText( nCurSel, sText );
+				if( sText != mpTemplate->GetStringProperty( Prop::Text ) )
+					mpTemplate->SetStringProperty( Prop::Text, sText );
+			}
+			break;
+	}
+	return lResult;
+}
 
 BOOL CArxColorComboBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
@@ -110,7 +151,10 @@ void CArxColorComboBoxCtrl::PostNcDestroy()
 void CArxColorComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
-	SetEditSel( 0 , -1 );	//combobox is gaining focus, highlight text in edit control
+#if (_ACADTARGET == 17)
+	if( GetTheme().IsThemeActive() )
+		Invalidate();
+#endif
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
@@ -126,7 +170,7 @@ void CArxColorComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 }
 
-void CArxColorComboBoxCtrl::OnSelchange()
+void CArxColorComboBoxCtrl::OnCbnSelchange()
 {
 	int nCurSel = GetCurSel();
 	CString sText;
@@ -135,8 +179,7 @@ void CArxColorComboBoxCtrl::OnSelchange()
 	mpTemplate->SetStringProperty( Prop::Text, sText );
 }
 
-void CArxColorComboBoxCtrl::OnDropdown()
+void CArxColorComboBoxCtrl::OnCbnDropdown()
 {
-	__super::OnDropDown();
 	GetArxServices()->HandleEvent( Prop::EventDropDown );
 }

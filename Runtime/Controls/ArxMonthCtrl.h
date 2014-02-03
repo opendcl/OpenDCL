@@ -28,6 +28,6 @@ protected:
 
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSelchange(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnCbnSelchange(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSelect(NMHDR* pNMHDR, LRESULT* pResult);
 };

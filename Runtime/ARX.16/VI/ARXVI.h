@@ -23,3 +23,10 @@ extern "C" int ads_queueexpr( ACHAR* pszCommand );
 #define subSetAttributes setAttributes
 #define subWorldDraw worldDraw
 #define subViewportDraw viewportDraw
+
+#define ON_WM_MOUSELEAVE() \
+	{ WM_MOUSELEAVE, 0, 0, 0, AfxSig_vv, \
+		(AFX_PMSG)(AFX_PMSGW) \
+		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > (OnMouseLeave)) },
+
+#include "UxThemeVI.h"

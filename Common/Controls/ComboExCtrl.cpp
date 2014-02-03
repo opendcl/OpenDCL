@@ -27,7 +27,7 @@ CComboExCtrl::~CComboExCtrl()
 
 bool CComboExCtrl::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwComboStyle, UINT nID )
 {
-	DWORD dwStyle = (WS_CHILD | WS_VISIBLE | WS_VSCROLL | dwComboStyle);
+	DWORD dwStyle = (WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_AUTOHSCROLL | dwComboStyle);
 	bool bSuccess = (__super::Create( dwStyle, rectWnd, pParentWnd, nID ) != FALSE);
 	if( bSuccess )
 	{

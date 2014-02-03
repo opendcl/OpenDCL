@@ -52,8 +52,8 @@ public:
 
 // Operations
 public:
-	virtual void AddControl( TDclControlPtr pDclControl, bool bAssignNewID = false );
-	virtual TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl );
+	virtual void AddControl( TDclControlPtr pDclControl, bool bAssignNewID = false, bool bToTopOfZOrder = true );
+	virtual TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl, bool bToTopOfZOrder = true );
 	virtual void DeleteControl( TDclControlPtr& pDclControl );
 	virtual bool ReorderControl( TDclControlPtr pDclControl, bool bToFront );
 	virtual bool ReorderControl( TDclControlPtr pDclControl, size_t idxNew );
@@ -69,6 +69,7 @@ protected:
 public:
 	TDclControlPtr GetRefCountedPtr( CDclControlObject* pDclControl ) const;
 	void ClearControls();
+	TDclControlPtr FindControl( UINT nID, bool brecursive = true ) const;
 	TDclControlPtr FindControl( LPCTSTR pszControlName ) const;
 	TDclControlPtr FindControl( LPCTSTR pszControlName, ControlType eType ) const;
 	TDclControlPtr FindFirstControlOfType( ControlType eType ) const;

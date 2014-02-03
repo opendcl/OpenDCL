@@ -35,10 +35,11 @@ protected:
 
 protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	afx_msg LRESULT OnSelchange( WPARAM wParam, LPARAM lParam );
-	afx_msg void OnDropdown();
-	afx_msg void OnDestroy();	
-	afx_msg void OnKillfocus();
-	afx_msg void OnSetfocus();
+	afx_msg void OnCbnSelchange();
+	afx_msg void OnCbnDropdown();
+	afx_msg void OnCbnCloseup();
+	afx_msg void OnCbnDestroy();	
+	afx_msg void OnCbnKillfocus();
+	afx_msg void OnCbnSetfocus();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

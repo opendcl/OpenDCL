@@ -31,11 +31,11 @@ bool CArxComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 }
 
 BEGIN_MESSAGE_MAP(CArxComboBoxCtrl, CComboBoxCtrl)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
-	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
-	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CArxComboBoxCtrl::OnEditchange)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxComboBoxCtrl::OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CArxComboBoxCtrl::OnCbnDropdown)
+	ON_CONTROL_REFLECT(CBN_KILLFOCUS, &CArxComboBoxCtrl::OnCbnKillfocus)
+	ON_CONTROL_REFLECT(CBN_SETFOCUS, &CArxComboBoxCtrl::OnCbnSetfocus)
+	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CArxComboBoxCtrl::OnCbnEditchange)
 	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
@@ -43,11 +43,12 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxComboBoxCtrl message handlers
 
-void CArxComboBoxCtrl::OnSelchange() 
+void CArxComboBoxCtrl::OnCbnSelchange() 
 {
-	int nCurSel = GetCurSel();
 	CString sText;
-	GetLBText( nCurSel, sText );
+	int nCurSel = GetCurSel();
+	if( nCurSel >= 0 )
+		GetLBText( nCurSel, sText );
 	mpTemplate->SetStringProperty( Prop::Text, sText );
 	CString sEvent = mpTemplate->GetStringProperty(Prop::EventSelChanged);
 	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
@@ -71,9 +72,9 @@ void CArxComboBoxCtrl::OnSelchange()
 		GetArxServices()->HandleEvent( sEvent, args_NS( nCurSel, sText ) );
 }
 
-void CArxComboBoxCtrl::OnDropdown() 
+void CArxComboBoxCtrl::OnCbnDropdown() 
 {
-	__super::OnDropdown();
+	__super::OnCbnDropdown();
 	GetArxServices()->HandleEvent( Prop::EventDropDown );	
 }
 
@@ -83,17 +84,17 @@ void CArxComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 }
 
-void CArxComboBoxCtrl::OnKillfocus() 
+void CArxComboBoxCtrl::OnCbnKillfocus() 
 {
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
-void CArxComboBoxCtrl::OnSetfocus() 
+void CArxComboBoxCtrl::OnCbnSetfocus() 
 {
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 }
 
-void CArxComboBoxCtrl::OnEditchange()
+void CArxComboBoxCtrl::OnCbnEditchange()
 {
 	CString sText;
 	GetWindowText( sText );

@@ -128,15 +128,14 @@ void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 }
 
 
-void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /*= false*/ )
+void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /*= false*/, bool bToTopOfZOrder /*= true*/ )
 {
 	if( !pDclControl )
 		return;
-	//if( bAssignNewID && !mDclControls.empty() )
-	//		mDclControls.insert( ++mDclControls.begin(), pDclControl );
-	//else
-	//	mDclControls.push_back( pDclControl );
-	mDclControls.push_back( pDclControl );
+	if( bToTopOfZOrder || mDclControls.empty() )
+		mDclControls.push_back( pDclControl );
+	else
+		mDclControls.insert( ++mDclControls.begin(), pDclControl );
 	CUndoManager* pUndoManager = GetUndoManager();
 	if( pUndoManager )
 		pUndoManager->AddControl( pDclControl );
@@ -146,7 +145,7 @@ void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /
 }
 
 
-TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl )
+TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl, bool bToTopOfZOrder /*= true*/ )
 {
 	CUndoManager* pUndoManager = GetUndoManager();
 	if( pUndoManager )
@@ -160,7 +159,7 @@ TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName,
 	AddDefaultProperties( pNewControl, rcControl.Width(), rcControl.Height() );
 	if( pUndoManager )
 		pUndoManager->setEnabled( true );
-	AddControl( pNewControl, true );
+	AddControl( pNewControl, true, bToTopOfZOrder );
 	return pNewControl;
 }
 
@@ -773,6 +772,29 @@ TDclControlPtr CDclFormObject::GetControlProperties()
 CSize CDclFormObject::GetFormSize() const
 {
 	return CSize( GetControlProperties()->GetLongProperty(Prop::Width), GetControlProperties()->GetLongProperty(Prop::Height) );
+}
+
+TDclControlPtr CDclFormObject::FindControl( UINT nID, bool brecursive /*= true*/ ) const
+{
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+	{
+		if( (*iter)->GetID() == nID )
+			return *iter;
+	}
+	if( brecursive )
+	{
+		TDclFormList ChildForms;
+		if( mpProject->FindChildForms( TDclFormLockedPtr( const_cast< CDclFormObject* >( this ) ), ChildForms ) )
+		{
+			for( TDclFormList::const_iterator iter = ChildForms.begin(); iter != ChildForms.end(); ++iter )
+			{
+				TDclControlPtr pCtrl = (*iter)->FindControl( nID );
+				if( pCtrl )
+					return pCtrl;
+			}
+		}
+	}
+	return NULL;
 }
 
 TDclControlPtr CDclFormObject::FindControl( LPCTSTR pszControlName ) const

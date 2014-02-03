@@ -143,9 +143,9 @@ protected:
 // File I/O
 public:
 	virtual void Serialize(CArchive& ar);	
-  IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
-  IOStatus ReadFromTextFile6(std::ifstream &sFile, const CString &fileName);
-  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
+	IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
+	IOStatus ReadFromTextFile6(std::ifstream &sFile, const CString &fileName);
+	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
 // Name rendition
 public:

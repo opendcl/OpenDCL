@@ -4,7 +4,6 @@
 #pragma once
 
 #include "DialogControl.h"
-#include "ThemeHelperST.h"
 #include "Project.h"
 #include "DclFormObject.h"
 #include <list>
@@ -29,7 +28,6 @@ protected:
 	TDclFormPtr mpSourceForm;
 	TDialogControls mControls;
 	CWnd* mpHostDlg;
-	CThemeHelperST mThemeHelper;
 	bool mbRecalcInProgress;
 	TDclControlList mPendingRecalc;
 	bool mbDeferWindowPos;
@@ -53,6 +51,7 @@ public:
 	bool HasSplitter( int nSplitterId ) const;
 	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
 	bool IsModal() const;
+	bool IsClosing() const;
 
 // Operations
 public:
@@ -71,7 +70,6 @@ protected:
 // Implementation
 public:
 	virtual void CleanUpControls();
-	virtual CThemeHelperST* GetThemeHelper() { return &mThemeHelper; }
 	virtual bool FindControl( HWND hwndControl, /*out*/ CString& sControlName ) const; //if found, returns true & sets sControlName
 	virtual TDialogControlPtr FindControl( HWND hwndControl ) const;
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = _CtlInvalid ) const;

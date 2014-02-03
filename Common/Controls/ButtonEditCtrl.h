@@ -18,6 +18,11 @@ class CButtonEditCtrl : public CDynamicButtonCtrl, public CGridCellEditCtrl
 		{
 			return CRect( rcCell.right - 24, rcCell.top + 2, rcCell.right - 2, rcCell.bottom - 2 );
 		}
+	static CThemeHelperST* GetThemeHelper()
+		{
+			static CThemeHelperST TH;
+			return &TH;
+		}
 public:
 	CButtonEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, UINT idIcon, UINT nID = 100 )
 		: CDynamicButtonCtrl( pGridCtrl, CalcRect( pGridCtrl->GetCellRect( nRow, nCol ) ), nID )
@@ -26,7 +31,7 @@ public:
 			HICON hIcon =
 				(HICON)::LoadImage( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(idIcon), IMAGE_ICON, 0, 0, 0 );
 			SetIcon( hIcon );
-			SetThemeHelper( pGridCtrl->GetControlPane()->GetThemeHelper() );
+			SetThemeHelper( GetThemeHelper() );
 			SetFlat( FALSE );
 			SetFocus();
 		}
@@ -35,7 +40,7 @@ public:
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		{
 			SetWindowText( pszCaption );
-			SetThemeHelper( pGridCtrl->GetControlPane()->GetThemeHelper() );
+			SetThemeHelper( GetThemeHelper() );
 			SetFlat( FALSE );
 			SetFocus();
 		}

@@ -10,9 +10,9 @@
                      c:splitter_splitter_OnInitialize
                      c:splitter_splitter_OnCancelClose
                      c:splitter_splitter_spl_ver_OnSplitterMoved
-		     c:Splitter_splitter_grd_OnBeginLabelEdit
-		     c:Splitter_splitter_grd_OnEndLabelEdit
-		     )
+         c:Splitter_splitter_grd_OnBeginLabelEdit
+         c:Splitter_splitter_grd_OnEndLabelEdit
+         )
 
   ;; Variablen setzen
   
@@ -49,14 +49,14 @@
   (defun check_distance (strValue)
     (if (not (member strValue lstDistance))
       (setq lstDistance (vl-sort (cons strValue lstDistance)
-				 '(lambda (a b) (< (atoi a) (atoi b)))))
+         '(lambda (a b) (< (atoi a) (atoi b)))))
     ); if
   ); check_distance
 
   (defun check_thickness (strValue)
     (if (not (member strValue lstThickness))
       (setq lstThickness (vl-sort (cons strValue lstThickness)
-				 '(lambda (a b) (< (atoi a) (atoi b)))))
+         '(lambda (a b) (< (atoi a) (atoi b)))))
     ); if
   ); check_thickness
 
@@ -76,16 +76,16 @@
     (setq intStyle (dcl-Control-GetEdgeStyle splitter_splitter_spl_ver))
     
     (foreach lstRow (list (list strInner 38 lstDistance (itoa intInside))
-			  (list strOuter 38 lstDistance (itoa intOutside))
-			  (list strThick 38 lstThickness (itoa intThickness))
-			  (list strStyle 18 lstStyle (nth intStyle lstStyle))
-			  )
+        (list strOuter 38 lstDistance (itoa intOutside))
+        (list strThick 38 lstThickness (itoa intThickness))
+        (list strStyle 18 lstStyle (nth intStyle lstStyle))
+        )
       (if (setq intRow (dcl-Grid-AddString Splitter_splitter_grd (car lstRow)))
-	(progn
-	  (dcl-Grid-SetCellStyle Splitter_splitter_grd intRow 1 (cadr lstRow))
-	  (dcl-Grid-SetCellDropList Splitter_splitter_grd intRow 1 (caddr lstRow))
-	  (dcl-Grid-SetCellText Splitter_splitter_grd intRow 1 (last lstRow))
-	); progn
+  (progn
+    (dcl-Grid-SetCellStyle Splitter_splitter_grd intRow 1 (cadr lstRow))
+    (dcl-Grid-SetCellDropList Splitter_splitter_grd intRow 1 (caddr lstRow))
+    (dcl-Grid-SetCellText Splitter_splitter_grd intRow 1 (last lstRow))
+  ); progn
       ); if
     ); foreach
 
@@ -124,15 +124,15 @@
       ((not lstLastContent) nil)
       ((/= intRow (car lstLastContent)) nil)
       ((or (not (setq strValue (dcl-Grid-GetCellText Splitter_splitter_grd intRow 1)))
-	   (= (vl-string-trim " " strValue) ""))
+     (= (vl-string-trim " " strValue) ""))
        (dcl-Grid-SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent)))
       ((or (not (setq strProp (dcl-Grid-GetCellText Splitter_splitter_grd intRow 0)))
-	   (= strProp ""))
+     (= strProp ""))
        (dcl-Grid-SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent)))
       ((= strProp strStyle)
        (if (setq intPos (vl-position strValue lstStyle))
-	 (set_style intPos)
-	 (dcl-Grid-SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent))
+   (set_style intPos)
+   (dcl-Grid-SetCellText Splitter_splitter_grd intRow 1 (last lstLastContent))
        ))
       ((= strProp strThick)
        (check_thickness strValue)
@@ -173,7 +173,7 @@
   (setvar "CMDECHO" cmdecho)
 
   ;; Projekt laden
-  (dcl-Project-Load (*ODCL:Samples:FindFile "Splitter.odcl"))
+  (dcl-Project-Load (*ODCL:Samples-FindFile "Splitter.odcl"))
 
   ;; Dialog anzeigen
   (dcl-Form-Show splitter_splitter)
@@ -186,50 +186,45 @@
   (princ)
 ); splitter
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
 ;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
 ;;; durch das Installationsprogramm in der Registry eingetragen wurde.
-;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
 ;;; werden in allen Beispieldateien verwendet.
 ;;;
-(or *ODCL:Samples:FindFile
-	(defun *ODCL:Samples:FindFile (file)
-		(setq *ODCL:Prefix
-			(cond
-				(	*ODCL:Prefix
-				) ;_ Bereits definiert
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 32-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-						"SamplesFolder"
-					 )
-				) ;_ 32-bit Variante alle Nutzer
-				(	(vl-registry-read
-						"HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante aktueller Nutzer
-				(	(vl-registry-read
-						"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-						"SamplesFolder"
-					)
-				) ;_ 64-bit Variante alle Nutzer
-			)
-		)
-		(cond
-			((findfile file)) ; überprüfe zunächst den Supportpfad
-			(*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
-			(file)
-		)
-	)
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
 )
 
 ;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
@@ -238,18 +233,18 @@
 ;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
 
 (	(lambda (demoname)
-		(if *ODCL:MasterDemo
-			(progn
-				(princ (strcat "'" demoname "\n"))
-				(apply (read (strcat "C:" demoname)) nil)
-			)
-			(progn
-				(princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
-				(princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
-			)
-		)
-	)
-	"Splitter"
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "Splitter"
 )
 (princ)
 

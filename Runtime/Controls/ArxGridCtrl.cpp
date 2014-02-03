@@ -575,7 +575,8 @@ void CArxGridCtrl::OnEditCurCell()
 void CArxGridCtrl::OnEndEditCurCell()
 {
 	__super::OnEndEditCurCell();
-	GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
+	if( GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) ) )
+		return;
 	if( GetFocus() != this )
 		GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }

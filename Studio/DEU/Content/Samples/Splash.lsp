@@ -14,7 +14,7 @@
   (setvar "CMDECHO" cmdecho)
 
   ;; Projekt laden
-  (dcl-Project-Load (*ODCL:Samples:FindFile "Splash.odcl"))
+  (dcl-Project-Load (*ODCL:Samples-FindFile "Splash.odcl"))
 
   ;; Dialog anzeigen
   (dcl-Form-Show Splash/Form1)
@@ -31,7 +31,7 @@
   (princ)
 )
 
-;|<<OpenDCL Event Handlers>>|;
+;|«OpenDCL Event Handlers»|;
 
 (defun c:splash/Form1#OnTimer ()
   (dcl-Control-SetCaption Splash/Form1/Label1 (strcat "Ich lade..." (itoa *Count*)))
@@ -45,18 +45,18 @@
 
 (princ)
 
-;|<<OpenDCL Samples Epilog>>|;
+;|«OpenDCL Samples Epilog»|;
 
 ;;;######################################################################
 ;;;######################################################################
 ;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
 ;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
 ;;; durch das Installationsprogramm in der Registry eingetragen wurde.
-;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
 ;;; werden in allen Beispieldateien verwendet.
 ;;;
-(or *ODCL:Samples:FindFile
-  (defun *ODCL:Samples:FindFile (file)
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
     (setq *ODCL:Prefix
       (cond
         (	*ODCL:Prefix
@@ -71,11 +71,6 @@
             "SamplesFolder"
            )
         ) ;_ 32-bit Variante alle Nutzer
-        (	(vl-registry-read
-            "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-            "SamplesFolder"
-          )
-        ) ;_ 64-bit Variante aktueller Nutzer
         (	(vl-registry-read
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
             "SamplesFolder"
@@ -97,7 +92,7 @@
 ;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
 
 (	(lambda (demoname)
-    (if *ODCL:MasterDemo
+    (if *ODCL:AllSamples
       (progn
         (princ (strcat "'" demoname "\n"))
         (apply (read (strcat "C:" demoname)) nil)

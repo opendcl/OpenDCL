@@ -78,16 +78,36 @@ void CArxPrinterComboBoxCtrl::SetPaperSizeCombo( TDclControlPtr pPaperCombo )
 
 
 BEGIN_MESSAGE_MAP(CArxPrinterComboBoxCtrl, CArxComboBoxCtrl)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxPrinterComboBoxCtrl::OnSelchange)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxPrinterComboBoxCtrl::OnCbnSelchange)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxPrinterComboBoxCtrl message handlers
 
-void CArxPrinterComboBoxCtrl::OnSelchange()
+LRESULT CArxPrinterComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	__super::OnSelchange();
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+		case CB_SELECTSTRING:
+		case CB_SETCURSEL:
+			{
+				CString sText;
+				int nCurSel = GetCurSel();
+				if( nCurSel >= 0 )
+					GetLBText( nCurSel, sText );
+				if( sText != mpTemplate->GetStringProperty( Prop::Text ) )
+					mpTemplate->SetStringProperty( Prop::Text, sText );
+			}
+			break;
+	}
+	return lResult;
+}
+
+void CArxPrinterComboBoxCtrl::OnCbnSelchange()
+{
+	__super::OnCbnSelchange();
 	if( mpPaperCombo )
 	{
 		CDialogControl* pDclControl = mpPaperCombo->GetControlInstance();
