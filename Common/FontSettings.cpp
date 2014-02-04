@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FontSettings.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "OLEFont.h"

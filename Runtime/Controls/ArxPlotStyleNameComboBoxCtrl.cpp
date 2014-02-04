@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ArxPlotStyleNameComboBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
 

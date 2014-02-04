@@ -5,7 +5,7 @@
 #include "FontToolBar.h"
 #include "StudioFrame.h"
 #include "PropertyIds.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ControlTypes.h"
 #include "StudioDialogControl.h"

@@ -18,19 +18,19 @@ change at runtime in an instance of the control.
 
 The important classes that represent the different elements of a project are:
 
-CProject           Project.h/cpp            : a single project
-CDclFormObject     DclFormObject.h/cpp      : a single form
-CDclControlObject  DclControlObject.h/cpp   : a single control (which may contain child controls)
-CPropertyObject    PropertyObject.h/cpp     : a single property
+CProject            Project.h/cpp            : a single project
+CDclFormObject      DclFormTemplate.h/cpp    : a single form
+CDclControlTemplate DclControlTemplate.h/cpp : a single control (which may contain child controls)
+CPropertyObject     PropertyObject.h/cpp     : a single property
 
-CProjectCollection ProjectCollection.h/cpp  : collection of projects (e.g. all currently loaded projects)
-CFontCollection    FontCollection.h/cpp     : collection of CFont objects that defines all needed fonts
-CImageListObject   ImageListObject.h/cpp    : collection of images (either icons or bitmaps) used by a control
+CProjectCollection  ProjectCollection.h/cpp  : collection of projects (e.g. all currently loaded projects)
+CFontCollection     FontCollection.h/cpp     : collection of CFont objects that defines all needed fonts
+CDclImageList       DclImageList.h/cpp       : collection of images (either icons or bitmaps) used by a control
 
-CWorkspace         Workspace.h/cpp          : global data (projects, fonts, and client-specific data)
-CDialogObject      DialogObject.h/cpp       : instantiated ODCL form interface (analagous to CDclFormObject)
-CControlPane       ControlPane.h/cpp        : manages a collection of control windows (can be nested via tab pages)
-CDialogControl     DialogControl.h/cpp      : instantiated ODCL control interface (analagous to CDclControlObject)
+CWorkspace          Workspace.h/cpp          : global data (projects, fonts, and client-specific data)
+CDialogObject       DialogObject.h/cpp       : instantiated ODCL form interface (analagous to CDclFormObject)
+CControlPane        ControlPane.h/cpp        : manages a collection of control windows (can be nested via tab pages)
+CDialogControl      DialogControl.h/cpp      : instantiated ODCL control interface (analagous to CDclControlTemplate)
 
 The OpenDCL editor defines CStudioProject and CStudioWorkspace that customize and extend the common
 CProject/CWorkspace classes. Likewise, the ARX modules define CArxProject/CArxWorkspace to customize and 
@@ -64,7 +64,7 @@ class that all named objects derive from or export. This I leave as an exercise 
 
 class CStgFile;
 class CUndoManager;
-class CPictureObject;
+class CDclPicture;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
 class AxEventDescriptor;
@@ -113,7 +113,8 @@ protected:
 	//2008-02-15 [ORW]: save version set to 13 (removed mOleControls)
 	//2008-09-15 [ORW]: save version set to 14 (removed mrsActiveXFiles)
 	//2008-11-02 [ORW]: save version set to 15 (changed version from ULONG to BYTE)
-	BYTE GetCurrentSaveVersion() const { return 15; }
+	//2014-02-03 [ORW]: save version set to 16 (CDclControlObject => CDclControlTemplate; no longer derived from CObject)
+	BYTE GetCurrentSaveVersion() const { return 16; }
 
 public:
 	static LPCTSTR GetOdclPassword() { return _T("d32afd3aw3aq3fdaw3"); }
@@ -129,8 +130,8 @@ public:
 	virtual IOStatus WriteToFile( LPCTSTR pszFilePath ); //write in the current project file format
 protected:
 	IOStatus ReadFromTextFile( LPCTSTR pszFilePath ); //read a project from a text file
-  IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName); //read from text file
-  IOStatus ReadFromTextFile9(std::ifstream &sFile, const CString &fileName); //read version 9 text file
+	IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName); //read from text file
+	IOStatus ReadFromTextFile9(std::ifstream &sFile, const CString &fileName); //read version 9 text file
 
 	//Attributes
 public:

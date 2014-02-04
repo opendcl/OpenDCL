@@ -5,7 +5,7 @@
 
 #include "Resource.h"
 #include "PropertyObject.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

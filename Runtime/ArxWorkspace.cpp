@@ -7,11 +7,11 @@
 #include "Resource.h"
 #include "ArchiveEx.h"
 #include "ArxDialogObject.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "InvokeMethod.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 
 CWorkspace* theWorkspacePtr()
@@ -317,7 +317,7 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 			continue; //child forms have the same key name as their parent, so ignore them
 		CString sVarName = pSourceForm->GetVarName();
 		if (!sVarName.IsEmpty())
-			SetLispSymbol( sVarName, (const CDclControlObject*)pDialog->GetSourceForm()->GetControlProperties(), odcl::ptrDclControl );
+			SetLispSymbol( sVarName, (const CDclControlTemplate*)pDialog->GetSourceForm()->GetControlProperties(), odcl::ptrDclControl );
 		pDialog->GetControlPane()->SetGlobalLispSymbols();
 	}
 

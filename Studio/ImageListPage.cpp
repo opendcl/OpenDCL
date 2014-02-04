@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "ImageListPage.h"
 #include "PreviewFileDlg.h"
-#include "ImageListObject.h"
-#include "DclFormObject.h"
+#include "DclImageList.h"
+#include "DclFormTemplate.h"
 #include "PropertyObject.h"
 #include "StudioDialogControl.h"
 #include "Workspace.h"
@@ -255,7 +255,7 @@ void CImageListPage::OnAddimage()
 		while( pos )
 		{
 			CString sPathName = BrowseWnd.GetNextPathName( pos );
-			CPictureObject pic( -1, sPathName );
+			CDclPicture pic( -1, sPathName );
 			ImageListAddPicture( pic.GetPictureDisp() );
 		}
 	}
@@ -349,7 +349,7 @@ void CImageListPage::OnChangeimage()
 	{
 		POSITION pos = BrowseWnd.GetStartPosition();
 		CString sPathName = BrowseWnd.GetNextPathName( pos );
-		CPictureObject pic( -1, sPathName );
+		CDclPicture pic( -1, sPathName );
 		ImageListReplacePicture( nItem, pic.GetPictureDisp() );
 	}
 
@@ -362,7 +362,7 @@ void CImageListPage::OnChangeimage()
 BOOL CImageListPage::OnApply() 
 {
 	if( mpImageList && mpImageList->m_hImageList && mpImageList->GetImageCount() > 0 )
-		mpDclControl->SetImageList( new CImageListObject( mpImageList ) );
+		mpDclControl->SetImageList( new CDclImageList( mpImageList ) );
 	else
 		mpDclControl->SetImageList( NULL );
 	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::ImageList);

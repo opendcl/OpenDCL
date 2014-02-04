@@ -3,9 +3,9 @@
 
 #include "stdafx.h"
 #include "FormVarNameUpdate.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyPane.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "StudioFrame.h"
 #include "StudioWorkspace.h"
 

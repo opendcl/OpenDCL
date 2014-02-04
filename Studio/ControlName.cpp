@@ -6,7 +6,7 @@
 #include "Resource.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 
 CString GetControlDisplayName( ControlType type )

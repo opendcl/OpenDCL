@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "PropertyObject.h"
 #include "UndoManager.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
@@ -855,7 +855,7 @@ public:
 			VariantInit( &v );
 			if( !mpValue )
 				return false;
-			CDclControlObject* pDclControl = mpProperty->GetOwnerControl();
+			CDclControlTemplate* pDclControl = mpProperty->GetOwnerControl();
 			if( !pDclControl )
 				return false;
 			AxPropertyDescriptor* pPropGet = mpValue->GetPropGet();
@@ -875,7 +875,7 @@ public:
 		{
 			if( !mpValue )
 				return false;
-			CDclControlObject* pDclControl = mpProperty->GetOwnerControl();
+			CDclControlTemplate* pDclControl = mpProperty->GetOwnerControl();
 			if( !pDclControl )
 				return false;
 			AxPropertyDescriptor* pPropPut = mpValue->GetPropPutRef();
@@ -1513,7 +1513,7 @@ CPropertyObject::CPropertyObject()
 	SetFlags( 0 );
 }
 
-CPropertyObject::CPropertyObject( CDclControlObject* pOwnerControl,
+CPropertyObject::CPropertyObject( CDclControlTemplate* pOwnerControl,
 																	PropertyType type,
 																	DWORD dwFlags /*= 0*/,
 																	Prop::Id nID /*= -1*/ )

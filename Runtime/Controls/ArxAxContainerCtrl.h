@@ -2,7 +2,7 @@
 
 #include "AxContainerCtrl.h"
 #include "ArxControlServices.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 //export this function so it can be used elsewhere
 resbuf* VariantArgToResbuf( const VARIANTARG& varArg, const GUID& guidType, resbuf*& prbTail );

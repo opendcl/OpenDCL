@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ButtonStyles.h"
 #include "PreviewFileDlg.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "Workspace.h"
 #include "Project.h"
 #include "PropertyObject.h"

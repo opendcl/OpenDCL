@@ -27,5 +27,5 @@ ADSRESULT SetFocus();
 ADSRESULT SetPos();
 ADSRESULT SetProperty();
 ADSRESULT ShowToolTip();
-ADSRESULT ZOrder();
+ADSRESULT TabOrder();
 };

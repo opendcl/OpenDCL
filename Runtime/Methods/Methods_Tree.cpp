@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "Methods_Tree.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ArgumentsRetrieval.h"
 #include "ArxImageTreeCtrl.h"
 #include "ControlTypes.h"

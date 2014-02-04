@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "PictureBox.h"
 #include "Workspace.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 
 
 #define HIMETRIC_INCH	2540
@@ -237,7 +237,7 @@ void CPictureBox::SetPicture( TPicturePtr pPicture )
 
 void CPictureBox::SetPicture( UINT nIconResId )
 {
-	mpPicture = new CPictureObject( -1 );
+	mpPicture = new CDclPicture( -1 );
 	mpPicture->LoadResourceIcon( nIconResId );
 	AutoSize();
 	Refresh();
@@ -662,7 +662,7 @@ bool CPictureBox::LoadPictureFile(LPCTSTR pszFile, bool bStretch)
 	CString sPicFile = theWorkspace.FindFile( pszFile );
 	if( sPicFile.IsEmpty() )
 		sPicFile = pszFile;
-	mpPicture = CPictureObject::CreatePictureObject( -1, sPicFile );
+	mpPicture = CDclPicture::CreatePictureObject( -1, sPicFile );
 	Refresh();
 	return (mpPicture != NULL);
 }

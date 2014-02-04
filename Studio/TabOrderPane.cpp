@@ -1,8 +1,8 @@
-// ZOrderPane.cpp : implementation file
+// TabOrderPane.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "ZOrderPane.h"
+#include "TabOrderPane.h"
 #include "Resource.h"
 #include "StudioWorkspace.h"
 #include "ControlManager.h"
@@ -11,57 +11,57 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CZOrderPane
+// CTabOrderPane
 
-CZOrderPane::CZOrderPane()
+CTabOrderPane::CTabOrderPane()
 {
 }
 
-CZOrderPane::~CZOrderPane()
+CTabOrderPane::~CTabOrderPane()
 {
 }
 
-void CZOrderPane::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
+void CTabOrderPane::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
 {
-	mZOrderList.OnActivateDlgObject( pDlgObject );
+	mTabOrderList.OnActivateDlgObject( pDlgObject );
 	UpdateToolUI();
 }
 
-void CZOrderPane::OnActivateDclControl( TDclControlPtr pDclControl )
+void CTabOrderPane::OnActivateDclControl( TDclControlPtr pDclControl )
 {
-	mZOrderList.OnActivateDclControl( pDclControl );
+	mTabOrderList.OnActivateDclControl( pDclControl );
 	UpdateToolUI();
 }
 
-void CZOrderPane::UpdateToolUI()
+void CTabOrderPane::UpdateToolUI()
 {
-	BOOL bEnable = mZOrderList.GetSelCount() > 0;
+	BOOL bEnable = mTabOrderList.GetSelCount() > 0;
 	mToolbar.EnableButton( ID_SENDTOFRONT, bEnable );
 	mToolbar.EnableButton( ID_SENDTOBACK, bEnable );
-	mToolbar.EnableButton( ID_MOVEZFRONTBY1, bEnable );
-	mToolbar.EnableButton( ID_MOVEZBACKBY1, bEnable );
+	mToolbar.EnableButton( ID_MOVEFRONTBY1, bEnable );
+	mToolbar.EnableButton( ID_MOVEBACKBY1, bEnable );
 }
 
 
-BEGIN_MESSAGE_MAP(CZOrderPane, CDialog)
+BEGIN_MESSAGE_MAP(CTabOrderPane, CDialog)
 	ON_WM_CREATE()
 	ON_WM_SIZE()	
 	ON_WM_DESTROY()
-	ON_NOTIFY_RANGE( TTN_NEEDTEXTA, ID_SENDTOFRONT, ID_MOVEZBACKBY1, OnNeedTextA)
-	ON_NOTIFY_RANGE( TTN_NEEDTEXTW, ID_SENDTOFRONT, ID_MOVEZBACKBY1, OnNeedTextW)
+	ON_NOTIFY_RANGE( TTN_NEEDTEXTA, ID_SENDTOFRONT, ID_MOVEBACKBY1, OnNeedTextA)
+	ON_NOTIFY_RANGE( TTN_NEEDTEXTW, ID_SENDTOFRONT, ID_MOVEBACKBY1, OnNeedTextW)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CZOrderPane message handlers
+// CTabOrderPane message handlers
 
-int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CTabOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if( CDialog::OnCreate( lpCreateStruct ) == -1 )
 		return -1;
 	
 	CRect rc( 0, 0, 2, 2 );
-	if( !mZOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, rc, this, 107 ) )
+	if( !mTabOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, rc, this, 107 ) )
 		return -1;
 
 	DWORD dwStyle = WS_VISIBLE | WS_CHILD | CCS_NODIVIDER | CCS_NOPARENTALIGN      
@@ -74,10 +74,10 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		{0, ID_SENDTOFRONT, 0, BYTE(TBSTYLE_BUTTON)},
 		{1, ID_SENDTOBACK, 0, BYTE(TBSTYLE_BUTTON)},
-		{2, ID_MOVEZFRONTBY1, 0, BYTE(TBSTYLE_BUTTON)},
-		{3, ID_MOVEZBACKBY1, 0, BYTE(TBSTYLE_BUTTON)},
+		{2, ID_MOVEFRONTBY1, 0, BYTE(TBSTYLE_BUTTON)},
+		{3, ID_MOVEBACKBY1, 0, BYTE(TBSTYLE_BUTTON)},
 	};
-	mToolbar.AddBitmap( 4, IDR_ZTABORDER );
+	mToolbar.AddBitmap( 4, IDR_TABORDER );
 	mToolbar.SetBitmapSize( CSize( 16, 16 ) );
 	VERIFY(mToolbar.AddButtons( _elements(rTbButtons), rTbButtons ));
 	mToolbar.AutoSize();
@@ -88,7 +88,7 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 
-void CZOrderPane::OnSize(UINT nType, int cx, int cy) 
+void CTabOrderPane::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialog::OnSize(nType, cx, cy);
 
@@ -98,29 +98,29 @@ void CZOrderPane::OnSize(UINT nType, int cx, int cy)
 	if (IsWindow(mToolbar.m_hWnd))
 		mToolbar.GetWindowRect(&rc);
 	ScreenToClient(rc);
-	// resize the ZOrder list 
-	CRect rcZOrder(0,rc.bottom + 1,cx-2, cy);
-	mZOrderList.MoveWindow(rcZOrder, TRUE);
+	// resize the TabOrder list 
+	CRect rcTabOrder(0,rc.bottom + 1,cx-2, cy);
+	mTabOrderList.MoveWindow(rcTabOrder, TRUE);
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CToolboxPane message handlers
-void CZOrderPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
+void CTabOrderPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
   lpTTT->lpszText = MAKEINTRESOURCEW(nID);
   lpTTT->hinst = AfxGetResourceHandle();
 }
 
-void CZOrderPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
+void CTabOrderPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXTA lpTTT = (LPTOOLTIPTEXTA)pNotifyStruct;
   lpTTT->lpszText = MAKEINTRESOURCEA(nID);
   lpTTT->hinst = AfxGetResourceHandle();
 }
 
-BOOL CZOrderPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 
+BOOL CTabOrderPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 
 {
 	ASSERT(pResult != NULL);
 	NMHDR* pNMHDR = (NMHDR*)lParam;
@@ -149,7 +149,7 @@ BOOL CZOrderPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	return __super::OnNotify(wParam, lParam, pResult);
 }
 
-BOOL CZOrderPane::PreTranslateMessage(MSG* pMsg) 
+BOOL CTabOrderPane::PreTranslateMessage(MSG* pMsg) 
 {
 	if (pMsg->message== WM_KEYDOWN )
 	{
@@ -169,14 +169,14 @@ BOOL CZOrderPane::PreTranslateMessage(MSG* pMsg)
 	return CDialog::PreTranslateMessage(pMsg);
 }
 
-void CZOrderPane::OnDestroy() 
+void CTabOrderPane::OnDestroy() 
 {
 	CDialog::OnDestroy();
 }
 
-BOOL CZOrderPane::OnCommand(WPARAM wParam, LPARAM lParam)
+BOOL CTabOrderPane::OnCommand(WPARAM wParam, LPARAM lParam)
 {
-	if( (BOOL)mZOrderList.SendMessage( WM_COMMAND, wParam, lParam ) )
+	if( (BOOL)mTabOrderList.SendMessage( WM_COMMAND, wParam, lParam ) )
 		return TRUE;
 
 	return __super::OnCommand(wParam, lParam);

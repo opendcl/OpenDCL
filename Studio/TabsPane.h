@@ -6,8 +6,8 @@
 #include "Resource.h"
 #include "PictureBox.h"
 #include "PropertyObject.h"
-#include "DclControlObject.h"
-#include "DclFormObject.h"
+#include "DclControlTemplate.h"
+#include "DclFormTemplate.h"
 
 
 class CTabInfo

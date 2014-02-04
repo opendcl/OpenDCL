@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxSplitterCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
 #include "Workspace.h"

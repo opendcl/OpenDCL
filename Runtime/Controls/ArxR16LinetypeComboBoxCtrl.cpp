@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "ArxComboBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxComboBoxCtrl
 
-CArxComboBoxCtrl::CArxComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CArxComboBoxCtrl::CArxComboBoxCtrl( CDclControlTemplate* pTemplate, CControlPane* pPane, UINT nID,
 																		CComboHandler* pHandler, bool bCreate /*= true*/ )
 : CComboBoxCtrl( pTemplate, pPane, nID, pHandler )
 , mArxServices( pTemplate )

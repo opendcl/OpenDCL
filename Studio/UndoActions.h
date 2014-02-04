@@ -4,8 +4,8 @@
 #pragma once
 
 #include "PtrTypes.h"
-#include "DclFormObject.h"
-#include "DclControlObject.h"
+#include "DclFormTemplate.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 
 class CStudioProject;

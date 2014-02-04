@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "StgFile.h"
 #include "ArchiveEx.h"
 #include "Filing.h"
@@ -251,50 +251,50 @@ protected:
 };
 
 
-CPictureObject::CPictureObject()
+CDclPicture::CDclPicture()
 : mnID( -1 )
 {
 	m_hPicture.CreateEmpty();
 	CalcLogicalSize();
 }
 
-CPictureObject::CPictureObject( UINT nID )
+CDclPicture::CDclPicture( UINT nID )
 : mnID( nID )
 {
 	m_hPicture.CreateEmpty();
 	CalcLogicalSize();
 }
 
-CPictureObject::CPictureObject( UINT nID, LPCTSTR szFile, bool bApplyMask /*= false*/ )
+CDclPicture::CDclPicture( UINT nID, LPCTSTR szFile, bool bApplyMask /*= false*/ )
 : mnID( nID )
 {
 	LoadFile( szFile, bApplyMask );
 }
 
-CPictureObject::CPictureObject( const CPictureObject& _Src )
+CDclPicture::CDclPicture( const CDclPicture& _Src )
 : mnID( _Src.mnID )
 {
 	m_hPicture.SetPictureDispatch( _Src.GetPictureDisp() );
 	CalcLogicalSize();
 }
 
-CPictureObject::~CPictureObject()
+CDclPicture::~CDclPicture()
 {
 }
 
 //static
-CPictureObject* CPictureObject::CreatePictureObject( short nID, LPPICTUREDISP pPicDisp )
+CDclPicture* CDclPicture::CreatePictureObject( short nID, LPPICTUREDISP pPicDisp )
 {
-	CPictureObject* pPicture = new CPictureObject( nID );
+	CDclPicture* pPicture = new CDclPicture( nID );
 	pPicture->m_hPicture.SetPictureDispatch( pPicDisp );
 	pPicture->CalcLogicalSize();
 	return pPicture;
 }
 
 //static
-CPictureObject* CPictureObject::CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask /*= false*/ )
+CDclPicture* CDclPicture::CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 {
-	CPictureObject* pPicture = new CPictureObject( nID, pszFile, bApplyMask );
+	CDclPicture* pPicture = new CDclPicture( nID, pszFile, bApplyMask );
 	if( !pPicture->m_hPicture.m_pPict )
 	{
 		delete pPicture;
@@ -304,20 +304,20 @@ CPictureObject* CPictureObject::CreatePictureObject( short nID, LPCTSTR pszFile,
 	return pPicture;
 }
 
-void CPictureObject::Clear()
+void CDclPicture::Clear()
 {
 	if( m_hPicture.m_pPict )
 		m_hPicture.m_pPict->Release();
 }
 
-LPPICTUREDISP CPictureObject::GetPictureDisp() const
+LPPICTUREDISP CDclPicture::GetPictureDisp() const
 {
 	if( !m_hPicture.m_pPict )
 		return NULL;
-	return const_cast< CPictureObject* >(this)->m_hPicture.GetPictureDispatch();
+	return const_cast< CDclPicture* >(this)->m_hPicture.GetPictureDispatch();
 }
 
-const HBITMAP CPictureObject::GetBitmap() const
+const HBITMAP CDclPicture::GetBitmap() const
 {
 	if( GetPicType() != PICTYPE_BITMAP )
 		return NULL;
@@ -326,7 +326,7 @@ const HBITMAP CPictureObject::GetBitmap() const
 	return hbmpPic;
 }
 
-const HICON CPictureObject::GetIcon() const
+const HICON CDclPicture::GetIcon() const
 {
 	if( GetPicType() != PICTYPE_ICON )
 		return NULL;
@@ -335,7 +335,7 @@ const HICON CPictureObject::GetIcon() const
 	return hIcon;			
 }
 
-HICON CPictureObject::CloneIcon() const
+HICON CDclPicture::CloneIcon() const
 {
 	switch (GetPicType() )
 	{
@@ -365,7 +365,7 @@ HICON CPictureObject::CloneIcon() const
 	return NULL;
 }
 
-HBITMAP CPictureObject::CloneBitmap() const
+HBITMAP CDclPicture::CloneBitmap() const
 {
 	switch (GetPicType() )
 	{
@@ -379,19 +379,19 @@ HBITMAP CPictureObject::CloneBitmap() const
 	return NULL;
 }
 
-short CPictureObject::GetPicType() const
+short CDclPicture::GetPicType() const
 {
-	return const_cast<CPictureObject*>(this)->m_hPicture.GetType();
+	return const_cast<CDclPicture*>(this)->m_hPicture.GetType();
 }
 
-void CPictureObject::Update( LPPICTURE pPicture ) 
+void CDclPicture::Update( LPPICTURE pPicture ) 
 {
 	CComQIPtr< IPictureDisp > pPictureDisp = pPicture;
 	m_hPicture.SetPictureDispatch( pPictureDisp );
 	CalcLogicalSize();
 }
 
-void CPictureObject::LoadResourceIcon( UINT nIconResId, HMODULE hResMod /*= NULL*/ )
+void CDclPicture::LoadResourceIcon( UINT nIconResId, HMODULE hResMod /*= NULL*/ )
 {
 	if( !hResMod )
 		hResMod = theWorkspace.GetLocalResourceModule();
@@ -403,7 +403,7 @@ void CPictureObject::LoadResourceIcon( UINT nIconResId, HMODULE hResMod /*= NULL
 	CalcLogicalSize();
 }
 
-bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
+bool CDclPicture::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 {
 	Clear();
 	// open file
@@ -511,7 +511,7 @@ bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 	return true;
 }
 
-//IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
+//IOStatus CDclPicture::WriteToTextFile(FILE* pFile, const CString &fileName) const
 //{
 //  //savebug
 //  fprintf(pFile, "\nCPictureObject");
@@ -521,7 +521,7 @@ bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 //	writeInt(pFile, msizePic.cx);
 //	writeInt(pFile, msizePic.cy);
 //
-//	int nPictureType = const_cast<CPictureObject*>(this)->m_hPicture.GetType();
+//	int nPictureType = const_cast<CDclPicture*>(this)->m_hPicture.GetType();
 //	writeInt(pFile, nPictureType);
 //
 //	if (nPictureType == PICTYPE_BITMAP) {
@@ -533,7 +533,7 @@ bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 //    writeImage(pFile, fileName, img);
 //
 //    hBitmap = img.Detach();
-//    const_cast<CPictureObject*>(this)->m_hPicture.CreateFromBitmap(hBitmap, NULL, TRUE);
+//    const_cast<CDclPicture*>(this)->m_hPicture.CreateFromBitmap(hBitmap, NULL, TRUE);
 //	} else if (nPictureType == PICTYPE_METAFILE ||
 //             nPictureType == PICTYPE_ENHMETAFILE) {
 //    //Currently not quite sure how to handle these
@@ -553,7 +553,7 @@ bool CPictureObject::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 //}
 
 
-void CPictureObject::Serialize(CArchive& ar)
+void CDclPicture::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
@@ -703,10 +703,10 @@ void CPictureObject::Serialize(CArchive& ar)
 	}
 }
 
-IOStatus CPictureObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
+IOStatus CDclPicture::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
 	CString sObject;
-	if (readLine(sFile) != "CPictureObject") return statInvalidFormat;
+	if (readLine(sFile) != "CDclPicture") return statInvalidFormat;
 	int iVersion;
 	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
@@ -719,7 +719,7 @@ IOStatus CPictureObject::ReadFromTextFile(std::ifstream &sFile, const CString &f
 	return statInvalidFormat;
 }
 
-IOStatus CPictureObject::ReadFromTextFile3(std::ifstream &sFile, const CString &fileName)
+IOStatus CDclPicture::ReadFromTextFile3(std::ifstream &sFile, const CString &fileName)
 {
 	try
 	{
@@ -761,7 +761,7 @@ IOStatus CPictureObject::ReadFromTextFile3(std::ifstream &sFile, const CString &
 	return statOK;
 }
 
-BOOL AFX_CDECL CPictureObject::PX_IUnknown2(CPropExchange* pPX, LPCTSTR pszPropName, LPUNKNOWN& pUnk,
+BOOL AFX_CDECL CDclPicture::PX_IUnknown2(CPropExchange* pPX, LPCTSTR pszPropName, LPUNKNOWN& pUnk,
 	REFIID iid, LPUNKNOWN pUnkDefault)
 {
 	ASSERT_POINTER(pPX, CPropExchange);
@@ -775,7 +775,7 @@ BOOL AFX_CDECL CPictureObject::PX_IUnknown2(CPropExchange* pPX, LPCTSTR pszPropN
 	return pPX->ExchangePersistentProp(pszPropName, &pUnk, iid, pUnkDefault);
 }
 
-BOOL AFX_CDECL CPictureObject::PX_Picture(CPropExchange* pPX, LPCTSTR pszPropName, CPictureHolder& pict)
+BOOL AFX_CDECL CDclPicture::PX_Picture(CPropExchange* pPX, LPCTSTR pszPropName, CPictureHolder& pict)
 {
 	ASSERT_POINTER(pPX, CPropExchange);
 	ASSERT(AfxIsValidString(pszPropName));
@@ -787,7 +787,7 @@ BOOL AFX_CDECL CPictureObject::PX_Picture(CPropExchange* pPX, LPCTSTR pszPropNam
 	return PX_IUnknown2(pPX, pszPropName, pUnk, IID_IPicture);
 }
 
-BOOL CPictureObject::PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk,
+BOOL CDclPicture::PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk,
 	REFIID iid, LPUNKNOWN pUnkDefault)
 {
 	ASSERT_POINTER(&pUnk, LPUNKNOWN);
@@ -797,7 +797,7 @@ BOOL CPictureObject::PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk,
 	return ExchangePersistentProp(ar, &pUnk, iid, pUnkDefault);
 }
 
-BOOL CPictureObject::PX_Picture(CArchive& ar, CPictureHolder& pict)
+BOOL CDclPicture::PX_Picture(CArchive& ar, CPictureHolder& pict)
 {
 	ASSERT_POINTER(&pict, CPictureHolder);
 
@@ -805,7 +805,7 @@ BOOL CPictureObject::PX_Picture(CArchive& ar, CPictureHolder& pict)
 	return PX_IUnknown(ar, pUnk, IID_IPicture);
 }
 
-BOOL CPictureObject::ExchangePersistentProp(CArchive& ar, 
+BOOL CDclPicture::ExchangePersistentProp(CArchive& ar, 
 		LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault)
 {
 	ASSERT_POINTER(ppUnk, LPUNKNOWN);
@@ -934,7 +934,7 @@ BOOL CPictureObject::ExchangePersistentProp(CArchive& ar,
 	return TRUE;
 }
 
-void CPictureObject::Render( CDC* pDC, const CRect& rcDest ) const
+void CDclPicture::Render( CDC* pDC, const CRect& rcDest ) const
 {
 	if( !m_hPicture.m_pPict )
 		return;
@@ -946,7 +946,7 @@ void CPictureObject::Render( CDC* pDC, const CRect& rcDest ) const
 	m_hPicture.m_pPict->Render( pDC->m_hDC, rcDest.left, rcDest.top, rcDest.Width(), rcDest.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcDest );
 }
 
-void CPictureObject::CalcLogicalSize()
+void CDclPicture::CalcLogicalSize()
 {
 	if( !m_hPicture.m_pPict )
 	{

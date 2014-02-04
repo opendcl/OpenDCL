@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 class CDclFormObject;
 class CStudioDialogObject;

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxPictureBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "Resource.h"

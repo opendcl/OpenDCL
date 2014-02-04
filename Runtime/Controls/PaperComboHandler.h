@@ -4,7 +4,7 @@
 #pragma once
 
 #include "ComboHandler.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "AutoDocLock.h"
 
 

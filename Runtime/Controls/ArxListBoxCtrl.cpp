@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ArxListBoxCtrl.h"
 #include "PropertyObject.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
@@ -45,7 +45,7 @@ bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 			HGLOBAL hData = pSourceData->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
 			if( !hData )
 				return FALSE;
-			CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+			CDclControlTemplate* pSourceDclControl = *(CDclControlTemplate**)GlobalLock( hData );
 			GlobalUnlock( hData );
 			GlobalFree( hData );
 			if( !pSourceDclControl )

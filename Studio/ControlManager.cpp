@@ -46,7 +46,7 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 {
 	CWnd* pTopLevelWnd = pDlgControl->GetTopLevelWnd();
 	TraceFmt( _T("> CControlManager::CControlManager(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						(LPCTSTR)mpTemplate->GetKeyPath(), (const CDclControlObject*)mpTemplate, pDlgControl->GetControlPane(),
+						(LPCTSTR)mpTemplate->GetKeyPath(), (const CDclControlTemplate*)mpTemplate, pDlgControl->GetControlPane(),
 						(LPCTSTR)CString(mpControlWnd->GetRuntimeClass()->m_lpszClassName),
 						pTopLevelWnd->m_hWnd, this );
 	pDlgControl->SetControlManager( this );

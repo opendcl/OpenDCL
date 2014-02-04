@@ -13,11 +13,11 @@
 #include "ProjectPane.h"
 #include "PropertyPane.h"
 #include "ToolboxPane.h"
-#include "ZOrderPane.h"
+#include "TabOrderPane.h"
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "OLEFont.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "ControlName.h"
 #include "FormControlManager.h"
 #include "PropertyWizard.h"
@@ -301,14 +301,14 @@ CDialogControl* CStudioDialogObject::GetControlAtPoint( const CPoint& pt )
 	return NULL;
 }
 
-TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow /*= true*/, bool bToTopOfZOrder /*= true*/ )
+TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow /*= true*/, bool bToTopOfTabOrder /*= true*/ )
 {
 	AutoUndoGroup UndoGroup( mpSourceForm->GetUndoManager(), IDS_UNDO_ADDCONTROL );
 	TDclControlPtr pDclControl = NULL;
 	switch( type )
 	{
 	case CtlFileExplorer:
-		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlSimpleName( CtlFileExplorer ), rcControl, bToTopOfZOrder );
+		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlSimpleName( CtlFileExplorer ), rcControl, bToTopOfTabOrder );
 		break;
 	case CtlActiveX:
 		{
@@ -316,7 +316,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 			CString sLicenseKey;
 			CString sFilename;
 			theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo( clsid, sLicenseKey, sFilename );
-			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( clsid ) ), rcControl, bToTopOfZOrder );
+			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( clsid ) ), rcControl, bToTopOfTabOrder );
 			if( pDclControl )
 				pDclControl->SetAxCtrlInfo( clsid, sLicenseKey );
 		}
@@ -325,7 +325,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		assert( mpSourceForm->GetType() != FrmTabPage ); //can't nest tab pages
 		if( mpSourceForm->GetType() == FrmTabPage )
 			return NULL;
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( CtlTabStrip ) ), rcControl, bToTopOfZOrder );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( CtlTabStrip ) ), rcControl, bToTopOfTabOrder );
 		if( pDclControl )
 		{
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
@@ -344,7 +344,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		}
 		break;
 	default:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( type ) ), rcControl, bToTopOfZOrder );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( type ) ), rcControl, bToTopOfTabOrder );
 		break;
 	}
 	assert( pDclControl != NULL );
@@ -585,7 +585,7 @@ UINT CStudioDialogObject::HitTest( const CPoint& point ) const
 	return nHitTest;
 }
 
-void CStudioDialogObject::ZOrderSelectedControls( bool bToFront ) 
+void CStudioDialogObject::TabOrderSelectedControls( bool bToFront ) 
 {
 	TDclControlList SelectedControls;
 	GetSelectedControls( SelectedControls );
@@ -793,7 +793,7 @@ void CStudioDialogObject::OnEditPaste()
 			AutoUndoGroup UndoGroup( mpSourceForm->GetUndoManager(), ctControls > 1? IDS_UNDO_ADDCONTROLS : IDS_UNDO_ADDCONTROL );
 			while( ctControls-- > 0 )
 			{
-				TDclControlPtr pDclControl = new CDclControlObject( mpSourceForm );
+				TDclControlPtr pDclControl = new CDclControlTemplate( mpSourceForm );
 				pDclControl->Serialize( ClipboardArchive );
 				size_t ctChildren = 0;
 				ClipboardArchive >> ctChildren;
@@ -1169,7 +1169,7 @@ void CStudioDialogObject::OnUpdateToolsReseteventnames(CCmdUI *pCmdUI)
 
 void CStudioDialogObject::OnBringtofront() 
 {
-	ZOrderSelectedControls( 0 );
+	TabOrderSelectedControls( 0 );
 }
 
 void CStudioDialogObject::OnUpdateBringtofront(CCmdUI *pCmdUI)
@@ -1179,7 +1179,7 @@ void CStudioDialogObject::OnUpdateBringtofront(CCmdUI *pCmdUI)
 
 void CStudioDialogObject::OnSendtoback() 
 {
-	ZOrderSelectedControls( 1 );
+	TabOrderSelectedControls( 1 );
 }
 
 void CStudioDialogObject::OnUpdateSendtoback(CCmdUI *pCmdUI)

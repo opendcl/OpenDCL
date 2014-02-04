@@ -110,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Common\DclImageList.cpp" />
     <ClCompile Include="..\..\Common\ThemeAPI.cpp" />
     <ClCompile Include="..\AcadBlockInsertDropTarget.cpp" />
     <ClCompile Include="..\AcadDockBarHost.cpp">
@@ -241,9 +242,9 @@
     <ClCompile Include="..\..\Common\Base64.cpp" />
     <ClCompile Include="..\..\Common\CeXDib.cpp" />
     <ClCompile Include="..\..\Common\ControlPane.cpp" />
-    <ClCompile Include="..\..\Common\DclControlObject.cpp" />
+    <ClCompile Include="..\..\Common\DclControlTemplate.cpp" />
     <ClCompile Include="..\..\Common\DclControlProp.cpp" />
-    <ClCompile Include="..\..\Common\DclFormObject.cpp" />
+    <ClCompile Include="..\..\Common\DclFormTemplate.cpp" />
     <ClCompile Include="..\..\Common\DialogControl.cpp" />
     <ClCompile Include="..\..\Common\DialogObject.cpp" />
     <ClCompile Include="..\..\Common\DragDropService.cpp" />
@@ -256,7 +257,7 @@
     <ClCompile Include="..\..\Common\OleFont.cpp" />
     <ClCompile Include="..\..\Common\OleLicenseKey.cpp" />
     <ClCompile Include="..\..\Common\PictureBox.cpp" />
-    <ClCompile Include="..\..\Common\PictureObject.cpp" />
+    <ClCompile Include="..\..\Common\DclPicture.cpp" />
     <ClCompile Include="..\..\Common\PPDrawManager.cpp" />
     <ClCompile Include="..\..\Common\PPHtmlDrawer.cpp" />
     <ClCompile Include="..\..\Common\PPTooltip.cpp" />
@@ -330,6 +331,7 @@
     <ResourceCompile Include="..\ARX.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Common\DclImageList.h" />
     <ClInclude Include="..\..\Common\ThemeAPI.h" />
     <ClInclude Include="..\..\Common\UxThemeVI.h" />
     <ClInclude Include="..\AcadBlockInsertDropTarget.h" />
@@ -468,9 +470,9 @@
     <ClInclude Include="..\..\Common\CeXDib.h" />
     <ClInclude Include="..\..\Common\ControlPane.h" />
     <ClInclude Include="..\..\Common\ControlTypes.h" />
-    <ClInclude Include="..\..\Common\DclControlObject.h" />
+    <ClInclude Include="..\..\Common\DclControlTemplate.h" />
     <ClInclude Include="..\..\Common\DclControlProp.h" />
-    <ClInclude Include="..\..\Common\DclFormObject.h" />
+    <ClInclude Include="..\..\Common\DclFormTemplate.h" />
     <ClInclude Include="..\..\Common\Diagnostic.h" />
     <ClInclude Include="..\..\Common\DialogControl.h" />
     <ClInclude Include="..\..\Common\DialogObject.h" />
@@ -486,7 +488,7 @@
     <ClInclude Include="..\..\Common\OleFont.h" />
     <ClInclude Include="..\..\Common\OleLicenseKey.h" />
     <ClInclude Include="..\..\Common\PictureBox.h" />
-    <ClInclude Include="..\..\Common\PictureObject.h" />
+    <ClInclude Include="..\..\Common\DclPicture.h" />
     <ClInclude Include="..\..\Common\PPDrawManager.h" />
     <ClInclude Include="..\..\Common\PPHtmlDrawer.h" />
     <ClInclude Include="..\..\Common\PPTooltip.h" />

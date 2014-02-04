@@ -5,7 +5,7 @@
 #include "ArxPrinterComboBoxCtrl.h"
 #include "PrinterComboHandler.h"
 #include "ArxPaperComboBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "InvokeMethod.h"

@@ -8,8 +8,8 @@
 
 #include "FormTypes.h"
 #include "ControlTypes.h"
-#include "DclControlObject.h"
-#include "DclFormObject.h"
+#include "DclControlTemplate.h"
+#include "DclFormTemplate.h"
 #include "DialogControl.h"
 #include "ControlPane.h"
 #include "PropertyObject.h"

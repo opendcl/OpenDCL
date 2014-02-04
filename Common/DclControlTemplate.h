@@ -6,7 +6,7 @@
 #include "PtrTypes.h"
 #include "PropertyObject.h"
 #include "FontSettings.h"
-#include "ImageListObject.h"
+#include "DclImageList.h"
 #include <list>
 
 class CAxContainerCtrl;
@@ -18,9 +18,9 @@ typedef std::list< TPropertyPtr > TPropertyList;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CDclControlObject
+// CDclControlTemplate
 
-class CDclControlObject : public CObject
+class CDclControlTemplate /*: public CObject*/
 {
 protected:
 	CDclFormObject* mpOwner;
@@ -39,13 +39,13 @@ private:
 	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 
 protected:
-	CDclControlObject();
-	CDclControlObject(const CDclControlObject&); //declared protected to prevent copy construction
-	CDclControlObject& operator=( const CDclControlObject& ); //declared protected to prevent copy construction
+	CDclControlTemplate();
+	CDclControlTemplate(const CDclControlTemplate&); //declared protected to prevent copy construction
+	CDclControlTemplate& operator=( const CDclControlTemplate& ); //declared protected to prevent copy construction
 public:
-	CDclControlObject(CDclFormObject* pOwner);
-	CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);
-	virtual ~CDclControlObject();
+	CDclControlTemplate(CDclFormObject* pOwner);
+	CDclControlTemplate(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);
+	virtual ~CDclControlTemplate();
 
 	//2007-01-30 [ORW]: save version set to 6 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 7 (eliminated serialized MFC classes)
@@ -53,7 +53,8 @@ public:
 	//2007-09-17 [ORW]: save version set to 9 (removed m_ClientHeight member)
 	//2008-01-12 [ORW]: save version set to 10 (removed m_bLicenseChecked, m_sBaseCode members)
 	//2008-11-02 [ORW]: save version set to 11 (changed version from ULONG to BYTE)
-	BYTE GetCurrentSaveVersion() const { return 11; }
+	//2014-02-03 [ORW]: save version set to 12 (removed CObject base class)
+	BYTE GetCurrentSaveVersion() const { return 12; }
 
 // Attributes
 public:
@@ -73,7 +74,7 @@ public:
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
-	virtual bool IsZOrderAllowed() const;
+	virtual bool IsTabOrderAllowed() const;
 	const CComPtr< IStream >& GetIStream() const { return mpStream; }
 	CComPtr< IStream >& GetIStream() { return mpStream; }
 	LPCTSTR GetAxCtrlLicenseKey() const { return msLicenseKey; }
@@ -155,7 +156,7 @@ public:
 	CString GetVarName() const;
 
 protected:
-	DECLARE_SERIAL(CDclControlObject)
+	//DECLARE_SERIAL(CDclControlTemplate)
 
 #ifdef _DIAGNOSTIC
 public:

@@ -5,7 +5,7 @@
 
 #include "ControlGripper.h"
 #include "ControlDropSource.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 class CDialogControl;
 class CStudioDialogObject;

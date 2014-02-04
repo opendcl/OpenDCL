@@ -3,12 +3,12 @@
 
 #include "stdafx.h"
 #include "ControlBarDlg.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
 #include "ArxProject.h"
 #include "ArxDialogControl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "Resource.h"
 
 #if (defined(_BRXTARGET) || defined(_ZRXTARGET))

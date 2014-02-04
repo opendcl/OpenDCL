@@ -3,13 +3,13 @@
 
 #include "stdafx.h"
 #include "PictureBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "AcadColorService.h"
 #include "PropertyIds.h"
 #include "Resource.h"
 #include "Workspace.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 
 
 const int nClientBorderSize = 4;

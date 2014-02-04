@@ -11,7 +11,7 @@
 #include "ArxFolderComboCtrl.h"
 #include "SADirRead.h"
 #include "PropertyIds.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ToolTips.h"
 

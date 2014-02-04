@@ -169,7 +169,7 @@ ADSRESULT Form::GetControls()
 			if( (*iter)->GetType() == _CtlForm )
 				continue;
 			resbuf* prbControl = acutNewRb( RTENAME );
-			prbControl->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter);
+			prbControl->resval.rlname[0] = (LONG_PTR)(const CDclControlTemplate*)(*iter);
 			prbControl->resval.rlname[1] = odcl::ptrDclControl;
 			if( prbTail )
 				prbTail->rbnext = prbControl;

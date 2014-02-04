@@ -1,10 +1,10 @@
-// CZOrderListBox.h : header file
+// CTabOrderListBox.h : header file
 //
 
 #pragma once
 
 #include "ControlTypes.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "PtrTypes.h"
 #include <map>
 #include <list>
@@ -13,9 +13,9 @@ class CStudioDialogObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CZOrderListBox window
+// CTabOrderListBox window
 
-class CZOrderListBox : public CListBox
+class CTabOrderListBox : public CListBox
 {
 	CStudioDialogObject* mpDlgObject;
 	CImageList mImageList;
@@ -30,8 +30,8 @@ class CZOrderListBox : public CListBox
 
 // Construction
 public:
-	CZOrderListBox();
-	virtual ~CZOrderListBox();
+	CTabOrderListBox();
+	virtual ~CTabOrderListBox();
 
 public:
 	virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
@@ -45,7 +45,7 @@ public:
 	void OnActivateDclControl( TDclControlPtr pDclControl );
 
 protected:
-	void OnZOrderChanged();
+	void OnTabOrderChanged();
 	void OnMovezToIndex( int idxInsertAt );
 
 // Generated message map functions
@@ -57,8 +57,8 @@ protected:
 	afx_msg void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
 	afx_msg void OnSendtofront();
 	afx_msg void OnSendtoback();
-	afx_msg void OnMovezbackby1();
-	afx_msg void OnMovezfrontby1();
+	afx_msg void OnMovebackby1();
+	afx_msg void OnMovefrontby1();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);

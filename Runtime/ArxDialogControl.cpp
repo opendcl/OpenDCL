@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxDialogControl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 #include "ToolTips.h"
 #include "ArxWorkspace.h"
@@ -95,7 +95,7 @@ CArxDialogControl::CArxDialogControl( TDclControlPtr pTemplate, CControlPane* pP
 , mArxServices( this )
 {
 	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						(LPCTSTR)pTemplate->GetKeyPath(), (const CDclControlObject*)pTemplate, pPane,
+						(LPCTSTR)pTemplate->GetKeyPath(), (const CDclControlTemplate*)pTemplate, pPane,
 						(LPCTSTR)CString(pControl? pControl->GetRuntimeClass()->m_lpszClassName : "<null>"),
 						pControl? pControl->m_hWnd : NULL, this );
 }

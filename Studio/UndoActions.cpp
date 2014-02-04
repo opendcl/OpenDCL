@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "UndoActions.h"
-#include "DclFormobject.h"
+#include "DclFormTemplate.h"
 #include "StudioWorkspace.h"
 #include "ProjectPane.h"
 #include "StudioDialogControl.h"
@@ -192,7 +192,7 @@ bool CReorderControlUA::Undo()
 	{
 		CControlPane* pControlPane = pDlgObject->GetControlPane();
 		if( pControlPane )
-			pControlPane->ApplyZOrder();
+			pControlPane->ApplyTabOrder();
 		if( pDlgObject == theStudioWorkspace.GetActiveDlgObject() )
 			theStudioWorkspace.ActivateDlgObject( pDlgObject );
 	}

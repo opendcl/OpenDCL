@@ -5,7 +5,7 @@
 #include "StudioProject.h"
 #include "OpenDCLDoc.h"
 #include "StudioWorkspace.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "StudioFrame.h"
 #include "UndoActions.h"
 

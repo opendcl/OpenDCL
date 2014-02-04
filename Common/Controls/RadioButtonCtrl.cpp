@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "RadioButtonCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"

@@ -6,7 +6,7 @@
 #include "PPToolTip.h"
 #include "AcadColorTable.h"
 #include "Project.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 #include "PropertyObject.h"
 #include "Resource.h"

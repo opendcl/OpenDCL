@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ProgressBarPage.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "StudioDialogControl.h"
 #include "Workspace.h"
 #include "PropertyIds.h"

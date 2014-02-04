@@ -313,7 +313,7 @@ void CFormControlManager::OnCancelMode()
 void CFormControlManager::OnCaptureChanged(CWnd *pWnd)
 {
 	mptDragStart.SetPoint( -1, -1 );
-	mpDlgObject->OnUpdateZOrder();
+	mpDlgObject->OnUpdateTabOrder();
 	__super::OnCaptureChanged(pWnd);
 }
 

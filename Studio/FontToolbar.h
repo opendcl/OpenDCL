@@ -9,7 +9,7 @@
 #include "FontSettings.h"
 #include <vector>
 
-class CDclControlObject;
+class CDclControlTemplate;
 class CStudioFrame;
 
 

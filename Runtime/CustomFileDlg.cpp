@@ -11,7 +11,7 @@
 #include "InvokeMethod.h"
 #include "ArxWorkspace.h"
 #include "ArxDialogControl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlTypes.h"
 #include "Resource.h"
 #include "MultiMon.h"
@@ -339,7 +339,7 @@ void CCustomFileDlg::OnInitializationComplete()
 	UINT nID = 1000;
 	GetControlPane()->CreateControls( nID );
 	mpFileDlgCtrl->SetControlInstance( this );
-	theArxWorkspace.SetLispSymbol( mpFileDlgCtrl->GetVarName(), (const CDclControlObject*)mpFileDlgCtrl, odcl::ptrDclControl );
+	theArxWorkspace.SetLispSymbol( mpFileDlgCtrl->GetVarName(), (const CDclControlTemplate*)mpFileDlgCtrl, odcl::ptrDclControl );
 	GetControlPane()->RecalcLayout();
 
 	CRect rcDesktop;

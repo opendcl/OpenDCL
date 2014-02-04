@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxAcadSlideCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
 #include "InvokeMethod.h"

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "GraphicButtonCtrl.h"
 #include "ControlPane.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "Project.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

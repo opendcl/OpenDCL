@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "DclControlObject.h"
-#include "DclFormObject.h"
+#include "DclControlTemplate.h"
+#include "DclFormTemplate.h"
 #include "PropertyObject.h"
 #include "Resource.h"
 #include "Workspace.h"

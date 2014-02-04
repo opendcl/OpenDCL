@@ -4,7 +4,7 @@
 #pragma once
 
 #include "RefCountedPtr.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 
 const COLORREF COLOR_TRANSPARENT = (COLORREF)-1;
 const COLORREF COLOR_USEBACKGROUND = (COLORREF)0;

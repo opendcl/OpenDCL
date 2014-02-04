@@ -1,9 +1,9 @@
 #pragma once
 
 #include "FormTypes.h"
-#include "ImageListObject.h"
+#include "DclImageList.h"
 #include "Project.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include <list>
 
 class CFontCollection;
@@ -48,12 +48,13 @@ public:
 	//2008-02-16 [ORW]: save version set to 7 (removed mbUsesClientRect)
 	//2008-11-02 [ORW]: save version set to 8 (changed version from ULONG to BYTE)
 	//2009-03-03 [ORW]: save version set to 9 (removed msName)
-	BYTE GetCurrentSaveVersion() const { return 9; }
+	//2014-02-03 [ORW]: save version set to 10 (CDclControlObject no longer derives from CObject)
+	BYTE GetCurrentSaveVersion() const { return 10; }
 
 // Operations
 public:
-	virtual void AddControl( TDclControlPtr pDclControl, bool bAssignNewID = false, bool bToTopOfZOrder = true );
-	virtual TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl, bool bToTopOfZOrder = true );
+	virtual void AddControl( TDclControlPtr pDclControl, bool bAssignNewID = false, bool bToTopOfTabOrder = true );
+	virtual TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl, bool bToTopOfTabOrder = true );
 	virtual void DeleteControl( TDclControlPtr& pDclControl );
 	virtual bool ReorderControl( TDclControlPtr pDclControl, bool bToFront );
 	virtual bool ReorderControl( TDclControlPtr pDclControl, size_t idxNew );
@@ -67,7 +68,7 @@ protected:
 
 	//Services
 public:
-	TDclControlPtr GetRefCountedPtr( CDclControlObject* pDclControl ) const;
+	TDclControlPtr GetRefCountedPtr( CDclControlTemplate* pDclControl ) const;
 	void ClearControls();
 	TDclControlPtr FindControl( UINT nID, bool brecursive = true ) const;
 	TDclControlPtr FindControl( LPCTSTR pszControlName ) const;
@@ -117,9 +118,9 @@ public:
 	//File I/O
 public:
 	virtual void Serialize(CArchive& ar);
-  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
-  IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
-  IOStatus ReadFromTextFile4(std::ifstream &sFile, const CString &fileName);
+	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
+	IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
+	IOStatus ReadFromTextFile4(std::ifstream &sFile, const CString &fileName);
 	
 	// Name rendition
 public:

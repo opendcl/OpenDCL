@@ -4,11 +4,11 @@
 #include "stdafx.h"
 #include "PropertyGridCtrl.h"
 #include "PropertiesTabPane.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "StudioWorkspace.h"
 #include "StudioDialogControl.h"
 #include "StudioFrame.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "Resource.h"
 #include "ThemeHelperST.h"
 #include "StudioUndoManager.h"
@@ -374,7 +374,7 @@ public:
 				}
 			}
 			__super::ApplyValue( pszValue );
-			theStudioWorkspace.GetZOrderPane()->Invalidate();
+			theStudioWorkspace.GetTabOrderPane()->Invalidate();
 		}
 };
 

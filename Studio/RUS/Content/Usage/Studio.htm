@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
@@ -40,12 +40,12 @@
         using the font toolbar while the control is selected. Other control 
         properties can be modified in the property pane, or by right-clicking on 
         a control and selecting Properties.</p>
-		<p>The Tab / Z-Order pane shows the current form's tab order. Control 
-        names can be selected and dragged to a new position to change the tab 
-        order. Overlapping controls are discouraged, but the Tab / Z-Order can 
-        also be used to force one control to appear &quot;below&quot; another (however 
-        note that the editor may have trouble displaying overlapping controls 
-        correctly).</p>
+		<p>The Tab Order pane shows the current form&#39;s tab order. Control names can be 
+      selected and dragged to a new position to change the tab order. Tab order does 
+      not control the order in which controls are painted on the form, so this cannot 
+      be used to put one overlapping control &quot;above&quot; another. Note that 
+      transparent controls always paint after opaque controls, so overlapping controls 
+      may be managed by setting the &quot;top&quot; control&#39;s background color to &quot;transparent&quot;.</p>
 		<p>When the control selection button (<img border="0" src="Pointer.png" width="16" height="16">) 
         is selected in the control toolbox, one or more controls can be selected 
         for editing. Clicking on a control selects the control. If the [Ctrl] 
@@ -73,12 +73,11 @@
         property, open a separate dialog box for making changes.</p>
 		<p>The control properties dialog provides a user friendly interface for 
         many properties. The control properties dialog opens when double 
-        clicking on a control in the tab / z-order pane, by selecting Properties 
+        clicking on a control in the tab order pane, by selecting Properties 
         in the control's right click context menu in the form workspace, or by 
-        clicking in the '(Wizard)' property field in the property pane. For some 
-        common control properties such as tooltips, fonts, and control alignment 
+        clicking in the '(Wizard)' property field in the property pane. For control properties such as tooltips, fonts, and control alignment 
         properties, the control properties dialog is the primary interface for 
-        making changes. For some controls such as the grid, tab control, and 
+        making changes. For controls such as the grid, tab control, and 
         image combo box, the control properties dialog provides access to hidden 
         properties that cannot be changed via the properties pane.</p>
 		<p>Creating resizable forms is an important end user feature, and this 

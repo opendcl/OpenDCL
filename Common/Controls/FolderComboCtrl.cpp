@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "FolderComboCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "FolderTreeCtrl.h"
 #include "PropertyIds.h"

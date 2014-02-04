@@ -5,7 +5,7 @@ class CPropertyObject;
 #include "PropertyIds.h"
 #include "PtrTypes.h"
 
-class CDclControlObject;
+class CDclControlTemplate;
 class CUndoManager;
 class AxPropertyDescriptor;
 class AxEventDescriptor;
@@ -134,7 +134,7 @@ namespace PropVal
 class CPropertyObject
 {
 	RefCountedPtr< PropVal::CPropertyValueBase > mpValue;
-	CDclControlObject* mpOwnerControl;
+	CDclControlTemplate* mpOwnerControl;
 
 protected:
 	bool mbHidden;
@@ -150,7 +150,7 @@ protected:
 	CPropertyObject();
 	virtual ~CPropertyObject();
 public:
-	CPropertyObject( CDclControlObject* pOwnerControl, PropertyType type, DWORD dwFlags = 0, Prop::Id nID = (Prop::Id)-1);
+	CPropertyObject( CDclControlTemplate* pOwnerControl, PropertyType type, DWORD dwFlags = 0, Prop::Id nID = (Prop::Id)-1);
 
 	//2007-01-30 [ORW]: save version set to 5 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 6 (eliminate MFC serialized classes)

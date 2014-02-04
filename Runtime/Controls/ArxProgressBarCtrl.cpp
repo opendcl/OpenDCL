@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxProgressBarCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"

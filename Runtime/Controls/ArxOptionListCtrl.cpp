@@ -5,7 +5,7 @@
 #include "ArxOptionListCtrl.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "PropertyObject.h"
 

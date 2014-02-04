@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxWorkspace.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "ModalDlg.h"
 #include "ModelessDlg.h"
 #include "OptionsTabDlg.h"

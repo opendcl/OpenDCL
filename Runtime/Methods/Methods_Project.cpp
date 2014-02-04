@@ -252,7 +252,7 @@ ADSRESULT Project::GetForms()
 	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
 		resbuf* prbForm = acutNewRb( RTENAME );
-		prbForm->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter)->GetControlProperties();
+		prbForm->resval.rlname[0] = (LONG_PTR)(const CDclControlTemplate*)(*iter)->GetControlProperties();
 		prbForm->resval.rlname[1] = odcl::ptrDclControl;
 		if( prbTail )
 			prbTail->rbnext = prbForm;

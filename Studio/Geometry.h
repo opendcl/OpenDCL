@@ -6,7 +6,7 @@
 #include "Resource.h"
 #include "GeometryImage.h"
 #include "PropertyObject.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 class CDclFormObject;
 

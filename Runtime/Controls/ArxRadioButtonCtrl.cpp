@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxRadioButtonCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"

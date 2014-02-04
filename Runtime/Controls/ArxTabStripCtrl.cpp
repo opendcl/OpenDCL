@@ -7,10 +7,10 @@
 #include "InvokeMethod.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "TabPageDlg.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "Project.h"
 
 

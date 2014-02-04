@@ -5,7 +5,7 @@
 #include "BaseDlg.h"
 #include "Workspace.h"
 #include "PropertyIds.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PictureObject.h"
 #include "InvokeMethod.h"
 #include "MultiMon.h"

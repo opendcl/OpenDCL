@@ -26,7 +26,7 @@
 #include "Resource.h"
 #include "ArxWorkspace.h"
 #include "PropertyNames.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ArgumentsRetrieval.h"
 #include "Methods_ActiveX.h"
@@ -144,11 +144,12 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Control-SetPos"),               Control::SetPos},
 	{_T("Control-SetProperty"),          Control::SetProperty}, //used to set any property of any control
 	{_T("Control-ShowToolTip"),          Control::ShowToolTip},
-	{_T("Control-ZOrder"),               Control::ZOrder},
+	{_T("Control-TabOrder"),             Control::TabOrder},
 
 	// General control deprecated methods
 	{_T("Control-GetCurPos"),            Control::GetPos},
 	{_T("Control-ForceUpdateNow"),       Control::Redraw},
+	{_T("Control-ZOrder"),               Control::TabOrder},
 
 	// Property get/set deprecated methods
 	{_T("Control-GetAlternateColor"),    T_GetCtrlProperty< Prop::AlternatingColor >},

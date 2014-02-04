@@ -4,7 +4,7 @@ class CStgFile;
 enum IOStatus;
 
 
-class CPictureObject
+class CDclPicture
 {
 protected:
 	UINT mnID;
@@ -12,14 +12,14 @@ protected:
 	CPictureHolder m_hPicture;
 
 private:
-	CPictureObject& operator= (const CPictureObject&);
+	CDclPicture& operator= (const CDclPicture&);
 protected:
-	CPictureObject(void);
+	CDclPicture(void);
 public:
-	CPictureObject( const CPictureObject& );
-	CPictureObject( UINT nID );
-	CPictureObject( UINT nID, LPCTSTR szFile, bool bApplyMask = false );
-	virtual ~CPictureObject(void);
+	CDclPicture( const CDclPicture& );
+	CDclPicture( UINT nID );
+	CDclPicture( UINT nID, LPCTSTR szFile, bool bApplyMask = false );
+	virtual ~CDclPicture(void);
 
 protected:
 	//2007-02-12 [ORW]: save version set to 6 (was originally set to 3, but some code in Serialize() expects 4 or 5)
@@ -44,17 +44,17 @@ public:
 	//Copied from non-member utility function in Editor
 	void Update( LPPICTURE pPicture );
 	bool LoadFile( LPCTSTR pszFile, bool bApplyMask = false );
-	static CPictureObject* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
-	static CPictureObject* CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask = false );
+	static CDclPicture* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
+	static CDclPicture* CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask = false );
 
 	void Clear();
 	void Render( CDC* pDC, const CRect& rcDest ) const;
 
 	// File I/O
 	virtual void Serialize(CArchive& ar);
-  IOStatus ReadFromTextFile(std::ifstream& sFile, const CString &fileName);
-  IOStatus ReadFromTextFile3(std::ifstream& sFile, const CString &fileName);
-  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
+	IOStatus ReadFromTextFile(std::ifstream& sFile, const CString &fileName);
+	IOStatus ReadFromTextFile3(std::ifstream& sFile, const CString &fileName);
+	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
 protected:
 	void CalcLogicalSize();

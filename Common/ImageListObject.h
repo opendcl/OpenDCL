@@ -1,8 +1,8 @@
 #pragma once
 
-enum IOStatus;
+// This class is only used for serializing in old project files; see DclImageList.h for its replacement.
 
-#include "RefCountedPtr.h"
+enum IOStatus;
 
 
 class CImageListObject : public CObject
@@ -39,13 +39,10 @@ public:
 	//File I/O
 public:
 	virtual void Serialize(CArchive& ar);
-  IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
-  IOStatus ReadFromTextFile1(std::ifstream &sFile, const CString &fileName);
-  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
+	IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
+	IOStatus ReadFromTextFile1(std::ifstream &sFile, const CString &fileName);
+	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 
 protected:
 	DECLARE_SERIAL(CImageListObject)
 };
-
-typedef RefCountedPtr< CImageListObject > TImageListPtr;
-typedef RefCountedPtrAsIUnknown< TImageListPtr > TImageListPtrIUnknown;

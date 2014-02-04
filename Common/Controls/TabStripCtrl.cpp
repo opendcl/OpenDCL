@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "TabStripCtrl.h"
 #include "ControlPane.h"
-#include "ImageListObject.h"
-#include "DclControlObject.h"
+#include "DclImageList.h"
+#include "DclControlTemplate.h"
 #include "DialogObject.h"
 
 

@@ -289,13 +289,13 @@
     <ClCompile Include="..\..\Common\ControlPane.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclControlObject.cpp">
+    <ClCompile Include="..\..\Common\DclControlTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\DclControlProp.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclFormObject.cpp">
+    <ClCompile Include="..\..\Common\DclFormTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\DialogControl.cpp">
@@ -334,7 +334,7 @@
     <ClCompile Include="..\..\Common\PictureBox.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PictureObject.cpp">
+    <ClCompile Include="..\..\Common\DclPicture.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\PPDrawManager.cpp">
@@ -593,6 +593,9 @@
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\ThemeAPI.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\DclImageList.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -917,13 +920,13 @@
     <ClInclude Include="..\..\Common\ControlTypes.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclControlObject.h">
+    <ClInclude Include="..\..\Common\DclControlTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\DclControlProp.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclFormObject.h">
+    <ClInclude Include="..\..\Common\DclFormTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Diagnostic.h">
@@ -971,7 +974,7 @@
     <ClInclude Include="..\..\Common\PictureBox.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PictureObject.h">
+    <ClInclude Include="..\..\Common\DclPicture.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\PPDrawManager.h">
@@ -1329,6 +1332,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\UxThemeVI.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\DclImageList.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

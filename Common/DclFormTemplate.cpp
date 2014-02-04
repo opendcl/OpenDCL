@@ -1,9 +1,9 @@
-// DclFormObject.cpp : implementation file
+// DclFormTemplate.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "DclFormObject.h"
-#include "DclControlObject.h"
+#include "DclFormTemplate.h"
+#include "DclControlTemplate.h"
 #include "UndoManager.h"
 #include "PropertyIds.h"
 #include "PropertyObject.h"
@@ -14,8 +14,10 @@
 #include "Workspace.h"
 #include "DclControlProp.h"
 #include "DialogObject.h"
+#include "DclImageList.h"
 #include "ControlPane.h"
 #include "FontCollection.h"
+#include "ImageListObject.h"
 
 
 //moving all image lists from the form to individual controls while reading older ODC files
@@ -32,7 +34,7 @@ static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLi
 			{//we have a winner
 				short idx = (*iter)->GetShortValue();
 				if( idx >= 0 && (size_t)idx < rImageLists.size() )
-					pDclControl->SetImageList( new CImageListObject( *rImageLists.at( idx ) ) );
+					pDclControl->SetImageList( new CDclImageList( &rImageLists.at( idx )->GetImageList() ) );
 				pDclControl->RemoveProperty( (*iter)->GetID() );
 				break; //stop looking and ignore any additional PropImageList properties, since there should only be one
 			}
@@ -100,9 +102,8 @@ void CDclFormObject::OnModified()
 void CDclFormObject::SetParentForm( TDclFormPtr pParentForm )
 {
 	mpParentForm = pParentForm;
-	if( !pParentForm )
-		return;
-	msUniqueName = pParentForm->GetUniqueName();
+	if( pParentForm )
+		msUniqueName = pParentForm->GetUniqueName();
 	OnModified();
 }
 
@@ -113,10 +114,7 @@ void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
 		return; //calling with an empty name is an error; use the other SetParentForm() to clear the parent
 	TDclFormPtr pParentForm = mpProject->FindParentDclForm( sNewParentName );
 	if( pParentForm )
-	{
 		SetParentForm( pParentForm );
-		OnModified();
-	}
 }
 
 void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
@@ -128,11 +126,11 @@ void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 }
 
 
-void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /*= false*/, bool bToTopOfZOrder /*= true*/ )
+void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /*= false*/, bool bToTopOfTabOrder /*= true*/ )
 {
 	if( !pDclControl )
 		return;
-	if( bToTopOfZOrder || mDclControls.empty() )
+	if( bToTopOfTabOrder || mDclControls.empty() )
 		mDclControls.push_back( pDclControl );
 	else
 		mDclControls.insert( ++mDclControls.begin(), pDclControl );
@@ -145,7 +143,7 @@ void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /
 }
 
 
-TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl, bool bToTopOfZOrder /*= true*/ )
+TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl, bool bToTopOfTabOrder /*= true*/ )
 {
 	CUndoManager* pUndoManager = GetUndoManager();
 	if( pUndoManager )
@@ -155,11 +153,11 @@ TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName,
 		else
 			pUndoManager = NULL;
 	}
-	TDclControlPtr pNewControl = new CDclControlObject( type, this, pszKeyName );
+	TDclControlPtr pNewControl = new CDclControlTemplate( type, this, pszKeyName );
 	AddDefaultProperties( pNewControl, rcControl.Width(), rcControl.Height() );
 	if( pUndoManager )
 		pUndoManager->setEnabled( true );
-	AddControl( pNewControl, true, bToTopOfZOrder );
+	AddControl( pNewControl, true, bToTopOfTabOrder );
 	return pNewControl;
 }
 
@@ -373,6 +371,17 @@ UINT_PTR CDclFormObject::GetUniqueControlId()
 //	return statOK;
 //}
 
+
+// This class is used for deserializing controls from archived form versions earlier than 10
+// (the class must have the same name as the original, since the original code used MFC's
+// typesafe serialization mechanism, which writes the class name to the archive) [ORW]
+namespace DclForm
+{
+	class CDclControlObject : public CObject
+	{ public: CDclControlObject() {} DECLARE_SERIAL(CDclControlObject); };
+		IMPLEMENT_SERIAL(CDclControlObject, CObject, 1);
+};
+
 void CDclFormObject::Serialize(CArchive& ar)
 {
 	BYTE nThisVersion = GetCurrentSaveVersion();
@@ -465,7 +474,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 		ClearControls();
 		while (nCount-- > 0)
 		{
-			TDclControlPtr pDclControl = new CDclControlObject( this );
+			TDclControlPtr pDclControl = new CDclControlTemplate( this );
 			pDclControl->Serialize(ar);
 
 			//Check for another control with the same ID; assign a new one if there's a collision
@@ -542,7 +551,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 	}
 }
 
-TDclControlPtr CDclFormObject::GetRefCountedPtr( CDclControlObject* pDclControl ) const
+TDclControlPtr CDclFormObject::GetRefCountedPtr( CDclControlTemplate* pDclControl ) const
 {
 	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
@@ -618,7 +627,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
 	while (nCount-- > 0)
 	{
-		TDclControlPtr pControl = new CDclControlObject( this );
+		TDclControlPtr pControl = new CDclControlTemplate( this );
 
 		IOStatus stat = pControl->ReadFromTextFile(sFile, fileName);
 		if (stat != statOK) return stat;
@@ -750,7 +759,7 @@ TDclControlPtr CDclFormObject::CreateControlProperties()
 {
 	if( !mDclControls.empty() )
 		return mDclControls.front();
-	TDclControlPtr pProps = new CDclControlObject( this );
+	TDclControlPtr pProps = new CDclControlTemplate( this );
 	mDclControls.push_back( pProps );
 	return pProps;
 }

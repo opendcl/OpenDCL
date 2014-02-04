@@ -6,7 +6,7 @@
 #include "SCBarG.h"
 #include "ProjectPane.h"
 #include "ToolboxPane.h"
-#include "ZOrderPane.h"
+#include "TabOrderPane.h"
 #include "PropertyPane.h"
 #include "FontToolbar.h"
 
@@ -23,7 +23,7 @@ public:
 	CFontToolbar& GetFontToolbar() { return m_wndFontToolBar; }
 	CToolboxPane& GetToolboxPane() { return m_wndToolBoxPane; }
 	CProjectPane& GetProjectPane() { return *m_pwndProjectPane; }
-	CZOrderPane& GetZOrderPane() { return m_wndZOrderPane; }
+	CTabOrderPane& GetTabOrderPane() { return m_wndTabOrderPane; }
 	CPropertyPane& GetPropertyPane() { return m_wndPropertyPane; }
 
 // Operations
@@ -58,8 +58,8 @@ protected:  // control bar embedded members
 	CSizingControlBarG m_wndPropertySizingBar;
 	CPropertyPane m_wndPropertyPane;
 	
-	CSizingControlBarG m_wndZOrderSizingBar; // ZOrder bar
-	CZOrderPane m_wndZOrderPane;
+	CSizingControlBarG m_wndTabOrderSizingBar; // TabOrder bar
+	CTabOrderPane m_wndTabOrderPane;
 
 	CStatusBar m_wndStatusBar;
 

@@ -3,11 +3,11 @@
 
 #include "stdafx.h"
 #include "TabsPane.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "DclFormView.h"
 #include "StudioDialogControl.h"
 #include "PropertyIds.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "PropertyObject.h"
 #include "Resource.h"
 #include "Project.h"

@@ -6,7 +6,7 @@
 #include "Workspace.h"
 #include "PropertyIds.h"
 #include "Resource.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "DclControlProp.h"
 #include "UndoManager.h"
@@ -15,9 +15,9 @@
 #include "AxContainerCtrl.h"
 #include "StgFile.h"
 #include "Filing.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "DialogObject.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "ControlTypes.h"
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
@@ -293,7 +293,7 @@ bool CProject::LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask /*
 	TPicturePtr pPic = FindPicture( nID );
 	if( !pPic )
 	{
-		pPic = new CPictureObject( nID );
+		pPic = new CDclPicture( nID );
 		AddPicture( pPic );
 	}
 	pPic->LoadFile( szFile, bApplyMask );
@@ -583,12 +583,16 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 }
 
 
-// This class is used for deserializing OLE controls from versions 8 and 9 project archives
+// These classes are used for deserializing OLE controls from versions 8/9 and 10/11/12 project archives
 // (the class must have the same name as the original, since the original code used MFC's
 // typesafe serialization mechanism, which writes the class name to the archive) [ORW]
-class CArxControlObject : public CDclControlObject
-{ CArxControlObject() : CDclControlObject( NULL ) {} DECLARE_SERIAL(CArxControlObject); };
+class CArxControlObject : public CObject
+{ CDclControlTemplate mCtrl; public: CArxControlObject() : mCtrl(NULL) {} DECLARE_SERIAL(CArxControlObject);	virtual void Serialize(CArchive& ar);	};
 	IMPLEMENT_SERIAL(CArxControlObject, CObject, 1);
+	void CArxControlObject::Serialize(CArchive& ar) { mCtrl.Serialize(ar); }
+class CDclControlObject : public CArxControlObject
+{ public: CDclControlObject() {} DECLARE_SERIAL(CDclControlObject); };
+	IMPLEMENT_SERIAL(CDclControlObject, CObject, 1);
 
 
 void CProject::Serialize(CArchive& ar)
@@ -772,10 +776,9 @@ void CProject::Serialize(CArchive& ar)
 			{
 				unsigned long ctOleControls;
 				ar >> ctOleControls;
-				CDclControlObject* pDiscardOleControl = new CDclControlObject( NULL );
+				CDclControlObject discard;
 				for( unsigned long idx = 0; idx < ctOleControls; ++idx )
-					pDiscardOleControl->Serialize( ar );
-				delete pDiscardOleControl;
+					discard.Serialize( ar );
 			}
 		}
 
@@ -784,12 +787,12 @@ void CProject::Serialize(CArchive& ar)
 		{
 			try
 			{
-				CList< CPictureObject* > Pictures;
+				CList< CDclPicture* > Pictures;
 				Pictures.Serialize( ar );
 				POSITION pos = Pictures.GetHeadPosition();
 				while( pos )
 				{
-					CPictureObject* pPict = Pictures.GetNext( pos );
+					CDclPicture* pPict = Pictures.GetNext( pos );
 					if( !pPict )
 						continue; //skip empty picture objects
 					if( pPict->GetID() <= -1 || pPict->GetID() >= 3000 )
@@ -816,7 +819,7 @@ void CProject::Serialize(CArchive& ar)
 
 			while( nCount-- > 0 )
 			{
-				TPicturePtr pPict = new CPictureObject( -1 );
+				TPicturePtr pPict = new CDclPicture( -1 );
 				pPict->Serialize( ar );
 				mPictures[pPict->GetID()] = pPict;							
 			}
@@ -935,7 +938,7 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 	}
 
 	if (!readInt(sFile, iCount)) return statInvalidFormat;
-	CDclControlObject* pOleControl = new CDclControlObject( NULL );
+	CDclControlTemplate* pOleControl = new CDclControlTemplate( NULL );
 	for (int i = 0; i < iCount; i++) {
 		IOStatus stat = pOleControl->ReadFromTextFile(sFile, fileName);
 		if (stat != statOK) return stat;
@@ -950,7 +953,7 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 	while (nCount-- > 0)
 	{
 		// get current images
-		TPicturePtr pPict = new CPictureObject( -1 );
+		TPicturePtr pPict = new CDclPicture( -1 );
 		if( !pPict )
 			continue;
 		try

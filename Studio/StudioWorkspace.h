@@ -13,7 +13,7 @@ class CStudioFrame;
 class CStudioProject;
 class CToolboxPane;
 class CPropertyPane;
-class CZOrderPane;
+class CTabOrderPane;
 class COpenDCLDoc;
 class CDclFormView;
 class CStudioDialogObject;
@@ -52,7 +52,7 @@ public:
 	CProjectPane* GetProjectPane() const;
 	CPropertyPane* GetPropertyPane() const;
 	CToolboxPane* GetToolboxPane() const;
-	CZOrderPane* GetZOrderPane() const;
+	CTabOrderPane* GetTabOrderPane() const;
 	CString GetActiveProjectName() const;
 
 	// Undo notifications

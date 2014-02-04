@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ListViewCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "AcadColorService.h"
 #include "PropertyIds.h"

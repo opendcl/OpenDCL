@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "ControlPane.h"
 #include "DialogObject.h"
-#include "DclFormObject.h"
-#include "DclControlObject.h"
+#include "DclFormTemplate.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "UndoManager.h"
@@ -46,7 +46,7 @@ CRect CControlPane::GetControlArea() const
 	return mpDlgObject->GetWndRect();
 }
 
-void CControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
+void CControlPane::TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
 	CWnd* pControlWnd = pDlgControl->GetControlWnd();
 	if( pControlWnd )
@@ -58,7 +58,7 @@ void CControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*
 	}
 }
 
-void CControlPane::ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
+void CControlPane::TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
 	CWnd* pControlWnd = pDlgControl->GetTopLevelWnd();
 	if( pControlWnd )
@@ -115,7 +115,7 @@ bool CControlPane::CreateControls(UINT& nId)
 		else
 			bFailed = true;
 	}
-	//ApplyZOrder();
+	//ApplyTabOrder();
 	//InvalidateControls();
 	if( bVisible )
 	{
@@ -239,7 +239,7 @@ bool CControlPane::IsClosing() const
 
 void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 {
-	if( !pDclControl || !pDclControl->IsZOrderAllowed() )
+	if( !pDclControl || !pDclControl->IsTabOrderAllowed() )
 		return;
 	CDialogControl* pDlgControl = pDclControl->GetControlInstance();
 	if( !pDlgControl )
@@ -272,7 +272,7 @@ void CControlPane::CleanUpControls()
 	}
 }
 
-void CControlPane::ApplyZOrder()
+void CControlPane::ApplyTabOrder()
 {
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
 	HDWP hdwp = (Controls.empty()? NULL : BeginDeferWindowPos( Controls.size() ));
@@ -281,9 +281,9 @@ void CControlPane::ApplyZOrder()
 		TDialogControlLockedPtr pDlgControl = (*iter)->GetControlInstance();
 		if( !pDlgControl )
 			continue;
-		if( !pDlgControl->GetTemplate()->IsZOrderAllowed() )
+		if( !pDlgControl->GetTemplate()->IsTabOrderAllowed() )
 			continue;
-		ZOrderFront( pDlgControl, hdwp );
+		TabOrderFront( pDlgControl, hdwp );
 	}
 	if( hdwp )
 		EndDeferWindowPos( hdwp );

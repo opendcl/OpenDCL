@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "Methods_TabStrip.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ArgumentsRetrieval.h"
 #include "ArxTabStripCtrl.h"
 #include "ControlTypes.h"

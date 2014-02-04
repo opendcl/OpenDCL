@@ -6,7 +6,7 @@
 #include "PropertyObject.h"
 #include "StudioWorkspace.h"
 #include "OpenDCL.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "StudioDialogControl.h"
 #include "Resource.h"
 

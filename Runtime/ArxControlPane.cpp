@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ArxControlPane.h"
 #include "ArxDialogControl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "AxContainerCtrl.h"
 #include "ArxProject.h"
 

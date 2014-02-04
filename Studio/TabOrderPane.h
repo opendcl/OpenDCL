@@ -1,15 +1,15 @@
-// ZOrderPane.h : header file
+// TabOrderPane.h : header file
 //
 
 #pragma once
 
-#include "ZOrderListBox.h"
+#include "TabOrderListBox.h"
 #include "PtrTypes.h"
 
 class CStudioDialogObject;
 
 
-//#define ZOrderListID  107
+//#define TabOrderListID  107
 //#define SendToBackId  108
 //#define BringToFrontId  109
 //#define ZUpArrowId  110
@@ -22,17 +22,17 @@ class CStudioDialogObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CZOrderPane window
+// CTabOrderPane window
 
-class CZOrderPane : public CDialog
+class CTabOrderPane : public CDialog
 {
-	CZOrderListBox mZOrderList;
+	CTabOrderListBox mTabOrderList;
 	CToolBarCtrl mToolbar;
 
 // Construction
 public:
-	CZOrderPane();
-	virtual ~CZOrderPane();
+	CTabOrderPane();
+	virtual ~CTabOrderPane();
 
 // Attributes
 public:	

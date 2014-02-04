@@ -32,7 +32,7 @@ void CArxControlServices::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 	if( msLispSymbolName.IsEmpty() )
 		return;
 	if( !bResetToNil )
-		theArxWorkspace.SetLispSymbol( msLispSymbolName, (const CDclControlObject*)mpDlgControl->GetTemplate(), odcl::ptrDclControl );
+		theArxWorkspace.SetLispSymbol( msLispSymbolName, (const CDclControlTemplate*)mpDlgControl->GetTemplate(), odcl::ptrDclControl );
 	else
 		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }
@@ -49,7 +49,7 @@ bool CArxControlServices::HandleDragOverControl( COleDataObject* pDataObject, DW
 		HGLOBAL hData = pDataObject->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
 		if( !hData )
 			return false;
-		CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+		CDclControlTemplate* pSourceDclControl = *(CDclControlTemplate**)GlobalLock( hData );
 		GlobalUnlock( hData );
 		GlobalFree( hData );
 		if( !pSourceDclControl )
@@ -99,7 +99,7 @@ bool CArxControlServices::HandleDropOnControl( COleDataObject* pDataObject,
 		HGLOBAL hData = pDataObject->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
 		if( !hData )
 			return false;
-		CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+		CDclControlTemplate* pSourceDclControl = *(CDclControlTemplate**)GlobalLock( hData );
 		GlobalUnlock( hData );
 		GlobalFree( hData );
 		if( !pSourceDclControl )

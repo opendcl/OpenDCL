@@ -8,7 +8,7 @@
 #include "OpenDCLDoc.h"
 #include "StudioFrame.h"
 #include "DclFormView.h"
-#include "ZOrderPane.h"
+#include "TabOrderPane.h"
 #include "StudioDialogObject.h"
 #include "ControlManager.h"
 
@@ -87,11 +87,11 @@ CToolboxPane* CStudioWorkspace::GetToolboxPane() const
 	return &GetStudioFrame()->GetToolboxPane();
 }
 
-CZOrderPane* CStudioWorkspace::GetZOrderPane() const
+CTabOrderPane* CStudioWorkspace::GetTabOrderPane() const
 {
 	if( !GetStudioFrame() )
 		return NULL;
-	return &GetStudioFrame()->GetZOrderPane();
+	return &GetStudioFrame()->GetTabOrderPane();
 }
 
 CString CStudioWorkspace::GetActiveProjectName() const
@@ -155,10 +155,10 @@ void CStudioWorkspace::ActivateDlgObject( CStudioDialogObject* pDlgObject )
 	{
 		if( pDlgObject->m_hWnd )
 		{
-			pDlgObject->OnUpdateZOrder();
-			CZOrderPane* pZOrderPane = GetZOrderPane();
-			if( pZOrderPane )
-				pZOrderPane->OnActivateDlgObject( pDlgObject );
+			pDlgObject->OnUpdateTabOrder();
+			CTabOrderPane* pTabOrderPane = GetTabOrderPane();
+			if( pTabOrderPane )
+				pTabOrderPane->OnActivateDlgObject( pDlgObject );
 		}
 	}
 	else
@@ -187,9 +187,9 @@ void CStudioWorkspace::DeactivateDlgObject( CStudioDialogObject* pDlgObject )
 						pDlgObject );
 	if( pDlgObject != mpActiveDlgObject )
 		return; //no-op
-	CZOrderPane* pZOrderPane = GetZOrderPane();
-	if( pZOrderPane )
-		pZOrderPane->OnActivateDlgObject( NULL );
+	CTabOrderPane* pTabOrderPane = GetTabOrderPane();
+	if( pTabOrderPane )
+		pTabOrderPane->OnActivateDlgObject( NULL );
 	CPropertyPane* pPropertyPane = GetPropertyPane();
 	if( pPropertyPane )
 		pPropertyPane->OnActivateDclControl( NULL );
@@ -204,7 +204,7 @@ void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl, bool bDea
 {
 	TraceFmt( _T("> CStudioWorkspace::ActivateDclControl(%s [%p], %s)\r\n"),
 						(LPCTSTR)(pDclControl? pDclControl->GetKeyPath() : NULL),
-						(const CDclControlObject*)pDclControl,
+						(const CDclControlTemplate*)pDclControl,
 						bDeactivateCurrent? _T("true") : _T("false") );
 	if( pDclControl && bDeactivateCurrent )
 		ActivateDclControl( NULL, false );
@@ -231,9 +231,9 @@ void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl, bool bDea
 		CStudioDialogObject* pDlgObject = (CStudioDialogObject*)pForm->GetFormInstance();
 		assert( pDlgObject == mpActiveDlgObject ); //make sure the form is activated first!
 		pDlgObject->OnActivateDclControl( pDclControl );
-		CZOrderPane* pZOrderPane = GetZOrderPane();
-		if( pZOrderPane )
-			pZOrderPane->OnActivateDclControl( pDclControl );
+		CTabOrderPane* pTabOrderPane = GetTabOrderPane();
+		if( pTabOrderPane )
+			pTabOrderPane->OnActivateDclControl( pDclControl );
 		CPropertyPane* pPropertyPane = GetPropertyPane();
 		if( pPropertyPane )
 			pPropertyPane->OnActivateDclControl( pDclControl );
@@ -241,9 +241,9 @@ void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl, bool bDea
 	}
 	else
 	{
-		CZOrderPane* pZOrderPane = GetZOrderPane();
-		if( pZOrderPane )
-			pZOrderPane->OnActivateDclControl( NULL );
+		CTabOrderPane* pTabOrderPane = GetTabOrderPane();
+		if( pTabOrderPane )
+			pTabOrderPane->OnActivateDclControl( NULL );
 		CPropertyPane* pPropertyPane = GetPropertyPane();
 		if( pPropertyPane )
 			pPropertyPane->OnActivateDclControl( NULL );

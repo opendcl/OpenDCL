@@ -8,7 +8,7 @@
 #pragma once
 
 #include "PPToolTip.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ThemeAPI.h"
 #include <list>
 #include <vector>

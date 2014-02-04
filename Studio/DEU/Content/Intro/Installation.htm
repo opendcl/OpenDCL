@@ -1,43 +1,100 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="de">
-<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>Installation</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="de">
+  <link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
+
+  <script type="text/javascript" src="../Utility.js"></script>
+
+  <title>Installation</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Installation</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-		<h4>OpenDCL Installation</h4>
-		<p>OpenDCL Studio l&auml;sst sich sehr leicht installieren. Laden Sie die gew&uuml;nschte Sprachversion von der <a target="_blank" href="http://sourceforge.net/project/showfiles.php?group_id=187950&package_id=220267">OpenDCL Studio Download Webseite </a>herunter und f&uuml;hren Sie die MSI-Datei aus. Dialoge k&ouml;nnen Sie im OpenDCL Studio auch ohne AutoCAD-Lizenz erstellen und ver&auml;ndern. Um die gesamte Entwicklungsarbeit auf einem einzigen Computer zu leisten und beispielsweise den Quellcode und das Verhalten der Dialoge und Steuerelemente testen zu k&ouml;nnen, ist es jedoch empfehlenswert, das AutoCAD w&auml;hrend der Entwicklung installiert ist. Das OpenDCL Studio enth&auml;lt die OpenDCL Laufzeitumgebung zum Laden und Anzeigen der Dialoge innerhalb von AutoCAD. </p>
-		<p>OpenDCL sollte vorzugsweise lokal installiert werden. W&auml;hrend der Installation wird die OpenDCL-Laufzeitumgebung in allen unterst&uuml;tzten Versionen von AutoCAD eingerichtet, die auf dem Arbeitsplatz installiert sind.</p>
-		<h4>OpenDCL Laufzeitumgebung </h4>
-		<p>Die OpenDCL Laufzeitumgebung wird immer automatisch im Ordner LW:\&lt;Programme-Verzeichnis&gt;\&lt;Gemeinsame Dateien&gt;\OpenDCL installiert, unabh&auml;ngig davon, ob Sie das OpenDCL Studio oder die OpenDCL Laufzeitumgebung installieren. Auf diesem Wege finden Sie bei der Installation von OpenDCL Studio die gleiche Situation wie beim Endkunden vor, der sp&auml;ter nur die OpenDCL Laufzeitumgebung installieren wird (z.B. &uuml;ber das Installationsprogramm Ihrer OpenDCL Applikation). Versuchen Sie nicht, die ARX-Dateien in einen anderen Ordner zu kopieren und von dort aus in AutoCAD zu laden - es wird schlichtweg nicht funktionieren. Wie Sie die OpenDCL Laufzeitumgebung im Programmablauf Ihrer Applikation laden, erfahren Sie im Abschnitt <a href="../Concepts/Development.htm">Eine Anwendung entwickeln</a>. Der Reiz der DemandLoading-Funktionalit&auml;t besteht darin, dass Sie sich als Entwickler nicht um die Prozessorarchitektur und die verwendete AutoCAD-Version k&uuml;mmern m&uuml;ssen - OpenDCL erledigt das f&uuml;r Sie und l&auml;dt die geeignete Laufzeitumgebung.</p>
-		<p>Bitte beachten Sie, dass die OpenDCL Laufzeitumgebung f&uuml;r alle installierten AutoCAD-Versionen eingerichtet wird. Installieren Sie nach der OpenDCL-Installation eine weitere AutoCAD-Version hinzu, f&uuml;r die Sie die OpenDCL-Funktionalit&auml;t zur Verf&uuml;gung stellen wollen, starten Sie anschlie&szlig;end den Reparaturvorgang von OpenDCL Studio bzw. der OpenDCL Laufzeitumgebung (z.B. beim Endanwender der OpenDCL-Applikation).</p>
-		<h4>OpenDCL Beispiele </h4>
-		<p>OpenDCL Studio liefert viele verschiedene Beispiele mit aus, die die unterschiedlichen Dialoge und Steuerelemente einschlie&szlig;lich ihrer Verwendung demonstrieren. Um die Beispiele zu starten, starten Sie AutoCAD und laden Sie die Datei &quot;Samples\_MasterDemo.lsp&quot;, die im l&auml;nderspezifischen Unterordner Ihrer OpenDCL-Installation gespeichert ist. Die Datei kann durch Drag&amp;Drop vom Windows Explorer in den Zeichenbereich der aktuellen Zeichnung geladen werden, um OpenDCL in Aktion treten zu lassen. Bitte beachten Sie, dass Sie keine zus&auml;tzlichen Supportpfade erg&auml;nzen m&uuml;ssen, um die OpenDCL-Beispiele zu laden und anzuwenden. </p>
-</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          Installation</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+            Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <h4>
+      OpenDCL Installation</h4>
+    <p>
+      OpenDCL Studio l&auml;sst sich sehr leicht installieren. Laden Sie die gew&uuml;nschte
+      Sprachversion von der <a target="_blank" href="http://sourceforge.net/project/showfiles.php?group_id=187950&package_id=220267">
+        OpenDCL Studio Download Webseite </a>herunter und f&uuml;hren Sie die MSI-Datei
+      aus. Dialoge k&ouml;nnen Sie im OpenDCL Studio auch ohne AutoCAD-Lizenz erstellen
+      und ver&auml;ndern. Um die gesamte Entwicklungsarbeit auf einem einzigen Computer
+      zu leisten und beispielsweise den Quellcode und das Verhalten der Dialoge und Steuerelemente
+      testen zu k&ouml;nnen, ist es jedoch empfehlenswert, das AutoCAD w&auml;hrend der
+      Entwicklung installiert ist. Das OpenDCL Studio enth&auml;lt die OpenDCL Laufzeitumgebung
+      zum Laden und Anzeigen der Dialoge innerhalb von AutoCAD.
+    </p>
+    <p>
+      OpenDCL sollte vorzugsweise lokal installiert werden. W&auml;hrend der Installation
+      wird die OpenDCL-Laufzeitumgebung in allen unterst&uuml;tzten Versionen von AutoCAD
+      eingerichtet, die auf dem Arbeitsplatz installiert sind.</p>
+    <h4>
+      OpenDCL Laufzeitumgebung
+    </h4>
+    <p>
+      Die OpenDCL Laufzeitumgebung wird immer automatisch im Ordner LW:\&lt;Programme-Verzeichnis&gt;\&lt;Gemeinsame
+      Dateien&gt;\OpenDCL installiert, unabh&auml;ngig davon, ob Sie das OpenDCL Studio
+      oder die OpenDCL Laufzeitumgebung installieren. Auf diesem Wege finden Sie bei der
+      Installation von OpenDCL Studio die gleiche Situation wie beim Endkunden vor, der
+      sp&auml;ter nur die OpenDCL Laufzeitumgebung installieren wird (z.B. &uuml;ber das
+      Installationsprogramm Ihrer OpenDCL Applikation). Versuchen Sie nicht, die ARX-Dateien
+      in einen anderen Ordner zu kopieren und von dort aus in AutoCAD zu laden - es wird
+      schlichtweg nicht funktionieren. Wie Sie die OpenDCL Laufzeitumgebung im Programmablauf
+      Ihrer Applikation laden, erfahren Sie im Abschnitt <a href="../Concepts/Development.htm">
+        Eine Anwendung entwickeln</a>. Der Reiz der DemandLoading-Funktionalit&auml;t
+      besteht darin, dass Sie sich als Entwickler nicht um die Prozessorarchitektur und
+      die verwendete AutoCAD-Version k&uuml;mmern m&uuml;ssen - OpenDCL erledigt das f&uuml;r
+      Sie und l&auml;dt die geeignete Laufzeitumgebung.</p>
+    <p>
+      Bitte beachten Sie, dass die OpenDCL Laufzeitumgebung f&uuml;r alle installierten
+      AutoCAD-Versionen eingerichtet wird. Installieren Sie nach der OpenDCL-Installation
+      eine weitere AutoCAD-Version hinzu, f&uuml;r die Sie die OpenDCL-Funktionalit&auml;t
+      zur Verf&uuml;gung stellen wollen, starten Sie anschlie&szlig;end den Reparaturvorgang
+      von OpenDCL Studio bzw. der OpenDCL Laufzeitumgebung (z.B. beim Endanwender der
+      OpenDCL-Applikation).</p>
+    <h4>
+      OpenDCL Beispiele
+    </h4>
+    <p>
+      OpenDCL Studio liefert viele verschiedene Beispiele mit aus, die die unterschiedlichen
+      Dialoge und Steuerelemente einschlie&szlig;lich ihrer Verwendung demonstrieren.
+      Um die Beispiele zu starten, starten Sie AutoCAD und laden Sie die Datei &quot;Samples\@AllSamples.lsp&quot;,
+      die im l&auml;nderspezifischen Unterordner Ihrer OpenDCL-Installation gespeichert
+      ist. Die Datei kann durch Drag&amp;Drop vom Windows Explorer in den Zeichenbereich
+      der aktuellen Zeichnung geladen werden, um OpenDCL in Aktion treten zu lassen. Bitte
+      beachten Sie, dass Sie keine zus&auml;tzlichen Supportpfade erg&auml;nzen m&uuml;ssen,
+      um die OpenDCL-Beispiele zu laden und anzuwenden.
+    </p>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      Alle Rechte vorbehalten.</p>
+    <p>
+      OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+        OpenDCL Consortium</a>.</p>
+    <p>
+      AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+        target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

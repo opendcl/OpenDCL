@@ -6,7 +6,7 @@
 #include "Resource.h"
 #include "FormTypes.h"
 #include "Workspace.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 
 
 CString GetFormDisplayName( FormType type )

@@ -1,11 +1,11 @@
-// CZOrderListBox.cpp : implementation file
+// CTabOrderListBox.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "ZOrderListBox.h"
+#include "TabOrderListBox.h"
 #include "StudioDialogObject.h"
-#include "DclControlObject.h"
-#include "DclFormObject.h"
+#include "DclControlTemplate.h"
+#include "DclFormTemplate.h"
 #include "DclFormView.h"
 #include "StudioWorkspace.h"
 #include "ControlManager.h"
@@ -55,9 +55,9 @@ static void ToggleControlSelected( TDclControlPtr pDclControl )
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CZOrderListBox
+// CTabOrderListBox
 
-CZOrderListBox::CZOrderListBox()
+CTabOrderListBox::CTabOrderListBox()
 : mpDlgObject( NULL )
 , mbNotifying( false )
 , mnItemUnselectPending( -1 )
@@ -72,11 +72,11 @@ CZOrderListBox::CZOrderListBox()
 		mFont.CreateStockObject( DEFAULT_GUI_FONT );
 }
 
-CZOrderListBox::~CZOrderListBox()
+CTabOrderListBox::~CTabOrderListBox()
 {
 }
 
-BOOL CZOrderListBox::Create( DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID )
+BOOL CTabOrderListBox::Create( DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID )
 {
 	dwStyle &= ~(LBS_SORT | LBS_HASSTRINGS);
 	dwStyle |= (WS_VSCROLL | LBS_MULTIPLESEL | LBS_OWNERDRAWFIXED | LBS_NOTIFY);
@@ -86,7 +86,7 @@ BOOL CZOrderListBox::Create( DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, 
 	return TRUE;
 }
 
-void CZOrderListBox::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
+void CTabOrderListBox::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
 {
 	mpDlgObject = pDlgObject;
 	mControls.clear();
@@ -100,7 +100,7 @@ void CZOrderListBox::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
 	while( iter != Controls.rend() )
 	{
 		TDclControlPtr pDclControl = *(iter++);
-		if( !pDclControl->IsZOrderAllowed() )
+		if( !pDclControl->IsTabOrderAllowed() )
 			continue;
 		mControls.push_back( pDclControl );
 		int idxItem = AddString( pDclControl->GetKeyName() );
@@ -108,12 +108,12 @@ void CZOrderListBox::OnActivateDlgObject( CStudioDialogObject* pDlgObject )
 	}
 }
 
-void CZOrderListBox::OnActivateDclControl( TDclControlPtr pDclControl )
+void CTabOrderListBox::OnActivateDclControl( TDclControlPtr pDclControl )
 {
 	if( pDclControl )
 	{
 		assert( !mpDlgObject || pDclControl->GetOwnerForm() == mpDlgObject->GetSourceForm() );
-		if( !pDclControl->IsZOrderAllowed() )
+		if( !pDclControl->IsTabOrderAllowed() )
 			return;
 		int idxItem = 0;
 		for( TDclControlList::const_iterator iter = mControls.begin();
@@ -137,7 +137,7 @@ void CZOrderListBox::OnActivateDclControl( TDclControlPtr pDclControl )
 	Invalidate();
 }
 
-void CZOrderListBox::OnZOrderChanged()
+void CTabOrderListBox::OnTabOrderChanged()
 {
 	if( !mpDlgObject )
 		return;
@@ -152,11 +152,11 @@ void CZOrderListBox::OnZOrderChanged()
 		SetSel( idxItem++, IsControlSelected( pDclControl ) );
 		pSourceForm->ReorderControl( pDclControl, true );
 	}
-	mpDlgObject->OnUpdateZOrder();
+	mpDlgObject->OnUpdateTabOrder();
 	mbNotifying = false;
 }
 
-void CZOrderListBox::OnMovezToIndex( int idxInsertAt ) 
+void CTabOrderListBox::OnMovezToIndex( int idxInsertAt ) 
 {
 	if( mControls.empty() )
 		return;
@@ -185,12 +185,12 @@ void CZOrderListBox::OnMovezToIndex( int idxInsertAt )
 		mControls.insert( iterInsert, Selection.back() );
 		Selection.pop_back();
 	}
-	OnZOrderChanged();
+	OnTabOrderChanged();
 	Invalidate();
 }
 
 
-BEGIN_MESSAGE_MAP(CZOrderListBox, CListBox)
+BEGIN_MESSAGE_MAP(CTabOrderListBox, CListBox)
 	ON_WM_DRAWITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
@@ -200,15 +200,15 @@ BEGIN_MESSAGE_MAP(CZOrderListBox, CListBox)
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_SENDTOFRONT, OnSendtofront)
 	ON_COMMAND(ID_SENDTOBACK, OnSendtoback)
-	ON_COMMAND(ID_MOVEZBACKBY1, OnMovezbackby1)
-	ON_COMMAND(ID_MOVEZFRONTBY1, OnMovezfrontby1)
+	ON_COMMAND(ID_MOVEBACKBY1, OnMovebackby1)
+	ON_COMMAND(ID_MOVEFRONTBY1, OnMovefrontby1)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CZOrderListBox message handlers
+// CTabOrderListBox message handlers
 
 
-void CZOrderListBox::OnSendtofront() 
+void CTabOrderListBox::OnSendtofront() 
 {
 	TDclControlList Selection;
 	TDclControlList::iterator iter = mControls.begin();
@@ -227,11 +227,11 @@ void CZOrderListBox::OnSendtofront()
 		mControls.push_front( Selection.back() );
 		Selection.pop_back();
 	}
-	OnZOrderChanged();
+	OnTabOrderChanged();
 	Invalidate();
 }
 
-void CZOrderListBox::OnSendtoback() 
+void CTabOrderListBox::OnSendtoback() 
 {
 	TDclControlList Selection;
 	TDclControlList::iterator iter = mControls.begin();
@@ -250,11 +250,11 @@ void CZOrderListBox::OnSendtoback()
 		mControls.push_back( Selection.back() );
 		Selection.pop_back();
 	}
-	OnZOrderChanged();
+	OnTabOrderChanged();
 	Invalidate();
 }
 
-void CZOrderListBox::OnMovezbackby1() 
+void CTabOrderListBox::OnMovebackby1() 
 {
 	if( mControls.empty() )
 		return;
@@ -281,10 +281,10 @@ void CZOrderListBox::OnMovezbackby1()
 		GetItemRect( idxItem + 1, &rcNewItem );
 		InvalidateRect( &rcNewItem );
 	}
-	OnZOrderChanged();
+	OnTabOrderChanged();
 }
 
-void CZOrderListBox::OnMovezfrontby1() 
+void CTabOrderListBox::OnMovefrontby1() 
 {
 	if( mControls.empty() )
 		return;
@@ -311,10 +311,10 @@ void CZOrderListBox::OnMovezfrontby1()
 		GetItemRect( idxItem - 1, &rcNewItem );
 		InvalidateRect( &rcNewItem );
 	}
-	OnZOrderChanged();
+	OnTabOrderChanged();
 }
 
-BOOL CZOrderListBox::PreTranslateMessage(MSG* pMsg) 
+BOOL CTabOrderListBox::PreTranslateMessage(MSG* pMsg) 
 {
 	if( pMsg->message == WM_KEYDOWN || pMsg->message == WM_CHAR )
 	{
@@ -324,12 +324,12 @@ BOOL CZOrderListBox::PreTranslateMessage(MSG* pMsg)
 	return CListBox::PreTranslateMessage(pMsg);
 }
 
-void CZOrderListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
+void CTabOrderListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	lpMeasureItemStruct->itemHeight = 20;
 }
 
-void CZOrderListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+void CTabOrderListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 	UINT idxItem = lpDrawItemStruct->itemID;
@@ -365,7 +365,7 @@ void CZOrderListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		pDC->DrawFocusRect( &lpDrawItemStruct->rcItem );
 }
 
-void CZOrderListBox::OnLButtonDown(UINT nFlags, CPoint point) 
+void CTabOrderListBox::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	if( !(nFlags & MK_CONTROL) )
 	{
@@ -414,7 +414,7 @@ void CZOrderListBox::OnLButtonDown(UINT nFlags, CPoint point)
 	//__super::OnLButtonDown( nFlags, point );
 }
 
-void CZOrderListBox::OnLButtonDblClk(UINT nFlags, CPoint point)
+void CTabOrderListBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	if( mbDragging )
 		ReleaseCapture();
@@ -422,7 +422,7 @@ void CZOrderListBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 	AfxGetMainWnd()->SendMessage( WM_COMMAND, ID_PROPERTIES, (LPARAM)m_hWnd );
 }
 
-void CZOrderListBox::OnLButtonUp(UINT nFlags, CPoint point)
+void CTabOrderListBox::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if( mbDragging )
 	{
@@ -458,7 +458,7 @@ void CZOrderListBox::OnLButtonUp(UINT nFlags, CPoint point)
 	__super::OnLButtonUp(nFlags, point);
 }
 
-void CZOrderListBox::OnMouseMove(UINT nFlags, CPoint point)
+void CTabOrderListBox::OnMouseMove(UINT nFlags, CPoint point)
 {
 	__super::OnMouseMove(nFlags, point);
 	if( nFlags & MK_LBUTTON && !mbDragging )
@@ -524,7 +524,7 @@ void CZOrderListBox::OnMouseMove(UINT nFlags, CPoint point)
 	}
 }
 
-void CZOrderListBox::OnCaptureChanged(CWnd *pWnd)
+void CTabOrderListBox::OnCaptureChanged(CWnd *pWnd)
 {
 	mbDragging = false;
 	midxInsertAt = -1;
@@ -533,7 +533,7 @@ void CZOrderListBox::OnCaptureChanged(CWnd *pWnd)
 	__super::OnCaptureChanged(pWnd);
 }
 
-void CZOrderListBox::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CTabOrderListBox::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	if( !mrcInsertCaret.IsRectNull() )
 	{
@@ -544,7 +544,7 @@ void CZOrderListBox::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	__super::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
-void CZOrderListBox::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
+void CTabOrderListBox::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 {
 	CPoint ptClient( point );
 	ScreenToClient( &ptClient );

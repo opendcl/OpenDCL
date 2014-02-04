@@ -9,7 +9,7 @@
 #include "ColorPickerCB.h"
 #include "ColorListBox.h"
 #include "ColorPatch.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

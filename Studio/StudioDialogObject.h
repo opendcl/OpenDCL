@@ -56,10 +56,10 @@ public:
 	virtual CPoint& SnapToGrid( CPoint& pt, bool bLimitToControlArea = false ) const;
 	virtual void OnFontChange( const FontSettings& FS, UINT flags = fontAll ); // change font
 	virtual void OnGridSpacingChange( UINT nGridSpacing ); // change grid spacing
-	virtual void OnUpdateZOrder() { GetControlPane()->ApplyZOrder(); }
+	virtual void OnUpdateTabOrder() { GetControlPane()->ApplyTabOrder(); }
 	virtual void OnActivateDclControl( TDclControlPtr pDclControl ) { SelectControl( pDclControl ); }
 	virtual UINT HitTest( const CPoint& point ) const;
-	virtual TDclControlPtr InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow = true, bool bToTopOfZOrder = true );
+	virtual TDclControlPtr InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow = true, bool bToTopOfTabOrder = true );
 	virtual void OnControlDeleted( TDclControlPtr pDclControl );
 
 // Implementation
@@ -78,7 +78,7 @@ protected:
 	virtual void ShiftSelection( long lHoriz, long lVert );
 
 protected:
-	void ZOrderSelectedControls( bool bToFront );
+	void TabOrderSelectedControls( bool bToFront );
 	CString GetNextControlName( LPCTSTR pszRootName );
 
 // CDialogObject Overrides

@@ -31,7 +31,7 @@ public:
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
-	virtual void ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
-	virtual void ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
+	virtual void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
+	virtual void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
 	virtual bool IsInvisibleControlAllowed(  TDialogControlPtr pDlgControl ) const { return false; }
 };

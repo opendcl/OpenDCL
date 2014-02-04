@@ -5,10 +5,10 @@
 #include "ArgumentsRetrieval.h"
 #include "Resource.h"
 #include "AcadColorTable.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ArxWorkspace.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "ControlPane.h"
 #include "VarUtils.h"
 #include <math.h>
@@ -156,7 +156,7 @@ bool GetFormArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm, /*i
 					HandleArgError( pArgs, odcl::argWrongType );
 				return false; 
 			}
-			TDclControlLockedPtr pDclControl( (CDclControlObject*)pArgs->resval.rlname[0] );
+			TDclControlLockedPtr pDclControl( (CDclControlTemplate*)pArgs->resval.rlname[0] );
 			if( pDclControl )
 				pForm = pDclControl->GetOwnerForm();
 		}
@@ -226,7 +226,7 @@ bool GetControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pCon
 				HandleArgError( pArgs, odcl::argWrongType );
 			return false; 
 		}
-		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
+		pControl = TDclControlLockedPtr( (CDclControlTemplate*)pArgs->resval.rlname[0] );
 		break;
 	case RTSTR:
 		{

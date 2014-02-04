@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "StudioDialogControl.h"
 #include "ControlManager.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 #include "ToolTips.h"
 #include "Workspace.h"
@@ -75,7 +75,7 @@ CStudioDialogControl::CStudioDialogControl( TDclControlPtr pTemplate, CControlPa
 : CDialogControl( pTemplate, pPane, pControlWnd )
 {
 	TraceFmt( _T("> CStudioDialogControl::CStudioDialogControl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						(LPCTSTR)pTemplate->GetKeyPath(), (const CDclControlObject*)pTemplate, pPane,
+						(LPCTSTR)pTemplate->GetKeyPath(), (const CDclControlTemplate*)pTemplate, pPane,
 						(LPCTSTR)CString(pControlWnd->GetRuntimeClass()->m_lpszClassName),
 						pControlWnd->m_hWnd, this );
 }

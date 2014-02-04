@@ -7,7 +7,7 @@
 #include "PictureBox.h"
 #include "PtrTypes.h"
 
-class CDclControlObject;
+class CDclControlTemplate;
 class CPropertyObject;
 
 

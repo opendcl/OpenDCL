@@ -8,7 +8,7 @@
 #include "AcadColorTable.h"
 #include "StudioWorkspace.h"
 #include "StudioDialogControl.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "PropertyObject.h"
 #include "Resource.h"
 

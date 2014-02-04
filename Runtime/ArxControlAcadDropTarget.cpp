@@ -6,7 +6,7 @@
 #include "ArxControlServices.h"
 #include "DragDropService.h"
 #include "DialogControl.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "InvokeMethod.h"
 #include "Workspace.h"
 

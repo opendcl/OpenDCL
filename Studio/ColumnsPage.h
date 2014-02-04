@@ -7,12 +7,12 @@
 #include "Resource.h"
 #include "ListHeader.h"
 #include "PropertyObject.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PtrTypes.h"
 
 class CImageListPage;
 class CDclFormObject;
-class CDclControlObject;
+class CDclControlTemplate;
 
 
 class CColumnData : public CObject

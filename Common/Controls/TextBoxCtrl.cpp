@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "TextBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 
 

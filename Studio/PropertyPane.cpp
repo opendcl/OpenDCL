@@ -5,7 +5,7 @@
 #include "PropertyPane.h"
 #include "Workspace.h"
 #include "Resource.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlName.h"
 #include "StudioDialogControl.h"
 #include "ControlTypes.h"

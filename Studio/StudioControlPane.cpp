@@ -56,7 +56,7 @@ void CStudioControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 		pManager->OnControlPositionChanged();
 }
 
-void CStudioControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
+void CStudioControlPane::TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
 	CControlManager* pManager = pDlgControl->GetControlManager();
 	if( pManager )
@@ -67,10 +67,10 @@ void CStudioControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDefer
 			pManager->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 	}
 	else
-		__super::ZOrderFront( pDlgControl, hDeferred );
+		__super::TabOrderFront( pDlgControl, hDeferred );
 }
 
-void CStudioControlPane::ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
+void CStudioControlPane::TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
 	CControlManager* pManager = pDlgControl->GetControlManager();
 	if( pManager )
@@ -81,5 +81,5 @@ void CStudioControlPane::ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferr
 			pManager->SetWindowPos( &CWnd::wndBottom, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 	}
 	else
-		__super::ZOrderBack( pDlgControl, hDeferred );
+		__super::TabOrderBack( pDlgControl, hDeferred );
 }

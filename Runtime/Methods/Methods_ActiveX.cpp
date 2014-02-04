@@ -8,7 +8,7 @@
 #include "AxMethodDescriptor.h"
 #include "AxPropertyDescriptor.h"
 #include "AxInterfaceDescriptor.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ArgumentsRetrieval.h"
 #include "ArxWorkspace.h"

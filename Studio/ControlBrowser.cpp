@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "ControlBrowser.h"
 #include "Workspace.h"
-#include "DclControlObject.h"
-#include "DclFormObject.h"
+#include "DclControlTemplate.h"
+#include "DclFormTemplate.h"
 #include "UndoManager.h"
 #include "ControlName.h"
 #include "FormName.h"
@@ -308,7 +308,7 @@ public:
 			CAxContainerCtrl* pAxCont = axCont();
 			if( !pAxCont )
 				return false;
-			TDclControlPtr pNewItem = new CDclControlObject( _CtlInvalid, NULL );
+			TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
 			if( !pAxCont->ExtractComponentsFromTLB( pNewItem, mpIDesc->GetGuid() ) )
 				return false;
 			if( pNewItem->GetAxTypeName().IsEmpty() )
@@ -477,7 +477,7 @@ public:
 			CAxContainerCtrl* pAxCont = axCont();
 			if( !pAxCont )
 				return false;
-			TDclControlPtr pNewItem = new CDclControlObject( _CtlInvalid, NULL );
+			TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
 			if( !pAxCont->ExtractComponentsFromTLB( pNewItem, mpMethodDesc->GetReturnGuid() ) )
 				return false;
 			if( pNewItem->GetAxTypeName().IsEmpty() )

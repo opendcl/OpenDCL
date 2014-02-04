@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ButtonCtrl.h"
 #include "AcadColorTable.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "Workspace.h"
 #include "Resource.h"

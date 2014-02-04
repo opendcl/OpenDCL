@@ -5,7 +5,7 @@
 
 #include "Resource.h"
 #include "TabsPane.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 class CDclFormObject;
 class COpenDCLView;

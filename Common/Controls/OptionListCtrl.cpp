@@ -5,7 +5,7 @@
 #include "OptionListCtrl.h"
 #include "Resource.h"
 #include "PropertyIds.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "PropertyObject.h"
 #include "ToolTips.h"

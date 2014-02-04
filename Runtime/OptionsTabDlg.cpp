@@ -5,9 +5,9 @@
 #include "OptionsTabDlg.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include "DialogControl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ArxProject.h"
 
 static const UINT& refWM_RECALCLAYOUT()

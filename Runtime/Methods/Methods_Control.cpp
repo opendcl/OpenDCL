@@ -5,7 +5,7 @@
 #include "ArgumentsRetrieval.h"
 #include "Methods_Control.h"
 #include "PropertyNames.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ControlTypes.h"
 #include "ArxWorkspace.h"
@@ -399,7 +399,7 @@ ADSRESULT Control::SetFocus()
 	return RSRSLT;
 }
 
-ADSRESULT Control::ZOrder()
+ADSRESULT Control::TabOrder()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

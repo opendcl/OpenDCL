@@ -1,13 +1,14 @@
-// DclControlObject.cpp : implementation file
+// DclControlTemplate.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "DclControlObject.h"
-#include "DclFormObject.h"
+#include "DclControlTemplate.h"
+#include "DclFormTemplate.h"
 #include "PropertyObject.h"
-#include "ImageListObject.h"
+#include "DclImageList.h"
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
+#include "ImageListObject.h"
 #include "Filing.h"
 #include "Workspace.h"
 #include "Project.h"
@@ -21,11 +22,11 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CDclControlObject
+// CDclControlTemplate
 
-IMPLEMENT_SERIAL(CDclControlObject, CObject, 1)
+//IMPLEMENT_SERIAL(CDclControlTemplate, CObject, 1)
 
-CDclControlObject::CDclControlObject()
+CDclControlTemplate::CDclControlTemplate()
 : mpOwner( NULL )
 , mType( _CtlForm )
 , mpDlgControl( NULL )
@@ -34,7 +35,7 @@ CDclControlObject::CDclControlObject()
 {
 }
 
-CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
+CDclControlTemplate::CDclControlTemplate(CDclFormObject* pOwner)
 : mpOwner( pOwner )
 , mType( _CtlForm )
 , mpDlgControl( NULL )
@@ -43,7 +44,7 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 {
 }
 
-CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
+CDclControlTemplate::CDclControlTemplate(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
 : mpOwner( pOwner )
 , mType( type )
 , mpDlgControl( NULL )
@@ -54,46 +55,46 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 		AddStringProperty(Prop::Name, PropString, pszName);
 }
 
-CDclControlObject::~CDclControlObject()
+CDclControlTemplate::~CDclControlTemplate()
 {
 }
 
-bool CDclControlObject::IsZOrderAllowed() const
+bool CDclControlTemplate::IsTabOrderAllowed() const
 {
 	if( mType == _CtlForm || mType == CtlFileExplorer )
 		return false;
 	return true;
 }
 
-CUndoManager* CDclControlObject::GetUndoManager() const
+CUndoManager* CDclControlTemplate::GetUndoManager() const
 {
 	if( !mpOwner )
 		return NULL;
 	return mpOwner->GetUndoManager();
 }
 
-CWnd* CDclControlObject::GetWindow() const
+CWnd* CDclControlTemplate::GetWindow() const
 {
 	if( !mpDlgControl )
 		return NULL;
 	return mpDlgControl->GetControlWnd();
 }
 
-TProjectPtr CDclControlObject::GetOwnerProject()
+TProjectPtr CDclControlTemplate::GetOwnerProject()
 {
 	if( !mpOwner )
 		return NULL;
 	return mpOwner->GetProject();
 }
 
-const TProjectPtr CDclControlObject::GetOwnerProject() const
+const TProjectPtr CDclControlTemplate::GetOwnerProject() const
 {
 	if( !mpOwner )
 		return NULL;
 	return mpOwner->GetProject();
 }
 
-TDclFormPtr CDclControlObject::GetOwnerForm()
+TDclFormPtr CDclControlTemplate::GetOwnerForm()
 {
 	if( !mpOwner )
 		return NULL;
@@ -103,7 +104,7 @@ TDclFormPtr CDclControlObject::GetOwnerForm()
 	return pProject->GetRefCountedPtr( mpOwner );
 }
 
-const TDclFormPtr CDclControlObject::GetOwnerForm() const
+const TDclFormPtr CDclControlTemplate::GetOwnerForm() const
 {
 	if( !mpOwner )
 		return NULL;
@@ -113,7 +114,7 @@ const TDclFormPtr CDclControlObject::GetOwnerForm() const
 	return pProject->GetRefCountedPtr( mpOwner );
 }
 
-void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
+void CDclControlTemplate::SetControlInstance( CDialogControl* pDlgControl )
 {
 	//note: an assertion here indicates more than 1 instance of the control; perhaps 
 	//an earlier instance didn't get destroyed when it should have been?
@@ -122,7 +123,7 @@ void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
 }
 
 
-//IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
+//IOStatus CDclControlTemplate::WriteToTextFile(FILE* pFile, const CString &fileName) const
 //{
 //  fprintf(pFile, "\nCArxControlObject");
 //
@@ -210,10 +211,10 @@ void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
 //	return statOK;
 //}
 
-void CDclControlObject::Serialize(CArchive& ar)
+void CDclControlTemplate::Serialize(CArchive& ar)
 {
 	BYTE nThisVersion = GetCurrentSaveVersion();
-	CObject::Serialize( ar );
+	//CObject::Serialize( ar );
 	if (ar.IsStoring())
 	{
 		ar << nThisVersion;
@@ -334,10 +335,20 @@ void CDclControlObject::Serialize(CArchive& ar)
 				ar >> bImageList;
 			if( bImageList )
 			{
-				mpImageList = new CImageListObject();
-				mpImageList->Serialize(ar);		
-				if( mpImageList->IsDeleted() )
-					mpImageList = NULL;
+				if( nThisVersion >= 12 )
+				{
+					mpImageList = new CDclImageList();
+					mpImageList->Serialize(ar);		
+					if( mpImageList->IsNull() )
+						mpImageList = NULL;
+				}
+				else
+				{
+					CImageListObject temp;
+					temp.Serialize(ar);		
+					if( !temp.IsDeleted() )
+						mpImageList = new CDclImageList( &temp.GetImageList() );
+				}
 			}
 		}
 
@@ -827,7 +838,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 	}
 }
 
-size_t CDclControlObject::CountPropertyListItems( Prop::Id nID )
+size_t CDclControlTemplate::CountPropertyListItems( Prop::Id nID )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -835,7 +846,7 @@ size_t CDclControlObject::CountPropertyListItems( Prop::Id nID )
 	return 0;
 }
 
-CString CDclControlObject::GetPropertyListItem( Prop::Id nID, size_t nIndex )
+CString CDclControlTemplate::GetPropertyListItem( Prop::Id nID, size_t nIndex )
 {
 	CString sValue;
 	TPropertyPtr pProp = GetPropertyObject( nID );
@@ -849,14 +860,14 @@ CString CDclControlObject::GetPropertyListItem( Prop::Id nID, size_t nIndex )
 	return sValue;
 }
 
-TPropertyPtr CDclControlObject::GetRefCountedPtr( const CPropertyObject* pProperty ) const
+TPropertyPtr CDclControlTemplate::GetRefCountedPtr( const CPropertyObject* pProperty ) const
 {
 	if( !pProperty )
 		return NULL;
 	return GetPropertyObject( pProperty->GetID() );
 }
 
-const TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID ) const
+const TPropertyPtr CDclControlTemplate::GetPropertyObject( Prop::Id nID ) const
 {
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -866,7 +877,7 @@ const TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID ) const
 	return NULL;
 }
 
-TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID )
+TPropertyPtr CDclControlTemplate::GetPropertyObject( Prop::Id nID )
 {
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -876,7 +887,7 @@ TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID )
 	return NULL;
 }
 
-TPropertyPtr CDclControlObject::FindPropertyObject( LPCTSTR pszApiName ) const
+TPropertyPtr CDclControlTemplate::FindPropertyObject( LPCTSTR pszApiName ) const
 {
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -886,14 +897,14 @@ TPropertyPtr CDclControlObject::FindPropertyObject( LPCTSTR pszApiName ) const
 	return NULL;
 }
 
-CRect CDclControlObject::GetWndRect() const
+CRect CDclControlTemplate::GetWndRect() const
 {
 	CPoint ptThis( GetLongProperty( Prop::Left ), GetLongProperty( Prop::Top ) );
 	CSize sizeThis( GetLongProperty( Prop::Width ), GetLongProperty( Prop::Height ) );
 	return CRect( ptThis, sizeThis );
 }
 
-void CDclControlObject::SetFontProperties( const FontSettings& FS, UINT flags /*= fontAll*/ )
+void CDclControlTemplate::SetFontProperties( const FontSettings& FS, UINT flags /*= fontAll*/ )
 {
 	if( flags & fontName )
 		SetStringProperty( Prop::FontName, FS.name() );
@@ -913,7 +924,7 @@ void CDclControlObject::SetFontProperties( const FontSettings& FS, UINT flags /*
 		SetBooleanProperty( Prop::FontUnderline, FS.isUnderlined() );
 }
 
-void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )	
+void CDclControlTemplate::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )	
 {	
 	CString sParentName = pszParentName;
 	if( sParentName.IsEmpty() )
@@ -922,12 +933,12 @@ void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ 
 	AddStringProperty( Prop::VarName, PropString, sControlName, true );
 }
 
-void CDclControlObject::ClearGlobalVariableName()	
+void CDclControlTemplate::ClearGlobalVariableName()	
 {	
 	SetStringProperty( Prop::VarName, NULL );
 }
 
-void CDclControlObject::ResetEventNames()	
+void CDclControlTemplate::ResetEventNames()	
 {	
 	for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -949,7 +960,7 @@ void CDclControlObject::ResetEventNames()
 	}
 }
 
-bool CDclControlObject::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )	
+bool CDclControlTemplate::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )	
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -957,7 +968,7 @@ bool CDclControlObject::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )
 	return pProp->SetStringValue( pszValue );
 }
 
-TPropertyPtr CDclControlObject::AddStringProperty( Prop::Id nID,
+TPropertyPtr CDclControlTemplate::AddStringProperty( Prop::Id nID,
 																									 PropertyType type /*= PropString*/,
 																									 LPCTSTR pszValue /*= NULL*/,
 																									 bool bResetExisting /*= false*/ )
@@ -977,7 +988,7 @@ TPropertyPtr CDclControlObject::AddStringProperty( Prop::Id nID,
 	return pProp;
 }
 
-bool CDclControlObject::SetBooleanProperty( Prop::Id nID, bool bValue /*= true*/ )	
+bool CDclControlTemplate::SetBooleanProperty( Prop::Id nID, bool bValue /*= true*/ )	
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -985,7 +996,7 @@ bool CDclControlObject::SetBooleanProperty( Prop::Id nID, bool bValue /*= true*/
 	return pProp->SetBooleanValue( bValue );
 }
 
-TPropertyPtr CDclControlObject::AddBooleanProperty( Prop::Id nID,
+TPropertyPtr CDclControlTemplate::AddBooleanProperty( Prop::Id nID,
 																										PropertyType type /*= PropBool*/,
 																										bool bValue /*= true*/,
 																										bool bResetExisting /*= false*/ )
@@ -1005,7 +1016,7 @@ TPropertyPtr CDclControlObject::AddBooleanProperty( Prop::Id nID,
 	return pProp;
 }
 
-bool CDclControlObject::SetLongProperty( Prop::Id nID, long lValue /*= -1*/ )	
+bool CDclControlTemplate::SetLongProperty( Prop::Id nID, long lValue /*= -1*/ )	
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -1013,7 +1024,7 @@ bool CDclControlObject::SetLongProperty( Prop::Id nID, long lValue /*= -1*/ )
 	return pProp->SetLongValue( lValue );
 }
 
-TPropertyPtr CDclControlObject::AddLongProperty( Prop::Id nID,
+TPropertyPtr CDclControlTemplate::AddLongProperty( Prop::Id nID,
 																								 PropertyType type /*= PropLong*/,
 																								 long lValue /*= -1*/,
 																								 bool bResetExisting /*= false*/ )
@@ -1033,7 +1044,7 @@ TPropertyPtr CDclControlObject::AddLongProperty( Prop::Id nID,
 	return pProp;
 }
 
-bool CDclControlObject::IsMicrosoftActiveXCtrl() const
+bool CDclControlTemplate::IsMicrosoftActiveXCtrl() const
 {	
 	CString sName;
 	try
@@ -1050,7 +1061,7 @@ bool CDclControlObject::IsMicrosoftActiveXCtrl() const
 	return (sName.Left( 9 ) == _T("Microsoft"));
 }
 
-CString CDclControlObject::GetActiveXTypeName() const
+CString CDclControlTemplate::GetActiveXTypeName() const
 {
 	CString sName;
 	
@@ -1075,11 +1086,11 @@ CString CDclControlObject::GetActiveXTypeName() const
 	sName = sName.Right( sName.GetLength() - sName.SpanIncluding( _T("0123456789.") ).GetLength() ).SpanExcluding( _T(".") );
 	sName.MakeReverse();
 	
-	const_cast< CDclControlObject* >(this)->msAxTypeName = sName; //cache it
+	const_cast< CDclControlTemplate* >(this)->msAxTypeName = sName; //cache it
 	return sName;
 }
 
-CString CDclControlObject::GetStringProperty(Prop::Id nID) const
+CString CDclControlTemplate::GetStringProperty(Prop::Id nID) const
 {
 	CString sValue;
 	TPropertyPtr pProp = GetPropertyObject( nID );
@@ -1088,7 +1099,7 @@ CString CDclControlObject::GetStringProperty(Prop::Id nID) const
 	return sValue;
 }
 
-long CDclControlObject::GetLongProperty( Prop::Id nID ) const
+long CDclControlTemplate::GetLongProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -1105,14 +1116,14 @@ long CDclControlObject::GetLongProperty( Prop::Id nID ) const
 	return -1;
 }
 
-void CDclControlObject::SetColorProperty( Prop::Id nID, COLORREF color )
+void CDclControlTemplate::SetColorProperty( Prop::Id nID, COLORREF color )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
 		pProp->SetOLEColorValue(color);
 }
 
-COLORREF CDclControlObject::GetColorProperty( Prop::Id nID ) const
+COLORREF CDclControlTemplate::GetColorProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -1120,7 +1131,7 @@ COLORREF CDclControlObject::GetColorProperty( Prop::Id nID ) const
 	return RGB(0,0,0);
 }
 
-double CDclControlObject::GetDoubleProperty( Prop::Id nID ) const
+double CDclControlTemplate::GetDoubleProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -1128,7 +1139,7 @@ double CDclControlObject::GetDoubleProperty( Prop::Id nID ) const
 	return 0.0;
 }
 	
-bool CDclControlObject::GetBooleanProperty( Prop::Id nID ) const
+bool CDclControlTemplate::GetBooleanProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -1145,7 +1156,7 @@ bool CDclControlObject::GetBooleanProperty( Prop::Id nID ) const
 	return false;
 }
 
-TPropertyPtr CDclControlObject::GetMethods() const
+TPropertyPtr CDclControlTemplate::GetMethods() const
 { 
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -1155,14 +1166,14 @@ TPropertyPtr CDclControlObject::GetMethods() const
 	return NULL;
 }
 
-TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( Prop::Id id, bool bHidden )
+TPropertyList::iterator CDclControlTemplate::FindPropertyInsertPos( Prop::Id id, bool bHidden )
 {
 	if( id == Prop::ControlBrowser )
 		return mProperties.begin();		
 	return FindPropertyInsertPos( GetPropertyApiName( id ), bHidden );
 }
 
-TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden )
+TPropertyList::iterator CDclControlTemplate::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden )
 {
 	if( !pszName || !*pszName )
 		return mProperties.begin();
@@ -1183,7 +1194,7 @@ TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( LPCTSTR pszNam
 	return ++iter;
 }
 
-bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
+bool CDclControlTemplate::InsertNamedProperty( TPropertyPtr pProp )
 {
 	assert( pProp != NULL );
 	if( !pProp )
@@ -1206,14 +1217,14 @@ bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
 	return true;
 }
 
-void CDclControlObject::ResetProperty( Prop::Id nId )
+void CDclControlTemplate::ResetProperty( Prop::Id nId )
 {
 	TPropertyPtr pProp = GetPropertyObject( nId );
 	if( pProp )
 		pProp->clear();
 }
 
-void CDclControlObject::RemoveProperty( Prop::Id nId )
+void CDclControlTemplate::RemoveProperty( Prop::Id nId )
 {
 	for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -1225,10 +1236,10 @@ void CDclControlObject::RemoveProperty( Prop::Id nId )
 	}
 }
 
-IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
+IOStatus CDclControlTemplate::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
 	CStringA sClassname = readLine(sFile);
-	if ( sClassname != "CDclControlObject" && sClassname != "CArxControlObject") return statInvalidFormat;
+	if ( sClassname != "CDclControlTemplate" && sClassname != "CArxControlObject") return statInvalidFormat;
 	int iVersion;
 	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
@@ -1241,7 +1252,7 @@ IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString
 	return statInvalidFormat;
 }
 
-IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CString &fileName)
+IOStatus CDclControlTemplate::ReadFromTextFile6(std::ifstream &sFile, const CString &fileName)
 {
 	CStringA sTypeName;
 	if (!readString(sFile, sTypeName)) return statInvalidFormat;
@@ -1261,9 +1272,10 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 	bool bImageList;
 	if (!readBool(sFile, bImageList)) return statInvalidFormat;
 	if (bImageList) {
-		mpImageList = new CImageListObject();
-		IOStatus stat = mpImageList->ReadFromTextFile(sFile, fileName);
+		CImageListObject discard;
+		IOStatus stat = discard.ReadFromTextFile(sFile, fileName);
 		if (stat != statOK) return stat;
+		mpImageList = new CDclImageList(&discard.GetImageList());
 	}
 
 	if (mType == CtlActiveX)
@@ -1346,12 +1358,12 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 	return statOK;
 }
 
-CString CDclControlObject::GetKeyName() const
+CString CDclControlTemplate::GetKeyName() const
 {
 	return GetStringProperty( Prop::Name );
 }
 
-CString CDclControlObject::GetKeyPath() const
+CString CDclControlTemplate::GetKeyPath() const
 {
 	CString sPath;
 	if( mpOwner )
@@ -1365,7 +1377,7 @@ CString CDclControlObject::GetKeyPath() const
 	return sPath;
 }
 
-CString CDclControlObject::GetVarName() const
+CString CDclControlTemplate::GetVarName() const
 {
 	CString sName = GetStringProperty( Prop::VarName );
 	if( sName.IsEmpty() )
@@ -1375,7 +1387,7 @@ CString CDclControlObject::GetVarName() const
 
 
 #ifdef _DIAGNOSTIC
-LPCTSTR CDclControlObject::toString() const
+LPCTSTR CDclControlTemplate::toString() const
 {
 	CString sInstance;
 	if( mpDlgControl )
@@ -1385,7 +1397,7 @@ LPCTSTR CDclControlObject::toString() const
 	return buf;
 }
 
-void CDclControlObject::dump( bool bDeep /*= true*/ ) const
+void CDclControlTemplate::dump( bool bDeep /*= true*/ ) const
 {
 	CString sOut;
 	sOut.Format( _T("%s\r\n"), toString() );
@@ -1404,7 +1416,7 @@ void CDclControlObject::dump( bool bDeep /*= true*/ ) const
 
 
 #ifdef _DEBUG
-void CDclControlObject::dumpDebugger( bool bDeep /*= true*/ ) const
+void CDclControlTemplate::dumpDebugger( bool bDeep /*= true*/ ) const
 {
 	TraceFmt( _T("%s\r\n"), toString() );
 	if( !bDeep )

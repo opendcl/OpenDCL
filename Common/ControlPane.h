@@ -5,7 +5,7 @@
 
 #include "DialogControl.h"
 #include "Project.h"
-#include "DclFormObject.h"
+#include "DclFormTemplate.h"
 #include <list>
 
 class CDialogObject;
@@ -63,8 +63,8 @@ public:
 
 protected:
 	void InvalidateControls();
-	virtual void ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
-	virtual void ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
+	virtual void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
+	virtual void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
 	virtual bool IsInvisibleControlAllowed( TDialogControlPtr pDlgControl ) const { return true; }
 
 // Implementation
@@ -75,7 +75,7 @@ public:
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = _CtlInvalid ) const;
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const {}
 	virtual void RecalcLayout(); //recalculate control positions
-	virtual void ApplyZOrder(); //reorder all control windows to reflect current Z order
+	virtual void ApplyTabOrder(); //reorder all control windows to reflect current Z order
 	virtual void ApplyPosition( TDialogControlPtr pDlgControl ); //move control window to new position
 	virtual void ApplyVisibility( TDialogControlPtr pDlgControl ); //show or hide control
 

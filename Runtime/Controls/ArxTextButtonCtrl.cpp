@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxTextButtonCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
 

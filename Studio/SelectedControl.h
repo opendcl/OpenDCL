@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 
 class CDialogControl;
 

@@ -4,9 +4,9 @@
 #include "stdafx.h"
 #include "DialogObject.h"
 #include "Workspace.h"
-#include "DclFormObject.h"
-#include "DclControlObject.h"
-#include "PictureObject.h"
+#include "DclFormTemplate.h"
+#include "DclControlTemplate.h"
+#include "DclPicture.h"
 #include "AcadColorService.h"
 #include "PropertyIds.h"
 

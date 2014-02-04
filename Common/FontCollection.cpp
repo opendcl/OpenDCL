@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "FontCollection.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 
 

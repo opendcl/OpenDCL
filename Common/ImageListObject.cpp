@@ -47,18 +47,18 @@ CImageListObject& CImageListObject::operator =( const CImageListObject& Src )
 
 IOStatus CImageListObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
-  CString sObject;
-  if (readLine(sFile) != "CImageListObject") return statInvalidFormat;
-  int iVersion;
-  if (!readInt(sFile, iVersion)) return statInvalidFormat;
+	CString sObject;
+	if (readLine(sFile) != "CImageListObject") return statInvalidFormat;
+	int iVersion;
+	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  switch (iVersion) {
-    case 1 : 
-      return ReadFromTextFile1(sFile, fileName);
-      break;
-  }
+	switch (iVersion) {
+		case 1 : 
+			return ReadFromTextFile1(sFile, fileName);
+			break;
+	}
 
-  return statInvalidFormat;
+	return statInvalidFormat;
 }
 
 void CImageListObject::Serialize(CArchive& ar)
@@ -115,22 +115,22 @@ void CImageListObject::Serialize(CArchive& ar)
 
 IOStatus CImageListObject::ReadFromTextFile1(std::ifstream &sFile, const CString &fileName)
 {
-  if (!readLong(sFile, mszImage.cx)) return statInvalidFormat;		
-  if (!readLong(sFile, mszImage.cy)) return statInvalidFormat;		
+	if (!readLong(sFile, mszImage.cx)) return statInvalidFormat;		
+	if (!readLong(sFile, mszImage.cy)) return statInvalidFormat;		
 
-  // set the delete flag as false
-  mbDeleted = false;
+	// set the delete flag as false
+	mbDeleted = false;
 
-  BOOL bNull;
-  if (!readBOOL(sFile, bNull)) return statInvalidFormat;
-  // if the flag indicates that the image list in not null, then read the image list
-  if (bNull == FALSE)
+	BOOL bNull;
+	if (!readBOOL(sFile, bNull)) return statInvalidFormat;
+	// if the flag indicates that the image list in not null, then read the image list
+	if (bNull == FALSE)
 	{
-    if (!readImageList(sFile, fileName, mImageList)) return statInvalidFormat;
+		if (!readImageList(sFile, fileName, mImageList)) return statInvalidFormat;
 	}
-  else
-    mImageList.DeleteImageList();
-  return statOK;
+	else
+		mImageList.DeleteImageList();
+	return statOK;
 }
 
 //IOStatus CImageListObject::WriteToTextFile(FILE* pFile, const CString &fileName) const

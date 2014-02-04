@@ -4,10 +4,10 @@
 #include "stdafx.h"
 #include "PictureFolder.h"
 #include "Project.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "PreviewFileDlg.h"
-#include "DclFormObject.h"
-#include "DclControlObject.h"
+#include "DclFormTemplate.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 
 
@@ -170,7 +170,7 @@ void CPictureFolder::MultiFileDialog()
 		{
 			// load the picture into the picture list collection
 			int nID = nLargestId++;
-			TPicturePtr pPict = new CPictureObject( nID, BrowseWnd.GetNextPathName( pos ) );
+			TPicturePtr pPict = new CDclPicture( nID, BrowseWnd.GetNextPathName( pos ) );
 			if( !pPict->IsValid() )
 				continue;
 			for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();
@@ -206,7 +206,7 @@ void CPictureFolder::UpdateSingleFileDialog()
 
 	if( BrowseWnd.DoModal() == IDOK )
 	{
-		TPicturePtr pPict = new CPictureObject( nCurSelId, BrowseWnd.GetPathName() );
+		TPicturePtr pPict = new CDclPicture( nCurSelId, BrowseWnd.GetPathName() );
 		if( !pPict->IsValid() )
 			return;
 		for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();

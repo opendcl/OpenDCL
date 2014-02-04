@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "DialogControl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "AcadColorService.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"
@@ -165,10 +165,10 @@ DROPEFFECT CDialogControl::BeginDragDrop( const CPoint& point )
 DROPEFFECT CDialogControl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
 {
 	UINT CF_DclControl = CDragDropService::GetDclControlClipboardFormat();
-	HGLOBAL hDclControlPtr = GlobalAlloc( GHND, sizeof(CDclControlObject*) );
+	HGLOBAL hDclControlPtr = GlobalAlloc( GHND, sizeof(CDclControlTemplate*) );
 	if( !hDclControlPtr )
 		return DROPEFFECT_NONE;
-	*(CDclControlObject**)GlobalLock( hDclControlPtr ) = &(*mpTemplate);
+	*(CDclControlTemplate**)GlobalLock( hDclControlPtr ) = &(*mpTemplate);
 	GlobalUnlock( hDclControlPtr );
 	SourceData.CacheGlobalData( CF_DclControl, hDclControlPtr );
 	DWORD dwDropEffect = DROPEFFECT_COPY;

@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "ArxProject.h"
 #include "ArxWorkspace.h"
-#include "DclFormObject.h"
-#include "DclControlObject.h"
+#include "DclFormTemplate.h"
+#include "DclControlTemplate.h"
 #include "PropertyIds.h"
 #include "InvokeMethod.h"
 
@@ -55,7 +55,7 @@ bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 			if( bResetToNil )
 				theArxWorkspace.ResetLispSymbol( sVarName );
 			else
-				theArxWorkspace.SetLispSymbol( sVarName, (const CDclControlObject*)(*iter)->GetControlProperties(), odcl::ptrDclControl );
+				theArxWorkspace.SetLispSymbol( sVarName, (const CDclControlTemplate*)(*iter)->GetControlProperties(), odcl::ptrDclControl );
 		}
 	}
 	return true;

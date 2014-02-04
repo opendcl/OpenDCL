@@ -313,21 +313,21 @@ int CStudioFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndPropertyPane.ShowWindow(SW_SHOW);
 
 	// create Z order sizing bar and pane
-	if (!m_wndZOrderSizingBar.Create(_T("Instant Bar"), this, 131 ))
+	if (!m_wndTabOrderSizingBar.Create(_T("Instant Bar"), this, 131 ))
 	{
-		TRACE0("Failed to create Z order instant bar\n");
+		TRACE0("Failed to create tab order instant bar\n");
 		return -1;		// fail to create
 	}
-	m_wndZOrderSizingBar.SetWindowText(theWorkspace.LoadResourceString(IDS_ZTABORDER));
-	m_wndZOrderSizingBar.SetSCBStyle(m_wndZOrderSizingBar.GetSCBStyle() | SCBS_SIZECHILD);
-	m_wndZOrderSizingBar.SetBarStyle(m_wndZOrderSizingBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndZOrderSizingBar.EnableDocking(CBRS_ALIGN_LEFT|CBRS_ALIGN_RIGHT);
-	if (!m_wndZOrderPane.Create(IDD_OPENDCL_PANE, &m_wndZOrderSizingBar))
+	m_wndTabOrderSizingBar.SetWindowText(theWorkspace.LoadResourceString(IDS_TABORDER));
+	m_wndTabOrderSizingBar.SetSCBStyle(m_wndTabOrderSizingBar.GetSCBStyle() | SCBS_SIZECHILD);
+	m_wndTabOrderSizingBar.SetBarStyle(m_wndTabOrderSizingBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+	m_wndTabOrderSizingBar.EnableDocking(CBRS_ALIGN_LEFT|CBRS_ALIGN_RIGHT);
+	if (!m_wndTabOrderPane.Create(IDD_OPENDCL_PANE, &m_wndTabOrderSizingBar))
 	{
-		TRACE0("Failed to create Z order pane\n");
+		TRACE0("Failed to create tab order pane\n");
 		return -1;		// fail to create
 	}
-	m_wndZOrderPane.ShowWindow(SW_SHOW);
+	m_wndTabOrderPane.ShowWindow(SW_SHOW);
 
 	DockControlBar(&m_wndToolBoxSizingBar, AFX_IDW_DOCKBAR_LEFT);
 	DockControlBar(&m_wndPropertySizingBar, AFX_IDW_DOCKBAR_RIGHT);
@@ -340,7 +340,7 @@ int CStudioFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndPropertySizingBar.GetWindowRect(rBar);
 	rBar.OffsetRect(1, 1);
-	DockControlBar(&m_wndZOrderSizingBar, AFX_IDW_DOCKBAR_RIGHT, rBar);
+	DockControlBar(&m_wndTabOrderSizingBar, AFX_IDW_DOCKBAR_RIGHT, rBar);
 	RecalcLayout();
 
 	static LPCTSTR pszBarState = _T("BarState");
@@ -517,12 +517,12 @@ void CStudioFrame::OnUpdateViewToolbox(CCmdUI* pCmdUI)
 
 void CStudioFrame::OnViewZorder() 
 {
-	ShowControlBar( &m_wndZOrderSizingBar, !m_wndZOrderSizingBar.IsVisible(), FALSE );
+	ShowControlBar( &m_wndTabOrderSizingBar, !m_wndTabOrderSizingBar.IsVisible(), FALSE );
 }
 
 void CStudioFrame::OnUpdateViewZorder(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetCheck( m_wndZOrderSizingBar.IsWindowVisible() );
+	pCmdUI->SetCheck( m_wndTabOrderSizingBar.IsWindowVisible() );
 }
 
 void CStudioFrame::OnUndoButtonDropdown() 

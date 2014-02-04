@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ListBoxCtrl.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"

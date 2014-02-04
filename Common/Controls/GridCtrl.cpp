@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "GridCtrl.h"
 #include "ControlPane.h"
-#include "DclControlObject.h"
+#include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "FolderComboBox.h"

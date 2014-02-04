@@ -248,12 +248,6 @@
     <ClInclude Include="UndoActions.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="ZOrderListBox.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ZOrderPane.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\AcadColorService.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -293,13 +287,13 @@
     <ClInclude Include="..\Common\ControlTypes.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\DclControlObject.h">
+    <ClInclude Include="..\Common\DclControlTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\DclControlProp.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\DclFormObject.h">
+    <ClInclude Include="..\Common\DclFormTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Diagnostic.h">
@@ -344,7 +338,7 @@
     <ClInclude Include="..\Common\PictureBox.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\PictureObject.h">
+    <ClInclude Include="..\Common\DclPicture.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\PPDrawManager.h">
@@ -623,6 +617,15 @@
     <ClInclude Include="..\Common\UxThemeVI.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="TabOrderPane.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabOrderListBox.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\DclImageList.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonStyles.cpp">
@@ -835,12 +838,6 @@
     <ClCompile Include="UndoActions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ZOrderListBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ZOrderPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\AcadColorService.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -874,13 +871,13 @@
     <ClCompile Include="..\Common\ControlPane.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\DclControlObject.cpp">
+    <ClCompile Include="..\Common\DclControlTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\DclControlProp.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\DclFormObject.cpp">
+    <ClCompile Include="..\Common\DclFormTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\DialogControl.cpp">
@@ -916,7 +913,7 @@
     <ClCompile Include="..\Common\PictureBox.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\PictureObject.cpp">
+    <ClCompile Include="..\Common\DclPicture.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\PPDrawManager.cpp">
@@ -1091,6 +1088,15 @@
       <Filter>Common\Controls</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\ThemeAPI.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="TabOrderListBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabOrderPane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\DclImageList.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
