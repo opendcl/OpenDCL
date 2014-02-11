@@ -85,17 +85,32 @@
       Controls (and forms) are referenced in AutoLISP code by AutoLISP symbols that contain
       a <a href="../Reference/DataType/Control.htm">handle for the control</a>. These
       symbols are automatically created in the AutoLISP namespace of every AutoCAD drawing
-      when an instance of a form is active. The default AutoLISP symbol name for this
+      while an instance of a form is active. The default AutoLISP symbol name for this
       handle is constructed by concatenating the project key, form name, and control name,
-      all separated by a forward slash character, as follows:</p>
+      all separated by a forward slash character, as in this example:</p>
     <blockquote>
-      <pre>ProjectKey/FormName/ControlName</pre>
+      <pre>((<a href="../Reference/Property/Name.htm">dcl-Control-GetName</a> ProjectKey/FormName/ControlName)</pre>
     </blockquote>
     <p>
       This default symbol name can be overridden by setting the control's <a href="../Reference/Property/VarName.htm">
-        VarName property</a>
-    , but using the default naming convention is recommended to minimize the risk of
-    symbol name collisions between applications.</div>
+        VarName</a> property, but using the default naming convention is recommended to
+      minimize the risk of symbol name collisions between applications.</p>
+    <p>
+      Controls and forms can also be referenced by specifying their project hierarchy
+      path in the form of strings, as in this example:</p>
+    <blockquote>
+      <pre>(<a href="../Reference/Property/Name.htm">dcl-Control-GetName</a> &quot;ProjectKey&quot; &quot;FormName&quot; &quot;ControlName&quot;)</pre>
+    </blockquote>
+    <p>
+      The lisp symbol method only works while the control&#39;s form is active, however
+      the string method can be used to refer to any loaded control even when its form
+      is not active. The string method is also useful when performing the same operation
+      on a list of controls, as in this example:</p>
+    <blockquote>
+      <pre>(foreach control &#39;(&quot;Control1&quot; &quot;Control2&quot; &quot;Control3&quot;) (
+<a href="../Reference/Property/Enabled.htm">dcl-Control-SetEnabled</a> &quot;ProjectKey&quot; &quot;FormName&quot; control NIL))</pre>
+    </blockquote>
+  </div>
   <hr />
   <div id="footer">
     <p>

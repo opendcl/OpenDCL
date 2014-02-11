@@ -25,6 +25,9 @@
     ;;                   renamed some functions for consistency with other
     ;;                   OpenDCl Studio samples. (OW)
     ;;
+    ;;  1.4 2014/02/10 - Simplified code by removing some error condition
+    ;;                   checks and added OpenDCL sample boilerplate. (OW)
+    ;;
     ;;--------------------------------------------------------------------------
     ;;
     ;;  Dependencies:
@@ -55,49 +58,8 @@
         ;;  Locals.
 
         c:DistSample/MainForm/OkButton#OnClicked
-        _Load_ODCL_Runtime
         _Load_ODCL_Embedded_Project
-        _Load_ODCL_File_Project
         _Main
-
-    ) ;;------------------------------------------------------------------------
-
-    (defun _Load_ODCL_Runtime ( / )
-
-        (or
-
-            ;;  Already loaded, vacate now (return t to caller).
-
-            dcl-getversionex
-
-            ;;  If demand loading is enabled, use the OPENDCL command
-            ;;  to induce the loading of the OpenDCL Runtime. If demand
-            ;;  loading is disabled, assume it was disabled intentionally
-            ;;  and honor the intent by not loading anything.
-
-            (and
-
-                ;;  Let's ensure demand loading is enabled, lest the
-                ;;  invocation of the OpenDCL command be pointless.
-
-                (= 2 (boole 1 (getvar "DEMANDLOAD") 2))
-
-                ;;  We're good, invoke the OpenDCL command ...
-
-                (vl-catch-all-apply 'vl-cmdf '("OPENDCL"))
-
-                ;;  Is core OpenDCL functionality now defined?
-
-                dcl-getversionex
-            )
-
-            ;;  If we got here the opendcl runtime was not loaded.
-            ;;  Inform the user of the sad news.
-
-            (princ "Error: OpenDCL Runtime could not be loaded.\n")
-        )
-
-        dcl-getversion
 
     ) ;;------------------------------------------------------------------------
 
@@ -107,169 +69,119 @@
         ;;  the text resources in the current vlx file. If successful
         ;;  attempt to import via odcl_project_import, returning it's
         ;;  result to the caller, otherwise nil.
-
         (cond
-
-            ;;  At this point the OpenDCL Runtime should already
-            ;;  have been loaded; if not, then either the
-            ;;  initialization failed (and this function is being
-            ;;  inappropriately called) or older OpenDCL runtimes
-            ;;  have been loaded. Either way alert and bail.
-
-            (	(null dcl-project-import)
-
-                (princ "OpenDCL version 5.0 or newer is required.\n")
-
-                nil
-            )
-
             ;;  Trap unsuccesful retrieval of project from the vlx
             ;;  text resources; alert and bail.
-
-            (	(or
+            (	  (or
                     (null (setq bytes (vl-get-resource projname)))
                     (not (eq 'str (setq rtype (type bytes))))
                     (eq "" bytes)
                 )
 
-                (princ
-                    (strcat
-                        "Failed to load <"
-                        projname
-                        "> ODCL resource from vlx file.\n"
-                    )
-                )
-
+                (princ (strcat "Failed to load <" projname "> ODCL resource from vlx file.\n"))
                 nil
-
             )
 
             ;;  Call dcl-project-import and return the result to the
             ;;  caller if successful ...
-
             (	(dcl-project-import bytes password alias)  )
         )
-
-    ) ;;------------------------------------------------------------------------
-
-    (defun _Load_ODCL_File_Project ( projname reload password alias / samples )
-
-        ;;  Attempt to load an ODCL project file by trying to load
-        ;;  it from the support path; if that fails, try to load it
-        ;;  from the OpenDCL Studio samples folder.
-
-        (cond
-
-            ;;  At this point the OpenDCL Runtime should already
-            ;;  have been loaded; if not, then either the
-            ;;  initialization failed (and this function is being
-            ;;  inappropriately called) or older OpenDCL runtimes
-            ;;  have been loaded. Either way alert and bail.
-
-            (	(null dcl-project-load)
-
-                (princ "OpenDCL version 5 or later is required.\n")
-
-                nil
-            )
-
-            ;;  Call dcl_project_load and return the result to the
-            ;;  caller if successful ...
-
-            (	(dcl-project-load projname reload password alias)  )
-
-            ;;  Since this file is installed along with the other
-            ;;  OpenDCL samples, and since the samples folder is not
-            ;;  in the support path, try loading from there...
-
-            ;;  Unless you're writing an OpenDCL sample,
-            ;;  don't leave this part in your own code!
-
-            (	(setq samples
-                    (cond
-                        (	(vl-registry-read
-                                "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ;_ 32-bit location
-                        (	(vl-registry-read
-                                "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ;_ 32-bit location
-                        (	(vl-registry-read
-                                "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ;_ 64-bit location
-                    )
-                )
-
-                (dcl-project-load (strcat samples projname) reload password alias)
-            )
-        )
-
     ) ;;------------------------------------------------------------------------
 
     (defun c:DistSample/MainForm/OkButton#OnClicked ( )
-
-        (dcl-MessageBox "Press [Ok] to terminate ..." "About to exit ...")
-
         (dcl-form-close DistSample/MainForm)
-
     ) ;;------------------------------------------------------------------------
 
     (defun _Main ( / odclProjName )
-
         ;;  Wrap up and call functionality defined in this file.
 
+        ;; Ensure OpenDCL Runtime is (quietly) loaded
+        (setq cmdecho (getvar "CMDECHO"))
+        (setvar "CMDECHO" 0)
+        (command "_OPENDCL")
+        (setvar "CMDECHO" cmdecho)
+
         (setq odclProjName "DistSample.odcl") ;; don't include .lsp extension
-
         (if
+            ;;  Attempt to load the ODCL project.
+            (or
+                ;;  ODCL project retrieved from vlx resources
+                (_Load_ODCL_Embedded_Project odclProjName nil nil)
 
-            (and
-
-                (_Load_ODCL_Runtime)
-
-                ;;  Attempt to load the ODCL project.
-
-                (or
-                    ;;  ODCL project retrieved from vlx resources
-
-                    (_Load_ODCL_Embedded_Project odclProjName nil nil)
-
-                    ;;  If it couldn't be loaded from resources, try
-                    ;;  loading from a separate file (this could be
-                    ;;  useful during development, but you may wish
-                    ;;  to remove this option before shipping).
-
-                    (_Load_ODCL_File_Project odclProjName t)
-                )
+                ;;  If it couldn't be loaded from resources, try
+                ;;  loading from a separate file (this could be
+                ;;  useful during development, but you may wish
+                ;;  to remove this option before shipping).
+                (dcl-Project-Load (*ODCL:Samples-FindFile odclProjName))
             )
 
-            (if
-                (null
-                    (dcl-Form-Show DistSample/MainForm)
-                )
-
-                (princ "Failed to show form: DistSample/MainForm\n")
-            )
+            (dcl-Form-Show DistSample/MainForm)
         )
 
         (princ)
-
     ) ;;------------------------------------------------------------------------
 
-    ;;==========================================================================
-    ;;
-    ;;  Invoke _Main ...
-    ;;
-    ;;==========================================================================
-
-    (_Main)
-
+    (_Main) ;; Invoke _Main ...
 )
 
-(princ "OpenDCL DistSample1 (ver 1.3) loaded. Enter \"DistSample1\" to execute.\n")
+(princ)
 
+;|«OpenDCL Samples Epilog»|;
+
+;;;######################################################################
+;;;######################################################################
+;;; The following section of code is designed to locate OpenDCL Studio
+;;; sample files in the samples folder by prefixing the filename with
+;;; the path prefix that was saved in the registry by the installer.
+;;; The global *ODCL:Prefix and function *ODCL:Samples-FindFile
+;;; are used throughout the samples.
+;;;
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ already defined
+        (	(vl-registry-read
+             "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 32-bit location
+        (	(vl-registry-read
+             "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 32-bit location
+        (	(vl-registry-read
+             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+             "SamplesFolder"
+          )
+        ) ;_ 64-bit location
+      )
+    )
+    (cond
+      ((findfile file)) ; check the support path first
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
+)
+
+;; If AllSamples is active, run the main function immediately; otherwise
+;; display a banner. The extra gymnastics allow the sample name to be
+;; specified in only one place, thus making it easier to reuse this code.
+( (lambda (demoname)
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL sample loaded"))
+        (princ (strcat " (Enter " (strcase demoname) " command to run)\n"))
+      )
+    )
+  )
+  "DistSample1"
+)
 (princ)

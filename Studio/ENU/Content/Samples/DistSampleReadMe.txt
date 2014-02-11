@@ -46,7 +46,7 @@ Contents
                             wrapped in lisp (note, OpenDCL studio does this
                             for you when you save it to .lsp format).
 
-    DistSample1.lsp       - LISP Source, uses DistSample.odce if running as
+    DistSample1.lsp       - LISP Source, uses DistSample.odcl if running as
                             lisp. If running as vlx attempts to load
                             DistSample.odcl.lsp as a text resource that has 
                             been compiled to the vlx file.
@@ -75,15 +75,15 @@ DistSample.odcl
 
     Varnames:
 
-        Form   = DistSample_MainForm
-        Label  = DistSample_MainForm_MainLabel
-        Button = DistSample_MainForm_OkButton
+        Form   = DistSample/MainForm
+        Label  = DistSample/MainForm/MainLabel
+        Button = DistSample/MainForm/OkButton
 
     Enabled events:
 
-        DistSample_MainForm           = none
-        DistSample_MainForm_MainLabel = none
-        DistSample_MainForm_OkButton  = OnClick
+        DistSample/MainForm           = none
+        DistSample/MainForm/MainLabel = none
+        DistSample/MainForm/OkButton  = OnClick
 
     Project is not pass worded.
 

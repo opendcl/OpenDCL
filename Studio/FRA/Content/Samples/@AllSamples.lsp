@@ -5,43 +5,77 @@
 ;;; This sample provides an interface for running the individual OpenDCL samples.
 ;;;
 
+
+;|«Global Constants»|;
+
+;; List of samples as (tab-name sample-name lisp-filename description)
+(setq *OdclAllSamples '(
+  ("Basic" "Misc." "Misc.lsp" "Block View, Slide files, Combo Box styles, misc. controls")
+  ("Basic" "Methods" "Methods.lsp" "Picture Box, Slide controls, manipulating controls")
+  ("Basic" "Events" "EventHandling.lsp" "Event handling")
+  ("Basic" "Message box" "MessageBox.lsp" "Using the message box")
+  ("Basic" "View DWG" "ViewDWG.lsp" "Working with the DWG Preview control")
+  ("Basic" "Modeless" "Modeless.lsp" "Working with Modeless forms")
+  ("Basic" "Palette" "AllControls.lsp" "Palette showing samples of all controls")
+  ("Basic" "HTML" "HTML.lsp" "Web browser control")
+  ("Basic" "Animation" "Animation.lsp" "Play an AVI file with the Animation control")
+  ("Basic" "Hatch" "Hatches.lsp" "Display hatch patterns")
+  ("Basic" "Tooltip" "ToolTip.lsp" "Working with control tool tips")
+  ("Basic" "Drag & Drop" "DragNDrop.lsp" "Drag and drop from one control to another")
+  ("Basic" "ListView" "ListView.lsp" "Using the ListView control")
+  ("Basic" "Copy/Paste" "ListBoxCopyPaste.lsp" "Copy/move text between controls")
+  ("Basic" "Splitter" "Splitter.lsp" "Working with Splitter controls")
+  ("Basic" "DWG List" "DwgList.lsp" "Working with the Dwg List control")
+  ("Basic" "List Box" "ListBox.lsp" "Working with a List Box & file selection")
+  ("Advanced" "Tree" "Tree.lsp" "Working with the Tree control")
+  ("Advanced" "Grid" "Grid.lsp" "Working with the Grid control")
+  ("Advanced" "Selection" "Selections.lsp" "Hiding a Modal form to select points or entities")
+  ("Advanced" "Slider" "Slider.lsp" "Custom slider control from picture box")
+  ("Advanced" "Options Tab" "OptionsTab.lsp" "Adding a custom Options tab")
+  ("Advanced" "Splash" "Splash.lsp" "Using OnTimer to display a splash screen")
+  ("Advanced" "Mover" "FormMover.lsp" "Moving and resizing a form after it's been shown")
+  ("Advanced" "Combo Box Lab" "ComboBoxLab.lsp" "Compare combo box styles and behavior")
+  ("Advanced" "VLX 1" "DistSample1.vlx" "ODCL embedded as a resource")
+  ("Advanced" "VLX 2" "DistSample2.vlx" "ODCL as an inline stream")
+))
+
 ;; Main program
-(DEFUN c:OpenDCLDemo (/ *error*)
-  (DEFUN *error* (msg)
-    (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
+(DEFUN C:OPENDCLDEMO (/ *error*)
+  (defun *error* (msg)
+    (while (< 0 (getvar "cmdactive")) (command))
     ;; do error stuff
-    (IF (dcl-Form-ISACTIVE AllSamples/Main)
-      (dcl-Form-CLOSE AllSamples/Main)
+    (if (dcl-Form-IsActive AllSamples/Main)
+      (dcl-Form-Close AllSamples/Main)
     )
-    (PRINC
-      (STRCAT "\nApplication Error: " (ITOA (GETVAR "errno")) " :- " msg)
+    (princ
+      (strcat "\nApplication Error: " (itoa (getvar "errno")) " :- " msg)
     )
-    (PRINC)
+    (princ)
   )
   ;;------------------------
 
   ;; Ensure OpenDCL Runtime is loaded (without echoing to command line)
-  (SETQ cmdecho (GETVAR "CMDECHO"))
-  (SETVAR "CMDECHO" 0)
-  (COMMAND "_OPENDCL")
-  (SETVAR "CMDECHO" cmdecho)
+  (setq cmdecho (getvar "CMDECHO"))
+  (setvar "CMDECHO" 0)
+  (command "_OPENDCL")
+  (setvar "CMDECHO" cmdecho)
 
   ;; Load the project
-  (dcl-Project-LOAD (*ODCL:Samples-FindFile "@AllSamples.odcl") NIL "AllSamples")
+  (dcl-Project-Load (*ODCL:Samples-FindFile "@AllSamples.odcl") NIL "AllSamples")
 
   ;; Show the main form
-  (dcl-Form-SHOW AllSamples/Main)
+  (dcl-Form-Show AllSamples/Main)
   ;; The Event handlers manage the form here.
-  (PRINC)
+  (princ)
 )
 
 ;; Load the specified sample
 (DEFUN *ODCL:RunSample (filename)
-  (SETQ *ODCL:AllSamples T) ; flag the sample to run on load
-  (IF (NOT (LOAD (*ODCL:Samples-FindFile filename) NIL))
-    ((ALERT (STRCAT "\"" filename "\" failed to load!")))
+  (setq *ODCL:AllSamples T) ; flag the sample to run on load
+  (if (eq "Fail" (load (*ODCL:Samples-FindFile filename) "Fail"))
+    ((alert (strcat "\"" filename "\" failed to load!")))
   )
-  (SETQ *ODCL:AllSamples nil)
+  (setq *ODCL:AllSamples nil)
 )
 
 ;; Completely unload OpenDCL to allow upgrade installation
@@ -215,11 +249,6 @@
           )
       ) ;_ 32-bit location
       ( (vl-registry-read
-          "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL"
-          "Language"
-        )
-      ) ;_ 64-bit location
-      ( (vl-registry-read
           "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
           "Language"
         )
@@ -310,153 +339,75 @@
     (dcl-Control-SetVisible AllSamples/Update/btnClose T)
   )
 )
-
-(DEFUN c:AllSamples/Main/btnMisc#OnClicked ()
-  (*ODCL:RunSample "Misc.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnMethods#OnClicked ()
-  (*ODCL:RunSample "Methods.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnEventHandling#OnClicked ()
-  (*ODCL:RunSample "EventHandling.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnMessageBox#OnClicked ()
-  (*ODCL:RunSample "MessageBox.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnTree#OnClicked ()
-  (*ODCL:RunSample "Tree.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnViewDwg#OnClicked ()
-  (*ODCL:RunSample "ViewDwg.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnModeless#OnClicked ()
-  (*ODCL:RunSample "Modeless.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnAllControls#OnClicked ()
-  (*ODCL:RunSample "AllControls.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnHTML#OnClicked ()
-  (*ODCL:RunSample "HTML.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnGrid#OnClicked ()
-  (*ODCL:RunSample "GRID.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnAnimation#OnClicked ()
-  (*ODCL:RunSample "Animation.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnHatches#OnClicked ()
-  (*ODCL:RunSample "Hatches.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnToolTip#OnClicked ()
-  (*ODCL:RunSample "ToolTip.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnDragNDrop#OnClicked ()
-  (*ODCL:RunSample "DragNDrop.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnSelections#OnClicked ()
-  (*ODCL:RunSample "Selections.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnListView#OnClicked ()
-  (*ODCL:RunSample "ListView.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnListBoxCopyPaste#OnClicked ()
-  (*ODCL:RunSample "ListBoxCopyPaste.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnSplitter#OnClicked ()
-  (*ODCL:RunSample "Splitter.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnDwgList#OnClicked ()
-  (*ODCL:RunSample "DwgList.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnListBox#OnClicked ()
-  (*ODCL:RunSample "ListBox.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnDistSample#OnClicked (/ readme)
-  (SETQ readme (*ODCL:Samples-FindFile "DistSampleReadMe.txt"))
-  (IF readme
-    (STARTAPP "notepad" readme)
-    (ALERT (STRCAT "Cant find \"DistSampleReadMe.txt\"!"))
+(defun c:AllSamples/Main#OnInitialize (/)
+  (dcl-Grid-Clear AllSamples/Main/Basic)
+  (foreach sample *OdclAllSamples
+    (dcl-Grid-AddRow "AllSamples" "Main" (nth 0 sample) (nth 1 sample) (nth 2 sample) (nth 3 sample))
   )
-  (PRINC)
+  (c:AllSamples/Main#OnDocActivated)
+  (princ)
 )
 
-(DEFUN c:AllSamples/Main/btnOptionsTab#OnClicked ()
-  (*ODCL:RunSample "OptionsTab.lsp")
-  (PRINC)
+(defun c:AllSamples/Main#OnSize (NewWidth NewHeight /)
+  (dcl-Grid-SetColumnWidth AllSamples/Main/Basic 2 (- (dcl-Control-GetWidth AllSamples/Main/Basic) (dcl-Grid-GetColumnWidth AllSamples/Main/Basic 0) 18))
+  (dcl-Grid-SetColumnWidth AllSamples/Main/Advanced 2 (- (dcl-Control-GetWidth AllSamples/Main/Advanced) (dcl-Grid-GetColumnWidth AllSamples/Main/Advanced 0) 18))
+  (princ)
 )
 
-(DEFUN c:AllSamples/Main/btnSplash#OnClicked (/)
-  (*ODCL:RunSample "Splash.lsp")
-  (PRINC)
+(defun c:AllSamples/Main#OnEnteringNoDocState (/)
+  (dcl-Control-SetEnabled AllSamples/Main/Basic NIL)
+  (dcl-Control-SetEnabled AllSamples/Main/Advanced NIL)
+  (dcl-Control-SetEnabled AllSamples/Main/btnUpdateCheck NIL)
+  (princ)
 )
 
-(DEFUN c:AllSamples/Main/btnFormMover#OnClicked (/)
-  (*ODCL:RunSample "FormMover.lsp")
-  (PRINC)
+(defun c:AllSamples/Main#OnDocActivated (/)
+  (dcl-Control-SetEnabled AllSamples/Main/Basic T)
+  (dcl-Control-SetEnabled AllSamples/Main/Advanced T)
+  (dcl-Control-SetEnabled AllSamples/Main/btnUpdateCheck T)
+  (princ)
 )
 
-(DEFUN c:AllSamples/Main/btnSlider#OnClicked (/)
-  (*ODCL:RunSample "Slider.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnComboBoxLab#OnClicked (/)
-  (*ODCL:RunSample "ComboBoxLab.lsp")
-  (PRINC)
-)
-
-(DEFUN c:AllSamples/Main/btnReadme#OnClicked (/ readme)
-  (SETQ readme (*ODCL:Samples-FindFile "_ReadME.txt"))
-  (IF readme
-    (STARTAPP "notepad" readme)
-    (ALERT (STRCAT "Cant find \"_ReadME.txt\"!"))
+(defun c:AllSamples/Main/Basic#OnDblClicked (Row Column /)
+  (if (<= Column 0)
+    (dcl-SendString (strcat "(*ODCL:RunSample \"" (dcl-Grid-GetCellText AllSamples/Main/Basic Row 1) "\")(princ)\n"))
   )
-  (PRINC)
+  (princ)
 )
 
-(DEFUN c:AllSamples/Main/btnUpdateCheck#OnClicked ()
-  (dcl-SENDSTRING "(*ODCL:UpdateCheck)\n")
-  (PRINC)
+(defun c:AllSamples/Main/Advanced#OnDblClicked (Row Column /)
+  (if (<= Column 0)
+    (dcl-SendString (strcat "(*ODCL:RunSample \"" (dcl-Grid-GetCellText AllSamples/Main/Advanced Row 1) "\")(princ)\n"))
+  )
+  (princ)
+)
+
+(defun c:AllSamples/Main/Basic#OnSelChanged (Row Column /)
+  (if (>= Column 0)
+    (dcl-Grid-SetCurCell AllSamples/Main/Basic Row -1)
+  )
+  (princ)
+)
+
+(defun c:AllSamples/Main/Advanced#OnSelChanged (Row Column /)
+  (if (>= Column 0)
+    (dcl-Grid-SetCurCell AllSamples/Main/Advanced Row -1)
+  )
+  (princ)
+)
+
+(defun c:AllSamples/Main/btnReadme#OnClicked (/ readme)
+  (setq readme (*ODCL:Samples-FindFile "@ReadME.txt"))
+  (if readme
+    (startapp "notepad" readme)
+    (alert (strcat "Cant find \"@ReadME.txt\"!"))
+  )
+  (princ)
+)
+
+(defun c:AllSamples/Main/btnUpdateCheck#OnClicked ()
+  (dcl-SendString "(*ODCL:UpdateCheck)\n")
+  (princ)
 )
 
 (princ)
@@ -501,7 +452,7 @@
 )
 
 (princ "\nOPENDCLDEMO\n")
-(C:OpenDCLDemo)
+(C:OPENDCLDEMO)
 
 ;;;######################################################################
 ;;;######################################################################

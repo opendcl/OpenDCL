@@ -24,6 +24,9 @@
     ;;                   einige Funktionen umbenannt zugunsten der Konsistenz
     ;;                   mit anderen Beispielen des OpenDCl Studio. (OW)
     ;;
+    ;;  1.4 2014/02/10 - Simplified code by removing some error condition
+    ;;                   checks and added OpenDCL sample boilerplate. (OW)
+    ;;
     ;;--------------------------------------------------------------------------
     ;;
     ;;  Voraussetzungen:
@@ -54,47 +57,8 @@
         ;;  Lokale Variablen
 
         c:DistSample/MainForm/OkButton#OnClicked
-        _Load_ODCL_Runtime
         _Load_ODCL_Embedded_Project
-        _Load_ODCL_File_Project
         _Main
-
-    ) ;;------------------------------------------------------------------------
-
-    (defun _Load_ODCL_Runtime ( / )
-
-        (or
-
-            ;;  OpenDCL ist bereits geladen, mit T beenden
-
-            dcl-getversionex
-
-            ;;  Ist das Laden nach Bedarf aktiviert (DEMANDLOAD), nutze das OPENDCL-Kommando
-            ;;  um die OpenDCL-Laufzeitumgebung zu laden. Ist das Laden nach Bedarf deaktiviert,
-            ;;  nehmen wir an, dass dies gewünscht ist und laden deshalb nicht dazu.
-
-            (and
-
-                ;;  Ist das Laden nach Bedarf aktiviert
-
-                (= 2 (boole 1 (getvar "DEMANDLOAD") 2))
-
-                ;;  dann lade die OpenDCL Laufzeitumgebung
-
-                (vl-catch-all-apply 'vl-cmdf '("OPENDCL"))
-
-                ;;  Und prüfe, ob die Funktionen nun geladen sind
-
-                dcl-getversionex
-            )
-
-            ;;  Konnte oder sollte die Laufzeitumgebung nicht geladen werden
-            ;;  wird der Anwender informiert.
-
-            (princ "\nFehler: OpenDCL-Laufzeitumgebung konnte nicht geladen werden.\n")
-        )
-
-        dcl-getversion
 
     ) ;;------------------------------------------------------------------------
 
@@ -104,169 +68,132 @@
         ;;  der aktuellen VLX auszulesen. War dies erfolgreich, muss das Projekt mit der
         ;;  Funktion dcl_project_import geladen und der Rückgabewert an die aufrufende
         ;;  Funktion übergeben werden
-
         (cond
-
-            ;;  An diesem Punkt muss die OpenDCL-Laufzeitumgebung bereits geladen
-            ;;	sein. Wenn nicht, ist zuvor die Initialisierung fehlgeschlagen oder
-            ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
-            ;;  So oder so, an dieser Stell gehts nicht weiter...
-
-            (	(null dcl-project-import)
-
-                (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
-
-                nil
-            )
-
             ;;  Prüfe den Zugriff auf die Projektdaten innerhalb der Textquelle in der
             ;;  VLX und gebe eine Meldung aus, wenn dies fehlgeschalgen ist
-
-            (	(or
+            (	  (or
                     (null (setq bytes (vl-get-resource projname)))
                     (not (eq 'str (setq rtype (type bytes))))
                     (eq "" bytes)
                 )
 
-                (princ
-                    (strcat
-                        "\nKann die Quell für das OpenDCL-Projekt <"
-                        projname
-                        "> nicht aus der VLX-Datei laden.\n"
-                    )
-                )
-
+                (princ (strcat "\nKann die Quell für das OpenDCL-Projekt <" projname "> nicht aus der VLX-Datei laden.\n"))
                 nil
-
             )
 
             ;;  Mit dcl_project_load wird das Projekt geladen und der Rückgabewert
             ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
-
             (	(dcl-project-import bytes password alias)  )
         )
-
-    ) ;;------------------------------------------------------------------------
-
-    (defun _Load_ODCL_File_Project ( projname reload password alias / samples )
-
-        ;;  An dieser Stelle wird versucht, eine OpenDCL-Projektdatei in einem der
-        ;; AutoCAD-Supportpfade zu finden und zu laden. Schlägt das fehl, soll sie
-        ;; aus dem Ordner der Beispieldateien von OpenDCL Studio geladen werden.
-
-        (cond
-
-            ;;  An diesem Punkt muss die OpenDCL-Laufzeitumgebung bereits geladen
-            ;;	sein. Wenn nicht, ist zuvor die Initialisierung fehlgeschlagen oder
-            ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
-            ;;  So oder so, an dieser Stell gehts nicht weiter...
-
-            (	(null dcl-project-load)
-
-                (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
-
-                nil
-            )
-
-            ;;  Mit dcl_project_load wird das Projekt geladen und der Rückgabewert
-            ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
-
-            (	(dcl-project-load projname reload password alias)  )
-
-            ;;  Da diese Datei neben anderen Beispieldateien installiert wurde und
-            ;;	dieser normalerweise nicht in den AutoCAD-Supportpfade eingetragen
-            ;;	ist, wird versucht die Datei von dort zu laden
-
-            ;;  Löschen Sie den folgenden Abschnitt, wenn es sich nicht um ein
-            ;;	OpenDCL-Beispiel handelt
-
-            (	(setq samples
-                    (cond
-                        (	(vl-registry-read
-                                "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ; 32-bit Variante aktueller Nutzer
-                        (	(vl-registry-read
-                                "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ; 32-bit Variante alle Nutzer
-                        (	(vl-registry-read
-                                "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
-                                "SamplesFolder"
-                            )
-                        ) ; 64-bit Variante alle Nutzer
-                    )
-                )
-
-                (dcl-project-load (strcat samples projname) reload password alias)
-            )
-        )
-
     ) ;;------------------------------------------------------------------------
 
     (defun c:DistSample/MainForm/OkButton#OnClicked ( )
-
-        (dcl-MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
-
         (dcl-form-close DistSample/MainForm)
-
     ) ;;------------------------------------------------------------------------
 
     (defun _Main ( / odclProjName )
-
         ;;  Die Funktionen in dieser Datei laden und ausführen.
+
+        ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+        (setq cmdecho (getvar "CMDECHO"))
+        (setvar "CMDECHO" 0)
+        (command "_OPENDCL")
+        (setvar "CMDECHO" cmdecho)
 
         (setq odclProjName "DistSample.odcl") ;; die .LSP-Erweiterung weglassen!!!
 
         (if
+            ;;  Versuche das OpenDCL-Projekt zu laden
+            (or
+                ;;  ... zunächst aus der eingebetteten Quelle
+                (_Load_ODCL_Embedded_Project odclProjName nil nil)
 
-            (and
-
-                (_Load_ODCL_Runtime)
-
-                ;;  Versuche das OpenDCL-Projekt zu laden
-
-                (or
-                    ;;  ... zunächst aus der eingebetteten Quelle
-
-                    (_Load_ODCL_Embedded_Project odclProjName nil nil)
-
-                    ;;  ... war das Laden des OopenDCL-Projekts aus der
-                    ;; VLX-Quelle erfolglos, wird versucht, das Projekt
-                    ;; aus der separaten *.odcl-Datei zu laden (das kann
-                    ;; in der Phase der Produktentwicklung interessant
-                    ;; sein, diese Zeile sollte jedoch vor der Veröffent-
-                    ;; lichung entfernt werden.)
-
-                    (_Load_ODCL_File_Project odclProjName t)
-                )
+                ;;  ... war das Laden des OopenDCL-Projekts aus der
+                ;; VLX-Quelle erfolglos, wird versucht, das Projekt
+                ;; aus der separaten *.odcl-Datei zu laden (das kann
+                ;; in der Phase der Produktentwicklung interessant
+                ;; sein, diese Zeile sollte jedoch vor der Veröffent-
+                ;; lichung entfernt werden.)
+                (dcl-Project-Load (*ODCL:Samples-FindFile odclProjName))
             )
 
-            (if
-                (null
-                    (dcl-Form-Show DistSample/MainForm)
-                )
-
-                (princ "\nKann den Dialog nicht anzeigen: DistSample/MainForm\n")
-            )
+            (dcl-Form-Show DistSample/MainForm)
         )
 
         (princ)
 
     ) ;;------------------------------------------------------------------------
 
-    ;;==========================================================================
-    ;;
-    ;;  Hauptfunktion ausführen ...
-    ;;
-    ;;==========================================================================
-
-    (_Main)
-
+    (_Main) ;; Hauptfunktion ausführen ...
 )
 
-(princ "\nOpenDCL DistSample1 (ver 1.3) wurde geladen. Geben Sie den Befehl \"DistSample1\" ein, um ihn auszuführen.\n")
-
 (princ)
+
+;|«OpenDCL Samples Epilog»|;
+
+;;;######################################################################
+;;;######################################################################
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
+;;; werden in allen Beispieldateien verwendet.
+;;;
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
+)
+
+;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
+;; Andernfalls gib einen Text in der Befehlszeile aus, mit welchem Kommando das Beispiel
+;; gestartet werden kann. Auf diesem Wege wird sichergestellt, dass der Name des Beispiels
+;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
+
+(	(lambda (demoname)
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "DistSample1"
+)
+(princ)
+
+;;;######################################################################
+;;;######################################################################
+
+;|«Visual LISP© Format Options»
+(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
+;*** DO NOT add text below the comment! ***|;

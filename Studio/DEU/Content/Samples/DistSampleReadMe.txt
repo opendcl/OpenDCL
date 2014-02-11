@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------
 
-DistSamples.zip    
+AutoLISP Application Code Deployment Samples
 
 --------------------------------------------------------------------------------
 
 Overview
 
-    DistSamples.zip contains the lisp source code and OpenDCL files to
+    The DistSample*.* files are lisp source code and OpenDCL files to
     demonstrate how to embed an OpenDCL project (saved as a .odcl.lsp
     file) into a vlx file, and then how to use said resource as one 
     might normally use a regular OpenDCL project file.
@@ -15,7 +15,7 @@ Overview
     data can be embedded directly into the lisp source code as an
     inline text stream. Generally speaking, this would be the most
     frequent (easier/faster) used method of the two. Having said that
-    it's nice to have to have the options. =)
+    it's nice to have the options. =)
 
     Why would you want to do this? The primary reason is one of
     simplified distribution, though some developers might want to use
@@ -36,7 +36,7 @@ Requirements
 
 --------------------------------------------------------------------------------
 
-Contents of DistSamples.zip
+Contents
 
     DistSamplesReadMe.txt - This file.
 
@@ -46,7 +46,7 @@ Contents of DistSamples.zip
                             wrapped in lisp (note, OpenDCL studio does this
                             for you when you save it to .lsp format).
 
-    DistSample1.lsp       - LISP Source, uses DistSample.odce if running as
+    DistSample1.lsp       - LISP Source, uses DistSample.odcl if running as
                             lisp. If running as vlx attempts to load
                             DistSample.odcl.lsp as a text resource that has 
                             been compiled to the vlx file.
@@ -75,15 +75,15 @@ DistSample.odcl
 
     Varnames:
 
-        Form   = DistSample_MainForm
-        Label  = DistSample_MainForm_MainLabel
-        Button = DistSample_MainForm_OkButton
+        Form   = DistSample/MainForm
+        Label  = DistSample/MainForm/MainLabel
+        Button = DistSample/MainForm/OkButton
 
     Enabled events:
 
-        DistSample_MainForm           = none
-        DistSample_MainForm_MainLabel = none
-        DistSample_MainForm_OkButton  = OnClick
+        DistSample/MainForm           = none
+        DistSample/MainForm/MainLabel = none
+        DistSample/MainForm/OkButton  = OnClick
 
     Project is not pass worded.
 

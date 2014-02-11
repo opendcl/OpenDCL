@@ -24,6 +24,9 @@
     ;;                   einige Funktionen umbenannt zugunsten der Konsistenz
     ;;                   mit anderen Beispielen des OpenDCl Studio. (OW)
     ;;
+    ;;  1.4 2014/02/10 - Simplified code by removing some error condition
+    ;;                   checks and added OpenDCL sample boilerplate. (OW)
+    ;;
     ;;--------------------------------------------------------------------------
     ;;
     ;;  Voraussetzungen:
@@ -50,46 +53,8 @@
         ;;  Lokale Variablen
 
         c:DistSample/MainForm/OkButton#OnClicked
-        _Load_ODCL_Runtime
         _Load_ODCL_Stream
         _Main
-
-    ) ;;------------------------------------------------------------------------
-
-    (defun _Load_ODCL_Runtime ( / )
-
-        (or
-
-            ;;  OpenDCL ist bereits geladen, mit T beenden
-
-            dcl-getversionex
-
-            ;;  Ist das Laden nach Bedarf aktiviert (DEMANDLOAD), nutze das OPENDCL-Kommando
-            ;;  um die OpenDCL-Laufzeitumgebung zu laden. Ist das Laden nach Bedarf deaktiviert,
-            ;;  nehmen wir an, dass dies gewünscht ist und laden deshalb nicht dazu.
-
-            (and
-
-                ;;  Ist das Laden nach Bedarf aktiviert
-
-                (= 2 (boole 1 (getvar "DEMANDLOAD") 2))
-
-                ;;  dann lade die OpenDCL Laufzeitumgebung
-
-                (vl-catch-all-apply 'vl-cmdf '("OPENDCL"))
-
-                ;;  Und prüfe, ob die Funktionen nun geladen sind
-
-                dcl-getversionex
-            )
-
-            ;;  Konnte oder sollte die Laufzeitumgebung nicht geladen werden
-            ;;  wird der Anwender informiert.
-
-            (princ "\nFehler: OpenDCL-Laufzeitumgebung konnte nicht geladen werden.\n")
-        )
-
-        dcl-getversion
 
     ) ;;------------------------------------------------------------------------
 
@@ -100,95 +65,136 @@
         ;;  einheitliche Länge gebracht wurden
 
         (setq project
-            '("YWt6AzUbAABgsXpTBuKTJkUxai9qgDggaVrvHjZSSid8djhbtmV1He5mLmhubRwSdpJQjCa+XobW"
-              "Ws/OzsnMyornhjZS08qNeaam51YUG93MAJmwsLCwJzpqa3cNWQmYAIlCkEOZ4BEYzUUstVfaBTdp"
-              "WA5/jUbzbzKdQuw2vn+O1HZWmC3q1EVuPUWcFj515K/2/ZIP8HAPqjK9aPIPSjwHZbMb0OMNd0ov"
-              "0f8WsjQckNxXj6b2KJTyLGDdGHkTnKgB+csQnTYCyS2gEEP0IF05s6pk2ztVKRXcMGDI9S2nzxPF"
-              "HmISjW47WDSzd7KeRhhPuW6zSWrYu/Dm5CV0ISqGR3RCUkmNJLdRV4I7n7V0wT7HycGKOLNejO+r"
-              "sitB3smy6VeJjxPvQYvPqwHSjm37YVcilnrJGmqAlJE5crMLagdGUMZU7pzEAKgz/FeQvE+KjM54"
-              "5pYnMgwQ9Otrz5fxbrdNPyd6PapF7edFuZlWhUJRx+Xpf4FFKdSvH5piEuNhmyfwEh+aBydA7i1m"
-              "g6IjWWiS1M2KHTR9eStpvR/SE5sfFiEr4ucfSOyq9S/oHqAy/7SMAytmCWvA2Y7j4WoYTA0UUOAs"
-              "BkTtYZnNKqvS7DFUAj3Tyeq34fXpAwMlW2Hqg4Uyq8bGJKcBiokdm1VuHWXySbuNtGKRQL/7v52i"
-              "tX02pkzypcUH3jaLLmsL97xNfwHbL2AE+gPioOzCXFL4WjVL5fJLHAkth9eOmyl6cYaG854tNIBQ"
-              "zlAy81FhbAfh8YV64SoakCtG1I53+596iWVapZChUwct1YzuO7kP2pdWVXdbL9GXJqK1azgT0MPL"
-              "al+BV/8SetVulq1YWi6oKbsQQUFtwFWxXKZyDHYopbM9D6GgDDIdiPYi1DsmTozgZZnW+YlHsHQL"
-              "mhPAHhNsyPLY08iyqIFDBECN3SYsobB0j82h8SStKyzrM6k/WTapbNIwqTR6lwRzAf7QPwSQJ1VD"
-              "Kd6tVHqTCKwNDsGOB5aXCybqh8K0Bk/v1zQF6ahnEzOlt83wg1YF54tlD3sbthf1cr6VrMyPJATQ"
-              "ubOraL2GvYbJDoLXC8jzoIEEJTQsngtJ3iGUZcOBi8hOgE6AToBOgE6AToBOgE6AToDTawEZijYE"
-              "WrGewXiQYW/1Qc6CYQCCAXkdxe4a"
-      )
+            '("YWt6A5QaAAB4rwI7BuKTJjUxLT9qgLSNNMQWNjYi6H4s3XyMUlDyPxw+JT4y9g85Ybbdyni/uTRs"
+              "aVCixQyXrBmcXQ+XNAmAfkmQMmobmzjbABkQBRGRV/x6a3IJEBiQAg2w4ucRsEcN5fiMFQdqFKNe"
+              "GA5n9Ub5N7KdbEw2XX6eE1MuuclWS4ld91Yslj5xxK/3XdJXiPDMqbP3Q+YcEeyMQDDpz1a5rJbc"
+              "IHmv6u9akzuNHM9tw6o3LuDaGEGZ2vKDAE3F8UPPY9tCFFL0IFkFo6o0DjhRKZXcMFv8zCXFkvlr"
+              "PjtvD2dVMMtnGg90R1Lu4YtkizsHP69kOWs09At98LtxotIrkZwFXAGfHN2BMp+ZdEErhsXF4HbS"
+              "JdZTnOqeWHH7tlbj7Fj7P+I68llPOFxHsgwS8BB1ZQQfXAfZV3Ud/ASZ48/1AlkmaYc2FcOPpvlr"
+              "D4kJ/0OVeRT0pU2MxXQhL4Zr1DWWvgTZmilr0HcGj0lbwdjOm6txKNyWxb0bgGCb33Iet+6z74IE"
+              "gND+m4YcqpsALg7zqaJ/ZDXlrTHnqATSHJv3jBvjvCfxwx7iF2gY49jLcuFOw+Tf+TQd0juYoy8I"
+              "ZCKHC78dUABRhtLsASpAEA+bbVxhD4/2nk1UOB10uWtA0058oIOUZhUrAjQcECQOrp2NNmy5zqC7"
+              "qnDjrpOuUBGcNujH7N8g7MxKAxkr1eYF2hyS/7xxa8DBN7IZYgBI4C0GoJ9lhlQJNDC3GWvA06gl"
+              "D7CtuBXQwEexsRSAWZkwzw/N5IG7o/FKP+8oZKLYDRQh8jngTn8lQoKzzNSaeCNryCuwF6eM7NK1"
+              "3FKVJPnG9gPtt8wtGDdFgbzydo+USgW9EmlGVIdaSaXs5+1ID0wRyhvKk5GbkjXpu/SEMEr24z1Q"
+              "FeO9DCrbR0JgjpjOAgZJtJ84Bg2GWIA+cBFfGfl8G0eFMQ2ykhn9YiWj+0cYEr6AuCkcRmjeq1RA"
+              "X0CiEMCvyix4nMP794zwzuAec2dlHyVuPCcn2KX0KzRXgOMkEI+BVLVAAeGBYJjhoRinl4MRyZqb"
+              "dvSrWMrbxK2FoRCPh4WCA4BAAeHBsaGZkY2Jh5FTgH2PnfvgwsOBZKYBOlKBHJgQho+BbeoaF1g="
+             )
         )
 
-        (cond
-
-            ;;  An diesem Punkt muss die OpenDCL-Laufzeitumgebung bereits geladen
-            ;;	sein. Wenn nicht, ist zuvor die Initialisierung fehlgeschlagen oder
-            ;;	es ist eine ältere OpenDCL-Laufzeitumgebung geladen worden.
-            ;;  So oder so, an dieser Stell gehts nicht weiter...
-
-            (	(null dcl-project-import)
-
-                (princ "\nFür diese Funktion wird die Laufzeitumgebung von OpenDCL 5 oder höher vorausgesetzt.\n")
-
-                nil
-            )
-
-            ;;  Mit dcl-project-load wird das Projekt geladen und der Rückgabewert
-            ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
-
-            (	(dcl-project-import project password alias)   )
-        )
-
+        ;;  Mit dcl-project-load wird das Projekt geladen und der Rückgabewert
+        ;;	an die aufrufende Funktion übergeben, wenn der Vorgang erfolgreich war. 
+        (dcl-project-import project password alias)
     ) ;;------------------------------------------------------------------------
 
     (defun c:DistSample/MainForm/OkButton#OnClicked ( )
-
-        (dcl-MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen..." "Abbrechen und schließen ...")
-
         (dcl-form-close DistSample/MainForm)
-
     ) ;;------------------------------------------------------------------------
 
     (defun _Main ( / odclProjName )
-
         ;;  Die Funktionen in dieser Datei laden und ausführen.
 
+        ;; Sicherstellen, dass die OpenDCL-Laufzeitumgebung geladen wurde (ohne Meldungen an der Befehlszeile)
+        (setq cmdecho (getvar "CMDECHO"))
+        (setvar "CMDECHO" 0)
+        (command "_OPENDCL")
+        (setvar "CMDECHO" cmdecho)
+
+        (setq odclProjName "DistSample.odcl") ;; die .LSP-Erweiterung weglassen!!!
+
         (if
+            ;;  Versuche das OpenDCL-Projekt zu laden
+            (or
+                ;;  ... zunächst aus der eingebetteten Quelle
+                (_Load_ODCL_Stream nil "DistSample")
 
-            (and
-
-                (_Load_ODCL_Runtime)
-
-                ;;  Versuche das OpenDCL-Projekt aus den hardcodierten Projektdaten
-                ;;  des Quellcodes zu laden
-
-                (_Load_ODCL_Stream nil nil)
-
+                ;;  ... war das Laden des OopenDCL-Projekts aus der
+                ;; VLX-Quelle erfolglos, wird versucht, das Projekt
+                ;; aus der separaten *.odcl-Datei zu laden (das kann
+                ;; in der Phase der Produktentwicklung interessant
+                ;; sein, diese Zeile sollte jedoch vor der Veröffent-
+                ;; lichung entfernt werden.)
+                (dcl-Project-Load (*ODCL:Samples-FindFile odclProjName))
             )
 
-            (if
-                (null
-                    (dcl-Form-Show DistSample/MainForm)
-                )
-
-                (princ "\nKann den Dialog nicht anzeigen: DistSample/MainForm\n")
-            )
+            (dcl-Form-Show DistSample/MainForm)
         )
 
         (princ)
 
     ) ;;------------------------------------------------------------------------
 
-    ;;==========================================================================
-    ;;
-    ;;  Hauptfunktion ausführen ...
-    ;;
-    ;;==========================================================================
-
-    (_Main)
-
+    (_Main) ;; Hauptfunktion ausführen ...
 )
 
-(princ "\nOpenDCL DistSample2 (ver 1.3) wurde geladen. Geben Sie den Befehl \"DistSample2\" ein, um ihn auszuführen.\n")
-
 (princ)
+
+;|«OpenDCL Samples Epilog»|;
+
+;;;######################################################################
+;;;######################################################################
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples-FindFile
+;;; werden in allen Beispieldateien verwendet.
+;;;
+(or *ODCL:Samples-FindFile
+  (defun *ODCL:Samples-FindFile (file)
+    (setq *ODCL:Prefix
+      (cond
+        (	*ODCL:Prefix
+        ) ;_ Bereits definiert
+        (	(vl-registry-read
+            "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 32-bit Variante aktueller Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
+            "SamplesFolder"
+           )
+        ) ;_ 32-bit Variante alle Nutzer
+        (	(vl-registry-read
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
+            "SamplesFolder"
+          )
+        ) ;_ 64-bit Variante alle Nutzer
+      )
+    )
+    (cond
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
+      (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
+      (file)
+    )
+  )
+)
+
+;; Ist der Hauptdialog der OpenDCL-Beispiele aktiv, starte das Beispiel sofort.
+;; Andernfalls gib einen Text in der Befehlszeile aus, mit welchem Kommando das Beispiel
+;; gestartet werden kann. Auf diesem Wege wird sichergestellt, dass der Name des Beispiels
+;; nur an einer Stelle definiert werden muss. Das macht es einfacher, den Code wiederzuverwenden.
+
+(	(lambda (demoname)
+    (if *ODCL:AllSamples
+      (progn
+        (princ (strcat "'" demoname "\n"))
+        (apply (read (strcat "C:" demoname)) nil)
+      )
+      (progn
+        (princ (strcat "\n" demoname " OpenDCL-Beispiel ist geladen."))
+        (princ (strcat " (Starten Sie das Beispiel mit dem Befehl " (strcase demoname) ")\n"))
+      )
+    )
+  )
+  "DistSample2"
+)
+(princ)
+
+;;;######################################################################
+;;;######################################################################
+
+;|«Visual LISP© Format Options»
+(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
+;*** DO NOT add text below the comment! ***|;
