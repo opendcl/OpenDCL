@@ -24,14 +24,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // CDclControlTemplate
 
-//IMPLEMENT_SERIAL(CDclControlTemplate, CObject, 1)
-
 CDclControlTemplate::CDclControlTemplate()
 : mpOwner( NULL )
 , mType( _CtlForm )
 , mpDlgControl( NULL )
 , mnID( -1 )
-, mClsid( CLSID_NULL )
 {
 }
 
@@ -40,7 +37,6 @@ CDclControlTemplate::CDclControlTemplate(CDclFormObject* pOwner)
 , mType( _CtlForm )
 , mpDlgControl( NULL )
 , mnID( -1 )
-, mClsid( CLSID_NULL )
 {
 }
 
@@ -49,7 +45,6 @@ CDclControlTemplate::CDclControlTemplate(ControlType type, CDclFormObject* pOwne
 , mType( type )
 , mpDlgControl( NULL )
 , mnID( -1 )
-, mClsid( CLSID_NULL )
 {
 	if( pszName )
 		AddStringProperty(Prop::Name, PropString, pszName);
@@ -214,57 +209,25 @@ void CDclControlTemplate::SetControlInstance( CDialogControl* pDlgControl )
 void CDclControlTemplate::Serialize(CArchive& ar)
 {
 	BYTE nThisVersion = GetCurrentSaveVersion();
-	//CObject::Serialize( ar );
 	if (ar.IsStoring())
 	{
 		ar << nThisVersion;
-		ar << msAxTypeName;
 		ar << long(mType);
 		ar << mnID;
+
+		if( mType == _CtlOldFileExplorer )
+			mType = CtlFileExplorer;
 
 		// serialize the image if it exists
 		ar << bool(mpImageList != NULL);
 		if( mpImageList )
 			mpImageList->Serialize(ar);
-			
-		if( mType == _CtlOldFileExplorer )
-			mType = CtlFileExplorer;
-		else if( mType == CtlActiveX )
-		{
-			// save the activeX info.
-			ar << msLicenseKey;
-			SerializeCLSID(ar, mClsid);
-			try
-			{		
-				ar << bool(mpStream != NULL);
-				if (mpStream)
-				{
-					ULARGE_INTEGER iSeekPtr;
-					LARGE_INTEGER nZeroDisp = { 0, 0 };
-					HRESULT hr = mpStream->Seek( nZeroDisp, STREAM_SEEK_END, &iSeekPtr );
-					ULONG cbStream = ULONG( iSeekPtr.QuadPart );
-					ULONG nBytesLeft = cbStream;
-					
-					// store the bytes left
-					ar << nBytesLeft;
-					
-					hr = mpStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
-					ULONG nBytesRead;
-					BYTE abData[512];
-					while( nBytesLeft > 0 )
-					{
-						hr = mpStream->Read( abData, std::min<ULONG>( nBytesLeft, sizeof( abData ) ), &nBytesRead );
-						if ( nBytesRead > 0 )
-							ar.Write( abData, nBytesRead );
-						nBytesLeft -= nBytesRead;
-					}
-				}
-			}
-			catch( CFileException* pException )
-			{
-				pException->Delete();
-			}
-		}
+
+		// serialize ActiveX info if it exists
+		ar << bool(mpAxCtrlInitInfo != NULL);
+		if( mpAxCtrlInitInfo )
+			mpAxCtrlInitInfo->Serialize( ar );
+
 		// write property list
 		ar << unsigned short(mProperties.size());
 		for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
@@ -292,7 +255,9 @@ void CDclControlTemplate::Serialize(CArchive& ar)
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
-		ar >> msAxTypeName;
+		CString sAxTypeName;
+		if( nThisVersion < 12 )
+			ar >> sAxTypeName;
 		long lType;
 		ar >> lType;
 		mType = (ControlType)lType;
@@ -352,54 +317,77 @@ void CDclControlTemplate::Serialize(CArchive& ar)
 			}
 		}
 
-		if (nThisVersion >= 3)
+		mpAxCtrlInitInfo = NULL;
+		if (nThisVersion >= 3 )
 		{
-			if (mType == CtlActiveX)
+			if( nThisVersion >= 12)
 			{
-				// get the activeX info.
-				ar >> msLicenseKey;
-				if (nThisVersion >= 4 && nThisVersion <= 9)
+				bool bAxCtrlInitInfo;
+				ar >> bAxCtrlInitInfo;
+				if( bAxCtrlInitInfo )
 				{
-					CString sBaseCode;
-					ar >> sBaseCode;
-					BOOL bLicenseChecked;
-					ar >> bLicenseChecked;
+					mpAxCtrlInitInfo = new CDclAxCtrlInitInfo;
+					mpAxCtrlInitInfo->Serialize( ar );
+					if( mpAxCtrlInitInfo->IsNull() )
+						mpAxCtrlInitInfo = NULL;
 				}
-
-				SerializeCLSID(ar, mClsid);
-
-				bool bHasStream;
-				if( nThisVersion <= 10 )
+			}
+			else
+			{
+				if (mType == CtlActiveX)
 				{
-					BOOL bHasStreamTemp;
-					ar >> bHasStreamTemp;
-					bHasStream = (bHasStreamTemp != FALSE);
-				}
-				else
-					ar >> bHasStream;
-
-				mpStream = NULL;
-				if( bHasStream )
-				{
-					HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &mpStream );
-					if( FAILED( hResult ) )
-						return;
-
-					ULONG cbStream;
-					ar >> cbStream;
-					while( cbStream > 0 )
+					CLSID clsid = CLSID_NULL;
+					CString sLicenseKey;
+					// get the activeX info.
+					ar >> sLicenseKey;
+					if (nThisVersion >= 4 && nThisVersion <= 9)
 					{
-						BYTE abData[512];
-						ULONG nBytesToRead = std::min<ULONG>( cbStream, sizeof( abData ) );
-						ar.Read( abData, nBytesToRead );
-						mpStream->Write( abData, nBytesToRead, NULL );
-						cbStream -= nBytesToRead;
+						CString sBaseCode;
+						ar >> sBaseCode;
+						BOOL bLicenseChecked;
+						ar >> bLicenseChecked;
 					}
 
-					LARGE_INTEGER nZeroDisp = { 0, 0 };
-					mpStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
+					SerializeCLSID(ar, clsid);
+
+					bool bHasStream;
+					if( nThisVersion <= 10 )
+					{
+						BOOL bHasStreamTemp;
+						ar >> bHasStreamTemp;
+						bHasStream = (bHasStreamTemp != FALSE);
+					}
+					else
+						ar >> bHasStream;
+
+					CComPtr< IStream > pStream = NULL;
+					if( bHasStream )
+					{
+						HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &pStream );
+						if( FAILED( hResult ) )
+							return;
+
+						ULONG cbStream;
+						ar >> cbStream;
+						while( cbStream > 0 )
+						{
+							BYTE abData[512];
+							ULONG nBytesToRead = std::min<ULONG>( cbStream, sizeof( abData ) );
+							ar.Read( abData, nBytesToRead );
+							pStream->Write( abData, nBytesToRead, NULL );
+							cbStream -= nBytesToRead;
+						}
+
+						LARGE_INTEGER nZeroDisp = { 0, 0 };
+						pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
+					}
+					mpAxCtrlInitInfo = new CDclAxCtrlInitInfo( clsid, sLicenseKey, sAxTypeName );
+					if( mpAxCtrlInitInfo->IsNull() )
+						mpAxCtrlInitInfo = NULL;
+					else if( pStream )
+						mpAxCtrlInitInfo->GetIStream() = pStream;
 				}
-			}	
+			}
 		}
 
 		mProperties.clear();
@@ -1044,52 +1032,6 @@ TPropertyPtr CDclControlTemplate::AddLongProperty( Prop::Id nID,
 	return pProp;
 }
 
-bool CDclControlTemplate::IsMicrosoftActiveXCtrl() const
-{	
-	CString sName;
-	try
-	{
-		LPOLESTR pwszUserType = NULL;	
-		OleRegGetUserType( mClsid, USERCLASSTYPE_FULL, &pwszUserType );
-		sName = pwszUserType;
-		CoTaskMemFree( pwszUserType );
-	}
-	catch(...)
-	{
-		return false;
-	}
-	return (sName.Left( 9 ) == _T("Microsoft"));
-}
-
-CString CDclControlTemplate::GetActiveXTypeName() const
-{
-	CString sName;
-	
-	if( !msAxTypeName.IsEmpty() )
-		return msAxTypeName;
-
-	try
-	{
-		LPOLESTR pwszProgID = NULL;        
-		HRESULT hResult = ProgIDFromCLSID( mClsid, &pwszProgID );
-		if( !FAILED(hResult) )
-		{
-			sName = pwszProgID;
-			CoTaskMemFree( pwszProgID );
-		}
-	}
-	catch(...)
-	{
-	}
-
-	sName.MakeReverse();
-	sName = sName.Right( sName.GetLength() - sName.SpanIncluding( _T("0123456789.") ).GetLength() ).SpanExcluding( _T(".") );
-	sName.MakeReverse();
-	
-	const_cast< CDclControlTemplate* >(this)->msAxTypeName = sName; //cache it
-	return sName;
-}
-
 CString CDclControlTemplate::GetStringProperty(Prop::Id nID) const
 {
 	CString sValue;
@@ -1254,9 +1196,8 @@ IOStatus CDclControlTemplate::ReadFromTextFile(std::ifstream &sFile, const CStri
 
 IOStatus CDclControlTemplate::ReadFromTextFile6(std::ifstream &sFile, const CString &fileName)
 {
-	CStringA sTypeName;
+	CStringA sTypeName; //discard
 	if (!readString(sFile, sTypeName)) return statInvalidFormat;
-	msAxTypeName = sTypeName;
 	long lType;
 	if (!readLong(sFile, lType)) return statInvalidFormat;
 	mType = (ControlType)lType;
@@ -1278,23 +1219,23 @@ IOStatus CDclControlTemplate::ReadFromTextFile6(std::ifstream &sFile, const CStr
 		mpImageList = new CDclImageList(&discard.GetImageList());
 	}
 
+	mpAxCtrlInitInfo = NULL;
 	if (mType == CtlActiveX)
 	{
 		// get the activeX info.
 		CStringA sKey;
 		if (!readString(sFile, sKey)) return statInvalidFormat;
-		msLicenseKey = sKey;
+		CString sLicenseKey = CString( sKey );
 		CStringA sBaseCode; //ignored
 		if (!readString(sFile, sBaseCode)) return statInvalidFormat;
 		BOOL bLicenseChecked; //ignored
 		if (!readBOOL(sFile, bLicenseChecked)) return statInvalidFormat;
 
-		if (!readCLSID(sFile, mClsid)) return statInvalidFormat;
+		CLSID clsid = CLSID_NULL;
+		if (!readCLSID(sFile, clsid)) return statInvalidFormat;
 
 		LARGE_INTEGER nDisplacement;
-
-		mpStream = NULL;
-
+		CComPtr< IStream >pStream;
 		try
 		{
 			BOOL bHasStream;
@@ -1314,14 +1255,19 @@ IOStatus CDclControlTemplate::ReadFromTextFile6(std::ifstream &sFile, const CStr
 
 				nDisplacement.QuadPart = 0;
 				pStreamTemp->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
-				mpStream = pStreamTemp;
+				pStream = pStreamTemp;
 			}
 		}
 		catch( CFileException* pException )
 		{
 			pException->Delete();
 			return statInvalidFormat;
-		}					
+		}
+		mpAxCtrlInitInfo = new CDclAxCtrlInitInfo( clsid, sLicenseKey );
+		if( mpAxCtrlInitInfo->IsNull() )
+			mpAxCtrlInitInfo = NULL;
+		else if( pStream )
+			mpAxCtrlInitInfo->GetIStream() = pStream;
 	}
 
 	// get counter for objects

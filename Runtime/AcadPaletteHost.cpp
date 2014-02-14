@@ -46,6 +46,9 @@ CAcadPaletteHost::CAcadPaletteHost( CPaletteDlg* pDlgObject, CWnd *pParent /*= N
 , mbMouseLeft( true )
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
+#ifdef _BRXTARGET
+, mszMRUSize( -1, -1)
+#endif
 {
 	m_bAutoDelete = FALSE;
 }
@@ -64,6 +67,13 @@ void CAcadPaletteHost::GetClientArea( CRect& rect )
 		GetAdjustedClientRect( rcAdj );
 		rect.top += 5;
 		IntersectRect( &rect, &rect, &rcAdj );
+	#ifdef _BRXTARGET
+		CRect rcContainer;
+		GetParent()->GetClientRect( &rcContainer );
+		IntersectRect( &rcAdj, &rcAdj, &rcContainer );
+		rect.bottom = rcAdj.bottom;
+		rect.MoveToXY(0, 0);
+	#endif
 	}
 	else
 	{
@@ -150,6 +160,23 @@ LRESULT CAcadPaletteHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mpDlgObject->OnApplyResizable( pResizableProp );
+#if defined(_BRXTARGET)
+	if( !IsFloating() && mpDlgObject->IsResizable() )
+	{ //Bricscad palette doesn't automatically expand to fill all available space
+		CRect rcClient;
+		GetClientArea( rcClient );
+		SetWindowPos( NULL, 0, 0,
+									rcClient.Width() + mpDlgObject->GetNCWidth(),
+									rcClient.Height() + mpDlgObject->GetNCHeight(),
+									SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+		UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);
+		if( mpDlgObject->IsIgnoreSizing() || !mpDlgObject->IsResizable() )
+			nFlags |= SWP_NOSIZE;
+		mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
+															 rcClient.Width(), rcClient.Height(),
+															 nFlags );
+	}
+#endif
 	return 0;
 }
 
@@ -212,6 +239,11 @@ void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 	__super::OnUserSizing( fwSide, pRect );
 }
 
+DWORD CAcadPaletteHost::RecalcDelayShow(AFX_SIZEPARENTPARAMS* lpLayout)
+{
+	return __super::RecalcDelayShow( lpLayout );
+}
+
 CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 {
 	if( !mpDlgObject->IsResizable() )
@@ -231,6 +263,71 @@ CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	else if( szMax.cy > 0 && sizeDefault.cy > szMax.cy )
 		sizeDefault.cy = szMax.cy;
 	return sizeDefault;
+}
+
+CSize CAcadPaletteHost::CalcDynamicLayout(int nLength, DWORD nMode)
+{
+TCHAR szMsg[1024];
+_stprintf(szMsg, _T("## CalcDynamicLayout(nLength=%d, dMode = %x)\r\n"), nLength, nMode);
+OutputDebugString(szMsg);
+#ifndef _BRXTARGET
+	return __super::CalcDynamicLayout(nLength, nMode);
+#else
+	static long lLastLength = -1;
+	static bool bLastHoriz = false;
+	long lTitleBarWidth = (IsFloating()? 20 : 0);
+
+	if( mszMRUSize.cx < 0 || mszMRUSize.cy < 0 )
+		mszMRUSize.SetSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
+												mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+
+	if( !mpDlgObject->IsResizable() )
+		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth() + lTitleBarWidth,
+									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
+
+	CSize sizeDefault(mszMRUSize.cx, mszMRUSize.cy);
+	if (nLength > 0)
+	{
+		if (nMode & LM_LENGTHY)
+			sizeDefault.cy = nLength;
+		else
+			sizeDefault.cx = nLength - lTitleBarWidth;
+	}
+
+	if( nMode & LM_MRUWIDTH )
+		sizeDefault.SetSize( mszMRUSize.cx, mszMRUSize.cy );
+	else if( nMode & LM_COMMIT )
+	{ //Bricscad sends LM_COMMIT always with the width, so we have to use the last sent length when it was vertical sizing
+		if( bLastHoriz )
+			mszMRUSize.cx = nLength - lTitleBarWidth;
+		else if( lLastLength > 0 )
+			mszMRUSize.cy = lLastLength;
+	}
+	//else if( nMode & (LM_HORZDOCK | LM_VERTDOCK) )
+	//{
+	//	if( !IsFloating() )
+	//	{
+	//	}
+	//}
+	lLastLength = nLength;
+	bLastHoriz = !(nMode & LM_LENGTHY);
+
+	CSize szMin( 0, 0 );
+	CSize szMax( 0, 0 );
+	mpDlgObject->GetMinMaxClientSize( szMin, szMax );
+
+	if( szMin.cx > 0 && sizeDefault.cx < szMin.cx )
+		sizeDefault.cx = szMin.cx;
+	else if( szMax.cx > 0 && sizeDefault.cx > szMax.cx )
+		sizeDefault.cx = szMax.cx;
+	if( szMin.cy > 0 && sizeDefault.cy < szMin.cy )
+		sizeDefault.cy = szMin.cy;
+	else if( szMax.cy > 0 && sizeDefault.cy > szMax.cy )
+		sizeDefault.cy = szMax.cy;
+	sizeDefault.cx += (mpDlgObject->GetNCWidth() + lTitleBarWidth);
+	sizeDefault.cy += mpDlgObject->GetNCHeight();
+	return sizeDefault;
+#endif
 }
 
 void CAcadPaletteHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
@@ -278,6 +375,12 @@ void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if( !mpDlgObject->GetControlWnd()->m_hWnd )
 		return;
+#ifdef _BRXTARGET
+	if( !mpDlgObject->IsResizable() )
+		mpDlgObject->OnFrameChanged();
+	if( !IsFloating() )
+		return;
+#endif
 	CRect rcClient;
 	GetClientArea( rcClient );
 	UINT nFlags = (SWP_NOZORDER | SWP_NOACTIVATE/* | SWP_NOCOPYBITS*/ | SWP_NOOWNERZORDER);

@@ -376,7 +376,7 @@
     <ClCompile Include="..\..\Common\ToolTips.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\VarUtils.Cpp">
+    <ClCompile Include="..\..\Common\AxTypeUtils.Cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\Workspace.cpp">
@@ -596,6 +596,9 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\DclImageList.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\DclAxCtrlInitInfo.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1028,7 +1031,7 @@
     <ClInclude Include="..\..\Common\UndoManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\VarUtils.H">
+    <ClInclude Include="..\..\Common\AxTypeUtils.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Workspace.h">
@@ -1335,6 +1338,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\DclImageList.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

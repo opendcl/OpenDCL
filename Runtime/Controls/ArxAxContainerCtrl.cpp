@@ -8,7 +8,7 @@
 #include "InvokeMethod.h"
 #include "ArgumentsRetrieval.h"
 #include "Project.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "Workspace.h"
 
 
@@ -434,8 +434,9 @@ CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane*
 , mArxServices( this )
 {
 	TraceFmt( _T("> CArxAxContainerCtrl::CArxAxContainerCtrl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
-		(LPCTSTR)pTemplate->GetKeyPath(), &*pTemplate, pPane, (LPCTSTR)CString(mpTemplate->GetRuntimeClass()->m_lpszClassName),
-		mpTemplate->GetWindow(), this );
+		(LPCTSTR)pTemplate->GetKeyPath(), &*pTemplate, pPane,
+		mpTemplate->GetAxCtrlInitInfo()? (LPCTSTR)mpTemplate->GetAxCtrlInitInfo()->GetDisplayName() : _T("<UNKNOWN>"),
+		mpTemplate->GetWindow()->GetSafeHwnd(), this );
 
 	if( bCreate ) 
 		Create( pPane->GetHostDialog(), nID );

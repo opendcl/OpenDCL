@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "AxPropertyDescriptor.h"
 #include "AxContainerCtrl.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "Filing.h"
 #include "Workspace.h"
 
@@ -146,7 +146,7 @@ CString AxPropertyDescriptor::GetTypeDisplayName() const
 		return msTypeName;
 	CString sName;
 	if( mGuid != GUID_NULL )
-		sName = GetAxTypeName( mGuid );
+		sName = GetAxShortTypeName( mGuid );
 	if( sName.IsEmpty() )
 		sName = AxTypeToDisplayableLispType( mType, mGuid );
 	return sName;
@@ -166,7 +166,7 @@ CString AxPropertyDescriptor::GetArgDisplayName( size_t idxArg ) const
 	const AxArg& arg = mrArgs.at( idxArg );
 	CString sName;
 	if( arg.clsid != GUID_NULL )
-		sName = GetAxTypeName( arg.clsid );
+		sName = GetAxShortTypeName( arg.clsid );
 	if( sName.IsEmpty() )
 		sName = AxTypeToDisplayableLispType( arg.vt, arg.clsid );
 	return sName;
@@ -177,7 +177,7 @@ HRESULT AxPropertyDescriptor::Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs,
 	DISPPARAMS params = { rvarArgs, NULL, ctArgs, 0 };
 	EXCEPINFO xinfo = { NULL };
 	UINT nErrArg = 0;
-  return pObjectDisp->Invoke( mDispId, IID_NULL, LOCALE_INVARIANT, INVOKE_PROPERTYGET,
+	return pObjectDisp->Invoke( mDispId, IID_NULL, LOCALE_INVARIANT, INVOKE_PROPERTYGET,
 															&params, &varResult, &xinfo, &nErrArg );
 }
 
@@ -314,7 +314,7 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype 
 					{ 
 						if(SUCCEEDED(TheRefType->GetVarDesc( i, &pVarDesc )))
 						{
-	   					CComBSTR  bstrName;
+							CComBSTR  bstrName;
 							if (SUCCEEDED(TheRefType->GetDocumentation(pVarDesc->memid, &bstrName, NULL,NULL,NULL ))) 
 							{   
 								if (i == 0)
@@ -423,7 +423,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 			ar >> mrEnum[i].Name;
 			COleVariant var;
 			ar >> var; 
-      mrEnum[i].Var = var;
+			mrEnum[i].Var = var;
 		}
 		for (size_t i = 0; i < ctParams; ++i)
 		{
@@ -441,51 +441,51 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 
 IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion )
 {
-  if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
+	if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
 	CStringA sName;
-  if (!readString(sFile, sName)) return statInvalidFormat;
+	if (!readString(sFile, sName)) return statInvalidFormat;
 	msName = sName;
 	CStringA sDesc;
-  if (!readString(sFile, sDesc)) return statInvalidFormat;
+	if (!readString(sFile, sDesc)) return statInvalidFormat;
 	msDesc = sDesc;
 
-  if (!readVARTYPE(sFile, mType)) return statInvalidFormat;
+	if (!readVARTYPE(sFile, mType)) return statInvalidFormat;
 	BOOL bArray;
-  if (!readBOOL(sFile, bArray)) return statInvalidFormat;
+	if (!readBOOL(sFile, bArray)) return statInvalidFormat;
 	mbArray = (bArray != FALSE);
 	BOOL bNotReadOnly;
-  if (!readBOOL(sFile, bNotReadOnly)) return statInvalidFormat;
+	if (!readBOOL(sFile, bNotReadOnly)) return statInvalidFormat;
 	mbReadOnly  = (bNotReadOnly == FALSE);
 
-  if (!readCLSID(sFile, mGuid)) return statInvalidFormat;
+	if (!readCLSID(sFile, mGuid)) return statInvalidFormat;
 	int ctEnum;
-  if (!readInt(sFile, ctEnum)) return statInvalidFormat;
+	if (!readInt(sFile, ctEnum)) return statInvalidFormat;
 	mrEnum.resize( ctEnum );
 	int ctParams;
-  if (!readInt(sFile, ctParams)) return statInvalidFormat;
+	if (!readInt(sFile, ctParams)) return statInvalidFormat;
 	mrArgs.resize( ctParams );
-  int iKind;
-  if (!readInt(sFile, iKind)) return statInvalidFormat;
+	int iKind;
+	if (!readInt(sFile, iKind)) return statInvalidFormat;
 	mInvKind = (INVOKEKIND)iKind;
-  for (size_t i = 0; i < (size_t)ctEnum; ++i)
-  {
+	for (size_t i = 0; i < (size_t)ctEnum; ++i)
+	{
 		CStringA sName;
-    if (!readString(sFile, sName)) return statInvalidFormat;
+		if (!readString(sFile, sName)) return statInvalidFormat;
 		mrEnum[i].Name = sName;
-    COleVariant var;
-    if (!readOleVariant(sFile, var)) return statInvalidFormat;
-    mrEnum[i].Var = var;
-  }
-  for (int i = 0; i < ctParams; ++i)
-  {
-    if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
+		COleVariant var;
+		if (!readOleVariant(sFile, var)) return statInvalidFormat;
+		mrEnum[i].Var = var;
+	}
+	for (int i = 0; i < ctParams; ++i)
+	{
+		if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
 		CStringA sName;
-    if (!readString(sFile, sName)) return statInvalidFormat;
+		if (!readString(sFile, sName)) return statInvalidFormat;
 		mrArgs[i].name = sName;
 		if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
-  }
+	}
 
-  return statOK;
+	return statOK;
 }
 
 //IOStatus AxPropertyDescriptor::WriteToTextFile( FILE* pFile ) const

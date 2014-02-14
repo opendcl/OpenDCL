@@ -10,7 +10,7 @@
 #include "ArxWorkspace.h"
 #include "DclFormTemplate.h"
 #include "ControlPane.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include <math.h>
 
 

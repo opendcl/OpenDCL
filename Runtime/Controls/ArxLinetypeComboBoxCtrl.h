@@ -3,11 +3,11 @@
 
 #pragma once
 
-#if (_ACADTARGET < 17)
+#if defined(_ARXTARGET) && (_ARXTARGET < 17)
 //The new AcUiLinetypeComboBox was not introduced until AutoCAD 2006, so we're just
 //using a plain text combo with a linetype handler in older versions of AutoCAD
 #include "ArxR16LinetypeComboBoxCtrl.h"
-#else //(_ACADTARGET < 17)
+#else //defined(_ARXTARGET) && (_ARXTARGET < 17)
 
 #include "DialogControl.h"
 #include "ArxControlServices.h"
@@ -50,4 +50,4 @@ protected:
 	afx_msg void OnCbnDropdown();
 };
 
-#endif //(_ACADTARGET < 17)
+#endif //defined(_ARXTARGET) && (_ARXTARGET < 17)

@@ -12,7 +12,7 @@
 #include "AxContainerCtrl.h"
 #include "Filing.h"
 #include "OleFont.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "Workspace.h"
 #include "Project.h"
 #include "Resource.h"

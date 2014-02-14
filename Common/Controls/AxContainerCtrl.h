@@ -44,6 +44,7 @@ public:
 	HRESULT GetOleObject( IOleObject** ppOleObject );
 
 protected:
+	bool Create( const CLSID& clsid, CWnd* pParentWnd, DWORD dwStyle, UINT nID, CRect ArxRect, COleStreamFile* pStreamFile, BSTR bstrLicenseKey );
 	UINT ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* pTI, LPOLEOBJECT pIObject = NULL, bool bEnumList = false );
 	UINT ExtractEventInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo, bool bUseAsType );
 	UINT ExtractMethodInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo );
@@ -55,7 +56,7 @@ public:
 	HRESULT GetProperty( const AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	HRESULT SetProperty( const AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs );
 	HRESULT Invoke( AxMethodDescriptor* axMethod, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	bool ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid );
+	bool ExtractComponentsFromTLB( TDclControlPtr pDclControl );
 	bool GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPages );
 	bool ParseTypeLibInfo();
 

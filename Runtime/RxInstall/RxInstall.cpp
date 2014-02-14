@@ -289,7 +289,7 @@ public:
 		}
 };
 
-static UINT GetRxCommandArray( LPCTSTR*& rpszCommands )
+static UINT GetRxRuntimeCommandArray( LPCTSTR*& rpszCommands )
 {
 	static LPCTSTR rszCommands[] =
 	{
@@ -297,6 +297,28 @@ static UINT GetRxCommandArray( LPCTSTR*& rpszCommands )
 	};
 	rpszCommands = rszCommands;
 	return _elements(rszCommands);
+}
+
+static UINT GetRxStudioCommandArray( LPCTSTR*& rpszCommands )
+{
+	static LPCTSTR rszCommands[] =
+	{
+		_T("OPENDCL"),
+		_T("OPENDCLDEMO"),
+	};
+	rpszCommands = rszCommands;
+	return _elements(rszCommands);
+}
+
+static bool IsStudioInstalled()
+{
+	static bool bIsStudioInstalled = (NULL != RegKey( _T("OpenDCL.Project"), HKEY_CLASSES_ROOT, false, KEY_READ ));
+	return bIsStudioInstalled;
+}
+
+static UINT GetRxCommandArray( LPCTSTR*& rpszCommands )
+{
+	return (IsStudioInstalled()? GetRxStudioCommandArray( rpszCommands ) : GetRxRuntimeCommandArray( rpszCommands ));
 }
 
 
@@ -576,7 +598,7 @@ public:
 			}
 			return GetSiblingModulePath( sAppFilename );
 		}
-	void CreateDemandLoadEntry( RegKey& rkDemandLoad, LPCTSTR pszModifier = NULL ) const
+	void CreateDemandLoadEntry( RegKey& rkDemandLoad, bool bLoadOnStartup = false, LPCTSTR pszModifier = NULL ) const
 		{
 			if( !rkDemandLoad )
 				return;
@@ -587,7 +609,7 @@ public:
 				rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( pszModifier ) );
 				rkDemandLoad.SetValue( REGKEY_DESCRIPTION, GetAppLongName() );
 				if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
-					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
+					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest | (bLoadOnStartup? kOnAutoCADStartup : 0) );
 				{
 					RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
 					LPCTSTR* rpszCommands = NULL;
@@ -607,7 +629,7 @@ public:
 				rkDemandLoad.SetValue( REGVAL_REGPATH, pszRegPath );
 				delete [] pszRegPath;
 				if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
-					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
+					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest | (bLoadOnStartup? kOnAutoCADStartup : 0) );
 				{
 					RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true, KEY_WRITE );
 					rkLoader.SetValue( _MODULE, GetTargetModulePath( pszModifier ) );
@@ -627,7 +649,7 @@ public:
 };
 
 
-void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true )
+void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bWantHKLM = true, bool bLoadOnStartup = false )
 {
 	bool bX64 = (Target.architecture() == TargetModule::kX64);
 	HKEY hkRoot = Target.GetTargetRootRegKey( bWantHKLM );
@@ -638,7 +660,7 @@ void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bW
 		//no 'Applications' subkey
 		switch( Target.platform() )
 		{
-		case TargetModule::kAutoCADPlatform:
+		case TargetModule::kAutoCAD:
 			return; //skip AutoCAD keys with no existing 'Applications' subkey
 		}
 	}
@@ -650,11 +672,11 @@ void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bW
 											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkDemandLoad )
 		return;
-	Target.CreateDemandLoadEntry( rkDemandLoad, (bX64? _T("x64") : NULL) );
+	Target.CreateDemandLoadEntry( rkDemandLoad, bLoadOnStartup, (bX64? _T("x64") : NULL) );
 }
 
 
-bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true )
+bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, bool bLoadOnStartup = false )
 {
 	bool bX64 = (Target.architecture() == TargetModule::kX64);
 	String sRootKey = Target.GetTargetAppRegKey();
@@ -684,7 +706,7 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true )
 		sTargetKey += _T('\\');
 		sTargetKey += sSubkey;
 		if( bWantHKLM &&
-				Target.architecture() == TargetModule::kBricscad &&
+				Target.platform() == TargetModule::kBricscad &&
 				Target.majorVersion() == TargetModule::kBRX9 )
 		{
 			RegKey rkRoot( sTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
@@ -700,9 +722,45 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true )
 				RegKey rkApps( _T("Applications"), rkLang, true, KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 			}
 		}
-		RxSelfInstallImp( Target, sTargetKey, bWantHKLM );
+		RxSelfInstallImp( Target, sTargetKey, bWantHKLM, bLoadOnStartup );
 	}
 	return true;
+}
+
+void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStartup )
+{
+	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2014x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD14, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2000, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2004, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2005, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2006, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2007, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	if( IsWow64() )
+	{
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	}
 }
 
 extern "C"
@@ -728,41 +786,37 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 #else
 	bool bWantHKLM = true;
 #endif
-	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2014x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad12, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x86, sInstallDir ), bWantHKLM );
-	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD14, sInstallDir ), bWantHKLM );
-	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2000, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2004, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2005, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2006, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2007, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013x86, sInstallDir ), bWantHKLM );
-	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014x86, sInstallDir ), bWantHKLM );
-	if( IsWow64() )
+
+	// Decide whether to autostart the OPENDCLDEMO command on next startup
+	bool bLoadOnNextStartup = false;
+	if( IsStudioInstalled() )
 	{
-		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2011x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2012x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2013x64, sInstallDir ), bWantHKLM );
-		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2014x64, sInstallDir ), bWantHKLM );
+		DWORD dwLastAutoStart = (DWORD)-1;
+		RegKey rkCU( _T("Software\\OpenDCL"), HKEY_CURRENT_USER, false, KEY_READ | KEY_WRITE );
+		if (rkCU)
+		{
+			dwLastAutoStart = rkCU.GetDword( _T("LastAutoStart") );
+			if( dwLastAutoStart != (DWORD)-1 )
+			{
+				SYSTEMTIME st;
+				GetSystemTime( &st );
+				DWORD dwNow = (((st.wYear - 2000) * 365) + ((st.wMonth - 1) * 30) + st.wDay); //approximate number of days since 2000-01-01
+				rkCU.SetValue( _T("LastAutoStart"), dwNow );
+				bLoadOnNextStartup = ((dwLastAutoStart == 0) || (dwNow - dwLastAutoStart >= 365));
+				rkCU.SetValue( _T("DisableAutoStartOnNextLoad"), bLoadOnNextStartup? 1 : 0 );
+			}
+		}
 	}
+
+	if (bWantHKLM && bLoadOnNextStartup)
+	{
+		InstallAllTargets( sInstallDir, true, false );
+		InstallAllTargets( sInstallDir, false, true );
+	}
+	else
+		InstallAllTargets( sInstallDir, bWantHKLM, bLoadOnNextStartup );
 	return ERROR_SUCCESS;
 }
-
 
 bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot, bool bX64 = false )
 {
@@ -797,68 +851,47 @@ bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot, bool bX64 = false )
 	return true;
 }
 
+void UninstallAllTargets( HKEY hkRoot )
+{
+	//RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R14.0"), hkRoot );
+	//RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R15.0"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.0"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.1"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.2"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.0"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14"), hkRoot );
+	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), hkRoot );
+	if( IsWow64() )
+	{
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), hkRoot, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
+	}
+}
+
 extern "C"
 __declspec(dllexport)
 UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 {
-	//RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R14.0"), HKEY_LOCAL_MACHINE );
-	//RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R15.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.0"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.1"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.1"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.2"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R16.2"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.0"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V12"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14"), HKEY_CURRENT_USER );
-	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), HKEY_LOCAL_MACHINE );
-	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), HKEY_CURRENT_USER );
-	if( IsWow64() )
-	{
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.2"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.0"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.1"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R18.2"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.0"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R19.1"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), HKEY_CURRENT_USER, true );
-		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), HKEY_LOCAL_MACHINE, true );
-		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), HKEY_CURRENT_USER, true );
-	}
+	UninstallAllTargets( HKEY_LOCAL_MACHINE );
+	UninstallAllTargets( HKEY_CURRENT_USER );
 	return ERROR_SUCCESS;
 }

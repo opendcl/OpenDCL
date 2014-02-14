@@ -10,11 +10,11 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>.\;..\;.\VI;$(ARX2007)\Inc;$(MSVC8)\Include;$(MSVC8)\ATLMFC\Include;$(MSVC8)\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ACADTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=17;_ARXTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_ACADTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=17;_ARXTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ARX2007)\Lib;$(MSVC8)\Lib;$(MSVC8)\ATLMFC\Lib;$(MSVC8)\PlatformSDK\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -22,7 +22,7 @@
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
     </Link>
     <Midl>
-      <PreprocessorDefinitions>_ACADTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=17;_ARXTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ARX2007)\Inc;$(MSVC8)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateStublessProxies>true</GenerateStublessProxies>
       <HeaderFileName>%(Filename).h</HeaderFileName>

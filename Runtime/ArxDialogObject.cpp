@@ -53,7 +53,7 @@ void CArxDialogObject::CDocReactor::documentToBeDestroyed(AcApDocument* pDocToDe
 	if( acDocManager->documentCount() == 1 )
 	{
 		resbuf rbSDI = { NULL };
-		if( acedGetVar( ACRX_T("SDI"), &rbSDI ) != RTNORM || rbSDI.resval.rint != 1 )
+		if( acedGetVar( _ACRX_T("SDI"), &rbSDI ) != RTNORM || rbSDI.resval.rint != 1 )
 		{
 			mpDialogobject->OnEnteringNoDocState();
 			mpDialogobject->GetArxServices()->HandleEvent( msEnteringNoDocStateEvent, false, args_null(), pDocToDestroy );

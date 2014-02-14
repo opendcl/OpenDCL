@@ -5,6 +5,7 @@
 //define ACHAR type
 typedef char ACHAR;
 #define ACRX_T(x) x
+#define _ACRX_T(x) x
 
 #include <TChar.h> //needed by acrxEntryPoint.cpp
 

@@ -39,16 +39,6 @@ ControlType CToolboxPane::GetSelectedTool() const
 	return (ControlType)(mnSelectedCtrl);
 }
 
-bool CToolboxPane::GetActiveXControlInfo( CLSID& clsid, CString& sLicenseKey, CString& sFilename ) const
-{
-	if( clsid == GUID_NULL )
-		return false;
-	clsid = mAxClsid;
-	sLicenseKey = msAxLicenseKey;
-	sFilename = msAxFileName;
-	return true;
-}
-
 void CToolboxPane::ResetToPointer()
 {
 	mToolbar.CheckButton(ID_TOOLBOX_POINTER, TRUE);
@@ -148,7 +138,7 @@ BOOL CToolboxPane::OnInitDialog()
 	mToolbar.EnableWindow( TRUE );
 	mToolbar.EnableToolTips(TRUE);	
 	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
+								// EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
 
@@ -191,15 +181,15 @@ void CToolboxPane::OnSize(UINT nType, int cx, int cy)
 void CToolboxPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-  lpTTT->lpszText = MAKEINTRESOURCEW(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
-  lpTTT->hinst = AfxGetResourceHandle();
+	lpTTT->lpszText = MAKEINTRESOURCEW(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
+	lpTTT->hinst = AfxGetResourceHandle();
 }
 
 void CToolboxPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXTA lpTTT = (LPTOOLTIPTEXTA)pNotifyStruct;
-  lpTTT->lpszText = MAKEINTRESOURCEA(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
-  lpTTT->hinst = AfxGetResourceHandle();
+	lpTTT->lpszText = MAKEINTRESOURCEA(nID - ID_TOOLBOX_POINTER + IDS_POINTER);
+	lpTTT->hinst = AfxGetResourceHandle();
 }
 
 BOOL CToolboxPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 
@@ -457,15 +447,12 @@ void CToolboxPane::OnToolboxActivex()
 		return;
 	}
 
-	mAxClsid = dlg.m_clsid;
-	msAxFileName = dlg.m_FileName;
 	mbToolSelected = true;
 	CString sLicenseKey;
 	CWaitCursor wait;
-	if( RequestLicenseKey( sLicenseKey, dlg.m_clsid ) == TRUE )
-		msAxLicenseKey = sLicenseKey;
-	else
-		msAxLicenseKey.Empty();
+	if( RequestLicenseKey( sLicenseKey, dlg.m_clsid ) != TRUE )
+		sLicenseKey.Empty();
+	mpAxCtrlInitInfo = new CDclAxCtrlInitInfo( dlg.m_clsid, sLicenseKey );
 }
 
 void CToolboxPane::OnToolboxDwglist() 

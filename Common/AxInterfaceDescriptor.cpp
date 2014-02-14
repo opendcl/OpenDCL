@@ -8,7 +8,7 @@
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "AxContainerCtrl.h"
 #include "OleFont.h"
 

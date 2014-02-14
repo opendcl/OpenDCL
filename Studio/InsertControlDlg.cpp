@@ -3,6 +3,7 @@
 
 #include "StdAfx.h"
 #include "InsertControlDlg.h"
+#include "AxTypeUtils.h"
 #include "Workspace.h"
 
 
@@ -11,8 +12,8 @@
 
 
 CInsertControlDlg::CInsertControlDlg( CWnd* pParent ) :
-   CDialog( CInsertControlDlg::IDD, pParent ),
-   m_clsid( CLSID_NULL )
+	 CDialog( CInsertControlDlg::IDD, pParent ),
+	 m_clsid( CLSID_NULL )
 {
 	//{{AFX_DATA_INIT(CInsertControlDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -32,20 +33,20 @@ void CInsertControlDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CONTROLS, m_lbControls);
 	//}}AFX_DATA_MAP
 
-   if( pDX->m_bSaveAndValidate )
-   {
-	  iItem = m_lbControls.GetCurSel();
-	  if( iItem == LB_ERR )
-	  {
+	 if( pDX->m_bSaveAndValidate )
+	 {
+		iItem = m_lbControls.GetCurSel();
+		if( iItem == LB_ERR )
+		{
 		 m_clsid = CLSID_NULL;
-	  }
-	  else
-	  {
+		}
+		else
+		{
 		 posControl = POSITION( m_lbControls.GetItemDataPtr( iItem ) );
 		 ASSERT( posControl != NULL );
 		 m_clsid = m_lControls.GetAt( posControl );
-	  }
-   }
+		}
+	 }
 }
 
 
@@ -75,7 +76,7 @@ BOOL CInsertControlDlg::OnInitDialog()
 		sErr.Format( _T("Failed to create Component Categories Manager!\r\nHRESULT: %X"), hResult );
 		MessageBox( sErr, _T("Error") );
 		EndDialog( IDCANCEL );
-	  return( TRUE );
+		return( TRUE );
 	}
 
 	CDialog::OnInitDialog();
@@ -158,86 +159,81 @@ void GetClassServerPath( REFCLSID clsid, CString& strServerPath )
 
 void CInsertControlDlg::RefreshControlList()
 {
-   BOOL tDone;
-   HRESULT hResult;
-   IEnumGUIDPtr pEnum;
-   ULONG nImplementedCategories;
-   CATID* pcatidImpl;
-   ULONG nRequiredCategories;
-   CATID* pcatidReq;
-   CLSID clsid;
-   LPOLESTR pszName;
-   CString strName;
-   ULONG iCategory;
-   int iItem;
-   POSITION posControl;
-   CString strServerPath;
-   CString strString;
+	 BOOL tDone;
+	 HRESULT hResult;
+	 IEnumGUIDPtr pEnum;
+	 ULONG nImplementedCategories;
+	 CATID* pcatidImpl;
+	 ULONG nRequiredCategories;
+	 CATID* pcatidReq;
+	 CLSID clsid;
+	 CString strName;
+	 ULONG iCategory;
+	 int iItem;
+	 POSITION posControl;
+	 CString strServerPath;
+	 CString strString;
 
-   m_lbControls.ResetContent();
-   m_lControls.RemoveAll();
+	 m_lbControls.ResetContent();
+	 m_lControls.RemoveAll();
 
-   nImplementedCategories = (ULONG)m_aImplementedCategories.GetSize();
-   if( nImplementedCategories == 0 )
-   {
-	  nImplementedCategories = ULONG( -1 );
-	  pcatidImpl = NULL;
-   }
-   else
-   {
-	  pcatidImpl = (CATID*)_alloca( nImplementedCategories*sizeof( CATID ) );
-	  for( iCategory = 0; iCategory < nImplementedCategories; iCategory++ )
-	  {
+	 nImplementedCategories = (ULONG)m_aImplementedCategories.GetSize();
+	 if( nImplementedCategories == 0 )
+	 {
+		nImplementedCategories = ULONG( -1 );
+		pcatidImpl = NULL;
+	 }
+	 else
+	 {
+		pcatidImpl = (CATID*)_alloca( nImplementedCategories*sizeof( CATID ) );
+		for( iCategory = 0; iCategory < nImplementedCategories; iCategory++ )
+		{
 		 pcatidImpl[iCategory] = m_aImplementedCategories[iCategory];
-	  }
-   }
-   nRequiredCategories = m_aRequiredCategories.GetSize();  
-   if( nRequiredCategories == 0 )
-   {
-	   nRequiredCategories = ULONG( -1 );
-	   pcatidReq = NULL;
-   }
-   else
-   {
- 	  pcatidReq = (CATID*)_alloca( nRequiredCategories*sizeof( CATID ) );
- 	  for( iCategory = 0; iCategory < nRequiredCategories; iCategory++ )
-	  {
-	 	 pcatidReq[iCategory] = m_aRequiredCategories[iCategory];
-	  }
-   }
+		}
+	 }
+	 nRequiredCategories = m_aRequiredCategories.GetSize();  
+	 if( nRequiredCategories == 0 )
+	 {
+		 nRequiredCategories = ULONG( -1 );
+		 pcatidReq = NULL;
+	 }
+	 else
+	 {
+		pcatidReq = (CATID*)_alloca( nRequiredCategories*sizeof( CATID ) );
+		for( iCategory = 0; iCategory < nRequiredCategories; iCategory++ )
+		{
+		 pcatidReq[iCategory] = m_aRequiredCategories[iCategory];
+		}
+	 }
 
-   hResult = m_pCatInfo->EnumClassesOfCategories( nImplementedCategories,
-	  pcatidImpl, nRequiredCategories, pcatidReq, &pEnum );
-   if( FAILED( hResult ) )
-   {
-	  return;
-   }
+	 hResult = m_pCatInfo->EnumClassesOfCategories( nImplementedCategories,
+		pcatidImpl, nRequiredCategories, pcatidReq, &pEnum );
+	 if( FAILED( hResult ) )
+	 {
+		return;
+	 }
 
-   tDone = FALSE;
-   while( !tDone )
-   {
-	  hResult = pEnum->Next( 1, &clsid, NULL );
-	  if( hResult == S_OK )
-	  {
-		 pszName = NULL;
-		 hResult = OleRegGetUserType( clsid, USERCLASSTYPE_FULL, &pszName );
-		 if( SUCCEEDED( hResult ) )
+	 tDone = FALSE;
+	 while( !tDone )
+	 {
+		hResult = pEnum->Next( 1, &clsid, NULL );
+		if( hResult == S_OK )
+		{
+		 strName = GetAxLongTypeName( clsid );
+		 if( !strName.IsEmpty() )
 		 {
-			strName = pszName;
-			CoTaskMemFree( pszName );
-			pszName = NULL;
-			iItem = m_lbControls.AddString( strName );
-			posControl = m_lControls.AddTail( clsid );
-			m_lbControls.SetItemDataPtr( iItem, posControl );
+			 iItem = m_lbControls.AddString( strName );
+			 posControl = m_lControls.AddTail( clsid );
+			 m_lbControls.SetItemDataPtr( iItem, posControl );
 		 }
-	  }
-	  else
-	  {
+		}
+		else
+		{
 		 tDone = TRUE;
-	  }
-   }
+		}
+	 }
 
-   OnControlsSelChange();
+	 OnControlsSelChange();
 }
 
 
@@ -249,26 +245,26 @@ void CInsertControlDlg::OnControlsDblClk()
 
 void CInsertControlDlg::OnControlsSelChange()
 {
-   int iItem;
-   POSITION posControl;
-   CString strServerPath;
-   CLSID clsid;
+	 int iItem;
+	 POSITION posControl;
+	 CString strServerPath;
+	 CLSID clsid;
 
-   iItem = m_lbControls.GetCurSel();
-   if( iItem != LB_ERR )
-   {
-	  m_butOK.EnableWindow( TRUE );
-	  posControl = POSITION( m_lbControls.GetItemDataPtr( iItem ) );
-	  clsid = m_lControls.GetAt( posControl );
-	  GetClassServerPath( clsid, strServerPath );
-	  m_staticServerPath.SetWindowText( strServerPath );
-	  m_FileName = strServerPath;
-   }
-   else
-   {
-	  m_butOK.EnableWindow( FALSE );
-	  m_staticServerPath.SetWindowText( NULL );
-   }
+	 iItem = m_lbControls.GetCurSel();
+	 if( iItem != LB_ERR )
+	 {
+		m_butOK.EnableWindow( TRUE );
+		posControl = POSITION( m_lbControls.GetItemDataPtr( iItem ) );
+		clsid = m_lControls.GetAt( posControl );
+		GetClassServerPath( clsid, strServerPath );
+		m_staticServerPath.SetWindowText( strServerPath );
+		m_FileName = strServerPath;
+	 }
+	 else
+	 {
+		m_butOK.EnableWindow( FALSE );
+		m_staticServerPath.SetWindowText( NULL );
+	 }
 }
 
 typedef HRESULT (STDAPICALLTYPE* PDLLREGISTERSERVER)( void );

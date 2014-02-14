@@ -33,6 +33,7 @@ public:
 	virtual bool SetValue( LPCSTR pszName, DWORD dwValue );
 	virtual bool SetValue( LPCSTR pszName, const BYTE* pbData, DWORD cbData );
 	virtual LPCSTR GetString( LPCSTR pszName ) const;
+	virtual DWORD GetDword( LPCSTR pszName ) const;
 	operator HKEY () const { return m_hkThis; }
 	LPCSTR Key() const { return m_pszKey; }
 	HKEY Root() const { return m_hkRoot; }

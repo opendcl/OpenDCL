@@ -20,6 +20,10 @@ class CAcadPaletteHost : public CAdUiPaletteSet
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
 
+#ifdef _BRXTARGET
+	CSize mszMRUSize;
+#endif
+
 // Construction
 public:
 	CAcadPaletteHost( CPaletteDlg* pDlgObject, CWnd *pParent = NULL );
@@ -35,7 +39,9 @@ private:
 	virtual bool CanFrameworkTakeFocus();
 	virtual void DrawBorders(CDC* pDC, CRect& rect);
 	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
+	virtual DWORD RecalcDelayShow(AFX_SIZEPARENTPARAMS* lpLayout);
 	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
+	virtual CSize CalcDynamicLayout(int nLength, DWORD nMode);
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
 	virtual void GetMinimumSize(CSize& size);
 	virtual void GetMaximumSize(CSize& size);
@@ -47,7 +53,7 @@ private:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-  virtual BOOL OnCommand (WPARAM wParam, LPARAM lParam);
+	virtual BOOL OnCommand (WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);

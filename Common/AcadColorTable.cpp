@@ -7,10 +7,10 @@
 
 
 /* The following table maps the  256 standard AutoCAD colours into RGB
-   values with a Maxval of 255.  These colours are actually derived in
-   an  algorithmic way from the HLS colour system, but it's easier and
-   faster  to  just provide a table than to compute the RGB components
-   on the fly from the colour index. */
+	 values with a Maxval of 255.  These colours are actually derived in
+	 an  algorithmic way from the HLS colour system, but it's easier and
+	 faster  to  just provide a table than to compute the RGB components
+	 on the fly from the colour index. */
 
 static unsigned char acadcol[256][3] =
 {

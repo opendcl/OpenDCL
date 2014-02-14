@@ -1663,7 +1663,7 @@ void CPropertyGridCtrl::ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LP
 			}
 		}
 	}
-	CWnd* pFocusWnd = GetFocus();
+	CWnd* pActiveWnd = GetActiveWindow();
 	CLSID FAR * pPropPages = lpPages;
 	ULONG ctPropPages = ctPages;
 	if( ctPropPages == 0 )
@@ -1687,8 +1687,8 @@ void CPropertyGridCtrl::ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LP
 	};
 	if( S_OK == OleCreatePropertyFrameIndirect( &params ) )
 	{
-		if( pFocusWnd )
-			pFocusWnd->SetFocus();
+		if( pActiveWnd )
+			pActiveWnd->SetActiveWindow();
 		for( TPropertySet::const_iterator iter = PropertySet.begin();
 				 iter != PropertySet.end();
 				 ++iter )

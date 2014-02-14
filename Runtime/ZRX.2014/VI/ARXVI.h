@@ -2,6 +2,8 @@
 
 #define _ACADTARGET 17
 
+#define _ACRX_T(x) x
+
 
 //custom macro for use with command names that include special characters (e.g. hyphens)
 #define ACED_ARXCOMMAND_ENTRY_KEY_AUTO(T_CLASS,T_KEY,T_GROUPNAME,T_GLOBALNAME,T_LOCALNAME,T_FLAGS,T_CONTEXT) \

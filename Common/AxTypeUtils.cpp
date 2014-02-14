@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "Workspace.h"
 #include "Resource.h"
 
@@ -262,7 +262,7 @@ void SetRefType( VARTYPE& vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID& 
 	}
 }
 
-CString GetAxTypeName( const CLSID& clsid )
+CString GetAxProgId( const CLSID& clsid )
 {
 	CString sName;
 	WCHAR* pwszProgID = NULL;        
@@ -272,8 +272,49 @@ CString GetAxTypeName( const CLSID& clsid )
 		sName = pwszProgID;
 		CoTaskMemFree( pwszProgID );
 	}
+	return sName;
+}
+
+CString GetAxShortTypeName( LPCTSTR pszProgId )
+{
+	CString sName = pszProgId;
 	sName.MakeReverse();
 	sName = sName.Right( sName.GetLength() - sName.SpanIncluding( _T("0123456789.") ).GetLength() ).SpanExcluding( _T(".") );
 	sName.MakeReverse();
 	return sName;
+}
+
+CString GetAxShortTypeName( const CLSID& clsid )
+{
+	return GetAxShortTypeName( GetAxProgId( clsid ) );
+}
+
+CString GetAxLongTypeName( const CLSID& clsid )
+{
+	CString sName;
+	LPOLESTR pwszName = NULL;        
+	HRESULT hr = OleRegGetUserType( clsid, USERCLASSTYPE_FULL, &pwszName );
+	if( SUCCEEDED(hr) )
+	{
+		sName = pwszName;
+		CoTaskMemFree( pwszName );
+	}
+	return sName;
+}
+
+bool IsMicrosoftCtrl( const CLSID& clsid )
+{	
+	CString sName;
+	try
+	{
+		LPOLESTR pwszUserType = NULL;	
+		OleRegGetUserType( clsid, USERCLASSTYPE_FULL, &pwszUserType );
+		sName = pwszUserType;
+		CoTaskMemFree( pwszUserType );
+	}
+	catch(...)
+	{
+		return false;
+	}
+	return (sName.Left( 9 ) == _T("Microsoft"));
 }

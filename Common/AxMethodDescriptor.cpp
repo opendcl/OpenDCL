@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AxMethodDescriptor.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "Project.h"
 #include "Filing.h"
 
@@ -100,7 +100,7 @@ CString AxMethodDescriptor::GetReturnTypeDisplayName() const
 		return msReturnTypeName;
 	CString sName;
 	if( mReturnGuid != GUID_NULL )
-		sName = GetAxTypeName( mReturnGuid );
+		sName = GetAxShortTypeName( mReturnGuid );
 	if( sName.IsEmpty() )
 		sName = AxTypeToDisplayableLispType( mReturnType, mReturnGuid );
 	return sName;
@@ -116,7 +116,7 @@ HRESULT AxMethodDescriptor::Invoke( IDispatch* pObjectDisp, const VARIANTARG* rv
 
 	EXCEPINFO excepInfo = {0};
 	UINT iArgErr = 0;
-  return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( DISPATCH_METHOD ),
+	return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( DISPATCH_METHOD ),
 															&dpParams, &varResult, &excepInfo, &iArgErr );
 }
 
@@ -212,42 +212,42 @@ void AxMethodDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 
 IOStatus AxMethodDescriptor::ReadFromTextFile(std::ifstream &sFile)
 {
-  int iVersion;
-  if (!readInt(sFile, iVersion)) return statInvalidFormat;
+	int iVersion;
+	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
-  switch (iVersion) {
-    case 2 : 
-      return ReadFromTextFile2(sFile);
-      break;
-  }
-  return statInvalidFormat;
+	switch (iVersion) {
+		case 2 : 
+			return ReadFromTextFile2(sFile);
+			break;
+	}
+	return statInvalidFormat;
 }
 
 IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
 {
-  if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
+	if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
 	CStringA sName;
 	if (!readString(sFile, sName)) return statInvalidFormat;
 	msName = sName;
 	CStringA sUnusedParams;
-  if (!readString(sFile, sUnusedParams)) return statInvalidFormat;
+	if (!readString(sFile, sUnusedParams)) return statInvalidFormat;
 	CStringA sDesc;
-  if (!readString(sFile, sDesc)) return statInvalidFormat;
+	if (!readString(sFile, sDesc)) return statInvalidFormat;
 	msDesc = sDesc;
-  if (!readVARTYPE(sFile, mReturnType)) return statInvalidFormat;
+	if (!readVARTYPE(sFile, mReturnType)) return statInvalidFormat;
 	int ctArgs;
-  if (!readInt(sFile, ctArgs)) return statInvalidFormat;
-  if (!readCLSID(sFile, mReturnGuid)) return statInvalidFormat;
+	if (!readInt(sFile, ctArgs)) return statInvalidFormat;
+	if (!readCLSID(sFile, mReturnGuid)) return statInvalidFormat;
 	mrArgs.resize(ctArgs);
-  for (int i = 0; i < ctArgs; ++i)
-  {
-    if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
+	for (int i = 0; i < ctArgs; ++i)
+	{
+		if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
 		CStringA sName;
-    if (!readString(sFile, sName)) return statInvalidFormat;
+		if (!readString(sFile, sName)) return statInvalidFormat;
 		mrArgs[i].name = sName;
-    if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
-  }
-  return statOK;
+		if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
+	}
+	return statOK;
 }
 
 

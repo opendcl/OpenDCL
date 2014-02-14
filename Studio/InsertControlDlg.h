@@ -35,12 +35,12 @@ public:
 
 // Implementation
 protected:
-   void RefreshControlList();
+	 void RefreshControlList();
 
-   ICatInformationPtr m_pCatInfo;
-   CArray< CATID, CATID& > m_aImplementedCategories;
-   CArray< CATID, CATID& > m_aRequiredCategories;
-   CList< CLSID, CLSID& > m_lControls;
+	 ICatInformationPtr m_pCatInfo;
+	 CArray< CATID, CATID& > m_aImplementedCategories;
+	 CArray< CATID, CATID& > m_aRequiredCategories;
+	 CList< CLSID, CLSID& > m_lControls;
 
 	// Generated message map functions
 	//{{AFX_MSG(CInsertControlDlg)

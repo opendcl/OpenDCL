@@ -64,7 +64,7 @@
 #include "ArxDialogControl.h"
 #include "StringCompare.h"
 #include "FolderBrowseDlg.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "ArxAcadSlideCtrl.h"
 #include "AcadColorTable.h"
 #include "LineWeightDlg.h"
@@ -88,9 +88,9 @@
 		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(old##name)
 #elif _BRXTARGET
 	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(T_CLASS,T_NAME,T_REGISTERFUNCTION) \
-		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,ACRX_T("dcl-") ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
+		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,_ACRX_T("dcl-") _ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
 		const bool __adsRegisteredFunction_##T_CLASS##T_NAME = __adsRegisteredSymbol_##T_NAME.registerFunction(); \
-		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_old##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,ACRX_T("dcl_") ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
+		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_old##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,_ACRX_T("dcl_") _ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
 		const bool __adsRegisteredFunction_##T_CLASSold##T_NAME = __adsRegisteredSymbol_old##T_NAME.registerFunction();
 #else
 	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
@@ -979,6 +979,84 @@ protected:
 			static const CString sPrefix = dclPrefix() + _T("Control-Set");
 			return sPrefix;
 		}
+	static bool disableAutostart( LPCTSTR pszRegKey, bool bX64 )
+		{
+			CString sRegTarget = _T("Software\\");
+			sRegTarget += pszRegKey;
+			HKEY hkRegTarget = NULL;
+			if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, sRegTarget, 0, KEY_READ | (bX64? KEY_WOW64_64KEY : KEY_WOW64_32KEY), &hkRegTarget ) )
+			{
+				DWORD cchMaxSubkey = MAX_PATH;
+				RegQueryInfoKey( hkRegTarget, NULL, NULL, NULL, NULL, &cchMaxSubkey, NULL, NULL, NULL, NULL, NULL, NULL );
+				TCHAR* pszSubkey = new TCHAR[cchMaxSubkey + 1];
+				DWORD idxSubkey = 0;
+				DWORD dwBufSize = cchMaxSubkey + 1;
+				while( RegEnumKeyEx( hkRegTarget,
+															idxSubkey,
+															pszSubkey,
+															&dwBufSize,
+															NULL,
+															NULL,
+															NULL,
+															NULL ) == ERROR_SUCCESS )
+				{
+					idxSubkey++;
+					CString sSubkey = pszSubkey;
+					sSubkey += _T("\\Applications\\OpenDCL");
+					HKEY hkRegApp = NULL;
+					if( ERROR_SUCCESS == RegOpenKeyEx( hkRegTarget, sSubkey, 0, KEY_READ | KEY_WRITE | (bX64? KEY_WOW64_64KEY : KEY_WOW64_32KEY), &hkRegApp ) )
+					{
+						DWORD dwLoadCtrls = 0;
+						DWORD dwSize = sizeof(dwLoadCtrls);
+						DWORD dwType;
+						if( ERROR_SUCCESS == RegQueryValueEx( hkRegApp, _T("LOADCTRLS"), 0, &dwType, (BYTE*)&dwLoadCtrls, &dwSize ) )
+						{
+							dwLoadCtrls &= (~DWORD(AcadApp::kOnAutoCADStartup));
+							RegSetValueEx( hkRegApp, _T("LOADCTRLS"), 0, REG_DWORD, (BYTE*)&dwLoadCtrls, sizeof(dwLoadCtrls) );
+						}
+						RegCloseKey( hkRegApp );
+					}
+					dwBufSize = cchMaxSubkey + 1;
+				}
+				delete[] pszSubkey;
+				RegCloseKey( hkRegTarget );
+			}
+			return true;
+		}
+
+	#if (_ARXTARGET >= 19)
+	static bool addTrustedPath( LPCTSTR pszPath )
+		{
+			CString sNewPath = pszPath;
+			if( sNewPath.IsEmpty() )
+				return false;
+			sNewPath.Replace( _T('/'), _T('\\') );
+			if( sNewPath.GetAt( sNewPath.GetLength() - 1 ) != _T('\\') )
+				sNewPath += _T('\\');
+			resbuf rbTrustedPaths = { NULL };
+			if( RTNORM == acedGetVar( _ACRX_T("TRUSTEDPATHS"), &rbTrustedPaths ) )
+			{
+				CString sTrustedPaths = rbTrustedPaths.resval.rstring;
+				acutDelString( rbTrustedPaths.resval.rstring );
+				int idxToken = 0;
+				do
+				{
+					CString sPath = sTrustedPaths.Tokenize( _T(";"), idxToken );
+					if( sPath.CompareNoCase( sNewPath ) == 0 )
+						break;
+				} while( idxToken != -1 );
+				if( idxToken == -1 )
+				{ //path wasn't found, so add it
+					if( !sTrustedPaths.IsEmpty() && sTrustedPaths.GetAt( sTrustedPaths.GetLength() - 1 ) != _T(';') )
+						sTrustedPaths += _T(';');
+					sTrustedPaths += sNewPath;
+					rbTrustedPaths.resval.rstring = sTrustedPaths.LockBuffer();
+					acedSetVar( _ACRX_T("TRUSTEDPATHS"), &rbTrustedPaths );
+				}
+			}
+			return true;
+		}
+	#endif
 
 public:
 	CARXApp () : AcRxArxApp () {}
@@ -1102,14 +1180,12 @@ public:
 	virtual AcRx::AppRetCode On_kLoadDwgMsg (void *pkt) {
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kLoadDwgMsg (pkt) ;
 		
-	#if (_ACADTARGET >= 19)
 		static bool bInitialized = false;
 		if( !bInitialized )
 		{
 			bInitialized = true;
-			ads_queueexpr( _ACRX_T("(opendcl_init_ui)") );
+			ads_queueexpr( CString(_T("(opendcl_init_ui)")).LockBuffer() );
 		}
-	#endif
 
 		if( retCode == AcRx::kRetOK )
 		{
@@ -1175,6 +1251,155 @@ public:
 	// ----- OpenDCL.OpenDCL command
 	static void OpenDCLOpenDCL(void)
 	{  //do nothing, just need it here so that AutoCAD doesn't complain about an unknown command
+	}
+
+	// ----- OpenDCL.OpenDCLDemo command
+	static void OpenDCLOpenDCLDemo(void)
+	{ //load OpenDCL demo if samples are installed
+		static const LPCTSTR pszDemoFilename = _T("@AllSamples.lsp");
+		CString sDemoFilepath;
+	#ifdef _DEBUG
+		if( RTNORM == acedFindFile( pszDemoFilename, sDemoFilepath.GetBuffer( MAX_PATH ) ) )
+			sDemoFilepath.ReleaseBuffer();
+		else
+			sDemoFilepath.ReleaseBuffer(0);
+		if( sDemoFilepath.IsEmpty() )
+	#endif
+		{
+			static const LPCTSTR pszRKRoot = _T("SOFTWARE\\OpenDCL");
+			static const LPCTSTR pszRKSamplesFolder = _T("SamplesFolder");
+			CString sSamplesFolder;
+			HKEY hkReg = NULL;
+			if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, pszRKRoot, 0, KEY_QUERY_VALUE, &hkReg ) )
+			{
+				DWORD dwType = 0;
+				DWORD cbValue = MAX_PATH - sizeof(TCHAR);
+				if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKSamplesFolder, NULL, &dwType, (BYTE*)sSamplesFolder.GetBuffer( MAX_PATH ), &cbValue ) &&
+						dwType == REG_SZ )
+					sSamplesFolder.ReleaseBuffer();
+				else
+					sSamplesFolder.ReleaseBuffer( 0 );
+				RegCloseKey( hkReg );
+			}
+			if( sSamplesFolder.IsEmpty() )
+			{
+				if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, pszRKRoot, 0, KEY_QUERY_VALUE, &hkReg ) )
+				{
+					DWORD dwType = 0;
+					DWORD cbValue = MAX_PATH - sizeof(TCHAR);
+					if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKSamplesFolder, NULL, &dwType, (BYTE*)sSamplesFolder.GetBuffer( MAX_PATH ), &cbValue ) &&
+							dwType == REG_SZ )
+						sSamplesFolder.ReleaseBuffer();
+					else
+						sSamplesFolder.ReleaseBuffer( 0 );
+					RegCloseKey( hkReg );
+				}
+			#ifdef _WIN64
+				if( sSamplesFolder.IsEmpty() )
+				{
+					if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, pszRKRoot, 0, KEY_QUERY_VALUE | KEY_WOW64_32KEY, &hkReg ) )
+					{
+						DWORD dwType = 0;
+						DWORD cbValue = MAX_PATH - sizeof(TCHAR);
+						if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKSamplesFolder, NULL, &dwType, (BYTE*)sSamplesFolder.GetBuffer( MAX_PATH ), &cbValue ) &&
+								dwType == REG_SZ )
+							sSamplesFolder.ReleaseBuffer();
+						else
+							sSamplesFolder.ReleaseBuffer( 0 );
+						RegCloseKey( hkReg );
+					}
+				}
+			#endif //_WIN64
+			}
+			if( sSamplesFolder.IsEmpty() )
+				return;
+			if( sSamplesFolder.Right(1).FindOneOf( _T("\\/") ) < 0 )
+				sSamplesFolder += _T('\\');
+		#if (_ARXTARGET >= 19)
+			addTrustedPath( sSamplesFolder );
+		#endif
+			sDemoFilepath = sSamplesFolder + pszDemoFilename;
+		}
+		sDemoFilepath.Replace( _T('\\'), _T('/') );
+		CString sExpr;
+		sExpr.Format( _T("(load \"%s\")"), (LPCTSTR)sDemoFilepath );
+		ads_queueexpr( sExpr.LockBuffer() );
+	}
+	
+	// ----- ads_opendcl_init_ui symbol (do not rename)
+	static int ads_opendcl_init_ui(void)
+	{
+		//----- Remove the following line if you do not expect any argument for this ADS function
+		struct resbuf *pArgs =acedGetArgs () ;
+
+	#if (_ARXTARGET >= 19)
+		{
+			CString sModuleFilename;
+			DWORD cchFilename = GetModuleFileName( _hdllInstance, sModuleFilename.GetBuffer( MAX_PATH ), MAX_PATH );
+			sModuleFilename.ReleaseBuffer( cchFilename );
+			CString sModulePath;
+			DWORD cchPath = GetLongPathName( sModuleFilename, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
+			sModulePath.ReleaseBuffer( cchPath );
+			sModulePath.MakeReverse();
+			sModulePath = sModulePath.Mid( sModulePath.SpanExcluding( _T("\\/:") ).GetLength() );
+			sModulePath.MakeReverse();
+			addTrustedPath( sModulePath );
+		}
+	#endif
+
+		{
+			HKEY hkReg = NULL;
+			if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, _T("Software\\OpenDCL"), 0, KEY_READ | KEY_WRITE, &hkReg ) )
+			{
+				DWORD dwValue = 0;
+				DWORD dwType = 0;
+				DWORD cbValue = sizeof(dwValue);
+				RegQueryValueEx( hkReg, _T("DisableAutoStartOnNextLoad"), NULL, &dwType, (BYTE*)&dwValue, &cbValue );
+				bool bDisableNow = (dwValue == 1);
+				if( bDisableNow )
+				{
+					dwValue = 0;
+					RegSetValueEx( hkReg, _T("DisableAutoStartOnNextLoad"), 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue) );
+				}
+				RegCloseKey( hkReg );
+				if( bDisableNow )
+				{
+					acutPrintf( _T("\n") );
+					OpenDCLOpenDCLDemo();
+					disableAutostart( _T("Autodesk\\AutoCAD\\R16.0"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R16.1"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R16.2"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R17.0"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R17.1"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R17.1"), true );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R17.2"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R17.2"), true );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R18.0"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R18.0"), true );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R18.1"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R18.1"), true );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R18.2"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R18.2"), true );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R19.0"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R19.0"), true );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R19.1"), false );
+					disableAutostart( _T("Autodesk\\AutoCAD\\R19.1"), true );
+					disableAutostart( _T("Bricsys\\Bricscad\\V9"), false );
+					disableAutostart( _T("Bricsys\\Bricscad\\V10"), false );
+					disableAutostart( _T("Bricsys\\Bricscad\\V11"), false );
+					disableAutostart( _T("Bricsys\\Bricscad\\V12"), false );
+					disableAutostart( _T("Bricsys\\Bricscad\\V13"), false );
+					disableAutostart( _T("Bricsys\\Bricscad\\V13x64"), true );
+					disableAutostart( _T("Bricsys\\Bricscad\\V14"), false );
+					disableAutostart( _T("Bricsys\\Bricscad\\V14x64"), true );
+					disableAutostart( _T("ZWSOFT\\ZWCAD\\2014"), false );
+				}
+			}
+		}
+
+		acedRetVoid () ;
+
+		return (RSRSLT) ;
 	}
 
 	// ----- ads_dcl_getversion symbol (do not rename)
@@ -3376,50 +3601,6 @@ public:
 
 		return (RSRSLT) ;
 	}
-
-	// ----- ads_opendcl_init_ui symbol (do not rename)
-	static int ads_opendcl_init_ui(void)
-	{
-		//----- Remove the following line if you do not expect any argument for this ADS function
-		struct resbuf *pArgs =acedGetArgs () ;
-
-	#if (_ACADTARGET >= 19)
-		CString sModuleFilename;
-		DWORD cchFilename = GetModuleFileName( _hdllInstance, sModuleFilename.GetBuffer( MAX_PATH ), MAX_PATH );
-		sModuleFilename.ReleaseBuffer( cchFilename );
-		CString sModulePath;
-		DWORD cchPath = GetLongPathName( sModuleFilename, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
-		sModulePath.ReleaseBuffer( cchPath );
-		sModulePath.MakeReverse();
-		sModulePath = sModulePath.Mid( sModulePath.SpanExcluding( _T("\\/:") ).GetLength() );
-		sModulePath.MakeReverse();
-		resbuf rbTrustedPaths = { NULL };
-		if( RTNORM == acedGetVar( _ACRX_T("TRUSTEDPATHS"), &rbTrustedPaths ) )
-		{
-			CString sTrustedPaths = rbTrustedPaths.resval.rstring;
-			acutDelString( rbTrustedPaths.resval.rstring );
-			int idxToken = 0;
-			do
-			{
-				CString sPath = sTrustedPaths.Tokenize( _T(";"), idxToken );
-				if( sPath.CompareNoCase( sModulePath ) == 0 )
-					break;
-			} while( idxToken != -1 );
-			if( idxToken == -1 )
-			{ //module path wasn't found, so add it
-				if( !sTrustedPaths.IsEmpty() && sTrustedPaths.GetAt( sTrustedPaths.GetLength() - 1 ) != _T(';') )
-					sTrustedPaths += _T(';');
-				sTrustedPaths += sModulePath;
-				rbTrustedPaths.resval.rstring = sTrustedPaths.LockBuffer();
-				acedSetVar( _ACRX_T("TRUSTEDPATHS"), &rbTrustedPaths );
-			}
-		}
-	#endif
-
-		acedRetVoid () ;
-
-		return (RSRSLT) ;
-	}
 } ;
 
 CString CARXApp::msDialogToBeShown;
@@ -3554,6 +3735,7 @@ static int DumpControl(void)
 #endif //_DIAGNOSTIC
 
 ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCL, OpenDCL, ACRX_CMD_TRANSPARENT, NULL)
+ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCLDemo, OpenDCLDemo, ACRX_CMD_TRANSPARENT, NULL)
 ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getversion, true)
 ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, getversionex, true)
 ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, loadproject, true)

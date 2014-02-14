@@ -10,7 +10,7 @@
 #include "DclControlTemplate.h"
 #include "DclFormTemplate.h"
 #include "ArxProject.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "DialogControl.h"
 #include "ControlTypes.h"
 

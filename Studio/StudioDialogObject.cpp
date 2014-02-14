@@ -312,13 +312,12 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		break;
 	case CtlActiveX:
 		{
-			CLSID clsid;
-			CString sLicenseKey;
-			CString sFilename;
-			theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo( clsid, sLicenseKey, sFilename );
-			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( clsid ) ), rcControl, bToTopOfTabOrder );
+			TAxCtrlInitInfoPtr pAxCtrlInitInfo = theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo();
+			if( !pAxCtrlInitInfo )
+				return NULL;
+			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( pAxCtrlInitInfo->GetClsid() ) ), rcControl, bToTopOfTabOrder );
 			if( pDclControl )
-				pDclControl->SetAxCtrlInfo( clsid, sLicenseKey );
+				pDclControl->SetAxCtrlInitInfo( pAxCtrlInitInfo );
 		}
 		break;
 	case CtlTabStrip:

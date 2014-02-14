@@ -112,6 +112,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Common\DclAxCtrlInitInfo.cpp" />
     <ClCompile Include="..\..\Common\DclImageList.cpp" />
     <ClCompile Include="..\..\Common\ThemeAPI.cpp" />
     <ClCompile Include="..\AcadBlockInsertDropTarget.cpp" />
@@ -230,7 +231,7 @@
     <ClCompile Include="..\..\Common\ThemeHelperST.cpp" />
     <ClCompile Include="..\..\Common\TipWnd.cpp" />
     <ClCompile Include="..\..\Common\ToolTips.cpp" />
-    <ClCompile Include="..\..\Common\VarUtils.Cpp" />
+    <ClCompile Include="..\..\Common\AxTypeUtils.Cpp" />
     <ClCompile Include="..\..\Common\Workspace.cpp" />
     <ClCompile Include="..\..\Common\Controls\AngleSlideCtrl.cpp" />
     <ClCompile Include="..\..\Common\Controls\AnimationCtrl.cpp" />
@@ -306,6 +307,7 @@
     <ResourceCompile Include="..\ARX.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h" />
     <ClInclude Include="..\..\Common\DclImageList.h" />
     <ClInclude Include="..\..\Common\ThemeAPI.h" />
     <ClInclude Include="..\..\Common\UxThemeVI.h" />
@@ -451,7 +453,7 @@
     <ClInclude Include="..\..\Common\TipWnd.h" />
     <ClInclude Include="..\..\Common\ToolTips.h" />
     <ClInclude Include="..\..\Common\UndoManager.h" />
-    <ClInclude Include="..\..\Common\VarUtils.H" />
+    <ClInclude Include="..\..\Common\AxTypeUtils.h" />
     <ClInclude Include="..\..\Common\Workspace.h" />
     <ClInclude Include="..\..\Common\Controls\AngleFilter.h" />
     <ClInclude Include="..\..\Common\Controls\AngleSlideCtrl.h" />

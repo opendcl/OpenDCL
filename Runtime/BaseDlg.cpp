@@ -6,7 +6,7 @@
 #include "Workspace.h"
 #include "PropertyIds.h"
 #include "DclControlTemplate.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "InvokeMethod.h"
 #include "MultiMon.h"
 

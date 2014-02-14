@@ -13,7 +13,7 @@
 #include "ArgumentsRetrieval.h"
 #include "ArxWorkspace.h"
 #include "AcadColorTable.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 
 
 static void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp = NULL, const AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, const AxPropertyDescriptor *pAxProp = NULL);

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AxEventDescriptor.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "Filing.h"
 #include "Project.h"
 

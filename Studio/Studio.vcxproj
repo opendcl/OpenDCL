@@ -124,7 +124,7 @@
     <Link>
       <AdditionalDependencies>Rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)OpenDCL Studio.exe</OutputFile>
-      <Version>7</Version>
+      <Version>8.0</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -169,7 +169,7 @@
     <Link>
       <AdditionalDependencies>Rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)OpenDCL Studio.exe</OutputFile>
-      <Version>7</Version>
+      <Version>8.0</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -213,7 +213,7 @@
     <Link>
       <AdditionalDependencies>Rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)OpenDCL Studio.exe</OutputFile>
-      <Version>7</Version>
+      <Version>8.0</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>urlmon.dll;avifil32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -255,7 +255,7 @@
     <Link>
       <AdditionalDependencies>Rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)OpenDCL Studio.exe</OutputFile>
-      <Version>7</Version>
+      <Version>8.0</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>urlmon.dll;avifil32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -280,6 +280,7 @@
     <ResourceCompile Include="Studio.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\DclAxCtrlInitInfo.h" />
     <ClInclude Include="..\Common\DclImageList.h" />
     <ClInclude Include="..\Common\ThemeAPI.h" />
     <ClInclude Include="..\Common\UxThemeVI.h" />
@@ -407,7 +408,7 @@
     <ClInclude Include="..\Common\TipWnd.h" />
     <ClInclude Include="..\Common\ToolTips.h" />
     <ClInclude Include="..\Common\UndoManager.h" />
-    <ClInclude Include="..\Common\VarUtils.H" />
+    <ClInclude Include="..\Common\AxTypeUtils.h" />
     <ClInclude Include="..\Common\Workspace.h" />
     <ClInclude Include="..\Common\Controls\AngleFilter.h" />
     <ClInclude Include="..\Common\Controls\AngleSlideCtrl.h" />
@@ -482,6 +483,7 @@
     <ClInclude Include="..\Common\Controls\XPStyleButtonST.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\DclAxCtrlInitInfo.cpp" />
     <ClCompile Include="..\Common\DclImageList.cpp" />
     <ClCompile Include="..\Common\ThemeAPI.cpp" />
     <ClCompile Include="ButtonStyles.cpp" />
@@ -600,7 +602,7 @@
     <ClCompile Include="..\Common\ThemeHelperST.cpp" />
     <ClCompile Include="..\Common\TipWnd.cpp" />
     <ClCompile Include="..\Common\ToolTips.cpp" />
-    <ClCompile Include="..\Common\VarUtils.cpp" />
+    <ClCompile Include="..\Common\AxTypeUtils.cpp" />
     <ClCompile Include="..\Common\Workspace.cpp" />
     <ClCompile Include="..\Common\Controls\AngleSlideCtrl.cpp" />
     <ClCompile Include="..\Common\Controls\AnimationCtrl.cpp" />

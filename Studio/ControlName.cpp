@@ -7,6 +7,7 @@
 #include "ControlTypes.h"
 #include "Workspace.h"
 #include "DclControlTemplate.h"
+#include "AxTypeUtils.h"
 
 
 CString GetControlDisplayName( ControlType type )
@@ -14,6 +15,7 @@ CString GetControlDisplayName( ControlType type )
 	switch (type)
 	{
 	case _CtlForm: return theWorkspace.LoadResourceString(IDS_DCLFORM);
+	case CtlActiveX: return theWorkspace.LoadResourceString(IDS_ACTIVEX);
 	case CtlAngleSlider: return theWorkspace.LoadResourceString(IDS_ANGLESLIDER);
 	case CtlAnimation: return theWorkspace.LoadResourceString(IDS_ANIMATION);
 	case CtlBlockList: return theWorkspace.LoadResourceString(IDS_BLOCKLIST);
@@ -59,7 +61,13 @@ CString GetControlDisplayName( TDclControlPtr pDclControl )
 		return NULL;
 	switch( pDclControl->GetType() )
 	{
-	case CtlActiveX: return pDclControl->GetActiveXTypeName();
+	case CtlActiveX:
+		{
+			TAxCtrlInitInfoPtr pAxCtrlInitInfo = pDclControl->GetAxCtrlInitInfo();
+			if( pAxCtrlInitInfo )
+				return pAxCtrlInitInfo->GetDisplayName();
+		}
+		break;
 	}
 	return GetControlDisplayName( pDclControl->GetType() );
 }
@@ -67,17 +75,10 @@ CString GetControlDisplayName( TDclControlPtr pDclControl )
 
 CString GetControlDisplayName( CLSID clsid )
 {
-	// get the ProgId
-	WCHAR* pwszProgID = NULL;        
-	HRESULT hResult = ProgIDFromCLSID(clsid, &pwszProgID);
-	if (FAILED(hResult))
-		return _T("AxObject");
-	CString sName( pwszProgID );
-	CoTaskMemFree(pwszProgID);
-	sName.MakeReverse();
-	sName = sName.Right(sName.GetLength() - sName.SpanIncluding(_T("0123456789.")).GetLength()).SpanExcluding(_T("."));
-	sName.MakeReverse();
-	return sName;
+	CString sName = GetAxShortTypeName( clsid );
+	if( !sName.IsEmpty() )
+		return sName;
+	return _T("AxObject");
 }
 
 

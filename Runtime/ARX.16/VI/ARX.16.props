@@ -11,14 +11,14 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>.\;..\;.\VI;$(ARX2004)\Inc;$(MSVC7)\Include;$(MSVC7)\ATLMFC\Include;$(MSVC7)\PlatformSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ACADTARGET=16;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=16;_ARXTARGET=16;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ErrorReporting>None</ErrorReporting>
       <AdditionalOptions>/YXStdAfx.h %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_ACADTARGET=16;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=16;_ARXTARGET=16;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ARX2004)\Lib;$(MSVC7)\Lib;$(MSVC7)\ATLMFC\Lib;$(MSVC7)\PlatformSDK\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -28,7 +28,7 @@
       </LinkErrorReporting>
     </Link>
     <Midl>
-      <PreprocessorDefinitions>_ACADTARGET=16;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=16;_ARXTARGET=16;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ARX2004)\Inc;$(MSVC7)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateStublessProxies>true</GenerateStublessProxies>
       <HeaderFileName>%(Filename).h</HeaderFileName>

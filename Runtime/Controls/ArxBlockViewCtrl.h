@@ -5,7 +5,7 @@
 
 #include "ArxGsViewCtrl.h"
 
-#if (_ACADTARGET == 18)
+#if (_ARXTARGET == 18)
 #define setAttributes subSetAttributes
 #define worldDraw subWorldDraw
 #define viewportDraw subViewportDraw

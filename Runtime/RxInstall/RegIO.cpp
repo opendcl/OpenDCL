@@ -116,6 +116,15 @@ LPCSTR RegKeyA::GetString( LPCSTR pszName ) const
 	return szReturn;
 }
 
+DWORD RegKeyA::GetDword( LPCSTR pszName ) const
+{
+	DWORD dwReturn = 0;
+	DWORD dwSize = sizeof(dwReturn);
+	DWORD dwType;
+	::RegQueryValueExA( m_hkThis, pszName, 0, &dwType, (BYTE*)&dwReturn, &dwSize );
+	return dwReturn;
+}
+
 
 bool RegRemoveKey( RegKeyA& rkTarget )
 {

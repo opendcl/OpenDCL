@@ -4,6 +4,7 @@
 #pragma once
 
 #include "PtrTypes.h"
+#include "DclAxCtrlInitInfo.h"
 
 class CStudioDialogObject;
 
@@ -17,11 +18,7 @@ class CToolboxPane : public CDialog
 	CStudioDialogObject* mpActiveDlgObject;
 	CToolBarCtrl mToolbar;
 	int mnSelectedCtrl;
-
-	//ActiveX control
-	CLSID mAxClsid;
-	CString msAxFileName;
-	CString msAxLicenseKey;
+	TAxCtrlInitInfoPtr mpAxCtrlInitInfo; //ActiveX control info
 
 // Construction
 public:
@@ -32,7 +29,7 @@ public:
 public:
 	bool IsPointer() const { return !mbToolSelected; }
 	ControlType GetSelectedTool() const;
-	bool GetActiveXControlInfo( CLSID& clsid, CString& sLicenseKey, CString& sFilename ) const;
+	TAxCtrlInitInfoPtr GetActiveXControlInfo() const { return mpAxCtrlInitInfo; }
 
 // Operations
 public:

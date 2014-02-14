@@ -9,7 +9,7 @@
 #include "ArxProject.h"
 #include "ArxDialogControl.h"
 #include "DclControlTemplate.h"
-#include "PictureObject.h"
+#include "DclPicture.h"
 #include "Resource.h"
 
 #if (defined(_BRXTARGET) || defined(_ZRXTARGET))
@@ -144,14 +144,17 @@ void CPaletteDlg::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return;
+#ifdef _BRXTARGET
+	HWND hwndHost = mHostPaletteSet.m_hWnd;
+#endif
 	CWnd* pTopLevel = GetTopLevelWnd();
 	HWND hwndTopLevel = pTopLevel? pTopLevel->m_hWnd : NULL;
 	mHostPaletteSet.EndModalLoop( nStatus ); //set the status
 	if( hwndTopLevel && ::IsWindow( hwndTopLevel ) )
 		::SendMessage( hwndTopLevel, WM_CLOSE, 0, 0 );
 #ifdef _BRXTARGET
-	assert(::IsWindow( mHostPaletteSet.m_hWnd ));
-	mHostPaletteSet.SendMessage( WM_CLOSE, 0, 0 ); //Bricscad only: the palette set window must be closed explicitly
+	if( hwndTopLevel != hwndHost )
+		::SendMessage( hwndHost, WM_CLOSE, 0, 0 ); //Bricscad only: the floating palette set window must be closed explicitly
 #endif
 }
 
@@ -203,10 +206,15 @@ CRect CPaletteDlg::GetEffectiveClientRect() const
 
 void CPaletteDlg::OnFrameChanged()
 {
-	CRect rectWindow = GetEffectiveWindowRect();
 	CRect rcClient = GetEffectiveClientRect();
+#ifdef _BRXTARGET
+	long lNCWidth = IsFloating()? 0 : 9;
+	long lNCHeight = IsFloating()? 0 : 16;
+#else
+	CRect rectWindow = GetEffectiveWindowRect();
 	long lNCWidth = rectWindow.Width() - rcClient.Width();
 	long lNCHeight = rectWindow.Height() - rcClient.Height();
+#endif
 	SetNCWidth( lNCWidth );
 	SetNCHeight( lNCHeight );
 	assert( GetNCWidth() >= 0 && GetNCHeight() >= 0 );

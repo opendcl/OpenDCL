@@ -10,7 +10,7 @@
 #include "ControlName.h"
 #include "FormName.h"
 #include "StdioUnicodeFile.h"
-#include "VARUtils.h"
+#include "AxTypeUtils.h"
 #include "AxMethodDescriptor.h"
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
@@ -237,14 +237,29 @@ class CAxObjectNode : public CDclControlNode
 {
 	CAxContainerCtrl* mpAxCont;
 
+	static LPCTSTR GetAxShortName( TAxCtrlInitInfoPtr pAxInfo )
+	{
+		if( pAxInfo )
+		{
+			CString sName = pAxInfo->GetDisplayName();
+			if( !sName.IsEmpty() )
+				return sName;
+		}
+		return _T("<UNKNOWN>");
+	}
+
 public:
 	CAxObjectNode( CAxContainerCtrl* pAxCont, TDclControlPtr pAxInfo )
-		: CDclControlNode( pAxInfo, pAxInfo->GetAxTypeName() )
+		: CDclControlNode( pAxInfo, GetAxShortName(pAxInfo->GetAxCtrlInitInfo()) )
 		, mpAxCont( pAxCont )
 		{}
 	virtual ~CAxObjectNode() {}
 
 	virtual int image() const { return 5; }
+	virtual CString description( std::map< CString, CString >& params ) const
+		{
+			return _T("chm://Reference/DataType/AxObject.htm");
+		}
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 		{
 			CString sMethodsHtml;
@@ -284,13 +299,13 @@ public:
 			CString sObType = ConstructTypeNameHtml( bAxControl? _T("Control") : _T("AxObject"), sOb );
 			CString sGetFunction;
 			sGetFunction.Format(
-				_T("(dcl_%s_Get <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
+				_T("(dcl-%s-Get <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
 				(LPCTSTR)sAx, (LPCTSTR)sObType, (LPCTSTR)sName, (LPCTSTR)propGetArgList() );
 			params[_T("{GETPROPFUNCTION}")] = sGetFunction;
 			CString sSetFunction = _T("&nbsp;");
 			if( mpIDesc->GetPropPut() || mpIDesc->GetPropPutRef() )
 				sSetFunction.Format(
-					_T("(dcl_%s_Put <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
+					_T("(dcl-%s-Put <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
 					(LPCTSTR)sAx, (LPCTSTR)sObType, (LPCTSTR)sName, (LPCTSTR)propPutArgList() );
 			params[_T("{SETPROPFUNCTION}")] = sSetFunction;
 			params[_T("{APPLIESTO}")] = _T("&nbsp;");
@@ -309,9 +324,11 @@ public:
 			if( !pAxCont )
 				return false;
 			TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
-			if( !pAxCont->ExtractComponentsFromTLB( pNewItem, mpIDesc->GetGuid() ) )
+			TAxCtrlInitInfoPtr pAxCtrlInitInfo = new CDclAxCtrlInitInfo( mpIDesc->GetGuid() );
+			pNewItem->SetAxCtrlInitInfo( pAxCtrlInitInfo );
+			if( !pAxCont->ExtractComponentsFromTLB( pNewItem ) )
 				return false;
-			if( pNewItem->GetAxTypeName().IsEmpty() )
+			if( pAxCtrlInitInfo->GetDisplayName().IsEmpty() )
 				return false; //don't display unnamed objects
 			Browser.InsertItem( TVI_ROOT, new CAxObjectNode( pAxCont, pNewItem ) );
 			return true;
@@ -461,7 +478,7 @@ public:
 			CString sObType = ConstructTypeNameHtml( bAxControl? _T("Control") : _T("AxObject"), sOb );
 			CString sFunction;
 			sFunction.Format(
-				_T("(dcl_%s_Invoke <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
+				_T("(dcl-%s-Invoke <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
 				(LPCTSTR)sAx, (LPCTSTR)sObType, (LPCTSTR)sName, (LPCTSTR)methodArgList() );
 			params[_T("{FUNCTION}")] = sFunction;
 			params[_T("{APPLIESTO}")] = _T("&nbsp;");
@@ -478,9 +495,11 @@ public:
 			if( !pAxCont )
 				return false;
 			TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
-			if( !pAxCont->ExtractComponentsFromTLB( pNewItem, mpMethodDesc->GetReturnGuid() ) )
+			TAxCtrlInitInfoPtr pAxCtrlInitInfo = new CDclAxCtrlInitInfo( mpMethodDesc->GetReturnGuid() );
+			pNewItem->SetAxCtrlInitInfo( pAxCtrlInitInfo );
+			if( !pAxCont->ExtractComponentsFromTLB( pNewItem ) )
 				return false;
-			if( pNewItem->GetAxTypeName().IsEmpty() )
+			if( pAxCtrlInitInfo->GetDisplayName().IsEmpty() )
 				return false; //don't display unnamed objects
 			Browser.InsertItem( TVI_ROOT, new CAxObjectNode( pAxCont, pNewItem ) );
 			return true;
@@ -575,7 +594,7 @@ protected:
 			}
 			sExtraInfo += _T("<p>");
 			sExtraInfo += theWorkspace.LoadResourceString( IDS_AXMETHODMOREINFO );
-			if( control()->IsMicrosoftActiveXCtrl() )
+			if( IsMicrosoftCtrl(control()->GetAxCtrlInitInfo()->GetClsid()) )
 				sExtraInfo += theWorkspace.LoadResourceString( IDS_AXMETHODMSDN );
 			sExtraInfo += _T("</p>");
 			return sExtraInfo;

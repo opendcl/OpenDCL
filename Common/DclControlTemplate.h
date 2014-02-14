@@ -7,6 +7,7 @@
 #include "PropertyObject.h"
 #include "FontSettings.h"
 #include "DclImageList.h"
+#include "DclAxCtrlInitInfo.h"
 #include <list>
 
 class CAxContainerCtrl;
@@ -20,7 +21,7 @@ typedef std::list< TPropertyPtr > TPropertyList;
 /////////////////////////////////////////////////////////////////////////////
 // CDclControlTemplate
 
-class CDclControlTemplate /*: public CObject*/
+class CDclControlTemplate
 {
 protected:
 	CDclFormObject* mpOwner;
@@ -30,13 +31,8 @@ protected:
 private:
 	TPropertyList mProperties;
 	TImageListPtr mpImageList;
+	TAxCtrlInitInfoPtr mpAxCtrlInitInfo;
 	int mnID;
-
-	//ActiveX control info
-	CComPtr< IStream > mpStream; //for persisting ActiveX controls
-	CString msLicenseKey;
-	CLSID mClsid;
-	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 
 protected:
 	CDclControlTemplate();
@@ -71,17 +67,10 @@ public:
 	TPropertyList& GetPropertyList() { return mProperties; }
 	TImageListPtr GetImageList() const { return mpImageList; }
 	void SetImageList( TImageListPtr pImageList ) { mpImageList = pImageList; }
-	const CString& GetAxTypeName() const { return msAxTypeName; }
-	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
+	TAxCtrlInitInfoPtr GetAxCtrlInitInfo() const { return mpAxCtrlInitInfo; }
+	void SetAxCtrlInitInfo( TAxCtrlInitInfoPtr pAxCtrlInitInfo ) { mpAxCtrlInitInfo = pAxCtrlInitInfo; }
 	int GetID() const { return mnID; }
 	virtual bool IsTabOrderAllowed() const;
-	const CComPtr< IStream >& GetIStream() const { return mpStream; }
-	CComPtr< IStream >& GetIStream() { return mpStream; }
-	LPCTSTR GetAxCtrlLicenseKey() const { return msLicenseKey; }
-	const CLSID& GetAxCtrlClsid() const { return mClsid; }
-	void SetAxCtrlInfo( const CLSID& clsid, LPCTSTR pszLicenseKey = NULL ) { mClsid = clsid; msLicenseKey = pszLicenseKey; }
-	CString GetActiveXTypeName() const;
-	bool IsMicrosoftActiveXCtrl() const;
 
 protected: //for use by parent form only
 	friend class CDclFormObject;
@@ -154,9 +143,6 @@ public:
 	CString GetKeyPath() const;
 	ControlType GetType() const { return mType; }
 	CString GetVarName() const;
-
-protected:
-	//DECLARE_SERIAL(CDclControlTemplate)
 
 #ifdef _DIAGNOSTIC
 public:

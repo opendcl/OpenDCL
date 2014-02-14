@@ -15,7 +15,7 @@
 #include "DclPicture.h"
 #include "Project.h"
 #include "Workspace.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "PropertyIds.h"
 #include "Resource.h"
 
@@ -283,16 +283,20 @@ HRESULT CAxContainerCtrl::GetOleObject( IOleObject** ppOleObject )
 
 bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
+	TAxCtrlInitInfoPtr pAxCtrlInitInfo = GetTemplate()->GetAxCtrlInitInfo();
+	if( !pAxCtrlInitInfo || pAxCtrlInitInfo->IsNull() )
+		return false;
 	DWORD dwStyle = GetWndStyle();
+	CRect rcCtrl = GetWndRect();
 
 	//setup license key (if used)
-	CString sLicenseKey = GetTemplate()->GetAxCtrlLicenseKey();
+	CString sLicenseKey = pAxCtrlInitInfo->GetLicenseKey();
 	CComBSTR bstrLicenseKey;
 	if( !sLicenseKey.IsEmpty() )
 		bstrLicenseKey = sLicenseKey;
 
 	COleStreamFile* pOleStreamFile = NULL;
-	const CComPtr< IStream >& pStream = GetTemplate()->GetIStream();
+	const CComPtr< IStream >& pStream = pAxCtrlInitInfo->GetIStream();
 	if( pStream )
 	{
 		LARGE_INTEGER nZeroDisp = { 0, 0 };
@@ -300,38 +304,26 @@ bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 		pOleStreamFile = new COleStreamFile( pStream );
 	}
 
-	bool bSuccess = false;
-	try
-	{
-		const CLSID& clsid = GetTemplate()->GetAxCtrlClsid();
-		//Create the control, passing the OleStream and license key.
-		bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
-																				pOleStreamFile, FALSE, bstrLicenseKey ));
-		if (!bSuccess && pOleStreamFile)
+	bool bSuccess = Create( pAxCtrlInitInfo->GetClsid(), pParentWnd, dwStyle, nID, rcCtrl, pOleStreamFile, bstrLicenseKey );
+	if( !bSuccess )
+	{ //try getting a CLSID from the saved ProgId, and if it's different see if that works better
+		CString sProgId = pAxCtrlInitInfo->GetProgId();
+		if( !sProgId.IsEmpty() )
 		{
-			//Creation failed.
-			//Try again, this as storage.
-			bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
-																					pOleStreamFile, TRUE, bstrLicenseKey ));
+			CLSID clsid;
+			HRESULT hr = CLSIDFromProgID( CStringW( sProgId ), &clsid );
+			if( SUCCEEDED(hr) && clsid != pAxCtrlInitInfo->GetClsid() )
+				bSuccess = Create( clsid, pParentWnd, dwStyle, nID, rcCtrl, pOleStreamFile, bstrLicenseKey );
+			else
+			{ //try removing the version from the ProgId
+				sProgId.MakeReverse();
+				sProgId = sProgId.Right( sProgId.GetLength() - sProgId.SpanIncluding( _T("0123456789.") ).GetLength() );
+				sProgId.MakeReverse();
+				HRESULT hr = CLSIDFromProgID( CStringW( sProgId ), &clsid );
+				if( SUCCEEDED(hr) && clsid != pAxCtrlInitInfo->GetClsid() )
+					bSuccess = Create( clsid, pParentWnd, dwStyle, nID, rcCtrl, pOleStreamFile, bstrLicenseKey );
+			}
 		}
-		if (!bSuccess && pOleStreamFile)
-		{
-			//Creation failed.
-			//Try again, this time without the OleStream.
-			bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
-																					NULL, FALSE, bstrLicenseKey ));
-		}
-		if (!bSuccess && (BSTR)bstrLicenseKey)
-		{
-			//Creation failed.
-			//Try again, this time without the OleStream and without the license key.
-			bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
-																					NULL, FALSE, NULL ));
-		}
-	}
-	catch(...)
-	{
-		bSuccess = false;
 	}
 
 	if( pOleStreamFile )
@@ -340,6 +332,42 @@ bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	return bSuccess;
+}
+
+bool CAxContainerCtrl::Create( const CLSID& clsid, CWnd* pParentWnd, DWORD dwStyle, UINT nID, CRect ArxRect, COleStreamFile* pStreamFile, BSTR bstrLicenseKey )
+{
+	bool bSuccess = false;
+	try
+	{
+		do
+		{
+			//Create the control, passing the OleStream and license key.
+			bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID, pStreamFile, FALSE, bstrLicenseKey ));
+			if( bSuccess )
+				break;
+			if (pStreamFile)
+			{
+				//Try again, this time as storage.
+				bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID, pStreamFile, TRUE, bstrLicenseKey ));
+				if( bSuccess )
+					break;
+				//Try again, this time without the OleStream.
+				bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID, NULL, FALSE, bstrLicenseKey ));
+				if( bSuccess )
+					break;
+			}
+			if (bstrLicenseKey)
+			{
+				//Try again, this time without the OleStream and without the license key.
+				bSuccess = (FALSE != CreateControl( clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID, NULL, FALSE, NULL ));
+			}
+		} while(0);
+	}
+	catch(...)
+	{
+		bSuccess = false;
+	}
 	return bSuccess;
 }
 
@@ -389,7 +417,7 @@ HRESULT CAxContainerCtrl::GetProperty( const AxPropertyDescriptor* axProp, VARIA
 		return E_POINTER;
 	CComPtr< IDispatch > pDispatch;
 	HRESULT hr = GetOleDispatch( &pDispatch );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 	return axProp->Get( pDispatch, rvarArgs, ctArgs, varResult );
 }
@@ -400,12 +428,12 @@ HRESULT CAxContainerCtrl::GetProperty( const AxPropertyDescriptor* axProp, CStri
 		return E_POINTER;
 	CComPtr< IDispatch > pDispatch;
 	HRESULT hr = GetOleDispatch( &pDispatch );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 	VARIANT varResult;
 	VariantClear( &varResult );
 	hr = axProp->Get( pDispatch, NULL, 0, varResult );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 	if( varResult.vt == VT_BOOL )
 		strReturnValue = (varResult.boolVal != VARIANT_FALSE? _T("True") : _T("False"));
@@ -425,10 +453,10 @@ HRESULT CAxContainerCtrl::SetProperty( const AxPropertyDescriptor* axProp, const
 		return E_POINTER;
 	CComPtr< IDispatch > pDispatch;
 	HRESULT hr = GetOleDispatch( &pDispatch );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 	hr = axProp->Set( pDispatch, rvarArgs, ctArgs );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 
 	SaveToStream();
@@ -668,13 +696,17 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 	return ctProperties;
 }
 
-bool CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid )
+bool CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl )
 {
 	if( !mpTypeLib )
 		return false;
 	long lTypeInfoCount = mpTypeLib->GetTypeInfoCount();
 	if( lTypeInfoCount == 0 )
 		return false; //no type information
+
+	TAxCtrlInitInfoPtr pAxCtrlInitInfo = pDclControl->GetAxCtrlInitInfo();
+	if( !pAxCtrlInitInfo )
+		return false;
 
 	//Get the help string and help file for each TypeInfo
 	for( long lIter = 0; lIter < lTypeInfoCount ; lIter++ )
@@ -685,7 +717,7 @@ bool CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLS
 		if( TheInfo != NULL )
 		{
 			TheInfo->GetTypeAttr( &TheAttr );
-			if( TheAttr && clsid == TheAttr->guid )
+			if( TheAttr && pAxCtrlInitInfo->GetClsid() == TheAttr->guid )
 			{
 				ExtractPropertyInfo( pDclControl, TheInfo, NULL, true );
 				ExtractMethodInfo( pDclControl, TheInfo );	
@@ -693,7 +725,11 @@ bool CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLS
 				CComBSTR bstrName;
 				mpTypeLib->GetDocumentation( lIter, &bstrName, &bstrDoc, NULL, NULL );
 				if( bstrName.Length() > 0 )
-					pDclControl->SetAxTypeName( CString( bstrName ) );
+				{
+					TAxCtrlInitInfoPtr pAxCtrlInitInfo = pDclControl->GetAxCtrlInitInfo();
+					if( pAxCtrlInitInfo )
+						pAxCtrlInitInfo->SetDisplayName( CString( bstrName ) );
+				}
 			}
 			TheInfo->ReleaseTypeAttr( TheAttr );
 			TheInfo->Release();
@@ -713,7 +749,7 @@ bool CAxContainerCtrl::GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPag
 	HRESULT hr = pOleObject->QueryInterface( &pSpecify );
 	if( FAILED(hr) )
 		return( false );
-   
+	 
 	CAUUID pages = { 0, NULL };
 	hr = pSpecify->GetPages( &pages );
 	if( FAILED(hr) )
@@ -747,7 +783,10 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	//		return hr;
 	//}
 
-	CComPtr< IStream >& pStream = GetTemplate()->GetIStream();
+	TAxCtrlInitInfoPtr pAxCtrlInitInfo = GetTemplate()->GetAxCtrlInitInfo();
+	if( !pAxCtrlInitInfo )
+		return E_NOINTERFACE;
+	CComPtr< IStream >& pStream = pAxCtrlInitInfo->GetIStream();
 	if( !pStream )
 	{
 		hr = CreateStreamOnHGlobal( NULL, TRUE, &pStream );
@@ -756,7 +795,7 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	}
 	LARGE_INTEGER nZeroDisp = { 0, 0 };
 	hr = pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 
 	//CLSID clsid;
@@ -773,20 +812,20 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	else
 	{
 		CComPtr< IPersistStreamInit > pPersistStreamInit;
-	  hr = pOleObject->QueryInterface( &pPersistStreamInit );
+		hr = pOleObject->QueryInterface( &pPersistStreamInit );
 		if( FAILED(hr) )
 			return hr;
-	  hr = pPersistStreamInit->Save( pStream, TRUE );
+		hr = pPersistStreamInit->Save( pStream, TRUE );
 	}
 	if( FAILED(hr) )
 		return hr;
 
 	ULARGE_INTEGER nCurSize;
 	hr = pStream->Seek( nZeroDisp, STREAM_SEEK_CUR, &nCurSize );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 	hr = pStream->SetSize( nCurSize );
-  if( FAILED(hr) )
+	if( FAILED(hr) )
 		return hr;
 
 	theWorkspace.SetModified(true);

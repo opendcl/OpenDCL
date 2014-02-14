@@ -85,11 +85,11 @@ bool CArxColorComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 
 bool CArxColorComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 {
-#if (_ACADTARGET >= 17 && !defined(_BRXTARGET) && !defined(_ZRXTARGET))
+#if (_ARXTARGET >= 17)
 	static bool bVistaOrLater = (LOBYTE(LOWORD(GetVersion())) >= 6);
 	if( bVistaOrLater )
 	{
-	#if (_ACADTARGET == 17)
+	#if (_ARXTARGET == 17)
 		bool bThemeEnabled = GetTheme().IsThemeActive();
 	#else
 		bool bThemeEnabled = IsVistaTheme();
@@ -151,7 +151,7 @@ void CArxColorComboBoxCtrl::PostNcDestroy()
 void CArxColorComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
-#if (_ACADTARGET == 17)
+#if (_ARXTARGET == 17)
 	if( GetTheme().IsThemeActive() )
 		Invalidate();
 #endif

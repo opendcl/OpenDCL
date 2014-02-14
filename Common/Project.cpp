@@ -10,7 +10,7 @@
 #include "PropertyObject.h"
 #include "DclControlProp.h"
 #include "UndoManager.h"
-#include "VarUtils.h"
+#include "AxTypeUtils.h"
 #include "ArchiveEx.h"
 #include "AxContainerCtrl.h"
 #include "StgFile.h"

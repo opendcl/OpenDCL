@@ -155,21 +155,6 @@ CString CWorkspace::GetLanguage(void) const
 			sLanguage.ReleaseBuffer( 0 );
 		RegCloseKey( hkReg );
 	}
-#ifdef _WIN64
-	if( !sLanguage.IsEmpty() )
-		return sLanguage;
-	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, KEY_QUERY_VALUE | KEY_WOW64_32KEY, &hkReg ) )
-	{
-		DWORD dwType = 0;
-		DWORD cbValue = 64 - sizeof(TCHAR);
-		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
-				dwType == REG_SZ )
-			sLanguage.ReleaseBuffer();
-		else
-			sLanguage.ReleaseBuffer( 0 );
-		RegCloseKey( hkReg );
-	}
-#endif //_WIN64
 	if( !sLanguage.IsEmpty() )
 		return sLanguage;
 	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )

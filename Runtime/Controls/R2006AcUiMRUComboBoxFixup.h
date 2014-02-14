@@ -3,7 +3,7 @@
 
 #pragma once
 
-#if (_ACADTARGET == 16)
+#if (_ARXTARGET == 16)
 
 typedef CAcUiColorComboBox CAcUiColorComboBoxOriginal;
 typedef CAcUiLineWeightComboBox CAcUiLineWeightComboBoxOriginal;
@@ -21,7 +21,7 @@ typedef CAcUiPlotStyleTablesComboBox CAcUiPlotStyleTablesComboBoxOriginal;
 template< typename TAcUiMRUComboBoxBase >
 class CAcUiMRUComboBoxFixup : public TAcUiMRUComboBoxBase
 {
-#if (_ACADTARGET == 16)
+#if (_ARXTARGET == 16)
 	CPalette* __padding; //add space for the 2006 member in case it's needed
 	static bool isR2006() 
 	{
@@ -38,13 +38,13 @@ public:
 		else
 			*(int*)(((BYTE*)&m_mruLen) + sizeof(__padding)) = nLen;
 	}
-#else //(_ACADTARGET == 16)
+#else //(_ARXTARGET == 16)
 public:
 	void SetMRULen( int nLen )
 	{
 		m_mruLen = nLen;
 	}
-#endif //(_ACADTARGET == 16)
+#endif //(_ARXTARGET == 16)
 public:
 	CAcUiMRUComboBoxFixup() {}
 	virtual ~CAcUiMRUComboBoxFixup() {}
@@ -55,4 +55,4 @@ public:
 #define CAcUiPlotStyleNamesComboBox CAcUiMRUComboBoxFixup< CAcUiPlotStyleNamesComboBoxOriginal >
 #define CAcUiPlotStyleTablesComboBox CAcUiMRUComboBoxFixup< CAcUiPlotStyleTablesComboBoxOriginal >
 
-#endif //(_ACADTARGET == 16)
+#endif //(_ARXTARGET == 16)

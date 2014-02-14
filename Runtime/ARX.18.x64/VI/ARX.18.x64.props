@@ -10,12 +10,12 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>.\;..\;.\VI;$(ARX2010)\Inc-x64;$(ARX2010)\Inc;$(MSVC9)\Include;$(MSVC9)\ATLMFC\Include;$(WindowsSdkDirIA64)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ACADTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=18;_ARXTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>/wd4265 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_ACADTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=18;_ARXTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ARX2010)\Lib-x64;$(MSVC9)\Lib\AMD64;$(MSVC9)\ATLMFC\Lib\AMD64;$(WindowsSdkDirIA64)\Lib\AMD64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -23,7 +23,7 @@
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
     </Link>
     <Midl>
-      <PreprocessorDefinitions>_ACADTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=18;_ARXTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ARX2010)\Inc-x64;$(ARX2010)\Inc;$(MSVC9)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateStublessProxies>true</GenerateStublessProxies>
       <HeaderFileName>%(Filename).h</HeaderFileName>
