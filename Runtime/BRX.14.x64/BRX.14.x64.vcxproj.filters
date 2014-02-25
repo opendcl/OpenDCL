@@ -604,9 +604,6 @@
     <ClCompile Include="..\DwgThumbnail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\pnglite\pnglite.c">
-      <Filter>Common</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -1348,9 +1345,6 @@
     </ClInclude>
     <ClInclude Include="..\DwgThumbnail.h">
       <Filter>Include Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\pnglite\pnglite.h">
-      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
