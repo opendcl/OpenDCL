@@ -23,8 +23,6 @@ static bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 																		resbuf*& pArgs,
 																		const AxPropertyDescriptor* pAxProp,
 																		const AxMethodDescriptor* pAxMethod );
-static LPPICTUREDISP GetPictureFromId( TProjectPtr pProject, UINT nPicId );
-static LPPICTUREDISP GetPictureFromFilename( LPCTSTR pszFilename );
 
 
 static void ReturnDate( const COleDateTime& Date )

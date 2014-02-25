@@ -7,66 +7,9 @@
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
 #include "AcadBlockInsertDropTarget.h"
+#include "DwgThumbnail.h"
 
 class CArxFolderComboCtrl;
-
-
-class ThumbnailFile : public CObject
-{
-public:
-	CString m_sFileName;
-	HGLOBAL m_hDIB;
-	HBITMAP m_hBitmap;
-	bool m_bLoaded;
-	CString m_sPath;
-	int nIndex;
-	int nBmpHeight;
-	int nBmpWidth;
-
-public:
-	ThumbnailFile()
-	{
-		m_hDIB = NULL;
-		m_hBitmap = NULL;
-		m_bLoaded = false;
-		nBmpHeight = 0;
-		nBmpWidth = 0;
-	}
-	ThumbnailFile( const CString& sPath, LPCTSTR pszFilename = NULL )
-	{
-		m_sFileName = pszFilename;
-		m_sPath = sPath;
-		m_hDIB = NULL;
-		m_hBitmap = NULL;
-		m_bLoaded = false;
-		nBmpHeight = 0;
-		nBmpWidth = 0;
-	}
-	~ThumbnailFile()
-	{
-		try
-		{
-			if (m_hDIB != NULL)
-			{
-				::GlobalFree(m_hDIB);
-				m_hDIB = NULL;
-			}
-			if (m_hBitmap != NULL)
-			{
-				DeleteObject(m_hBitmap);
-				m_hBitmap = NULL;
-			}		
-		}
-		catch(...)
-		{
-		}
-	}
-	BOOL LoadDwgThumbnail();
-	void DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPaintableHeight, HBITMAP &hR14LogoLarge, HBITMAP &hR14LogoSmall);
-	CSize GetBitmapSize();
-};
-
-typedef CList<ThumbnailFile*> CThumbnailFileList;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -78,12 +21,12 @@ class CArxDwgListCtrl : public CListBoxCtrl
 	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 	int mnRowHeight;
-	HBITMAP mhR14LogoLarge;
-	HBITMAP mhR14LogoSmall;
 	CString msPath;
 
-	CThumbnailFileList	m_ThumbnailFileList;
-	CImageList			m_imageList;
+	CImageList mImageList;
+
+	typedef CMap<CString, LPCTSTR, CDwgThumbnailPtr, CDwgThumbnailPtr> TDwgThumbnailMap;
+	TDwgThumbnailMap mmapThumbnail;
 
 public:
 	CArxFolderComboCtrl* m_pDirComboBox;
@@ -107,9 +50,11 @@ public:
 
 // Operations
 public:
+	void Dir(LPCTSTR pszDir);
+
+protected:
 	int HitTest(CPoint point);
 	void CreateImageList();
-	void Dir(CString sDir);
 	void ClearThumbnailList();
 
 // Overrides

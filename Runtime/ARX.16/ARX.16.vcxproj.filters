@@ -112,9 +112,6 @@
     <ClCompile Include="..\PaletteDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\SADirRead.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -601,6 +598,9 @@
     <ClCompile Include="..\..\Common\DclAxCtrlInitInfo.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\DwgThumbnail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -696,9 +696,6 @@
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\RuntimeRes.Local.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SADirRead.h">
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\StdAfx.h">
@@ -1342,6 +1339,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DwgThumbnail.h">
+      <Filter>Include Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

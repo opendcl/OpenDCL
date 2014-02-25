@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)ZLib;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -82,7 +82,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)ZLib;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -141,6 +141,7 @@
     <ClCompile Include="..\CustomFileDlg.cpp" />
     <ClCompile Include="..\DelayedInvoke.cpp" />
     <ClCompile Include="..\DocData.cpp" />
+    <ClCompile Include="..\DwgThumbnail.cpp" />
     <ClCompile Include="..\FolderBrowseDlg.cpp" />
     <ClCompile Include="..\LinetypeDlg.cpp" />
     <ClCompile Include="..\LineWeightDlg.cpp" />
@@ -153,7 +154,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\SADirRead.cpp" />
     <ClCompile Include="..\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -354,6 +354,7 @@
     <ClInclude Include="..\CustomFileDlg.h" />
     <ClInclude Include="..\DelayedInvoke.h" />
     <ClInclude Include="..\DocData.h" />
+    <ClInclude Include="..\DwgThumbnail.h" />
     <ClInclude Include="..\EventArgs.h" />
     <ClInclude Include="..\FolderBrowseDlg.h" />
     <ClInclude Include="..\LinetypeDlg.h" />
@@ -367,7 +368,6 @@
     <ClInclude Include="..\Resource.h" />
     <ClInclude Include="..\RuntimeRes.h" />
     <ClInclude Include="..\RuntimeRes.Local.h" />
-    <ClInclude Include="..\SADirRead.h" />
     <ClInclude Include="..\StdAfx.h" />
     <ClInclude Include="..\StringCompare.h" />
     <ClInclude Include="..\TabPageDlg.h" />
@@ -583,7 +583,15 @@
     <ClInclude Include="..\..\Common\Controls\XPStyleButtonST.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ZLib\ZLib.32\ZLib.32.vcxproj">
+    <ProjectReference Include="..\..\Library\LibPNG\LibPNG.32\LibPNG.32.vcxproj">
+      <Project>{d927ca66-88db-45fa-a926-8f85cd424a30}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\ZLib\ZLib.32\ZLib.32.vcxproj">
       <Project>{a459ef20-fc54-44d3-b922-9d872e52a1fd}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

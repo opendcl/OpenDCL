@@ -1,196 +1,158 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="Content-Language" content="en-us">
-	<title>OpenDCL for AutoCAD</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="en-us">
+  <title>OpenDCL</title>
 </head>
-
 <body>
-<div align="center">
-  <h1><font color="#034abd">OpenDCL<sup>(tm)</sup> for AutoCAD</font></h1>
-  <a href="http://www.opendcl.com" target="_blank">www.opendcl.com</a>
-</div>
-<p>
-Copyright (C) 2007 - 2014 OpenDCL Consortium<br>
-OpenDCL is a trademark of OpenDCL Consortium<br />
-See GNU-GPL.txt for license terms and conditions</p>
-<div align="center">
-  <hr />
-  <h2><font color="#034abd">LICENSE</font></h2>
-</div>
-<p>
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.</p>
-<p>
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.</p>
-<p>
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.</p>
-
-
-<div align="center">
-  <hr />
-  <h2><font color="#034abd">CREDITS</font></h2>
-</div>
-<p>
-OpenDCL is based on ObjectDCL, a commercial application by 3rd 
-Day Software that was released as open source under the GNU 
-General Public License in 2006 by owner Chad Wanless. OpenDCL 
-represents the combined work of the original authors and the 
-following individuals who contributed in various ways to the 
-OpenDCL open source project on <a href="http://www.sourceforge.net/projects/opendcl" 
-target="_blank">SourceForge</a>.</p>
-<p>
-Credits include SourceForge or <a href="http://www.opendcl.com/forum/" target="_blank">OpenDCL Forum</a> handles with real names in 
-parentheses when available.</p>
-
-<H4>PROGRAMMING:</H4>
-<UL>
-  <LI>owenwengerd (Owen Wengerd)</LI>
-  <LI>davidrobison (David Robison)</LI>
-</UL>
-
-<H4>DOCUMENTATION/SAMPLES:</H4>
-<UL>
-  <LI>davic_jg_white (David White)</LI>
-  <LI>bazzacad (Barry Ralphs)</LI>
-  <LI>kerrybrown (Kerry Brown)</LI>
-  <LI>puckettm (Michael Puckett)</LI>    
-</UL>
-
-<H4>LOGO/GRAPHICS:</H4>
-<UL>
-  <LI>jb (James Buzbee)</LI>
-  <LI>dkh007 (Daniel Hargreaves)</LI>
-</UL>
-
-<H4>LOCAL LANGUAGE PROJECT MANAGERS:</H4>
-<UL>
-  <LI>Zibster (Zbigniew Kniat)</LI>
-  <LI>stephan_35 (Stephan Buchholz)</LI>
-  <LI>kep-digital (Fred Tomke)</LI>
-  <LI>Kelie</LI>   
-  <LI>Marco Jacinto (Marco Jacinto)</LI>  
-</UL>
-
-
-<H4>BETA TESTERS:</H4>
-<UL>
-  <LI>bazzacad (Barry Ralphs)</LI>   
-  <LI>kerrybrown (Kerry Brown)</LI>
-  <LI>kep-digital (Fred Tomke)</LI>
-  <LI>davic_jg_white (David White)</LI>
-  <LI>jmaeding (James Maeding)</LI>
-  <LI>domenicomaria (Domenico Maria Pisano)</LI>
-  <LI>seros (Mateusz Jacak)</LI>
-  <LI>svelasquez (Sebastião Velasquez)</LI>
-  <LI>zeeboy (Doug Barense)</LI>
-  <LI>dkh007 (Daniel Hargreaves)</LI>
-  <LI>davidbarker (David Barker)</LI>
-  <LI>stephan_35 (Stéphan Buchholz)</LI>
-  <LI>funkitect (James LeVieux)</LI>
-  <LI>aymen_ellouze (Aymen Ellouze)</LI>
-  <LI>tlindell (Torrence Lindell)</LI>
-  <LI>jb (James Buzbee)</LI>  
-</UL>
-
-<div align="center">
-  <hr />
-  <h2><font color="#034abd">THIRD PARTY ACKNOWLEDGEMENTS</font></h2>
-</div>
-<p>
-Some OpenDCL components are based on or derived from public 
-domain and copyrighted source code licensed from third 
-parties. Thanks to the following for their valuable 
-contributions to OpenDCL:</p>
-
-<blockquote>
-<b>Davide Calabro</b> (davide_calabro@yahoo.com)<br />
-CCeXDIb device independent bitmap class<br />
-CButtonST hot tracking button class<br />
-CXPStyleButtonST XP style hot tracking button<br />
-CThemeHelperST XP themes helper class<br />
-CLayeredWindowHelperST semi-transparent (layered) window class<br />
-</blockquote>
-
-<blockquote>
-<b>Cristi Posea</b> (www.datamekanix.com)<br />
-CSizingControlBar class for docking control bars<br />
-</blockquote>
-
-<blockquote>
-<b>Daniel Frey</b> (Daniel.Frey@hew-kabel-cdt.com)<br />
-CRoundSliderCtrl round slider control class<br />
-including code from Chris Maunder (chrismaunder@codeguru.com)<br />
-</blockquote>
-
-<blockquote>
-<b>Jorge Lodos</b> (lodos@cigb.edu.cu)<br />
-CPreviewFileDlg MFC file dialog with preview window<br />
-CDib helper class for reading and displaying DIB images<br />
-CDIBStatic static control for displaying a bitmap image<br />
-</blockquote>
-
-<blockquote>
-<b>Chris Maunder</b> (chrismaunder@codeguru.com)<br />
-CColourPicker, CColourPopup classes for displaying color<br /> 
-swatches for selection<br />
-</blockquote>
-
-<blockquote>
-<b>James R. Twine</b><br />
-CColorPickerCB combo box for color selection<br />
-</blockquote>
-
-<blockquote>
-<b>Paramax Technology Limited</b><br />
-CTipWnd tooltip window control<br />
-</blockquote>
-
-<blockquote>
-<b>Paolo Messina</b> (ppescher@yahoo.com)<br />
-CResizableDialog manages control repositioning during resizing<br />
-</blockquote>
-
-<blockquote>
-<b>Eugene Pustovoyt</b><br />
-CPPToolTip MFC tooltip class<br />
-</blockquote>
-
-<blockquote>
-<b>Keith Rule</b> (keithr@europa.com)<br />
-CMemDC memory device context for image manipulation<br />
-</blockquote>
-
-<blockquote>
-<b>Jeremy Iverson</b> (jeremy@dragonmount.net)<br />
-CAutoRichEditCtrl MFC rich text control<br />
-</blockquote>
-
-<blockquote>
-<b>Mike Scanlon</b> (mrs3691@megahertz.njit.edu)<br />
-CSnapDlg MFC dialog base class<br />
-</blockquote>
-
-<blockquote>
-<b>Smaller Animals Software, Inc.</b> (http://www.smalleranimals.com)<br />
-CSADirRead class for finding files and subdirectories<br />
-</blockquote>
-
-<blockquote>
-<b>Ian J Hart</b><br />
-CNumEdit numeric input edit box<br />
-CCurrencyEdit currency input edit box<br />
-CPercentageEdit percentage input edit box<br />
-</blockquote>
-
+  <div align="center">
+    <h1>
+      <font color="#034abd">OpenDCL<sup>(tm)</sup></font></h1>
+    <a href="http://www.opendcl.com" target="_blank">www.opendcl.com</a>
+  </div>
+  <p>
+    Copyright (C) 2007 - 2014 OpenDCL Consortium<br>
+    OpenDCL is a trademark of OpenDCL Consortium<br />
+    See GNU-GPL.txt for license terms and conditions</p>
+  <div align="center">
+    <hr />
+    <h2>
+      <font color="#034abd">LICENSE</font></h2>
+  </div>
+  <p>
+    This program is free software; you can redistribute it and/or modify it under the
+    terms of the GNU General Public License as published by the Free Software Foundation;
+    either version 2 of the License, or (at your option) any later version.</p>
+  <p>
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY
+    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+  <p>
+    You should have received a copy of the GNU General Public License along with this
+    program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street,
+    Fifth Floor, Boston, MA 02110-1301, USA.</p>
+  <div align="center">
+    <hr />
+    <h2>
+      <font color="#034abd">CREDITS</font></h2>
+  </div>
+  <p>
+    OpenDCL is based on ObjectDCL, a commercial application by 3rd Day Software that
+    was released as open source under the GNU General Public License in 2006 by owner
+    Chad Wanless. OpenDCL represents the combined work of the original authors and the
+    following individuals who contributed in various ways to the OpenDCL open source
+    project on <a href="http://www.sourceforge.net/projects/opendcl" target="_blank">SourceForge</a>.</p>
+  <p>
+    Credits include SourceForge or <a href="http://www.opendcl.com/forum/" target="_blank">
+      OpenDCL Forum</a> handles with real names in parentheses when available.</p>
+  <h4>
+    PROGRAMMING:</h4>
+  <ul>
+    <li>owenwengerd (Owen Wengerd)</li>
+    <li>davidrobison (David Robison)</li>
+  </ul>
+  <h4>
+    DOCUMENTATION/SAMPLES:</h4>
+  <ul>
+    <li>davic_jg_white (David White)</li>
+    <li>bazzacad (Barry Ralphs)</li>
+    <li>kerrybrown (Kerry Brown)</li>
+    <li>puckettm (Michael Puckett)</li>
+  </ul>
+  <h4>
+    LOGO/GRAPHICS:</h4>
+  <ul>
+    <li>jb (James Buzbee)</li>
+    <li>dkh007 (Daniel Hargreaves)</li>
+  </ul>
+  <h4>
+    LOCAL LANGUAGE PROJECT MANAGERS:</h4>
+  <ul>
+    <li>Zibster (Zbigniew Kniat)</li>
+    <li>stephan_35 (Stephan Buchholz)</li>
+    <li>kep-digital (Fred Tomke)</li>
+    <li>Kelie</li>
+    <li>Marco Jacinto (Marco Jacinto)</li>
+  </ul>
+  <h4>
+    BETA TESTERS:</h4>
+  <ul>
+    <li>bazzacad (Barry Ralphs)</li>
+    <li>kerrybrown (Kerry Brown)</li>
+    <li>kep-digital (Fred Tomke)</li>
+    <li>davic_jg_white (David White)</li>
+    <li>jmaeding (James Maeding)</li>
+    <li>domenicomaria (Domenico Maria Pisano)</li>
+    <li>seros (Mateusz Jacak)</li>
+    <li>svelasquez (Sebastião Velasquez)</li>
+    <li>zeeboy (Doug Barense)</li>
+    <li>dkh007 (Daniel Hargreaves)</li>
+    <li>davidbarker (David Barker)</li>
+    <li>stephan_35 (Stéphan Buchholz)</li>
+    <li>funkitect (James LeVieux)</li>
+    <li>aymen_ellouze (Aymen Ellouze)</li>
+    <li>tlindell (Torrence Lindell)</li>
+    <li>jb (James Buzbee)</li>
+  </ul>
+  <div align="center">
+    <hr />
+    <h2>
+      <font color="#034abd">THIRD PARTY ACKNOWLEDGEMENTS</font></h2>
+  </div>
+  <p>
+    Some OpenDCL components are based on or derived from public domain and copyrighted
+    source code licensed from third parties. Thanks to the following for their valuable
+    contributions to OpenDCL:</p>
+  <blockquote>
+    <b>Davide Calabro</b> (davide_calabro@yahoo.com)<br />
+    CCeXDIb device independent bitmap class<br />
+    CButtonST hot tracking button class<br />
+    CXPStyleButtonST XP style hot tracking button<br />
+    CThemeHelperST XP themes helper class<br />
+    CLayeredWindowHelperST semi-transparent (layered) window class<br />
+  </blockquote>
+  <blockquote>
+    <b>Cristi Posea</b> (www.datamekanix.com)<br />
+    CSizingControlBar class for docking control bars<br />
+  </blockquote>
+  <blockquote>
+    <b>Daniel Frey</b> (Daniel.Frey@hew-kabel-cdt.com)<br />
+    CRoundSliderCtrl round slider control class<br />
+    including code from Chris Maunder (chrismaunder@codeguru.com)<br />
+  </blockquote>
+  <blockquote>
+    <b>Jorge Lodos</b> (lodos@cigb.edu.cu)<br />
+    CPreviewFileDlg MFC file dialog with preview window<br />
+  </blockquote>
+  <blockquote>
+    <b>Chris Maunder</b> (chrismaunder@codeguru.com)<br />
+    CColourPicker, CColourPopup classes for displaying color<br />
+    swatches for selection<br />
+  </blockquote>
+  <blockquote>
+    <b>James R. Twine</b><br />
+    CColorPickerCB combo box for color selection<br />
+  </blockquote>
+  <blockquote>
+    <b>Paramax Technology Limited</b><br />
+    CTipWnd tooltip window control<br />
+  </blockquote>
+  <blockquote>
+    <b>Paolo Messina</b> (ppescher@yahoo.com)<br />
+    CResizableDialog manages control repositioning during resizing<br />
+  </blockquote>
+  <blockquote>
+    <b>Eugene Pustovoyt</b><br />
+    CPPToolTip MFC tooltip class<br />
+  </blockquote>
+  <blockquote>
+    <b>Keith Rule</b> (keithr@europa.com)<br />
+    CMemDC memory device context for image manipulation<br />
+  </blockquote>
+  <blockquote>
+    <b>Guy Eric Schalnat (and others)</b> (http://www.libpng.org/pub/png/libpng.html)<br />
+    Libpng C library for reading/writing PNG image data<br />
+  </blockquote>
 </body>
 </html>
