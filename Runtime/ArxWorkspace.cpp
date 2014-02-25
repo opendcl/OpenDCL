@@ -543,21 +543,7 @@ TArxProjectPtr CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszK
 
 FontSettings CArxWorkspace::GetDefaultFontSettings() const
 {
-	CWinApp* pApp = AfxGetApp();
-	static const CString sSection = theWorkspace.GetAppKey();
-	FontSettings FS( pApp->GetProfileString( sSection, S_DefaultFontName, NULL ),
-									 pApp->GetProfileInt( sSection, S_DefaultFontSize, -10 ),
-									 pApp->GetProfileInt( sSection, S_DefaultFontBold, 0 ) != 0,
-									 pApp->GetProfileInt( sSection, S_DefaultFontUnderLine, 0 ) != 0,
-									 pApp->GetProfileInt( sSection, S_DefaultFontItalic, 0 ) != 0 );
-	if( !FS )
-		FS.setName( theWorkspace.GetDefaultFontName() );
-	if( pApp->GetProfileInt( sSection, S_DefaultFontSizeStyle, 0 ) != 0 )
-	{
-		if( !FS.isScaled() )
-			FS.setSize( -FS.size() ); //if "size style" is non-zero, make the size positive to indicate "point size"
-	}
-	return FS;
+	return FontSettings( GetDefaultFontName(), -10, false, false, false );
 }
 
 //display alert dialog; returns true if displayed, false if suppressed
