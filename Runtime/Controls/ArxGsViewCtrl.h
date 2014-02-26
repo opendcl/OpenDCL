@@ -29,7 +29,7 @@ protected:
 	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 
-	class GsViewReactor : public AcGsReactor
+	class GsViewReactor : public AcGsReactor, public AcEditorReactor, public AcDbDatabaseReactor
 	{
 		AcDbDatabase* mpDb;
 		CArxGsViewCtrl* mpCtrl;
@@ -49,9 +49,11 @@ protected:
 			, mpGhostModel( NULL )
 			, mpView( NULL )
 			{
+				acedEditor->addReactor(this);
 				assert( mpCtrl != NULL );
 				if( pDb )
 				{
+					mpDb->addReactor(this);
 					mpManager = acgsGetGsManager();
 					assert( mpManager != NULL );
 					if( !mpManager )
@@ -93,6 +95,7 @@ protected:
 		~GsViewReactor()
 			{
 				clear();
+				acedEditor->removeReactor(this);
 			}
 	protected:
 		void clear()
@@ -135,6 +138,8 @@ protected:
 					}
 					mpFactory = NULL;
 				}
+				if( mpDb )
+					mpDb->removeReactor(this);
 				mpDb = NULL;
 				mpCtrl->OnNeedRepaint( false );
 			}
@@ -169,6 +174,15 @@ protected:
 			{
 				assert( mpFactory == pClassFactory );
 				clear();
+			}
+		virtual void quitWillStart()
+			{
+				clear();
+			}
+		virtual void goodbye( const AcDbDatabase* dwg )
+			{
+				if( mpDb == dwg )
+					clear();
 			}
 	};
 	GsViewReactor* mpGsReactor;
