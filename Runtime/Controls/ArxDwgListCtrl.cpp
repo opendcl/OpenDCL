@@ -7,6 +7,7 @@
 #include "Workspace.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
+#include "DialogObject.h"
 #include "ArxFolderComboCtrl.h"
 #include "PropertyIds.h"
 #include "DclControlTemplate.h"
@@ -61,7 +62,8 @@ bool CArxDwgListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
 
-	CreateImageList();
+	if( bSuccess )
+		Dir( NULL );
 
 	return bSuccess;
 }
@@ -84,22 +86,11 @@ bool CArxDwgListCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::RowHeight:
 		{
 			mnRowHeight = pProp->GetLongValue();
-			int nCurSel = GetCurSel();
-			Dir( msPath );
-			SetCurSel( nCurSel );
-			OnNeedRepaint();
+			OnNeedRepaint( true );
 			break;
 		}
 	}
 	return !bFailed;
-}
-
-void CArxDwgListCtrl::CreateImageList()
-{
-	CBitmap bitmap;
-	bitmap.LoadBitmap( IDB_FOLDER );
-	mImageList.Create( 16, 16, ILC_COLOR24, 10, 5 );
-	mImageList.Add( &bitmap, RGB(0,0,0) );
 }
 
 void CArxDwgListCtrl::ClearThumbnailList()
@@ -112,7 +103,9 @@ void CArxDwgListCtrl::Dir(LPCTSTR pszDir)
 	ResetContent();
 	ClearThumbnailList();
 
-	CString sPath(pszDir);
+	CString sPath;
+	DWORD cchPath = GetFullPathName( pszDir? pszDir : _T("."), MAX_PATH, sPath.GetBuffer( MAX_PATH + 1 ), NULL );
+	sPath.ReleaseBuffer( cchPath );
 	sPath = sPath.TrimRight( _T("\\/") );
 	msPath = sPath;
 
@@ -199,80 +192,70 @@ void CArxDwgListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	ASSERT(pDC); // Attached failed
 	int nIndexDC = pDC->SaveDC();
 
-	COLORREF backGround;
-	COLORREF textColor;
-	COLORREF insideColor = ::GetSysColor(COLOR_WINDOW);
+	COLORREF clrBackground = GetSysColor(COLOR_WINDOW);
+	COLORREF clrForeground = GetSysColor(COLOR_BTNTEXT);
 
-	int nCurSel = GetCurSel();
-	if (nCurSel == lpDrawItemStruct->itemID)
+	bool bSelected = ((GetCurSel() == lpDrawItemStruct->itemID) || (lpDrawItemStruct->itemState & ODS_SELECTED && GetFocus() == this));
+	if( bSelected )
 	{
-		backGround = ::GetSysColor(COLOR_HIGHLIGHT);
-		textColor = ::GetSysColor(COLOR_HIGHLIGHTTEXT);
-	}
-	else if (lpDrawItemStruct->itemState & ODS_SELECTED && GetFocus() == this)
-	{
-		backGround = ::GetSysColor(COLOR_HIGHLIGHT);
-		textColor = ::GetSysColor(COLOR_HIGHLIGHTTEXT);
+		clrBackground = GetSysColor(COLOR_HIGHLIGHT);
+		clrForeground = GetSysColor(COLOR_HIGHLIGHTTEXT);
 	}
 	else
 	{
-		backGround = ::GetSysColor(COLOR_WINDOW);
-		textColor = ::GetSysColor(COLOR_BTNTEXT);
+		CAcadColorService* pColorService = GetColorService();
+		if( pColorService )
+		{
+			if( pColorService->IsBackgroundTransparent() )
+			{
+				CDialogObject* pHostDlg = mpControlPane->GetDialogObject();
+				if( pHostDlg )
+				{
+					CAcadColorService* pDlgColor = pHostDlg->GetColorService();
+					if( pDlgColor )
+						clrBackground = (pDlgColor->GetBackgroundColor() & 0xFFFFFF);
+				}
+			}
+			else if( !pColorService->IsBackgroundNotSet() )
+				clrBackground = pColorService->GetBackgroundColor();
+		}
 	}
-	pDC->SetBkColor(backGround);
-	pDC->SetBkMode(TRANSPARENT);
 
-	CRect rcInside = rc;
-	CRect rcOutside = rc;
-
-	rcInside.right = rcInside.left + 17;
-	rcOutside.left = rcOutside.left + 18;
-
-	CBrush BrushInside;
-	BrushInside.CreateSolidBrush(insideColor);
-	pDC->FillRect(rcInside, &BrushInside);
-	pDC->FillRect(rcOutside, &BrushInside);
-	BrushInside.DeleteObject();
-
-	rcOutside.top = rcInside.top;
-	rcOutside.bottom =  rcInside.top + 19;
-
-	CBrush BrushBg;
-	BrushBg.CreateSolidBrush(backGround);
-	pDC->FillRect(rcOutside, &BrushBg);
-	BrushBg.DeleteObject();
+	pDC->FillSolidRect( &rc, clrBackground );
 
 	CString sFilename;
 	GetText(lpDrawItemStruct->itemID, sFilename);
 
-	int nData = GetItemData(lpDrawItemStruct->itemID);
+	CString sPath = msPath;
+	if( !sPath.IsEmpty() && (sPath.GetAt( sPath.GetLength() - 1 ) != _T('\\')) )
+		sPath += _T('\\');
+	sPath += sFilename;
+	SHFILEINFO sfi;
+	SHGetFileInfo( sPath, 0, &sfi, sizeof(sfi), SHGFI_ICON | (bSelected? SHGFI_SELECTED : 0) );
+	DrawIconEx( pDC->m_hDC, rc.left + 1, rc.top + 1, sfi.hIcon, 16, 16, 0, NULL, DI_NORMAL );
+	DestroyIcon( sfi.hIcon );
 
 	CRect rcText = rc;
 	rcText.left += 18;
 	rcText.top += 2;
-	if (nData == 0)
-	{
-		// paint folder icon
-		CPoint pt( 1, rcText.top - 1 );
-		mImageList.Draw(pDC, 0, pt, ILD_NORMAL);
-	}
-	else
+
+	if( GetItemData(lpDrawItemStruct->itemID) != 0 )
 	{
 		CSize szText;
-		::GetTextExtentPoint32(pDC->m_hDC, sFilename, sFilename.GetLength(), &szText);
-		//rcText.top += m_RowHeight - szText.cy;		
-		pDC->SetBkColor(backGround);
+		GetTextExtentPoint32(pDC->m_hDC, sFilename, sFilename.GetLength(), &szText);
 		CRect rcImage( rcText );
 		rcImage.top += (szText.cy + 1);
 		rcImage.bottom -= 2;
 		CDwgThumbnailPtr ThumbnailPtr;
 		if( mmapThumbnail.Lookup( sFilename, ThumbnailPtr ) )
-			ThumbnailPtr->Render( pDC, rcImage );
+			ThumbnailPtr->Render( pDC, rcImage, clrBackground );
 	}
 	
 	pDC->SelectObject(GetFont());
-	pDC->SetTextColor(textColor);
-	::DrawText(pDC->m_hDC, sFilename, sFilename.GetLength(), &rcText, DT_TOP|DT_LEFT);
+	pDC->SetTextColor(clrForeground);
+	pDC->SetBkColor(clrBackground);
+	pDC->SetBkMode(TRANSPARENT);
+	pDC->DrawText( sFilename, &rcText, DT_TOP|DT_LEFT );
 
 	pDC->RestoreDC(nIndexDC);
 }

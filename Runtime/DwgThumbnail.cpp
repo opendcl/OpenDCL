@@ -8,30 +8,76 @@
 #include "png.h"
 
 
-static HBITMAP GetDefaultPreviewLogoLarge()
+static HBITMAP CreateDIBSection( BITMAPINFO& bmInfo )
 {
-	static class ResBmp
-	{
-		HBITMAP mhBmp;
-	public:
-		ResBmp( UINT idRes ) : mhBmp( (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(idRes), IMAGE_BITMAP, 0, 0, 0) ) {}
-		~ResBmp() { DeleteObject( mhBmp ); }
-		operator HBITMAP() const { return mhBmp; }
-	} hR14LogoLarge( IDB_R14LARGE );
-	return hR14LogoLarge;
-}
+	BITMAPINFOHEADER& bmiHeader = bmInfo.bmiHeader;
+	if( bmiHeader.biCompression != BI_RGB )
+		return NULL; //only uncompressed bitmaps are supported
 
-static HBITMAP GetDefaultPreviewLogoSmall()
-{
-	static class ResBmp
+	// If bmiHeader.biClrUsed is zero we have to infer the number
+	// of colors from the number of bits used to specify it.
+	int nColors = bmiHeader.biClrUsed ? bmiHeader.biClrUsed : (1 << bmiHeader.biBitCount);
+
+	LPVOID lpDIBBits;
+	if( bmInfo.bmiHeader.biBitCount > 8 )
+		lpDIBBits = (LPVOID)((LPDWORD)(bmInfo.bmiColors + bmInfo.bmiHeader.biClrUsed) + 
+		((bmInfo.bmiHeader.biCompression == BI_BITFIELDS) ? 3 : 0));
+	else
+		lpDIBBits = (LPVOID)(bmInfo.bmiColors + nColors);
+
+	BITMAPINFO bmiARGB = 
 	{
-		HBITMAP mhBmp;
-	public:
-		ResBmp( UINT idRes ) : mhBmp( (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(idRes), IMAGE_BITMAP, 0, 0, 0) ) {}
-		~ResBmp() { DeleteObject( mhBmp ); }
-		operator HBITMAP() const { return mhBmp; }
-	} hR14LogoSmall( IDB_R14SMALL );
-	return hR14LogoSmall;
+		sizeof(BITMAPINFOHEADER),
+		bmiHeader.biWidth,
+		bmiHeader.biHeight,
+		1,
+		32,
+		BI_RGB,
+	};
+	COLORREF* rcrDest = NULL;
+	HBITMAP hBitmap = CreateDIBSection( NULL, &bmiARGB, DIB_RGB_COLORS, (LPVOID*)&rcrDest, NULL, 0 );
+	if( !hBitmap )
+		return NULL;
+	if( bmiHeader.biBitCount <= 8 )
+	{
+		BYTE* pSrcPixel = (LPBYTE)lpDIBBits;
+		RGBQUAD* rcrSrc = bmInfo.bmiColors;
+		COLORREF* pDestPixel = &rcrDest[0];
+		BYTE idxBackground = *pSrcPixel;
+		for( size_t row = abs(bmiHeader.biHeight); row > 0; --row )
+		{
+			pSrcPixel = (LPBYTE)(((DWORD_PTR)pSrcPixel - 1) & ~(DWORD_PTR)3) + 4; //align on 4-byte boundary
+			for( size_t col = bmiHeader.biWidth; col > 0; --col )
+			{
+				BYTE idxSrc = *pSrcPixel;
+				DWORD dwAlpha = (idxSrc == idxBackground)? 0 : 0xFF000000;
+				*pDestPixel = *(COLORREF*)(&rcrSrc[idxSrc]) | dwAlpha;
+				++pSrcPixel;
+				++pDestPixel;
+			}
+		}
+	}
+	else if( bmiHeader.biBitCount == 32 )
+	{
+		COLORREF* pSrcPixel = (COLORREF*)lpDIBBits;
+		COLORREF* pDestPixel = &rcrDest[0];
+		COLORREF crBackground = RGB(GetRValue(*pSrcPixel), GetGValue(*pSrcPixel), GetBValue(*pSrcPixel));
+		for( size_t row = abs(bmiHeader.biHeight); row > 0; --row )
+		{
+			for( size_t col = bmiHeader.biWidth; col > 0; --col )
+			{
+				if( (*pSrcPixel & 0xFF000000) != 0xFF000000 )
+					*pDestPixel = (*pSrcPixel & 0xFFFFFF);
+				else if( (*pSrcPixel & 0xFFFFFF) == crBackground )
+					*pDestPixel = crBackground;
+				else
+					*pDestPixel = *pSrcPixel;
+				++pSrcPixel;
+				++pDestPixel;
+			}
+		}
+	}
+	return hBitmap;
 }
 
 bool CDwgThumbnail::Load()
@@ -61,22 +107,23 @@ bool CDwgThumbnail::Load()
 
 		// read sentinel, but ignore it
 		BYTE cbSentinel[SENTINEL_LENGTH];
-		fileDwg.Read (cbSentinel, SENTINEL_LENGTH);
+		fileDwg.Read( cbSentinel, SENTINEL_LENGTH );
 
-		ULONG lSize;
-		fileDwg.Read (&lSize, sizeof(lSize)); //not used
+		ULONG ulSize;
+		fileDwg.Read( &ulSize, sizeof(ulSize) ); //not used
 
 		// check each thumbnail entry
 		BYTE ctThumbs;
 		fileDwg.Read (&ctThumbs, 1);
 		// iterate the entries
-		for (unsigned char idxThumb = 0; idxThumb < ctThumbs; ++idxThumb)
+		for( unsigned char idxThumb = 0; idxThumb < ctThumbs; ++idxThumb )
 		{
 			BYTE nThumbType;
 			fileDwg.Read (&nThumbType, 1); //thumbnail type
-			// Get Offset and Size in DWG
+
+			// get thumbnail file offset and size
 			fileDwg.Read( &lOffset, sizeof(lOffset) );
-			fileDwg.Read( &lSize, sizeof(lSize) );
+			fileDwg.Read( &ulSize, sizeof(ulSize) );
 
 			switch (nThumbType)
 			{
@@ -86,89 +133,32 @@ bool CDwgThumbnail::Load()
 				{
 					LONGLONG lOld = (LONGLONG)fileDwg.GetPosition();
 					fileDwg.Seek( lOffset, CFile::begin );
-					HGLOBAL hDIB = GlobalAlloc( GMEM_FIXED, lSize );
+					HGLOBAL hDIB = LocalAlloc( GMEM_FIXED, ulSize );
 					void* pDIB = (void*)hDIB;
-					if( fileDwg.Read( pDIB, lSize ) != lSize )
+					if( fileDwg.Read( pDIB, ulSize ) != ulSize )
 					{
-						GlobalFree( hDIB );
+						LocalFree( hDIB );
 						return false;
 					}
 					fileDwg.Seek( lOld, CFile::begin );
 
 					BITMAPINFO& bmInfo = *(LPBITMAPINFO)pDIB;
-					BITMAPINFOHEADER& bmiHeader = bmInfo.bmiHeader;
-
-					// If bmiHeader.biClrUsed is zero we have to infer the number
-					// of colors from the number of bits used to specify it.
-					int nColors = bmiHeader.biClrUsed ? bmiHeader.biClrUsed : (1 << bmiHeader.biBitCount);
-
-					LPVOID lpDIBBits;
-					if( bmInfo.bmiHeader.biBitCount > 8 )
-						lpDIBBits = (LPVOID)((LPDWORD)(bmInfo.bmiColors + bmInfo.bmiHeader.biClrUsed) + 
-						((bmInfo.bmiHeader.biCompression == BI_BITFIELDS) ? 3 : 0));
-					else
-						lpDIBBits = (LPVOID)(bmInfo.bmiColors + nColors);
-
-					// Create the palette
-					if( nColors <= 256 )
-					{
-						RGBQUAD *rgbStd = new RGBQUAD[nColors] ;
-						for( int idx = 0; idx < nColors; ++idx )
-						{
-							// here we switch the background color from white to black
-							if (bmInfo.bmiColors[idx].rgbBlue == 255 &&
-								bmInfo.bmiColors[idx].rgbGreen == 255 &&
-								bmInfo.bmiColors[idx].rgbRed == 255)
-							{	
-								rgbStd[idx].rgbBlue = 0;
-								rgbStd[idx].rgbGreen = 0;
-								rgbStd[idx].rgbRed = 0;
-								rgbStd[idx].rgbReserved = 0;
-							}
-							// here we switch the foreground color from black to white
-							else if (bmInfo.bmiColors[idx].rgbBlue == 0 &&
-								bmInfo.bmiColors[idx].rgbGreen == 0 &&
-								bmInfo.bmiColors[idx].rgbRed == 0)							
-							{	
-								rgbStd[idx].rgbBlue = 255;
-								rgbStd[idx].rgbGreen = 255;
-								rgbStd[idx].rgbRed = 255;
-								rgbStd[idx].rgbReserved = 0;
-							}
-							else
-							{
-								rgbStd[idx].rgbBlue = bmInfo.bmiColors[idx].rgbBlue;
-								rgbStd[idx].rgbGreen = bmInfo.bmiColors[idx].rgbGreen;
-								rgbStd[idx].rgbRed = bmInfo.bmiColors[idx].rgbRed;
-								rgbStd[idx].rgbReserved = 0;
-							}
-						}
-						memcpy( bmInfo.bmiColors, rgbStd, sizeof(RGBQUAD) * nColors ); 
-						delete rgbStd;
-					}
-
-					CClientDC dc(NULL);
-					mhBitmap = CreateDIBitmap( dc.m_hDC,		// handle to device context 
-						&bmiHeader,	// pointer to bitmap size and format data 
-						CBM_INIT,	// initialization flag 
-						lpDIBBits,	// pointer to initialization data 
-						&bmInfo,	// pointer to bitmap color-format data 
-						DIB_RGB_COLORS );		// color-data usage 
+					mhBitmap = CreateDIBSection( bmInfo );
 
 					// store the height and width of the bmp
-					mnWidth = bmiHeader.biWidth;
-					mnHeight = bmiHeader.biHeight;
+					mnWidth = bmInfo.bmiHeader.biWidth;
+					mnHeight = abs(bmInfo.bmiHeader.biHeight);
 
-					GlobalFree( hDIB );
+					LocalFree( hDIB );
 				}
 				break;
 			case PNG_THUMB:
 				{
 					LONGLONG lOld = (LONGLONG)fileDwg.GetPosition();
 					fileDwg.Seek( lOffset, CFile::begin );
-					HGLOBAL hPNG = GlobalAlloc( GMEM_FIXED, lSize );
+					HGLOBAL hPNG = GlobalAlloc( GMEM_FIXED, ulSize );
 					void* pPNG = (void*)hPNG;
-					if( fileDwg.Read( pPNG, lSize ) != lSize )
+					if( fileDwg.Read( pPNG, ulSize ) != ulSize )
 					{
 						GlobalFree( hPNG );
 						break;
@@ -180,49 +170,41 @@ bool CDwgThumbnail::Load()
 						NULL,
 						PNG_IMAGE_VERSION,
 					};
-					int nResult = png_image_begin_read_from_memory( &pngInfo, pPNG, lSize );
+					int nResult = png_image_begin_read_from_memory( &pngInfo, pPNG, ulSize );
 					if( !nResult )
 					{
 						GlobalFree( hPNG );
 						break;
 					}
 
-					pngInfo.format = PNG_FORMAT_BGRA_COLORMAP;
-					size_t nStride = PNG_IMAGE_ROW_STRIDE( pngInfo );
+					pngInfo.format = PNG_FORMAT_RGBA;
+					png_int_32 nStride = PNG_IMAGE_ROW_STRIDE( pngInfo );
 					size_t cbImage = PNG_IMAGE_SIZE(pngInfo);
-					size_t cbColorMap = PNG_IMAGE_COLORMAP_SIZE(pngInfo);
-					BYTE* pDIB = (BYTE*)malloc( sizeof(BITMAPINFOHEADER) + cbColorMap + cbImage );
-					memset( pDIB, 0, sizeof(BITMAPINFOHEADER) + cbColorMap + cbImage );
-					png_bytep pImageData = pDIB + sizeof(BITMAPINFOHEADER) + cbColorMap;
-					png_bytep pColorMap = (cbColorMap > 0)? (pDIB + sizeof(BITMAPINFOHEADER)) : NULL;
-					nResult = png_image_finish_read( &pngInfo, NULL, pImageData, nStride, pColorMap );
+					BYTE* pDIB = (BYTE*)malloc( sizeof(BITMAPINFOHEADER) + cbImage );
+					memset( pDIB, 0, sizeof(BITMAPINFOHEADER) + cbImage );
+					png_bytep pImageData = pDIB + sizeof(BITMAPINFOHEADER);
+					nResult = png_image_finish_read( &pngInfo, NULL, pImageData, -nStride, NULL );
 					if( nResult )
 					{
 						BITMAPINFO& bmiPngSource = *(BITMAPINFO*)pDIB;
 						BITMAPINFOHEADER& bmihPngSource = bmiPngSource.bmiHeader;
 						bmihPngSource.biSize = sizeof(BITMAPINFOHEADER);
-						bmihPngSource.biWidth = pngInfo.width;
-						bmihPngSource.biHeight = -pngInfo.height;
+						bmihPngSource.biWidth = (LONG)pngInfo.width;
+						bmihPngSource.biHeight = (LONG)pngInfo.height;
 						bmihPngSource.biPlanes = 1;
-						bmihPngSource.biBitCount = 8;
+						bmihPngSource.biBitCount = 32;
 						bmihPngSource.biCompression = BI_RGB;
-						bmihPngSource.biSizeImage = 0;
+						bmihPngSource.biSizeImage = cbImage;
 						bmihPngSource.biXPelsPerMeter = 0;
 						bmihPngSource.biYPelsPerMeter = 0;
-						bmihPngSource.biClrUsed = pngInfo.colormap_entries;
+						bmihPngSource.biClrUsed = 0;
 						bmihPngSource.biClrImportant = 0;
 
-						CClientDC dc(NULL);
-						mhBitmap = CreateDIBitmap( dc.m_hDC,		// handle to device context 
-							&bmihPngSource,	// pointer to bitmap size and format data 
-							CBM_INIT,	// initialization flag 
-							pImageData,	// pointer to initialization data 
-							&bmiPngSource,	// pointer to bitmap color-format data 
-							DIB_RGB_COLORS );		// color-data usage 
+						mhBitmap = CreateDIBSection( bmiPngSource );
 
 						// store the height and width of the bmp
-						mnWidth = bmihPngSource.biWidth;
-						mnHeight = abs(bmihPngSource.biHeight);
+						mnWidth = bmiPngSource.bmiHeader.biWidth;
+						mnHeight = abs(bmiPngSource.bmiHeader.biHeight);
 					}
 
 					free( pDIB );
@@ -249,7 +231,7 @@ CSize CDwgThumbnail::GetBitmapSize()
 	return CSize(mnWidth, mnHeight);
 }
 
-void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas)
+void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackground)
 {
 	Load();
 
@@ -260,26 +242,7 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas)
 	pDC->FillRect(rcCanvas, &StaticBrush);
 	StaticBrush.DeleteObject();
 
-	if (!mhBitmap)
-	{
-		if (rcCanvas.Height() < 100)
-		{
-			HBITMAP* pBmpOld = (HBITMAP*)SelectObject(dcMem.m_hDC, GetDefaultPreviewLogoSmall());
-			int nX = (rcCanvas.Width() - 53) / 2;
-			int nY = (rcCanvas.Height() - 51) / 2;
-			pDC->StretchBlt(rcCanvas.left + nX, rcCanvas.top + nY, 53, 51, &dcMem, 0, 0, 53, 51, SRCCOPY);
-			SelectObject(dcMem.m_hDC, pBmpOld);
-		}
-		else
-		{
-			HBITMAP* pBmpOld = (HBITMAP*)SelectObject(dcMem.m_hDC, GetDefaultPreviewLogoLarge());
-			int nX = (rcCanvas.Width() - 100) / 2;
-			int nY = (rcCanvas.Height() - 98) / 2;
-			pDC->StretchBlt(rcCanvas.left + nX, rcCanvas.top + nY, 100, 98, &dcMem, 0, 0, 100, 98, SRCCOPY);
-			SelectObject(dcMem.m_hDC, pBmpOld);
-		}
-	}
-	else 
+	if (mhBitmap)
 	{
 		CSize paintSize(rcCanvas.Width(), rcCanvas.Height());
 		CSize drawSize(mnWidth, mnHeight);
@@ -296,9 +259,64 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas)
 		}
 		CPoint ptUL( rcCanvas.left + ((paintSize.cx - drawSize.cx) / 2), rcCanvas.top + ((paintSize.cy - drawSize.cy) / 2) );
 
-		HBITMAP* pBmpOld = (HBITMAP*)::SelectObject( dcMem.m_hDC, mhBitmap );
-		pDC->StretchBlt( ptUL.x, ptUL.y, drawSize.cx, drawSize.cy, &dcMem, 0, 0, mnWidth, mnHeight, SRCCOPY );
-		::SelectObject( dcMem.m_hDC, pBmpOld );
+		DIBSECTION bmpARGB = { 0 };
+		if( sizeof(bmpARGB) == GetObject( mhBitmap, sizeof(bmpARGB), &bmpARGB ) )
+		{
+			BITMAPINFO bmiBlended = 
+			{
+				sizeof(BITMAPINFOHEADER),
+				mnWidth,
+				mnHeight,
+				1,
+				32,
+				BI_RGB,
+			};
+
+			COLORREF* rcrDest = NULL;
+			HBITMAP hBlendedBmp = CreateDIBSection( dcMem.m_hDC, &bmiBlended, DIB_RGB_COLORS, (LPVOID*)&rcrDest, NULL, 0 );
+
+			COLORREF* rcrSrc = (COLORREF*)bmpARGB.dsBm.bmBits;
+			COLORREF* pSrcPixel = &rcrSrc[0];
+			COLORREF* pDestPixel = &rcrDest[0];
+			for( size_t row = abs(mnHeight); row > 0; --row )
+			{
+				for( size_t col = mnWidth; col > 0; --col )
+				{
+					COLORREF crSrc = *pSrcPixel;
+					if( crSrc == (0xFF000000 | clrBackground) )
+						*pDestPixel = (0xFF000000 | ~crSrc); //invert pixels that match background color
+					else if( (crSrc & 0xFF000000) )
+						*pDestPixel = crSrc; //all non-zero alpha values are treated as opaque
+					else
+						*pDestPixel = (0xFF000000 | clrBackground);
+					++pSrcPixel;
+					++pDestPixel;
+				}
+			}
+
+			HBITMAP hOldBmp = (HBITMAP)dcMem.SelectObject( hBlendedBmp );
+			int nOldStretchMode = pDC->SetStretchBltMode( HALFTONE );
+			POINT ptOldBrushOrg;
+			BOOL bBrushOrgSet = SetBrushOrgEx( pDC->m_hDC, 0, 0, &ptOldBrushOrg );
+			pDC->StretchBlt( ptUL.x, ptUL.y, drawSize.cx, drawSize.cy, &dcMem, 0, 0, mnWidth, mnHeight, SRCCOPY );
+			pDC->SetStretchBltMode( nOldStretchMode );
+			if( bBrushOrgSet )
+				SetBrushOrgEx( pDC->m_hDC, ptOldBrushOrg.x, ptOldBrushOrg.y, &ptOldBrushOrg );
+			dcMem.SelectObject( hOldBmp );
+			DeleteObject( hBlendedBmp );
+		}
+		else
+		{
+			HBITMAP hOldBmp = (HBITMAP)dcMem.SelectObject( mhBitmap );
+			int nOldStretchMode = pDC->SetStretchBltMode( HALFTONE );
+			POINT ptOldBrushOrg;
+			BOOL bBrushOrgSet = SetBrushOrgEx( pDC->m_hDC, 0, 0, &ptOldBrushOrg );
+			pDC->StretchBlt( ptUL.x, ptUL.y, drawSize.cx, drawSize.cy, &dcMem, 0, 0, mnWidth, mnHeight, SRCCOPY );
+			pDC->SetStretchBltMode( nOldStretchMode );
+			if( bBrushOrgSet )
+				SetBrushOrgEx( pDC->m_hDC, ptOldBrushOrg.x, ptOldBrushOrg.y, &ptOldBrushOrg );
+			dcMem.SelectObject( hOldBmp );
+		}
 	}
 	dcMem.DeleteDC();
 }

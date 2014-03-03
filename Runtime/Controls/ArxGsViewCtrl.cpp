@@ -20,7 +20,7 @@ CArxGsViewCtrl::CArxGsViewCtrl( TDclControlPtr pTemplate,
 , mArxServices( this )
 , mDragDropService( this )
 , mBlockInsertDropTarget( this )
-, mpGsReactor( NULL )
+, mpGsManager( NULL )
 , mclrHighlight( CAcadColorService::GetTransparentColor() )
 , mLBState( up )
 , mRBState( up )
@@ -75,23 +75,23 @@ void CArxGsViewCtrl::RemoveHighlight()
 
 void CArxGsViewCtrl::clearAll()
 {
-	delete mpGsReactor;
-	mpGsReactor = NULL;
+	delete mpGsManager;
+	mpGsManager = NULL;
 	RemoveHighlight();
 }
 
 bool CArxGsViewCtrl::UpdateModel( AcGiDrawable* pDrawable )
 {
-	if( !mpGsReactor )
+	if( !mpGsManager )
 		return false;
-	mpGsReactor->setDrawable( pDrawable );
+	mpGsManager->setDrawable( pDrawable );
 	return true;
 }
 
 void CArxGsViewCtrl::Zoom( double dZoomFactor )
 {
-	if( mpGsReactor )
-		mpGsReactor->zoom( dZoomFactor );
+	if( mpGsManager )
+		mpGsManager->zoom( dZoomFactor );
 	OnNeedRepaint( false );
 }
 
@@ -102,10 +102,10 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 	AcDbDatabase* pDb = pBTR->database();
 	if( !pDb )
 		pDb = acdbCurDwg();
-	if( !mpGsReactor || mpGsReactor->database() != pDb )
+	if( !mpGsManager || mpGsManager->database() != pDb )
 	{
-		delete mpGsReactor;
-		mpGsReactor = new GsViewReactor( this, pDb );
+		delete mpGsManager;
+		mpGsManager = new GsViewManager( this, pDb );
 	}
 	AcDbExtents extBTR;
 	AcDbBlockTableRecordIterator* pBlockIterator = NULL;
@@ -253,8 +253,8 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 	}
 	pView->setMode( GetRenderMode() );
 
-	if( mpGsReactor )
-		mpGsReactor->setDrawable( pBTR );
+	if( mpGsManager )
+		mpGsManager->setDrawable( pBTR );
 
 	OnNeedRepaint( true );
 }
@@ -326,11 +326,11 @@ void CArxGsViewCtrl::OnPaint()
 void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize( nType, cx, cy );
-	if( mpGsReactor ) 
+	if( mpGsManager ) 
 	{
 		CRect rect;
 		GetClientRect( &rect );
-		mpGsReactor->onSize( rect.Width(), rect.Height() );
+		mpGsManager->onSize( rect.Width(), rect.Height() );
 	}
 }
 

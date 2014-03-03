@@ -3,8 +3,6 @@
 // Used by w:\OpenDCL\Build 5.0\Runtime\ENU\Runtime.Res\Runtime.ENU.rc
 //
 #define IDD_DOCKINGDLGHOST              101
-#define IDB_R14LARGE                    10000
-#define IDB_R14SMALL                    10001
 #define IDI_CROSS                       11000
 #define IDI_ORBIT                       11001
 #define IDI_PAN                         11002

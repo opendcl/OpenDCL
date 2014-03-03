@@ -58,7 +58,6 @@ public:
 	void Snapshot();
 private:
 	void SaveDC();
-	void PaintControl(CDC *pdc);
 
 	// Generated message map functions
 protected:

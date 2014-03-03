@@ -54,7 +54,6 @@ public:
 
 protected:
 	int HitTest(CPoint point);
-	void CreateImageList();
 	void ClearThumbnailList();
 
 // Overrides

@@ -29,7 +29,10 @@ protected:
 	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 
-	class GsViewReactor : public AcGsReactor, public AcEditorReactor, public AcDbDatabaseReactor
+	class GsViewManager : public AcDbDatabaseReactor, public AcGsReactor
+	#ifdef _BRXTARGET
+		, public AcEditorReactor
+	#endif
 	{
 		AcDbDatabase* mpDb;
 		CArxGsViewCtrl* mpCtrl;
@@ -40,7 +43,7 @@ protected:
 		AcGsModel* mpGhostModel;
 		AcGsView* mpView;
 	public:
-		GsViewReactor( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
+		GsViewManager( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
 			: mpDb( pDb )
 			, mpCtrl( pCtrl )
 			, mpManager( NULL )
@@ -49,7 +52,9 @@ protected:
 			, mpGhostModel( NULL )
 			, mpView( NULL )
 			{
+			#ifdef _BRXTARGET
 				acedEditor->addReactor(this);
+			#endif
 				assert( mpCtrl != NULL );
 				if( pDb )
 				{
@@ -92,10 +97,12 @@ protected:
 					mpView->setView( AcGePoint3d(), AcGePoint3d( 0, 0, -1 ), AcGeVector3d( 0, 1, 0 ), 0.01, 0.01 );
 				}
 			}
-		~GsViewReactor()
+		~GsViewManager()
 			{
 				clear();
+			#ifdef _BRXTARGET
 				acedEditor->removeReactor(this);
+			#endif
 			}
 	protected:
 		void clear()
@@ -170,22 +177,27 @@ protected:
 		AcGsModel* GetGsModel() const { return mpModel; }
 		AcGsDevice* GetGsDevice() const { return mpDevice; }
 	protected:
-		virtual void gsToBeUnloaded( AcGsClassFactory* pClassFactory )
-			{
-				assert( mpFactory == pClassFactory );
-				clear();
-			}
-		virtual void quitWillStart()
-			{
-				clear();
-			}
 		virtual void goodbye( const AcDbDatabase* dwg )
 			{
 				if( mpDb == dwg )
 					clear();
 			}
+		virtual void gsToBeUnloaded( AcGsClassFactory* pClassFactory )
+			{
+				assert( mpFactory == pClassFactory );
+				clear();
+			}
+	#ifdef _BRXTARGET
+		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
+			{
+				// The cached pointers are no longer valid when this reactor fires, so clear them
+				// to avoid a crash when the control is destroyed.
+				mpManager = NULL;
+				mpFactory = NULL;
+			}
+	#endif
 	};
-	GsViewReactor* mpGsReactor;
+	GsViewManager* mpGsManager;
 
 private:
 	enum btnstate { up = 0, down = 1, dblclk = 2, };
@@ -208,9 +220,9 @@ public:
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 
 protected:
-	AcGsView* GetGsView() { return (mpGsReactor? mpGsReactor->GetGsView() : NULL); }
-	AcGsModel* GetGsModel() { return (mpGsReactor? mpGsReactor->GetGsModel() : NULL); }
-	AcGsDevice* GetGsDevice() { return (mpGsReactor? mpGsReactor->GetGsDevice() : NULL); }
+	AcGsView* GetGsView() { return (mpGsManager? mpGsManager->GetGsView() : NULL); }
+	AcGsModel* GetGsModel() { return (mpGsManager? mpGsManager->GetGsModel() : NULL); }
+	AcGsDevice* GetGsDevice() { return (mpGsManager? mpGsManager->GetGsDevice() : NULL); }
 	virtual bool CanShowHighlight() const { return true; }
 	virtual bool CanShowFocus() const { return false; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}

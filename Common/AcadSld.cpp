@@ -12,6 +12,21 @@ struct SlbEntry
 	DWORD dwOffset;
 };
 
+static unsigned short SwapByteOrder( unsigned short n )
+{
+	return ((n >> 8) | ((n & 0xFF) << 8));
+}
+
+static signed short SwapByteOrder( signed short n )
+{
+	return SwapByteOrder( (unsigned short)n );
+}
+
+static unsigned long SwapByteOrder( unsigned long n )
+{
+	return ((n >> 24) | ((n & 0xFF0000) >> 8) | ((n & 0xFF00) << 8) | ((n & 0xF) << 24));
+}
+
 
 CAcadSld::CAcadSld(void)
 : msizeSlide( -1, -1 )
@@ -108,12 +123,10 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 	unsigned short nWidth;
 	if( sizeof(nWidth) != fileSlide.Read( &nWidth, sizeof(nWidth) ) )
 		return false;
-	assert( nWidth < 0x1000 ); //this is pretty big -- it may be invalid
 	cbSlide -= sizeof(nWidth);
 	unsigned short nHeight;
 	if( sizeof(nHeight) != fileSlide.Read( &nHeight, sizeof(nHeight) ) )
 		return false;
-	assert( nHeight < 0x1000 ); //this is pretty big -- it may be invalid
 	cbSlide -= sizeof(nHeight);
 	double aspect = 1;
 	unsigned short hfill;
@@ -129,7 +142,6 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 			aspect = fAspect;
 			if( sizeof(hfill) != fileSlide.Read( &hfill, sizeof(hfill) ) )
 				return false;
-			assert( hfill == 0 || hfill == 2 );
 			cbSlide -= sizeof(hfill);
 			fileSlide.Seek( 1, CFile::current ); //skip filler byte
 			cbSlide -= 1;
@@ -141,10 +153,8 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 			if( sizeof(lAspect) != fileSlide.Read( &lAspect, sizeof(lAspect) ) )
 				return false;
 			cbSlide -= sizeof(lAspect);
-			aspect = (double(lAspect) / 1E7);
 			if( sizeof(hfill) != fileSlide.Read( &hfill, sizeof(hfill) ) )
 				return false;
-			assert( hfill == 0 || hfill == 2 );
 			cbSlide -= sizeof(hfill);
 			unsigned short nTest;
 			if( sizeof(nTest) != fileSlide.Read( &nTest, sizeof(nTest) ) )
@@ -156,14 +166,28 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 				break;
 			case 0x3412:
 				endian = big;
+				SwapByteOrder( lAspect );
 				break;
 			default:
 				return false;
 			}
 			cbSlide -= sizeof(nTest);
+			aspect = (double(lAspect) / 1E7);
 		}
 		break;
 	}
+
+	if( endian == big )
+	{ //multi-byte values must be reversed
+		hfill = SwapByteOrder( hfill );
+		nWidth = SwapByteOrder( nWidth );
+		nHeight = SwapByteOrder( nHeight );
+	}
+	assert( nWidth < 0x1000 ); //this is pretty big -- it may be invalid
+	assert( nHeight < 0x1000 ); //this is pretty big -- it may be invalid
+	assert( hfill == 0 || hfill == 2 );
+
+
 	BYTE* bufSlide = new BYTE [cbSlide];
 	bool bGotSlide = (cbSlide == cbSlide != fileSlide.Read( bufSlide, cbSlide ));
 	if( bGotSlide )
@@ -207,8 +231,10 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 	WORD wRecord;
 	while( !bEndOfData && mData.Read( &wRecord, sizeof(wRecord) ) == sizeof(wRecord) )
 	{
-		BYTE type = (meEndian == big)? LOBYTE(wRecord) : HIBYTE(wRecord);
-		BYTE lowbyte = (meEndian == big)? HIBYTE(wRecord) : LOBYTE(wRecord);
+		if( meEndian == big )
+			wRecord = SwapByteOrder( wRecord );
+		BYTE type = HIBYTE(wRecord);
+		BYTE lowbyte = LOBYTE(wRecord);
 		switch( type )
 		{
 		case 0xF7: //undocumented 2-byte record
@@ -238,11 +264,16 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 		case 0xFD: //solid fill
 			{
 				assert( lowbyte == 0 );
-				short x;
-				short y;
+				signed short x;
+				signed short y;
 				if( sizeof(x) == mData.Read( &x, sizeof(x) ) &&
 						sizeof(y) == mData.Read( &y, sizeof(y) ) )
 				{
+					if( meEndian == big )
+					{
+						x = SwapByteOrder(x);
+						y = SwapByteOrder(y);
+					}
 					if( y >= 0 )
 					{
 						rptSolid.Add( SldToClient( CPoint( x, y ), rcDest ) );
@@ -310,6 +341,12 @@ bool CAcadSld::Draw( CDC* pDC, const CRect& rcDest )
 						sizeof(x2) == mData.Read( &x2, sizeof(x2) ) &&
 						sizeof(y2) == mData.Read( &y2, sizeof(y2) ) )
 				{
+					if( meEndian == big )
+					{
+						y = SwapByteOrder(y);
+						x2 = SwapByteOrder(x2);
+						y2 = SwapByteOrder(y2);
+					}
 					CPoint ptFrom( (signed short)wRecord, y );
 					CPoint ptTo( x2, y2 );
 					pDC->MoveTo( SldToClient( ptFrom, rcDest ) );

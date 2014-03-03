@@ -247,13 +247,24 @@ bool CArxWorkspace::UnregisterDialog( CDialogObject* pDialog )
 
 void CArxWorkspace::CloseAllDialogs( DWORD dwMask /*= (DWORD)-1*/ )
 {
-	POSITION posDialog = mDialogs.GetHeadPosition();
-	while (posDialog)
+	// Closing a dialog changes the mDialogs list, so start over at the beginning after each CloseDialog() call
+	// and keep doing this until no more dialogs are found to close.
+	bool bKeepLooking = true;
+	while( bKeepLooking )
 	{
-		CDialogObject* pDialog = mDialogs.GetNext(posDialog);
-		assert(pDialog != NULL);
-		if( dwMask == 0 || ((DWORD( 1 ) << pDialog->GetSourceForm()->GetType()) & dwMask) != 0 )
-			pDialog->CloseDialog(); //this call should result in the dialog being removed from the list
+		bKeepLooking = false;
+		POSITION posDialog = mDialogs.GetHeadPosition();
+		while (posDialog)
+		{
+			CDialogObject* pDialog = mDialogs.GetNext(posDialog);
+			assert(pDialog != NULL);
+			if( dwMask == 0 || ((DWORD( 1 ) << pDialog->GetSourceForm()->GetType()) & dwMask) != 0 )
+			{
+				bKeepLooking = true;
+				pDialog->CloseDialog(); //this call should result in the dialog being removed from the list
+				break;
+			}
+		}
 	}
 }
 

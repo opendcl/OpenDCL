@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxDwgPreviewCtrl.h"
+#include "DwgThumbnail.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
 #include "Workspace.h"
@@ -58,38 +59,6 @@ static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtr
 	}
 
 	return rcCell;
-}
-
-static void DrawTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int nWidth, int nHeight, COLORREF crTransparent )
-{
-	CDC dcImage, dcTrans;
-
-	// Create two memory dcs for the image and the mask
-	dcImage.CreateCompatibleDC(pDC);
-	dcTrans.CreateCompatibleDC(pDC);
-
-	// Select the image into the appropriate dc
-	CBitmap* pOldBitmapImage = dcImage.SelectObject(pBitmap);
-
-	// Create the mask bitmap
-	CBitmap bitmapTrans;
-	bitmapTrans.CreateBitmap(nWidth, nHeight, 1, 1, NULL);
-
-	// Select the mask bitmap into the appropriate dc
-	CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
-
-	// Build mask based on transparent colour
-	dcImage.SetBkColor(crTransparent);
-	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
-
-	// Do the work - True Mask method - cool if not actual display
-	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
-	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
-	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
-
-	// Restore settings
-	dcImage.SelectObject(pOldBitmapImage);
-	dcTrans.SelectObject(pOldBitmapTrans);
 }
 
 
@@ -307,7 +276,20 @@ void CArxDwgPreviewCtrl::OnPaint()
 		memdc.SelectObject( pSavedBmp );
 	}
 	else
-		PaintControl( &dc );
+	{
+		CRect rcCell;
+		GetClientRect(&rcCell);
+		if( msDwgFilename.IsEmpty() )
+			dc.FillSolidRect( &rcCell, mColorService.GetBackgroundColor() );
+		else
+		{
+			//Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
+			//acdbDisplayPreviewFromDwg( msDwgFilename, (void*)m_hWnd, &nBgColor );
+			CDwgThumbnail Thumb( msDwgFilename );
+			Thumb.Render( &dc, rcClient, mColorService.GetBackgroundColor() );
+		}
+		SaveDC();
+	}
 
 
 	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
@@ -334,38 +316,6 @@ void CArxDwgPreviewCtrl::OnPaint()
 		rcFocus.DeflateRect( 2, 2 );
 		dc.DrawFocusRect( rcFocus );
 	}
-}
-
-void CArxDwgPreviewCtrl::PaintControl(CDC* pDC) 
-{
-	int nDCState = pDC->SaveDC();
-	CRect rcCell;
-	GetClientRect(&rcCell);
-	if( msDwgFilename.IsEmpty() )
-		pDC->FillSolidRect( &rcCell, mColorService.GetBackgroundColor() );
-	else
-	{
-		Adesk::UInt32 nBgColor = mColorService.GetBackgroundColor();
-		acdbDisplayPreviewFromDwg( msDwgFilename, (void*)m_hWnd, &nBgColor );
-	}
-	
-	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
-	{
-		CRect rcHighlight = rcCell;
-		rcHighlight.DeflateRect( 1, 1 );
-		
-		CPen pen( PS_SOLID, 1, mclrHighlight );
-		CPen* pOldPen = pDC->SelectObject( &pen );
-		pDC->MoveTo( rcHighlight.TopLeft() );
-		pDC->LineTo( rcHighlight.right, rcHighlight.top );		
-		pDC->LineTo( rcHighlight.right, rcHighlight.bottom );		
-		pDC->LineTo( rcHighlight.left, rcHighlight.bottom );		
-		pDC->LineTo( rcHighlight.left, rcHighlight.top );		
-		pDC->SelectObject( pOldPen );
-	}
-
-	pDC->RestoreDC( nDCState );
-	SaveDC();
 }
 
 void CArxDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy) 

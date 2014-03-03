@@ -8,9 +8,6 @@
 
 class CDwgThumbnail
 {
-private:
-	HBITMAP mhR14LogoLarge;
-	HBITMAP mhR14LogoSmall;
 protected:
 	CString msDwgFilePath;
 	bool mbLoaded;
@@ -41,7 +38,7 @@ public:
 	}
 
 public:
-	void Render(CDC* pDC, const CRect& rcCanvas);
+	void Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackground);
 	CSize GetBitmapSize();
 
 private:
