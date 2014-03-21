@@ -1,45 +1,45 @@
 ;;;######################################################################
 ;;;
-;;;OpenDCL Sample: AllSamples
+;;;OpenDCL Beispiel: AllSamples
 ;;;
-;;; This sample provides an interface for running the individual OpenDCL samples.
+;;; Dieses Beispiel zeigt einen Dialog zum Start der einzelnen OpenDCL Beispiel.
 ;;;
 
 
 ;|«Global Constants»|;
 
-;; List of samples as (tab-name sample-name lisp-filename description)
+;; Liste der Beispiele in der Form (Registerkarte Beispielname Lisp-Dateiname Beschreibung)
 (setq *OdclAllSamples '(
-  ("Basic" "Misc." "Misc.lsp" "Block View, Slide files, Combo Box styles, misc. controls")
-  ("Basic" "Methods" "Methods.lsp" "Picture Box, Slide controls, manipulating controls")
-  ("Basic" "Events" "EventHandling.lsp" "Event handling")
-  ("Basic" "Message box" "MessageBox.lsp" "Using the message box")
-  ("Basic" "View DWG" "ViewDWG.lsp" "Working with the DWG Preview control")
-  ("Basic" "Modeless" "Modeless.lsp" "Working with Modeless forms")
-  ("Basic" "Palette" "AllControls.lsp" "Palette showing samples of all controls")
-  ("Basic" "HTML" "HTML.lsp" "Web browser control")
-  ("Basic" "Animation" "Animation.lsp" "Play an AVI file with the Animation control")
-  ("Basic" "Hatch" "Hatches.lsp" "Display hatch patterns")
-  ("Basic" "Tooltip" "ToolTip.lsp" "Working with control tool tips")
-  ("Basic" "Drag & Drop" "DragNDrop.lsp" "Drag and drop from one control to another")
-  ("Basic" "ListView" "ListView.lsp" "Using the ListView control")
-  ("Basic" "Copy/Paste" "ListBoxCopyPaste.lsp" "Copy/move text between controls")
-  ("Basic" "Splitter" "Splitter.lsp" "Working with Splitter controls")
-  ("Basic" "DWG List" "DwgList.lsp" "Working with the Dwg List control")
-  ("Basic" "List Box" "ListBox.lsp" "Working with a List Box & file selection")
-  ("Advanced" "Tree" "Tree.lsp" "Working with the Tree control")
-  ("Advanced" "Grid" "Grid.lsp" "Working with the Grid control")
-  ("Advanced" "Selection" "Selections.lsp" "Hiding a Modal form to select points or entities")
-  ("Advanced" "Slider" "Slider.lsp" "Custom slider control from picture box")
-  ("Advanced" "Options Tab" "OptionsTab.lsp" "Adding a custom Options tab")
-  ("Advanced" "Splash" "Splash.lsp" "Using OnTimer to display a splash screen")
-  ("Advanced" "Mover" "FormMover.lsp" "Moving and resizing a form after it's been shown")
-  ("Advanced" "Combo Box Lab" "ComboBoxLab.lsp" "Compare combo box styles and behavior")
-  ("Advanced" "VLX 1" "DistSample1.vlx" "ODCL embedded as a resource")
-  ("Advanced" "VLX 2" "DistSample2.vlx" "ODCL as an inline stream")
+  ("Basic" "Verschiedenes" "Misc.lsp" "Blockvorschau, Dias, Listen und verschiedene Steuerelemente")
+  ("Basic" "Methoden" "Methods.lsp" "Bilder, Regler, Steuerelemente verändern")
+  ("Basic" "Ereignisse" "EventHandling.lsp" "Ereignisse behandeln")
+  ("Basic" "Message box" "MessageBox.lsp" "Meldungen und Abfragen verwenden")
+  ("Basic" "DWG-Vorschau" "ViewDWG.lsp" "Mit der DWG-Vorschau arbeiten")
+  ("Basic" "Nicht-modaler Dialog" "Modeless.lsp" "Mit nicht-modalen Dialogen arbeiten")
+  ("Basic" "Palette" "AllControls.lsp" "Palette mit Beispielen aller Steuerelemente")
+  ("Basic" "HTML" "HTML.lsp" "Webseiten-Steuerelement")
+  ("Basic" "Video" "Animation.lsp" "Eine AVI-Datei mit dem Video-Steuerelement abspielen")
+  ("Basic" "Schraffur" "Hatches.lsp" "Zeigt Schraffurmuster")
+  ("Basic" "Tooltip" "ToolTip.lsp" "Mit Tooltips an Steuerlementen arbeiten")
+  ("Basic" "Drücken & Ziehen" "DragNDrop.lsp" "Drag&drop zwischen verschiedenen Steuerelementen")
+  ("Basic" "Erweiterte Liste" "ListView.lsp" "Die erweiterte Liste nutzen")
+  ("Basic" "Kopieren & Einfügen" "ListBoxCopyPaste.lsp" "Kopieren und verschieben zwischen Steuerelementen")
+  ("Basic" "Splitter" "Splitter.lsp" "Mit Splitter-Steuerlementen arbeiten")
+  ("Basic" "DWG-Liste" "DwgList.lsp" "Mit der DWG-Liste arbeiten")
+  ("Basic" "Listenfeld" "ListBox.lsp" "Mit dem Listenfeld und der Dateiauswahl arbeiten")
+  ("Advanced" "Baumstruktur" "Tree.lsp" "Mit der Baumstruktur arbeiten")
+  ("Advanced" "Datenblatt" "Grid.lsp" "Mit dem Datenblatt arbeiten")
+  ("Advanced" "Auswahl" "Selections.lsp" "Punkt oder Objekte aus modalen Dialogen heraus wählen")
+  ("Advanced" "Schieberegler" "Slider.lsp" "Benutzerdefinierter Schieberegler basierend auf einem Bildsteuerelement")
+  ("Advanced" "Registerkarte in den Optionen" "OptionsTab.lsp" "Eine benutzerdefinierte Registerkarte in den Optionen anzeigen und verwenden")
+  ("Advanced" "Splash" "Splash.lsp" "Einen Splash-Dialog mit OnTimer anzeigen")
+  ("Advanced" "Mover" "FormMover.lsp" "Bewegen und skalieren einer Dialogbox, nachdem sie angezeigt wurde")
+  ("Advanced" "Auswahlliste" "ComboBoxLab.lsp" "Vergleich zwischen versch. Arten von Auswahllisten und ihrem Verhalten")
+  ("Advanced" "VLX 1" "DistSample1.vlx" "ODCL in einer Quelle eingebettet")
+  ("Advanced" "VLX 2" "DistSample2.vlx" "ODCL als Datenstrom")
 ))
 
-;; Main program
+;; Hauptprogramm
 (DEFUN C:OPENDCLDEMO (/ *error*)
   (defun *error* (msg)
     (while (< 0 (getvar "cmdactive")) (command))
@@ -48,37 +48,37 @@
       (dcl-Form-Close AllSamples/Main)
     )
     (princ
-      (strcat "\nApplication Error: " (itoa (getvar "errno")) " :- " msg)
+      (strcat "\nAnwendungsfehler: " (itoa (getvar "errno")) " :- " msg)
     )
     (princ)
   )
   ;;------------------------
 
-  ;; Ensure OpenDCL Runtime is loaded (without echoing to command line)
+  ;; Stellt sicher, dass die OpenDCL Laufzeitumgebung geladen ist (ohne Textausgabe an der Befehlszeile)
   (setq cmdecho (getvar "CMDECHO"))
   (setvar "CMDECHO" 0)
   (command "_OPENDCL")
   (setvar "CMDECHO" cmdecho)
 
-  ;; Load the project
+  ;; Lädt das Projekt
   (dcl-Project-Load (*ODCL:Samples-FindFile "@AllSamples.odcl") NIL "AllSamples")
 
-  ;; Show the main form
+  ;; Zeig den Dialog an.
   (dcl-Form-Show AllSamples/Main)
-  ;; The Event handlers manage the form here.
+  ;; Die Ereignisfunktionen steuern an dieser Stelle den Dialog.
   (princ)
 )
 
-;; Load the specified sample
+;; Lade das spezielle Beispiel
 (DEFUN *ODCL:RunSample (filename)
-  (setq *ODCL:AllSamples T) ; flag the sample to run on load
+  (setq *ODCL:AllSamples T) ; definiert, dass das Beispiel aus dem Masterdemo geladen wurde
   (if (eq "Fail" (load (*ODCL:Samples-FindFile filename) "Fail"))
-    ((alert (strcat "\"" filename "\" failed to load!")))
+    ((alert (strcat "Die Datei \"" filename "\" konnte nicht geladen werden!")))
   )
   (setq *ODCL:AllSamples nil)
 )
 
-;; Completely unload OpenDCL to allow upgrade installation
+;; Entlade OpenDCL komplett, um die die Installation der Aktualisierungen zu ermöglichen
 (DEFUN *ODCL:Vanish ()
   (foreach project (dcl-GetProjects) (dcl-Project-Unload project T))
   (foreach module (arx)
@@ -87,18 +87,19 @@
   (princ)
 )
 
-;; Check for newer version; if found, prompt to download and install
+;; Überprüfe auf eine jüngere Version; wurde eine gefunden,
+;; frage, ob sie heruntergeladen und installiert werden soll
 (DEFUN *ODCL:UpdateCheck (/ create_http request_http download_msi write_msi
                             parse_version <version get_curver get_curlang
                             append_status)
   (vl-load-com)
-  (defun create_http () ; create and return WinHttpRequest object
+  (defun create_http () ; Erzeuge das WinHttpRequest Objekt und schließe ab
     (cond
       ((vlax-create-object "WinHttp.WinHttpRequest.5.1"))
       ((vlax-create-object "WinHttp.WinHttpRequest.5"))
     )
   )
-  (defun request_http (url return / http disp pos location filename result) ; perform HTTP request
+  (defun request_http (url return / http disp pos location filename result) ; HTTP Anfrage ausführen
     (setq http (create_http))
     (setq result
       (vl-catch-all-apply
@@ -118,29 +119,30 @@
     )
     result
   )
-  (defun download_msi (lang dev / result) ; download MSI via HTTP, return responsebody
-    (append_status "Downloading OpenDCL Studio installation file...")
-    ;; Construct file download URL and download file
-    ;; Note: to download runtime MSI, use http://opendcl.com/go?runtime and ignore language
+  (defun download_msi (lang dev / result) ; MSI via HTTP herunterladen, Rückgabe Antwort
+    (append_status "OpenDCL Studio Installationsdatei herunterladen...")
+    ;; Stelle die DownloadURL zusammen und lade die Datei herunter
+    ;; Hinweis: um die Laufzeit MSI herunterzuladen, verwenden Sie
+    ;; die URL http://opendcl.com/go?runtime und ignorieren die Sprache
     (setq url "http://opendcl.com/go?studio")
     (if lang (setq url (strcat url "&" (strcase lang T))))
     (if dev (setq url (strcat url "&dev")))
     (setq result (request_http url "ResponseBody"))
-    (if result (append_status "  Downloaded successfully!"))
+    (if result (append_status "  Herunterladen erfolgreich!"))
 
     (if (and (setq result (request_http url "ResponseBody"))
              (= (type result) 'VARIANT)
              (not (zerop (vlax-variant-type result))))
-      (append_status "  Downloaded successfully!")
+      (append_status "  Erfolgreich heruntergeladen!")
       (progn
-        (append_status "  ERROR: The server's response did not contain any data!")
+        (append_status "  FEHLER: Die Antwort des Servers enthielt keine Daten!")
         (setq result nil)
       );
     );
 
     result
   )
-  (defun write_msi (lang dev filename / result fso) ; write downloaded MSI to temp folder, return file path
+  (defun write_msi (lang dev filename / result fso) ; heruntergeladene MSI ins Temp-Verzeichnis speichern, Rückgabe des Dateipfads
     (if (setq result (download_msi lang dev))
       (progn
         (setq fso (vlax-create-object "Scripting.FileSystemObject"))
@@ -148,7 +150,7 @@
           (vl-catch-all-apply
             (function
               (lambda (/ tempfolder filepath adostream filestream)
-                (append_status "Writing installation file to disk...")
+                (append_status "Installationsdatei auf den Datenträger speichern...")
                 (setq tempfolder (vlax-invoke-method fso "GetSpecialFolder" 2))
                 (setq filepath (strcat (vlax-get-property tempfolder "Path") "\\" filename))
                 (vlax-release-object tempfolder)
@@ -161,7 +163,7 @@
                             (if (= :vlax-true (vlax-invoke-method fso "FileExists" filepath))
                               (vlax-invoke-method fso "DeleteFile" filepath :vlax-true)
                             )
-                            (vlax-put adostream "Type" 1) ;1 = binary
+                            (vlax-put adostream "Type" 1) ;1 = Binär
                             (vlax-invoke adostream "Open")
                             (vlax-invoke-method adostream "Write" result)
                             (vlax-put adostream "Position" 0)
@@ -194,8 +196,8 @@
                   )
                 )
                 (if (vl-catch-all-error-p result)
-                  (progn (append_status (strcat "  ERROR: " (vl-catch-all-error-message result))) (setq filepath nil))
-                  (append_status "  File written successfully!")
+                  (progn (append_status (strcat "  FEHLER: " (vl-catch-all-error-message result))) (setq filepath nil))
+                  (append_status "  Datei erfolgreich gespeichert!")
                 )
                 filepath
               )
@@ -204,19 +206,19 @@
         )
         (if fso (vlax-release-object fso))
         (if (vl-catch-all-error-p result)
-          (progn (append_status (strcat "  ERROR: " (vl-catch-all-error-message result))) (setq result nil))
+          (progn (append_status (strcat "  FEHLER: " (vl-catch-all-error-message result))) (setq result nil))
         )
         result
       )
     )
   )
-  (defun parse_version (version / token) ; helper to convert version string to list
+  (defun parse_version (version / token) ; Wandelt den Versionsnamen in eine Liste
     (if (setq token (vl-string-position 46 version))
       (cons (atoi (substr version 1 token)) (parse_version (substr version (+ 2 token))))
       (list (atoi version))
     )
   )
-  (defun <version (left right) ; compare version lists
+  (defun <version (left right) ; Versionslisten vergleichen
     (cond
       ( (null left)
         (not (null right))
@@ -227,7 +229,7 @@
       )
     )
   )
-  (defun get_curver (dev / url) ; get current build version from opendcl.com
+  (defun get_curver (dev / url) ; Aktuelle Version von opendcl.com abfragen
     (setq url
       (if dev
         "http://opendcl.com/version/version_dev.txt"
@@ -236,28 +238,28 @@
     )
     (request_http url "ResponseText")
   )
-  (defun get_curlang () ; get current installed language
+  (defun get_curlang () ; aktuell installierte Sprache abfragen
     (cond
       ( (vl-registry-read
           "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
           "Language"
         )
-      ) ;_ 32-bit location
+      ) ;_ 32-bit Speicherort
       ( (vl-registry-read
           "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
           "Language"
           )
-      ) ;_ 32-bit location
+      ) ;_ 32-bit Speicherort
       ( (vl-registry-read
           "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
           "Language"
         )
-      ) ;_ 64-bit location
-      ( "ENU"
+      ) ;_ 64-bit Speicherort
+      ( "DEU"
       )
     )
   )
-  (defun append_status (status) ; append to dialog box status listbox
+  (defun append_status (status) ; Status zur Listbox hinzufügen
     (dcl-ListBox-AddString AllSamples/Update/lbxStatus status)
     (dcl-Control-Redraw AllSamples/Update)
   )
@@ -273,19 +275,19 @@
   (dcl-ListBox-Clear AllSamples/Update/lbxStatus)
   (dcl-Control-SetVisible AllSamples/Update/btnUpdate nil)
 
-  (append_status "Checking for an update. Please wait...")
+  (append_status "Ich suche Aktualisierungen. Bitte warten Sie...")
 
-  ;; Display installed OpenDCL version
+  ;; Installierte OpenDCL-Version anzeigen
   (setq curlang (get_curlang))
   (setq myver (parse_version (setq myver_string (dcl-GETVERSIONEX))))
   (dcl-Control-SetCaption AllSamples/Update/lblLanguage curlang)
   (dcl-Control-SetCaption AllSamples/Update/lblVersion myver_string)
 
-  ;; Display latest available OpenDCL version
+  ;; Letzte verfügbare OpenDCL-Version anzeigen
   (setq curver (parse_version (setq curver_string (get_curver nil))))
   (if (<version curver myver)
     (progn
-      (setq curver_string (get_curver T)) ; now getting dev build version
+      (setq curver_string (get_curver T)) ; Build-Version abfragen
       (setq curver (parse_version curver_string))
       (dcl-Control-SetVisible AllSamples/Update/lblDevBuild T)
       (dcl-Control-SetVisible AllSamples/Update/lblDevBuildAvail T)
@@ -298,15 +300,15 @@
   (dcl-Control-SetCaption AllSamples/Update/lblLanguageAvail curlang)
   (dcl-Control-SetCaption AllSamples/Update/lblVersionAvail curver_string)
 
-  ;; Decide whether installed version can be updated
+  ;; Überprüfung, ob die installierte Version aktualisiert werden kann
   (dcl-Control-SetVisible AllSamples/Update/btnClose T)
   (if (<version myver curver)
     (progn
-      (append_status "A newer version of OpenDCL Studio is available!")
+      (append_status "Eine neuere Version von OpenDCL Studio ist verfügbar!")
       (dcl-Control-SetEnabled AllSamples/Update/btnUpdate T)
       (dcl-Control-SetVisible AllSamples/Update/btnUpdate T)
     )
-    (append_status "OpenDCL Studio is up to date!")
+    (append_status "OpenDCL Studio ist aktuell!")
   )
 )
 
@@ -400,7 +402,7 @@
   (setq readme (*ODCL:Samples-FindFile "@ReadME.txt"))
   (if readme
     (startapp "notepad" readme)
-    (alert (strcat "Cant find \"@ReadME.txt\"!"))
+    (alert (strcat "Ich kann die Datei \"@ReadME.txt\" nicht finden!"))
   )
   (princ)
 )
@@ -414,37 +416,37 @@
 
 ;;;######################################################################
 ;;;######################################################################
-;;; The following section of code is designed to locate OpenDCL Studio
-;;; sample files in the samples folder by prefixing the filename with
-;;; the path prefix that was saved in the registry by the installer.
-;;; The global *ODCL:Prefix and function *ODCL:Samples-FindFile
-;;; are used throughout the samples.
+;;; Der folgende Abschnitt dient dazu, die Beispiel-Dateien zu lokalisieren.
+;;; Die Pfadangabe wird um den Abschnitt des Beispielordner, erweitert, der
+;;; durch das Installationsprogramm in der Registry eingetragen wurde.
+;;; Die globalen Variable *ODCL:Prefix und die Function *ODCL:Samples:FindFile
+;;; werden in allen Beispieldateien verwendet.
 ;;;
 (or *ODCL:Samples-FindFile
   (defun *ODCL:Samples-FindFile (file)
     (setq *ODCL:Prefix
       (cond
         (	*ODCL:Prefix
-        ) ;_ already defined
+        ) ;_ bereits definiert
         (	(vl-registry-read
             "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL"
             "SamplesFolder"
           )
-        ) ;_ 32-bit location
+        ) ;_ 32-bit Variante
         (	(vl-registry-read
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL"
             "SamplesFolder"
            )
-        ) ;_ 32-bit location
+        ) ;_ 32-bit Variante
         (	(vl-registry-read
             "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL"
             "SamplesFolder"
           )
-        ) ;_ 64-bit location
+        ) ;_ 64-bit Variante
       )
     )
     (cond
-      ((findfile file)) ; check the support path first
+      ((findfile file)) ; überprüfe zunächst den Supportpfad
       (*ODCL:Prefix (findfile (strcat *ODCL:Prefix file)))
       (file)
     )
