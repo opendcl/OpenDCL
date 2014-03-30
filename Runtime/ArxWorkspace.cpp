@@ -128,11 +128,10 @@ CString CArxWorkspace::GetLanguage(void) const
 
 CString CArxWorkspace::FindFile( LPCTSTR pszFilePath ) const
 {
-	CString sPath;
-	if( acedFindFile( pszFilePath, sPath.GetBuffer( MAX_PATH ) ) != RTNORM )
+	TCHAR szPath[MAX_PATH];
+	if( acedFindFile( pszFilePath, szPath ) != RTNORM )
 		return CWorkspace::FindFile( pszFilePath );
-	sPath.ReleaseBuffer();
-	return sPath;
+	return szPath;
 }
 
 bool CArxWorkspace::IsModalFormOpen() const
@@ -659,10 +658,19 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 					sHandlerName += pszHandlerName;
 				}
 				CString sLisp;
-				sLisp.Format( _T("(if (member (type %s) '(SUBR EXSUBR LIST)) 'T)"), (LPCTSTR)sHandlerName );
+				sLisp.Format( _T("(or (member (type %s) '(SUBR EXSUBR LIST)))"), (LPCTSTR)sHandlerName );
 				acedEvaluateLisp( sLisp, prbResult );
 				if( prbResult && prbResult->restype == RTT )
 					mbValid = true;
+			#if (_ARXTARGET >= 20)
+				else if( !prbResult )
+				{
+					acedGetSym( _ACRX_T("c:XXXX"), &prbResult );
+					acedGetSym( sHandlerName, &prbResult );
+					if( prbResult && prbResult->restype == RTVOID )
+						mbValid = true;
+				}
+			#endif
 			#else
 				if( RTNORM != acedGetSym( pszHandlerName, &prbResult ) ||
 						(prbResult && (prbResult->rbnext || prbResult->restype == RTVOID)) )

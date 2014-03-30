@@ -118,11 +118,6 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	//					asString( pDC ) );
 	if( !pDC )
 		return FALSE;
-	CAcadColorService* pColorService = GetColorService();
-	if( !pColorService )
-		return FALSE;
-	if( pColorService->IsBackgroundNotSet() )
-		return FALSE;
 	CRect rcClip;
 	pDC->GetClipBox( &rcClip );
 	CRect rcClient;
@@ -134,6 +129,16 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 		pDC->SetBkMode( TRANSPARENT );
 		return TRUE;
 	}
+	if( !mpControlWnd->IsWindowEnabled() )
+	{
+		pDC->FillSolidRect( &rcClip, GetSysColor( COLOR_INACTIVEBORDER ) );
+		return TRUE;
+	}
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return FALSE;
+	if( pColorService->IsBackgroundNotSet() )
+		return FALSE;
 	if( pColorService->IsBackgroundTransparent() )
 	{
 		CWnd* pParent = mpControlWnd->GetParent();
@@ -227,8 +232,6 @@ bool CDialogControl::IsAsyncEvents() const
 {
 	if( mpControlPane && mpControlPane->IsModal() )
 		return false; // force controls on modal forms to handle events synchronously
-	if( mpControlPane && mpControlPane->IsClosing() )
-		return true;
 	if( mpTemplate )
 		return (mpTemplate->GetLongProperty(Prop::EventInvoke) == 1);
 	return false;

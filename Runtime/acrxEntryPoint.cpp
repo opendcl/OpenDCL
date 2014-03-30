@@ -1259,10 +1259,9 @@ public:
 		static const LPCTSTR pszDemoFilename = _T("@AllSamples.lsp");
 		CString sDemoFilepath;
 	#ifdef _DEBUG
-		if( RTNORM == acedFindFile( pszDemoFilename, sDemoFilepath.GetBuffer( MAX_PATH ) ) )
-			sDemoFilepath.ReleaseBuffer();
-		else
-			sDemoFilepath.ReleaseBuffer(0);
+		TCHAR szDemoFilepath[MAX_PATH];
+		if( RTNORM == acedFindFile( pszDemoFilename, szDemoFilepath ) )
+			sDemoFilepath = szDemoFilepath;
 		if( sDemoFilepath.IsEmpty() )
 	#endif
 		{
@@ -1329,9 +1328,6 @@ public:
 	// ----- ads_opendcl_init_ui symbol (do not rename)
 	static int ads_opendcl_init_ui(void)
 	{
-		//----- Remove the following line if you do not expect any argument for this ADS function
-		struct resbuf *pArgs =acedGetArgs () ;
-
 	#if (_ARXTARGET >= 19)
 		{
 			CString sModuleFilename;

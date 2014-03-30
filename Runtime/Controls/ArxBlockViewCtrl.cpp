@@ -13,6 +13,24 @@
 const int nOrbitOffset = 20;
 const int nOrbitQuadCircleDia = 19;
 
+#if (_ARXTARGET >= 20)
+static AcGiVisualStyle::Type RenderModeToVisualStyle( long nRenderMode )
+{
+	switch( nRenderMode )
+	{
+	case 0: return AcGiVisualStyle::kFlat;
+	case 1: return AcGiVisualStyle::kFlat;
+	case 2: return AcGiVisualStyle::k3DWireframe;
+	case 3: return AcGiVisualStyle::kHidden;
+	case 4: return AcGiVisualStyle::kFlat;
+	case 5: return AcGiVisualStyle::kGouraud;
+	case 6: return AcGiVisualStyle::kFlatWithEdges;
+	case 7: return AcGiVisualStyle::kGouraudWithEdges;
+	};
+	return AcGiVisualStyle::kFlat;
+}
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxBlockViewCtrl
@@ -84,7 +102,13 @@ bool CArxBlockViewCtrl::ApplyProperty( TPropertyPtr pProp )
 		{
 			AcGsView* pView = GetGsView();
 			if( pView )
+			{
+			#if (_ARXTARGET >= 20)
+				pView->setVisualStyle( AcGiVisualStyle( RenderModeToVisualStyle( pProp->GetLongValue() ) ) );
+			#else
 				pView->setMode( (AcGsView::RenderMode)pProp->GetLongValue() );
+			#endif
+			}
 		}
 		break;
 	case Prop::BlockName:
@@ -151,11 +175,17 @@ void CArxBlockViewCtrl::AddUIDrawable( AcGsModel* pModel, AcGsView* pView )
 	pView->add( &mOrbitGadget, pModel );
 	mOrbitGadget.setGsView( pView );
 }
-
+#if (_ARXTARGET >= 20)
+AcGiVisualStyle::Type CArxBlockViewCtrl::GetVisualStyle()
+{
+	return RenderModeToVisualStyle( mpTemplate->GetLongProperty( Prop::RenderMode ) );
+}
+#else
 AcGsView::RenderMode CArxBlockViewCtrl::GetRenderMode()
 {
 	return (AcGsView::RenderMode)mpTemplate->GetLongProperty( Prop::RenderMode );
 }
+#endif
 
 void CArxBlockViewCtrl::DrawOrbitCircles(CDC* pDC /*= NULL*/ )
 {

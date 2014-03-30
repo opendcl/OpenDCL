@@ -97,14 +97,14 @@ public:
 			finder.Close();
 			return true;
 		}
-	static CString GetPlottersPath()
+	static LPCTSTR GetPlottersPath()
 		{
-			static CString sPlottersPath;
-			if( sPlottersPath.IsEmpty() )
+			static TCHAR szPlottersPath[MAX_PATH] = _T("");
+			if( !szPlottersPath[0] )
 			{
-				acedGetEnv( _T("PrinterConfigDir"), sPlottersPath.GetBuffer( MAX_PATH ) );
-				sPlottersPath.ReleaseBuffer();
+				TCHAR szPlottersPath[MAX_PATH];
+				acedGetEnv( _T("PrinterConfigDir"), szPlottersPath );
 			}
-			return sPlottersPath;
+			return szPlottersPath;
 		}
 };

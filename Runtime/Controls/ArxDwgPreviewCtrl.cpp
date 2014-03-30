@@ -291,7 +291,6 @@ void CArxDwgPreviewCtrl::OnPaint()
 		SaveDC();
 	}
 
-
 	if( !CAcadColorService::IsTransparentColor( mclrHighlight ) )
 	{
 		CRect rcCell;

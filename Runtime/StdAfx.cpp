@@ -45,6 +45,8 @@ extern "C" long _ftol2( double dblSource ) { return _ftol( dblSource ); }
 #define HOSTAPP_DLL _T("AcDb18.dll")
 #elif (_ARXTARGET == 19)
 #define HOSTAPP_DLL _T("AcDb19.dll")
+#elif (_ARXTARGET == 20)
+#define HOSTAPP_DLL _T("AcDb20.dll")
 #endif
 
 #ifdef HOSTAPP_DLL

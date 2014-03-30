@@ -177,7 +177,7 @@ bool CDwgThumbnail::Load()
 						break;
 					}
 
-					pngInfo.format = PNG_FORMAT_RGBA;
+					pngInfo.format = PNG_FORMAT_BGRA;
 					png_int_32 nStride = PNG_IMAGE_ROW_STRIDE( pngInfo );
 					size_t cbImage = PNG_IMAGE_SIZE(pngInfo);
 					BYTE* pDIB = (BYTE*)malloc( sizeof(BITMAPINFOHEADER) + cbImage );
@@ -238,9 +238,8 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackgrou
 	CDC dcMem;
 	VERIFY(dcMem.CreateCompatibleDC(pDC));
 
-	CBrush StaticBrush(pDC->GetBkColor());
-	pDC->FillRect(rcCanvas, &StaticBrush);
-	StaticBrush.DeleteObject();
+	pDC->FillSolidRect( rcCanvas, clrBackground );
+	dcMem.SetBkColor( clrBackground );
 
 	if (mhBitmap)
 	{
@@ -257,6 +256,25 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackgrou
 			LONG lNewX = LONG((double(drawSize.cx) * double(paintSize.cy) / double(drawSize.cy)) + 0.5);
 			drawSize.SetSize( lNewX, paintSize.cy );
 		}
+
+		//This block of code enlarges the bitmap up if there is room. The results of enlarging are not
+		//very visually appealing, so this is here only as historical test code for posterity. [ORW 2014-03-30]
+		//
+		//if( drawSize.cx < paintSize.cx && drawSize.cy < paintSize.cy )
+		//{
+		//	int dAspect = (drawSize.cx * paintSize.cy) / (drawSize.cy * paintSize.cx);
+		//	if( dAspect > 0 )
+		//	{
+		//		LONG lNewY = LONG((double(drawSize.cy) * double(paintSize.cx) / double(drawSize.cx)) + 0.5);
+		//		drawSize.SetSize( paintSize.cx, lNewY );
+		//	}
+		//	else if( dAspect < 0 )
+		//	{
+		//		LONG lNewX = LONG((double(drawSize.cx) * double(paintSize.cy) / double(drawSize.cy)) + 0.5);
+		//		drawSize.SetSize( lNewX, paintSize.cy );
+		//	}
+		//}
+
 		CPoint ptUL( rcCanvas.left + ((paintSize.cx - drawSize.cx) / 2), rcCanvas.top + ((paintSize.cy - drawSize.cy) / 2) );
 
 		DIBSECTION bmpARGB = { 0 };
@@ -272,23 +290,24 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackgrou
 				BI_RGB,
 			};
 
-			COLORREF* rcrDest = NULL;
+			RGBQUAD* rcrDest = NULL;
 			HBITMAP hBlendedBmp = CreateDIBSection( dcMem.m_hDC, &bmiBlended, DIB_RGB_COLORS, (LPVOID*)&rcrDest, NULL, 0 );
 
-			COLORREF* rcrSrc = (COLORREF*)bmpARGB.dsBm.bmBits;
-			COLORREF* pSrcPixel = &rcrSrc[0];
-			COLORREF* pDestPixel = &rcrDest[0];
+			RGBQUAD crBack = { GetBValue(clrBackground), GetGValue(clrBackground), GetRValue(clrBackground), 0xFF };
+			RGBQUAD* rcrSrc = (RGBQUAD*)bmpARGB.dsBm.bmBits;
+			RGBQUAD* pSrcPixel = &rcrSrc[0];
+			RGBQUAD* pDestPixel = &rcrDest[0];
 			for( size_t row = abs(mnHeight); row > 0; --row )
 			{
 				for( size_t col = mnWidth; col > 0; --col )
 				{
-					COLORREF crSrc = *pSrcPixel;
-					if( crSrc == (0xFF000000 | clrBackground) )
-						*pDestPixel = (0xFF000000 | ~crSrc); //invert pixels that match background color
-					else if( (crSrc & 0xFF000000) )
+					RGBQUAD crSrc = *pSrcPixel;
+					if( *(DWORD*)&crSrc == *(DWORD*)&crBack )
+						*(DWORD*)pDestPixel = (0xFF000000 | ~*(DWORD*)pDestPixel); //invert pixels that match background color
+					else if( crSrc.rgbReserved != 0 )
 						*pDestPixel = crSrc; //all non-zero alpha values are treated as opaque
 					else
-						*pDestPixel = (0xFF000000 | clrBackground);
+						*(DWORD*)pDestPixel = *(DWORD*)&crBack;
 					++pSrcPixel;
 					++pDestPixel;
 				}

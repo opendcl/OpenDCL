@@ -16,12 +16,23 @@
 //
 class OrbitGadget : public AcGiDrawable
 {
-		AcGsNode* m_pNode;
-		AcGsView* m_pAcGsView;
-public:	
+	AcGsView* m_pAcGsView;
+#if (_ARXTARGET < 20)
+	AcGsNode* m_pNode;
+#endif
 
-	OrbitGadget():m_pNode(NULL) {}
-		void setGsView(AcGsView* pView) {m_pAcGsView=pView;}
+public:	
+	OrbitGadget()
+		: m_pAcGsView(NULL)
+	#if (_ARXTARGET < 20)
+		, m_pNode(NULL)
+	#endif
+		{}
+
+	void setGsView(AcGsView* pView)
+	{
+		m_pAcGsView = pView;
+	}
 
 	virtual Adesk::UInt32   subSetAttributes   (AcGiDrawableTraits * traits)
 		{
@@ -55,6 +66,7 @@ public:
 		{
 				return AcDbObjectId::kNull;
 		}
+	#if (_ARXTARGET < 20)
 		virtual void            setGsNode       (AcGsNode * gsnode)
 		{
 				m_pNode = gsnode;
@@ -63,6 +75,7 @@ public:
 		{
 				return m_pNode;
 		}
+	#endif
 };
 
 
@@ -138,7 +151,11 @@ protected:
 	virtual bool CanShowHighlight() const;
 	virtual void PaintUI( CDC* pdc = NULL );
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView );
+#if (_ARXTARGET >= 20)
+	virtual AcGiVisualStyle::Type GetVisualStyle();
+#else
 	virtual AcGsView::RenderMode GetRenderMode();
+#endif
 
 public:
 	AcDbDatabase* GetSourceDb() { return mpSourceDb; }

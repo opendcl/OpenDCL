@@ -184,6 +184,11 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 	#endif
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 
+		DWORD dwExStyle = GetExtendedStyle();
+		dwExStyle |= LVS_EX_LABELTIP;
+		SetExtendedStyle( dwExStyle );
+		EnableToolTips(FALSE);
+
 		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
 		if( pHeaderCtrl )
 			pHeaderCtrl->SendMessage( HDM_SETBITMAPMARGIN, 1, 0 );
@@ -1207,10 +1212,17 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 		}
 
 		//Draw cell background and border
-		if( nCol == 0 && mbHasRowHeader )
+		if( !IsWindowEnabled() )
 		{
-			cdc.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
-			cdc.SetTextColor( ::GetSysColor( COLOR_BTNTEXT ) );
+			crBackground = GetSysColor( COLOR_INACTIVEBORDER );
+			cdc.FillSolidRect( &rcBounds, crBackground ); 
+			cdc.SetBkColor( crBackground );
+			cdc.SetTextColor( mColorService.GetForegroundColor() ); 
+		}
+		else if( nCol == 0 && mbHasRowHeader )
+		{
+			cdc.SetBkColor( GetSysColor( COLOR_BTNFACE ) );
+			cdc.SetTextColor( GetSysColor( COLOR_BTNTEXT ) );
 			CRect rcHeader = rcBounds;
 			WndTheme HeaderTheme( GetSafeHwnd(), VSCLASS_HEADER );
 			if( HeaderTheme )
@@ -1224,8 +1236,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 			}
 			else
 			{			
-				CBrush br( ::GetSysColor( COLOR_BTNFACE ) );
-				cdc.FillRect( &rcHeader, &br );
+				cdc.FillSolidRect( &rcHeader, GetSysColor( COLOR_BTNFACE ) ); 
 				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
 			}    
 			cdc.SetBkColor( crBackground );
@@ -1235,15 +1246,13 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 		{
 			if( bHighlight )
 			{
-				CBrush br( ::GetSysColor( COLOR_HIGHLIGHT ) );
-				cdc.FillRect( rcBounds, &br );
+				cdc.FillSolidRect( &rcBounds, GetSysColor( COLOR_HIGHLIGHT ) ); 
 				cdc.SetBkColor( ::GetSysColor( COLOR_HIGHLIGHT ) );
 				cdc.SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
 			}
 			else
 			{
-				CBrush br( crBackground );
-				cdc.FillRect( rcBounds, &br ); 
+				cdc.FillSolidRect( &rcBounds, crBackground ); 
 				cdc.SetBkColor( crBackground );
 				cdc.SetTextColor( mColorService.GetForegroundColor() ); 
 			}

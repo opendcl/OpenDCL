@@ -87,11 +87,10 @@ static resbuf* LongLongToRB( LONGLONG lValue )
 static CString DoubleToS( double dValue )
 {
 	static CString sDefault = _T("0.0");
-	CString sReturn;
-	if( RTNORM != acdbRToS( dValue, 2, 8, sReturn.GetBuffer( 256 ) ) )
+	TCHAR szVal[32];
+	if( RTNORM != acdbRToS( dValue, 2, 8, szVal ) )
 		return sDefault;
-	sReturn.ReleaseBuffer();
-	return sReturn;
+	return szVal;
 }
 
 

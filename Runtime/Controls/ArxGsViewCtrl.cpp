@@ -196,14 +196,15 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 	}
 	catch(...)
 	{
+	#if (_ARXTARGET < 20)
 		/*identification number of the current viewport*/
 		struct resbuf   rb;
 		acedGetVar(_T("CVPORT"), &rb);
 		int nVPNum = rb.resval.rint;
 		acedGetVar(_T("TILEMODE"), &rb);
-		AcGsView::RenderMode eMode;
 		try
 		{		
+			AcGsView::RenderMode eMode;
 			if ((rb.resval.rint==0) && (nVPNum == 1))
 			{
 				// SHADEMODE is not available in non mspace layout viewports
@@ -227,6 +228,7 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 			Trace(_T("* CArxGsViewCtrl::DisplayBlock() exception caught"));
 			assert(false);
 		}
+	#endif
 	}
 
 	// set the zoom to units per pixel as program requests
@@ -251,7 +253,11 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 			pView->zoom(dZoomFactor);	
 		}
 	}
+#if (_ARXTARGET >= 20)
+	pView->setVisualStyle( AcGiVisualStyle( GetVisualStyle() ) );
+#else
 	pView->setMode( GetRenderMode() );
+#endif
 
 	if( mpGsManager )
 		mpGsManager->setDrawable( pBTR );

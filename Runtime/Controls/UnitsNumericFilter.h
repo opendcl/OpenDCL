@@ -25,10 +25,11 @@ public:
 			ads_real dblValue;
 			if( RTNORM != acdbDisToF( sRaw, -1, &dblValue ) )
 				return false;
-			int nStat = acdbRToS( dblValue, -1, -1, sRaw.GetBuffer( 256 ) );
-			sRaw.ReleaseBuffer();
+			TCHAR szVal[32];
+			int nStat = acdbRToS( dblValue, -1, -1, szVal );
 			if( nStat != RTNORM )
 				return false;
+			sRaw = szVal;
 			return true;
 		}
 	virtual bool OnValidateInput( CString& sInput ) //return false to reject final input

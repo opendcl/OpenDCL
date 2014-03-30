@@ -80,9 +80,9 @@ public:
 			//sArg.Format( _T(" %u"), _arg );
 			//return sArg;
 			ads_real rArg = static_cast<ads_real>(_arg);
-			TCHAR szArg[256] = _T(" "); 
-			if( RTNORM == acdbRToS( rArg, 2, 0, szArg + 1 ) )
-				return szArg;
+			TCHAR szArg[32] = _T(""); 
+			if( RTNORM == acdbRToS( rArg, 2, 0, szArg ) )
+				return CString( _T(' ') ) + szArg;
 			return _T(" 0");
 		}
 };

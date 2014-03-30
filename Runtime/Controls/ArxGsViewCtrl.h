@@ -37,7 +37,11 @@ protected:
 		AcDbDatabase* mpDb;
 		CArxGsViewCtrl* mpCtrl;
 		AcGsManager* mpManager;
+	#if (_ARXTARGET >= 20)
+		AcGsGraphicsKernel* mpKernel;
+	#else
 		AcGsClassFactory* mpFactory;
+	#endif
 		AcGsDevice* mpDevice;
 		AcGsModel* mpModel;
 		AcGsModel* mpGhostModel;
@@ -47,6 +51,11 @@ protected:
 			: mpDb( pDb )
 			, mpCtrl( pCtrl )
 			, mpManager( NULL )
+		#if (_ARXTARGET >= 20)
+			, mpKernel( NULL )
+		#else
+			, mpFactory( NULL )
+		#endif
 			, mpDevice( NULL )
 			, mpModel( NULL )
 			, mpGhostModel( NULL )
@@ -63,6 +72,19 @@ protected:
 					assert( mpManager != NULL );
 					if( !mpManager )
 						return;
+				#if (_ARXTARGET >= 20)
+					AcGsKernelDescriptor KernelDesc;
+					KernelDesc.addRequirement(AcGsKernelDescriptor::k3DDrawing);
+					mpKernel = mpManager->acquireGraphicsKernel( KernelDesc );
+					assert( mpKernel != NULL );
+					if( !mpKernel )
+						return;
+				#ifndef _BRXTARGET
+					mpKernel->addReactor( this );
+				#endif
+					//a device with standard autocad color palette
+					mpDevice = mpManager->createAutoCADDevice( *mpKernel, mpCtrl->m_hWnd );
+				#else
 					mpFactory = mpManager->getGSClassFactory();
 					assert( mpFactory != NULL );
 					if( !mpFactory )
@@ -72,6 +94,7 @@ protected:
 				#endif
 					//a device with standard autocad color palette
 					mpDevice = mpManager->createAutoCADDevice( mpCtrl->m_hWnd );
+				#endif
 					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
 					if( pAcadColor )
 					{
@@ -87,11 +110,19 @@ protected:
 					mpCtrl->GetClientRect( &rect);
 					onSize( rect.Width(), rect.Height() );   
 					//a simple view
+				#if (_ARXTARGET >= 20)
+					mpView = mpKernel->createView();
+					mpModel = mpManager->createAutoCADModel( *mpKernel ); //a model with open/close protocol
+
+					//another model without open/close for the orbit gadget
+					mpGhostModel = mpKernel->createModel( AcGsModel::kDirect, 0, 0, 0 );
+				#else
 					mpView = mpFactory->createView();
 					mpModel = mpManager->createAutoCADModel(); //a model with open/close protocol
 
 					//another model without open/close for the orbit gadget
 					mpGhostModel = mpFactory->createModel( AcGsModel::kDirect, 0, 0, 0 );
+				#endif
 					mpCtrl->AddUIDrawable( mpGhostModel, mpView );
 					mpDevice->add( mpView );
 					mpView->setView( AcGePoint3d(), AcGePoint3d( 0, 0, -1 ), AcGeVector3d( 0, 1, 0 ), 0.01, 0.01 );
@@ -128,6 +159,25 @@ protected:
 					}
 					mpManager = NULL;
 				}
+			#if (_ARXTARGET >= 20)
+				if( mpKernel )
+				{
+				#ifndef _BRXTARGET
+					mpKernel->removeReactor( this );
+				#endif
+					if( mpView )
+					{
+						mpKernel->deleteView( mpView );
+						mpView = NULL;
+					}
+					if( mpGhostModel )
+					{
+						mpKernel->deleteModel( mpGhostModel );
+						mpGhostModel = NULL;
+					}
+					mpKernel = NULL;
+				}
+			#else
 				if( mpFactory )
 				{
 				#ifndef _BRXTARGET
@@ -145,6 +195,7 @@ protected:
 					}
 					mpFactory = NULL;
 				}
+			#endif
 				if( mpDb )
 					mpDb->removeReactor(this);
 				mpDb = NULL;
@@ -182,11 +233,24 @@ protected:
 				if( mpDb == dwg )
 					clear();
 			}
+		virtual void viewToBeDestroyed( AcGsView* pView )
+			{
+				if( mpView == pView )
+					clear();
+			}
+	#if (_ARXTARGET >= 20)
+		virtual void gsToBeUnloaded( AcGsGraphicsKernel* pKernel )
+			{
+				assert( mpKernel == pKernel );
+				clear();
+			}
+	#else
 		virtual void gsToBeUnloaded( AcGsClassFactory* pClassFactory )
 			{
 				assert( mpFactory == pClassFactory );
 				clear();
 			}
+	#endif
 	#ifdef _BRXTARGET
 		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
 			{
@@ -227,7 +291,11 @@ protected:
 	virtual bool CanShowFocus() const { return false; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
+#if (_ARXTARGET >= 20)
+	virtual AcGiVisualStyle::Type GetVisualStyle() { return AcGiVisualStyle::kFlat; }
+#else
 	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }
+#endif
 	void clearAll();
 	bool UpdateModel( AcGiDrawable* pDrawable );
 
