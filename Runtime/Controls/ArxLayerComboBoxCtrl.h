@@ -24,14 +24,16 @@ class CArxLayerComboBoxCtrl : public CArxComboBoxCtrl
 		~CDocReactor()
 			{ if( mpHandler ) acDocManager->removeReactor( this ); }
 		void documentActivated(AcApDocument* pActivatedDoc)
-			{ if( mpCombo ) mpCombo->ResetContent(); }
+			{ if( mpCombo ) mpHandler->PopulateList(mpCombo); }
 		void documentDestroyed(const char* filename)
-			{ if( mpCombo ) mpCombo->ResetContent(); }
+			{ if( mpCombo ) mpHandler->PopulateList(mpCombo); }
 	} mDocReactor;
+
 public:
 	CArxLayerComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true )
 		: CArxComboBoxCtrl( pTemplate, pPane, nID, new CLayerComboHandler, bCreate )
 		, mDocReactor( this )
 		{}
 	virtual ~CArxLayerComboBoxCtrl() {}
+protected:
 };

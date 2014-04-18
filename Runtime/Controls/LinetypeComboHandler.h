@@ -19,8 +19,6 @@ public:
 public:
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			assert( pCombo->GetCount() == 0 );
-
 			CAutoDocReadLock CurDocLock;
 			AcDbDatabase* pCurDb = acdbHostApplicationServices()->workingDatabase();
 			if( !pCurDb )

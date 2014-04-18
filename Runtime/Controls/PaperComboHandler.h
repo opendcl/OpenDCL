@@ -22,8 +22,6 @@ public:
 public:
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			assert( pCombo->GetCount() == 0 );
-
 			CWaitCursor WaitCursor;
 			CAutoDocWriteLock CurDocLock;
 			AcDbLayoutManager* pLayoutManager = acdbHostApplicationServices()->layoutManager();

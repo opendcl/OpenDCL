@@ -128,7 +128,6 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::List:
-		if( !GetComboHandler() )
 		{
 			mbIgnoreChange = true;
 			ResetContent();
@@ -145,9 +144,16 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 						SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
 				}
 			}
-			mbIgnoreChange = false;
 			if( (GetStyle() & CBS_SORT) )
+			{
+				mbIgnoreChange = false;
 				OnListChanged(); //in case the list is sorted, to update the List property
+				mbIgnoreChange = true;
+			}
+			CComboHandler* pHandler = GetComboHandler();
+			if( pHandler )
+				pHandler->PopulateList(this);
+			mbIgnoreChange = false;
 		}
 		break;
 	case Prop::ItemData:

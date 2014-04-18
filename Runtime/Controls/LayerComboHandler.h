@@ -18,14 +18,15 @@ class CLayerComboHandler : public CComboHandler
 	CImageList mImageList;
 	struct _lprop
 	{
-		CString name;
 		AcCmColor color;
 		bool frozen;
 		bool off;
-		_lprop( LPCTSTR pszName, const AcCmColor& Color, bool bFrozen, bool bOff )
-			: name( pszName ), color( Color ), frozen( bFrozen ), off( bOff ) {}
+		_lprop()
+			: frozen( false ), off( false ) {}
+		_lprop( const AcCmColor& Color, bool bFrozen, bool bOff )
+			: color( Color ), frozen( bFrozen ), off( bOff ) {}
 	};
-	std::vector< _lprop > mrLayerProperties;
+	std::map< CString, _lprop > mmapLayerProperties;
 
 public:
 	CLayerComboHandler()
@@ -39,62 +40,93 @@ public:
 		}
 	virtual ~CLayerComboHandler() {}
 
+protected:
+	bool LookupLayerProps( LPCTSTR pszLayerName, _lprop& props )
+	{
+		CString sName( pszLayerName );
+		sName.MakeUpper();
+		std::map< CString, _lprop >::const_iterator iterLayer = mmapLayerProperties.find(sName);
+		if( iterLayer == mmapLayerProperties.end() )
+			return false;
+		props = iterLayer->second;
+		return true;
+	}
+	bool HasLayerProps( LPCTSTR pszLayerName )
+	{
+		CString sName( pszLayerName );
+		sName.MakeUpper();
+		std::map< CString, _lprop >::const_iterator iterLayer = mmapLayerProperties.find(sName);
+		return (iterLayer != mmapLayerProperties.end());
+	}
+
 public:
 	virtual bool IsOwnerDrawn() const { return true; }
 	virtual UINT GetItemHeight() const { return 16; }
 	virtual void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct )
 		{
-			size_t idxItem = lpDrawItemStruct->itemID;
-			if( idxItem >= mrLayerProperties.size() )
-				return;
-
 			CDC *pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 			int nIndexDC = pDC->SaveDC();
 			CRect rc( lpDrawItemStruct->rcItem );
 			CBrush brushFill;
 			if( lpDrawItemStruct->itemState & ODS_SELECTED )
 			{
-				brushFill.CreateSolidBrush( ::GetSysColor( COLOR_HIGHLIGHT ) );
+				pDC->FillSolidRect( rc, GetSysColor( COLOR_HIGHLIGHT ) );
 				pDC->SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
 			}
 			else
-				brushFill.CreateSolidBrush( pDC->GetBkColor() );
-			pDC->SetBkMode( TRANSPARENT );
-			pDC->FillRect( rc, &brushFill );
-			CRect rcImage( rc );
-			rcImage.left += 2;
-			rcImage.right = rcImage.left + 13;
-			rcImage.bottom = rcImage.top + 13;
+				pDC->FillSolidRect( rc, pDC->GetBkColor() );
 
-			const _lprop& lprop = mrLayerProperties.at( idxItem );
-			CPoint point;
-			CRect rcColor( rcImage );
-			rcColor.top++;
-			rcColor.bottom++;
-			CPen penColorBorder( PS_SOLID, 1, RGB(0,0,0) );
-			CPen* pOldPen = pDC->SelectObject( &penColorBorder );
-			pDC->Rectangle( &rcColor );
-			pDC->SelectObject( pOldPen );
-			rcColor.DeflateRect( 1, 1 );
-			COLORREF crFill = 
-				(lprop.color.isByColor()? RGB(lprop.color.red(),lprop.color.green(),lprop.color.blue()) :
-																	GetRGBColor( lprop.color.colorIndex() ));
-			CBrush brFill( crFill );
-			pDC->FillRect( &rcColor, &brFill );
-			mImageList.Draw( pDC, lprop.off? 1 : 0, CPoint( rcImage.left + 14, rcImage.top ), ILD_TRANSPARENT );
-			mImageList.Draw( pDC, lprop.frozen? 3 : 2, CPoint( rcImage.left + 28, rcImage.top ), ILD_TRANSPARENT );
-			int nX = rc.left; // Save for lines
-			rc.left += 48; // Text Position
-			rc.top++;
-			pDC->TextOut( rc.left, rc.top, lprop.name );
+			int idxItem = (int)lpDrawItemStruct->itemID;
+			if(idxItem >= 0)
+			{
+				CString sName;
+				pCombo->GetLBText(idxItem, sName);
+				_lprop lprop;
+				if( LookupLayerProps(sName, lprop) )
+				{
+					CRect rcImage( rc );
+					rcImage.left += 2;
+					rcImage.right = rcImage.left + 13;
+					rcImage.bottom = rcImage.top + 13;
+
+					CPoint point;
+					CRect rcColor( rcImage );
+					rcColor.top++;
+					rcColor.bottom++;
+					CPen penColorBorder( PS_SOLID, 1, RGB(0,0,0) );
+					CPen* pOldPen = pDC->SelectObject( &penColorBorder );
+					pDC->Rectangle( &rcColor );
+					pDC->SelectObject( pOldPen );
+					rcColor.DeflateRect( 1, 1 );
+					COLORREF crFill = 
+						(lprop.color.isByColor()? RGB(lprop.color.red(),lprop.color.green(),lprop.color.blue()) :
+																			GetRGBColor( lprop.color.colorIndex() ));
+					CBrush brFill( crFill );
+					pDC->FillRect( &rcColor, &brFill );
+					mImageList.Draw( pDC, lprop.off? 1 : 0, CPoint( rcImage.left + 14, rcImage.top ), ILD_TRANSPARENT );
+					mImageList.Draw( pDC, lprop.frozen? 3 : 2, CPoint( rcImage.left + 28, rcImage.top ), ILD_TRANSPARENT );
+				}
+				rc.left += 48; // Text Position
+				rc.top++;
+				pDC->TextOut( rc.left, rc.top, sName );
+			}
 			if( lpDrawItemStruct->itemState & ODS_FOCUS )
 				pDC->DrawFocusRect( &lpDrawItemStruct->rcItem );
 			pDC->RestoreDC( nIndexDC );
 		}
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			assert( pCombo->GetCount() == 0 );
-			mrLayerProperties.clear();
+			CString sSelected;
+			pCombo->GetWindowText(sSelected);
+			//Delete all existing layer names (and leave the items which are not layers)
+			for(int idxItem = pCombo->GetCount() - 1; idxItem >= 0; --idxItem)
+			{
+				CString sName;
+				pCombo->GetLBText(idxItem, sName);
+				if( HasLayerProps(sName) )
+					pCombo->DeleteString(idxItem);
+			}
+			mmapLayerProperties.clear();
 
 			CAutoDocReadLock CurDocLock;
 			AcDbDatabase* pCurDb = acdbHostApplicationServices()->workingDatabase();
@@ -130,11 +162,11 @@ public:
 					CSize sizeText = pComboDC->GetTextExtent( CString( pszName ) );
 					if( sizeText.cx > nMinWidth )
 						nMinWidth = sizeText.cx;
-					mrLayerProperties.insert( mrLayerProperties.begin() + idx,
-																		_lprop( pszName,
-																						pLayerTableRecord->color(),
-																						pLayerTableRecord->isFrozen(),
-																						pLayerTableRecord->isOff() ) );
+					CString sName( pszName );
+					sName.MakeUpper();
+					mmapLayerProperties[sName] = _lprop( pLayerTableRecord->color(),
+																							 pLayerTableRecord->isFrozen(),
+																							 pLayerTableRecord->isOff() );
 				}
 				pLayerTableRecord->close();
 			}
@@ -146,6 +178,9 @@ public:
 				if( nMinWidth > nCurrent )
 					pCombo->SetDroppedWidth( nMinWidth );
 			}
+			int nSelected = pCombo->FindStringExact( -1, sSelected );
+			if( nSelected >= 0 )
+				pCombo->SetCurSel( nSelected );
 			pCombo->ReleaseDC( pComboDC );
 			return bSuccess;
 		}

@@ -109,7 +109,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CComboBoxCtrl message handlers
+// CArxLineweightComboBoxCtrl message handlers
 
 LRESULT CArxLineweightComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {

@@ -186,7 +186,7 @@
     (function (lambda (ctrl arglist) (dcl-ComboBox-ClearEdit ctrl)))
   )
   (list "DeleteItem" '(0 "0123456789" "0") NIL
-    (function (lambda (ctrl arglist) (dcl-ComboBox-DeleteItem ctrl (car arglist))))
+    (function (lambda (ctrl arglist) (dcl-ComboBox-DeleteItem ctrl (atoi (car arglist)))))
   )
   (list "Dir" '(12 NIL NIL) '(0 NIL "Filter")
     (function (lambda (ctrl arglist) (dcl-ComboBox-Dir ctrl (car arglist) (if (eq (cadr arglist) "") NIL (cadr arglist)))))

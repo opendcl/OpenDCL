@@ -76,14 +76,14 @@ public:
 		}
 	virtual CString asString() const
 		{
-			//CString sArg;
-			//sArg.Format( _T(" %u"), _arg );
-			//return sArg;
-			ads_real rArg = static_cast<ads_real>(_arg);
-			TCHAR szArg[32] = _T(""); 
-			if( RTNORM == acdbRToS( rArg, 2, 0, szArg ) )
-				return CString( _T(' ') ) + szArg;
-			return _T(" 0");
+			CString sArg;
+			sArg.Format( _T(" %.1f"), (double)_arg );
+			return sArg;
+			//ads_real rArg = static_cast<ads_real>(_arg);
+			//TCHAR szArg[32] = _T(""); 
+			//if( RTNORM == acdbRToS( rArg, 2, 20, szArg ) )
+			//	return CString( _T(' ') ) + szArg;
+			//return _T(" 0");
 		}
 };
 

@@ -107,7 +107,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CComboBoxCtrl message handlers
+// CArxPlotStyleNameComboBoxCtrl message handlers
 
 LRESULT CArxPlotStyleNameComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {

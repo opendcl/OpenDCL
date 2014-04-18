@@ -721,6 +721,15 @@ bool GetHandleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ DWORD_PTR& nArg, /*in
 	case RTLONG:
 		nArg = pArgs->resval.rlong;
 		break;
+	case RTREAL:
+		if( pArgs->resval.rreal < 0 )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+		}
+		nArg = (DWORD_PTR)pArgs->resval.rreal;
+		break;
 	case RTENAME:
 		if( pArgs->resval.rlname[1] != odcl::ptrHandle )
 		{

@@ -51,7 +51,7 @@ CRect CArxColorComboBoxCtrl::GetWndRect() const
 DWORD CArxColorComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (WS_VSCROLL | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT);
+	dwStyle |= (WS_VSCROLL | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED/* | CBS_NOINTEGRALHEIGHT*/);
 	//if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
 	//	dwStyle |= CBS_SORT;
 	//else
@@ -114,7 +114,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CComboBoxCtrl message handlers
+// CArxColorComboBoxCtrl message handlers
 
 LRESULT CArxColorComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -181,5 +181,6 @@ void CArxColorComboBoxCtrl::OnCbnSelchange()
 
 void CArxColorComboBoxCtrl::OnCbnDropdown()
 {
+	__super::OnDropDown();
 	GetArxServices()->HandleEvent( Prop::EventDropDown );
 }

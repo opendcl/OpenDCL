@@ -107,7 +107,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CComboBoxCtrl message handlers
+// CArxArrowComboBoxCtrl message handlers
 
 LRESULT CArxArrowComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
