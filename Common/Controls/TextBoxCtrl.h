@@ -30,7 +30,7 @@ public:
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return CFilteredEditCtrl::GetColorService(); }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
 	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
 
 protected:

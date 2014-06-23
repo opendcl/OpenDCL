@@ -85,8 +85,7 @@ DROPEFFECT CArxImageTreeCtrl::OnDragOver( const CPoint& point, COleDataObject* p
 	return dwEffect;
 }
 
-bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-																DROPEFFECT dropEffect )
+bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
 	{
@@ -109,11 +108,47 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 			CString sControl;
 			if( pSourceDclControl->GetType() != _CtlForm )
 				sControl = pSourceDclControl->GetKeyName();
+			bool bExtendedHandler = sDropControlEvent.GetAt( sDropControlEvent.GetLength() - 1 ) == _T('+'); //drop effect as additional argument?
+			bool bCancel = false;
+			resbuf* prbResult = NULL;
 			if( !sKey.IsEmpty() )
-				GetArxServices()->HandleEvent( sDropControlEvent, args_SSSS( sProject, sForm, sControl, sKey ) );
+			{
+				if( bExtendedHandler )
+					bCancel = GetArxServices()->HandleEvent( sDropControlEvent, prbResult, args_SSSSN( sProject, sForm, sControl, sKey, dropEffect ) );
+				else
+					bCancel = GetArxServices()->HandleEvent( sDropControlEvent, prbResult, args_SSSS( sProject, sForm, sControl, sKey ) );
+			}
 			else
-				GetArxServices()->HandleEvent( sDropControlEvent, args_SSSH( sProject, sForm, sControl, (DWORD_PTR)hItem ) );
-			return true;
+			{
+				if( bExtendedHandler )
+					bCancel = GetArxServices()->HandleEvent( sDropControlEvent, prbResult, args_SSSHN( sProject, sForm, sControl, (DWORD_PTR)hItem, dropEffect ) );
+				else
+					bCancel = GetArxServices()->HandleEvent( sDropControlEvent, prbResult, args_SSSH( sProject, sForm, sControl, (DWORD_PTR)hItem ) );
+			}
+			bool bUnhandled = false;
+			if( bCancel )
+				dropEffect = DROPEFFECT_NONE;
+			else if( prbResult )
+			{
+				if( prbResult->restype == RTSHORT )
+				{
+					switch( prbResult->resval.rint )
+					{
+					case -1:
+						bUnhandled = true;
+						break;
+					case DROPEFFECT_NONE:
+					case DROPEFFECT_COPY:
+					case DROPEFFECT_MOVE:
+					case DROPEFFECT_LINK:
+						dropEffect = (DROPEFFECT)prbResult->resval.rint;
+						break;
+					}
+				}
+				acutRelRb( prbResult );
+			}
+			if( !bUnhandled )
+				return true;
 		}
 
 		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromOther );
@@ -126,7 +161,7 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 			return true;
 		}
 	}
-	return __super::OnDrop( point, pSourceData, dropEffect )  ;
+	return __super::OnDrop( point, pSourceData, dropEffect );
 }
 
 BOOL CArxImageTreeCtrl::SetItemText( HTREEITEM hItem, LPCTSTR lpszItem )

@@ -190,7 +190,7 @@ public:
 	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual void OnDragLeave() {}
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dwEffect );
 
 	// Creation & Property Application
 public:

@@ -23,7 +23,8 @@
 class CBaseDlg : public CDialog, public CArxDialogObject
 {
 	CAcadColorService mColorService;
-	int mnInitialX;
+	CPoint mptInitial;
+	CSize msizeInitial;
 	int mnInitialY;
 	bool mbHasTitleBar;
 	bool mbResizable;

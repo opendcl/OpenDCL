@@ -9,47 +9,47 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Introduction To OpenDCL">
+		<param name="Name" value="&Acirc;&acirc;&aring;&auml;&aring;&iacute;&egrave;&aring; &acirc; OpenDCL">
 		<param name="Local" value="Intro\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="License and Credits">
+			<param name="Name" value="&Euml;&egrave;&ouml;&aring;&iacute;&ccedil;&egrave;&yuml; &egrave; &agrave;&acirc;&ograve;&icirc;&eth;&ucirc;">
 			<param name="Local" value="License.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Installation">
+			<param name="Name" value="&Oacute;&ntilde;&ograve;&agrave;&iacute;&icirc;&acirc;&ecirc;&agrave;">
 			<param name="Local" value="Intro\Installation.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Resources">
+			<param name="Name" value="&Dstrok;&aring;&ntilde;&oacute;&eth;&ntilde;&ucirc;">
 			<param name="Local" value="Intro\Resources.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Glossary">
+			<param name="Name" value="&Ntilde;&euml;&icirc;&acirc;&agrave;&eth;&uuml; &ograve;&aring;&eth;&igrave;&egrave;&iacute;&icirc;&acirc;">
 			<param name="Local" value="Intro\Glossary.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="OpenDCL Concepts">
+		<param name="Name" value="&Icirc;&ntilde;&iacute;&icirc;&acirc;&iacute;&ucirc;&aring; &iuml;&icirc;&iacute;&yuml;&ograve;&egrave;&yuml; OpenDCL">
 		<param name="Local" value="Concepts\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Object Model">
+			<param name="Name" value="&Icirc;&aacute;&uacute;&aring;&ecirc;&ograve;&iacute;&agrave;&yuml; &igrave;&icirc;&auml;&aring;&euml;&uuml;">
 			<param name="Local" value="Concepts\ObjectModel.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Application Development">
+			<param name="Name" value="&Dstrok;&agrave;&ccedil;&eth;&agrave;&aacute;&icirc;&ograve;&ecirc;&agrave; &iuml;&eth;&egrave;&euml;&icirc;&aelig;&aring;&iacute;&egrave;&yuml;">
 			<param name="Local" value="Concepts\Development.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Modal vs. Modeless">
+			<param name="Name" value="&Igrave;&icirc;&auml;&agrave;&euml;&uuml;&iacute;&ucirc;&aring; &egrave; &Iacute;&aring;&igrave;&icirc;&auml;&agrave;&euml;&uuml;&iacute;&ucirc;&aring; &auml;&egrave;&agrave;&euml;&icirc;&atilde;&egrave;">
 			<param name="Local" value="Concepts\Modality.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Using OpenDCL">
+		<param name="Name" value="&Egrave;&ntilde;&iuml;&icirc;&euml;&uuml;&ccedil;&icirc;&acirc;&agrave;&iacute;&egrave;&aring; OpenDCL">
 		<param name="Local" value="Usage\Index.htm">
 		</OBJECT>
 	<UL>
@@ -58,65 +58,65 @@
 			<param name="Local" value="Usage\Studio.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="AutoLISP Code">
+			<param name="Name" value="&Ecirc;&icirc;&auml; AutoLISP">
 			<param name="Local" value="Usage\AutoLISP.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Error Handling">
+			<param name="Name" value="&Icirc;&aacute;&eth;&agrave;&aacute;&icirc;&ograve;&ecirc;&agrave; &icirc;&oslash;&egrave;&aacute;&icirc;&ecirc;">
 			<param name="Local" value="Usage\ErrorHandling.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Advanced OpenDCL">
+		<param name="Name" value="&Iuml;&eth;&icirc;&auml;&acirc;&egrave;&iacute;&oacute;&ograve;&ucirc;&aring; &acirc;&icirc;&ccedil;&igrave;&icirc;&aelig;&iacute;&icirc;&ntilde;&ograve;&egrave; OpenDCL">
 		<param name="Local" value="Advanced\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Deployment">
+			<param name="Name" value="&Dstrok;&agrave;&ccedil;&acirc;&aring;&eth;&ograve;&ucirc;&acirc;&agrave;&iacute;&egrave;&aring;">
 			<param name="Local" value="Advanced\Deployment.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Tips and Techniques">
+			<param name="Name" value="&Ntilde;&icirc;&acirc;&aring;&ograve;&ucirc; &egrave; &iuml;&eth;&egrave;&aring;&igrave;&ucirc;">
 			<param name="Local" value="Advanced\Tips.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="OpenDCL Reference">
+		<param name="Name" value="&Egrave;&ntilde;&iuml;&icirc;&euml;&iacute;&yuml;&aring;&igrave;&ucirc;&eacute; &igrave;&icirc;&auml;&oacute;&euml;&uuml; OpenDCL">
 		<param name="Local" value="Reference\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Form Types">
+			<param name="Name" value="&Ograve;&egrave;&iuml;&ucirc; &ocirc;&icirc;&eth;&igrave;">
 			<param name="Local" value="Reference\Form\Index.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Control Bar">
+				<param name="Name" value="&Iuml;&agrave;&iacute;&aring;&euml;&uuml; &oacute;&iuml;&eth;&agrave;&acirc;&euml;&aring;&iacute;&egrave;&yuml;">
 				<param name="Local" value="Reference\Form\ControlBar.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="File Dialog">
+				<param name="Name" value="&Ocirc;&agrave;&eacute;&euml;&icirc;&acirc;&ucirc;&eacute; &auml;&egrave;&agrave;&euml;&icirc;&atilde;">
 				<param name="Local" value="Reference\Form\FileDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Modal Dialog">
+				<param name="Name" value="&Igrave;&icirc;&auml;&agrave;&euml;&uuml;&iacute;&ucirc;&eacute; &auml;&egrave;&agrave;&euml;&icirc;&atilde;">
 				<param name="Local" value="Reference\Form\ModalDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Modeless Dialog">
+				<param name="Name" value="&Iacute;&aring;&igrave;&icirc;&auml;&agrave;&euml;&uuml;&iacute;&ucirc;&eacute; &auml;&egrave;&agrave;&euml;&icirc;&atilde;">
 				<param name="Local" value="Reference\Form\ModelessDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Options Tab">
+				<param name="Name" value="&Acirc;&ecirc;&euml;&agrave;&auml;&ecirc;&agrave; &iuml;&agrave;&eth;&agrave;&igrave;&aring;&ograve;&eth;&icirc;&acirc;">
 				<param name="Local" value="Reference\Form\OptionsTab.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Palette">
+				<param name="Name" value="&Iuml;&agrave;&euml;&egrave;&ograve;&eth;&agrave;">
 				<param name="Local" value="Reference\Form\Palette.htm">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Control Types">
+			<param name="Name" value="&Ograve;&egrave;&iuml;&ucirc; &yacute;&euml;&aring;&igrave;&aring;&iacute;&ograve;&icirc;&acirc; &oacute;&iuml;&eth;&agrave;&acirc;&euml;&aring;&iacute;&egrave;&yuml;">
 			<param name="Local" value="Reference\Control\Index.htm">
 			</OBJECT>
 		<UL>
@@ -262,7 +262,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Data Types">
+			<param name="Name" value="&Ograve;&egrave;&iuml;&ucirc; &auml;&agrave;&iacute;&iacute;&ucirc;&otilde;">
 			<param name="Local" value="Reference\DataType\Index.htm">
 			</OBJECT>
 		<UL>
@@ -336,7 +336,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Properties">
+			<param name="Name" value="&Ntilde;&acirc;&icirc;&eacute;&ntilde;&ograve;&acirc;&agrave;">
 			<param name="Local" value="Reference\Property\Index.htm">
 			</OBJECT>
 		<UL>
@@ -986,7 +986,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Methods">
+			<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc;">
 			<param name="Local" value="Reference\Method\Index.htm">
 			</OBJECT>
 		<UL>
@@ -2730,7 +2730,7 @@
 			</UL>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Events">
+			<param name="Name" value="&Ntilde;&icirc;&aacute;&ucirc;&ograve;&egrave;&yuml;">
 			<param name="Local" value="Reference\Event\Index.htm">
 			</OBJECT>
 		<UL>
@@ -3044,7 +3044,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Functions">
+			<param name="Name" value="&Ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave;">
 			<param name="Local" value="Reference\Function\Index.htm">
 			</OBJECT>
 		<UL>
@@ -3184,6 +3184,7 @@
 				<param name="Name" value="YTwipsToPixels">
 				<param name="Local" value="Reference\Function\YTwipsToPixels.htm">
 				</OBJECT>
+		</UL>
 	</UL>
 </UL>
 </BODY></HTML>

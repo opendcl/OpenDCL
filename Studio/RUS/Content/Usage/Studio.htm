@@ -1,100 +1,95 @@
-﻿<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>OpenDCL Studio</title>
-</head>
-<body>
+<script type="text/javascript" src="../Utility.js"></script><title>OpenDCL Studio</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
+		<tbody><tr>
+			<td nowrap="nowrap">
 				<div id="title">OpenDCL Studio</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+      <div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
+</td></tr></tbody></table><hr>
 	<div id="content">
-		<p>OpenDCL Studio is used to create and edit OpenDCL projects. A single 
-        project may contain multiple forms and pictures. Projects are saved in 
-        files with the file extension .odcl. The following diagram identifies 
-        the main areas of the OpenDCL Studio project editor.</p>
-		<p><img border="0" src="Studio.png" width="503" height="482"></p>
-		<p>New forms are added to a project by right-clicking in the project 
-        pane or by clicking the new form dropdown toolbar button in the main 
-        toolbar. Double clicking a form in the project pane opens it in the form 
-        workspace for editing. Note that the Window menu can be used to cascade 
-        or tile multiple forms for simultaneous viewing.</p>
-		<p>Controls can be added to a form by selecting the control type from 
-        the control toolbox, then dragging a rectangle on the form in the form 
-        workspace. A control's size and position can be changed by dragging the 
-        control or its edges, or by using the keyboard arrow keys to &quot;nudge&quot; the 
-        selected controls in any direction. A control's default text font can be modified 
-        using the font toolbar while the control is selected. Other control 
-        properties can be modified in the property pane, or by right-clicking on 
-        a control and selecting Properties.</p>
-		<p>The Tab Order pane shows the current form&#39;s tab order. Control names can be 
-      selected and dragged to a new position to change the tab order. Tab order does 
-      not control the order in which controls are painted on the form, so this cannot 
-      be used to put one overlapping control &quot;above&quot; another. Note that 
-      transparent controls always paint after opaque controls, so overlapping controls 
-      may be managed by setting the &quot;top&quot; control&#39;s background color to &quot;transparent&quot;.</p>
-		<p>When the control selection button (<img border="0" src="Pointer.png" width="16" height="16">) 
-        is selected in the control toolbox, one or more controls can be selected 
-        for editing. Clicking on a control selects the control. If the [Ctrl] 
-        key is pressed while clicking, the control is added to the current 
-        selection; otherwise any previously selected controls are unselected. 
-        Clicking on a blank area of active form begins a drag operation that 
-        selects all controls inside or intersecting the drag rectangle.</p>
-		<p>When multiple controls are selected, property changes in the property 
-        pane are applied to all selected controls. This provides a convenient 
-        way to synchronize control properties among multiple controls. For 
-        example, left aligning multiple controls can be accomplished by 
-        selecting the controls, then entering a new value for their 'Left' 
-        property.</p>
-		<p>Changing design time control properties can be done in multiple ways. 
-        The most straightforward way to change control properties is by 
-        selecting the control, then editing the property value in the property 
-        pane. Clicking on the desired property name initiates an editor control 
-        for the property. For text or numeric property types, the edit control 
-        is a text box where new values can be typed, followed by [Enter] to 
-        apply the new value. Properties that accept an enumerated list display a 
-        dropdown combo box where a new value can be selected. List properties 
-        accept a list of values separated by vertical bar (&quot;|&quot;) characters. 
-        Boolean properties simply display a check box that can be toggled on or 
-        off. Some properties, such as the '<a href="../Reference/Property/Font.htm">Font</a>' 
-        property, open a separate dialog box for making changes.</p>
-		<p>The control properties dialog provides a user friendly interface for 
-        many properties. The control properties dialog opens when double 
-        clicking on a control in the tab order pane, by selecting Properties 
-        in the control's right click context menu in the form workspace, or by 
-        clicking in the '(Wizard)' property field in the property pane. For control properties such as tooltips, fonts, and control alignment 
-        properties, the control properties dialog is the primary interface for 
-        making changes. For controls such as the grid, tab control, and 
-        image combo box, the control properties dialog provides access to hidden 
-        properties that cannot be changed via the properties pane.</p>
-		<p>Creating resizable forms is an important end user feature, and this 
-        can be easily done in OpenDCL Studio. The form's '<a href="../Reference/Property/AllowResizing.htm">Allow 
-        Resizing</a>' property must be 'True' to enable form resizing. When 
-        designing a resizable form, its controls must change with the form as it 
-        is resized by the user. The properties that control the resizing 
-        behavior of controls can be changed visually in the Geometry tab of the 
-        control properties dialog.</p>
+		<p>OpenDCL
+Studio предназначена для создания и редактирования проектов OpenDCL.
+Один проект может содержать несколько форм и изображений. Проекты
+сохраняются в файлах с расширением .odcl. Следующая иллюстрация
+показывает основные области редактора проектов OpenDCLStudio. </p>
+		<p><img src="Studio.png" border="0" height="482" width="503"></p>
+		<p>Новые
+формы можно добавить в проект если щелкнуть правой кнопкой мыши в
+панели проекта, либо нажать "Новая форма" в выпадающем меню главной
+панели инструментов. Двойной щелчок по значку формы в панели проекта
+открывает ее в рабочей области для редактирования. Обратите внимание,
+что меню Окно может быть использовано для установки каскадом или
+плиткой сразу нескольких форм для одновременного просмотра.</p>
+		<p>Для
+добавления элемента управления в форму нужно выбрать его тип на панели
+элементов, а затем растянуть прямоугольник в рабочем окне формы.
+Размер и положение элемента управления можно изменить, перетащив
+элемент управления или его края, или с помощью клавиш со стрелками на
+клавиатуре, чтобы двигать выбранные элементы управления в любом
+направлении. Шрифт  по умолчанию для текста&nbsp; элемента можно изменить с помощью панели инструментов шрифта, когда элемент
+выбран. Другие свойства элементов могут быть изменены в панели свойств,
+либо щелчком правой кнопкой мыши на элементе управления в пункте
+"Свойства".</p>
+		<p>Панель
+порядка обхода элементов показывает порядок обхода элементов для
+текущей формы. Имена элементов управления можно выбирать и перемещать в
+новое положение, чтобы изменить их порядок. Порядок обхода не
+контролирует порядок, в котором элементы управления отрисовываются в
+форме, так что он не может быть использован, чтобы поместить один
+элемент над другим.Обратите внимание, что прозрачные элементы
+управления всегда отрисовываются после непрозрачных элементов, таким
+образом перекрывающимися элементами можно управлять, установив их
+"верхний" цвет в "прозрачный".</p>
+		<p>Нажав кнопку выбора элементов (<img src="Pointer.png" border="0" height="16" width="16">) можно
+выбрать один или несколько элементов управления для
+редактирования. При нажатии на элемент управления он выбирается. Если
+в это время нажать [Ctrl], то можно добавлять элементы&nbsp; к текущему выделению или убирать ранее
+выбранные. При нажатии на пустой области активной формы начинается
+операция растягивания рамки выбора, которая выбирает все элементы
+управления внутрипрямоугольника или пересекающиеся с ним. </p>
+		<p>Когда выбраны несколько
+элементов, изменения свойств в панели свойств применяются сразу к всем
+ним. Это обеспечивает удобный способ синхронизации свойств между
+несколькими элементами управления. Например, выравнивание&nbsp;
+нескольких элементов управления по левому краю может быть совершено
+путем их выбора и ввода нового значения свойства 'Лево'.</p>
+		<p>Изменение
+свойств элементов управления во время разработки можно сделать
+несколькими способами. Самым простым способом изменить свойства
+элемента управления является его выбор и редактирование значений
+свойств в панели свойств. Нажатие на нужное имя свойства инициирует его
+редактирование. Для текстовых или числовых типов свойств редактирование
+представляет собой текстовое поле, в котороемогут быть введены новые значения, далее нужно нажать [Enter], чтобы применить его. Свойства, принимающие список значений, отображаются выпадающим списком из которого можно выбрать нужное значение. Свойства в виде списка принимают список значений
+, разделенных знаком вертикальной черты ("|"). Логические свойства
+просто отображают флажок, который может быть включен или отключен.
+Некоторые свойства, такие как '<a href="../Reference/Property/Font.htm">Шрифт</a>', открывают отдельное диалоговое окно для внесения изменений.</p>
+		<p>Диалог
+свойств элементов предоставляет дружественный пользовательский
+интерфейс для многих свойств. Диалог свойств элементов открывается при
+двойном щелчке поэлементу в панели порядка обхода; выбором "Свойства"
+контекстного меню щелкнув правой кнопки мыши по элементу в рабочей
+области, или нажав "(Конструктор)" в панели свойств. Длятаких свойств элементов,&nbsp; как подсказка, шрифт, выравнивание, диалоговое окно свойств элемента является основным интерфейсом для внесения изменений. Для таких элементов,&nbsp; как сетка, панель вкладок, комбо с рисунками, диалоговое окно конструктора предоставляет доступ к их скрытым свойствам, которые не могут быть изменены с помощью панели свойств. </p>
+		<p>Создание форм с
+изменяемыми размерами является важной составляющей для конечного
+пользователя, и это можно легко сделать в OpenDCL Studio. Для этого
+свойство формы '<a href="../Reference/Property/AllowResizing.htm">Разрешить растягивание</a>' должно быть 'True'. При создании форм с изменяемыми размерами, элементы управления на ней также должны меняться вместе с ее изменением пользователем. Свойства, которые контролируют поведение изменения размеров элементов управления можно изменить визуально на вкладке Геометрия в диалоговом окне свойств элемента.</p>
 	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+	<hr>
+<div id="footer">
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
 </body>
 </html>

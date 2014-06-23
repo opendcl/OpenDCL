@@ -25,7 +25,7 @@ public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
 
 protected:
 	DECLARE_MESSAGE_MAP()

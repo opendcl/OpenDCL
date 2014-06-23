@@ -1,86 +1,91 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>AutoLISP Code</title>
-</head>
-<body>
+<script type="text/javascript" src="../Utility.js"></script><title>AutoLISP Code</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">AutoLISP Code</div>
+		<tbody><tr>
+			<td nowrap="nowrap">
+				<div id="title">Код AutoLISP<br>
+</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+				<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
 			</td>
 		</tr>
-	</table>
-	<hr />
+	</tbody></table>
+	<hr>
 	<div id="content">
-		<p>Writing AutoLISP code is typically done in an IDE such as the Visual 
-        LISP IDE included with AutoCAD, and this is where most of the work takes 
-        place when implementing an OpenDCL application's AutoLISP functions. 
-        OpenDCL Studio includes several tools to help programmers with the 
-        AutoLISP component of an OpenDCL application.</p>
-		<p>The OpenDCL Studio control browser provides a context sensitive 
-        reference of all supported properties, methods, and events for a 
-        specific control. In addition, the control browser makes it easy to copy 
-        function signatures to the Windows clipboard for pasting directly into 
-        AutoLISP code. The control browser's context sensitive function 
-        signatures include the correct control handle for the selected control, 
-        thus minimizing typographical errors.</p>
-		<p>The control browser can be opened by double-clicking on a control in 
-        the OpenDCL Studio workspace. Selecting a property, method, or event 
-        from the list displays syntax and reference documentation in the control 
-        browser's main frame. Pressing the Copy-To-Clipboard button (<img border="0" src="Clipboard.png" width="17" height="17">) 
-        copies the function signature to the Windows clipboard.</p>
-		<p>Handling events is the primary task of an OpenDCL application's 
-        AutoLISP code, so the process of implementing event handlers has been 
-        streamlined as much as possible. In OpenDCL Studio, the property pane's 
-        events tab displays the selected event handler function name in a text 
-        box below the event list for the selected control. It also displays a 
-        complete event handler skeleton function that opens a message box 
-        warning that the event handler has not yet been completed. Either the 
-        function name or the event handler skeleton function can be selected for 
-        copying and pasting into the application's AutoLISP code.</p>
-		<p>Specific events can be enabled by checking the toggle in front of its 
-        name in the event list. Enabling an event exposes two additional ways to 
-        incorporate the event handler skeleton function into the associated 
-        AutoLISP code. The [Clipboard Copy] button copies the event handler 
-        skeleton function to the Windows clipboard for pasting into the code. 
-        The [Add to File] button appends the event handler skeleton function 
-        directly to the project lisp file. These latter two buttons are 
-        displayed only if the &quot;Copy Events to Clipboard&quot; and &quot;Write Events to 
-        Lisp File&quot; options, respectively, are enabled in the OpenDCL Studio 
-        Tools menu.</p>
-		<h4>Style Guidelines</h4>
-		<p>Best practices for the AutoLISP code that uses an OpenDCL dialog 
-        include making event handlers global, and ensuring that the OpenDCL 
-        runtime is loaded before any OpenDCL functions are used. Using unique 
-        project names (ideally prefixed with a unique developer symbol) helps 
-        ensure that name collisions between multiple applications will be 
-        avoided. Following consistent control naming conventions helps with 
-        project organization and code maintenance. For example, prefixing 
-        control names with a three-character control type prefix and naming the 
-        control based on its function (&quot;btnOk&quot; for an [OK] button, for example) 
-        is a common technique used to make code more readable.</p>
-		<p>A recommended approach for a typical application is to utilize one 
-        AutoLISP file per form, with the lisp code arranged within the file so 
-        that the main function is at the top, followed by utility functions, 
-        then event handlers.</p>
+		<p>Написание
+кода AutoLISP, как правило, делается в интегрированной среде разработки, такой как Visual LISP IDE,
+входящей в состав AutoCAD. При этом проходит самая большая часть работы по
+реализации AutoLISP функций приложения OpenDCL. OpenDCL Studio содержит несколько инструментов, которые помогают программистам с
+компонентами AutoLISP в приложении OpenDCL.</p>
+		<p>Браузер
+объекта в OpenDCL Studio обеспечивает контекстно-чувствительную справку
+по всем поддерживаемым свойствам, методам и событиям для конкретного
+элемента. Кроме того, браузер объекта позволяет быстро скопировать
+имена вызываемых функций в буфер обмена Windows для последующей вставки
+непосредственно в код AutoLISP. Контекстно-чувствительные имена функций
+в браузере содержат правильные хэндлы для выбранного элемента и, таким
+образом, минимизируют ошибки в их написании.<img alt="" src="file:///E:/OpenDCL%20local/OpenDCL.RUS/Content/Usage/Pointer.png" border="0"><img alt="" src="file:///E:/OpenDCL%20local/OpenDCL.RUS/Content/Usage/Studio.png" border="0"></p>
+		<p>Браузер
+объекта может быть открыт двойным щелчком по нужному элементу в рабочей
+области OpenDCL Studio. Выбрав нужное свойство, метод или событие из
+списка, его синтаксис и справочная документацияпо нему отобразится в
+основном окне браузера объекта. Кнопка "Копировать в буфер обмена" ( <img src="Clipboard.png" border="0" height="17" width="17">) копирует полное написание функции в буфер обмена Windows.</p>
+		<p>Обработка
+событий является основной задачей кода AutoLISP
+в приложении OpenDCL, поэтому процесс внедрения обработчиков событий
+был упрощен максимально возможно. В OpenDCL Studioна панели свойств во
+вкладке "События" отображается имя функции выбранного события (в
+текстовом поле под списком событий). Ниже отображается окошко с полным
+шаблоном вызываемой функции и предупреждением о том, что ее написание
+еще не завершено. Здесь имя вызываемой функции либо ее полный шаблон
+может быть выбран для копирования и вставки в код приложения AutoLISP. </p>
+		<p>Конкретные
+события могут быть включены путем установки переключателя перед его
+именем в списке событий. Включение события предоставляет два
+дополнительных способа включения шаблона функции в соответствующий код
+AutoLISP. Кнопка "Копировать в буфер" копирует шаблон функции в буфер
+обмена Windows для последующей вставки в код. Кнопка "Записать в файл"
+копирует шаблон функции прямо в файл с кодом AutoLISP.
+Эти две кнопки отображаются только в том случае, если опции "Копировать
+события в буфер обмена" и ""Запись событий в файл Lisp» соответственно
+включены в меню "Инструменты" OpenDCL Studio.</p>
+		<h4>Руководство по стилю</h4>
+		<p>Рекомендуетя
+в коде AutoLISP, использующем диалоги OpenDCL, делать все обработчики
+событий глобальными, а также обеспеченить загрузку исполняемого модуля
+OpenDCL до использования любых функций OpenDCL. Использование
+уникальных имен проектов (в идеале с уникальным префиксом разработчика)
+поможет гарантировать устранение конфликтов имен между разными
+приложениями. Следование этим правилам именования помогает с проектной
+организацией и обслуживанием кода. Например, делая префикс в именах
+элементов в виде трех символов, основанных на его функции (например,
+"btnOk" для кнопки [OK]) является распространенным методом для
+улучшения зрительного восприятия кода (читаемости).</p>
+		<p>Рекомендуемый подход для типичного применения - использование одного файла
+AutoLISP на одну форму, где код Lisp расположен в файле так, что
+основная функция заключается в верхней части файла, затем идут
+вспомогательные функции, а далее - обработчики событий.</p>
 	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+	<hr>
+<div id="footer">
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
 </body>
 </html>

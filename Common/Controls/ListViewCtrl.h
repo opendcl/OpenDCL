@@ -89,7 +89,7 @@ public:
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual COleDropSource* GetDropSource() { return &mDropSource; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
 
 protected:
 	int GetCurrentSubItem() const { return mnEditSubItem; }

@@ -411,8 +411,7 @@ DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sour
 	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
 }
 
-bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-														DROPEFFECT dropEffect )
+bool CListViewCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	if( dropEffect == DROPEFFECT_NONE )
 		return true;

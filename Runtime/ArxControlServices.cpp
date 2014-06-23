@@ -37,8 +37,7 @@ void CArxControlServices::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }
 
-bool CArxControlServices::HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
-																								 const CPoint& point, DROPEFFECT& dwEffect ) const
+bool CArxControlServices::HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState, const CPoint& point, DROPEFFECT& dwEffect ) const
 {
 	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
 	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
@@ -87,8 +86,7 @@ bool CArxControlServices::HandleDragOverControl( COleDataObject* pDataObject, DW
 	return false;
 }
 
-bool CArxControlServices::HandleDropOnControl( COleDataObject* pDataObject, 
-																							 DROPEFFECT dropEffect, const CPoint& point ) const
+bool CArxControlServices::HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT& dwEffect, DROPEFFECT dwAllowed, const CPoint& point ) const
 {
 	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
 	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )

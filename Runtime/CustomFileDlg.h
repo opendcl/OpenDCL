@@ -38,8 +38,8 @@ class CCustomFileDlg : public CFileDialog, public CArxDialogObject
 	FileDialogParams* mpParams;
 	CMainFileDlg mMainFileDlg;
 	TDclControlPtr mpFileDlgCtrl;
-	int mnInitialX;
-	int mnInitialY;
+	CPoint mptInitial;
+	CSize msizeInitial;
 	int mnRightBorder;
 	int mnBottomBorder;
 

@@ -1,67 +1,56 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="Content-Language" content="en-us">
   <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
 
-  <script type="text/javascript" src="../Utility.js"></script>
-
-  <title>Installation</title>
-</head>
-<body>
+  <script type="text/javascript" src="../Utility.js"></script><title>Installation</title></head><body>
   <table width="100%">
-    <tr>
-      <td nowrap>
-        <div id="title">
-          Installation</div>
+    <tbody><tr>
+      <td nowrap="nowrap">
+        <div id="title">Установка</div>
       </td>
       <td align="right" valign="top">
         <div id="hdrlink" style="font-size: xx-small;">
-          <a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-          <a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
-        </div>
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
+				</div>
       </td>
     </tr>
-  </table>
-  <hr />
+  </tbody></table>
+  <hr>
   <div id="content">
+    <p>Для установки OpenDCL Studio нужно просто загрузить и запустить MSI файл желаемой языковой версии со <a target="_blank" href="http://sourceforge.net/project/showfiles.php?group_id=187950&amp;package_id=220267">страницы загрузки OpenDCL Studio</a>
+на SourceForge. OpenDCL Studio делает возможным создавать формы OpenDCL
+без лицензии на AutoCAD, однако рекомендуется, чтобы все работы
+производились на компьютере с установленным AutoCAD чтобы формы и
+события AutoLISP кода могли быть протестированы в процессе разработки.
+OpenDCL Studio включает в себя исполняемый модуль OpenDCL для загрузки
+и отображенияформ OpenDCL внутри AutoCAD. </p>
     <p>
-      Installing OpenDCL Studio is as simple as downloading and executing the desired
-      language version MSI file from the <a target="_blank" href="http://sourceforge.net/project/showfiles.php?group_id=187950&package_id=220267">
-        OpenDCL Studio download page</a> on SourceForge. OpenDCL Studio makes it possible
-      to design OpenDCL forms without an AutoCAD license, however it is recommended that
-      all development work be done on a computer that has AutoCAD installed so that forms
-      and event handler AutoLISP code can be tested during development. OpenDCL Studio
-      includes OpenDCL Runtime for loading and displaying OpenDCL forms inside AutoCAD.</p>
-    <p>
-      OpenDCL Studio is designed to be installed locally rather than on a network server.
-      During installation, OpenDCL Runtime is registered for demand loading in all supported
-      versions of AutoCAD already installed on the target system.</p>
+      OpenDCL Studio предназначена для локальной установки, а не на сетевом сервере. Во время установки исполняемый модуль OpenDCL
+будет зарегистрирован для запроса его загрузки во всех поддерживаемых
+версиях AutoCAD, установленных ​​на целевом компьютере.</p>
     <h4>
-      OpenDCL Samples</h4>
+      OpenDCL примеры</h4>
     <p>
-      OpenDCL Studio includes numerous samples that demonstrate different types of forms
-      and controls, and include examples of how they can be used. To see the samples in
-      action, start AutoCAD and load the &quot;Samples\@AllSamples.lsp&quot; file (installed
-      under the language subfolder of the main OpenDCL Studio installation folder). The
-      file can be dragged from Windows Explorer and dropped on the AutoCAD drawing window
-      to quickly see OpenDCL in action. Note that it is not necessary to add any folders
-      to the AutoCAD support path in order to load and use the samples.</p>
+OpenDCL Studio включает в себя многочисленные примеры, демонстрирующие
+различные типы форм и элементы управления, а также примеры того, как
+они могут быть использованы. Чтобы увидеть образцы в действии,
+запустите AutoCAD и загрузите файл "Samples\@AllSamples.lsp"
+(устанавливается в подпапку "RUS" основной папки OpenDCL Studio). Файл
+можно перетащить из проводника Windows в окно AutoCAD чтобы быстро
+увидеть OpenDCL в действии. Обратите внимание, что не требуется
+добавлять никакие папки в пути доступа к вспомогательным файламAutoCAD, чтобы загружать и использовать эти примеры. </p>
   </div>
-  <hr />
-  <div id="footer">
-    <p>
-      Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-      All rights reserved.</p>
-    <p>
-      OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL
-        Consortium</a>.</p>
-    <p>
-      AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com"
-        target="_blank">Autodesk, Inc.</a></p>
-    <p>
-      Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">
-        Microsoft Corporation</a> in the United States and other countries.</p>
-  </div>
+  <hr>
+<div id="footer">
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+	</div>
 </body>
 </html>

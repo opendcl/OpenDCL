@@ -319,20 +319,20 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 				SetColumnWidth( idxColumn, prnWidths->at( idxColumn ) );
 		}
 		else
-			SetupColumns();
+			ApplyCellFormatChanges( false );
 		OnNeedRepaint();
 		break;
 	case Prop::ColumnCaptions:
 		if( !IsEnumeratingProperties() )
-			SetupColumns();
+			ApplyCellFormatChanges( true );
 		break;
 	case Prop::ColumnImages:
 		if( !IsEnumeratingProperties() )
-			SetupColumns();
+			ApplyCellFormatChanges( true );
 		break;
 	case Prop::ColumnAlignments:
 		if( !IsEnumeratingProperties() )
-			SetupColumns();
+			ApplyCellFormatChanges( true );
 		break;
 	case Prop::ColumnStyles:
 		OnNeedRepaint();
@@ -927,6 +927,68 @@ void CGridCtrl::InvalidateCell( int nRow, int nCol )
 	InvalidateRect( rc, TRUE );
 }
 
+bool CGridCtrl::ApplyCellFormatChanges( bool bPreserveContent )
+{
+	if( !bPreserveContent )
+	{
+		SetupColumns();
+		return true;
+	}
+
+	mbIgnoreChange = true;
+	size_t ctRows = mRowData.size();
+	int ctItems = GetItemCount();
+	if( (int)ctRows > ctItems )
+		ctRows = ctItems;
+	typedef std::vector< TCellState > TRowState;
+	std::vector< TRowState > rGridState;
+	rGridState.resize( ctRows );
+	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	{
+		TRowState& RowState = rGridState[idxRow];
+		RowState.resize( mcColumns );
+		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
+		{
+			TCellState& CellState = RowState[idxCol];
+			CellState.text = GetCellText( idxRow, idxCol );
+			CellState.state = GetCellState( idxRow, idxCol );
+			CellState.data = GetCellDataRef( idxRow, idxCol );
+		}
+	}
+	SetupColumns();
+	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	{
+		TRowState& RowState = rGridState[idxRow];
+		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
+		{
+			TCellState& CellState = RowState[idxCol];
+			SetCellText( idxRow, idxCol, CellState.text );
+			SetCellState( idxRow, idxCol, CellState.state );
+			GetCellDataRef( idxRow, idxCol ) = CellState.data;
+		}
+	}
+	mbIgnoreChange = false;
+	return true;
+}
+
+void CGridCtrl::HideEditControls()
+{
+	if( mpCellEditCtrl && !mpCellEditCtrl->isInModalLoop() )
+	{
+		CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
+		mpCellEditCtrl = NULL;
+		mbActOnButtonUp = false;
+		NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_ENDLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
+		CWnd* pParent = GetParent();
+		if( pParent )
+			pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
+		delete pCellEditCtrl;
+		MSG msg;
+		while( PeekMessage( &msg, m_hWnd, WM_CANCELMODE, WM_CANCELMODE, PM_REMOVE ) ); //clear pending posted WM_CANCELMODE messages
+		OnEndEditCurCell();
+	}
+}
+
 void CGridCtrl::SetupColumns()
 {
 	mbIgnoreChange = true;
@@ -970,24 +1032,6 @@ void CGridCtrl::SetupColumns()
 									((prnImages && idxColumn < prnImages->size())? prnImages->at( idxColumn ) : -1) );
 	}
 	mbIgnoreChange = false;
-}
-
-void CGridCtrl::HideEditControls()
-{
-	if( mpCellEditCtrl && !mpCellEditCtrl->isInModalLoop() )
-	{
-		CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
-		mpCellEditCtrl = NULL;
-		mbActOnButtonUp = false;
-		NMLVDISPINFO lvdi = { m_hWnd, GetControlId(), LVN_ENDLABELEDIT, 0, mCurrentCell.row(), mCurrentCell.col(), };
-		CWnd* pParent = GetParent();
-		if( pParent )
-			pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
-		delete pCellEditCtrl;
-		MSG msg;
-		while( PeekMessage( &msg, m_hWnd, WM_CANCELMODE, WM_CANCELMODE, PM_REMOVE ) ); //clear pending posted WM_CANCELMODE messages
-		OnEndEditCurCell();
-	}
 }
 
 bool CGridCtrl::EditCurCell()

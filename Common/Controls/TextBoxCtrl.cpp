@@ -169,8 +169,7 @@ DROPEFFECT CTextBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sourc
 	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
 }
 
-bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-													 DROPEFFECT dropEffect )
+bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( !hData )

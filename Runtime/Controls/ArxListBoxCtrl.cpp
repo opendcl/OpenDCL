@@ -34,8 +34,7 @@ bool CArxListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-															DROPEFFECT dropEffect )
+bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
 	{
@@ -44,26 +43,26 @@ bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 		{
 			HGLOBAL hData = pSourceData->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
 			if( !hData )
-				return FALSE;
+				return false;
 			CDclControlTemplate* pSourceDclControl = *(CDclControlTemplate**)GlobalLock( hData );
 			GlobalUnlock( hData );
 			GlobalFree( hData );
 			if( !pSourceDclControl )
-				return FALSE;
+				return false;
 			CString sProject = pSourceDclControl->GetOwnerProject()->GetKeyName();
 			CString sForm = pSourceDclControl->GetOwnerForm()->GetKeyName();
 			CString sControl;
 			if( pSourceDclControl->GetType() != _CtlForm )
 				sControl = pSourceDclControl->GetKeyName();
 			GetArxServices()->HandleEvent( sDropControlEvent, args_SSSP( sProject, sForm, sControl, point ) );
-			return TRUE;
+			return true;
 		}
 
 		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromOther );
 		if( !sDropAcadWndPointEvent.IsEmpty() )
 		{
 			GetArxServices()->HandleEvent( sDropAcadWndPointEvent, args_P( point ) );
-			return TRUE;
+			return true;
 		}
 	}
 	return __super::OnDrop( point, pSourceData, dropEffect )  ;

@@ -443,23 +443,6 @@ void CEventsTabPane::OnAddtolisp()
 		e->Delete();
 	}
 
-	//try
-	//{
-	//	// here we are going to write out to the lisp file.
-	//	CStdioUnicodeFile fout( mpDclControl->GetOwnerProject()->GetLispFileName(),
-	//									 CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite );
-	//	fout.SeekToEnd();
-	//	fout.WriteString( _T("\r\n") );
-	//	fout.WriteString( sDefunPreview );
-	//	fout.WriteString( _T("\r\n") );
-	//	fout.Close();
-	//}
-	//catch( CException* e )
-	//{
-	//	e->ReportError();
-	//	e->Delete();
-	//}
-
 	theWorkspace.DisplayAlert( IDS_FUNCADDED );
 }
 

@@ -1,60 +1,56 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>ActivateEmail</title>
-</head>
-<body>
+<script type="text/javascript" src="../../Utility.js"></script><title>ActivateEmail</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
+		<tbody><tr>
+			<td nowrap="nowrap">
 				<div id="title">
-                  <img border="0" src="../images/Function.png" width="16" height="16"> 
+                  <img src="../images/Function.png" border="0" height="16" width="16"> 
                   ActivateEmail</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+				<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
 			</td>
 		</tr>
-	</table>
-	<hr />
+	</tbody></table>
+	<hr>
 	<div id="content">
-        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Function Name</th>
-            <td bgcolor="#CCFF99">dcl-ActivateEmail</td>
+        <table style="border-collapse: collapse;" id="AutoNumber2" border="1" bordercolor="#111111" cellpadding="3" cellspacing="0">
+          <tbody><tr>
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Имя функции</th>
+            <td bgcolor="#ccff99">dcl-ActivateEmail</td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
-&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="syntax">(dcl-ActivateEmail
-            <font color="#FF0000">EmailAddress [as
-<a href="../DataType/String.htm">String</a>] {Parameters [as
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Синтаксис
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px;"><img src="../images/Clipboard.png" height="13" width="15"></button></th>
+<td bgcolor="#ccff99"><code id="syntax">(dcl-ActivateEmail
+            <font color="#ff0000">EmailAddress [типа
+<a href="../DataType/String.htm">String</a>] {Parameters [типа
 <a href="../DataType/String.htm">String</a>]}</font>)</code></td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Return Type</th>
-            <td bgcolor="#CCFF99"><a href="../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Возвращаемый тип</th>
+            <td bgcolor="#ccff99"><a href="../DataType/Boolean.htm">Boolean</a> (T - успешно; иначе NIL)</td>
           </tr>
-          </table>
-		<p>This function opens the default email client to send an email. 
-        EmailAddress is the email address of the recipient, and OptionalParams 
-        are optional parameters that are appended to the email URL. For example, 
-        &quot;subject=Hello&amp;body=How are you?&quot; gives the email the subject &quot;Hello&quot; 
-        and the body text &quot;How are you?&quot;.</p>
+          </tbody></table>
+		<p>Эта
+функция открывает почтовый клиент по умолчанию, чтобы отправить
+письмо.EmailAddress - адрес электронной почты получателя,
+OptionalParams - необязательные параметры к письму (например,
+"subject=Привет&amp;body=Как дела?" задает письму тему "Привет" и основной текст "Как дела?").</p>
 	</div>
-	<hr />
+	<hr>
 	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
-</body>
-</html>
+</body></html>

@@ -1,87 +1,84 @@
-﻿<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>Modal vs. Modeless</title>
-</head>
-<body>
+<script type="text/javascript" src="../Utility.js"></script><title>Modal vs. Modeless</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Modal vs. Modeless</div>
+		<tbody><tr>
+			<td nowrap="nowrap">
+				<div id="title">Модальные и Немодальные диалоги<a href="file:///E:/OpenDCL%20local/OpenDCL.RUS/Content/Concepts/Modality.htm"></a></div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+      <div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
+</td></tr></tbody></table><hr>
 	<div id="content">
-		<p>Modal dialogs disable the AutoCAD window until they are closed. By 
-        their nature, modal dialogs are easier to manage because the AutoCAD 
-        state remains unchanged for the life of the dialog. Modal dialogs return 
-        a dialog status code when they close, and typically the main application 
-        code performs additional actions based on the status code returned from 
-        the dialog.</p>
-		<p>Modeless dialogs present additional challenges. Since modeless 
-        dialogs can remain open for the lifetime of the AutoCAD application, 
-        they must deal with changing AutoCAD state such as documents opening and 
-        closing. In addition, since every AutoCAD drawing has its own AutoLISP 
-        namespace, activating a new document means that event handlers defined 
-        in the deactivated document will no longer be accessible in the newly 
-        activated document.</p>
-		<p>These realities mean that the only way to manage a modeless dialog is 
-        by ensuring that the event handlers are defined in every new drawing 
-        file. In practice, this usually means that the application lisp file (or 
-        files) must be loaded via the acaddoc.lsp file or a similar method that 
-        loads the files as part of new document initialization.</p>
-		<p>Furthermore, since the dialog may already be active when startup code 
-        executes (after opening a second drawing file, for example), it must act 
-        accordingly. For example, if the application must read some 
-        initialization settings from the registry, it likely needs to do that 
-        only when the modeless dialog is initially activated. If such 
-        initialization is performed in the dialog's 
-        <a href="../Reference/Event/Initialize.htm">OnInitialize</a> event, it will 
-        only get executed once when the dialog is first activated. If the 
-        application needs to determine at runtime whether the dialog is already 
-        active it can use an expression like the following:</p>
+		<p>Модальные
+диалоги отключают окно AutoCAD, пока сами не будут закрыты. Модальными
+диалогами легче управлять, потому что состояние AutoCAD остается
+неизменным в течение всей работы диалога. Модальные диалоги возвращают
+код свего статуса когда они закрываются, и, как правило основной код
+приложения выполняет дополнительные действия в зависимости от этого
+статуса.</p>
+		<p>Немодальные диалоги представляют дополнительные
+проблемы. Немодальные диалоги могут работать одновременно с выполнением
+приложения AutoCAD и должны учитывать изменения в состоянии AutoCAD,
+такие как открытие или закрытиедокумента . Кроме того, поскольку каждый
+документ AutoCAD имеет свое собственное пространство имен AutoLISP,
+активация нового документа означает, что обработчики событий,
+определенные в отключенном документе больше не будут доступны в новом
+активизированном документе.</p>
+		<p>Эти означает, что единственный способ управлять немодальным диалогом - обеспечить определение
+обработчиков событий в каждом новом файле чертежа. На практике это
+обычно означает, что файл приложения Lisp (или файлы) должны быть
+загружены с помощью файла acaddoc.lsp или аналогичным методом, который
+автоматически загружает прописанные в нем файлы каждый раз при открытии
+нового документа.</p>
+		<p>Кроме того, так как диалог может быть уже
+активным во время запуска нового документа (или, например, при открытии
+второго файла чертежа), то он должен действовать соответственно.
+Например, если приложение должно прочитать некоторые параметры
+инициализации из реестра, это, вероятно, нужно сделать, только при
+активации немодального диалога. Если такая инициализация выполняется в
+событии <a href="../Reference/Event/Initialize.htm">OnInitialize</a>, она выполнится только один раз, при активации диалога.
+Если приложение должно определить во время выполнения открыт ли уже
+диалог или нет, то можно использовать выражение следующего типа:</p>
 	    <blockquote>
           <pre>(and MyProject-MyForm (<a href="../Reference/Method/Form/IsActive.htm">dcl-Form-IsActive</a> MyProject-MyForm))</pre>
         </blockquote>
-        <p>In addition to programming startup code to act appropriately when 
-        more than one drawing is opened, modeless dialogs must also behave 
-        correctly when all open drawings are closed (resulting in a state 
-        referred to as a &quot;no doc state&quot;) or when the user switches between 
-        multiple active drawings. If the modeless dialog contains controls whose 
-        settings or properties depend on the drawing contents, then it must 
-        define event handlers for the
-        <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> and
-        <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> 
-        events to update the controls as the document state changes.<p>Modeless 
-        dialog event handlers are normally invoked in the AutoCAD application 
-        context instead of the document context. AutoLISP code running in the 
-        application context cannot call document-dependent functions like the 
-        (command) function. To deal with this problem, the control's '<a href="../Reference/Property/EventInvoke.htm">Event 
-        Invoke</a>' property may be used to trigger the event handler 
-        asynchronously in the document context, thus allowing calls to (command) 
-        to succeed. Alternatively, the event handler may be executed 
-        synchronously, but instead of calling document-dependent functions 
-        within the handler function, it can simply trigger a new command to 
-        execute in the document context via the
-        <a href="../Reference/Function/SendString.htm">(dcl-SendString)</a> 
-        function.</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+        <p>В
+дополнение программированию соответствующим образом, когда открыт более
+чем один чертеж, немодальные диалоги должны также вести себя правильно,
+когда все открытые чертежи закрыты (состояние называется «no doc
+state»), или когда пользователь переключается между несколькими
+активными чертежами. Если немодальный диалог содержит элементы
+управления, параметры или свойствакоторых зависят от состояния чертежа, то в нем должны быть определены обработчики событий для
+         <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> и
+        <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> для обновления элементов управления при изменении состояния документов.</p><p>Обработчики
+событий немодальных диалогов, как правило, вызываются в контексте
+приложения AutoCAD, а не в контексте документа. Код AutoLISP,
+выполняемый в пространстве приложения не может вызызвать фунцкии
+пространства документа, такие как (command). Чтобы справиться с этим,
+можно&nbsp; использовать свойство '<a href="../Reference/Property/EventInvoke.htm">Event 
+        Invoke</a>'
+элемента управления для вызова обработчика события асинхронно в
+контексте документа, что позволяет вызывать (command). Однако,
+обработчик события может выполняться и синхронно, но вместо вызова
+документо-зависимых функций, можно записать новую команду для
+выполнения прямо в контексте документа с помощью функции <a href="../Reference/Function/SendString.htm">(dcl-SendString)</a>.</p></div>
+	<hr>
+<div id="footer">
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
 </body>
 </html>

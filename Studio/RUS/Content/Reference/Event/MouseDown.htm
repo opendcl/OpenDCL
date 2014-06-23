@@ -1,49 +1,48 @@
-﻿<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>MouseDown</title>
-</head>
-<body>
+<script type="text/javascript" src="../../Utility.js"></script><title>MouseDown</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
+		<tbody><tr>
+			<td nowrap="nowrap">
 				<div id="title">
-                  <img border="0" src="../images/Event.png" width="16" height="16"> 
+                  <img src="../images/Event.png" border="0" height="16" width="16"> 
                   MouseDown</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+				<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
 			</td>
 		</tr>
-	</table>
-	<hr />
+	</tbody></table>
+	<hr>
 	<div id="content">
-        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
-          <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Function Name</th>
-            <td bgcolor="#CCFF99">c:<i>&lt;CONTROL-NAME&gt;</i>#OnMouseDown</td>
+        <table style="border-collapse: collapse;" id="AutoNumber2" border="1" bordercolor="#111111" cellpadding="3" cellspacing="0">
+          <tbody><tr>
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Имя функции</th>
+            <td bgcolor="#ccff99">c:<i>&lt;CONTROL-NAME&gt;</i>#OnMouseDown</td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
-&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>#OnMouseDown 
-            (<font color="red">Button [as <a href="../DataType/Integer.htm">Integer</a>] Flags [as <a href="../DataType/Bitflag.htm">Bitflag</a>] X [as 
-            <a href="../DataType/Long.htm">Long</a>] Y [as
-            <a href="../DataType/Long.htm">Long</a>] </font>/)<br />)</code></td>
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Синтаксис
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px;"><img src="../images/Clipboard.png" height="13" width="15"></button></th>
+<td bgcolor="#ccff99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>#OnMouseDown </code><code id="syntax">(<font color="red">НомерКнопки [типа <a href="../DataType/Integer.htm">Integer</a>] Флаг [типа <a href="../DataType/Bitflag.htm">Bitflag</a>] X [типа 
+            <a href="../DataType/Long.htm">Long</a>] Y [типа
+            <a href="../DataType/Long.htm">Long</a>] </font>/)</code><code id="syntax"><br>)</code></td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Return Type</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Возвращаемый тип</th>
+            <td bgcolor="#ccff99">Ignored</td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Applies To</th>
-            <td bgcolor="#CCFF99">
+            <th align="left" bgcolor="#ffcc99" nowrap="nowrap" valign="top">Подходит к</th>
+            <td bgcolor="#ccff99">
             <a href="../Control/BlockView.htm">Block View</a>,
             <a href="../Control/Grid.htm">Grid</a>,
             <a href="../Control/Hatch.htm">Hatch</a>,
@@ -51,70 +50,72 @@
             <a href="../Control/PictureBox.htm">Picture Box</a>,
             <a href="../Control/SlideView.htm">Slide View</a></td>
           </tr>
-        </table>
-		<p>This event is triggered when one of the mouse buttons is pressed on the control. Button identifies the mouse button that 
-        triggered the event. Flags describes the state of the [Shift] and [Ctrl] 
-        keys, and the mouse buttons. X and Y specify the control client 
-        coordinates where the event occurred.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber4">
-          <tr>
-            <th nowrap>Button Number</th>
-            <th nowrap>Button</th>
+        </tbody></table>
+		<p>Данное
+событие срабатывает, когда нажимается одна из кнопок мыши на элементе.
+"Кнопка" идентифицирует кнопку мыши, запустившую событие. Флаги
+описывают состояние нажатия [Shift] и [Ctrl] и кнопок мыши. Х и Y
+указавает клиенту управления координаты, где произошло нажатие.</p>
+	    <table style="border-collapse: collapse;" id="AutoNumber4" border="1" bordercolor="#111111" cellpadding="3" cellspacing="0">
+          <tbody><tr>
+            <th nowrap="nowrap">Номер кнопки<br>
+</th>
+            <th nowrap="nowrap">Кнопка</th>
           </tr>
           <tr>
             <td>1</td>
-            <td>Left</td>
+            <td>Левая</td>
           </tr>
           <tr>
             <td>2</td>
-            <td>Right</td>
+            <td>Правая</td>
           </tr>
           <tr>
             <td>4</td>
-            <td>Middle</td>
+            <td>Средняя</td>
           </tr>
-        </table>
-        <br />
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
-          <tr>
-            <th nowrap>Flags bit</th>
-            <th nowrap>Value</th>
-            <th nowrap>Meaning</th>
+        </tbody></table>
+        <br>
+	    <table style="border-collapse: collapse;" id="AutoNumber3" border="1" bordercolor="#111111" cellpadding="3" cellspacing="0">
+          <tbody><tr>
+            <th nowrap="nowrap">Флаг</th>
+            <th nowrap="nowrap">Значение</th>
+            <th nowrap="nowrap">Meaning</th>
           </tr>
           <tr>
             <td>0</td>
             <td>1</td>
-            <td>Left mouse button pressed</td>
+            <td>Левая кнопка мыши нажата</td>
           </tr>
           <tr>
             <td>1</td>
             <td>2</td>
-            <td>Right mouse button pressed</td>
+            <td>Правая кнопка мыши нажата</td>
           </tr>
           <tr>
             <td>2</td>
             <td> 4</td>
-            <td> [Shift] key pressed</td>
+            <td>Нажата клавиша  [Shift]</td>
           </tr>
           <tr>
             <td>3</td>
             <td> 8</td>
-            <td> [Ctrl] key pressed</td>
+            <td>Нажата клавиша  [Ctrl]</td>
           </tr>
           <tr>
             <td>4</td>
             <td> 16</td>
-            <td> Middle mouse button pressed</td>
+            <td>Средняя кнопка мыши нажата
+          
+        </td>
           </tr>
-        </table>
+        </tbody></table>
 	</div>
-	<hr />
+	<hr>
 	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
-</body>
-</html>
+</body></html>

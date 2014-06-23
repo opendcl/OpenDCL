@@ -11,10 +11,10 @@ enum FormType;
 //This struct is used to pass standard and custom initialization data to the dialog creation function
 struct DialogParams
 {
-	DialogParams( const CPoint& p, const CRect& s, LPARAM d = NULL )
+	DialogParams( const CPoint& p, const CSize& s, LPARAM d = NULL )
 		: position( p ), size( s ), lpData( d ) {}
 	CPoint position; //desired initial position
-	CRect size; //desired initial size
+	CSize size; //desired initial size
 	LPARAM lpData; //dialog-specific initialization data
 };
 

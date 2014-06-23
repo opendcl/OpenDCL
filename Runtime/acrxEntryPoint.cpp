@@ -1536,7 +1536,7 @@ public:
 
 		//optional arguments
 		msActionToBeShown.Empty();
-		mptToBeShown.SetPoint(-1, -1); //should be encapsulated in an instance class [ORW]
+		mptToBeShown.SetPoint(INT_MIN, INT_MIN); //should be encapsulated in an instance class [ORW]
 		if (pArgs)
 		{
 			if (pArgs->restype != RTSTR)
@@ -1631,7 +1631,7 @@ public:
 		acutRelRb(prbResult);
 
 		// call method to display the requested form
-		DialogParams params( mptToBeShown, CRect(0,0,0,0) );
+		DialogParams params( mptToBeShown, CSize(0, 0) );
 		int nDialogId = theArxWorkspace.ActivateDclForm(mpDclToBeShown, &params);
 	
 		acedRetInt(mnDoneDialogValue);

@@ -276,8 +276,7 @@ void CListBoxCtrl::OnDragLeave()
 	__super::OnDragLeave();
 }
 
-bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-													 DROPEFFECT dropEffect )
+bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( !hData )

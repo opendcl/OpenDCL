@@ -660,21 +660,20 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 				CString sLisp;
 				sLisp.Format( _T("(or (member (type %s) '(SUBR EXSUBR LIST)))"), (LPCTSTR)sHandlerName );
 				acedEvaluateLisp( sLisp, prbResult );
-				if( prbResult && prbResult->restype == RTT )
-					mbValid = true;
+				if( prbResult )
+					mbValid = (prbResult->restype == RTT);
 			#if (_ARXTARGET >= 20)
-				else if( !prbResult )
+				else
 				{
-					acedGetSym( _ACRX_T("c:XXXX"), &prbResult );
 					acedGetSym( sHandlerName, &prbResult );
-					if( prbResult && prbResult->restype == RTVOID )
-						mbValid = true;
+					if( prbResult )
+						mbValid = (prbResult->rbnext || prbResult->restype == RTVOID);
 				}
 			#endif
 			#else
-				if( RTNORM != acedGetSym( pszHandlerName, &prbResult ) ||
-						(prbResult && (prbResult->rbnext || prbResult->restype == RTVOID)) )
-					mbValid = true;
+				acedGetSym( pszHandlerName, &prbResult );
+				if( prbResult )
+					mbValid = (prbResult->rbnext || prbResult->restype == RTVOID);
 			#endif //(_ACADTARGET >= 17)
 				acutRelRb( prbResult );
 			}

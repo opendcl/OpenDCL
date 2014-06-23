@@ -163,8 +163,8 @@ __if_not_exists(m_bVistaStyle)
 }
 , CArxDialogObject( pSourceForm, this )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
-, mnInitialX( pParams? pParams->position.x : -1 )
-, mnInitialY( pParams? pParams->position.y : -1 )
+, mptInitial( pParams? pParams->position : CPoint(INT_MIN, INT_MIN) )
+, msizeInitial( pParams? pParams->size : CSize(0, 0) )
 , mMainFileDlg( this, pParent )
 , mpFileDlgCtrl( pSourceForm->FindFirstControlOfType(CtlFileExplorer) )
 , mnRightBorder( 0 )
@@ -356,22 +356,28 @@ void CCustomFileDlg::OnInitializationComplete()
 #endif //SM_CXVIRTUALSCREEN
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(mMainFileDlg.m_hWnd), &rectParent );
-	if( mnInitialX >= 0 )
-		rectWindow.MoveToX( mnInitialX );
+	if( mptInitial.x > INT_MIN )
+		rectWindow.MoveToX( mptInitial.x );
 	else if( rectSaved.left >= rcDesktop.left - 10 && rectSaved.left < rcDesktop.right - 10 )
 		rectWindow.MoveToX( rectSaved.left );
 	else
 		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
-	if( mnInitialY >= 0 )
-		rectWindow.MoveToY( mnInitialY );
+	if( mptInitial.y > INT_MIN )
+		rectWindow.MoveToY( mptInitial.y );
 	else if( rectSaved.top >= rcDesktop.top - 10 && rectSaved.top < rcDesktop.right - 10 )
 		rectWindow.MoveToY( rectSaved.top );
 	else
 		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
-	if( IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
+	if( IsResizable() )
 	{
-		rectWindow.right = rectWindow.left + rectSaved.Width();
-		rectWindow.bottom = rectWindow.top + rectSaved.Height();
+		if( msizeInitial.cx > 0 )
+			rectWindow.right = rectWindow.left + msizeInitial.cx;
+		else if( rectSaved.right > rectSaved.left )
+			rectWindow.right = rectWindow.left + rectSaved.Width();
+		if( msizeInitial.cy > 0 )
+			rectWindow.bottom = rectWindow.top + msizeInitial.cy;
+		else if( rectSaved.bottom > rectSaved.top )
+			rectWindow.bottom = rectWindow.top + rectSaved.Height();
 	}
 	if( mMainFileDlg.GetStyle() & WS_CHILD )
 		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );

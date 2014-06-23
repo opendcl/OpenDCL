@@ -1,98 +1,79 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>Tips and Techniques</title>
-</head>
-<body>
+<script type="text/javascript" src="../Utility.js"></script><title>Tips and Techniques</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Tips and Techniques</div>
+		<tbody><tr>
+			<td nowrap="nowrap">
+				<div id="title">Советы и приемы</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
 			</td>
 		</tr>
-	</table>
-	<hr />
+	</tbody></table>
+	<hr>
 	<div id="content">
-		<h4>Dialog and Control Appearance</h4>
-		<p>Many controls support background and foreground colors. Setting the 
-        background color to -24 (Transparent) causes the control to appear 
-        transparent. Setting a foreground color in some cases depends on the '<a href="../Reference/Property/UseVisualStyle.htm">Use 
-        Visual Style</a>' property. When controls use a visual style, the style 
-        may override the explicit foreground color. If color control is 
-        important, disable the use of the visual style. Note that visual styles 
-        are available only in Windows XP and later, and only if visual styles 
-        are enabled in Windows settings.</p>
-		<p>Graphic buttons and picture box controls draw a transparent image by 
-        masking out pixels with the gray color value RGB 192, 192, 192. Any 
-        pixels with that color will be masked out when the image is painted.</p>
-		<p>A control's font setting includes the usual settings for font face, 
-        size, and style, however in OpenDCL there is an additional property that 
-        determines how the font size is calculated at runtime. The default 
-        setting for this property is &quot;Font Size in Pixels&quot;. Using the 
-        alternative &quot;Font Size Scaled to Monitor&quot; causes font size calculations 
-        to be scaled up or down depending on the size of the display. This 
-        alternative size algorithm must be used with caution, as it can result 
-        in controls too small or too large for the text inside.</p>
-		<h4>Modifying Properties at Runtime</h4>
-		<p>Modifying control and form properties at runtime is a powerful 
-        capability that enables OpenDCL applications to literally change their 
-        user interface dynamically at runtime. Controls can be enabled and 
-        disabled, or even hidden and shown, depending on changes in dialog or 
-        application state. This capability even allows distinctly different 
-        controls to occupy the same space on a form, allowing runtime code to 
-        alternatively show and hide them so that one or the other is visible at 
-        a given time.</p>
-		<p>Most form and control properties are stored in the project data. Such 
-        property values persist between invocations of the same form. This is 
-        important to remember, because in some cases the previous dialog state 
-        needs to be reset between invocations. To reset the dialog state, the project data 
-        could be reloaded from the  project file or the persisted 
-        properties can be reset directly to their initial values. For example, 
-        code that populates a list box during
-        <a href="../Reference/Event/Initialize.htm">OnInitialize</a> must 
-        handle the possibility that the list is already initialized either 
-        by checking first, or by simply clearing it every time before 
-        repopulating it.</p>
-		<p>In some cases, it may be useful to write AutoLISP code to automate a 
-        series of changes to an existing OpenDCL project, then save the changes 
-        back to a file. For example, the following code opens an OpenDCL 
-        project, iterates through every control on every form, and sets the font 
-        scaling method for each one (note that font scaling is controlled by the 
-        sign of the '<a href="../Reference/Property/FontSize.htm">FontSize</a>' 
-        property), then saves the modified project data to a new file.</p>
+		<h4>Внешний вид диалогов и элементов управления <br>
+</h4>
+		<p>Многие элементы управления поддерживают цвета фона и
+переднего плана. Установка цвета фона -24 (Прозрачный) приведет к тому,
+что элемент управления станет прозрачным. Установкацвета переднего плана в некоторых случаях зависит от свойства ' <a href="../Reference/Property/UseVisualStyle.htm">Использовать визуальный стиль</a>'. Когда элементы управления используют визуальный стиль, он может переопределить цвет переднего плана. Если требуется конкретный цвет элемента,
+лучше отключить использование визуального стиля. Обратите внимание, что
+визуальные стили доступны только в Windows XP и более поздних версиях,
+и только если они включены в настройках Windows.</p>
+		<p>Графические кнопки и элементы управления с картинками могут нарисовать изображения с прозрачными областями из пикселей со значением цвета RGB 192, 192, 192. Любые пиксели с этим цветом будут прозрачными.</p>
+		<p>Настройка
+шрифта элементов управления включает в себя обычные настройки шрифта,
+размера и стиля, однако в OpenDCL есть дополнительный свойство, которое
+определяет то, как размер шрифта рассчитывается во время выполнения.
+Значение по умолчанию этого свойства - "Размер шрифта в пикселях".
+Использование же свойства "Размер шрифта от размера монитора" вызывает
+увеличение или уменьшение шрифта в зависимости от размера дисплея.
+Данный алгоритм должен использоваться с осторожностью, так как это
+может привести к слишком маленьким или слишком большим размерам текста
+в элементах управления.</p>
+		<h4>Изменение свойств во время выполнения</h4>
+		<p>Изменение свойств элемента
+или формы во время выполнения - это очень мощная возможность, которая
+позволяет приложениям OpenDCL буквально изменять свой пользовательский
+интерфейс динамически во время их выполнения. Элементы управления могут
+быть включены и отключены, или скрыты и показаны, в зависимости от
+изменений их состояния. Эта возможность позволяет даже совершенно
+разным элементам управления занимать одно и то же место на форме, что
+позволяет с помощью кода показывать и скрывать их так, чтобы только
+один или другой был виден в данный момент времени.</p>
+		<p>Большинство
+свойств форм и элементов управления хранятся в данных проекта. Такие
+свойства сохраняются между вызовами одной и той же формы. Это важно
+помнить, потому что в некоторых случаях состояние предыдущего диалога
+необходимо сбрасывать между вызовами. Чтобы сбросить состояние диалога,
+данные проекта могут быть перезагружены из файла проекта или быть
+сброшены непосредственно к исходным значениям. Например, код, который
+заполняет поле со списком при <a href="../Reference/Event/Initialize.htm">OnInitialize</a> должен учитывать возможность, что список уже был инициализирован либо сначала проверять его, или просто очищать его каждый раз перед заполнением.</p>
+		<p>В некоторых случаях, может быть полезно написать код AutoLISP
+для автоматизации ряда изменений в существующем OpenDCL проекте, а
+затем сохранить изменения обратно в файл. Например, следующий код
+открывает проект OpenDCL, перебирает каждый элемент управления в каждой
+форме и устанавливает метод масштабирования шрифта для каждого из них
+(масштабирование шрифта контролируется свойством '<a href="../Reference/Property/FontSize.htm">FontSize</a>'), затем сохраняет проекта с измененными данными&nbsp; в новый файл.</p>
 	    <blockquote>
-          <pre>(defun SetOdclFontSizeUnscaled (odclfile password newodclpath / project props fontsize)
-  (setq project (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> odclfile))
-  (if (not project) (exit))
-  (foreach
-    form (<a href="../Reference/Method/Project/GetForms.htm">dcl-Project-GetForms</a> project)
-    (foreach
-      control (<a href="../Reference/Method/Form/GetControls.htm">dcl-Form-GetControls</a> form)
-      (progn (setq props (<a href="../Reference/Method/Control/GetProperties.htm">dcl-Control-GetProperties</a> control))
-        (if (member &quot;FontSize&quot; props)
-          (progn (setq fontsize (<a href="../Reference/Method/Control/GetProperty.htm">dcl-Control-GetProperty</a> control &quot;FontSize&quot;))
-            (if (&gt; fontsize 0)
-              (<a href="../Reference/Method/Control/SetProperty.htm">dcl-Control-SetProperty</a> control &quot;FontSize&quot; (- 0 fontsize))))))))
-  (<a href="../Reference/Method/Project/SaveAs.htm">dcl-Project-SaveAs</a> project newodclpath password)
-)</pre>
+          <pre>(defun SetOdclFontSizeUnscaled (odclfile password newodclpath / project props fontsize)<br>  (setq project (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> odclfile))<br>  (if (not project) (exit))<br>  (foreach<br>    form (<a href="../Reference/Method/Project/GetForms.htm">dcl-Project-GetForms</a> project)<br>    (foreach<br>      control (<a href="../Reference/Method/Form/GetControls.htm">dcl-Form-GetControls</a> form)<br>      (progn (setq props (<a href="../Reference/Method/Control/GetProperties.htm">dcl-Control-GetProperties</a> control))<br>        (if (member "FontSize" props)<br>          (progn (setq fontsize (<a href="../Reference/Method/Control/GetProperty.htm">dcl-Control-GetProperty</a> control "FontSize"))<br>            (if (&gt; fontsize 0)<br>              (<a href="../Reference/Method/Control/SetProperty.htm">dcl-Control-SetProperty</a> control "FontSize" (- 0 fontsize))))))))<br>  (<a href="../Reference/Method/Project/SaveAs.htm">dcl-Project-SaveAs</a> project newodclpath password)<br>)</pre>
         </blockquote>
 	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+	<hr>
+<div id="footer">
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
 </body>
 </html>

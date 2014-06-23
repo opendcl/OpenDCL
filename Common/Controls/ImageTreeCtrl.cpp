@@ -155,8 +155,7 @@ DROPEFFECT CImageTreeCtrl::OnBeginDrag( const CPoint& point, COleDataSource& Sou
 	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
 }
 
-DROPEFFECT CImageTreeCtrl::OnDragOver( const CPoint& point, COleDataObject* pSourceData,
-																			 DWORD dwKeyState )
+DROPEFFECT CImageTreeCtrl::OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState )
 {
 	UINT flags = 0;
 	HTREEITEM	hItem = HitTest( point, &flags );
@@ -169,8 +168,7 @@ DROPEFFECT CImageTreeCtrl::OnDragOver( const CPoint& point, COleDataObject* pSou
 	return DROPEFFECT_NONE;
 }
 
-bool CImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-														 DROPEFFECT dropEffect )
+bool CImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
 	if( !hData )

@@ -285,6 +285,7 @@ protected:
 	CRect GetCurSelRect();
 	CRect GetCurCellRect( int area = LVIR_BOUNDS );
 	void InvalidateCell( int nRow, int nCol );
+	bool ApplyCellFormatChanges( bool bPreserveContent );
 	void SetupColumns();
 	void MoveUp();
 	void MoveDown();

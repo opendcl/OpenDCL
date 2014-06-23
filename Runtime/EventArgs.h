@@ -336,6 +336,114 @@ public:
 		}
 };
 
+template< typename t1, typename t2, typename t3, typename t4, typename t5 >
+class args_5 : public arg_b
+{
+	const arg_t< t1 > arg1;
+	const arg_t< t2 > arg2;
+	const arg_t< t3 > arg3;
+	const arg_t< t4 > arg4;
+	const arg_t< t5 > arg5;
+public:
+	args_5( t1 _arg1, t2 _arg2, t3 _arg3, t4 _arg4, t5 _arg5 )
+		: arg1( _arg1 ), arg2( _arg2 ), arg3( _arg3 ), arg4( _arg4 ), arg5( _arg5 ) {}
+	virtual resbuf* asResbuf() const
+		{
+			resbuf* prbArg1 = arg1.asResbuf();
+			resbuf* prbArg2 = arg2.asResbuf();
+			resbuf* prbArg3 = arg3.asResbuf();
+			resbuf* prbArg4 = arg4.asResbuf();
+			resbuf* prbArg5 = arg5.asResbuf();
+			if( prbArg1 )
+			{
+				if( prbArg2 )
+				{
+					prbArg1->rbnext = prbArg2;
+					if( prbArg3 )
+					{
+						prbArg2->rbnext = prbArg3;
+						if( prbArg4 )
+						{
+							prbArg3->rbnext = prbArg4;
+							prbArg4->rbnext = prbArg5;
+						}
+						else
+							prbArg3->rbnext = prbArg5;
+					}
+					else if( prbArg4 )
+					{
+						prbArg3->rbnext = prbArg4;
+						prbArg4->rbnext = prbArg5;
+					}
+					else
+						prbArg3->rbnext = prbArg5;
+				}
+				else if( prbArg3 )
+				{
+					prbArg1->rbnext = prbArg3;
+					if( prbArg4 )
+					{
+						prbArg3->rbnext = prbArg4;
+						prbArg4->rbnext = prbArg5;
+					}
+					else
+						prbArg3->rbnext = prbArg5;
+				}
+				else if( prbArg4 )
+				{
+					prbArg1->rbnext = prbArg4;
+					prbArg4->rbnext = prbArg5;
+				}
+				else
+					prbArg1->rbnext = prbArg5;
+				return prbArg1;
+			}
+			if( prbArg2 )
+			{
+				if( prbArg3 )
+				{
+					prbArg2->rbnext = prbArg3;
+					if( prbArg4 )
+					{
+						prbArg3->rbnext = prbArg4;
+						prbArg4->rbnext = prbArg5;
+					}
+					else
+						prbArg3->rbnext = prbArg5;
+				}
+				else if( prbArg4 )
+				{
+					prbArg2->rbnext = prbArg4;
+					prbArg4->rbnext = prbArg5;
+				}
+				else
+					prbArg2->rbnext = prbArg5;
+				return prbArg2;
+			}
+			if( prbArg3 )
+			{
+				if( prbArg4 )
+				{
+					prbArg3->rbnext = prbArg4;
+					prbArg4->rbnext = prbArg5;
+				}
+				else
+					prbArg3->rbnext = prbArg5;
+				return prbArg3;
+			}
+			if( prbArg4 )
+			{
+				prbArg4->rbnext = prbArg5;
+				return prbArg4;
+			}
+			return prbArg5;
+		}
+	virtual CString asString() const
+		{
+			return arg1.asString() + arg2.asString() + arg3.asString() + arg4.asString() + arg5.asString();
+		}
+};
+
 
 typedef arg_null args_null;
 typedef args_1< int > args_N;
@@ -356,3 +464,5 @@ typedef args_4< int, int, int, int > args_NNNN;
 typedef args_4< LPCTSTR, LPCTSTR, LPCTSTR, LPCTSTR > args_SSSS;
 typedef args_4< LPCTSTR, LPCTSTR, LPCTSTR, DWORD_PTR > args_SSSH;
 typedef args_4< LPCTSTR, LPCTSTR, LPCTSTR, CPoint > args_SSSP;
+typedef args_5< LPCTSTR, LPCTSTR, LPCTSTR, LPCTSTR, int > args_SSSSN;
+typedef args_5< LPCTSTR, LPCTSTR, LPCTSTR, DWORD_PTR, int > args_SSSHN;

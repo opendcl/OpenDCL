@@ -29,10 +29,8 @@ public:
 
 	// Event Handling
 public:
-	virtual bool HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
-																			const CPoint& point, DROPEFFECT& dwEffect ) const;
-	virtual bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT dropEffect,
-																		const CPoint& point ) const;
+	virtual bool HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState, const CPoint& point, DROPEFFECT& dwEffect ) const;
+	virtual bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT& dwEffect, DROPEFFECT dwAllowed, const CPoint& point ) const;
 	bool HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const resbuf* prbArgs ) const;
 	bool HandleEvent( LPCTSTR pszHandlerName, resbuf*& prbResult, const arg_b& args = args_null() ) const;
 	bool HandleEvent( LPCTSTR pszHandlerName, bool bAsync, const arg_b& args = args_null(), AcApDocument* pDoc = NULL ) const;

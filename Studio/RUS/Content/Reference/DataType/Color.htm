@@ -1,55 +1,57 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../Utility.js"></script>
-<title>Color</title>
-</head>
-<body>
+<script type="text/javascript" src="../../Utility.js"></script><title>Color</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
+		<tbody><tr>
+			<td nowrap="nowrap">
 				<div id="title">Color</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+      <div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
+
+</td></tr></tbody></table><hr>
 	<div id="content">
-		<p>Color types represent an AutoCAD color in the range 1 through 256, 
-        including the &quot;logical&quot; ByLayer color 256. In OpenDCL, additional logical colors can be specified by negative values, 
-        as shown in the following table. If the color value is outside the range 
-        of logical and AutoCAD colors, it is interpreted as a bit coded RGB 
-        color value.</p>
-		<p>A color may also be represented by a list of three integers in the 
-        range 0 - 255 representing the Red, Green, and Blue components of the 
-        color in the form (Red Green Blue).</p>
-		<p>To convert an AutoCAD color to an <a href="OLEColor.htm">OLEColor</a> 
-        for use with an ActiveX object, use the
-        <a href="../Function/GetOLEColorValue.htm">GetOLEColorValue</a> 
-        function.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber1">
-          <tr>
-            <th nowrap>Color Value</th>
-            <th nowrap>Description</th>
+		<p>Тип Цвет представляет собой цвет AutoCAD в диапазоне от 1 до 256, в том числе "логический" цвет ПОСЛОЮ 256.
+В OpenDCL дополнительные логические цвета могут быть определены
+отрицательными значениями, как показано в следующей таблице. Если
+значение цвета находится вне диапазона логических и AutoCAD цветов, то
+оно интерпретируется как битовое значение цвета RGB.</p>
+		<p>Цвет
+также может быть представлен как список из трех целых чисел в диапазоне
+0 - 255, представляющих красный, зеленый и синий компоненты цвета в
+виде (Красный Зеленый Синий).</p>
+		<p>Для преобразования цвета AutoCAD в <a href="OLEColor.htm">OLEColor</a> для использования с объектом ActiveX , использовать функцию
+        <a href="../Function/GetOLEColor%D0%97%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D0%B5.htm">GetOLEColorValue</a> .</p>
+	    <table style="border-collapse: collapse;" id="AutoNumber1" border="1" bordercolor="#111111" cellpadding="3" cellspacing="0">
+          <tbody><tr>
+            <th nowrap="nowrap">Номер цвета<br>
+</th>
+            <th nowrap="nowrap">Описание</th>
           </tr>
           <tr>
             <td>-24</td>
-            <td>Transparent (background color shows through)</td>
+            <td>Прозрачный (цвет фона)</td>
           </tr>
           <tr>
             <td>-23</td>
-            <td>AutoCAD layout background color</td>
+            <td>AutoCAD цвет фона листа<br>
+</td>
           </tr>
           <tr>
             <td>-22</td>
-            <td>AutoCAD model space background color</td>
+            <td>AutoCAD цвет фона пространства модели <br>
+</td>
           </tr>
           <tr>
             <td>-21</td>
@@ -137,35 +139,36 @@
           </tr>
           <tr>
             <td>0</td>
-            <td>Black</td>
+            <td>Черный</td>
           </tr>
           <tr>
             <td>1</td>
-            <td>Red</td>
+            <td>Красный</td>
           </tr>
           <tr>
             <td>2</td>
-            <td>Yellow</td>
+            <td>Желтый</td>
           </tr>
           <tr>
             <td>3</td>
-            <td>Green</td>
+            <td>Зеленый</td>
           </tr>
           <tr>
             <td>4</td>
-            <td>Cyan</td>
+            <td>Голубой</td>
           </tr>
           <tr>
             <td>5</td>
-            <td>Blue</td>
+            <td>Синий</td>
           </tr>
           <tr>
             <td>6</td>
-            <td>Magenta</td>
+            <td>Фиолетовый<br>
+</td>
           </tr>
           <tr>
             <td>7</td>
-            <td>White</td>
+            <td>Белый</td>
           </tr>
           <tr>
             <td>8 - 255</td>
@@ -173,22 +176,19 @@
           </tr>
           <tr>
             <td>256</td>
-            <td>AutoCAD ByLayer color (i.e. default color of current layer)</td>
+            <td>AutoCAD Послою (то есть цвет по умолчанию текущего слоя)</td>
           </tr>
           <tr>
             <td>&gt; 256</td>
-            <td>Color is interpreted as an RGB color (see <a href="OLEColor.htm">
-            OLEColor</a> type)</td>
+            <td>Цвет интерпретируется как RGB (смотри тип&nbsp;<a href="OLEColor.htm">
+            OLEColor</a>)</td>
           </tr>
-        </table>
+        </tbody></table>
 	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2014 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
-	</div>
-</body>
-</html>
+	<hr>
+<div id="footer">
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p><p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+</div>
+</body></html>

@@ -480,8 +480,8 @@ ADSRESULT Form::Show()
 		return RSERR; //invalid input
 
 	//optional arguments
-	int nX = -1;
-	int nY = -1;
+	int nX = INT_MIN;
+	int nY = INT_MIN;
 	CString sDefaultDirectory;
 	CString sDefaultFileName;
 	CString sDefaultExtension;
@@ -517,7 +517,7 @@ ADSRESULT Form::Show()
 		fdp.sFilename = sFilename;
 		fdp.sDefaultExtension = sDefaultExtension;
 	}
-	DialogParams params( CPoint( nX, nY ), CRect(0,0,0,0), bHasFileParams? (LPARAM)&fdp : NULL );
+	DialogParams params( CPoint(nX, nY), CSize(0, 0), bHasFileParams? (LPARAM)&fdp : NULL );
 	int nResult = theArxWorkspace.ActivateDclForm(pDclForm, &params);
 
 	if (nResult >= 0)

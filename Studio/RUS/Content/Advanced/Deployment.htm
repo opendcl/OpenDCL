@@ -1,88 +1,77 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
-<title>Deployment</title>
-</head>
-<body>
+<script type="text/javascript" src="../Utility.js"></script><title>Deployment</title></head><body>
 	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Deployment</div>
+		<tbody><tr>
+			<td nowrap="nowrap">
+				<div id="title">Развертывание</div>
 			</td>
 			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+<div id="hdrlink" style="font-size: xx-small;">
+					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
 				</div>
 			</td>
 		</tr>
-	</table>
-	<hr />
+	</tbody></table>
+	<hr>
 	<div id="content">
-		<h4>Packaging The Application</h4>
-		<p>For all practical purposes, packaging an OpenDCL application for 
-        deployment is no different than packaging any AutoLISP application for 
-        deployment. Most developers choose to convert their AutoLISP files into 
-        fast loading lisp (.fas) or compiled and packaged lisp (.vlx) files 
-        before deploying them to end users, however this may not be necessary or 
-        desirable for in-house applications.</p>
-		<p>When preparing AutoLISP files for deployment, it is important to 
-        include all dependent files, such as OpenDCL project files, data files, 
-        and utility files. It is also important to write code that does not use 
-        hard coded file paths, so that the application works correctly no matter 
-        where it is installed.</p>
-		<p>A common approach to handling loading of dependent files without 
-        requiring a hard coded path is to add the application's installation 
-        folder to the AutoCAD support path. However, this approach is risky 
-        because it can result in failure if the application path is accidentally 
-        removed from the AutoCAD support path, or if the support path exceeds 
-        its allowable length. A more robust solution is to write the 
-        installation path to the application's registry key, then prefix the 
-        saved path to the file name of the desired file at runtime.</p>
-		<p>Many developers want to package their OpenDCL project files so that 
-        end users or third parties cannot easily view or change their contents. 
-        The standard approach of packaging .odcl files separately from the 
-        associated AutoLISP files makes this impossible. OpenDCL provides a 
-        solution to this problem by allowing OpenDCL project data to be included 
-        directly inside the AutoLISP code as data, thus enabling the files to be 
-        compiled into a single .vlx that includes both the AutoLISP code and the 
-        OpenDCL project data. Embedding project data requires that an OpenDCL 
-        project be saved from OpenDCL Studio with an .lsp file extension. 
-        Manually typing a destination file name with the .lsp extension causes 
-        OpenDCL Studio to save the file in an encoded plain text format so that 
-        its contents can be copied and pasted directly into lisp code, then 
-        loaded by using the <a href="../Reference/Method/Project/Import.htm">
-        (dcl-Project-Import)</a> function.</p>
-		<h4>Including OpenDCL Runtime</h4>
-		<p>OpenDCL applications must be deployed along with the OpenDCL Runtime. 
-        To ensure interoperability among multiple OpenDCL applications on the 
-        end user system, the OpenDCL runtime must be installed via Windows 
-        Installer. One way this can be accomplished is by distributing the 
-        OpenDCL Runtime .MSI file with the application, and executing the 
-        standalone .MSI file as a preliminary step in the application's 
-        installation sequence. Better yet is to merge the OpenDCL Runtime 
-        install directly into the application's installer by importing the 
-        OpenDCl Runtime merge module (.MSM) into the application installer 
-        script. Support for merge modules varies depending on the installer 
-        technology being used; if merge modules are not supported, or not 
-        supported fully, it may not be possible to use the merge module 
-        approach.</p>
-		<p>Either method for deploying OpenDCL Runtime ensures that the OpenDCL 
-        files are properly reference counted, so that uninstalling one OpenDCL 
-        application leaves the runtime files installed if any OpenDCL 
-        application still needs them, and removes the files when they are no 
-        longer needed.</p>
+		<h4>Упаковка приложений</h4>
+		<p>Практически для всех&nbsp; целей
+упаковка OpenDCL приложения для последующего развертывания ничем не отличается, чем
+упаковка любого AutoLISP приложения. Большинство
+разработчиков преобразовывают свои файлы AutoLISP в быстрозагружаемые
+(.fas) или компилируют в запакованные (.vlx) файлы, прежде чем передать их
+конечным пользователям, однако это может и не быть необходимым
+для приложений, предназначенных для внутреннего пользования. </p>
+		<p>При подготовке файлов AutoLISP для развертывания, очень важно включить все зависимые файлы, такие как файлы проекта OpenDCL,
+файлы данных и вспомогательные файлы. Важно также, чтобы написанный код
+не использовал четко прописанных путей к файлам. Это нужно для того,
+чтобы приложение работало правильно, независимо от того, куда оно
+установлено.</p>
+		<p>Общий метод загрузки зависимых файлов без необходимости четко прописанного пути
+в коде - это добавление папки с установленным приложением в пути поиска
+вспомогательных файлов в AutoCAD. Однако, такой подход рискован, т.к.пути поиска вспомогательных файлов
+можно случайно удалить из AutoCAD, или путь к папке может превысить
+допустимую длину. Более надежное решение - прописать путь к
+установленномуприложению в раздел реестра, чтобы потом обращаться к нему во время выполнения. </p>
+		<p>Многие разработчики хотят, чтобы конечные пользователи или третьи стороны не смогли легко просмотреть или изменить содержимое упакованных
+файлов проекта OpenDCL. Стандартное создание .odcl файлов отдельно от
+связанных с ними файлов AutoLISP делает это невозможным. Но OpenDCL
+обеспечивает решение этой проблемы, позволяя включить проект OpenDCL
+непосредственно в код AutoLISP в качестве данных. Все файлы будут
+сведены в один .vlx файл, включающий в себя как код AutoLISP, так и
+данные проекта OpenDCL. Для внедрения данных нужно, чтобы проект
+OpenDCL был сохранен из OpenDCL студии с расширением файла. LSP. Ручной
+ввод имени файла с расширением .LSP в OpenDCL Студии сохраняет файл
+проекта в формате зашифрованного текста, так что его содержимое может быть скопировано и вставлено непосредственно в код AutoLISP, и его можно будет загрузить с помощью функции <a href="../Reference/Method/Project/Import.htm">(dcl-Project-Import)</a>.</p>
+		<h4>Добавление исполняемого модуля OpenDCL<br>
+</h4>
+		
+<p>Приложения OpenDCL должны быть развернуты вместе с исполняемым
+модулем OpenDCL . Для обеспечения совместимости между несколькими
+приложениями OpenDCL в системе конечного пользователя, среда выполнения
+OpenDCL должна быть установлена с помощью установщика Windows. Один из
+способов - это распространениеисполняемого модуля  OpenDCL в .MSI файле
+вместе с приложением для его предварительной установки. А еще лучше
+объединить установщик модуля OpenDCL непосредственно с программой
+установки самого приложения с помощью импорта модуля (. MSM) OpenDCL,
+объединив их в скрипте программы установки. Поддержкаслияния модулей варьируется в зависимости от используемой технологии установки; если слияние модули не поддерживаются, или не поддерживаются в полной мере, то невозможно использовать такой подход. </p>
+
+		<p>Любой метод развертывания исполняемого модуля OpenDCL гарантирует, что файлы OpenDCL правильно найдут ссылки, так что удаление одного приложения OpenDCL не удалит файлы исполняемого модуля, и любое приложение OpenDCL, еще нуждающееся в них, сможет ими воспользоваться.</p>
 	</div>
-	<hr />
+	<hr>
 	<div id="footer">
-		<p>Copyright © 2010 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
+		<p>Авторские права © 2014 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
 	</div>
 </body>
 </html>

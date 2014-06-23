@@ -193,22 +193,19 @@ DROPEFFECT CDialogControl::OnBeginDrag( const CPoint& point, COleDataSource& Sou
 	return dwDropEffect;
 }
 
-DROPEFFECT CDialogControl::OnDragEnter( const CPoint& point, COleDataObject* pSourceData,
-																				DWORD dwKeyState )
+DROPEFFECT CDialogControl::OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState )
 {
 	return OnDragOver( point, pSourceData, dwKeyState );
 }
 
-DROPEFFECT CDialogControl::OnDragOver( const CPoint& point, COleDataObject* pSourceData,
-																			 DWORD dwKeyState )
+DROPEFFECT CDialogControl::OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState )
 {
 	if( (dwKeyState & MK_CONTROL) != MK_CONTROL )
 		return DROPEFFECT_MOVE;    
 	return DROPEFFECT_COPY;
 }
 
-bool CDialogControl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
-														 DROPEFFECT dropEffect )
+bool CDialogControl::OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect )
 {
 	return false;
 }
