@@ -7,7 +7,7 @@
 
 #ifdef _ZRXTARGET
 
-bool zcedLinetypeDialog(AcDbObjectId,bool,char * &,AcDbObjectId &);
+bool zcedLinetypeDialog(AcDbObjectId,bool,ZTCHAR * &,AcDbObjectId &);
 
 bool SelectLinetypeUI( /*in-out*/ AcDbObjectId& idLinetype,
 											 /*out*/ CString& sLinetype,
@@ -61,6 +61,8 @@ static FT_acedLinetypeDialog GetProc(void)
 	HMODULE hmodApi = GetModuleHandle( _T("brx13.dll") );
 #elif (_BRXTARGET == 14)
 	HMODULE hmodApi = GetModuleHandle( _T("brx14.dll") );
+#elif (_BRXTARGET == 15)
+	HMODULE hmodApi = GetModuleHandle( _T("brx15.dll") );
 #elif (_BRXTARGET)
 	#error Unknown BRX target!
 #else

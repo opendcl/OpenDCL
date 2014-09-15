@@ -11,33 +11,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3CBC2BF2-A4A1-475D-8CCC-FE3EE741EBC9}</ProjectGuid>
-    <RootNamespace>OpenDCL.2014</RootNamespace>
+    <ProjectGuid>{F5CCC78F-2EBD-4085-BB45-272908428EAC}</ProjectGuid>
+    <RootNamespace>OpenDCL.2015</RootNamespace>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v100</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v100</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="VI\ZRX.2014.props" />
+    <Import Project="VI\ZRX.2015.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="VI\ZRX.2014.props" />
+    <Import Project="VI\ZRX.2015.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -76,11 +76,10 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>mfcs100;mfc100</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>"$(ZRX2014)\Tools\ZRXCheck\ZRXCheck.exe" "$(TargetPath)"</Command>
+      <Command>"$(ZRX2015)\Tools\ZRXCheck\ZRXCheck.exe" "$(TargetPath)"</Command>
       <Message>Signing ZRX module</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -111,9 +110,10 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>mfcs100;mfc100</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>"$(ZRX2014)\Tools\ZRXCheck\ZRXCheck.exe" "$(TargetPath)"</Command>
+      <Command>"$(ZRX2015)\Tools\ZRXCheck\ZRXCheck.exe" "$(TargetPath)"</Command>
       <Message>Signing ZRX module</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>

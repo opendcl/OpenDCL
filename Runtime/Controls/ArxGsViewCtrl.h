@@ -29,10 +29,7 @@ protected:
 	CAcadBlockInsertDropTarget mBlockInsertDropTarget;
 	CArxDragDropService mDragDropService;
 
-	class GsViewManager : public AcDbDatabaseReactor, public AcGsReactor
-	#ifdef _BRXTARGET
-		, public AcEditorReactor
-	#endif
+	class GsViewManager : public AcDbDatabaseReactor, public AcGsReactor, public AcEditorReactor
 	{
 		AcDbDatabase* mpDb;
 		CArxGsViewCtrl* mpCtrl;
@@ -61,9 +58,7 @@ protected:
 			, mpGhostModel( NULL )
 			, mpView( NULL )
 			{
-			#ifdef _BRXTARGET
 				acedEditor->addReactor(this);
-			#endif
 				assert( mpCtrl != NULL );
 				if( pDb )
 				{
@@ -131,9 +126,7 @@ protected:
 		~GsViewManager()
 			{
 				clear();
-			#ifdef _BRXTARGET
 				acedEditor->removeReactor(this);
-			#endif
 			}
 	protected:
 		void clear()
@@ -251,15 +244,17 @@ protected:
 				clear();
 			}
 	#endif
-	#ifdef _BRXTARGET
 		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
 			{
 				// The cached pointers are no longer valid when this reactor fires, so clear them
 				// to avoid a crash when the control is destroyed.
 				mpManager = NULL;
+			#if (_ARXTARGET >= 20)
+				mpKernel = NULL;
+			#else
 				mpFactory = NULL;
+			#endif
 			}
-	#endif
 	};
 	GsViewManager* mpGsManager;
 
