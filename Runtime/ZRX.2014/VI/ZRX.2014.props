@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\;..\;.\VI;$(ZRX2014)\arxport;$(ZRX2014)\Inc;$(MSVC10)\Include;$(MSVC10)\ATLMFC\Include;$(WindowsSdkDir)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;.\VI;$(ZRX2014)\arxport;$(ZRX2014)\Inc;$(MSVC10)\Include;$(MSVC10)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_ACADTARGET=17;_ZRXTARGET=2014;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>

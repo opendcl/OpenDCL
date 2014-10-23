@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\;..\;.\VI;$(ARX2015)\Inc-x64;$(ARX2015)\Inc;$(MSVC11)\Include;$(MSVC11)\ATLMFC\Include;$(WindowsSdkDirIA64)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;.\VI;$(ARX2015)\Inc-x64;$(ARX2015)\Inc;$(MSVC11)\Include;$(MSVC11)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_ACADTARGET=20;_ARXTARGET=20;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>/wd4986 /wd4987 /wd4265 %(AdditionalOptions)</AdditionalOptions>

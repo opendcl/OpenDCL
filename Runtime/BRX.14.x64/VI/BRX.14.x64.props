@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\;..\;.\VI;$(BRX14)\Inc64;$(BRX14)\Inc;$(MSVC10)\Include;$(MSVC10)\ATLMFC\Include;$(WindowsSdkDirIA64)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;.\VI;$(BRX14)\Inc64;$(BRX14)\Inc;$(MSVC10)\Include;$(MSVC10)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_ACADTARGET=17;_BRXTARGET=14;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>/wd4986 /wd4987 /wd4265 %(AdditionalOptions)</AdditionalOptions>
