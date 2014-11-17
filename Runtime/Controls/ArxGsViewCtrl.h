@@ -33,7 +33,6 @@ protected:
 	{
 		AcDbDatabase* mpDb;
 		CArxGsViewCtrl* mpCtrl;
-		AcGsManager* mpManager;
 	#if (_ARXTARGET >= 20)
 		AcGsGraphicsKernel* mpKernel;
 	#else
@@ -47,7 +46,6 @@ protected:
 		GsViewManager( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
 			: mpDb( pDb )
 			, mpCtrl( pCtrl )
-			, mpManager( NULL )
 		#if (_ARXTARGET >= 20)
 			, mpKernel( NULL )
 		#else
@@ -63,14 +61,14 @@ protected:
 				if( pDb )
 				{
 					mpDb->addReactor(this);
-					mpManager = acgsGetGsManager();
-					assert( mpManager != NULL );
-					if( !mpManager )
+					AcGsManager* pManager = acgsGetGsManager();
+					assert( pManager != NULL );
+					if( !pManager )
 						return;
 				#if (_ARXTARGET >= 20)
 					AcGsKernelDescriptor KernelDesc;
 					KernelDesc.addRequirement(AcGsKernelDescriptor::k3DDrawing);
-					mpKernel = mpManager->acquireGraphicsKernel( KernelDesc );
+					mpKernel = pManager->acquireGraphicsKernel( KernelDesc );
 					assert( mpKernel != NULL );
 					if( !mpKernel )
 						return;
@@ -78,9 +76,9 @@ protected:
 					mpKernel->addReactor( this );
 				#endif
 					//a device with standard autocad color palette
-					mpDevice = mpManager->createAutoCADDevice( *mpKernel, mpCtrl->m_hWnd );
+					mpDevice = pManager->createAutoCADDevice( *mpKernel, mpCtrl->m_hWnd );
 				#else
-					mpFactory = mpManager->getGSClassFactory();
+					mpFactory = pManager->getGSClassFactory();
 					assert( mpFactory != NULL );
 					if( !mpFactory )
 						return;
@@ -88,7 +86,7 @@ protected:
 					mpFactory->addReactor( this );
 				#endif
 					//a device with standard autocad color palette
-					mpDevice = mpManager->createAutoCADDevice( mpCtrl->m_hWnd );
+					mpDevice = pManager->createAutoCADDevice( mpCtrl->m_hWnd );
 				#endif
 					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
 					if( pAcadColor )
@@ -107,13 +105,13 @@ protected:
 					//a simple view
 				#if (_ARXTARGET >= 20)
 					mpView = mpKernel->createView();
-					mpModel = mpManager->createAutoCADModel( *mpKernel ); //a model with open/close protocol
+					mpModel = pManager->createAutoCADModel( *mpKernel ); //a model with open/close protocol
 
 					//another model without open/close for the orbit gadget
 					mpGhostModel = mpKernel->createModel( AcGsModel::kDirect, 0, 0, 0 );
 				#else
 					mpView = mpFactory->createView();
-					mpModel = mpManager->createAutoCADModel(); //a model with open/close protocol
+					mpModel = pManager->createAutoCADModel(); //a model with open/close protocol
 
 					//another model without open/close for the orbit gadget
 					mpGhostModel = mpFactory->createModel( AcGsModel::kDirect, 0, 0, 0 );
@@ -131,11 +129,12 @@ protected:
 	protected:
 		void clear()
 			{
-				if( mpManager )
+				AcGsManager* pManager = acgsGetGsManager();
+				if( pManager )
 				{
 					if( mpModel )
 					{
-						mpManager->destroyAutoCADModel( mpModel );
+						pManager->destroyAutoCADModel( mpModel );
 						mpModel = NULL;
 					}
 					if( mpDevice )
@@ -147,10 +146,9 @@ protected:
 						#endif
 							mpDevice->erase( mpView );
 						}
-						mpManager->destroyAutoCADDevice( mpDevice );
+						pManager->destroyAutoCADDevice( mpDevice );
 						mpDevice = NULL;
 					}
-					mpManager = NULL;
 				}
 			#if (_ARXTARGET >= 20)
 				if( mpKernel )
@@ -248,7 +246,6 @@ protected:
 			{
 				// The cached pointers are no longer valid when this reactor fires, so clear them
 				// to avoid a crash when the control is destroyed.
-				mpManager = NULL;
 			#if (_ARXTARGET >= 20)
 				mpKernel = NULL;
 			#else

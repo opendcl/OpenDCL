@@ -60,6 +60,7 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSelchangePicturelist();
 	afx_msg void OnUpdate();
+	afx_msg void OnExport();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -104,12 +104,42 @@ bool CArxColorComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 	return __super::OnApplyUseVisualStyle( pProp );
 }
 
+void CArxColorComboBoxCtrl::OnListChanged()
+{
+	TPropertyPtr pItemList = mpTemplate->GetPropertyObject( Prop::List );
+	TPropertyPtr pItemDataList = mpTemplate->GetPropertyObject( Prop::ItemData );
+	if( !pItemList && !pItemDataList )
+		return;
+	if( pItemList )
+		pItemList->clear();
+	if( pItemDataList )
+		pItemDataList->clear();
+	int ctItems = GetCount();
+	for( int idx = 0; idx < ctItems; ++idx )
+	{
+		if( pItemList )
+		{
+			CString sItem;
+			GetLBText( idx, sItem );
+			pItemList->AddStringItem( sItem );
+		}
+		if( pItemDataList )
+			pItemDataList->GetIntArrayPtr()->push_back( GetItemData( idx ) );
+	}
+}
+
 BEGIN_MESSAGE_MAP(CArxColorComboBoxCtrl, CAcUiColorComboBox)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
 	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxColorComboBoxCtrl::OnCbnSelchange)
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CArxColorComboBoxCtrl::OnCbnDropdown)
+	ON_MESSAGE(CB_ADDSTRING, &CArxColorComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DELETESTRING, &CArxColorComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DIR, &CArxColorComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_INSERTSTRING, &CArxColorComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_SETITEMDATA, &CArxColorComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_RESETCONTENT, &CArxColorComboBoxCtrl::OnResetContent)
 END_MESSAGE_MAP()
 
 
@@ -146,6 +176,22 @@ void CArxColorComboBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+LRESULT CArxColorComboBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM lParam )
+{
+	LRESULT lResult = Default();
+	OnListChanged();
+	return lResult;
+}
+
+LRESULT CArxColorComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
+{
+	CString sSelection;
+	GetWindowText( sSelection );
+	Default();
+	OnListChanged();
+	return (LRESULT)TRUE;
 }
 
 void CArxColorComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)

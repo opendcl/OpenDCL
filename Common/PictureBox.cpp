@@ -224,6 +224,7 @@ void CPictureBox::Clear()
 void CPictureBox::ClearPicture()
 {
 	mpPicture = NULL;
+	Clear();
 	Refresh();
 }
 
@@ -232,6 +233,7 @@ void CPictureBox::SetPicture( TPicturePtr pPicture )
 	mpPicture = pPicture;
 	if( mpPicture )
 		AutoSize();
+	Clear();
 	Refresh();
 }
 
@@ -240,14 +242,15 @@ void CPictureBox::SetPicture( UINT nIconResId )
 	mpPicture = new CDclPicture( -1 );
 	mpPicture->LoadResourceIcon( nIconResId );
 	AutoSize();
+	Clear();
 	Refresh();
 }
 
 void CPictureBox::Refresh()
 {
-	Clear();
-	if( !IsWindowVisible() )
+	if( !m_hWnd || !IsWindowVisible() )
 		return;
+	Invalidate();
 	UpdateWindow();
 }
 
@@ -653,12 +656,10 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 // This function loads a file into an IStream.
 bool CPictureBox::LoadPictureFile(LPCTSTR pszFile, bool bStretch)
 {
+	Clear();
 	mbFitPictureToCtrl = bStretch;
 	if( !pszFile || !*pszFile )
-	{
-		Clear();
 		return true;
-	}
 	CString sPicFile = theWorkspace.FindFile( pszFile );
 	if( sPicFile.IsEmpty() )
 		sPicFile = pszFile;

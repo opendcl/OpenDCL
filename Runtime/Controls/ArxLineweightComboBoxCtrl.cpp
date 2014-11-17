@@ -99,12 +99,42 @@ bool CArxLineweightComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 	return __super::OnApplyUseVisualStyle( pProp );
 }
 
+void CArxLineweightComboBoxCtrl::OnListChanged()
+{
+	TPropertyPtr pItemList = mpTemplate->GetPropertyObject( Prop::List );
+	TPropertyPtr pItemDataList = mpTemplate->GetPropertyObject( Prop::ItemData );
+	if( !pItemList && !pItemDataList )
+		return;
+	if( pItemList )
+		pItemList->clear();
+	if( pItemDataList )
+		pItemDataList->clear();
+	int ctItems = GetCount();
+	for( int idx = 0; idx < ctItems; ++idx )
+	{
+		if( pItemList )
+		{
+			CString sItem;
+			GetLBText( idx, sItem );
+			pItemList->AddStringItem( sItem );
+		}
+		if( pItemDataList )
+			pItemDataList->GetIntArrayPtr()->push_back( GetItemData( idx ) );
+	}
+}
+
 BEGIN_MESSAGE_MAP(CArxLineweightComboBoxCtrl, CAcUiLineWeightComboBox)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnCbnDropdown)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxLineweightComboBoxCtrl::OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CArxLineweightComboBoxCtrl::OnCbnDropdown)
+	ON_MESSAGE(CB_ADDSTRING, &CArxLineweightComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DELETESTRING, &CArxLineweightComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_DIR, &CArxLineweightComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_INSERTSTRING, &CArxLineweightComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_SETITEMDATA, &CArxLineweightComboBoxCtrl::OnModifyContent)
+	ON_MESSAGE(CB_RESETCONTENT, &CArxLineweightComboBoxCtrl::OnResetContent)
 END_MESSAGE_MAP()
 
 
@@ -141,6 +171,22 @@ void CArxLineweightComboBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+LRESULT CArxLineweightComboBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM lParam )
+{
+	LRESULT lResult = Default();
+	OnListChanged();
+	return lResult;
+}
+
+LRESULT CArxLineweightComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
+{
+	CString sSelection;
+	GetWindowText( sSelection );
+	Default();
+	OnListChanged();
+	return (LRESULT)TRUE;
 }
 
 void CArxLineweightComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)

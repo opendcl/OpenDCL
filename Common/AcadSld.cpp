@@ -129,7 +129,7 @@ bool CAcadSld::Load( LPCTSTR pszFilename, LPCTSTR pszSlide /*= NULL*/ )
 		return false;
 	cbSlide -= sizeof(nHeight);
 	double aspect = 1;
-	unsigned short hfill;
+	unsigned short hfill = 0;
 	Endian endian = unknown;
 	switch( format )
 	{

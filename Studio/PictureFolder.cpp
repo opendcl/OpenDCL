@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(CPictureFolder, CDialog)
 	ON_BN_CLICKED(IDDELETE, OnDelete)
 	ON_LBN_SELCHANGE(IDC_PICTURELIST, OnSelchangePicturelist)
 	ON_BN_CLICKED(IDUPDATE, OnUpdate)
+	ON_BN_CLICKED(IDEXPORT, OnExport)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -248,4 +249,64 @@ void CPictureFolder::OnUpdate()
 {
 	UpdateSingleFileDialog();
 	OnSelchangePicturelist();
+}
+
+void CPictureFolder::OnExport() 
+{
+	TPicturePtr pPict = GetSelectedPictureObject();
+	if( !pPict )
+		return;
+	LPPICTUREDISP pPictDisp = pPict->GetPictureDisp();
+	if( !pPictDisp )
+		return;
+	CComQIPtr< IPicture > pPicture( pPictDisp );
+	if( !pPicture )
+		return;
+	CComPtr< IStream > pStream;
+	HRESULT hr = CreateStreamOnHGlobal( NULL, TRUE, &pStream );
+	if( FAILED(hr) || !pStream )
+		return;
+	hr = pPicture->SaveAsFile( pStream, TRUE, NULL );
+	if( FAILED(hr) )
+		return;
+	HGLOBAL hPicData = NULL;
+	hr = GetHGlobalFromStream( pStream, &hPicData );
+	if( FAILED(hr) || !hPicData )
+		return;
+
+	LPCTSTR pszDefExt = NULL;
+	switch( pPict->GetPicType() )
+	{
+	case PICTYPE_ICON: pszDefExt = _T("ico"); break;
+	case PICTYPE_BITMAP: pszDefExt = _T("bmp"); break;
+	case PICTYPE_METAFILE: pszDefExt = _T("wmf"); break;
+	case PICTYPE_ENHMETAFILE: pszDefExt = _T("wmf"); break;
+	}
+	CString sTitle = theWorkspace.GetActiveDocument()->GetTitle().SpanExcluding( _T(".") );
+	CString sFilename;
+	sFilename.Format( _T("%s-%d.%s"), (LPCTSTR)sTitle, pPict->GetID(), pszDefExt? pszDefExt : _T("") );
+	CFileDialog FileDlg( FALSE, pszDefExt, sFilename,
+											 OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_PATHMUSTEXIST, NULL,
+											 this );
+	if( FileDlg.DoModal() == IDOK )
+	{
+		CString sFilePath = FileDlg.GetPathName();
+		STATSTG StgStat;
+		hr = pStream->Stat( &StgStat, STATFLAG_NONAME );
+		if( SUCCEEDED(hr) )
+		{
+			HANDLE hfile = CreateFile( sFilePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+			if( hfile )
+			{
+				LPCVOID pvPicData = GlobalLock( hPicData );
+				if( pvPicData )
+				{
+					DWORD cbWritten = 0;
+					WriteFile( hfile, pvPicData, StgStat.cbSize.LowPart, &cbWritten, NULL );
+					GlobalUnlock( hPicData );
+				}
+				CloseHandle(hfile);
+			}
+		}
+	}
 }

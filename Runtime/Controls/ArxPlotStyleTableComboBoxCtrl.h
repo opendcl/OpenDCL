@@ -29,7 +29,8 @@ public:
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 
-public:
+protected:
+	virtual void OnListChanged();
 
 protected:
 	DECLARE_MESSAGE_MAP();
@@ -38,6 +39,8 @@ protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
+	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);

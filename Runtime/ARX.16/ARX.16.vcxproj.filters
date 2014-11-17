@@ -1343,5 +1343,8 @@
     <ClInclude Include="..\DwgThumbnail.h">
       <Filter>Include Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\OpenDCL 8.0\Runtime\Methods\Methods_Project.h">
+      <Filter>Methods\Include Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -905,9 +905,6 @@
     <ClInclude Include="..\Methods\Methods_ComboBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ComboBoxEx.h">
-      <Filter>Methods\Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Methods\Methods_Control.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>

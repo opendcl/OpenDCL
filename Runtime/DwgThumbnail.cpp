@@ -84,6 +84,11 @@ bool CDwgThumbnail::Load()
 {
 	if( mbLoaded )
 		return true;
+	if( mhBitmap )
+	{
+		DeleteObject( mhBitmap );
+		mhBitmap = NULL;
+	}
 
 	static const int DWG_OFFSET = 13;
 	static const int SENTINEL_LENGTH = 16;
@@ -116,7 +121,7 @@ bool CDwgThumbnail::Load()
 		BYTE ctThumbs;
 		fileDwg.Read (&ctThumbs, 1);
 		// iterate the entries
-		for( unsigned char idxThumb = 0; idxThumb < ctThumbs; ++idxThumb )
+		for( unsigned char idxThumb = 0; idxThumb < ctThumbs && !mhBitmap; ++idxThumb )
 		{
 			BYTE nThumbType;
 			fileDwg.Read (&nThumbType, 1); //thumbnail type

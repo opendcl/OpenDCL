@@ -223,6 +223,7 @@
     <None Include="res\SpinButton.ico" />
     <None Include="res\Splitter.ico" />
     <None Include="res\Tab.ico" />
+    <None Include="res\TabOrder.bmp" />
     <None Include="res\TextColor.ico" />
     <None Include="res\Toolbox.bmp" />
     <None Include="res\Tree.ico" />

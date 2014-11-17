@@ -414,7 +414,6 @@
     <ClInclude Include="..\Methods\Methods_BlockView.h" />
     <ClInclude Include="..\Methods\Methods_Calendar.h" />
     <ClInclude Include="..\Methods\Methods_ComboBox.h" />
-    <ClInclude Include="..\Methods\Methods_ComboBoxEx.h" />
     <ClInclude Include="..\Methods\Methods_Control.h" />
     <ClInclude Include="..\Methods\Methods_DwgList.h" />
     <ClInclude Include="..\Methods\Methods_DwgPreview.h" />

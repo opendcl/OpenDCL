@@ -917,9 +917,6 @@
     <ClInclude Include="..\Methods\Methods_ComboBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ComboBoxEx.h">
-      <Filter>Methods\Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Methods\Methods_Control.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
@@ -927,12 +924,6 @@
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Methods\Methods_DwgPreview.h">
-      <Filter>Methods\Include Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Edit.h">
-      <Filter>Methods\Include Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Methods\Methods_FileDlg.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Methods\Methods_FileExplorer.h">
@@ -966,9 +957,6 @@
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Methods\Methods_ProgressBar.h">
-      <Filter>Methods\Include Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Properties.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Methods\Methods_SlideView.h">
