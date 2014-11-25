@@ -46,9 +46,9 @@
         </th>
         <td bgcolor="#CCFF99">
           <code id="syntax">(dcl-Project-ExportPicture <i><a href="../../DataType/Project.htm">
-            &lt;PROJECT&gt;</a></i> <font color="#FF0000">{Password [as <a href="../../DataType/String.htm">
-              String</a>]}</font> <font color="#FF0000">Picture [as <a href="../../DataType/PictureID.htm">
-                PictureID</a>] Filename [as <a href="../../DataType/String.htm">String</a>]</font>)</code>
+            &lt;PROJECT&gt;</a></i> <font color="#FF0000">{strPassword [als <a href="../../DataType/String.htm">
+              String</a>]}</font> <font color="#FF0000">intPicture [als <a href="../../DataType/PictureID.htm">
+                PictureID</a>] strFilename [als <a href="../../DataType/String.htm">String</a>]</font>)</code>
         </td>
       </tr>
       <tr>
@@ -56,16 +56,12 @@
           Rückgabewert
         </th>
         <td bgcolor="#CCFF99">
-          <a href="../../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)
+          <a href="../../DataType/Boolean.htm">Boolean</a> (T bei Erfolg; ansonsten NIL)
         </td>
       </tr>
     </table>
-    <p>
-      This function exports the specified picture from the project&#39;s picture folder
-      to a file specified by Filename. If the project has a password, the optional Password
-      argument must be supplied, and it must match the project&#39;s password or the function
-      will fail.</p>
-  </div>
+    <p>Diese Funktion exportiert das angegebene Bild aus der Symbolliste des Projekts in die angegebene Datei. Wurde dem Projekt ein Passwort zugewiesen, muss dieses mit &uuml;bergeben werden. Ist das Passwort nicht korrekt, schl&auml;gt die Funktion fehl.</p>
+</div>
   <hr />
   <div id="footer">
     <p>
