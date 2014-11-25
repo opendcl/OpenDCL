@@ -180,6 +180,17 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // COptionListCtrl message handlers
 
+LRESULT COptionListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// hack to handle unwanted background painting when scrolling transparent window
+	if( message == WM_PRINTCLIENT )
+	{
+		Invalidate();
+		return 0;
+	}
+	return __super::WindowProc(message, wParam, lParam);
+}
+
 void COptionListCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
@@ -324,7 +335,12 @@ void COptionListCtrl::OnLbnSelchange()
 
 HBRUSH COptionListCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return HandleCtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
+	if( hbrBackground )
+		return hbrBackground;
+	if( GetTheme().IsThemeActive() )
+		return NULL; //when using visual style, transparent brush causes class background to be used
+	return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL COptionListCtrl::OnEraseBkgnd(CDC* pDC)
@@ -404,18 +420,6 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	pDC->RestoreDC( -1 );
 	return;
-}
-
-LRESULT COptionListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	// hack to handle unwanted background painting when scrolling transparent window
-	if( message == WM_PRINTCLIENT )
-	{
-		Invalidate();
-		return 0;
-	}
-
-	return __super::WindowProc(message, wParam, lParam);
 }
 
 __UINT_LRESULT COptionListCtrl::OnNcHitTest(CPoint point)

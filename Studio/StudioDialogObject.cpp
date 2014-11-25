@@ -823,7 +823,7 @@ void CStudioDialogObject::OnEditPaste()
 					}
 					else if( mpSourceForm->GetType() == FrmTabPage )
 					{
-						pDclControl = NULL; //can't add a second tab strip control!
+						pDclControl = NULL; //can't add a nested tab strip control!
 						MessageBox( theWorkspace.LoadResourceString(IDS_NOTABWITHINTAB), theWorkspace.GetAppKey(), MB_ICONERROR );
 					}
 					break;

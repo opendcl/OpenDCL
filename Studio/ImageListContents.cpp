@@ -53,14 +53,16 @@ END_MESSAGE_MAP()
 BOOL CImageListContents::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
+
+	TImageListPtr pImageList = m_pImageListPage->GetDclImageList();
 	
-	m_Image.SetImageList(m_pImageListPage->GetImageList());
-	m_TheList.SetImageList(m_pImageListPage->GetImageList(), LVSIL_SMALL);
-	m_TheList.SetImageList(m_pImageListPage->GetImageList(), TVSIL_NORMAL);
+	m_Image.SetImageList(&pImageList->GetImageList());
+	m_TheList.SetImageList(&pImageList->GetImageList(), LVSIL_SMALL);
+	m_TheList.SetImageList(&pImageList->GetImageList(), TVSIL_NORMAL);
 
-	m_pImageListPage->GetImageList()->SetBkColor(RGB(255,255,255));
+	pImageList->GetImageList().SetBkColor(RGB(255,255,255));
 
-  for( int i = 0; i < m_pImageListPage->GetImageList()->GetImageCount(); ++i )
+  for( int i = 0; i < pImageList->GetCount(); ++i )
 	{
 		CString sValue;
 		sValue.Format( _T("%u"), i );

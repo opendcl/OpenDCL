@@ -121,7 +121,7 @@ void CButtonStyles::OnSelchangePiclist()
 		{
 			CString sFile = BrowseWnd.GetPathName();
 			m_nHighestId++;
-			mpControl->GetOwnerProject()->LoadPictureFile(sFile, m_nHighestId);
+			mpControl->GetOwnerProject()->LoadPictureFile(m_nHighestId, sFile);
 			TCHAR Value[80];
 			_ui64tot(m_nHighestId, Value, 10);
 			int n = m_PicList.AddString(Value);

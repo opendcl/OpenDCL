@@ -6,7 +6,7 @@
 class CDclImageList
 {
 	CImageList mImageList;
-	CSize mszImage;
+	CSize msizeImage;
 
 public:
 	CDclImageList();
@@ -21,11 +21,16 @@ protected:
 // Operations
 public:
 	CDclImageList& operator =( const CDclImageList& Src );
+	bool SetSize( const CSize& sizeImage );
+	int AddPicture( CDC* pDC, LPPICTUREDISP iPic );
+	bool ReplacePicture( int idxPic, CDC* pDC, LPPICTUREDISP iPic );
+	bool DeletePicture( int idxPic );
 
 // Attributes
 public:
 	bool IsNull() const { return (!mImageList.m_hImageList); }
-	const CSize& GetSize() const { return mszImage; }
+	int GetCount() const { return (mImageList.m_hImageList? mImageList.GetImageCount() : 0); }
+	const CSize& GetSize() const { return msizeImage; }
 	const CImageList& GetImageList() const { return mImageList; }
 	CImageList& GetImageList() { return mImageList; }
 

@@ -132,100 +132,6 @@ static void LoadPicture(CArchive& ar, COleVariant& varSrc) {
 }
 
 
-static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList, CSize& ImageSize, bool bApplyMask)
-{
-	if (NULL == pPicture->m_pPict)
-		return false;
-	bool bSuccess = true;
-
-	// if picture is a bitmap
-	if (PICTYPE_BITMAP == pPicture->GetType())
-	{
-		// get handle of the bitmap
-		HBITMAP hBitmap = NULL;
-		pPicture->m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
-		CBitmap bmpPic;
-		bmpPic.Attach( hBitmap );
-
-		// get dimensions of bitmap
-		long lPicWidth = 0;
-		pPicture->m_pPict->get_Width(&lPicWidth);
-		long lPicHeight = 0;
-		pPicture->m_pPict->get_Height(&lPicHeight);
-
-		// convert coordinates from units to logical units
-		CSize sizePic( lPicWidth, lPicHeight );
-		CDC* pDC = CDC::FromHandle( ::GetDC( NULL ) );
-		pDC->HIMETRICtoLP( &sizePic );
-
-		// if image list has not been created
-		if (!ImageList.m_hImageList)
-		{			
-			if (ImageSize.cx == 0)
-			{
-				ImageSize.cx = sizePic.cx;
-				ImageSize.cy = sizePic.cy;
-			}
-
-			// create the image list
-			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR32 | (bApplyMask? ILC_MASK : 0), 0, 1) )
-				bSuccess = false;
-
-			// set the background color of the image list
-			//ImageList.SetBkColor(RGB(nWhite,nWhite,nWhite));		
-		}
-		// add bitmap to imagelist; mask is ignored in this sample
-		if( ImageList.Add( CBitmap::FromHandle(hBitmap), RGB(192, 192, 192) ) == -1 )
-			bSuccess = false;
-		bmpPic.DeleteObject();
-	}
-	// else if picture is an icon
-	else if (PICTYPE_ICON == pPicture->GetType())
-	{
-		HICON hIcon;
-
-		// get handle of the icon
-		pPicture->m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
-
-		// get dimensions of icon
-		long lPicWidth = 0;
-		pPicture->m_pPict->get_Width(&lPicWidth);
-		long lPicHeight = 0;
-		pPicture->m_pPict->get_Height(&lPicHeight);
-
-		// convert coordinates from units to logical units
-		CSize sizePic( lPicWidth, lPicHeight );
-		CDC* pDC = CDC::FromHandle( ::GetDC( NULL ) );
-		pDC->HIMETRICtoLP( &sizePic );
-
-		// if image list has not been created
-		if (!ImageList.m_hImageList)
-		{			
-			if (ImageSize.cx == 0)
-			{
-				ImageSize.cx = sizePic.cx;
-				ImageSize.cy = sizePic.cy;
-			}
-
-			// create the image list
-			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR32 | (bApplyMask? ILC_MASK : 0), 1, 1) )
-				bSuccess = false;
-
-			// set the background color of the image list
-			if( !bApplyMask )
-				ImageList.SetBkColor(RGB(255,255,255));		
-		}
-		// add icon to image list
-		if( ImageList.Add(hIcon) == -1 )
-			bSuccess = false;
-	}
-	else
-		bSuccess = false;
-	
-	return bSuccess;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CArchivePropExchange - for persistence in an archive.
 
@@ -265,10 +171,10 @@ CDclPicture::CDclPicture( UINT nID )
 	CalcLogicalSize();
 }
 
-CDclPicture::CDclPicture( UINT nID, LPCTSTR szFile, bool bApplyMask /*= false*/ )
+CDclPicture::CDclPicture( UINT nID, LPCTSTR szFile )
 : mnID( nID )
 {
-	LoadFile( szFile, bApplyMask );
+	LoadFile( szFile );
 }
 
 CDclPicture::CDclPicture( const CDclPicture& _Src )
@@ -292,9 +198,9 @@ CDclPicture* CDclPicture::CreatePictureObject( short nID, LPPICTUREDISP pPicDisp
 }
 
 //static
-CDclPicture* CDclPicture::CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask /*= false*/ )
+CDclPicture* CDclPicture::CreatePictureObject( short nID, LPCTSTR pszFile )
 {
-	CDclPicture* pPicture = new CDclPicture( nID, pszFile, bApplyMask );
+	CDclPicture* pPicture = new CDclPicture( nID, pszFile );
 	if( !pPicture->m_hPicture.m_pPict )
 	{
 		delete pPicture;
@@ -403,7 +309,48 @@ void CDclPicture::LoadResourceIcon( UINT nIconResId, HMODULE hResMod /*= NULL*/ 
 	CalcLogicalSize();
 }
 
-bool CDclPicture::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
+bool CDclPicture::Export( LPCTSTR pszFile )
+{
+	LPPICTUREDISP pPictDisp = GetPictureDisp();
+	if( !pPictDisp )
+		return false;
+	CComQIPtr< IPicture > pPicture( pPictDisp );
+	if( !pPicture )
+		return false;
+	CComPtr< IStream > pStream;
+	HRESULT hr = CreateStreamOnHGlobal( NULL, TRUE, &pStream );
+	if( FAILED(hr) || !pStream )
+		return false;
+	hr = pPicture->SaveAsFile( pStream, TRUE, NULL );
+	if( FAILED(hr) )
+		return false;
+	HGLOBAL hPicData = NULL;
+	hr = GetHGlobalFromStream( pStream, &hPicData );
+	if( FAILED(hr) || !hPicData )
+		return false;
+
+	STATSTG StgStat;
+	hr = pStream->Stat( &StgStat, STATFLAG_NONAME );
+	if( FAILED(hr) )
+		return false;
+	HANDLE hfile = CreateFile( pszFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+	if( !hfile )
+		return false;
+	DWORD cbWritten = 0;
+	LPCVOID pvPicData = GlobalLock( hPicData );
+	if( pvPicData )
+	{
+		WriteFile( hfile, pvPicData, StgStat.cbSize.LowPart, &cbWritten, NULL );
+		GlobalUnlock( hPicData );
+	}
+	CloseHandle(hfile);
+	if( cbWritten == 0 )
+		return false;
+
+	return true;
+}
+
+bool CDclPicture::LoadFile( LPCTSTR pszFile )
 {
 	Clear();
 	// open file
@@ -500,13 +447,6 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile, bool bApplyMask /*= false*/ )
 		return false;
 
 	Update( lpPicture );
-	if( bApplyMask )
-	{
-		CImageList imglTemp;
-		CSize sizeImage( 0, 0 );
-		if( ImageListAddPicture( &m_hPicture, imglTemp, sizeImage, true ) )
-			m_hPicture.CreateFromIcon( imglTemp.ExtractIcon(0), TRUE );
-	}
 
 	return true;
 }

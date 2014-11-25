@@ -142,6 +142,7 @@
     <ClCompile Include="..\LinetypeDlg.cpp" />
     <ClCompile Include="..\LineWeightDlg.cpp" />
     <ClCompile Include="..\MainFileDlg.cpp" />
+    <ClCompile Include="..\Methods\Methods_ImageList.cpp" />
     <ClCompile Include="..\Methods\Methods_Project.cpp" />
     <ClCompile Include="..\ModalDlg.cpp" />
     <ClCompile Include="..\ModelessDlg.cpp" />
@@ -342,6 +343,7 @@
     <ClInclude Include="..\LinetypeDlg.h" />
     <ClInclude Include="..\LineWeightDlg.h" />
     <ClInclude Include="..\MainFileDlg.h" />
+    <ClInclude Include="..\Methods\Methods_ImageList.h" />
     <ClInclude Include="..\Methods\Methods_Project.h" />
     <ClInclude Include="..\ModalDlg.h" />
     <ClInclude Include="..\ModelessDlg.h" />

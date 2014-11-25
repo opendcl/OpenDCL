@@ -44,6 +44,7 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual void PostNcDestroy();
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -55,6 +56,5 @@ protected:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 };

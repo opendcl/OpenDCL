@@ -53,6 +53,7 @@ BEGIN_MESSAGE_MAP(CPictureFolder, CDialog)
 	ON_LBN_SELCHANGE(IDC_PICTURELIST, OnSelchangePicturelist)
 	ON_BN_CLICKED(IDUPDATE, OnUpdate)
 	ON_BN_CLICKED(IDEXPORT, OnExport)
+	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -160,17 +161,18 @@ void CPictureFolder::MultiFileDialog()
 
 	if( BrowseWnd.DoModal() == IDOK )   
 	{
-		int nLargestId;
-		// change this line later for smallest available id
-		if (m_PictureList.GetCount() > 0)
-			nLargestId = m_PictureList.GetItemData( m_PictureList.GetCount() - 1 ) + 1;
-		else
-			nLargestId = 100;
+		UINT nNextId = 100;
+		for( int idxPic = m_PictureList.GetCount() - 1; idxPic >= 0; --idxPic )
+		{
+			UINT nId = m_PictureList.GetItemData( idxPic );
+			if( nId >= nNextId )
+				nNextId = nId + 1;
+		}
 
 		for( POSITION pos = BrowseWnd.GetStartPosition(); pos; )
 		{
 			// load the picture into the picture list collection
-			int nID = nLargestId++;
+			UINT nID = nNextId++;
 			TPicturePtr pPict = new CDclPicture( nID, BrowseWnd.GetNextPathName( pos ) );
 			if( !pPict->IsValid() )
 				continue;
@@ -187,7 +189,9 @@ void CPictureFolder::MultiFileDialog()
 			mlistPicsToAdd.push_back( pPict );
 			CString sVal;
 			sVal.Format( _T("%d"), nID );
-			m_PictureList.SetItemData( m_PictureList.AddString( sVal ), nID );
+			int nIdxNewPic = m_PictureList.AddString( sVal );
+			m_PictureList.SetItemData( nIdxNewPic, nID );
+			m_PictureList.SetCurSel( nIdxNewPic );
 		}
 	}
 }
@@ -256,23 +260,6 @@ void CPictureFolder::OnExport()
 	TPicturePtr pPict = GetSelectedPictureObject();
 	if( !pPict )
 		return;
-	LPPICTUREDISP pPictDisp = pPict->GetPictureDisp();
-	if( !pPictDisp )
-		return;
-	CComQIPtr< IPicture > pPicture( pPictDisp );
-	if( !pPicture )
-		return;
-	CComPtr< IStream > pStream;
-	HRESULT hr = CreateStreamOnHGlobal( NULL, TRUE, &pStream );
-	if( FAILED(hr) || !pStream )
-		return;
-	hr = pPicture->SaveAsFile( pStream, TRUE, NULL );
-	if( FAILED(hr) )
-		return;
-	HGLOBAL hPicData = NULL;
-	hr = GetHGlobalFromStream( pStream, &hPicData );
-	if( FAILED(hr) || !hPicData )
-		return;
 
 	LPCTSTR pszDefExt = NULL;
 	switch( pPict->GetPicType() )
@@ -289,24 +276,50 @@ void CPictureFolder::OnExport()
 											 OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_PATHMUSTEXIST, NULL,
 											 this );
 	if( FileDlg.DoModal() == IDOK )
+		pPict->Export( FileDlg.GetPathName() );
+}
+
+void CPictureFolder::OnDropFiles(HDROP hDropInfo)
+{
+	UINT ctFiles = DragQueryFile( hDropInfo, (UINT)-1, NULL, 0 );
+	if( ctFiles == 0 )
+		return;
+
+	UINT nNextId = 100;
+	for( int idxPic = m_PictureList.GetCount() - 1; idxPic >= 0; --idxPic )
 	{
-		CString sFilePath = FileDlg.GetPathName();
-		STATSTG StgStat;
-		hr = pStream->Stat( &StgStat, STATFLAG_NONAME );
-		if( SUCCEEDED(hr) )
+		UINT nId = m_PictureList.GetItemData( idxPic );
+		if( nId >= nNextId )
+			nNextId = nId + 1;
+	}
+
+	for( UINT nIdx = 0; nIdx < ctFiles; ++nIdx )
+	{
+		TCHAR szFile[MAX_PATH + 1];
+		UINT cchFilename = DragQueryFile( hDropInfo, nIdx, szFile, MAX_PATH );
+		if( cchFilename > 0 )
 		{
-			HANDLE hfile = CreateFile( sFilePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-			if( hfile )
+			UINT nID = nNextId++;
+			TPicturePtr pPict = new CDclPicture( nID, szFile );
+			if( !pPict->IsValid() )
+				continue;
+			for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();
+					 iterPict != mlistPicsToAdd.end();
+					 ++iterPict )
 			{
-				LPCVOID pvPicData = GlobalLock( hPicData );
-				if( pvPicData )
+				if( (*iterPict)->GetID() == nID )
 				{
-					DWORD cbWritten = 0;
-					WriteFile( hfile, pvPicData, StgStat.cbSize.LowPart, &cbWritten, NULL );
-					GlobalUnlock( hPicData );
+					mlistPicsToAdd.remove( *iterPict );
+					break;
 				}
-				CloseHandle(hfile);
 			}
+			mlistPicsToAdd.push_back( pPict );
+			CString sVal;
+			sVal.Format( _T("%d"), nID );
+			int nIdxNewPic = m_PictureList.AddString( sVal );
+			m_PictureList.SetItemData( nIdxNewPic, nID );
+			m_PictureList.SetCurSel( nIdxNewPic );
 		}
 	}
+	OnSelchangePicturelist();
 }

@@ -61,6 +61,7 @@ protected:
 	afx_msg void OnSelchangePicturelist();
 	afx_msg void OnUpdate();
 	afx_msg void OnExport();
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

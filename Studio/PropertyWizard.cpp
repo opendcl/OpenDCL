@@ -140,7 +140,7 @@ bool CPropertyWizard::Initialize(void)
 	// Tabs & Tab Sort pages
 	if( mpDclControl->GetPropertyObject( Prop::TabsCaption ) )
 	{
-		mpTabs = new CTabsPane( mpDclControl, mpImageListPage->GetImageList() );
+		mpTabs = new CTabsPane( mpDclControl, mpImageListPage->GetDclImageList() );
 		AddPage( mpTabs );
 		mpSortTabs = new CSortTabs( mpDclControl, mpTabs );
 		AddPage( mpSortTabs );

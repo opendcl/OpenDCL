@@ -8,6 +8,7 @@
 #include "PropertyObject.h"
 #include "DclControlTemplate.h"
 #include "DclFormTemplate.h"
+#include "DclImageList.h"
 
 
 class CTabInfo
@@ -31,7 +32,7 @@ typedef CList<CTabInfo*> CTabInfoList;
 class CTabsPane : public CPropertyPage
 {
 	TDclControlPtr mpDclControl;
-	RefCountedPtr< CImageList >& mpImageList; //address of image list pointer used by image list property page
+	TImageListPtr mpImageList; //image list used by image list property page
 	int mnTabIndex;
 
 	CStatic	m_Frame;
@@ -50,7 +51,7 @@ class CTabsPane : public CPropertyPage
 	
 	// Construction
 public:
-	CTabsPane( TDclControlPtr pControl, RefCountedPtr< CImageList >& pImageList );   // standard constructor
+	CTabsPane( TDclControlPtr pControl, TImageListPtr pImageList );   // standard constructor
 	~CTabsPane();   // standard constructor
 
 public:

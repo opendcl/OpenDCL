@@ -56,7 +56,10 @@ const WndTheme& CDialogControl::GetTheme() const
 
 void CDialogControl::OnThemeChanged()
 {
+	bool bHadTheme = (NULL != mWndTheme.GetWindowTheme());
 	mWndTheme.Close();
+	if( bHadTheme )
+		OnNeedRepaint( true );
 }
 
 void CDialogControl::OnThemeRequested( WndTheme& Theme ) const
@@ -129,7 +132,7 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 		pDC->SetBkMode( TRANSPARENT );
 		return TRUE;
 	}
-	if( !mpControlWnd->IsWindowEnabled() )
+	if( !mpControlWnd->IsWindowEnabled() && !GetTheme().IsThemeActive() )
 	{
 		pDC->FillSolidRect( &rcClip, GetSysColor( COLOR_INACTIVEBORDER ) );
 		return TRUE;

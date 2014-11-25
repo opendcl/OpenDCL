@@ -260,7 +260,7 @@ bool CProject::AddPicture( TPicturePtr pPicture )
 	return true;
 }
 
-void CProject::DeletePicture( int nID )
+void CProject::DeletePicture( UINT_PTR nID )
 {
 	bool bFound = (mPictures.find( nID ) != mPictures.end());
 	if( !bFound )
@@ -288,7 +288,16 @@ void CProject::DeletePicture( int nID )
 	}
 }
 
-bool CProject::LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask /*= false*/ )
+bool CProject::ExportPictureFile( UINT_PTR nID, LPCTSTR szFile )
+{
+	TPicturePtr pPic = FindPicture( nID );
+	if( !pPic )
+		return false;
+	return pPic->Export( szFile );
+	return true;
+}
+
+bool CProject::LoadPictureFile( UINT_PTR nID, LPCTSTR szFile )
 {
 	TPicturePtr pPic = FindPicture( nID );
 	if( !pPic )
@@ -296,7 +305,7 @@ bool CProject::LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask /*
 		pPic = new CDclPicture( nID );
 		AddPicture( pPic );
 	}
-	pPic->LoadFile( szFile, bApplyMask );
+	pPic->LoadFile( szFile );
 	return true;
 }
 

@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "PropertyObject.h"
 #include "DclControlTemplate.h"
+#include "DclImageList.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,7 +17,7 @@ class CImageListPage : public CPropertyPage
 	friend class CPropertyListCtrl;
 
 	TDclControlPtr mpDclControl;
-	RefCountedPtr< CImageList > mpImageList;
+	TImageListPtr mpImageList;
 
 	enum { IDD = IDD_IMAGELIST };
 	int	mnHeight;
@@ -27,7 +28,8 @@ public:
 	CImageListPage( TDclControlPtr pDclControl );
 	~CImageListPage();
 
-	RefCountedPtr< CImageList >& GetImageList() { return mpImageList; }
+	const TImageListPtr GetDclImageList() const { return mpImageList; }
+	TImageListPtr GetDclImageList() { return mpImageList; }
 
 protected:
 	BOOL ImageListAddPicture( LPPICTUREDISP iPic );
@@ -48,4 +50,5 @@ protected:
 	afx_msg void OnChangeimage();
 	virtual BOOL OnInitDialog();
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 };

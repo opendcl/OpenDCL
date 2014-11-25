@@ -18,7 +18,7 @@ protected:
 public:
 	CDclPicture( const CDclPicture& );
 	CDclPicture( UINT nID );
-	CDclPicture( UINT nID, LPCTSTR szFile, bool bApplyMask = false );
+	CDclPicture( UINT nID, LPCTSTR szFile );
 	virtual ~CDclPicture(void);
 
 protected:
@@ -43,9 +43,10 @@ public:
 
 	//Copied from non-member utility function in Editor
 	void Update( LPPICTURE pPicture );
-	bool LoadFile( LPCTSTR pszFile, bool bApplyMask = false );
+	bool Export( LPCTSTR pszFile );
+	bool LoadFile( LPCTSTR pszFile );
 	static CDclPicture* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
-	static CDclPicture* CreatePictureObject( short nID, LPCTSTR pszFile, bool bApplyMask = false );
+	static CDclPicture* CreatePictureObject( short nID, LPCTSTR pszFile );
 
 	void Clear();
 	void Render( CDC* pDC, const CRect& rcDest ) const;

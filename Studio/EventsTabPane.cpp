@@ -307,6 +307,14 @@ BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg)
 			case VK_ESCAPE:
 			case VK_RETURN:
 				return TRUE; //prevent dialog from closing
+			case VK_LEFT:
+			case VK_RIGHT:
+			case VK_UP:
+			case VK_DOWN:
+			{
+				if( 0 == (GetFocus()->SendMessage(WM_GETDLGCODE, 0, 0) & DLGC_WANTARROWS) )
+					break;
+			}
 			case VK_CONTROL:
 			case VK_DELETE:
 			case 'C':

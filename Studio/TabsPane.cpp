@@ -20,8 +20,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabsPane dialog
 
-CTabsPane::CTabsPane( TDclControlPtr pControl,
-											RefCountedPtr< CImageList >& pImageList )
+CTabsPane::CTabsPane( TDclControlPtr pControl, TImageListPtr pImageList )
 : CPropertyPage(CTabsPane::IDD)
 , mpDclControl( pControl )
 , mpImageList( pImageList )
@@ -96,7 +95,7 @@ BOOL CTabsPane::OnInitDialog()
 	bool bHasTabs = (m_TabList.GetCount() > 0);
 	GetDlgItem(IDC_DELETE)->EnableWindow(bHasTabs);
 	m_Caption.EnableWindow(bHasTabs);
-	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	bool bHasImages = (mpImageList->GetCount() > 0);
 	m_Image.EnableWindow(bHasImages && bHasTabs);
 	m_ToolTipTitle.EnableWindow(bHasTabs);
 
@@ -192,9 +191,9 @@ void CTabsPane::UpdateTabInfo()
 	{
 		CTabInfo* pTabInfo = m_TabList.GetAt(pos);
 		m_Caption.SetWindowText(pTabInfo->msCaption);
-		if( mpImageList->m_hImageList && mpImageList->GetImageCount() > 0 )
+		if( mpImageList->GetCount() > 0 )
 		{
-			if( pTabInfo->mnImageIndex >= 0 && pTabInfo->mnImageIndex < mpImageList->GetImageCount() )
+			if( pTabInfo->mnImageIndex >= 0 && pTabInfo->mnImageIndex < mpImageList->GetCount() )
 				m_Image.SetCurSel(pTabInfo->mnImageIndex + 1);
 			else 
 				m_Image.SetCurSel(0);
@@ -240,7 +239,7 @@ void CTabsPane::OnAdd()
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
 	GetDlgItem(IDC_DELETE)->EnableWindow(TRUE);
 	m_Caption.EnableWindow(TRUE);
-	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	bool bHasImages = (mpImageList->GetCount() > 0);
 	m_Image.SetCurSel(0);
 	m_Image.EnableWindow(bHasImages);
 	m_ToolTipTitle.EnableWindow(TRUE);
@@ -272,7 +271,7 @@ void CTabsPane::OnDelete()
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
 	GetDlgItem(IDC_DELETE)->EnableWindow(m_TabList.GetCount() > 0);
 	m_Caption.EnableWindow(m_TabList.GetCount() > 0);
-	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	bool bHasImages = (mpImageList->GetCount() > 0);
 	m_Image.EnableWindow(bHasImages);
 	m_ToolTipTitle.EnableWindow(m_TabList.GetCount() > 0);
 	UpdateFrame();
@@ -386,15 +385,15 @@ BOOL CTabsPane::OnSetActive()
 {
 	if( !__super::OnSetActive() )
 		return FALSE;
-	m_Image.SetImageList(mpImageList);
-	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	m_Image.SetImageList(&mpImageList->GetImageList());
+	bool bHasImages = (mpImageList->GetCount() > 0);
 	m_Image.ResetContent();
 	CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
 	COMBOBOXEXITEM cbi = { CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_TEXT, 0, sNone.LockBuffer(), 0, -1, -1 };
 	m_Image.InsertItem( &cbi );
 	if(bHasImages)
 	{
-		for( int i = 0; i < mpImageList->GetImageCount(); ++i )
+		for( int i = 0; i < mpImageList->GetCount(); ++i )
 		{
 			COMBOBOXEXITEM cbi = { CBEIF_IMAGE | CBEIF_SELECTEDIMAGE, i + 1, NULL, 0, i, i };
 			m_Image.InsertItem( &cbi );

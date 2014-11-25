@@ -45,6 +45,7 @@
 #include "Methods_Hatch.h"
 #include "Methods_Html.h"
 #include "Methods_ImageComboBox.h"
+#include "Methods_ImageList.h"
 #include "Methods_ListBox.h"
 #include "Methods_ListView.h"
 #include "Methods_OptionList.h"
@@ -198,11 +199,14 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 
 	// General project methods
 	{_T("Project-Export"),               Project::Export},
+	{_T("Project-ExportPicture"),        Project::ExportPicture},
 	{_T("Project-GetForms"),             Project::GetForms},
+	{_T("Project-GetPictures"),          Project::GetPictures},
 	{_T("Project-GetPictureSize"),       Project::GetPictureSize},
 	{_T("Project-Import"),               Project::Import},
 	{_T("Project-Load"),                 Project::Load},
 	{_T("Project-SaveAs"),               Project::SaveAs},
+	{_T("Project-SetPicture"),           Project::SetPicture},
 	{_T("Project-Unload"),               Project::Unload},
 
 	// Animation control methods
@@ -531,6 +535,11 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	// Image Combo Box control deprecated methods
 	{_T("ImageComboBox-DeleteString"),   ImageComboBox::DeleteItem},
 	{_T("ImageComboBox-GetTBText"),      ImageComboBox::GetEBText},
+
+	// Image List methods
+	{_T("ImageList-GetCount"),           ImageList::GetCount},		
+	{_T("ImageList-SetAt"),              ImageList::SetAt},		
+	{_T("ImageList-GetSize"),            ImageList::GetSize},		
 
 	// List Box control methods
 	{_T("ListBox-AddList"),              ListBox::AddList},		
@@ -979,12 +988,10 @@ protected:
 			static const CString sPrefix = dclPrefix() + _T("Control-Set");
 			return sPrefix;
 		}
-	static bool disableAutostart( LPCTSTR pszRegKey, bool bX64 )
+	static bool disableAutostartForVersion( LPCTSTR pszRegKeyInstance, bool bX64 )
 		{
-			CString sRegTarget = _T("Software\\");
-			sRegTarget += pszRegKey;
 			HKEY hkRegTarget = NULL;
-			if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, sRegTarget, 0, KEY_READ | (bX64? KEY_WOW64_64KEY : KEY_WOW64_32KEY), &hkRegTarget ) )
+			if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, pszRegKeyInstance, 0, KEY_READ | (bX64? KEY_WOW64_64KEY : KEY_WOW64_32KEY), &hkRegTarget ) )
 			{
 				DWORD cchMaxSubkey = MAX_PATH;
 				RegQueryInfoKey( hkRegTarget, NULL, NULL, NULL, NULL, &cchMaxSubkey, NULL, NULL, NULL, NULL, NULL, NULL );
@@ -1022,6 +1029,39 @@ protected:
 				RegCloseKey( hkRegTarget );
 			}
 			return true;
+		}
+	static bool disableAutostartForApp( LPCTSTR pszAppKey, bool bX64 )
+		{
+			bool bError = false;
+			CString sRegTarget = _T("Software\\");
+			sRegTarget += pszAppKey;
+			HKEY hkRegTarget = NULL;
+			if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, sRegTarget, 0, KEY_READ | (bX64? KEY_WOW64_64KEY : KEY_WOW64_32KEY), &hkRegTarget ) )
+			{
+				DWORD cchMaxSubkey = MAX_PATH;
+				RegQueryInfoKey( hkRegTarget, NULL, NULL, NULL, NULL, &cchMaxSubkey, NULL, NULL, NULL, NULL, NULL, NULL );
+				TCHAR* pszSubkey = new TCHAR[cchMaxSubkey + 1];
+				DWORD idxSubkey = 0;
+				DWORD dwBufSize = cchMaxSubkey + 1;
+				while( RegEnumKeyEx( hkRegTarget,
+															idxSubkey,
+															pszSubkey,
+															&dwBufSize,
+															NULL,
+															NULL,
+															NULL,
+															NULL ) == ERROR_SUCCESS )
+				{
+					idxSubkey++;
+					CString sInstanceKey = sRegTarget + _T('\\') + pszSubkey;
+					if( !disableAutostartForVersion( sInstanceKey, bX64 ) )
+						bError = true;
+					dwBufSize = cchMaxSubkey + 1;
+				}
+				delete[] pszSubkey;
+				RegCloseKey( hkRegTarget );
+			}
+			return !bError;
 		}
 
 	#if (_ARXTARGET >= 19)
@@ -1362,33 +1402,11 @@ public:
 				{
 					acutPrintf( _T("\n") );
 					OpenDCLOpenDCLDemo();
-					disableAutostart( _T("Autodesk\\AutoCAD\\R16.0"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R16.1"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R16.2"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R17.0"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R17.1"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R17.1"), true );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R17.2"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R17.2"), true );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R18.0"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R18.0"), true );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R18.1"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R18.1"), true );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R18.2"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R18.2"), true );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R19.0"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R19.0"), true );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R19.1"), false );
-					disableAutostart( _T("Autodesk\\AutoCAD\\R19.1"), true );
-					disableAutostart( _T("Bricsys\\Bricscad\\V9"), false );
-					disableAutostart( _T("Bricsys\\Bricscad\\V10"), false );
-					disableAutostart( _T("Bricsys\\Bricscad\\V11"), false );
-					disableAutostart( _T("Bricsys\\Bricscad\\V12"), false );
-					disableAutostart( _T("Bricsys\\Bricscad\\V13"), false );
-					disableAutostart( _T("Bricsys\\Bricscad\\V13x64"), true );
-					disableAutostart( _T("Bricsys\\Bricscad\\V14"), false );
-					disableAutostart( _T("Bricsys\\Bricscad\\V14x64"), true );
-					disableAutostart( _T("ZWSOFT\\ZWCAD\\2014"), false );
+					disableAutostartForApp( _T("Autodesk\\AutoCAD"), false );
+					disableAutostartForApp( _T("Autodesk\\AutoCAD"), true );
+					disableAutostartForApp( _T("Bricsys\\Bricscad"), false );
+					disableAutostartForApp( _T("Bricsys\\Bricscad"), true );
+					disableAutostartForApp( _T("ZWSOFT\\ZWCAD"), false );
 				}
 			}
 		}

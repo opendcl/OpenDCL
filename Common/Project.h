@@ -159,8 +159,9 @@ public:
 	virtual void ClearGlobalVariableNames();
 	TDclFormPtr GetRefCountedPtr( CDclFormObject* pDclForm ) const;
 	bool AddPicture( TPicturePtr pPicture );
-	void DeletePicture( int nID );
-	bool LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask = false );
+	void DeletePicture( UINT_PTR nID );
+	bool ExportPictureFile( UINT_PTR nID, LPCTSTR szFile );
+	bool LoadPictureFile( UINT_PTR nID, LPCTSTR szFile );
 	TDclFormPtr FindDclForm( LPCTSTR pszDclFormName ) const;
 	TDclFormPtr FindDclFormWithVarName( LPCTSTR pszVarName ) const;
 	TDclControlPtr FindControlWithVarName( LPCTSTR pszVarName ) const;

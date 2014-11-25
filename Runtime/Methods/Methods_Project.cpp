@@ -65,7 +65,7 @@ ADSRESULT Project::Unload()
 		return RSERR;
 
 	if( !pProject )
-		return RSERR; //too many arguments
+		return RSERR; //wrong argument type
 
 	if( theArxWorkspace.UnloadProject( pProject, bForce ) )
 		acedRetT();
@@ -194,37 +194,6 @@ ADSRESULT Project::Export()
 	return (RSRSLT) ;
 }
 
-ADSRESULT Project::GetPictureSize()
-{
-	struct resbuf *pArgs =acedGetArgs () ;
-
-	TArxProjectPtr pProject;
-	if( !GetProjectArgument( pArgs, pProject ) )
-		return RSERR; //invalid argument
-
-	long id = -1;
-	if( !GetLongArgument( pArgs, id ) )
-		return RSERR; //invalid argument
-
-	if( !AssertOutOfArgs( pArgs ) )
-		return RSERR;
-
-	if (!pProject)
-		return RSRSLT; //project not found
-
-	CSize sizePicture;
-	if (!pProject->GetPictureSize (id, sizePicture))
-		return RSRSLT; //no picture with that id
-
-	resbuf rbHeight = {NULL, RTSHORT};
-	rbHeight.resval.rint = sizePicture.cy;
-	resbuf rbWidth = {&rbHeight, RTSHORT};
-	rbWidth.resval.rint = sizePicture.cx;
-	acedRetList(&rbWidth);
-
-	return (RSRSLT) ;
-}
-
 ADSRESULT Project::GetForms()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
@@ -262,6 +231,170 @@ ADSRESULT Project::GetForms()
 	}
 	acedRetList( prbForms );
 	acutRelRb( prbForms );
+
+	return (RSRSLT) ;
+}
+
+ADSRESULT Project::GetPictures()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TArxProjectPtr pProject;
+	if( !GetProjectArgument( pArgs, pProject ) )
+		return RSERR; //invalid argument
+
+	//optional arguments
+	CString sPassword;
+	GetStringArgument( pArgs, sPassword, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pProject )
+		return RSRSLT; //project not found
+
+	if( pProject->GetPassword() != sPassword )
+		return RSRSLT; //wrong password
+
+	const TPictureMap PicMap = pProject->GetPictureMap();
+	TPictureMap::const_iterator iterPic = PicMap.begin();
+
+	resbuf* prbHead = NULL;
+	resbuf* prbTail = NULL;
+	for( TPictureMap::const_iterator iter = PicMap.begin(); iter != PicMap.end(); ++iter )
+	{
+		resbuf* prbNew = acutNewRb( RTLONG );
+		prbNew->rbnext = NULL;
+		prbNew->resval.rlong = iter->first;
+		if( !prbHead )
+			prbHead = prbNew;
+		else
+			prbTail->rbnext = prbNew;
+		prbTail = prbNew;
+	}
+	acedRetList( prbHead );
+	acutRelRb( prbHead );
+
+	return (RSRSLT) ;
+}
+
+ADSRESULT Project::GetPictureSize()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TArxProjectPtr pProject;
+	if( !GetProjectArgument( pArgs, pProject ) )
+		return RSERR; //invalid argument
+
+	//optional arguments
+	CString sPassword;
+	GetStringArgument( pArgs, sPassword, true );
+
+	long id = -1;
+	if( !GetLongArgument( pArgs, id ) )
+		return RSERR; //invalid argument
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pProject )
+		return RSRSLT; //project not found
+
+	if( pProject->GetPassword() != sPassword )
+		return RSRSLT; //wrong password
+
+	CSize sizePicture;
+	if (!pProject->GetPictureSize (id, sizePicture))
+		return RSRSLT; //no picture with that id
+
+	resbuf rbHeight = {NULL, RTSHORT};
+	rbHeight.resval.rint = sizePicture.cy;
+	resbuf rbWidth = {&rbHeight, RTSHORT};
+	rbWidth.resval.rint = sizePicture.cx;
+	acedRetList(&rbWidth);
+
+	return (RSRSLT) ;
+}
+
+ADSRESULT Project::ExportPicture()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TArxProjectPtr pProject;
+	if( !GetProjectArgument( pArgs, pProject ) )
+		return RSERR; //invalid argument
+
+	//optional arguments
+	CString sPassword;
+	GetStringArgument( pArgs, sPassword, true );
+
+	long id = -1;
+	if( !GetLongArgument( pArgs, id ) )
+		return RSERR; //invalid argument
+
+	CString sFilename;
+	if( !GetStringArgument( pArgs, sFilename ) )
+		return RSERR; //wrong argument type
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pProject )
+		return RSRSLT; //project not found
+
+	if( pProject->GetPassword() != sPassword )
+		return RSRSLT; //wrong password
+
+	if( pProject->ExportPictureFile( id, sFilename ) )
+		acedRetT();
+
+	return (RSRSLT) ;
+}
+
+ADSRESULT Project::SetPicture()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TArxProjectPtr pProject;
+	if( !GetProjectArgument( pArgs, pProject ) )
+		return RSERR; //invalid argument
+
+	//optional arguments
+	CString sPassword;
+	GetStringArgument( pArgs, sPassword, true );
+
+	long id = -1;
+	if( !GetLongArgument( pArgs, id ) )
+		return RSERR; //invalid argument
+
+	bool bDelete = GetNilArgument( pArgs, true );
+
+	CString sFilename;
+	if( !bDelete )
+	{
+		if( !GetStringArgument( pArgs, sFilename ) )
+			return RSERR; //wrong argument type
+	}
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pProject )
+		return RSRSLT; //project not found
+
+	if( pProject->GetPassword() != sPassword )
+		return RSRSLT; //wrong password
+
+	if( bDelete )
+	{
+		pProject->DeletePicture( id );
+		acedRetT();
+	}
+	else
+	{
+		if( pProject->LoadPictureFile( id, sFilename ) )
+			acedRetT();
+	}
 
 	return (RSRSLT) ;
 }

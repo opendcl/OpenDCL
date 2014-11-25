@@ -607,6 +607,9 @@
     <ClCompile Include="..\DwgThumbnail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Methods\Methods_ImageList.cpp">
+      <Filter>Methods\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -1351,6 +1354,9 @@
     </ClInclude>
     <ClInclude Include="..\DwgThumbnail.h">
       <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Methods\Methods_ImageList.h">
+      <Filter>Methods\Include Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

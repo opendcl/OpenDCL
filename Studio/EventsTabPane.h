@@ -36,17 +36,13 @@ public:
 	void SetEvent( size_t idxProp, LPCTSTR pszEventDefun );
 	CString GetEvent( size_t idxProp );
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-// Implementation
-protected:
-
 	// Generated message map functions
+protected:
+	DECLARE_MESSAGE_MAP()
+
+protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnChangeDefunedit();
@@ -56,5 +52,4 @@ protected:
 	afx_msg void OnDblClkEventstree();
 	afx_msg void OnSelchangeEventstree();
 	afx_msg void OnCheckChanged();
-	DECLARE_MESSAGE_MAP()
 };

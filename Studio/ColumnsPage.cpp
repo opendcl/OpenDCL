@@ -178,7 +178,7 @@ BOOL CColumnsPage::OnInitDialog()
 		m_HeaderCtrl.SubclassDlgItem(nID, &m_List);
 
 	if (pHeader->GetImageList() == NULL)
-		pHeader->SetImageList(mpImageListPage->GetImageList());
+		pHeader->SetImageList(&mpImageListPage->GetDclImageList()->GetImageList());
 
 	for (INT_PTR i = 0; i< m_ColData.GetCount(); i++)
 	{
@@ -261,10 +261,10 @@ bool CColumnsPage::IsImageListValid()
 {
 	if( !mpImageListPage )
 		return false;
-	if( !mpImageListPage->GetImageList()->m_hImageList )
+	if( mpImageListPage->GetDclImageList()->IsNull() )
 		return false;
-	m_List.SetImageList( mpImageListPage->GetImageList(), TVSIL_NORMAL );
-	m_List.SetImageList( mpImageListPage->GetImageList(), LVSIL_SMALL );
+	m_List.SetImageList( &mpImageListPage->GetDclImageList()->GetImageList(), TVSIL_NORMAL );
+	m_List.SetImageList( &mpImageListPage->GetDclImageList()->GetImageList(), LVSIL_SMALL );
 	return true;
 }
 
@@ -279,7 +279,7 @@ BOOL CColumnsPage::OnSetActive()
 	m_AltImage.ResetContent();
 	if (IsImageListValid())
 	{
-		CImageList* pImageList = mpImageListPage->GetImageList();
+		CImageList* pImageList = &mpImageListPage->GetDclImageList()->GetImageList();
 		m_Image.SetImageList(pImageList);
 		m_DefImage.SetImageList(pImageList);	
 		m_AltImage.SetImageList(pImageList);
@@ -671,7 +671,7 @@ void CColumnsPage::OnSelchangeImage()
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 	
 	if (pHeader->GetImageList() == NULL)
-		pHeader->SetImageList(mpImageListPage->GetImageList());
+		pHeader->SetImageList(&mpImageListPage->GetDclImageList()->GetImageList());
 	
 	SetColumn(m_nIndex);
 	SetModified();
