@@ -1845,6 +1845,23 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Image List">
+				<param name="Local" value="Reference\Method\Index.htm#ImageList">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCount">
+					<param name="Local" value="Reference\Method\ImageList/GetCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSize">
+					<param name="Local" value="Reference\Method\ImageList/GetSize.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetAt">
+					<param name="Local" value="Reference\Method\ImageList/SetAt.htm">
+					</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Kalender">
 				<param name="Local" value="Reference\Method\Index.htm#Calendar">
 				</OBJECT>
@@ -2480,8 +2497,16 @@
 					<param name="Local" value="Reference\Method\Project/Export.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ExportPicture">
+					<param name="Local" value="Reference\Method\Project/ExportPicture.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetForms">
 					<param name="Local" value="Reference\Method\Project/GetForms.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetPictures">
+					<param name="Local" value="Reference\Method\Project/GetPictures.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Import">
@@ -2494,6 +2519,10 @@
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SaveAs">
 					<param name="Local" value="Reference\Method\Project/SaveAs.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetPicture">
+					<param name="Local" value="Reference\Method\Project/SetPicture.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Unload">

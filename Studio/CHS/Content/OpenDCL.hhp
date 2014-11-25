@@ -492,6 +492,9 @@ Reference\Method\ImageComboBox\SetEditSel.htm
 Reference\Method\ImageComboBox\SetItem.htm
 Reference\Method\ImageComboBox\SetItemData.htm
 Reference\Method\ImageComboBox\SetTopIndex.htm
+Reference\Method\ImageList\GetCount.htm
+Reference\Method\ImageList\GetSize.htm
+Reference\Method\ImageList\SetAt.htm
 Reference\Method\ListBox\AddList.htm
 Reference\Method\ListBox\AddString.htm
 Reference\Method\ListBox\Clear.htm
@@ -589,10 +592,13 @@ Reference\Method\PictureBox\StoreImage.htm
 Reference\Method\ProgressBar\Reset.htm
 Reference\Method\Project\Dump.htm
 Reference\Method\Project\Export.htm
+Reference\Method\Project\ExportPicture.htm
 Reference\Method\Project\GetForms.htm
+Reference\Method\Project\GetPictures.htm
 Reference\Method\Project\Import.htm
 Reference\Method\Project\Load.htm
 Reference\Method\Project\SaveAs.htm
+Reference\Method\Project\SetPicture.htm
 Reference\Method\Project\Unload.htm
 Reference\Method\SlideView\Clear.htm
 Reference\Method\SlideView\EndImage.htm
