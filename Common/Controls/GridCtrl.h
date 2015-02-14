@@ -5,6 +5,7 @@
 
 #include "DialogControl.h"
 #include "AcadColorService.h"
+#include "ListCtrlHdr.h"
 #include "TipWnd.h"
 #include <string>
 #include <locale>
@@ -167,20 +168,22 @@ class CGridCtrl : public CListCtrl, public CDialogControl
 			mpGridCtl->DrawCell( mnRow, mnCol, *pDC, sizCell, true );
 			pDC->SelectObject( pOldFont );
 			mpGridCtl->ReleaseDC( pDC );
-			if( rcCell.Width() < sizCell.cx || rcCell.Height() < sizCell.cy )
+			if (rcCell.Width() < sizCell.cx || rcCell.Height() < sizCell.cy)
 			{
-				if( !m_hWnd )
-					Create( NULL );
-				SetFont( pFont );
-				CString sLabel = mpGridCtl->GetCellText( nRow, nCol );
-				SetWindowText( sLabel );
-				mpGridCtl->ClientToScreen( &rcCell );
-				if( rcCell.Width() < sizCell.cx )
+				if (!m_hWnd)
+					Create(NULL);
+				SetFont(pFont);
+				CString sLabel = mpGridCtl->GetCellText(nRow, nCol);
+				SetWindowText(sLabel);
+				mpGridCtl->ClientToScreen(&rcCell);
+				if (rcCell.Width() < sizCell.cx)
 					sizCell.cx += 4;
 				else
 					sizCell.cy += 4;
-				CTipWnd::Show( rcCell.TopLeft(), sizCell );
+				__super::Show(rcCell.TopLeft(), sizCell);
 			}
+			else
+				Hide();
 		}
 	protected:
 		void Paint(CDC* pDC)
@@ -196,6 +199,7 @@ class CGridCtrl : public CListCtrl, public CDialogControl
 			pDC->SetWindowOrg( ptOldOrg );
 		}
 	} mTipWnd;
+	CListCtrlHdr mHeaderWnd;
 	bool mbTrackingMouse;
 	ULONG mcColumns;
 	bool mbHasRowHeader;

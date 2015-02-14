@@ -5,6 +5,7 @@
 
 #include "DialogControl.h"
 #include "AcadColorService.h"
+#include "ListCtrlHdr.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,7 @@ public:
 
 class CListViewCtrl : public CListCtrl, public CDialogControl
 {
+	CListCtrlHdr mHeaderWnd;
 	CAcadColorService mColorService;
 	int mnEditSubItem;
 	int mnDragSource;

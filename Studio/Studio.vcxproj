@@ -280,6 +280,7 @@
     <ResourceCompile Include="Studio.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\Controls\ListCtrlHdr.h" />
     <ClInclude Include="..\Common\DclAxCtrlInitInfo.h" />
     <ClInclude Include="..\Common\DclImageList.h" />
     <ClInclude Include="..\Common\ThemeAPI.h" />
@@ -483,6 +484,7 @@
     <ClInclude Include="..\Common\Controls\XPStyleButtonST.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\Controls\ListCtrlHdr.cpp" />
     <ClCompile Include="..\Common\DclAxCtrlInitInfo.cpp" />
     <ClCompile Include="..\Common\DclImageList.cpp" />
     <ClCompile Include="..\Common\ThemeAPI.cpp" />

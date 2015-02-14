@@ -86,8 +86,11 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 		EnableToolTips(FALSE);
 
 		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
-		if( pHeaderCtrl )
-			pHeaderCtrl->SendMessage( HDM_SETBITMAPMARGIN, 1, 0 );
+		if (pHeaderCtrl)
+		{
+			pHeaderCtrl->SendMessage(HDM_SETBITMAPMARGIN, 1, 0);
+			mHeaderWnd.SubclassWindow(pHeaderCtrl->m_hWnd);
+		}
 	}
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -694,7 +697,7 @@ bool CListViewCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol ) con
 {
 	int ctColumns = 1;
 	CHeaderCtrl* pHeaderCtrl = const_cast<CListViewCtrl*>(this)->GetHeaderCtrl();
-	if( pHeaderCtrl )
+	if (pHeaderCtrl)
 		ctColumns = pHeaderCtrl->GetItemCount();
 	for( int idxRow = GetItemCount() - 1; idxRow >= 0; --idxRow )
 	{

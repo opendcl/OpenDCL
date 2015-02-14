@@ -607,6 +607,9 @@
     <ClCompile Include="..\Methods\Methods_ImageList.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Common\Controls\ListCtrlHdr.cpp">
+      <Filter>Common\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -1348,6 +1351,9 @@
     </ClInclude>
     <ClInclude Include="..\Methods\Methods_ImageList.h">
       <Filter>Methods\Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\Controls\ListCtrlHdr.h">
+      <Filter>Common\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

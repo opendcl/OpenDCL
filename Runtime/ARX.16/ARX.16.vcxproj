@@ -112,6 +112,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Common\Controls\ListCtrlHdr.cpp" />
     <ClCompile Include="..\..\Common\DclAxCtrlInitInfo.cpp" />
     <ClCompile Include="..\..\Common\DclImageList.cpp" />
     <ClCompile Include="..\..\Common\ThemeAPI.cpp" />
@@ -309,6 +310,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Source\OpenDCL 8.0\Runtime\Methods\Methods_Project.h" />
+    <ClInclude Include="..\..\Common\Controls\ListCtrlHdr.h" />
     <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h" />
     <ClInclude Include="..\..\Common\DclImageList.h" />
     <ClInclude Include="..\..\Common\ThemeAPI.h" />

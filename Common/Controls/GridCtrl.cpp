@@ -185,13 +185,14 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 
 		DWORD dwExStyle = GetExtendedStyle();
-		dwExStyle |= LVS_EX_LABELTIP;
-		SetExtendedStyle( dwExStyle );
 		EnableToolTips(FALSE);
 
 		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
-		if( pHeaderCtrl )
-			pHeaderCtrl->SendMessage( HDM_SETBITMAPMARGIN, 1, 0 );
+		if (pHeaderCtrl)
+		{
+			pHeaderCtrl->SendMessage(HDM_SETBITMAPMARGIN, 1, 0);
+			mHeaderWnd.SubclassWindow(pHeaderCtrl->m_hWnd);
+		}
 	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
@@ -2155,24 +2156,23 @@ void CGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	if( !mbTrackingMouse )
 	{
 		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_HOVER | TME_LEAVE, m_hWnd, 0 };
-		if( _TrackMouseEvent( &tm ) )
-			mbTrackingMouse = true;
+		mbTrackingMouse = (_TrackMouseEvent(&tm) != FALSE);
 	}
 	mTipWnd.Track( point );
 }
 
 LRESULT CGridCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	if( mbTrackingMouse )
-		mTipWnd.Hide();
 	mbTrackingMouse = false;
+	mTipWnd.Hide();
 	return FALSE;
 }
 
 LRESULT CGridCtrl::OnMouseHover(WPARAM wParam, LPARAM lParam) 
 {
-	mbTrackingMouse = false;
-	if( wParam != 0 )
+	TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_HOVER | TME_LEAVE, m_hWnd, 0 };
+	mbTrackingMouse = (_TrackMouseEvent(&tm) != FALSE);
+	if (wParam != 0)
 		mTipWnd.Hide();
 	else
 	{

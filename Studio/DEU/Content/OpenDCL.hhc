@@ -2509,6 +2509,10 @@
 					<param name="Local" value="Reference\Method\Project/GetPictures.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetPictureSize">
+					<param name="Local" value="Reference\Method\Project/GetPictureSize.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Import">
 					<param name="Local" value="Reference\Method\Project/Import.htm">
 					</OBJECT>

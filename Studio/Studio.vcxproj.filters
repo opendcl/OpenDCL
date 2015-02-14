@@ -629,6 +629,9 @@
     <ClInclude Include="..\Common\DclAxCtrlInitInfo.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Controls\ListCtrlHdr.h">
+      <Filter>Common\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonStyles.cpp">
@@ -1104,6 +1107,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\DclAxCtrlInitInfo.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Controls\ListCtrlHdr.cpp">
+      <Filter>Common\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

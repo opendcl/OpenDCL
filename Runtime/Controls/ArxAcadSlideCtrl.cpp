@@ -488,7 +488,7 @@ void CArxAcadSlideCtrl::OnSetFocus(CWnd* pOldWnd)
 void CArxAcadSlideCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus( pNewWnd );
-	OnNeedRepaint( true );
+	OnNeedRepaint( false );
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 }
 
