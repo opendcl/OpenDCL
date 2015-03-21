@@ -37,11 +37,11 @@ public:
 
 private:
 	virtual bool CanFrameworkTakeFocus();
-	virtual void DrawBorders(CDC* pDC, CRect& rect);
 	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
-	virtual DWORD RecalcDelayShow(AFX_SIZEPARENTPARAMS* lpLayout);
 	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
+#ifdef _BRXTARGET
 	virtual CSize CalcDynamicLayout(int nLength, DWORD nMode);
+#endif
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
 	virtual void GetMinimumSize(CSize& size);
 	virtual void GetMaximumSize(CSize& size);

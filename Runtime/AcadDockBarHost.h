@@ -33,9 +33,7 @@ public:
 
 private:
 	virtual bool CanFrameworkTakeFocus();
-	virtual void DrawBorders(CDC* pDC, CRect& rect);
 	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
-	virtual CSize CalcDynamicLayout( int nLength, DWORD dwMode );
 	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
 	virtual BOOL AddCustomMenuItems(LPARAM hMenu);

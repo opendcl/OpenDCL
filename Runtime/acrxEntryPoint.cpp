@@ -87,6 +87,12 @@
 		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_old##name = { _RXST("dcl_") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
 		extern "C" __declspec(allocate("ZDSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_old##name = &__ZdsSymbolMap_old##name ; \
 		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(old##name)
+#elif _GRXTARGET
+	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
+		_GDSSYMBOL_ENTRY __GdsSymbolMap_dcl__##name = { L"dcl-" L#name, classname::ads_dcl_ ##name, regFunc, (UINT)-1 , NULL } ; \
+		_CGcRxAddSymbolEntryAuto __GrxAddSymbolAuto_dcl__##name(& __GdsSymbolMap_dcl__##name) ; \
+		_GDSSYMBOL_ENTRY __GdsSymbolMap_dcl_##name = { L"dcl_" L#name, classname::ads_dcl_ ##name, regFunc, (UINT)-1 , NULL } ; \
+		_CGcRxAddSymbolEntryAuto __GrxAddSymbolAuto_dcl_##name(& __GdsSymbolMap_dcl_##name) ;
 #elif _BRXTARGET
 	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(T_CLASS,T_NAME,T_REGISTERFUNCTION) \
 		__declspec(selectany) _AdsRegisteredSymbol __adsRegisteredSymbol_##T_NAME(T_CLASS::ads_dcl_ ##T_NAME,_ACRX_T("dcl-") _ACRX_T(#T_NAME),T_REGISTERFUNCTION); \
@@ -952,6 +958,15 @@ public:
 			#elif (_BRXTARGET)
 				if( nFunctionCode >= 0 && nFunctionCode < __adsRegisteredSymbols.length() )
 					return __adsRegisteredSymbols[nFunctionCode].getName();
+			#elif (_GRXTARGET)
+				GcRxArxApp *pApp = (GcRxArxApp *)gcrxGetApp();
+				_GDSSYMBOL_ENTRY* pAdsSymbolMapEntry = pApp->m_pSymbolEntryFirst;
+				while (pAdsSymbolMapEntry)
+				{
+					if (pAdsSymbolMapEntry->nameID == nFunctionCode)
+						return pAdsSymbolMapEntry->pszName;
+					pAdsSymbolMapEntry = pAdsSymbolMapEntry->next;
+				}
 			#else
 				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryFirst = &__pAdsSymbolMapEntryFirst + 1;
 				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryLast = &__pAdsSymbolMapEntryLast;
@@ -1362,7 +1377,12 @@ public:
 		sDemoFilepath.Replace( _T('\\'), _T('/') );
 		CString sExpr;
 		sExpr.Format( _T("(load \"%s\")"), (LPCTSTR)sDemoFilepath );
+//#ifdef _GRXTARGET
+//		int gcedPostCommand(const wchar_t* pszCmd);
+//		acedPostCommand(sExpr + _T('\n'));
+//#else
 		ads_queueexpr( sExpr.LockBuffer() );
+//#endif
 	}
 	
 	// ----- ads_opendcl_init_ui symbol (do not rename)

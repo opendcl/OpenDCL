@@ -50,7 +50,9 @@ CAcadPaletteHost::CAcadPaletteHost( CPaletteDlg* pDlgObject, CWnd *pParent /*= N
 , mszMRUSize( -1, -1)
 #endif
 {
+#ifndef _GRXTARGET
 	m_bAutoDelete = FALSE;
+#endif
 }
 
 
@@ -187,11 +189,6 @@ bool CAcadPaletteHost::OnClosing()
 	return true;
 }
 
-void CAcadPaletteHost::DrawBorders(CDC* pDC, CRect& rect)
-{
-	__super::DrawBorders( pDC, rect );
-}
-
 void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 {	
 	if( !mpDlgObject->IsResizable() )
@@ -239,11 +236,6 @@ void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 	__super::OnUserSizing( fwSide, pRect );
 }
 
-DWORD CAcadPaletteHost::RecalcDelayShow(AFX_SIZEPARENTPARAMS* lpLayout)
-{
-	return __super::RecalcDelayShow( lpLayout );
-}
-
 CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 {
 	if( !mpDlgObject->IsResizable() )
@@ -265,14 +257,12 @@ CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	return sizeDefault;
 }
 
+#ifdef _BRXTARGET
 CSize CAcadPaletteHost::CalcDynamicLayout(int nLength, DWORD nMode)
 {
 //TCHAR szMsg[1024];
 //_stprintf(szMsg, _T("## CalcDynamicLayout(nLength=%d, dMode = %x)\r\n"), nLength, nMode);
 //OutputDebugString(szMsg);
-#ifndef _BRXTARGET
-	return __super::CalcDynamicLayout(nLength, nMode);
-#else
 	static long lLastLength = -1;
 	static bool bLastHoriz = false;
 	long lTitleBarWidth = (IsFloating()? 20 : 0);
@@ -327,8 +317,8 @@ CSize CAcadPaletteHost::CalcDynamicLayout(int nLength, DWORD nMode)
 	sizeDefault.cx += (mpDlgObject->GetNCWidth() + lTitleBarWidth);
 	sizeDefault.cy += mpDlgObject->GetNCHeight();
 	return sizeDefault;
-#endif
 }
+#endif
 
 void CAcadPaletteHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 {

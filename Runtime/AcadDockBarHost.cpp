@@ -47,7 +47,9 @@ CAcadDockBarHost::CAcadDockBarHost( CControlBarDlg* pDlgObject, CWnd *pParent /*
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
 {
+#ifndef _GRXTARGET
 	m_bAutoDelete = FALSE;
+#endif
 }
 
 
@@ -151,11 +153,6 @@ BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 	return TRUE;
 }
 
-void CAcadDockBarHost::DrawBorders(CDC* pDC, CRect& rect)
-{
-	__super::DrawBorders( pDC, rect );
-}
-
 void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 {	
 	if( !mpDlgObject->IsResizable() )
@@ -201,13 +198,6 @@ void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 			pRect->top = pRect->bottom - szMax.cy;
 	}
 	__super::OnUserSizing( fwSide, pRect );
-}
-
-
-CSize CAcadDockBarHost::CalcDynamicLayout( int nLength, DWORD dwMode )
-{
-	CSize sizeLayout = __super::CalcDynamicLayout( nLength, dwMode );
-	return sizeLayout;
 }
 
 CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )

@@ -43,7 +43,7 @@ CPoint CAcadSld::SldToClient( const CPoint& ptSld, const CRect& rcTarget )
 {
 	double dblHScale = (double)rcTarget.Width() / (double)msizeSlide.cx;
 	double dblVScale = (double)rcTarget.Height() / (double)msizeSlide.cy;
-	CPoint ptClient( rcTarget.left + int(dblHScale * ptSld.x), rcTarget.bottom - int(dblVScale * ptSld.y) );
+	CPoint ptClient( rcTarget.left + int(dblHScale * ptSld.x), rcTarget.bottom - 1 - int(dblVScale * ptSld.y) );
 	return ptClient;
 }
 

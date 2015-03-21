@@ -12,7 +12,7 @@
 #include "DclPicture.h"
 #include "Resource.h"
 
-#if (defined(_BRXTARGET) || defined(_ZRXTARGET))
+#if defined(_BRXTARGET) || defined(_ZRXTARGET) || defined(_GRXTARGET)
 static bool AcadIsQuitting() { return false; }
 #else
 extern bool AcadIsQuitting(void);
@@ -123,6 +123,15 @@ bool CPaletteDlg::CreateModeless( UINT nID )
 	OnApplyIcon( mpTemplate->GetPropertyObject( Prop::TitleBarIcon ) );
 
 	mHostPaletteSet.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
+#ifdef _GRXTARGET
+	if (mptInitPos.x >= 0 && mptInitPos.y >= 0)
+	{
+		if (!IsFloating())
+			mHostPaletteSet.UndockPane();
+		MoveDialog( mptInitPos.x, mptInitPos.y );
+	}
+	mHostPaletteSet.ShowPane(TRUE, TRUE, FALSE);
+#else
 	if( mptInitPos.x >= 0 && mptInitPos.y >= 0 )
 	{
 		if( !IsFloating() )
@@ -133,6 +142,7 @@ bool CPaletteDlg::CreateModeless( UINT nID )
 		MoveDialog( mptInitPos.x, mptInitPos.y );
 	}
 	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostPaletteSet, TRUE, TRUE );
+#endif
 
 	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostPaletteSet ) )
 		return false;

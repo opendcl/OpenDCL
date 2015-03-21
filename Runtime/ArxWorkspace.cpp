@@ -649,7 +649,7 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 					return;
 				}
 				resbuf* prbResult = NULL;
-			#if (_ACADTARGET >= 17)
+			#if (_ACADTARGET >= 17) && !defined(_GRXTARGET)
 				int acedEvaluateLisp(ACHAR const *, struct resbuf * &result);
 				CString sHandlerName( pszHandlerName );
 				if( sHandlerName.Left( 2 ).CompareNoCase( _T("C:") ) != 0 )

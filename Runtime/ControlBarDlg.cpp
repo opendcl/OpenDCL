@@ -11,7 +11,7 @@
 #include "DclControlTemplate.h"
 #include "Resource.h"
 
-#if (defined(_BRXTARGET) || defined(_ZRXTARGET))
+#if defined(_BRXTARGET) || defined(_ZRXTARGET) || defined(_GRXTARGET)
 static bool AcadIsQuitting() { return false; }
 #else
 extern bool AcadIsQuitting(void);
@@ -120,6 +120,15 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 	mHostControlBar.EnableDocking( dwDockableSides );
 
 	mHostControlBar.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
+#ifdef _GRXTARGET
+	if (mptInitPos.x >= 0 && mptInitPos.y >= 0)
+	{
+		if (!IsFloating())
+			mHostControlBar.UndockPane();
+		MoveDialog( mptInitPos.x, mptInitPos.y );
+	}
+	mHostControlBar.ShowPane(TRUE, TRUE, FALSE);
+#else
 	if( mptInitPos.x >= 0 && mptInitPos.y >= 0 )
 	{
 		if( !IsFloating() )
@@ -130,6 +139,7 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 		MoveDialog( mptInitPos.x, mptInitPos.y );
 	}
 	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostControlBar, TRUE, TRUE );
+#endif
 
 	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostControlBar ) )
 		return false;

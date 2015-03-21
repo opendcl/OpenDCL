@@ -50,14 +50,7 @@ bool CArxGsViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 		return false;
 	AcGsDevice* pGsDevice = GetGsDevice();
 	if( pGsDevice )
-	{
-		AcGsColor color = pGsDevice->getBackgroundColor();
-		COLORREF aColor = GetRGBColor( pProp->GetLongValue() );
-		color.m_red = GetRValue( aColor );
-		color.m_green = GetGValue( aColor );
-		color.m_blue = GetBValue( aColor );
-		pGsDevice->setBackgroundColor( color );
-	}
+		pGsDevice->setBackgroundColor( GsColorConvertor( GetRGBColor( pProp->GetLongValue() ) ) );
 	return true;
 }
 

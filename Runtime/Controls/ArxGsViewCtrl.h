@@ -18,6 +18,27 @@
 #endif
 
 
+#if defined(_GRXTARGET)
+#define GsColorConvertor(x) x
+#else
+class GsColorConvertor
+{
+	AcGsColor mGsColor;
+public:
+	GsColorConvertor(COLORREF color)
+	{
+		mGsColor.m_red = GetRValue(color);
+		mGsColor.m_green = GetGValue(color);
+		mGsColor.m_blue = GetBValue(color);
+	}
+	operator const AcGsColor& ()
+	{
+		return mGsColor;
+	}
+};
+#endif
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CArxGsViewCtrl window
 
@@ -90,18 +111,11 @@ protected:
 				#endif
 					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
 					if( pAcadColor )
-					{
-						COLORREF aColor = GetRGBColor( pAcadColor->GetLongValue() );
-						AcGsColor color = mpDevice->getBackgroundColor();
-						color.m_red = GetRValue( aColor );
-						color.m_green = GetGValue( aColor );
-						color.m_blue = GetBValue( aColor );
-						mpDevice->setBackgroundColor( color );
-					}	
+						mpDevice->setBackgroundColor( GsColorConvertor( GetRGBColor( pAcadColor->GetLongValue() ) ) );
 							
 					CRect rect;
 					mpCtrl->GetClientRect( &rect);
-					onSize( rect.Width(), rect.Height() );   
+					onSize( rect.Width(), rect.Height() );
 					//a simple view
 				#if (_ARXTARGET >= 20)
 					mpView = mpKernel->createView();
