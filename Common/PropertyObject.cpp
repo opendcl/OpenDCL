@@ -140,8 +140,24 @@ public:
 	virtual bool GetValue( unsigned long& v ) const { v = (unsigned long)mValue; return true; }
 	virtual bool SetValue( const unsigned long& v ) { mValue = (long)v; return true; }
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
-	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = (v? _tstol(v) : 0); return true; }
+	virtual bool SetValue( const CString& v )
+		{
+			if (v.GetAt(1) == _T('@'))
+				mValue += _tstol(v.Mid(1));
+			else
+				mValue = _tstol(v);
+			return true;
+		}
+	virtual bool SetValue( const LPCTSTR v )
+		{
+			if (!v)
+				mValue = 0;
+			else if (*v == _T('@'))
+				mValue += _tstol(v + 1);
+			else
+				mValue = _tstol(v);
+			return true;
+		}
 
 #ifdef _DIAGNOSTIC
 	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }

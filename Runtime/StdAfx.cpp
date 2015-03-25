@@ -33,7 +33,8 @@ extern "C" long _ftol( double ); //defined by VC6 C libs
 extern "C" long _ftol2( double dblSource ) { return _ftol( dblSource ); }
 #endif
 
-#if defined(_ARXTARGET)
+#if defined(_ARXTARGET) && (_ARXTARGET < 20)
+#undef acdbHostApplicationServices
 
 #if (_ARXTARGET == 15)
 #define HOSTAPP_DLL _T("AcUtil15.dll")
@@ -70,8 +71,7 @@ AcDbHostApplicationServices* acdbHostApplicationServicesEx()
 }
 #else
 #pragma message ("     HOSTAPP_DLL should be defined in StdAfx.cpp!")
-#undef acdbHostApplicationServices
-AcDbHostApplicationServices* acdbHostApplicationServicesEx() { return acdbHostApplicationServices; } //use original
+AcDbHostApplicationServices* acdbHostApplicationServicesEx() { return acdbHostApplicationServices(); } //use original
 #endif
 
 #endif //defined(_ARXTARGET)

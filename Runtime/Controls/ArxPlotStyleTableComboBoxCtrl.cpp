@@ -180,8 +180,6 @@ LRESULT CArxPlotStyleTableComboBoxCtrl::OnModifyContent( WPARAM wParam, LPARAM l
 
 LRESULT CArxPlotStyleTableComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 {
-	CString sSelection;
-	GetWindowText( sSelection );
 	Default();
 	OnListChanged();
 	return (LRESULT)TRUE;

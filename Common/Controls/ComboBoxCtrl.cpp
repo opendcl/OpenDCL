@@ -31,9 +31,6 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess )
 		SetExtendedUI();
 
-	if( bSuccess && GetComboHandler() )
-		ResetContent();  //populate list
-
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -56,7 +53,7 @@ CRect CComboBoxCtrl::GetWndRect() const
 DWORD CComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (CBS_NOINTEGRALHEIGHT);
+	dwStyle |= (CBS_NOINTEGRALHEIGHT | CBS_HASSTRINGS);
 	const CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
 	{
@@ -150,9 +147,6 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 				OnListChanged(); //in case the list is sorted, to update the List property
 				mbIgnoreChange = true;
 			}
-			CComboHandler* pHandler = GetComboHandler();
-			if( pHandler )
-				pHandler->PopulateList(this);
 			mbIgnoreChange = false;
 		}
 		break;
@@ -323,6 +317,7 @@ LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 	CString sSelection;
 	GetWindowText( sSelection );
 	Default();
+	OnListChanged();
 
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
@@ -333,7 +328,6 @@ LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 		if( idx >= 0 )
 			SetCurSel( idx );
 	}
-	OnListChanged();
 	return (LRESULT)TRUE;
 }
 

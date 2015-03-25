@@ -180,6 +180,7 @@ protected:
 						mpKernel->deleteModel( mpGhostModel );
 						mpGhostModel = NULL;
 					}
+					mpKernel->delRef();
 					mpKernel = NULL;
 				}
 			#else
@@ -258,11 +259,11 @@ protected:
 	#endif
 		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
 			{
-				// The cached pointers are no longer valid when this reactor fires, so clear them
-				// to avoid a crash when the control is destroyed.
 			#if (_ARXTARGET >= 20)
-				mpKernel = NULL;
+				clear();
 			#else
+				// The cached pointers are no longer valid when this reactor fires, so ensure
+				// they are not used when the control is destroyed.
 				mpFactory = NULL;
 			#endif
 			}

@@ -108,7 +108,9 @@ void CArxFontComboBoxCtrl::OnCbnCloseup()
 void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent) 
 {
 	// Is combo open
-	if (GetDroppedState( ))
+	bool bDropStyle = ((GetStyle() & CBS_DROPDOWN) != 0);
+	bool bIsActive = (bDropStyle? (GetDroppedState() == TRUE) : (::GetParent(::GetFocus()) == m_hWnd));
+	if ( bIsActive )
 	{
 		int nSel = GetCurSel();
 		int FirstVis = GetTopIndex();

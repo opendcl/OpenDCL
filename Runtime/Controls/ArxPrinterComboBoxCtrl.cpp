@@ -48,17 +48,22 @@ DWORD CArxPrinterComboBoxCtrl::GetWndStyle() const
 
 bool CArxPrinterComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
+	if (!pProp)
+		return false;
+	switch( pProp->GetID() )
+	{
+	case Prop::List:
+		{
+			if (IsEnumeratingProperties())
+			{
+				ResetContent();
+				return true;
+			}
+		}
+	}
+	bool bFailed = false;
 	if( !__super::ApplyProperty( pProp ) )
 		return false;
-	bool bFailed = false;
-	//switch( pProp->GetID() )
-	//{
-	//case Prop::DragnDropAllowDrop:
-	//	{
-	//		SetDragnDrop( pProp->GetBooleanValue() );
-	//		break;
-	//	}
-	//}
 	return !bFailed;
 }
 
@@ -74,6 +79,21 @@ void CArxPrinterComboBoxCtrl::SetPaperSizeCombo( TDclControlPtr pPaperCombo )
 			pComboCtrl->ResetContent();
 		}
 	}
+}
+
+void CArxPrinterComboBoxCtrl::OnListChanged()
+{
+	TPropertyPtr pItemList = mpTemplate->GetPropertyObject( Prop::List );
+	TPropertyPtr pItemDataList = mpTemplate->GetPropertyObject( Prop::ItemData );
+	int ctil1 = pItemList ? pItemList->size() : 0;
+	int ctidl1 = pItemDataList ? pItemDataList->size() : 0;
+	int ct1 = GetCount();
+	__super::OnListChanged();
+	int ctil2 = pItemList ? pItemList->size() : 0;
+	int ctidl2 = pItemDataList ? pItemDataList->size() : 0;
+	int ct2 = GetCount();
+	if (ct2 != ctil2)
+		int x = 1;
 }
 
 

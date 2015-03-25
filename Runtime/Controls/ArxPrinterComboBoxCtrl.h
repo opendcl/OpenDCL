@@ -24,6 +24,9 @@ public:
 public:
 	void SetPaperSizeCombo( TDclControlPtr pPaperCombo );
 
+protected:
+	virtual void OnListChanged();
+
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()

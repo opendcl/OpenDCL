@@ -207,7 +207,7 @@ inline void _cdecl TraceFmt( LPCTSTR, ... ) {}
 #endif //_DEBUG
 
 
-#if defined(_ARXTARGET)
+#if defined(_ARXTARGET) && (_ARXTARGET < 20)
 //some gymnastics to prevent implicit import of s_pServices
 #define acdbHostApplicationServices acdbHostApplicationServicesEx
 extern AcDbHostApplicationServices* acdbHostApplicationServicesEx();

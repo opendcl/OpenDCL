@@ -722,7 +722,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:8.0.0.12"
+        "Version" = "8:8.0.0.13"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -1215,7 +1215,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_86C6DCA6B4F94D45891D8CDFAF8DD27E"
             {
-            "SourcePath" = "8:..\\..\\GRX.2015.x64\\Debug\\OpenDCL.2015.x64.grx"
+            "SourcePath" = "8:..\\..\\GRX.2015.x64\\Debug\\OpenDCL.x64.2015.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"

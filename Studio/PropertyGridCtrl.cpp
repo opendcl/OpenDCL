@@ -66,6 +66,23 @@ typedef struct tagNMLVSCROLL
 #define PGIS_DISPLAYONLY 8
 
 
+class CIntegerOffsetFilter : public CIntegerFilter
+{
+
+public:
+	CIntegerOffsetFilter() {}
+	virtual ~CIntegerOffsetFilter() {}
+
+// CInputFilter overrides
+public:
+	const CString& GetFilter() const
+		{
+			static const CString sFilter = _T("0123456789-@");
+			return sFilter;
+		}
+};
+
+
 class CIntegerListFilter : public CInputFilter
 {
 
@@ -901,7 +918,7 @@ static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCt
 	case VT_I2:
 	case VT_I4:
 	case VT_I8:
-		return CFilteredTextEditCtrl::Create< CIntegerFilter >( pGridCtrl, idxCell, bMultiple );
+		return CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >( pGridCtrl, idxCell, bMultiple );
 	case VT_UINT:
 	case VT_UI1:
 	case VT_UI2:
@@ -1021,7 +1038,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::BlockName: return &CFilteredTextEditCtrl::Create< CSymbolNameFilter >;
 	case Prop::BlockListStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::BorderStyle: return &CEnumComboBoxCtrl::Create;
-	case Prop::BottomFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::BottomFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
 	case Prop::BtnCaption: return PF_UnfilteredTextEditCreator;
 	case Prop::BtnToolTips: return PF_UnfilteredTextEditCreator;
 	case Prop::Caption: return PF_UnfilteredTextEditCreator;
@@ -1074,8 +1091,8 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::LabelAlignment: return &CEnumComboBoxCtrl::Create;
 	case Prop::LabelWrap: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::LargeChange: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::Left: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::LeftFromRight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::Left: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
+	case Prop::LeftFromRight: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
 	case Prop::LinesAtRoot: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::List: return PF_UnfilteredTextEditCreator;
 	case Prop::ListImages: return &CFilteredTextEditCtrl::Create< CIntegerListFilter >;
@@ -1106,7 +1123,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::ReadOnly: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::RenderMode: return &CEnumComboBoxCtrl::Create;
 	case Prop::ReturnAsTab: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::RightFromRight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::RightFromRight: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
 	case Prop::RowHeader: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::RowHeight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::SelectionStyle: return &CEnumComboBoxCtrl::Create;
@@ -1125,8 +1142,8 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::SmallChange: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::SmoothProgress: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::Sorted: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::SplitterMax: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::SplitterMin: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::SplitterMax: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
+	case Prop::SplitterMin: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
 	case Prop::SplitterStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::TabFixedWidth: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::TabJustification: return &CEnumComboBoxCtrl::Create;
@@ -1140,7 +1157,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::TitleBar: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::TitleBarIcon: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::TitleBarText: return PF_UnfilteredTextEditCreator;
-	case Prop::Top: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::Top: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
 	case Prop::ToolTipAviFileName: return PF_UnfilteredTextEditCreator;
 	case Prop::ToolTipBalloon: return &CBooleanCheckBoxCtrl::Create;
 	//case Prop::ToolTipBody: return PF_UnfilteredTextEditCreator;
@@ -1149,14 +1166,14 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::ToolTipPicture: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::ToolTipTitle: return PF_UnfilteredTextEditCreator;
 	case Prop::ToolTipTitleColor: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::TopFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::TopFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >;
 	case Prop::URLLinkType: return &CEnumComboBoxCtrl::Create;
 	case Prop::UseBottomFromBottom: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseLeftFromRight: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseRightFromRight: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseTopFromBottom: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseVisualStyle: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::Value: if( type == PropLong ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CEnumComboBoxCtrl::Create;
+	case Prop::Value: if( type == PropLong ) return &CFilteredTextEditCtrl::Create< CIntegerOffsetFilter >; return &CEnumComboBoxCtrl::Create;
 	case Prop::VarName: if( bMultiple ) return NULL; return &CFilteredTextEditCtrl::Create< CSymbolNameFilter >;
 	case Prop::Visible: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::VScrollBar: return &CBooleanCheckBoxCtrl::Create;
