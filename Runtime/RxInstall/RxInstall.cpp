@@ -618,7 +618,7 @@ public:
 				break;
 			case kGstarCAD:
 				{
-					String sVersion( majorVersion() );
+					String sVersion( 2000 + majorVersion() );
 					sAppFilename += sVersion;
 					sAppFilename += _T(".grx");
 				}
@@ -632,6 +632,7 @@ public:
 				return;
 			if( platform() == kBricscad ||
 					platform() == kZWCAD ||
+					platform() == kGstarCAD ||
 					(platform() == kAutoCAD && majorVersion() >= kARX2004) )
 			{
 				rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( pszModifier ) );
