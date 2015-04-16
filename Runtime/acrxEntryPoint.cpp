@@ -1377,12 +1377,7 @@ public:
 		sDemoFilepath.Replace( _T('\\'), _T('/') );
 		CString sExpr;
 		sExpr.Format( _T("(load \"%s\")"), (LPCTSTR)sDemoFilepath );
-//#ifdef _GRXTARGET
-//		int gcedPostCommand(const wchar_t* pszCmd);
-//		acedPostCommand(sExpr + _T('\n'));
-//#else
 		ads_queueexpr( sExpr.LockBuffer() );
-//#endif
 	}
 	
 	// ----- ads_opendcl_init_ui symbol (do not rename)
@@ -1509,7 +1504,7 @@ public:
 			// give the command line focus (otherwise the command doesn't get processed immediately)
 			CWnd* wndCommandLine = acedGetAcadDockCmdLine();
 			if( wndCommandLine )
-				wndCommandLine->SetFocus();		
+				wndCommandLine->SetFocus();
 			Acad::ErrorStatus es = acDocManager->sendStringToExecute(pDoc, sToSend, false, true, false);
 			if( es == Acad::eOk )
 				acedRetT();

@@ -670,6 +670,10 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 						mbValid = (prbResult->rbnext || prbResult->restype == RTVOID);
 				}
 			#endif
+			#elif defined (_GRXTARGET)
+				int nResult = acedGetSym( pszHandlerName, &prbResult );
+				if( nResult == RTNORM )
+					mbValid = (prbResult == NULL);
 			#else
 				acedGetSym( pszHandlerName, &prbResult );
 				if( prbResult )

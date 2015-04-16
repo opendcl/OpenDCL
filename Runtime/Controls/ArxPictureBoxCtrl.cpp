@@ -157,7 +157,7 @@ void CArxPictureBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 LRESULT CArxPictureBoxCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	mbTrackingMouse = false;        
+	mbTrackingMouse = false;
 	if( GetArxServices()->HandleEvent( Prop::EventMouseMovedOff ) )
 		return FALSE;
 	return FALSE;

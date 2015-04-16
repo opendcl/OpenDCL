@@ -101,13 +101,17 @@ void CListCtrlHdr::PreSubclassWindow()
 {
 	__super::PreSubclassWindow();
 	EnableToolTips(FALSE);
+	mTipWnd.Create(this);
 }
 
 BOOL CListCtrlHdr::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
 {
 	BOOL bSuccess = __super::Create(dwStyle, rect, pParentWnd, nID);
-	if (bSuccess)
-		EnableToolTips(FALSE);
+    if (bSuccess)
+    {
+        EnableToolTips(FALSE);
+        mTipWnd.Create(this);
+    }
 	return bSuccess;
 }
 

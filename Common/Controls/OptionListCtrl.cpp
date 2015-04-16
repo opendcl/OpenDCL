@@ -323,7 +323,7 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 LRESULT COptionListCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	mbTrackingMouse = false;        
+	mbTrackingMouse = false;
 	OnNeedRepaint( true );
 	return FALSE;
 }

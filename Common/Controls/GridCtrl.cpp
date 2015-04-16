@@ -186,6 +186,7 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 		DWORD dwExStyle = GetExtendedStyle();
 		EnableToolTips(FALSE);
+		mTipWnd.Create( this );
 
 		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
 		if (pHeaderCtrl)

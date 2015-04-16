@@ -597,7 +597,7 @@ void CArxAcadSlideCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 LRESULT CArxAcadSlideCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseMovedOff );
-	mbTrackingMouse = false;        
+	mbTrackingMouse = false;
 	return FALSE;
 }
 

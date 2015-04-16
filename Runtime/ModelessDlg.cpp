@@ -286,7 +286,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )
 		{
 			CWnd* pCmdLine = acedGetAcadDockCmdLine();
-			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
+			if( pCmdLine && pCmdLine->IsTopParentActive() && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
 				pCmdLine->SetFocus();
 		}
 		else if( IsDescendant( this, pFocusWnd ) )
