@@ -1,6 +1,6 @@
 #pragma once
 
-#define _ACADTARGET 20
+#define _ACADTARGET 19
 
 #define _ACRX_T(x) L ## x
 

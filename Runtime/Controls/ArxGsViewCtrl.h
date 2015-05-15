@@ -54,7 +54,7 @@ protected:
 	{
 		AcDbDatabase* mpDb;
 		CArxGsViewCtrl* mpCtrl;
-	#if (_ARXTARGET >= 20)
+	#if (_ACADTARGET >= 20)
 		AcGsGraphicsKernel* mpKernel;
 	#else
 		AcGsClassFactory* mpFactory;
@@ -67,7 +67,7 @@ protected:
 		GsViewManager( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
 			: mpDb( pDb )
 			, mpCtrl( pCtrl )
-		#if (_ARXTARGET >= 20)
+		#if (_ACADTARGET >= 20)
 			, mpKernel( NULL )
 		#else
 			, mpFactory( NULL )
@@ -86,7 +86,7 @@ protected:
 					assert( pManager != NULL );
 					if( !pManager )
 						return;
-				#if (_ARXTARGET >= 20)
+				#if (_ACADTARGET >= 20)
 					AcGsKernelDescriptor KernelDesc;
 					KernelDesc.addRequirement(AcGsKernelDescriptor::k3DDrawing);
 					mpKernel = pManager->acquireGraphicsKernel( KernelDesc );
@@ -117,7 +117,7 @@ protected:
 					mpCtrl->GetClientRect( &rect);
 					onSize( rect.Width(), rect.Height() );
 					//a simple view
-				#if (_ARXTARGET >= 20)
+				#if (_ACADTARGET >= 20)
 					mpView = mpKernel->createView();
 					mpModel = pManager->createAutoCADModel( *mpKernel ); //a model with open/close protocol
 
@@ -164,7 +164,7 @@ protected:
 						mpDevice = NULL;
 					}
 				}
-			#if (_ARXTARGET >= 20)
+			#if (_ACADTARGET >= 20)
 				if( mpKernel )
 				{
 				#ifndef _BRXTARGET
@@ -244,7 +244,7 @@ protected:
 				if( mpView == pView )
 					clear();
 			}
-	#if (_ARXTARGET >= 20)
+	#if (_ACADTARGET >= 20)
 		virtual void gsToBeUnloaded( AcGsGraphicsKernel* pKernel )
 			{
 				assert( mpKernel == pKernel );
@@ -259,7 +259,7 @@ protected:
 	#endif
 		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
 			{
-			#if (_ARXTARGET >= 20)
+			#if (_ACADTARGET >= 20)
 				clear();
 			#else
 				// The cached pointers are no longer valid when this reactor fires, so ensure
@@ -298,7 +298,7 @@ protected:
 	virtual bool CanShowFocus() const { return false; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
-#if (_ARXTARGET >= 20)
+#if (_ACADTARGET >= 20)
 	virtual AcGiVisualStyle::Type GetVisualStyle() { return AcGiVisualStyle::kFlat; }
 #else
 	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }

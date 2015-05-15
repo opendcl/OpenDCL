@@ -312,7 +312,9 @@ BOOL CPaletteDlg::HandleEraseBkgnd( CDC* pDC )
 			{
 				CBrush* pbrBackground = pDC->GetCurrentBrush();
 			#if defined(_BRXTARGET)
+				int nDCInfo = pDC->SaveDC();
 				HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pParent->m_hWnd );
+				pDC->RestoreDC(nDCInfo);
 				if( hbrBackground )
 					pbrBackground = CBrush::FromHandle( hbrBackground );
 			#endif //_BRXTARGET

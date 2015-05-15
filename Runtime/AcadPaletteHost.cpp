@@ -581,7 +581,9 @@ void CAcadPaletteHost::OnClose()
 {
 	__super::OnClose();
 #if (defined(_BRXTARGET) && _BRXTARGET <= 15)
+#if (_BRXTARGET <= 14)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
+#endif
 	DestroyWindow();
 #endif
 }

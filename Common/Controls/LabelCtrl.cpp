@@ -107,8 +107,6 @@ HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	if( hbrBackground )
 		return hbrBackground;
-	if( GetTheme().IsThemeActive() )
-		return NULL; //when using visual style, transparent brush causes class background to be used
 	return CAcadColorService::GetTransparentBrush();
 }
 

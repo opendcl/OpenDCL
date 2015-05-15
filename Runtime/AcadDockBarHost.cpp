@@ -138,8 +138,11 @@ LRESULT CAcadDockBarHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 
 bool CAcadDockBarHost::OnClosing()
 {
+	__super::OnClosing();
 	mpDlgObject->OnClosing();
-	return __super::OnClosing();
+	return true;
+	//mpDlgObject->OnClosing();
+	//return __super::OnClosing();
 }
 
 BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
@@ -449,7 +452,9 @@ void CAcadDockBarHost::OnClose()
 {
 	__super::OnClose();
 #if (defined(_BRXTARGET) && _BRXTARGET <= 15)
+#if (_BRXTARGET <= 14)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
+#endif
 	DestroyWindow();
 #endif
 }

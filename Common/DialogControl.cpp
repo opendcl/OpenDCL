@@ -94,7 +94,9 @@ HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 					}
 					else
 						pDC->SetBkMode( TRANSPARENT );
+					int nDCInfo = pDC->SaveDC();
 					HBRUSH hbrBackground = (HBRUSH)pHostDlg->GetControlWnd()->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pHostDlg->GetControlWnd()->m_hWnd );
+					pDC->RestoreDC(nDCInfo);
 					if( hbrBackground )
 						return hbrBackground;
 				}
@@ -147,7 +149,9 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 		CWnd* pParent = mpControlWnd->GetParent();
 		if( pParent )
 		{
+			int nDCInfo = pDC->SaveDC();
 			HBRUSH hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pParent->m_hWnd );
+			pDC->RestoreDC(nDCInfo);
 			if( !hbrBackground )
 				return FALSE;
 			pDC->FillRect( &rcClip, CBrush::FromHandle( hbrBackground ) );

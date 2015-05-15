@@ -246,7 +246,7 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 			pView->zoom(dZoomFactor);	
 		}
 	}
-#if (_ARXTARGET >= 20)
+#if (_ACADTARGET >= 20)
 	pView->setVisualStyle( AcGiVisualStyle( GetVisualStyle() ) );
 #else
 	pView->setMode( GetRenderMode() );

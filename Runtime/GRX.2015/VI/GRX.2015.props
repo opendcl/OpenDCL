@@ -10,7 +10,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>.\;..\;.\VI;$(GRX2015)\inc-x86;$(GRX2015)\inc\arx;$(GRX2015)\inc;$(MSVC10)\Include;$(MSVC10)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ACADTARGET=20;_GRXTARGET=2015;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=2015;WINVER=0x0500;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
