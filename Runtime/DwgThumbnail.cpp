@@ -280,6 +280,7 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackgrou
 		//	}
 		//}
 
+		int nStretchBltMode = (clrBackground == 0) ? WHITEONBLACK : HALFTONE;
 		CPoint ptUL( rcCanvas.left + ((paintSize.cx - drawSize.cx) / 2), rcCanvas.top + ((paintSize.cy - drawSize.cy) / 2) );
 
 		DIBSECTION bmpARGB = { 0 };
@@ -319,7 +320,7 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackgrou
 			}
 
 			HBITMAP hOldBmp = (HBITMAP)dcMem.SelectObject( hBlendedBmp );
-			int nOldStretchMode = pDC->SetStretchBltMode( HALFTONE );
+			int nOldStretchMode = pDC->SetStretchBltMode( nStretchBltMode );
 			POINT ptOldBrushOrg;
 			BOOL bBrushOrgSet = SetBrushOrgEx( pDC->m_hDC, 0, 0, &ptOldBrushOrg );
 			pDC->StretchBlt( ptUL.x, ptUL.y, drawSize.cx, drawSize.cy, &dcMem, 0, 0, mnWidth, mnHeight, SRCCOPY );
@@ -332,7 +333,7 @@ void CDwgThumbnail::Render(CDC* pDC, const CRect& rcCanvas, COLORREF clrBackgrou
 		else
 		{
 			HBITMAP hOldBmp = (HBITMAP)dcMem.SelectObject( mhBitmap );
-			int nOldStretchMode = pDC->SetStretchBltMode( HALFTONE );
+			int nOldStretchMode = pDC->SetStretchBltMode( nStretchBltMode );
 			POINT ptOldBrushOrg;
 			BOOL bBrushOrgSet = SetBrushOrgEx( pDC->m_hDC, 0, 0, &ptOldBrushOrg );
 			pDC->StretchBlt( ptUL.x, ptUL.y, drawSize.cx, drawSize.cy, &dcMem, 0, 0, mnWidth, mnHeight, SRCCOPY );

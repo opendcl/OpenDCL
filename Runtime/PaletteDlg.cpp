@@ -203,7 +203,7 @@ CRect CPaletteDlg::GetEffectiveWindowRect() const
 	if( pTopLevelWnd == &mHostPaletteSet && mHostPaletteSet.RolledUp() )
 		mHostPaletteSet.GetFullRect( rectWindow );
 	else
-		GetWindowRect( &rectWindow );
+		pTopLevelWnd->GetWindowRect( &rectWindow );
 	return rectWindow;
 }
 

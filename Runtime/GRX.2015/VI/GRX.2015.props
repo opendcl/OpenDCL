@@ -14,7 +14,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_ACADTARGET=20;_GRXTARGET=2015;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=2015;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(GRX2015)\Lib-x86;$(MSVC10)\Lib;$(MSVC10)\ATLMFC\Lib;$(WindowsSdkDir)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -24,7 +24,7 @@
       <IgnoreSpecificDefaultLibraries>mfc100;mfcs100</IgnoreSpecificDefaultLibraries>
     </Link>
     <Midl>
-      <PreprocessorDefinitions>_ACADTARGET=20;_GRXTARGET=2015;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=2015;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(GRX2015)\inc-x86;$(GRX2015)\inc\arx;$(GRX2015)\inc;$(MSVC10)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateStublessProxies>true</GenerateStublessProxies>
       <HeaderFileName>%(Filename).h</HeaderFileName>

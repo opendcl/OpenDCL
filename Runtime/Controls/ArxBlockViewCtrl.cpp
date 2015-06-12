@@ -125,8 +125,13 @@ DROPEFFECT CArxBlockViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& 
 	if( !pDb )
 		return dwDropEffect;
 	CString sBlockName = mpTemplate->GetStringProperty( Prop::BlockName );
-	if( sBlockName.IsEmpty() )
-		return dwDropEffect;
+	if (sBlockName.IsEmpty())
+	{
+		if (mpSourceDb)
+			sBlockName = ACDB_MODEL_SPACE;
+		else
+			return dwDropEffect;
+	}
 	CStringA sTextA( sBlockName );
 	SIZE_T cchText = sTextA.GetLength() + 1;
 	HGLOBAL hData = GlobalAlloc( GHND, cchText );
@@ -305,8 +310,11 @@ void CArxBlockViewCtrl::RefreshBlock()
 	Acad::ErrorStatus es = pDb->getBlockTable( pTab, AcDb::kForRead );
 	if( es != Acad::eOk )
 		return;
+	CString sBlockName = mpTemplate->GetStringProperty( Prop::BlockName );
+	if (sBlockName.IsEmpty() && mpSourceDb)
+		sBlockName = ACDB_MODEL_SPACE;
 	AcDbBlockTableRecord* pRec = NULL;
-	es = pTab->getAt( mpTemplate->GetStringProperty( Prop::BlockName ), pRec, AcDb::kForRead );
+	es = pTab->getAt( sBlockName, pRec, AcDb::kForRead );
 	pTab->close();	
 	if( es != Acad::eOk )
 		return;
@@ -398,8 +406,7 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, boo
 		mpSourceDb = NULL;
 		return false;
 	}
-			
-	mpTemplate->SetStringProperty( Prop::BlockName, ACDB_MODEL_SPACE );
+
 	DisplayBTR( pModelSpace, dZoomFactor, bZoomExtents, nScaleType, vecViewDir );
 	pModelSpace->close();
 

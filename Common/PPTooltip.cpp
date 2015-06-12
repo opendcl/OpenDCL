@@ -319,7 +319,7 @@ LRESULT CPPToolTip::OnRepaintWindow(WPARAM wParam, LPARAM lParam)
 		OnRedrawTooltip(pDC->GetSafeHdc());
 		ReleaseDC(pDC);
 	}
-    return TRUE;
+	return TRUE;
 } //End of the UDM_TOOLTIP_REPAINT handler
 
 void CPPToolTip::OnDrawBorder(HDC hDC, HRGN hRgn)
@@ -454,8 +454,8 @@ void CPPToolTip::OnRedrawTooltip(HDC hDC, BYTE nTransparency /* = 0 */)
 		m_drawer.GetDrawManager()->DrawShadow(hTempDC, 
 											  m_szOffsetShadow.cx, 
 											  m_szOffsetShadow.cy,
-										      rect.Width(), rect.Height(), hMask,
-			   							      m_bGradientShadow, 
+											  rect.Width(), rect.Height(), hMask,
+											  m_bGradientShadow, 
 											  m_szDepthShadow.cx, m_szDepthShadow.cy);
 		::DeleteObject(hMask);
 	} //if
@@ -731,6 +731,11 @@ void CPPToolTip::OnTimer(UINT_PTR nIDEvent)
 		}
 		else if (PPTOOLTIP_STATE_HIDEN == m_nTooltipState)
 		{
+			//ORW 2015-05-16
+			//added this test to prevent problem with tooltip causing focus loss
+			//when WM_TIMER arrives after modal message box covers tooltip control
+			if (::WindowFromPoint(m_ptOriginal) != m_hParentWnd)
+				break; //if another window covers the parent, don't show the tooltip
 			TRACE(_T("OnTimerShow(Showing)\n"));
 			m_nTooltipState = PPTOOLTIP_STATE_SHOWING;
 			//Display first step
@@ -1166,10 +1171,10 @@ DWORD CPPToolTip::GetTooltipDirection(DWORD dwDirection, const CPoint & ptPoint,
 	//ENG: Get Window's rectangle. The whole virtual desktop .... not only the primary screen.JFN
 	//RUS: Получаем полный прямоугольник экрана Windows
 	CRect rWindow;
-    rWindow.left    = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
-    rWindow.top     = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
+	rWindow.left    = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
+	rWindow.top     = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
 	rWindow.right   = rWindow.left + ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
-    rWindow.bottom  = rWindow.top + ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	rWindow.bottom  = rWindow.top + ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
 	//-------------------------------------------
 	//ENG: Initializing size of the bounds rect
@@ -1547,14 +1552,14 @@ HRGN CPPToolTip::GetTooltipRgn(DWORD dwDirection, int x, int y, int nWidth, int 
 
 BOOL CPPToolTip::IsCursorOverTooltip() const
 {
-    ASSERT(m_hParentWnd);
+	ASSERT(m_hParentWnd);
 	
-    // Is tooltip visible?
-    if (!IsVisible() || !IsWindow(m_hWnd))
+	// Is tooltip visible?
+	if (!IsVisible() || !IsWindow(m_hWnd))
 		return FALSE;
 	
-    POINT pt;
-    GetCursorPos(&pt);
+	POINT pt;
+	GetCursorPos(&pt);
 	
 	CPPToolTip * pWnd = (CPPToolTip*)WindowFromPoint(pt);
 	
@@ -2647,7 +2652,7 @@ void CPPToolTip::SetCssStyles(LPCTSTR lpszCssStyles /* = NULL */)
 ///////////////////////////////////////////////////////////////////////////// 
 void CPPToolTip::SetCssStyles(DWORD dwIdCssStyle, LPCTSTR lpszPathDll /* = NULL */) 
 { 
-    m_drawer.SetCssStyles(dwIdCssStyle, lpszPathDll); 
+	m_drawer.SetCssStyles(dwIdCssStyle, lpszPathDll); 
 } //End of SetCssStyles
 
 /////////////////////////////////////////////////////////////////////////////

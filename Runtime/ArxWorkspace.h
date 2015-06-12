@@ -32,6 +32,7 @@ namespace odcl
 
 
 #define theArxWorkspace (*(CArxWorkspace*)&theWorkspace)
+#define acedRetLong theArxWorkspace.RetLong
 
 typedef CList< CDialogObject* > TDialogList;
 typedef std::list< TArxProjectPtr > TProjectList;

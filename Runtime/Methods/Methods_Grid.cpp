@@ -11,10 +11,10 @@
 
 static void ReturnRowCol(int nRow, int nCol)
 {
-	resbuf rbColumn = { NULL, RTSHORT };
-	rbColumn.resval.rint = nCol;
-	resbuf rbRow = { &rbColumn, RTSHORT };
-	rbRow.resval.rint = nRow;
+	resbuf rbColumn = { NULL, RTLONG };
+	rbColumn.resval.rlong = nCol;
+	resbuf rbRow = { &rbColumn, RTLONG };
+	rbRow.resval.rlong = nRow;
 	acedRetList( &rbRow );
 }
 
@@ -195,7 +195,7 @@ ADSRESULT Grid::AddRow()
 	for( size_t idx = rsText.size(); idx > 0; --idx )
 		pCtrl->SetCellText( nRow, idx, rsText[idx - 1] );
 
-	acedRetInt( nRow );
+	acedRetLong( nRow );
 	return RSRSLT;
 }
 
@@ -699,7 +699,7 @@ ADSRESULT Grid::GetColumnWidth()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetColumnWidth( nCol ) );
+	acedRetLong( pCtrl->GetColumnWidth( nCol ) );
 	return RSRSLT;
 }
 
@@ -746,7 +746,7 @@ ADSRESULT Grid::CalcColumnWidth()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetStringWidth( sText ) );
+	acedRetLong( pCtrl->GetStringWidth( sText ) );
 	return RSRSLT;
 }
 
@@ -1081,7 +1081,7 @@ ADSRESULT Grid::GetRowCount()
 		return RSERR;
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
-	acedRetInt( pCtrl->GetItemCount() );
+	acedRetLong( pCtrl->GetItemCount() );
 	return RSRSLT;
 }
 
@@ -1097,7 +1097,7 @@ ADSRESULT Grid::GetColumnCount()
 		return RSERR;
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
-	acedRetInt( pCtrl->GetColumnCount() );
+	acedRetLong( pCtrl->GetColumnCount() );
 	return RSRSLT;
 }
 
@@ -1233,7 +1233,7 @@ ADSRESULT Grid::AddString()
 	while( nTokenPos >= 0 && nTokenPos < cchText )
 		pCtrl->SetCellText( nRow, ++idxCol, TokenizeAllowNull( sRowText, sDelimiters, nTokenPos ) );
 
-	acedRetInt( nRow );
+	acedRetLong( nRow );
 	return RSRSLT;
 }
 

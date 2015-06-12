@@ -43,10 +43,10 @@ public:
 	arg_t( int arg ) : _arg( arg ) {}
 	virtual resbuf* asResbuf() const
 		{
-			resbuf* prb = acutNewRb( RTSHORT );
+			resbuf* prb = acutNewRb( RTLONG );
 			if( !prb )
 				return NULL;
-			prb->resval.rint = static_cast<short>(_arg);
+			prb->resval.rlong = static_cast<long>(_arg);
 			return prb;
 		}
 	virtual CString asString() const

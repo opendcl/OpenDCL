@@ -74,5 +74,5 @@ AcDbHostApplicationServices* acdbHostApplicationServicesEx()
 AcDbHostApplicationServices* acdbHostApplicationServicesEx() { return acdbHostApplicationServices(); } //use original
 #endif
 
-#endif //defined(_ARXTARGET)
+#endif //defined(_ARXTARGET) && (_ARXTARGET < 20)
 

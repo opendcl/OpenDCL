@@ -244,7 +244,13 @@ protected:
 				if( mpView == pView )
 					clear();
 			}
-	#if (_ACADTARGET >= 20)
+	#if (_GRXTARGET)
+		virtual void gsToBeUnloaded( OdGsModule* pModule )
+			{
+				assert( pModule != NULL );
+				clear();
+			}
+	#elif (_ACADTARGET >= 20)
 		virtual void gsToBeUnloaded( AcGsGraphicsKernel* pKernel )
 			{
 				assert( mpKernel == pKernel );
@@ -259,7 +265,7 @@ protected:
 	#endif
 		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
 			{
-			#if (_ACADTARGET >= 20)
+			#if defined(_GRXTARGET) || (_ACADTARGET >= 20)
 				clear();
 			#else
 				// The cached pointers are no longer valid when this reactor fires, so ensure
