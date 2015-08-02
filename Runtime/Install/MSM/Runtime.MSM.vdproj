@@ -722,7 +722,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:8.0.0.13"
+        "Version" = "8:8.0.1.0"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -739,7 +739,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_026ED025BBF34809B085A09A35C27791"
             {
-            "SourcePath" = "8:..\\..\\ARX.18.x64\\Debug\\OpenDCL.x64.18.arx"
+            "SourcePath" = "8:..\\..\\ARX.18.x64\\Release\\OpenDCL.x64.18.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -767,7 +767,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0289BC09E2BB4491A45246A310B4521A"
             {
-            "SourcePath" = "8:..\\..\\BRX.15.x64\\Debug\\OpenDCL.x64.15.brx"
+            "SourcePath" = "8:..\\..\\BRX.15.x64\\Release\\OpenDCL.x64.15.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -795,7 +795,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_03EFD96D87634200BD9D71238C988B14"
             {
-            "SourcePath" = "8:..\\..\\ARX.20\\Debug\\OpenDCL.20.arx"
+            "SourcePath" = "8:..\\..\\ARX.20\\Release\\OpenDCL.20.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -823,7 +823,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0834932F7A474EAFB1BF7E3E027CE7AB"
             {
-            "SourcePath" = "8:..\\..\\BRX.10\\Debug\\OpenDCL.10.brx"
+            "SourcePath" = "8:..\\..\\BRX.10\\Release\\OpenDCL.10.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -851,7 +851,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0BE01A1FD8CD490DAD9638748663B05B"
             {
-            "SourcePath" = "8:..\\..\\ZRX.2015\\Debug\\OpenDCL.2015.zrx"
+            "SourcePath" = "8:..\\..\\ZRX.2015\\Release\\OpenDCL.2015.zrx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -879,7 +879,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1DFF416A975C41689CA0E4A840D5E221"
             {
-            "SourcePath" = "8:..\\..\\BRX.15\\Debug\\OpenDCL.15.brx"
+            "SourcePath" = "8:..\\..\\BRX.15\\Release\\OpenDCL.15.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -907,7 +907,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1E65C652981041D4B7581C75F7B73AAF"
             {
-            "SourcePath" = "8:..\\..\\ARX.18\\Debug\\OpenDCL.18.arx"
+            "SourcePath" = "8:..\\..\\ARX.18\\Release\\OpenDCL.18.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -935,7 +935,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_21BB4F976D9F449B8DB906B58769FC4A"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -963,7 +963,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_279DFDCCBCC44B7B8359B3FB4AF5377E"
             {
-            "SourcePath" = "8:..\\..\\ENU\\Runtime.Res\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\ENU\\Runtime.Res\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D9B21004D7074CD69133DCADBACA6A8A"
@@ -991,7 +991,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_29075FC0160044C4B50B0DE0230DB358"
             {
-            "SourcePath" = "8:..\\..\\BRX.12\\Debug\\OpenDCL.12.brx"
+            "SourcePath" = "8:..\\..\\BRX.12\\Release\\OpenDCL.12.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1019,7 +1019,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_36E67301533B48C791CABAE8AA15C8E8"
             {
-            "SourcePath" = "8:..\\..\\BRX.9\\Debug\\OpenDCL.9.brx"
+            "SourcePath" = "8:..\\..\\BRX.9\\Release\\OpenDCL.9.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1047,7 +1047,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_379FA672087A4BBE80311FD5A9519AA3"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1075,7 +1075,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_449630E0CE8542B2872E4E4C49543E75"
             {
-            "SourcePath" = "8:..\\..\\ARX.19\\Debug\\OpenDCL.19.arx"
+            "SourcePath" = "8:..\\..\\ARX.19\\Release\\OpenDCL.19.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1103,7 +1103,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_620F97C9E5EC40CFBF9FE103D69EB3F4"
             {
-            "SourcePath" = "8:..\\..\\BRX.14.x64\\Debug\\OpenDCL.x64.14.brx"
+            "SourcePath" = "8:..\\..\\BRX.14.x64\\Release\\OpenDCL.x64.14.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1131,7 +1131,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_660C33FBA35144879311A7008F062E83"
             {
-            "SourcePath" = "8:..\\..\\DEU\\Runtime.Res\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\DEU\\Runtime.Res\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_23547504DD574D669C36F9C41B10788D"
@@ -1159,7 +1159,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_83641D0A86F04ADA8FE4BC71F8C37B0C"
             {
-            "SourcePath" = "8:..\\..\\GRX.2015\\Debug\\OpenDCL.2015.grx"
+            "SourcePath" = "8:..\\..\\GRX.2015\\Release\\OpenDCL.2015.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1187,7 +1187,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_837DA18C1C8D4911BB0E84AABE82F467"
             {
-            "SourcePath" = "8:..\\..\\ARX.20.x64\\Debug\\OpenDCL.x64.20.arx"
+            "SourcePath" = "8:..\\..\\ARX.20.x64\\Release\\OpenDCL.x64.20.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1215,7 +1215,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_86C6DCA6B4F94D45891D8CDFAF8DD27E"
             {
-            "SourcePath" = "8:..\\..\\GRX.2015.x64\\Debug\\OpenDCL.x64.2015.grx"
+            "SourcePath" = "8:..\\..\\GRX.2015.x64\\Release\\OpenDCL.x64.2015.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1243,7 +1243,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9812E29621284B3A978CE0ED1A09E771"
             {
-            "SourcePath" = "8:..\\..\\ESM\\Runtime.Res\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\ESM\\Runtime.Res\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_24AE9CCCB62C4E66953D94F5EBC964C5"
@@ -1271,7 +1271,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9FB43905CF6B4086B4DBB8FADAB6C721"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1299,7 +1299,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A90F8D638FC440CFBACC23823C863ECB"
             {
-            "SourcePath" = "8:..\\..\\FRA\\Runtime.Res\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\FRA\\Runtime.Res\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2799E127DC4444F48191C35493FC0F7B"
@@ -1327,7 +1327,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CC8B3E121DD24C45B4C7F2EDB9720238"
             {
-            "SourcePath" = "8:..\\..\\BRX.11\\Debug\\OpenDCL.11.brx"
+            "SourcePath" = "8:..\\..\\BRX.11\\Release\\OpenDCL.11.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1355,7 +1355,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CF44D0BF90124C9A89712C5C50076129"
             {
-            "SourcePath" = "8:..\\..\\BRX.13.x64\\Debug\\OpenDCL.x64.13.brx"
+            "SourcePath" = "8:..\\..\\BRX.13.x64\\Release\\OpenDCL.x64.13.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1383,7 +1383,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CFEDACDB05D54DA5AE3469985641F094"
             {
-            "SourcePath" = "8:..\\..\\RUS\\Runtime.Res\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\RUS\\Runtime.Res\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1D79A86534B04E499BC9DD4A0132C411"
@@ -1411,7 +1411,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D08FCB323B4C410E9094A76D1B2646E9"
             {
-            "SourcePath" = "8:..\\..\\ARX.17.x64\\Debug\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17.x64\\Release\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1439,7 +1439,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D5B11150A08D4A699918F95FDAE5346E"
             {
-            "SourcePath" = "8:..\\..\\ARX.19.x64\\Debug\\OpenDCL.x64.19.arx"
+            "SourcePath" = "8:..\\..\\ARX.19.x64\\Release\\OpenDCL.x64.19.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1467,7 +1467,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DD5928D4C1CD4E28B595A25BB9B91235"
             {
-            "SourcePath" = "8:..\\..\\ZRX.2014\\Debug\\OpenDCL.2014.zrx"
+            "SourcePath" = "8:..\\..\\ZRX.2014\\Release\\OpenDCL.2014.zrx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1495,7 +1495,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E4926B3E477F4EE0B98615F1B1188C22"
             {
-            "SourcePath" = "8:..\\..\\BRX.14\\Debug\\OpenDCL.14.brx"
+            "SourcePath" = "8:..\\..\\BRX.14\\Release\\OpenDCL.14.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1523,7 +1523,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E5994257798E4F518EC653EA21A4CCD8"
             {
-            "SourcePath" = "8:..\\..\\BRX.13\\Debug\\OpenDCL.13.brx"
+            "SourcePath" = "8:..\\..\\BRX.13\\Release\\OpenDCL.13.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1551,7 +1551,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EE39AFF4C55A45ECBDB74B23F9CF490F"
             {
-            "SourcePath" = "8:..\\..\\CHS\\Runtime.Res\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\CHS\\Runtime.Res\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_C18C3B705ED6413D877D286596C853EA"
