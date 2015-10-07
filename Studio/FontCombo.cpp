@@ -9,9 +9,9 @@
 #include "StudioWorkspace.h"
 
 
-// Constant and should not be changed unless 
+// Constant and should not be changed unless
 // image IDB_GLYPH is changed
-#define GLYPH_WIDTH 15 
+#define GLYPH_WIDTH 15
 const int SHX_FONTTYPE = 6;
 
 
@@ -24,11 +24,11 @@ const int SHX_FONTTYPE = 6;
 //
 // DESCRIPTION:	Constructor
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -66,7 +66,7 @@ CFontCombo::CFontCombo()
 		RegCloseKey( hkFontMgmt );
 	}
 }
-	
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,11 +75,11 @@ CFontCombo::CFontCombo()
 //
 // DESCRIPTION:	Constructor
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -106,17 +106,17 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CFontCombo message handlers
 // Overridables for onwerdraw combos
-void CFontCombo::DeleteItem(LPDELETEITEMSTRUCT) 
+void CFontCombo::DeleteItem(LPDELETEITEMSTRUCT)
 {
 }
 // Overridables for onwerdraw combos
-void CFontCombo::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
+void CFontCombo::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	lpMeasureItemStruct->itemHeight = 15;
 }
 
 // Initialize fonts for combo
-int CFontCombo::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CFontCombo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CComboBox::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -132,11 +132,11 @@ int CFontCombo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 //
 // DESCRIPTION:	Owner draw to render bitmap and font name
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -144,15 +144,15 @@ int CFontCombo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS) 
+void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 {
 	ASSERT(lpDIS->CtlType == ODT_COMBOBOX); // We've gotta be a combo
 	int nOffset = 0;
 	// Lets make a CDC for ease of use
 	CDC *pDC = CDC::FromHandle(lpDIS->hDC);
-	
+
 	ASSERT(pDC); // Attached failed
-	
+
 	int nOffset2 = 1;
 	if (lpDIS->rcItem.top > 3)
 	{
@@ -160,18 +160,18 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	}
 
 	CRect rc(lpDIS->rcItem);
-	
+
 	if (lpDIS->itemState > 4000)
 		nOffset = 3;
 	// Draw focus rectangle
 	if (lpDIS->itemState & ODS_FOCUS)
 		pDC->DrawFocusRect(rc);
-	
+
 	// Save off context attributes
 	int nIndexDC = pDC->SaveDC();
 
 	CBrush brushFill;
-	
+
 	// Draw selection state
 	if (lpDIS->itemState & ODS_SELECTED)
 	{
@@ -181,7 +181,7 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	else
 		brushFill.CreateSolidBrush(pDC->GetBkColor());
 
-	
+
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->FillRect(rc, &brushFill);
 
@@ -203,28 +203,28 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 //	ASSERT(pFontObj != NULL);
 	DWORD dwData = GetFontTypeId(strCurFont);// GetItemData(lpDIS->itemID);//pFontObj->GetFlags();
-	
+
 	// Render Bitmaps
 	if (dwData == 4 || dwData == 6)
 		m_img.Draw(pDC,0, CPoint(rc.left,rc.top-nOffset2),ILD_TRANSPARENT);
-	
+
 	int nX = rc.left; // Save for lines
 
 	rc.left += GLYPH_WIDTH + 2; // Text Position
-	
+
 	pDC->TextOut(rc.left,rc.top-nOffset2,strCurFont);
-	
+
 	// GetItemData - return font in use
 	if (GetItemData(lpDIS->itemID))
 	{
 		GetLBText(lpDIS->itemID+1,strNextFont);
 		CFontObj* pFontObjNext;
 		m_mapFonts.Lookup(strNextFont,pFontObjNext);
-		
+
 		if (!GetItemData(lpDIS->itemID+1) && lpDIS->itemState < 4000)
 		{
 			// Draw font MRU separator ==============
-			//                         
+			//
 			TEXTMETRIC tm;
 			pDC->GetTextMetrics(&tm);
 
@@ -233,9 +233,9 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 			pDC->MoveTo(nX,rc.top+tm.tmHeight+2);
 			pDC->LineTo(rc.right,rc.top+tm.tmHeight+2);
-	
+
 		}
-		
+
 	}
 
 	// Restore State of context
@@ -250,7 +250,7 @@ DWORD CFontCombo::GetFontTypeId( LPCTSTR pszFont )
 	while (pos != NULL)
 	{
 		pFontObj = NULL;
-		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);		
+		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);
 		if (strKey == pszFont)
 			return pFontObj->GetFlags();
 	}
@@ -271,7 +271,7 @@ BOOL CFontCombo::EnumerateFonts()
 			(FONTENUMPROC)EnumFamScreenCallBackEx,	// pointer to callback function
 			(LPARAM) this,	// application-supplied data
 			(DWORD) 0);
-	::ReleaseDC(NULL,hDC);	
+	::ReleaseDC(NULL,hDC);
 
 	if( nResult == 0 )
 		return FALSE;
@@ -286,11 +286,11 @@ BOOL CFontCombo::EnumerateFonts()
 //
 // DESCRIPTION:	Destroys font objects
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -298,11 +298,11 @@ BOOL CFontCombo::EnumerateFonts()
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::OnDestroy() 
+void CFontCombo::OnDestroy()
 {
 	POSITION pos = m_mapFonts.GetStartPosition();
-	
-	
+
+
 	while (pos)
 	{
 		CString strKey;
@@ -321,11 +321,11 @@ void CFontCombo::OnDestroy()
 //
 // DESCRIPTION:	Flags a font that is in use, similar to MS Words font MRU list
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -337,7 +337,7 @@ void CFontCombo::SetFontInUse(const CString& strFont)
 {
 	CFontObj *pFontObj;
 	CString strFontDesc;
-	
+
 	// Find the desired font
 	if (m_mapFonts.Lookup(strFont,pFontObj))
 	{
@@ -368,13 +368,13 @@ void CFontCombo::SetFontInUse(const CString& strFont)
 		{
 			// If font is aleady MRU'ed position it as the first font
 			int nSel = FindString(-1,strFont);
-	
+
 			if (nSel != CB_ERR)
 			{
 				// Remove from original position
 				DeleteString(nSel);
 				// Restore to begining of list
-			
+
 				InsertString(0,strFont);
 				SetItemData(0,TRUE); // Mark as selected
 				SetCurSel(0);	// Bring as current selection
@@ -389,11 +389,11 @@ void CFontCombo::SetFontInUse(const CString& strFont)
 //
 // DESCRIPTION:	Set up the current font
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -401,12 +401,12 @@ void CFontCombo::SetFontInUse(const CString& strFont)
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::OnKillfocus() 
+void CFontCombo::OnKillfocus()
 {
 	SetCurrentFont();
 	m_wndTip.ShowWindow(SW_HIDE);
 
-	
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -415,11 +415,11 @@ void CFontCombo::OnKillfocus()
 //
 // DESCRIPTION:	Save current font
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -427,12 +427,12 @@ void CFontCombo::OnKillfocus()
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::OnSetfocus() 
+void CFontCombo::OnSetfocus()
 {
 	// Save off original font
 	GetWindowText(m_strFontSave);
 
-	
+
 
 }
 
@@ -442,11 +442,11 @@ void CFontCombo::OnSetfocus()
 //
 // DESCRIPTION:	Set up the current font
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -466,7 +466,7 @@ void CFontCombo::SetCurrentFont()
 	{
 		GetWindowText(strSelFont);
 		nSel = FindStringExact(-1,strSelFont);
-		
+
 		if (nSel == CB_ERR)
 		{
 			SetWindowText(m_strFontSave);
@@ -480,11 +480,11 @@ void CFontCombo::SetCurrentFont()
 //
 // DESCRIPTION:	Hide tip window and set font name
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -494,7 +494,7 @@ void CFontCombo::SetCurrentFont()
 ////////////////////////////////////////////////////////////////////////////////
 void CFontCombo::OnCloseUp()
 {
-	int nSel;	
+	int nSel;
 
 	CString strFont;
 	// Set Face Name
@@ -513,11 +513,11 @@ void CFontCombo::OnCloseUp()
 //
 // DESCRIPTION:	Initials combo box
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -529,11 +529,11 @@ void CFontCombo::Initialize()
 {
 	CFontObj* pFontObj;
 	CString strKey,strComp;
-	
+
 	EnumerateFonts();
 
 	POSITION pos = m_mapFonts.GetStartPosition();
-	
+
 	// add the sysytem fonts manually because they are not added otherwise
 	AddString( _T("MS Shell Dlg"));
 	AddString( _T("MS Sans Serif"));
@@ -549,14 +549,14 @@ void CFontCombo::Initialize()
 		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);
 		AddString(strKey);
 	}
-	
+
 	// We set the timer because its the only way we know when a selection
 	// has changed - use for tip window
 	SetTimer(1, 200, NULL);
 
 	// Yep tip window is created here
-	m_wndTip.Create(this);
-	
+	m_wndTip.Create();
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -565,11 +565,11 @@ void CFontCombo::Initialize()
 //
 // DESCRIPTION:	Adds a font to the internal array
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -579,7 +579,7 @@ void CFontCombo::Initialize()
 ////////////////////////////////////////////////////////////////////////////////
 void CFontCombo::AddFont(LPCTSTR pszFontName, DWORD dwFlags)
 {
-	CFontObj* pFontObj;	
+	CFontObj* pFontObj;
 
 	// Check fonts not aleady in the array
 	if (!m_mapFonts.Lookup(pszFontName,pFontObj))
@@ -592,11 +592,11 @@ void CFontCombo::AddFont(LPCTSTR pszFontName, DWORD dwFlags)
 //
 // DESCRIPTION:	Positions tip window against selected font
 //
-// INPUTS:		
+// INPUTS:
 //
-// RETURNS:     
+// RETURNS:
 //
-// NOTES:       
+// NOTES:
 //
 // MODIFICATIONS:
 //
@@ -604,14 +604,14 @@ void CFontCombo::AddFont(LPCTSTR pszFontName, DWORD dwFlags)
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::OnTimer(UINT_PTR nIDEvent) 
+void CFontCombo::OnTimer(UINT_PTR nIDEvent)
 {
 	// Is combo open
 	if (GetDroppedState( ))
 	{
 		int nSel = GetCurSel();
 		int FirstVis = GetTopIndex();
-		
+
 		// Selected
 		if (nSel != -1 && FirstVis <= nSel)
 		{
@@ -663,14 +663,14 @@ bool CFontCombo::IsHidden( LPCTSTR pszFont )
 	return false;
 }
 
-BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf, 
+BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf,
 	NEWTEXTMETRICEX* lpntm, int FontType, CFontCombo* pThis)
 
 {
 	// don't put in non-printer raster fonts
 	if (FontType & RASTER_FONTTYPE)
 		return 1;
-	
+
 	if (FontType & TRUETYPE_FONTTYPE)
 	{
 		CFontCombo* pFontCombo = (CFontCombo*)pThis;
@@ -679,16 +679,16 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 			return 1;
 		pFontCombo->AddFont(sFont, TRUETYPE_FONTTYPE);
 	}
-	
+
 	return 1; // Call me back
 }
 
-BOOL CFontCombo::PreTranslateMessage(MSG* pMsg) 
+BOOL CFontCombo::PreTranslateMessage(MSG* pMsg)
 {
 	return CComboBox::PreTranslateMessage(pMsg);
 }
 
-void CFontCombo::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
+void CFontCombo::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	lpMeasureItemStruct->itemHeight = 15;
 	CComboBox::OnMeasureItem(nIDCtl, lpMeasureItemStruct);

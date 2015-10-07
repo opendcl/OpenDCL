@@ -1,19 +1,19 @@
-// (C) Copyright 2002-2005 by Autodesk, Inc. 
+// (C) Copyright 2002-2005 by Autodesk, Inc.
 //
 // Permission to use, copy, modify, and distribute this software in
-// object code form for any purpose and without fee is hereby granted, 
-// provided that the above copyright notice appears in all copies and 
+// object code form for any purpose and without fee is hereby granted,
+// provided that the above copyright notice appears in all copies and
 // that both that copyright notice and the limited warranty and
-// restricted rights notice below appear in all supporting 
+// restricted rights notice below appear in all supporting
 // documentation.
 //
-// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS. 
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
 // AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
-// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC. 
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 //
-// Use, duplication, or disclosure by the U.S. Government is subject to 
+// Use, duplication, or disclosure by the U.S. Government is subject to
 // restrictions set forth in FAR 52.227-19 (Commercial Computer
 // Software - Restricted Rights) and DFAR 252.227-7013(c)(1)(ii)
 // (Rights in Technical Data and Computer Software), as applicable.
@@ -26,8 +26,13 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
+#if defined(_BRXTARGET) && defined(AC_FULL_DEBUG)
+#undef _BRXTARGET
+#define _BRXTARGET 16
+#endif
+
 //-----------------------------------------------------------------------------
-//- 'DEBUG workaround' below prevents the MFC or ATL #include-s from pulling 
+//- 'DEBUG workaround' below prevents the MFC or ATL #include-s from pulling
 //- in "Afx.h" that would force the debug CRT through #pragma-s.
 #if defined(_DEBUG) && !defined(AC_FULL_DEBUG)
 #define _DEBUG_WAS_DEFINED
@@ -54,7 +59,7 @@
 
 #ifndef _WIN32_WINNT			//- Allow use of features specific to Windows NT 4 or later.
 #define _WIN32_WINNT 0x0500		//- Change this to the appropriate value to target Windows 2000 or later.
-#endif						
+#endif
 
 #ifndef _WIN32_WINDOWS			//- Allow use of features specific to Windows 98 or later.
 #define _WIN32_WINDOWS 0x0410	//- Change this to the appropriate value to target Windows Me or later.
@@ -67,6 +72,7 @@
 
 //- ObjectARX and OMF headers needs this
 #include <map>
+#include <algorithm>
 
 //-----------------------------------------------------------------------------
 #include <afxwin.h>				//- MFC core and standard components

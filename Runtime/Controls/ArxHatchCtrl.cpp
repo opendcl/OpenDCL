@@ -57,7 +57,7 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 	AcDbDatabase* pWorkingDb = new AcDbDatabase( true, true );
 	if( !pWorkingDb )
 		return false;
-	
+
 	AcDbBlockTable* pBlockTable = NULL;
 	Acad::ErrorStatus es = pWorkingDb->getSymbolTable( pBlockTable, AcDb::kForRead );
 	if( es != Acad::eOk )
@@ -80,11 +80,11 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 		// Construct database AcDbLines
 		//
 		AcGePoint3d vertexPts[4];
-	
+
 		int nTheWidth = ::GetSystemMetrics(SM_CXSCREEN);
 		int nTheHeight =::GetSystemMetrics(SM_CYSCREEN);
 		CRect rc(0,0,nTheWidth, nTheHeight);
-		
+
 		rc.left -= nTheWidth*0.5;
 		rc.right -= nTheWidth*0.5;
 		rc.top -= nTheHeight*0.5;
@@ -102,7 +102,7 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 								GetGValue(crFore),
 								GetBValue(crFore) );
 
-		for( int i = 0; i < 4; i++ ) 
+		for( int i = 0; i < 4; i++ )
 		{
 			AcDbLine* pLine = new AcDbLine();
 			pLine->setStartPoint( vertexPts[i] );
@@ -121,8 +121,12 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 
 		double dblPatternScaleFactor = 1.0;
 		AcDbDatabase* pCurDwg = acdbCurDwg();
-		if( pCurDwg && pCurDwg->measurement() == AcDb::kEnglish )
-			dblPatternScaleFactor = 25.4;
+		if( pCurDwg )
+		{
+			if( pCurDwg->measurement() == AcDb::kEnglish )
+				dblPatternScaleFactor = 25.4;
+			pWorkingDb->setMeasurement( pCurDwg->measurement() );
+		}
 
 		AcDbHatch* pHatch = new AcDbHatch;
 		pHatch->setNormal( AcGeVector3d( 0.0, 0.0, 1.0 ) );
@@ -133,18 +137,18 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 		//pHatch->setHatchStyle(AcDbHatch::kNormal);
 		pHatch->appendLoop( AcDbHatch::kExternal, mridLoop );
 		pHatch->setPattern( AcDbHatch::kPreDefined, pszPattern );
-		pHatch->evaluateHatch();
 		pHatch->setColor( clr );
-	
+
 		es = pModelSpace->appendAcDbEntity( midHatch, pHatch );
 		assert( es == Acad::eOk );
 		if( es != Acad::eOk )
 			delete pHatch;
 		else
+		{
+			pHatch->evaluateHatch();
 			pHatch->close();
+		}
 	}
-
-	AcGePoint3d extMax = pWorkingDb->extmax();
 
 	DisplayBTR( pModelSpace, 1.0, false, 1, AcGeVector3d::kZAxis );
 

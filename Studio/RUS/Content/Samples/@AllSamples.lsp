@@ -349,8 +349,8 @@
 )
 
 (defun c:AllSamples/Main#OnSize (NewWidth NewHeight /)
-  (dcl-Grid-SetColumnWidth AllSamples/Main/Basic 2 (- (dcl-Control-GetWidth AllSamples/Main/Basic) (dcl-Grid-GetColumnWidth AllSamples/Main/Basic 0) 18))
-  (dcl-Grid-SetColumnWidth AllSamples/Main/Advanced 2 (- (dcl-Control-GetWidth AllSamples/Main/Advanced) (dcl-Grid-GetColumnWidth AllSamples/Main/Advanced 0) 18))
+  (dcl-Grid-SetColumnWidth AllSamples/Main/Basic 2 (- (dcl-Control-GetWidth AllSamples/Main/Basic) (dcl-Grid-GetColumnWidth AllSamples/Main/Basic 0) 21))
+  (dcl-Grid-SetColumnWidth AllSamples/Main/Advanced 2 (- (dcl-Control-GetWidth AllSamples/Main/Advanced) (dcl-Grid-GetColumnWidth AllSamples/Main/Advanced 0) 21))
   (princ)
 )
 

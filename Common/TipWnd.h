@@ -27,7 +27,7 @@ public:
 
 // Interface
 public:
-	BOOL Create(CWnd* pParent);
+	BOOL Create();
 	void Show(const CPoint& ptTip, const CSize& szTip);
 	void Show();
 	void Hide();
@@ -38,10 +38,11 @@ protected:
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
-	
+
 	afx_msg LRESULT OnGetFont(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSetFont(WPARAM wParam, LPARAM lParam);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg void OnDestroy();
 };

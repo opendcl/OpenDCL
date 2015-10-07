@@ -111,7 +111,7 @@ const TDclFormPtr CDclControlTemplate::GetOwnerForm() const
 
 void CDclControlTemplate::SetControlInstance( CDialogControl* pDlgControl )
 {
-	//note: an assertion here indicates more than 1 instance of the control; perhaps 
+	//note: an assertion here indicates more than 1 instance of the control; perhaps
 	//an earlier instance didn't get destroyed when it should have been?
 	assert( mpDlgControl == NULL || pDlgControl == NULL );
 	mpDlgControl = pDlgControl;
@@ -138,12 +138,12 @@ void CDclControlTemplate::SetControlInstance( CDialogControl* pDlgControl )
 //  if (mpImageList != NULL)
 //  {
 //    bImageList = TRUE;
-//    writeBOOL(pFile, bImageList);	
+//    writeBOOL(pFile, bImageList);
 //    mpImageList->WriteToTextFile(pFile, fileName);
 //  }
 //  else
 //  {
-//    bImageList = FALSE;			
+//    bImageList = FALSE;
 //    writeBOOL(pFile, bImageList);
 //  }
 //
@@ -153,17 +153,17 @@ void CDclControlTemplate::SetControlInstance( CDialogControl* pDlgControl )
 //    writeString(pFile, m_sLicenseKey);
 //    writeCLSID(pFile, m_clsid);
 //    try
-//    {		
+//    {
 //      if (m_pStream) {
 //				LARGE_INTEGER nZeroDisp = { 0, 0 };
 //				ULARGE_INTEGER iSeekPtr;
 //				HRESULT hr = m_pStream->Seek( nZeroDisp, STREAM_SEEK_END, &iSeekPtr );
 //				ULONG cbStream = ULONG( iSeekPtr.QuadPart );
 //				ULONG nBytesLeft = cbStream;
-//				
+//
 //				// store the bytes left
 //				ar << nBytesLeft;
-//				
+//
 //				hr = m_pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
 //				ULONG nBytesRead;
 //        BYTE* abData = new BYTE[nBytesLeft];
@@ -303,14 +303,14 @@ void CDclControlTemplate::Serialize(CArchive& ar)
 				if( nThisVersion >= 12 )
 				{
 					mpImageList = new CDclImageList();
-					mpImageList->Serialize(ar);		
+					mpImageList->Serialize(ar);
 					if( mpImageList->IsNull() )
 						mpImageList = NULL;
 				}
 				else
 				{
 					CImageListObject temp;
-					temp.Serialize(ar);		
+					temp.Serialize(ar);
 					if( !temp.IsDeleted() )
 						mpImageList = new CDclImageList( &temp.GetImageList() );
 				}
@@ -394,7 +394,7 @@ void CDclControlTemplate::Serialize(CArchive& ar)
 		if (nThisVersion >= 2)
 		{
 			unsigned short nCount;
-			ar >> nCount;		
+			ar >> nCount;
 			while (nCount-- > 0)
 			{
 				TPropertyPtr pProp = new CPropertyObject( TDclControlLockedPtr( this ), PropInvalid );
@@ -912,8 +912,8 @@ void CDclControlTemplate::SetFontProperties( const FontSettings& FS, UINT flags 
 		SetBooleanProperty( Prop::FontUnderline, FS.isUnderlined() );
 }
 
-void CDclControlTemplate::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )	
-{	
+void CDclControlTemplate::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )
+{
 	CString sParentName = pszParentName;
 	if( sParentName.IsEmpty() )
 		sParentName = mpOwner->GetKeyPath();
@@ -921,13 +921,13 @@ void CDclControlTemplate::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*
 	AddStringProperty( Prop::VarName, PropString, sControlName, true );
 }
 
-void CDclControlTemplate::ClearGlobalVariableName()	
-{	
+void CDclControlTemplate::ClearGlobalVariableName()
+{
 	SetStringProperty( Prop::VarName, NULL );
 }
 
-void CDclControlTemplate::ResetEventNames()	
-{	
+void CDclControlTemplate::ResetEventNames()
+{
 	for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
 		TPropertyPtr pProp = *iter;
@@ -948,7 +948,7 @@ void CDclControlTemplate::ResetEventNames()
 	}
 }
 
-bool CDclControlTemplate::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )	
+bool CDclControlTemplate::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -976,7 +976,7 @@ TPropertyPtr CDclControlTemplate::AddStringProperty( Prop::Id nID,
 	return pProp;
 }
 
-bool CDclControlTemplate::SetBooleanProperty( Prop::Id nID, bool bValue /*= true*/ )	
+bool CDclControlTemplate::SetBooleanProperty( Prop::Id nID, bool bValue /*= true*/ )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -1004,7 +1004,7 @@ TPropertyPtr CDclControlTemplate::AddBooleanProperty( Prop::Id nID,
 	return pProp;
 }
 
-bool CDclControlTemplate::SetLongProperty( Prop::Id nID, long lValue /*= -1*/ )	
+bool CDclControlTemplate::SetLongProperty( Prop::Id nID, long lValue /*= -1*/ )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -1080,7 +1080,7 @@ double CDclControlTemplate::GetDoubleProperty( Prop::Id nID ) const
 		return pProp->GetDoubleValue();
 	return 0.0;
 }
-	
+
 bool CDclControlTemplate::GetBooleanProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
@@ -1099,7 +1099,7 @@ bool CDclControlTemplate::GetBooleanProperty( Prop::Id nID ) const
 }
 
 TPropertyPtr CDclControlTemplate::GetMethods() const
-{ 
+{
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
 		if( (*iter)->GetType() == PropActiveXMethods )
@@ -1111,7 +1111,7 @@ TPropertyPtr CDclControlTemplate::GetMethods() const
 TPropertyList::iterator CDclControlTemplate::FindPropertyInsertPos( Prop::Id id, bool bHidden )
 {
 	if( id == Prop::ControlBrowser )
-		return mProperties.begin();		
+		return mProperties.begin();
 	return FindPropertyInsertPos( GetPropertyApiName( id ), bHidden );
 }
 
@@ -1186,7 +1186,7 @@ IOStatus CDclControlTemplate::ReadFromTextFile(std::ifstream &sFile, const CStri
 	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
 	switch (iVersion) {
-		case 6 : 
+		case 6 :
 			return ReadFromTextFile6(sFile, fileName);
 			break;
 	}
@@ -1293,7 +1293,7 @@ IOStatus CDclControlTemplate::ReadFromTextFile6(std::ifstream &sFile, const CStr
 				pProp->SetStringValue( pProp->GetConstAxInterfaceDescriptorPtr()->GetName() );
 			}
 		}
-		mProperties.push_back(pProp);		
+		mProperties.push_back(pProp);
 	}
 
 	// here were are going to add the font of this object to the font collection

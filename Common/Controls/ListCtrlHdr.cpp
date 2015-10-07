@@ -71,7 +71,7 @@ void CListCtrlHdr::CHdrTipWnd::Show(int nCol)
 	if (rcCell.Width() < (sizCell.cx + nNonLabelWidth) || rcCell.Height() < sizCell.cy)
 	{
 		if (!m_hWnd)
-			Create(NULL);
+			Create();
 		SetFont(pFont);
 		SetWindowText(sLabel);
 		mpHdrCtrl->ClientToScreen(&rcCell);
@@ -101,7 +101,7 @@ void CListCtrlHdr::PreSubclassWindow()
 {
 	__super::PreSubclassWindow();
 	EnableToolTips(FALSE);
-	mTipWnd.Create(this);
+	mTipWnd.Create();
 }
 
 BOOL CListCtrlHdr::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
@@ -110,7 +110,7 @@ BOOL CListCtrlHdr::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UIN
     if (bSuccess)
     {
         EnableToolTips(FALSE);
-        mTipWnd.Create(this);
+        mTipWnd.Create();
     }
 	return bSuccess;
 }

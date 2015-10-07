@@ -361,8 +361,8 @@ static bool IsWow64()
 }
 
 
-BOOL APIENTRY DllMain( HMODULE hModule, 
-											 DWORD  ul_reason_for_call, 
+BOOL APIENTRY DllMain( HMODULE hModule,
+											 DWORD  ul_reason_for_call,
 											 LPVOID lpReserved )
 {
 	switch (ul_reason_for_call)
@@ -386,7 +386,7 @@ public:
 	enum Architecture { kAny = 0, kX86, kX64, };
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, kZWCAD, kGstarCAD };
 	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
-											kBRX13 = 13, kBRX14 = 14, kBRX15 = 15,
+											kBRX13 = 13, kBRX14 = 14, kBRX15 = 15, kBRX16 = 16,
 											kZRX2014 = 14, kZRX2015 = 15,
 											kGRX2015 = 15,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
@@ -516,6 +516,8 @@ public:
 		kBricscad14x64 =     (kX64Architecture | kBricscadPlatform | (kBRX14 << shftMajorVer) | 0),
 		kBricscad15x86 =     (kX86Architecture | kBricscadPlatform | (kBRX15 << shftMajorVer) | 0),
 		kBricscad15x64 =     (kX64Architecture | kBricscadPlatform | (kBRX15 << shftMajorVer) | 0),
+		kBricscad16x86 =     (kX86Architecture | kBricscadPlatform | (kBRX16 << shftMajorVer) | 0),
+		kBricscad16x64 =     (kX64Architecture | kBricscadPlatform | (kBRX16 << shftMajorVer) | 0),
 		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 		kZWCAD2015x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2015 << shftMajorVer) | 0),
 		kGstarCAD2015x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
@@ -768,6 +770,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad15x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kBricscad16x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD14, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	//EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2000, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2004, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -789,6 +792,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad15x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad16x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -913,6 +917,7 @@ void UninstallAllTargets( HKEY hkRoot )
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15"), hkRoot );
+	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V16"), hkRoot );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), hkRoot );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2015"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot );
@@ -930,6 +935,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V16x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot, true );
 	}
 }

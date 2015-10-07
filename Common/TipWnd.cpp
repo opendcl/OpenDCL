@@ -29,9 +29,9 @@ CTipWnd::~CTipWnd()
 {
 }
 
-BOOL CTipWnd::Create( CWnd* pParentWnd ) 
+BOOL CTipWnd::Create()
 {
-	HWND hwndParent = pParentWnd? pParentWnd->m_hWnd : ::GetDesktopWindow();
+	HWND hwndParent = ::GetDesktopWindow();
 	DWORD dwStyle = (WS_BORDER | WS_POPUP);
 	DWORD dwExStyle = (WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW);
 	BOOL bSuccess = CreateEx( dwExStyle, AfxRegisterWndClass( CS_DROPSHADOW ), NULL, dwStyle, 0, 0, 0, 0, hwndParent, NULL );
@@ -98,6 +98,7 @@ BEGIN_MESSAGE_MAP(CTipWnd, CWnd)
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -120,12 +121,12 @@ LRESULT CTipWnd::OnSetFont(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-BOOL CTipWnd::OnEraseBkgnd(CDC* pDC) 
+BOOL CTipWnd::OnEraseBkgnd(CDC* pDC)
 {
 	return TRUE;
 }
 
-void CTipWnd::OnPaint() 
+void CTipWnd::OnPaint()
 {
 	CPaintDC dc(this);
 	Paint( &dc );
@@ -134,4 +135,9 @@ void CTipWnd::OnPaint()
 __UINT_LRESULT CTipWnd::OnNcHitTest(CPoint point)
 {
 	return HTTRANSPARENT;
+}
+
+void CTipWnd::OnDestroy()
+{
+	__super::OnDestroy();
 }

@@ -42,7 +42,7 @@ typedef struct tagNMLVSCROLL
 		int     dy;
 } NMLVSCROLL, *LPNMLVSCROLL;
 
-#define LVN_BEGINSCROLL          (LVN_FIRST-80)          
+#define LVN_BEGINSCROLL          (LVN_FIRST-80)
 #define LVN_ENDSCROLL            (LVN_FIRST-81)
 #endif //(_WIN32_WINNT < 0x501)
 #define HDM_SETBITMAPMARGIN (HDM_FIRST + 20)
@@ -186,7 +186,7 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 		DWORD dwExStyle = GetExtendedStyle();
 		EnableToolTips(FALSE);
-		mTipWnd.Create( this );
+		mTipWnd.Create();
 
 		CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
 		if (pHeaderCtrl)
@@ -315,7 +315,7 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::ColumnWidths:
 		if( !IsEnumeratingProperties() )
 		{
-			const PropVal::TIntArray* prnWidths = pProp->GetConstIntArrayPtr();	
+			const PropVal::TIntArray* prnWidths = pProp->GetConstIntArrayPtr();
 			size_t idxMax = prnWidths? prnWidths->size() : 0;
 			for( int idxColumn = idxMax - 1; idxColumn >= 0; --idxColumn )
 				SetColumnWidth( idxColumn, prnWidths->at( idxColumn ) );
@@ -515,19 +515,19 @@ void CGridCtrl::SetCellStyle( int nRow, int nCol, Grid::CellStyle nStyle, int im
 			LVITEM lvi = { LVIF_STATE, nRow, nCol, (1 << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
-		}	
+		}
 	case Grid::OptionButtons:
 		{
 			LVITEM lvi = { LVIF_STATE, nRow, nCol, (1 << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
-		}	
+		}
 	case Grid::SwitchableIcons:
 		{
 			LVITEM lvi = { LVIF_STATE, nRow, nCol, (altImage << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
-		}	
+		}
 	case Grid::UpperCase:
 	case Grid::UpperCase_Combo:
 		{
@@ -535,7 +535,7 @@ void CGridCtrl::SetCellStyle( int nRow, int nCol, Grid::CellStyle nStyle, int im
 			sText.MakeUpper();
 			SetCellText( nRow, nCol, sText );
 			break;
-		}	
+		}
 	case Grid::LowerCase:
 	case Grid::LowerCase_Combo:
 		{
@@ -553,7 +553,7 @@ void CGridCtrl::SetCurCellText( LPCTSTR pszText )
 		SetCellText( mCurrentCell.row(), mCurrentCell.col(), pszText );
 }
 
-int CGridCtrl::GetCellImage( int nRow, int nCol )  
+int CGridCtrl::GetCellImage( int nRow, int nCol )
 {
 	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
 	//GetItem( &lvItem );
@@ -564,7 +564,7 @@ int CGridCtrl::GetCellImage( int nRow, int nCol )
 	return -1;
 }
 
-int CGridCtrl::GetCellAltImage( int nRow, int nCol )  
+int CGridCtrl::GetCellAltImage( int nRow, int nCol )
 {
 	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
 	//GetItem( &lvItem );
@@ -575,10 +575,10 @@ int CGridCtrl::GetCellAltImage( int nRow, int nCol )
 	return -1;
 }
 
-void CGridCtrl::SetCellImages( int nRow, int nCol, int nImage, int nAltImage/* = -2*/ )  
+void CGridCtrl::SetCellImages( int nRow, int nCol, int nImage, int nAltImage/* = -2*/ )
 {
 	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
-	//lvItem.iImage = nImage;	
+	//lvItem.iImage = nImage;
 	//SetItem( &lvItem );
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
 	CellData.midxImage = nImage;
@@ -657,7 +657,7 @@ bool CGridCtrl::SetCellListData( int nRow, int nCol, const CArray<int, int>& rnI
 			break;
 		case Grid::LowerCase:
 		case Grid::LowerCase_Combo:
-			sText.MakeLower();					
+			sText.MakeLower();
 			break;
 		}
 		rList.push_back( (LPCTSTR)sText );
@@ -693,7 +693,7 @@ bool CGridCtrl::GetCellComboListItems( int nRow, int nCol,
 		return true;
 	}
 	const PropVal::TCStringArrayList* pItemList =
-		mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetConstStringArrayListPtr();	
+		mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetConstStringArrayListPtr();
 	if( pItemList && nCol < (int)pItemList->size() )
 	{
 		rsList.clear();
@@ -788,7 +788,7 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 	CString sHeading = lpszColumnHeading;
 	if( nWidth < 0 )
 		nWidth = GetStringWidth( lpszColumnHeading ) + 20;
-	LVCOLUMN lvColumn = 
+	LVCOLUMN lvColumn =
 	{
 		(LVCF_FMT | LVCF_TEXT | LVCF_WIDTH),
 		nFormat,
@@ -821,28 +821,28 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 			PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetIntArrayPtr();
 			if( prnWidths && prnWidths->size() >= (size_t)nRet )
 				prnWidths->insert( prnWidths->begin() + nRet, nWidth );
-			PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();	
+			PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();
 			if( prsCaptions && prsCaptions->size() >= (size_t)nRet )
 				prsCaptions->insert( prsCaptions->begin() + nRet, sHeading );
-			PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();	
+			PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();
 			if( prnImages && prnImages->size() >= (size_t)nRet )
 				prnImages->insert( prnImages->begin() + nRet, nImageIndex );
-			PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();	
+			PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();
 			if( prnAlignment && prnAlignment->size() >= (size_t)nRet )
 				prnAlignment->insert( prnAlignment->begin() + nRet, nFormat );
-			PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();	
+			PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();
 			if( prnStyles && prnStyles->size() >= (size_t)nRet )
 				prnStyles->insert( prnStyles->begin() + nCol, Grid::Runtime );
-			PropVal::TIntArray* prnDefImages = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();	
+			PropVal::TIntArray* prnDefImages = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();
 			if( prnDefImages && prnDefImages->size() >= (size_t)nRet )
 				prnDefImages->insert( prnDefImages->begin() + nCol, -1 );
-			PropVal::TIntArray* prnAltImages = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();	
+			PropVal::TIntArray* prnAltImages = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();
 			if( prnAltImages && prnAltImages->size() >= (size_t)nRet )
 				prnAltImages->insert( prnAltImages->begin() + nCol, -1 );
-			PropVal::TCStringArrayList* prnListItems = mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();	
+			PropVal::TCStringArrayList* prnListItems = mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();
 			if( prnListItems && prnListItems->size() >= (size_t)nRet )
 				prnListItems->insert( prnListItems->begin() + nCol, PropVal::TCStringArray() );
-			PropVal::TIntArrayList* prnListImages = mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();	
+			PropVal::TIntArrayList* prnListImages = mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();
 			if( prnListImages && prnListImages->size() >= (size_t)nRet )
 				prnListImages->insert( prnListImages->begin() + nCol, PropVal::TIntArray() );
 		}
@@ -895,35 +895,35 @@ BOOL CGridCtrl::DeleteColumn( int nCol )
 		PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetIntArrayPtr();
 		if( prnWidths && prnWidths->size() > (size_t)nCol )
 			prnWidths->erase( prnWidths->begin() + nCol );
-		PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();	
+		PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();
 		if( prsCaptions && prsCaptions->size() > (size_t)nCol )
 			prsCaptions->erase( prsCaptions->begin() + nCol );
-		PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();	
+		PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();
 		if( prnImages && prnImages->size() > (size_t)nCol )
 			prnImages->erase( prnImages->begin() + nCol );
-		PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();	
+		PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();
 		if( prnAlignment && prnAlignment->size() > (size_t)nCol )
 			prnAlignment->erase( prnAlignment->begin() + nCol );
-		PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();	
+		PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();
 		if( prnStyles && prnStyles->size() > (size_t)nCol )
 			prnStyles->erase( prnStyles->begin() + nCol );
-		PropVal::TIntArray* prnDefImages = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();	
+		PropVal::TIntArray* prnDefImages = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();
 		if( prnDefImages && prnDefImages->size() > (size_t)nCol )
 			prnDefImages->erase( prnDefImages->begin() + nCol );
-		PropVal::TIntArray* prnAltImages = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();	
+		PropVal::TIntArray* prnAltImages = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();
 		if( prnAltImages && prnAltImages->size() > (size_t)nCol )
 			prnAltImages->erase( prnAltImages->begin() + nCol );
-		PropVal::TCStringArrayList* prnListItems = mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();	
+		PropVal::TCStringArrayList* prnListItems = mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();
 		if( prnListItems && prnListItems->size() > (size_t)nCol )
 			prnListItems->erase( prnListItems->begin() + nCol );
-		PropVal::TIntArrayList* prnListImages = mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();	
+		PropVal::TIntArrayList* prnListImages = mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();
 		if( prnListImages && prnListImages->size() > (size_t)nCol )
 			prnListImages->erase( prnListImages->begin() + nCol );
 	}
 	return TRUE;
 }
 
-void CGridCtrl::InvalidateCell( int nRow, int nCol ) 
+void CGridCtrl::InvalidateCell( int nRow, int nCol )
 {
 	CRect rc = GetCellRect( nRow, nCol );
 	InvalidateRect( rc, TRUE );
@@ -997,10 +997,10 @@ void CGridCtrl::SetupColumns()
 	for( int idxColumn = mcColumns; idxColumn >= 0; --idxColumn )
 		DeleteColumn( idxColumn );
 	mcColumns = 0;
-	const PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetConstIntArrayPtr();	
-	const PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetConstStringArrayPtr();	
-	const PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetConstIntArrayPtr();	
-	const PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();	
+	const PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetConstIntArrayPtr();
+	const PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetConstStringArrayPtr();
+	const PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetConstIntArrayPtr();
+	const PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();
 	size_t idxMax = prsCaptions? prsCaptions->size() : 0;
 	if( prnWidths && prnWidths->size() > idxMax )
 		idxMax = prnWidths->size();
@@ -1014,13 +1014,13 @@ void CGridCtrl::SetupColumns()
 		if( prnAlignment && idxColumn < prnAlignment->size() )
 		{
 			switch( prnAlignment->at( idxColumn ) )
-			{					
+			{
 			case 1:
 				nAlignment = HDF_CENTER;
 				break;
 			case 2:
 				nAlignment = HDF_RIGHT;
-				break;				
+				break;
 			default:
 				nAlignment = HDF_LEFT;
 				break;
@@ -1115,7 +1115,7 @@ CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 	return NULL;
 }
 
-void CGridCtrl::MoveUp() 
+void CGridCtrl::MoveUp()
 {
 	int nRow = mCurrentCell.row();
 	if( nRow <= 0 )
@@ -1123,7 +1123,7 @@ void CGridCtrl::MoveUp()
 	SetCurCell( nRow - 1, mCurrentCell.col() );
 }
 
-void CGridCtrl::MoveDown() 
+void CGridCtrl::MoveDown()
 {
 	int nRow = mCurrentCell.row() + 1;
 	if( nRow >= GetItemCount() )
@@ -1131,7 +1131,7 @@ void CGridCtrl::MoveDown()
 	SetCurCell( nRow, mCurrentCell.col() );
 }
 
-void CGridCtrl::MoveLeft() 
+void CGridCtrl::MoveLeft()
 {
 	int nCol = mCurrentCell.col();
 	if( nCol <= 0 )
@@ -1141,7 +1141,7 @@ void CGridCtrl::MoveLeft()
 	SetCurCell( mCurrentCell.row(), nCol - 1 );
 }
 
-void CGridCtrl::MoveRight() 
+void CGridCtrl::MoveRight()
 {
 	int nCol = mCurrentCell.col() + 1;
 	if( nCol <= (mbHasRowHeader? 1 : 0) )
@@ -1174,7 +1174,7 @@ bool CGridCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol ) const
 	return false;
 }
 
-void CGridCtrl::SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage )  
+void CGridCtrl::SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage )
 {
 	if( nRow < 0 || nCol < ((nImage >= 0)? 1 : 0) ) //CListCtrl won't allow images in the first column
 		return;
@@ -1222,7 +1222,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 	//									 ((lvi.state & LVIS_DROPHILITED) || (lvi.state & LVIS_SELECTED)));
 
 	CRect rcBounds = GetCellRect( nRow, nCol, LVIR_BOUNDS );
-	CRect rcLabel = GetCellRect( nRow, nCol, LVIR_LABEL ); 
+	CRect rcLabel = GetCellRect( nRow, nCol, LVIR_LABEL );
 	CRect rcIcon = GetCellRect( nRow, nCol, LVIR_ICON );
 	CString sLabel = GetCellText( nRow, nCol );
 
@@ -1261,9 +1261,9 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 		if( !IsWindowEnabled() )
 		{
 			crBackground = GetSysColor( COLOR_INACTIVEBORDER );
-			cdc.FillSolidRect( &rcBounds, crBackground ); 
+			cdc.FillSolidRect( &rcBounds, crBackground );
 			cdc.SetBkColor( crBackground );
-			cdc.SetTextColor( mColorService.GetForegroundColor() ); 
+			cdc.SetTextColor( mColorService.GetForegroundColor() );
 		}
 		else if( nCol == 0 && mbHasRowHeader )
 		{
@@ -1281,26 +1281,26 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 				cdc.SelectObject( pOldPen );
 			}
 			else
-			{			
-				cdc.FillSolidRect( &rcHeader, GetSysColor( COLOR_BTNFACE ) ); 
+			{
+				cdc.FillSolidRect( &rcHeader, GetSysColor( COLOR_BTNFACE ) );
 				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
-			}    
+			}
 			cdc.SetBkColor( crBackground );
-			cdc.SetTextColor( mColorService.GetForegroundColor() ); 
+			cdc.SetTextColor( mColorService.GetForegroundColor() );
 		}
 		else
 		{
 			if( bHighlight )
 			{
-				cdc.FillSolidRect( &rcBounds, GetSysColor( COLOR_HIGHLIGHT ) ); 
+				cdc.FillSolidRect( &rcBounds, GetSysColor( COLOR_HIGHLIGHT ) );
 				cdc.SetBkColor( ::GetSysColor( COLOR_HIGHLIGHT ) );
 				cdc.SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
 			}
 			else
 			{
-				cdc.FillSolidRect( &rcBounds, crBackground ); 
+				cdc.FillSolidRect( &rcBounds, crBackground );
 				cdc.SetBkColor( crBackground );
-				cdc.SetTextColor( mColorService.GetForegroundColor() ); 
+				cdc.SetTextColor( mColorService.GetForegroundColor() );
 			}
 			if (mbHasGridLines)
 			{
@@ -1426,10 +1426,10 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 					nCellImage = nUncheckedImage;
 			}
 
-			if( nCellImage > -1 ) 
+			if( nCellImage > -1 )
 			{
 				CImageList* pImageList = GetImageList( LVSIL_SMALL );
-				if( pImageList ) 
+				if( pImageList )
 				{
 					IMAGEINFO inf;
 					pImageList->GetImageInfo( nCellImage, &inf );
@@ -1493,16 +1493,16 @@ void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, 
 	//{
 	//	// draw the round option button
 	//	if( bPressed )
-	//		pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), BP_RADIOBUTTON, 
+	//		pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), BP_RADIOBUTTON,
 	//																 (bSelected? RBS_CHECKEDNORMAL : RBS_CHECKEDNORMAL), &rc, NULL );
 	//	else
 	//		pTheme->DrawThemeBackground(hTheme, m_hWnd, cdc.GetSafeHdc(),
-	//			BP_RADIOBUTTON, 
+	//			BP_RADIOBUTTON,
 	//			(bSelected ? RBS_UNCHECKEDNORMAL : RBS_UNCHECKEDNORMAL), &rc, NULL);
 	//	pTheme->CloseThemeData(hTheme);
 
 	//	//// draw top left corner, this is required to paint of the
-	//	//// greyish background because the option button is round but is 
+	//	//// greyish background because the option button is round but is
 	//	//// drawn as a square.
 	//	//CPen penBackground( PS_SOLID, 1, pDC->GetBkColor() );
 	//	//CPen* pOldPen = pDC->SelectObject( &penBackground );
@@ -1607,7 +1607,7 @@ void CGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CStr
 	COLORREF crFill = RGB(255,255,255);
 	if( nColor >= 0 && nColor <= 256 )
 		crFill = GetRGBColor( nColor );
-	else if( !sText.IsEmpty() )					
+	else if( !sText.IsEmpty() )
 	{
 		int idxComma = sText.Find( _T(",") );
 		if( idxComma < 0 )
@@ -1681,7 +1681,7 @@ void CGridCtrl::DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CSt
 		case 40:
 		{
 			rc.top += 5;
-			rc.bottom = rc.top + 4;	
+			rc.bottom = rc.top + 4;
 			break;
 		}
 		case 50:
@@ -1922,7 +1922,7 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 
 
 BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
-	ON_WM_NCCALCSIZE()	
+	ON_WM_NCCALCSIZE()
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
@@ -1936,8 +1936,8 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_DESTROY()
 	ON_WM_CANCELMODE()
 	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_MOUSELEAVE, &CGridCtrl::OnMouseLeave)   
-	ON_MESSAGE(WM_MOUSEHOVER, &CGridCtrl::OnMouseHover)   
+	ON_MESSAGE(WM_MOUSELEAVE, &CGridCtrl::OnMouseLeave)
+	ON_MESSAGE(WM_MOUSEHOVER, &CGridCtrl::OnMouseHover)
 END_MESSAGE_MAP()
 
 
@@ -1987,13 +1987,13 @@ void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	return;
 }
 
-void CGridCtrl::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp) 
+void CGridCtrl::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp)
 {
-	UpdateWindow();	
-	__super::OnNcCalcSize(bCalcValidRects, lpncsp);	
+	UpdateWindow();
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
 }
 
-BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST )
@@ -2004,7 +2004,7 @@ BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown(nFlags, point);
 	mbActOnButtonUp = false;
@@ -2020,7 +2020,7 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	EditCurCell();
 }
 
-void CGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+void CGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonUp(nFlags, point);
 	if( !mbActOnButtonUp )
@@ -2040,21 +2040,21 @@ void CGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	lpMeasureItemStruct->itemHeight = mnRowHeight;
 }
 
-void CGridCtrl::HScroll(UINT nSBCode, UINT nPos) 
+void CGridCtrl::HScroll(UINT nSBCode, UINT nPos)
 {
-	if( GetFocus() != this) 
+	if( GetFocus() != this)
 		SetFocus();
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
 }
 
-void CGridCtrl::VScroll(UINT nSBCode, UINT nPos) 
+void CGridCtrl::VScroll(UINT nSBCode, UINT nPos)
 {
-	if( GetFocus() != this) 
+	if( GetFocus() != this)
 		SetFocus();
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
 }
 
-void CGridCtrl::PostNcDestroy() 
+void CGridCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
@@ -2162,14 +2162,14 @@ void CGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	mTipWnd.Track( point );
 }
 
-LRESULT CGridCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
+LRESULT CGridCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 {
 	mbTrackingMouse = false;
 	mTipWnd.Hide();
 	return FALSE;
 }
 
-LRESULT CGridCtrl::OnMouseHover(WPARAM wParam, LPARAM lParam) 
+LRESULT CGridCtrl::OnMouseHover(WPARAM wParam, LPARAM lParam)
 {
 	TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_HOVER | TME_LEAVE, m_hWnd, 0 };
 	mbTrackingMouse = (_TrackMouseEvent(&tm) != FALSE);

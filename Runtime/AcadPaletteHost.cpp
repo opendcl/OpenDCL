@@ -67,9 +67,11 @@ void CAcadPaletteHost::GetClientArea( CRect& rect )
 	{
 		CRect rcAdj;
 		GetAdjustedClientRect( rcAdj );
+	#if !defined(_BRXTARGET) || (_BRXTARGET <= 15) //BRX16+ requires no adjustment
 		rect.top += 5;
+	#endif
 		IntersectRect( &rect, &rect, &rcAdj );
-	#ifdef _BRXTARGET
+	#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 		CRect rcContainer;
 		GetParent()->GetClientRect( &rcContainer );
 		IntersectRect( &rcAdj, &rcAdj, &rcContainer );
@@ -86,7 +88,7 @@ void CAcadPaletteHost::GetClientArea( CRect& rect )
 	}
 }
 
-bool CAcadPaletteHost::Create( LPCTSTR lpszTitle, CRect rect ) 
+bool CAcadPaletteHost::Create( LPCTSTR lpszTitle, CRect rect )
 {
 	bool bDisabled = (mpParent && !mpParent->IsWindowEnabled());
 	if( !__super::Create( lpszTitle,
@@ -144,7 +146,7 @@ bool CAcadPaletteHost::CanFrameworkTakeFocus ()
 	return false;
 }
 
-void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
+void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
@@ -162,7 +164,7 @@ LRESULT CAcadPaletteHost::OnFrameChanged(WPARAM wParam, LPARAM lParam)
 	TDclControlPtr pProps = mpDlgObject->GetSourceForm()->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mpDlgObject->OnApplyResizable( pResizableProp );
-#if defined(_BRXTARGET)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 	if( !IsFloating() && mpDlgObject->IsResizable() )
 	{ //Bricscad palette doesn't automatically expand to fill all available space
 		CRect rcClient;
@@ -190,7 +192,7 @@ bool CAcadPaletteHost::OnClosing()
 }
 
 void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)
-{	
+{
 	if( !mpDlgObject->IsResizable() )
 	{
 		GetParent()->GetParent()->SendMessage( WM_CANCELMODE, 0, 0 );
@@ -257,7 +259,7 @@ CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	return sizeDefault;
 }
 
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 CSize CAcadPaletteHost::CalcDynamicLayout(int nLength, DWORD nMode)
 {
 //TCHAR szMsg[1024];
@@ -381,7 +383,7 @@ void CAcadPaletteHost::OnSize(UINT nType, int cx, int cy)
 														 nFlags );
 }
 
-BOOL CAcadPaletteHost::PreTranslateMessage(MSG* pMsg) 
+BOOL CAcadPaletteHost::PreTranslateMessage(MSG* pMsg)
 {
 	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
 	{
@@ -455,7 +457,7 @@ BOOL CAcadPaletteHost::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CAcadPaletteHost::OnDestroy() 
+void CAcadPaletteHost::OnDestroy()
 {
 	__super::OnDestroy();
 }
@@ -553,7 +555,7 @@ void CAcadPaletteHost::OnTimer(UINT_PTR nIDEvent)
 	__super::OnTimer(nIDEvent);
 }
 
-void CAcadPaletteHost::PostNcDestroy() 
+void CAcadPaletteHost::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	//delete this;
@@ -580,7 +582,7 @@ BOOL CAcadPaletteHost::OnEraseBkgnd(CDC* pDC)
 void CAcadPaletteHost::OnClose()
 {
 	__super::OnClose();
-#if (defined(_BRXTARGET) && _BRXTARGET <= 15)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 #if (_BRXTARGET <= 14)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 #endif

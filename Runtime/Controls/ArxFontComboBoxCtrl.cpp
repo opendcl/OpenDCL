@@ -37,7 +37,7 @@ bool CArxFontComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 		__super::Create( pParentWnd, nID );
 
 	if( bSuccess )
-		mwndTip.Create( this );
+		mwndTip.Create();
 
 	// We set the timer because its the only way we know when a selection
 	// has changed - use for tip window
@@ -105,7 +105,7 @@ void CArxFontComboBoxCtrl::OnCbnCloseup()
 	__super::OnCbnCloseup();
 }
 
-void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent) 
+void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent)
 {
 	// Is combo open
 	bool bDropStyle = ((GetStyle() & CBS_DROPDOWN) != 0);
@@ -114,7 +114,7 @@ void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent)
 	{
 		int nSel = GetCurSel();
 		int FirstVis = GetTopIndex();
-		
+
 		// Selected
 		if (nSel != -1 && FirstVis <= nSel)
 		{
@@ -126,7 +126,7 @@ void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent)
 			if (nSel <= lastVis)
 			{
 				int nHeight = itemHeight * ((nSel - FirstVis) + 1);
-				
+
 				CPoint pt(rc.right + 5,rc.top + nHeight);
 
 				// Show tip in correct position
@@ -157,7 +157,7 @@ void CArxFontComboBoxCtrl::OnTimer(UINT_PTR nIDEvent)
 	__super::OnTimer(nIDEvent);
 }
 
-void CArxFontComboBoxCtrl::OnKillfocus() 
+void CArxFontComboBoxCtrl::OnKillfocus()
 {
 	mwndTip.ShowWindow( SW_HIDE );
 }

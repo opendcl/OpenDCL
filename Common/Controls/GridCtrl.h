@@ -84,7 +84,7 @@ struct _CellData
 		, midxImage( -1 )
 		, midxAltImage( -1 )
 	{
-	} 
+	}
 	_CellData( const _CellData& _Right )
 		: mType( _Right.mType )
 		, midxImage( _Right.midxImage )
@@ -92,13 +92,13 @@ struct _CellData
 		, mrsComboList( _Right.mrsComboList )
 		, mrnComboImage( _Right.mrnComboImage )
 	{
-	} 
+	}
 	_CellData( Grid::CellStyle type, int image = -1, int altImage = -1 )
 		: mType( type )
 		, midxImage( image )
 		, midxAltImage( altImage )
 	{
-	} 
+	}
 	virtual ~_CellData() {}
 	_CellData& operator =( const _CellData& _Right )
 	{
@@ -108,7 +108,7 @@ struct _CellData
 		mrsComboList = _Right.mrsComboList;
 		mrnComboImage = _Right.mrnComboImage;
 		return *this;
-	} 
+	}
 };
 
 typedef std::vector< _CellData > _ColumnData;
@@ -125,7 +125,7 @@ struct _RowData
 		mnItemData = _Right.mnItemData;
 		mCellData = _Right.mCellData;
 		return *this;
-	} 
+	}
 };
 
 
@@ -171,7 +171,7 @@ class CGridCtrl : public CListCtrl, public CDialogControl
 			if (rcCell.Width() < sizCell.cx || rcCell.Height() < sizCell.cy)
 			{
 				if (!m_hWnd)
-					Create(NULL);
+					Create();
 				SetFont(pFont);
 				CString sLabel = mpGridCtl->GetCellText(nRow, nCol);
 				SetWindowText(sLabel);
@@ -357,6 +357,6 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnCancelMode();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
-	afx_msg LRESULT OnMouseHover(WPARAM wParam, LPARAM lParam);	
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMouseHover(WPARAM wParam, LPARAM lParam);
 };

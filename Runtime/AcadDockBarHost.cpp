@@ -70,9 +70,9 @@ void CAcadDockBarHost::GetClientArea( CRect& rect )
 	}
 }
 
-bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
+bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID )
 {
-	CString strWndClass = AfxRegisterWndClass( CS_DBLCLKS, LoadCursor( NULL, IDC_ARROW ) );	
+	CString strWndClass = AfxRegisterWndClass( CS_DBLCLKS, LoadCursor( NULL, IDC_ARROW ) );
 	bool bDisabled = (mpParent && !mpParent->IsWindowEnabled());
 	if( !CAdUiDockControlBar::Create( strWndClass, lpszTitle,
 																		WS_VISIBLE | WS_CHILD | (bDisabled? WS_DISABLED : 0) | WS_CLIPCHILDREN,
@@ -115,7 +115,7 @@ bool CAcadDockBarHost::CanFrameworkTakeFocus ()
 	return false;
 }
 
-void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
+void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 {
 	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
 		PostMessage( refWM_FRAMECHANGED() );
@@ -152,12 +152,12 @@ BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 		::RemoveMenu( (HMENU)hMenu, ID_ADUI_ALLOWDOCK, MF_BYCOMMAND );
 		::RemoveMenu( (HMENU)hMenu, ID_ADUI_HIDEBAR, MF_BYCOMMAND );
 	}
-	
+
 	return TRUE;
 }
 
 void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
-{	
+{
 	if( !mpDlgObject->IsResizable() )
 	{
 		GetParent()->GetParent()->SendMessage( WM_CANCELMODE, 0, 0 );
@@ -251,7 +251,7 @@ void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 														 nFlags );
 }
 
-BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg) 
+BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg)
 {
 	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
 	{
@@ -326,7 +326,7 @@ BOOL CAcadDockBarHost::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CAcadDockBarHost::OnDestroy() 
+void CAcadDockBarHost::OnDestroy()
 {
 	__super::OnDestroy();
 }
@@ -424,7 +424,7 @@ void CAcadDockBarHost::OnTimer(UINT_PTR nIDEvent)
 	__super::OnTimer(nIDEvent);
 }
 
-void CAcadDockBarHost::PostNcDestroy() 
+void CAcadDockBarHost::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	//delete this;
@@ -451,7 +451,7 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 void CAcadDockBarHost::OnClose()
 {
 	__super::OnClose();
-#if (defined(_BRXTARGET) && _BRXTARGET <= 15)
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 #if (_BRXTARGET <= 14)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 #endif

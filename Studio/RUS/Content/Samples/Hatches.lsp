@@ -29,10 +29,15 @@
 ;|«OpenDCL Event Handlers»|;
 
 (defun c:Hatches/Hatch#OnInitialize (/ scale idx)
-	(setq scale (rtos (dcl-Control-GetHatchScale Hatches/Hatch/Hatch1) 2 0))
-	(setq idx (dcl-ComboBox-FindString Hatches/Hatch/ComboBox2 scale))
-	(if (< idx 0) (setq idx 0))
-	(dcl-ComboBox-SetCurSel Hatches/Hatch/ComboBox2 idx)
+	(setq idx (dcl-ComboBox-GetCurSel Hatches/Hatch/ComboBox2))
+	(if (< idx 0)
+		(progn
+			(setq idx 0)
+			(dcl-ComboBox-SetCurSel Hatches/Hatch/ComboBox2 0)
+		)
+	)
+	(setq scale (dcl-ComboBox-GetLBText Hatches/Hatch/ComboBox2 idx))
+	(c:Hatches/Hatch/ComboBox2#OnSelChanged nil scale)
 )
 
 (defun c:Hatches/Hatch/ComboBox1#OnSelChanged (nSelection sSelText /)

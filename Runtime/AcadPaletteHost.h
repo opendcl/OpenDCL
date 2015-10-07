@@ -38,11 +38,11 @@ public:
 private:
 	virtual bool CanFrameworkTakeFocus();
 	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
-	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
-#ifdef _BRXTARGET
+	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 	virtual CSize CalcDynamicLayout(int nLength, DWORD nMode);
 #endif
-	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
+	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);
 	virtual void GetMinimumSize(CSize& size);
 	virtual void GetMaximumSize(CSize& size);
 	virtual void TitleBarLocationUpdated( AdUiTitleBarLocation newLoc );

@@ -81,12 +81,12 @@ bool CPaletteDlg::CreateModeless( UINT nID )
 		break;
 	case 3:
 		// set the form to only dock on the top or bottom sides
-		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
+		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
 		break;
 	case 4:
 		// set the form to only dock on the left, right, or top sides
-		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
+		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
 		break;
 	case 5:
@@ -116,7 +116,7 @@ bool CPaletteDlg::CreateModeless( UINT nID )
 	{
 		UUID uuid = mpSourceForm->GetUUID();
 		mHostPaletteSet.SetToolID( &uuid );
-	}			
+	}
 	mHostPaletteSet.EnableDocking( dwDockableSides );
 
 	//SetIcon must be called before RestoreControlBar!
@@ -154,7 +154,7 @@ void CPaletteDlg::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return;
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 	HWND hwndHost = mHostPaletteSet.m_hWnd;
 #endif
 	CWnd* pTopLevel = GetTopLevelWnd();
@@ -162,7 +162,7 @@ void CPaletteDlg::CloseDialog(int nStatus)
 	mHostPaletteSet.EndModalLoop( nStatus ); //set the status
 	if( hwndTopLevel && ::IsWindow( hwndTopLevel ) )
 		::SendMessage( hwndTopLevel, WM_CLOSE, 0, 0 );
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 	if( hwndTopLevel != hwndHost )
 		::SendMessage( hwndHost, WM_CLOSE, 0, 0 ); //Bricscad only: the floating palette set window must be closed explicitly
 #endif
@@ -217,7 +217,7 @@ CRect CPaletteDlg::GetEffectiveClientRect() const
 void CPaletteDlg::OnFrameChanged()
 {
 	CRect rcClient = GetEffectiveClientRect();
-#ifdef _BRXTARGET
+#if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 	long lNCWidth = IsFloating()? 0 : 9;
 	long lNCHeight = IsFloating()? 0 : 16;
 #else
@@ -354,11 +354,11 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPaletteDlg message handlers
 
-int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
+
 	CRect rcWindow = GetEffectiveWindowRect();
 	CRect rcClient = GetEffectiveClientRect();
 	SetNCWidth( rcWindow.Width() - rcClient.Width() );
@@ -384,7 +384,7 @@ int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetControlPane()->CreateControls(nID);
 	GetControlPane()->RecalcLayout();
 
-	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
+	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
 	GetArxServices()->HandleEvent( Prop::FormEventMove,
 																 args_NN( rcWindow.left, rcWindow.top ) );
 	GetArxServices()->HandleEvent( Prop::FormEventSize,
@@ -394,7 +394,7 @@ int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 1;
 }
 
-void CPaletteDlg::PostNcDestroy() 
+void CPaletteDlg::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	CAcadPaletteHost* pHostToDelete = NULL;
@@ -426,7 +426,7 @@ void CPaletteDlg::OnMove(int x, int y)
 	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( x, y ) );
 }
 
-void CPaletteDlg::OnSize(UINT nType, int cx, int cy) 
+void CPaletteDlg::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() || !IsResizable() )
@@ -445,7 +445,7 @@ BOOL CPaletteDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 	return TRUE;
 }
 
-void CPaletteDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
+void CPaletteDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	if( GetArxServices()->HandleEvent( Prop::FormEventShow ) )
 		return;
@@ -454,7 +454,7 @@ void CPaletteDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	__super::OnShowWindow(bShow, nStatus);
 }
 
-BOOL CPaletteDlg::PreTranslateMessage(MSG* pMsg) 
+BOOL CPaletteDlg::PreTranslateMessage(MSG* pMsg)
 {
 	return CWnd::PreTranslateMessage(pMsg);
 }
@@ -471,7 +471,7 @@ bool CPaletteDlg::OnClosing()
 	return true;
 }
 
-void CPaletteDlg::OnDestroy() 
+void CPaletteDlg::OnDestroy()
 {
 	OnClosing();
 	GetControlPane()->CleanUpControls();

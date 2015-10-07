@@ -108,7 +108,7 @@ static bool IsWindows98orLater()
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx (&osvi);
-	return 
+	return
 		(osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) &&
 		( (osvi.dwMajorVersion > 4) ||
 		( (osvi.dwMajorVersion == 4) && (osvi.dwMinorVersion > 0) ) );
@@ -137,14 +137,14 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 	{
 		dwFlags |= OFN_HIDEREADONLY;
 		if (pFileDlgProperties->GetBooleanProperty(Prop::OverWritePrompt))
-			dwFlags |= OFN_OVERWRITEPROMPT;	
+			dwFlags |= OFN_OVERWRITEPROMPT;
 	}
 	if (pFileDlgProperties->GetBooleanProperty(Prop::ShowHelp))
 		dwFlags |= OFN_SHOWHELP;
 	if (pFileDlgProperties->GetBooleanProperty(Prop::ExtCanBeDiff))
 		dwFlags |= OFN_EXTENSIONDIFFERENT;
 	if (pFileDlgProperties->GetBooleanProperty(Prop::PathMustExist))
-		dwFlags |= OFN_PATHMUSTEXIST;	
+		dwFlags |= OFN_PATHMUSTEXIST;
 	return dwFlags;
 }
 
@@ -152,13 +152,14 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDlg
 
-CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 __if_exists(m_bVistaStyle)
 {
+CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent, 0, FALSE )
 }
 __if_not_exists(m_bVistaStyle)
 {
+CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
 }
 , CArxDialogObject( pSourceForm, this )
@@ -301,7 +302,7 @@ void CCustomFileDlg::SavePosition()
 	CWinApp* pApp = AfxGetApp();
 	CRect rcThis;
 	mMainFileDlg.GetWindowRect( &rcThis );
-	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath(); 
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
 	pApp->WriteProfileInt( sProfileName, _T("Width"), rcThis.Width() );
 	pApp->WriteProfileInt( sProfileName, _T("Height"), rcThis.Height() );
 	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcThis.left );
@@ -309,7 +310,7 @@ void CCustomFileDlg::SavePosition()
 }
 
 CRect CCustomFileDlg::ReadPosition() const
-{	
+{
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
@@ -381,7 +382,7 @@ void CCustomFileDlg::OnInitializationComplete()
 	}
 	if( mMainFileDlg.GetStyle() & WS_CHILD )
 		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );
-	
+
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
 	mMainFileDlg.MoveWindow( &rectWindow, FALSE );
 	IgnoreSizing( false );
@@ -417,15 +418,15 @@ void CCustomFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 }
 
 
-void CCustomFileDlg::CtrlModifyStyle(int nCtrl) 
-{	
+void CCustomFileDlg::CtrlModifyStyle(int nCtrl)
+{
 	CWnd *pCtrl = GetParent()->GetDlgItem(nCtrl);
 	if( pCtrl )
 		pCtrl->ModifyStyle(NULL, WS_CLIPSIBLINGS, 0);
 }
 
 
-BOOL CCustomFileDlg::OnInitDialog() 
+BOOL CCustomFileDlg::OnInitDialog()
 {
 	__super::OnInitDialog();
 	mMainFileDlg.SubclassWindow( ::GetParent( m_hWnd ) );
@@ -509,18 +510,18 @@ void CCustomFileDlg::OnFileNameChange()
 		return;
 	if( !mpFileDlgCtrl )
 		return;
-	
+
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
-	
+
 	CString sEventSelChanged = mpFileDlgCtrl->GetStringProperty( Prop::EventSelChanged );
 	int nSelCount = wndLst1->GetSelectedCount();
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
 	if( pos == NULL || nSelCount == 0 )
 		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( -1, _T("") ) );
 	else if (nSelCount == 1)
-		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( nSelCount, GetPathName() ) );			
-	else 
-		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( nSelCount, _T("") ) );			
+		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( nSelCount, GetPathName() ) );
+	else
+		CArxControlServices::HandleEventGeneric( false, sEventSelChanged, args_NS( nSelCount, _T("") ) );
 }
 
 void CCustomFileDlg::OnTypeChange()
@@ -537,7 +538,7 @@ void CCustomFileDlg::OnTypeChange()
 BOOL CCustomFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
 	GetArxServices()->HandleEvent( Prop::EventHelp );
-	return TRUE; 
+	return TRUE;
 }
 
 void CCustomFileDlg::OnHelp()
