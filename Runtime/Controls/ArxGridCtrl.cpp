@@ -324,7 +324,7 @@ typedef CAcUiComboEditCtrl< CAcUiLineTypeComboBox, (CBS_OWNERDRAWFIXED | CBS_DRO
 
 
 bool getvar(LPCTSTR pszVarName)
-{	
+{
 	struct resbuf rsVarVal;
 	if (acedGetVar(pszVarName, &rsVarVal) != RTNORM)
 		return false;
@@ -332,7 +332,7 @@ bool getvar(LPCTSTR pszVarName)
 		return true;
 	if (rsVarVal.restype == RTNIL)
 		return false;
-	return (rsVarVal.restype == RTSHORT && rsVarVal.resval.rint == 1);	
+	return (rsVarVal.restype == RTSHORT && rsVarVal.resval.rint == 1);
 }
 
 
@@ -484,7 +484,7 @@ public:
 };
 
 
-static void ShowDirectoryDlg( CGridCtrl* pGridCtrl, int nRow, int nCol ) 
+static void ShowDirectoryDlg( CGridCtrl* pGridCtrl, int nRow, int nCol )
 {
 	CFolderBrowseDlg dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), pGridCtrl->GetItemText(nRow, nCol) );
 	CWnd* pFocusWnd = CWnd::GetFocus();
@@ -500,7 +500,7 @@ static void ShowDirectoryDlg( CGridCtrl* pGridCtrl, int nRow, int nCol )
 }
 
 
-static void ShowFileDlg( CGridCtrl* pGridCtrl, int nRow, int nCol ) 
+static void ShowFileDlg( CGridCtrl* pGridCtrl, int nRow, int nCol )
 {
 	if( !acDocManager->curDocument() )
 		return; //ARX docs say you can't call acedGetFileD in zero doc state
@@ -662,17 +662,17 @@ void CArxGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const C
 BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_DESTROY()
 	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()	
+	ON_WM_LBUTTONUP()
 	ON_WM_RBUTTONDOWN()
-	ON_WM_RBUTTONUP()	
+	ON_WM_RBUTTONUP()
 	ON_WM_MBUTTONDOWN()
-	ON_WM_MBUTTONUP()	
+	ON_WM_MBUTTONUP()
 	ON_WM_CHAR()
 	ON_WM_KEYDOWN()
-	ON_WM_LBUTTONDBLCLK()	
+	ON_WM_LBUTTONDBLCLK()
 	ON_WM_SIZE()
 	ON_NOTIFY_REFLECT(NM_SETFOCUS, OnSetfocus)
-	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)		
+	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYUP()
 	ON_WM_CONTEXTMENU()
@@ -694,7 +694,7 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 	GetArxServices()->HandleEvent( Prop::EventBtnClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
-void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonDown(nFlags, point);
@@ -702,19 +702,19 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 }
 
-void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
-void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
-void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	if( !mCurrentCell )
 		return;
@@ -722,7 +722,7 @@ void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	GetArxServices()->HandleEvent( Prop::EventDblClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
-void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if( mpTemplate )
 	{
@@ -732,7 +732,7 @@ void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if( mpTemplate )
 	{
@@ -740,29 +740,29 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			return;
 	}
 
-	switch (nChar) 
+	switch (nChar)
 	{
-		case VK_ESCAPE: 
+		case VK_ESCAPE:
 			break;
-		case VK_SPACE: 
+		case VK_SPACE:
 			EditCurCell();
 			return;
-		case VK_UP: 
+		case VK_UP:
 		{
 			MoveUp();
 			return;
 		}
-		case VK_DOWN: 
+		case VK_DOWN:
 		{
 			MoveDown();
 			return;
 		}
-		case VK_LEFT: 
+		case VK_LEFT:
 		{
 			MoveLeft();
 			return;
 		}
-		case VK_RIGHT: 
+		case VK_RIGHT:
 		{
 			MoveRight();
 			return;
@@ -771,20 +771,20 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonUp(nFlags, point);
 	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
-void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
-void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonUp(nFlags, point);
@@ -796,31 +796,31 @@ void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 	__super::OnContextMenu(pTarget, point);
 }
 
-void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);
 }
 
-void CArxGridCtrl::OnSelectionChanged() 
+void CArxGridCtrl::OnSelectionChanged()
 {
 	GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
-void CArxGridCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxGridCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	HideEditControls();
 	*pResult = 0;
 }
 
-void CArxGridCtrl::OnSize(UINT nType, int cx, int cy) 
+void CArxGridCtrl::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	if (IsWindow(m_hWnd) == TRUE)
 		HideEditControls();
 }
 
-void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	GetArxServices()->HandleEvent( Prop::EventColumnClick, args_N( pNMListView->iSubItem ) );

@@ -227,9 +227,7 @@ ADSRESULT DwgList::GetCurSel()
 
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
-	int nSel = pCtrl->GetCurSel();
-	if( nSel >= 0 )
-		acedRetInt( nSel );
+	acedRetInt(pCtrl->GetCurSel());
 	return RSRSLT;
 }
 

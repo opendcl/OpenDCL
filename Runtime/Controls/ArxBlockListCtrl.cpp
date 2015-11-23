@@ -12,94 +12,94 @@
 //utility functions
 static WORD DibNumColors (VOID FAR * pv)
 {
-    INT                 bits;
-    LPBITMAPINFOHEADER  lpbi;
+	INT                 bits;
+	LPBITMAPINFOHEADER  lpbi;
 
-    lpbi = ((LPBITMAPINFOHEADER)pv);
+	lpbi = ((LPBITMAPINFOHEADER)pv);
 
-	if (lpbi->biClrUsed != 0)
-		return (WORD)lpbi->biClrUsed;
-    bits = lpbi->biBitCount;
+if (lpbi->biClrUsed != 0)
+	return (WORD)lpbi->biClrUsed;
+	bits = lpbi->biBitCount;
 
-    switch (bits){
-        case 1:
-                return 2;
-        case 4:
-                return 16;
-        case 8:
-                return 256;
-        default:
-                /* A 24 bitcount DIB has no color table */
-                return 0;
-    }
+	switch (bits){
+			case 1:
+							return 2;
+			case 4:
+							return 16;
+			case 8:
+							return 256;
+			default:
+							/* A 24 bitcount DIB has no color table */
+							return 0;
+	}
 }
 
 static WORD PaletteSize (VOID FAR * pv)
 {
-    LPBITMAPINFOHEADER lpbi;
-    WORD               NumColors;
+		LPBITMAPINFOHEADER lpbi;
+		WORD               NumColors;
 
-    lpbi      = (LPBITMAPINFOHEADER)pv;
-    NumColors = DibNumColors(lpbi);
+		lpbi      = (LPBITMAPINFOHEADER)pv;
+		NumColors = DibNumColors(lpbi);
 
-    return (WORD)(NumColors * sizeof(RGBQUAD));
+		return (WORD)(NumColors * sizeof(RGBQUAD));
 }
 
 static HBITMAP BitmapFromDib (
-    HANDLE         hdib,
-    HPALETTE   hpal)
+		HANDLE         hdib,
+		HPALETTE   hpal)
 {
-    LPBITMAPINFOHEADER  lpbi;
-    HPALETTE            hpalT;
-    HDC                 hdc;
-    HBITMAP             hbm;
+	LPBITMAPINFOHEADER  lpbi;
+	HPALETTE            hpalT;
+	HDC                 hdc;
+	HBITMAP             hbm;
 
 
-    if (!hdib)
-        return NULL;
+	if (!hdib)
+			return NULL;
 
-    lpbi = (LPBITMAPINFOHEADER)GlobalLock(hdib);
+	lpbi = (LPBITMAPINFOHEADER)GlobalLock(hdib);
 
-    if (!lpbi)
-        return NULL;
+	if (!lpbi)
+			return NULL;
 
-    hdc = GetDC(NULL);
+	hdc = GetDC(NULL);
 
-    if (hpal){
-        hpalT = SelectPalette(hdc,hpal,FALSE);
-        RealizePalette(hdc);     // GDI Bug...????
-    }
+	if (hpal){
+			hpalT = SelectPalette(hdc,hpal,FALSE);
+			RealizePalette(hdc);     // GDI Bug...????
+	}
 
-    hbm = CreateDIBitmap(hdc,
-                (LPBITMAPINFOHEADER)lpbi,
-                (LONG)CBM_INIT,
-                (LPSTR)lpbi + lpbi->biSize + PaletteSize(lpbi),
-                (LPBITMAPINFO)lpbi,
-                DIB_RGB_COLORS );
+	hbm = CreateDIBitmap(hdc,
+							(LPBITMAPINFOHEADER)lpbi,
+							(LONG)CBM_INIT,
+							(LPSTR)lpbi + lpbi->biSize + PaletteSize(lpbi),
+							(LPBITMAPINFO)lpbi,
+							DIB_RGB_COLORS );
 
-    if (hpal)
-        SelectPalette(hdc,hpalT,FALSE);
+	if (hpal)
+			SelectPalette(hdc,hpalT,FALSE);
 
-    ReleaseDC(NULL,hdc);
-    GlobalUnlock(hdib);
-    return hbm;
+	ReleaseDC(NULL,hdc);
+	GlobalUnlock(hdib);
+	return hbm;
 }
 
 static HANDLE readDibFromMemory(LPVOID pDibSrc)
 {
-    LPBITMAPINFOHEADER pbmih = (LPBITMAPINFOHEADER)pDibSrc;
+	LPBITMAPINFOHEADER pbmih = (LPBITMAPINFOHEADER)pDibSrc;
 
-    DWORD totalSize = pbmih->biSize 
-                        + pbmih->biSizeImage
-                            + (DWORD)PaletteSize(pbmih);
+	DWORD totalSize = pbmih->biSize
+											+ pbmih->biSizeImage
+													+ (DWORD)PaletteSize(pbmih);
 
-    HANDLE hdib = GlobalAlloc(GHND, totalSize);
-    LPVOID pDibDst = GlobalLock(hdib);
+	HANDLE hdib = GlobalAlloc(GHND, totalSize);
+	LPVOID pDibDst = GlobalLock(hdib);
 
-    CopyMemory(pDibDst, pDibSrc, totalSize);
+	CopyMemory(pDibDst, pDibSrc, totalSize);
 
-    GlobalUnlock(hdib);
-    return hdib;
+	GlobalUnlock(hdib);
+	return hdib;
 }
 
 
@@ -180,7 +180,7 @@ int CArxBlockListCtrl::extractPreview(const AcDbBlockTableRecord* pBTR)
 		pBTR->getPreviewIcon(previewIcon);
 		HANDLE hDib = readDibFromMemory((LPVOID)previewIcon.asArrayPtr());
 		HBITMAP hBitmap = BitmapFromDib(hDib,NULL);
-		if(hBitmap) 
+		if(hBitmap)
 		{
 			CBitmap* pbmpImage = CBitmap::FromHandle(hBitmap);
 			GetImageList(LVSIL_SMALL)->Add(pbmpImage, RGB(255,0,255));
@@ -208,7 +208,7 @@ bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 
 	if( pszFilename && *pszFilename )
 	{
-		CString sPath = theWorkspace.FindFile( pszFilename ); 
+		CString sPath = theWorkspace.FindFile( pszFilename );
 		if( sPath.IsEmpty() )
 		{
 			CString sMsg;
@@ -234,9 +234,9 @@ bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 		}
 		mpLoadedDwg->closeInput( true );
 	}
-	
+
 	RefreshBlockList();
-	return true;			
+	return true;
 }
 
 LPCTSTR CArxBlockListCtrl::GetLoadedDwg() const
@@ -249,7 +249,7 @@ LPCTSTR CArxBlockListCtrl::GetLoadedDwg() const
 	return NULL;
 }
 
-void CArxBlockListCtrl::RefreshBlockList() 
+void CArxBlockListCtrl::RefreshBlockList()
 {
 	if( mbNoRefresh )
 		return;
@@ -290,9 +290,9 @@ void CArxBlockListCtrl::RefreshBlockList()
 	AcDbBlockTableIterator* pBTItr;
 	Acad::ErrorStatus es = pBlockTable->newIterator( pBTItr );
 	pBlockTable->close();
-	if( es == Acad::eOk ) 
+	if( es == Acad::eOk )
 	{
-		while( !pBTItr->done() ) 
+		while( !pBTItr->done() )
 		{
 			AcDbBlockTableRecord* pRecord;
 			if( pBTItr->getRecord( pRecord, AcDb::kForRead ) == Acad::eOk )
@@ -364,7 +364,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxBlockListCtrl message handlers
 
-void CArxBlockListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	mbNoRefresh = true;
 	__super::OnLButtonDown(nFlags, point);
@@ -372,13 +372,13 @@ void CArxBlockListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
 }
 
-void CArxBlockListCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
 	__super::OnLButtonUp(nFlags, point);
 }
 
-void CArxBlockListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NMITEMACTIVATE* plvia = (NMITEMACTIVATE*)pNMHDR;
 	int nItem = plvia->iItem;
@@ -387,13 +387,13 @@ void CArxBlockListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	GetArxServices()->HandleEvent( Prop::EventKillFocus );
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NMITEMACTIVATE* plvia = (NMITEMACTIVATE*)pNMHDR;
 	int nItem = plvia->iItem;
@@ -402,7 +402,7 @@ void CArxBlockListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NMITEMACTIVATE* plvia = (NMITEMACTIVATE*)pNMHDR;
 	int nItem = plvia->iItem;
@@ -411,19 +411,19 @@ void CArxBlockListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	GetArxServices()->HandleEvent( Prop::EventReturnPressed );
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	GetArxServices()->HandleEvent( Prop::EventSetFocus );
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	LV_ITEM* plvItem = &pDispInfo->item;
@@ -436,50 +436,50 @@ void CArxBlockListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = TRUE;
 }
 
-void CArxBlockListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_N( pDispInfo->item.iItem ) );
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult) 
+void CArxBlockListCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	GetArxServices()->HandleEvent( Prop::EventColumnClick, args_N( pNMListView->iSubItem ) );
 	*pResult = 0;
 }
 
-void CArxBlockListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDblClk(nFlags, point);
 
 	int nRow = -1;
 	POSITION pos = GetFirstSelectedItemPosition();
 	if( pos )
-		nRow = GetNextSelectedItem( pos );			
+		nRow = GetNextSelectedItem( pos );
 	GetArxServices()->HandleEvent( Prop::EventDblClicked, args_N( nRow ) );
 }
 
-void CArxBlockListCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
-void CArxBlockListCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
-void CArxBlockListCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
-void CArxBlockListCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
 	__super::OnRButtonUp(nFlags, point);
@@ -491,19 +491,19 @@ void CArxBlockListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 	__super::OnContextMenu(pTarget, point);
 }
 
-void CArxBlockListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxBlockListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	GetArxServices()->HandleEvent( Prop::EventKeyDown, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CArxBlockListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxBlockListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	GetArxServices()->HandleEvent( Prop::EventKeyUp, args_CNN( (TCHAR)nChar, nRepCnt, nFlags ) );
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-void CArxBlockListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+void CArxBlockListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
 	__super::OnMouseMove(nFlags, point);

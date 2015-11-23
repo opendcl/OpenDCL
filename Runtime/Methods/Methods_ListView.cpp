@@ -874,7 +874,7 @@ ADSRESULT ListView::FillList()
 	if( bVisible )
 		pCtrl->SetRedraw( TRUE );
 	pCtrl->OnNeedRepaint();
-	pCtrl->UpdateWindow(); 
+	pCtrl->UpdateWindow();
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -1066,8 +1066,7 @@ ADSRESULT ListView::SetCurSel()
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 	if( nRow > -1 )
 	{
-		pCtrl->SetSelectionMark( nRow );
-		pCtrl->SetItem( nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED, 0 );		
+		pCtrl->SetItem( nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED, 0 );
 		pCtrl->EnsureVisible( nRow, TRUE );
 	}
 	else
@@ -1076,8 +1075,9 @@ ADSRESULT ListView::SetCurSel()
 		{
 			pCtrl->SetItemState( idx, 0, LVIS_SELECTED );
 			pCtrl->SetItemState( idx, 0, LVIS_FOCUSED );
-		}		
+		}
 	}
+	pCtrl->SetSelectionMark( nRow );
 	acedRetT();
 	return RSRSLT;
 }
@@ -1105,7 +1105,7 @@ ADSRESULT ListView::StartLabelEdit()
 }
 
 ADSRESULT ListView::CancelLabelEdit()
-{	
+{
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
