@@ -24,16 +24,13 @@
 IMPLEMENT_DYNAMIC(CPreviewFileDlg, CFileDialog)
 
 CPreviewFileDlg::CPreviewFileDlg(BOOL bOpenFileDialog, LPCTSTR lpszDefExt, LPCTSTR lpszFileName,
-		DWORD dwFlags, LPCTSTR lpszFilter, CWnd* pParentWnd) :
-	__if_exists(m_bVistaStyle)
-	{
-		CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd, 0, FALSE)
-	}
-	__if_not_exists(m_bVistaStyle)
-	{
-		CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
-	}
+		DWORD dwFlags, LPCTSTR lpszFilter, CWnd* pParentWnd)
+: CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
 {
+__if_exists(m_bVistaStyle)
+{
+	m_bVistaStyle = FALSE;
+}
 	m_ofn.Flags |= (OFN_EXPLORER | OFN_ENABLETEMPLATE);
 	m_ofn.lpTemplateName = MAKEINTRESOURCE(IDD_FILEOPENPREVIEW);
 	m_bPreview = TRUE;
@@ -48,32 +45,32 @@ BEGIN_MESSAGE_MAP(CPreviewFileDlg, CFileDialog)
 END_MESSAGE_MAP()
 
 
-BOOL CPreviewFileDlg::OnInitDialog() 
+BOOL CPreviewFileDlg::OnInitDialog()
 {
 	CFileDialog::OnInitDialog();
 
 	m_Preview.SubclassDlgItem(IDC_IMAGE, this);
 // if exception problem still exists whan selecting picture files change this next line to get the CWnd and modify that way
 	GetDlgItem(IDC_PREVIEW)->SendMessage(BM_SETCHECK, (m_bPreview) ? 1 : 0);
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-void CPreviewFileDlg::OnFileNameChange() 
+void CPreviewFileDlg::OnFileNameChange()
 {
 	CFileDialog::OnFileNameChange();
 	if( m_bPreview && m_Preview.m_hWnd )
 		m_Preview.LoadPictureFile( GetPathName(), true );
 }
 
-void CPreviewFileDlg::OnFolderChange() 
+void CPreviewFileDlg::OnFolderChange()
 {
 	CFileDialog::OnFolderChange();
 	m_Preview.Clear();
 }
 
-void CPreviewFileDlg::OnPreview() 
+void CPreviewFileDlg::OnPreview()
 {
 	m_bPreview = !m_bPreview;
 	if( !m_bPreview )
@@ -82,19 +79,19 @@ void CPreviewFileDlg::OnPreview()
 		m_Preview.LoadPictureFile( GetPathName(), true );
 }
 
-BOOL CPreviewFileDlg::OnQueryNewPalette() 
+BOOL CPreviewFileDlg::OnQueryNewPalette()
 {
 	m_Preview.SendMessage(WM_QUERYNEWPALETTE);	// redo the palette if necessary
 	return CFileDialog::OnQueryNewPalette();
 }
 
-void CPreviewFileDlg::OnPaletteChanged(CWnd* pFocusWnd) 
+void CPreviewFileDlg::OnPaletteChanged(CWnd* pFocusWnd)
 {
 	CFileDialog::OnPaletteChanged(pFocusWnd);
 	m_Preview.SendMessage(WM_PALETTECHANGED, (WPARAM)pFocusWnd->GetSafeHwnd());	// redo the palette if necessary
 }
 
-void CPreviewFileDlg::OnSetFocus(CWnd* pOldWnd) 
+void CPreviewFileDlg::OnSetFocus(CWnd* pOldWnd)
 {
 	CFileDialog::OnSetFocus(pOldWnd);
 	m_Preview.SendMessage(WM_QUERYNEWPALETTE);	// redo the palette if necessary

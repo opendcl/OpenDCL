@@ -14,14 +14,18 @@
   _CGcRxAddCommandEntryAuto __GrxAddCommandAuto_##T_GROUPNAME##T_KEY(& __GrxCmdMap_##T_GROUPNAME##T_KEY) ;
 
 //overwrite GRX version of macros that prefix "gds_" to command handler names instead of "ads_"
+#include "acad2grx.h"
+#undef ACED_ADSSYMBOL_ENTRY_AUTO
 #define ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
   _GDSSYMBOL_ENTRY __GdsSymbolMap_##name = { L#name, classname::ads_ ##name, regFunc, (UINT)-1 , NULL } ; \
   _CGcRxAddSymbolEntryAuto __GrxAddSymbolAuto_##name(& __GdsSymbolMap_##name) ;
 
+#undef ACED_ADSCOMMAND_ENTRY_AUTO
 #define ACED_ADSCOMMAND_ENTRY_AUTO(classname, name, regFunc) \
   _GDSSYMBOL_ENTRY __GdsSymbolMap_##name = { L"C:" L#name, classname::ads_ ##name, regFunc, (UINT)-1 , NULL } ; \
   _CGcRxAddSymbolEntryAuto __GrxAddSymbolAuto_##name(& __GdsSymbolMap_##name) ;
 
+#undef ACED_ADSSYMBOL_ENTRYBYID_AUTO
 #define ACED_ADSSYMBOL_ENTRYBYID_AUTO(classname, name, nameId, regFunc) \
   _GDSSYMBOL_ENTRY __GdsSymbolMap_##name = { NULL, classname::ads_ ##name, regFunc, nameId , NULL } ; \
   _CGcRxAddSymbolEntryAuto __GrxAddSymbolAuto_##name(& __GdsSymbolMap_##name) ;

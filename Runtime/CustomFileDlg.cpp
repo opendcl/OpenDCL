@@ -152,16 +152,8 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDlg
 
-__if_exists(m_bVistaStyle)
-{
-CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
-: CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent, 0, FALSE )
-}
-__if_not_exists(m_bVistaStyle)
-{
 CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
-}
 , CArxDialogObject( pSourceForm, this )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
 , mptInitial( pParams? pParams->position : CPoint(INT_MIN, INT_MIN) )
@@ -171,6 +163,10 @@ CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 , mnRightBorder( 0 )
 , mnBottomBorder( 0 )
 {
+__if_exists(m_bVistaStyle)
+{
+	m_bVistaStyle = FALSE;
+}
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();

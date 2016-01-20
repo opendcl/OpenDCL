@@ -36,7 +36,7 @@ typedef struct tagNMLVSCROLL
 		int     dy;
 } NMLVSCROLL, *LPNMLVSCROLL;
 
-#define LVN_BEGINSCROLL          (LVN_FIRST-80)          
+#define LVN_BEGINSCROLL          (LVN_FIRST-80)
 #define LVN_ENDSCROLL            (LVN_FIRST-81)
 #endif //(_WIN32_WINNT < 0x501)
 
@@ -297,8 +297,8 @@ public:
 					pFilter->ConvertForDisplay( sText );
 				}
 			}
-			ApplyValue( sText );
 			__super::OnApply();
+			ApplyValue( sText );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -459,8 +459,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCheck() == BST_CHECKED );
 			__super::OnApply();
+			ApplyValue( GetCheck() == BST_CHECKED );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -587,8 +587,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCurSel() );
 			__super::OnApply();
+			ApplyValue( GetCurSel() );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -685,8 +685,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCurSel() );
 			__super::OnApply();
+			ApplyValue( GetCurSel() );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -1591,7 +1591,7 @@ void CPropertyGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, co
 	COLORREF crFill = RGB(255,255,255);
 	if( nColor >= 0 && nColor <= 256 )
 		crFill = GetRGBColor( nColor );
-	else if( !sText.IsEmpty() )					
+	else if( !sText.IsEmpty() )
 	{
 		int idxComma = sText.Find( _T(",") );
 		CString sRed = sText.Left( idxComma );
@@ -1599,7 +1599,7 @@ void CPropertyGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, co
 		idxComma = sGreen.Find( _T(",") );
 		CString sBlue = sGreen.Mid( idxComma + 1 );
 		sGreen = sGreen.Left( idxComma );
-		crFill = RGB(_tstol( sRed ), _tstol( sGreen ), _tstol( sBlue ) );	
+		crFill = RGB(_tstol( sRed ), _tstol( sGreen ), _tstol( sBlue ) );
 	}
 	cdc.Rectangle( &rcIcon );
 	CRect rcFill = rcIcon;
@@ -1688,7 +1688,7 @@ void CPropertyGridCtrl::ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LP
 		ctPropPages = rPages.GetCount();
 		pPropPages = rPages.GetData();
 	}
-	OCPFIPARAMS params = 
+	OCPFIPARAMS params =
 	{
 		sizeof(OCPFIPARAMS),
 		hwndHost,
@@ -1730,7 +1730,7 @@ void CPropertyGridCtrl::ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LP
 
 
 BEGIN_MESSAGE_MAP(CPropertyGridCtrl, CListCtrl)
-	ON_WM_NCCALCSIZE()	
+	ON_WM_NCCALCSIZE()
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONDBLCLK()
@@ -1761,14 +1761,14 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyGridCtrl message handlers
 
-void CPropertyGridCtrl::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp) 
+void CPropertyGridCtrl::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp)
 {
 	HideEditControls();
 	UpdateWindow();
-	__super::OnNcCalcSize(bCalcValidRects, lpncsp);	
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
 }
 
-BOOL CPropertyGridCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CPropertyGridCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	if( __super::PreTranslateMessage(pMsg) )
 		return TRUE;
@@ -1807,7 +1807,7 @@ BOOL CPropertyGridCtrl::PreTranslateMessage(MSG* pMsg)
 	return FALSE;
 }
 
-void CPropertyGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CPropertyGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	int nRow = -1;
 	int nCol = -1;
@@ -1836,7 +1836,7 @@ void CPropertyGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 }
 
-void CPropertyGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
+void CPropertyGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	int nRow = -1;
 	int nCol = -1;
@@ -1861,17 +1861,17 @@ void CPropertyGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	lpMeasureItemStruct->itemHeight = 18;
 }
 
-void CPropertyGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CPropertyGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if( GetFocus() != this) 
+	if( GetFocus() != this)
 		SetFocus();
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-void CPropertyGridCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CPropertyGridCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if( GetFocus() != this) 
+	if( GetFocus() != this)
 		SetFocus();
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
 	__super::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -1928,7 +1928,7 @@ void CPropertyGridCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 		{
 			CRect rcItem;
 			GetItemRect( 0, &rcItem, LVIR_BOUNDS );
-			if( (rcItem.Height() * ctItems) > lpwndpos->cy ) 
+			if( (rcItem.Height() * ctItems) > lpwndpos->cy )
 				nWidth -= GetSystemMetrics( SM_CXVSCROLL );
 		}
 		if( nWidth < 100 )
@@ -2004,91 +2004,91 @@ void CPropertyGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	return;
 }
 
-void CPropertyGridCtrl::OnProperties() 
+void CPropertyGridCtrl::OnProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_PROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnFontProperties() 
+void CPropertyGridCtrl::OnFontProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_FONTPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnTooltipProperties() 
+void CPropertyGridCtrl::OnTooltipProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_TOOLTIPPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnForeColorProperties() 
+void CPropertyGridCtrl::OnForeColorProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_FORECOLORPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnBackColorProperties() 
+void CPropertyGridCtrl::OnBackColorProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_BACKCOLORPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAltColorProperties() 
+void CPropertyGridCtrl::OnAltColorProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_ALTCOLORPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnImageListProperties() 
+void CPropertyGridCtrl::OnImageListProperties()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_IMAGELISTPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnObjectbrowser() 
+void CPropertyGridCtrl::OnObjectbrowser()
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_CONTROLBROWSER, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxProperties() 
+void CPropertyGridCtrl::OnAxProperties()
 {
 	ShowPropertyPages( 0, NULL, NULL );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxColorPropertyPage() 
+void CPropertyGridCtrl::OnAxColorPropertyPage()
 {
 	ShowPropertyPages( 1, &CLSID( CLSID_CColorPropPage ), NULL );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxStockColorPropertyPage() 
+void CPropertyGridCtrl::OnAxStockColorPropertyPage()
 {
 	ShowPropertyPages( 1, &CLSID( CLSID_StockColorPage ), NULL );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxFontPropertyPage() 
+void CPropertyGridCtrl::OnAxFontPropertyPage()
 {
 	ShowPropertyPages( 1, &CLSID( CLSID_CFontPropPage ), NULL );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxStockFontPropertyPage() 
+void CPropertyGridCtrl::OnAxStockFontPropertyPage()
 {
 	ShowPropertyPages( 1, &CLSID( CLSID_StockFontPage ), NULL );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxPicturePropertyPage() 
+void CPropertyGridCtrl::OnAxPicturePropertyPage()
 {
 	ShowPropertyPages( 1, &CLSID( CLSID_CPicturePropPage ), NULL );
 	OnEndEditCurCell();
 }
 
-void CPropertyGridCtrl::OnAxStockPicturePropertyPage() 
+void CPropertyGridCtrl::OnAxStockPicturePropertyPage()
 {
 	ShowPropertyPages( 1, &CLSID( CLSID_StockPicturePage ), NULL );
 	OnEndEditCurCell();
