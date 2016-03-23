@@ -1,1 +1,1 @@
-cscript.exe "../../MSIREPFixup.js" ""%1"" //NoLogo
+cscript.exe "../MSIREPFixup.js" ""%1"" //NoLogo
