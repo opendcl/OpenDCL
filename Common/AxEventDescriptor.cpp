@@ -51,12 +51,12 @@ AxEventDescriptor::AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
 					bool bPtr = (vt == VT_PTR);
 					if( bPtr )
 						vt = (VT_BYREF | e.tdesc.lptdesc->vt);
-					if (vt == VT_USERDEFINED) 
+					if (vt == VT_USERDEFINED)
 						SetRefType( vt, pTypeInfo,
-												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
+												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype),
 												mrArgs[n].clsid );
 					mrArgs[n].vt = vt;
-					if( !!rbstrNames[n] && n < ctNames - 1 )	
+					if( !!rbstrNames[n] && n < ctNames - 1 )
 						mrArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
 				}
 			}
@@ -72,7 +72,7 @@ AxEventDescriptor::AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
 void AxEventDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 {
 	BYTE nThisVersion = GetCurrentSaveVersion();
-	
+
 	if (ar.IsStoring())
 	{
 		ar << nThisVersion;
@@ -154,17 +154,17 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nProper
 		if (i < ctParams) {
 			//Argument should be read into array
 			if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
-			CStringA sName;
-			if (!readString(sFile, sName)) return statInvalidFormat;
-			mrArgs[i].name = sName;
+			CStringA sNameType;
+			if (!readString(sFile, sNameType)) return statInvalidFormat;
+			mrArgs[i].name = sNameType;
 			if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
 		} else {
 			//Argument should be ignored
 			AxArg tempArg;
 			if (!readVARTYPE(sFile, tempArg.vt)) return statInvalidFormat;
-			CStringA sName;
-			if (!readString(sFile, sName)) return statInvalidFormat;
-			tempArg.name = sName;
+			CStringA sNameT;
+			if (!readString(sFile, sNameT)) return statInvalidFormat;
+			tempArg.name = sNameT;
 			if (!readCLSID(sFile, tempArg.clsid)) return statInvalidFormat;
 		}
 	}

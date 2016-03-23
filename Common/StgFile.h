@@ -17,7 +17,7 @@ class CStgFile : public CFile
 {
 
 	IStorage		*m_pStgRoot;		// open storage
-	
+
 	IStorage		*m_pStgStreamOpen;	// storage for current open stream
 	COleStreamFile	*m_pStreamOpen;		// pointer if stream is open
 
@@ -54,16 +54,16 @@ public:
 
 	virtual	BOOL	OnEnumStg( LPCTSTR pszStgPrefix, STATSTG *pStat )
 			{
-			printf( "CStgFile:: OnEnumStg( %s\\%s )\n",
-					pszStgPrefix,  CString( pStat->pwcsName ) );
+			printf( "CStgFile:: OnEnumStg( %ls\\%ls )\n",
+					pszStgPrefix, (LPCTSTR)CString( pStat->pwcsName ) );
 
 			return( TRUE );
 			}
 
 	virtual	BOOL	OnEnumStream( LPCTSTR pszStgPrefix, STATSTG *pStat )
 			{
-			printf( "CStgFile:: OnEnumStream( %s\\%s )\n",
-					pszStgPrefix,  CString( pStat->pwcsName ) );
+			printf( "CStgFile:: OnEnumStream( %ls\\%ls )\n",
+					pszStgPrefix, (LPCTSTR)CString( pStat->pwcsName ) );
 
 			return( TRUE );
 			}
@@ -73,7 +73,7 @@ public:
 		return( m_pStgRoot );
 	}
 
-	
+
 public:
 	//
 	//	Overrides to switch between external and document stream

@@ -1,19 +1,19 @@
-// (C) Copyright 2002-2005 by Autodesk, Inc. 
+// (C) Copyright 2002-2005 by Autodesk, Inc.
 //
 // Permission to use, copy, modify, and distribute this software in
-// object code form for any purpose and without fee is hereby granted, 
-// provided that the above copyright notice appears in all copies and 
+// object code form for any purpose and without fee is hereby granted,
+// provided that the above copyright notice appears in all copies and
 // that both that copyright notice and the limited warranty and
-// restricted rights notice below appear in all supporting 
+// restricted rights notice below appear in all supporting
 // documentation.
 //
-// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS. 
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
 // AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
-// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC. 
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 //
-// Use, duplication, or disclosure by the U.S. Government is subject to 
+// Use, duplication, or disclosure by the U.S. Government is subject to
 // restrictions set forth in FAR 52.227-19 (Commercial Computer
 // Software - Restricted Rights) and DFAR 252.227-7013(c)(1)(ii)
 // (Rights in Technical Data and Computer Software), as applicable.
@@ -442,7 +442,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Grid-GetColumnCount"),          Grid::GetColumnCount},
 	{_T("Grid-GetColumnImage"),          Grid::GetColumnImage},
 	{_T("Grid-GetColumnWidth"),          Grid::GetColumnWidth},
-	{_T("Grid-GetCurCell"),              Grid::GetCurCell},	
+	{_T("Grid-GetCurCell"),              Grid::GetCurCell},
 	{_T("Grid-GetRowCells"),             Grid::GetRowCells},
 	{_T("Grid-GetRowCount"),             Grid::GetRowCount},
 	{_T("Grid-GetRowData"),              Grid::GetRowData},
@@ -471,7 +471,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Grid-GetColImage"),             Grid::GetColumnImage},
 	{_T("Grid-GetColItems"),             Grid::GetColumnCells},
 	{_T("Grid-GetColWidth"),             Grid::GetColumnWidth},
-	{_T("Grid-GetCurSel"),               Grid::GetCurCell},	
+	{_T("Grid-GetCurSel"),               Grid::GetCurCell},
 	{_T("Grid-GetItemCheck"),            Grid::GetCellCheckState},
 	{_T("Grid-GetItemData"),             Grid::GetRowData},
 	{_T("Grid-GetItemDropList"),         Grid::GetCellDropList},
@@ -802,13 +802,13 @@ BOOL GetDiscSpace(LPCTSTR lpszPath, DWORDLONG *pnFree)
 		FreeLibrary(m_hDllInst);
 	}
 
-	if(!bRet) {	// We have to try and use GetDiskFreeSpace()	
-		ULONG secpercluster, bytespersec, nooffreeclusters, totalnoofclusters;	
+	if(!bRet) {	// We have to try and use GetDiskFreeSpace()
+		ULONG secpercluster, bytespersec, nooffreeclusters, totalnoofclusters;
 
 		if(GetDiskFreeSpace(lpszPath, &secpercluster, &bytespersec, &nooffreeclusters, &totalnoofclusters)) {
 			*pnFree = (totalnoofclusters * secpercluster * bytespersec);
 			bRet = TRUE;
-		}				
+		}
 	}
 
 	return bRet;
@@ -1117,7 +1117,7 @@ public:
 	CARXApp () : AcRxArxApp () {}
 
 	virtual AcRx::AppRetCode On_kInitAppMsg (void *pkt) {
-		
+
 		if( !theWorkspace.GetLocalResourceModule() )
 		{
 			AfxMessageBox( _T("The OpenDCL local language resource module was not found or could not be loaded. OpenDCL cannot continue.\r\nPlease reinstall OpenDCL Runtime to correct the problem."), MB_OK | MB_ICONHAND );
@@ -1126,7 +1126,7 @@ public:
 
 		// You *must* call On_kInitAppMsg here
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kInitAppMsg (pkt) ;
-		
+
 		CString sModulePath;
 		DWORD cchPath = GetModuleFileName( _hdllInstance, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
 		sModulePath.ReleaseBuffer( cchPath );
@@ -1234,7 +1234,7 @@ public:
 
 	virtual AcRx::AppRetCode On_kLoadDwgMsg (void *pkt) {
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kLoadDwgMsg (pkt) ;
-		
+
 		static bool bInitialized = false;
 		if( !bInitialized )
 		{
@@ -1379,7 +1379,7 @@ public:
 		sExpr.Format( _T("(load \"%s\")"), (LPCTSTR)sDemoFilepath );
 		ads_queueexpr( sExpr.LockBuffer() );
 	}
-	
+
 	// ----- ads_opendcl_init_ui symbol (do not rename)
 	static int ads_opendcl_init_ui(void)
 	{
@@ -1589,12 +1589,12 @@ public:
 					return RSERR; //too many arguments
 			}
 		}
-		
+
 		// get the dcl form object that will be displayed
 		mpDclToBeShown = mpProjectToBeShown->FindDclForm(msDialogToBeShown);
 		TDclControlPtr pProps = mpDclToBeShown->GetControlProperties();
 		pProps->SetStringProperty(Prop::FormEventInitialize, msActionToBeShown);
-		
+
 		TCHAR lpPathBuffer[MAX_PATH];
 		::GetTempPath(MAX_PATH, lpPathBuffer);
 		CString sTempFile = lpPathBuffer;
@@ -1666,7 +1666,7 @@ public:
 		// call method to display the requested form
 		DialogParams params( mptToBeShown, CSize(0, 0) );
 		int nDialogId = theArxWorkspace.ActivateDclForm(mpDclToBeShown, &params);
-	
+
 		acedRetInt(mnDoneDialogValue);
 
 		return (RSRSLT) ;
@@ -1832,7 +1832,7 @@ public:
 							lvItem.iSubItem = 0;
 							lvItem.pszText = (LPTSTR)pszValue;
 							lvItem.iImage = -1;
-							lvItem.iIndent = 0;			
+							lvItem.iIndent = 0;
 							pListCtrl->InsertItem(&lvItem);
 						}
 					}
@@ -1844,7 +1844,7 @@ public:
 						lvItem.iSubItem = 0;
 						lvItem.pszText = (LPTSTR)pszValue;
 						lvItem.iImage = -1;
-						lvItem.iIndent = 0;			
+						lvItem.iIndent = 0;
 						pListCtrl->InsertItem(&lvItem);
 					}
 					break;
@@ -1914,7 +1914,7 @@ public:
 			{
 				pCtrl->SetStringProperty(Prop::EventEditChanged, sAction);
 				break;
-			}		
+			}
 		case CtlGrid:
 		case CtlListView:
 			{
@@ -1926,7 +1926,7 @@ public:
 			{
 				pCtrl->SetStringProperty(Prop::EventSelChanged, sAction);
 				break;
-			}	
+			}
 		case CtlScrollBar:
 			{
 				pCtrl->SetStringProperty(Prop::EventScroll, sAction);
@@ -1938,7 +1938,7 @@ public:
 		::GetTempPath(4096, lpPathBuffer);
 		CString sTempFile = lpPathBuffer;
 		sTempFile += gpszDclEventsLspFileName; /*"DclEvents.lsp"*/
-			
+
 		// create and open the action events lsp file to be loaded.
 		CStdioFile tempFile(sTempFile, CFile::modeWrite);
 		tempFile.SeekToEnd();
@@ -2021,12 +2021,12 @@ public:
 				{
 					pCtrl->SetBooleanProperty(Prop::Enabled, true);
 					break;
-				}		
+				}
 			case 1:
 				{
 					pCtrl->SetBooleanProperty(Prop::Enabled, false);
 					break;
-				}		
+				}
 			}
 		}
 		else
@@ -2038,7 +2038,7 @@ public:
 					pCtrl->SetBooleanProperty(Prop::Enabled, true);
 					pCtrl->GetWindow()->EnableWindow(TRUE);
 					break;
-				}		
+				}
 			case 1:
 				{
 					pCtrl->SetBooleanProperty(Prop::Enabled, false);
@@ -2049,7 +2049,7 @@ public:
 				{
 					pCtrl->GetWindow()->SetFocus();
 					break;
-				}		
+				}
 			case 3:
 				{
 					if (pCtrl->GetType() == CtlTextBox)
@@ -2058,7 +2058,7 @@ public:
 						pEdit->SetSel(0, -1);
 					}
 					break;
-				}		
+				}
 			case 4:
 				{
 					if (pCtrl->GetType() == CtlSlideView)
@@ -2569,7 +2569,7 @@ public:
 		{
 			//convert the arguments into windows messagebox type flags
 			switch (fButtonStyle)
-			{	
+			{
 			case 1: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON1; break;
 			case -1: case 0: case 2: dwMsgBoxType = MB_OK|MB_DEFBUTTON1; break;
 			case 3: dwMsgBoxType = MB_OKCANCEL|MB_DEFBUTTON1; break;
@@ -2607,7 +2607,7 @@ public:
 			dwMsgBoxType |= MB_HELP;
 
 		acedRetInt( MessageBox( theArxWorkspace.GetTopmostModalForm(), sMessage, sTitle, dwMsgBoxType ) );
-		
+
 		return (RSRSLT) ;
 	}
 
@@ -2895,7 +2895,7 @@ public:
 		//----- Read the external DWG file
 		AcDbObjectId blockId;
 		AcDbDatabase *pDwg = new AcDbDatabase(false);
-		Acad::ErrorStatus es = pDwg->readDwgFile (sPath, _SH_DENYNO);
+		Acad::ErrorStatus es = pDwg->readDwgFile (sPath);
 		if (es == Acad::eOk)
 		{
 			//----- Put it into a block table record of the current database
@@ -3040,7 +3040,7 @@ public:
 				if (es != Acad::eOk )
 					break;
 				pAtt->close () ;
-			}	 
+			}
 			pEnt->close () ; //----- Use pEnt... pAttdef might be NULL
 		}
 		delete pIterator ;
@@ -3062,12 +3062,12 @@ public:
 	static int ads_dcl_attachxref(void)
 	{
 		/* Revision 2007-01-28 [ORW]  **This change breaks existing code.**
-				The original implementation of this function expected a path without filename as the first argument and 
-				a drawing file name as the second argument. It simply concatenated the second argument to the first 
-				argument and passed that to acedXrefAttach. The problem with this strategy is that it precludes the 
-				caller from renaming the block definition when the xref is attached. I changed it so that the first 
-				argument expects the filename as part of the path (or just the filename by itself). If the second 
-				argument is supplied and is not nil, it will become the block name of the attached xref. If the second 
+				The original implementation of this function expected a path without filename as the first argument and
+				a drawing file name as the second argument. It simply concatenated the second argument to the first
+				argument and passed that to acedXrefAttach. The problem with this strategy is that it precludes the
+				caller from renaming the block definition when the xref is attached. I changed it so that the first
+				argument expects the filename as part of the path (or just the filename by itself). If the second
+				argument is supplied and is not nil, it will become the block name of the attached xref. If the second
 				argument is not supplied, or is nil, then the block name defaults to the filename without extension.
 		*/
 		struct resbuf *pArgs =acedGetArgs () ;
@@ -3269,18 +3269,18 @@ public:
 			{
 				for( size_t idx = 0; idx < rsFilters.size(); ++idx )
 				{
-					CString sFilter = rsFilters[idx];
-					if( !sFilter.IsEmpty() )
+					CString sFilter2 = rsFilters[idx];
+					if( !sFilter2.IsEmpty() )
 					{
-						if( sFilter.Right( 1 ) != _T("|") )
-							sFilter += _T('|');
-						int nFirstSeparator = sFilter.Find( _T('|') );
-						if( nFirstSeparator == sFilter.GetLength() - 1 )
-							sFilter += sFilter; //only one element was provided, so just use the same text for both
-						else if( sFilter.Find( _T('|'), nFirstSeparator + 1 ) != sFilter.GetLength() - 1 )
-							sFilter = sFilter.Left( sFilter.Find( _T('|'), nFirstSeparator + 1 ) + 1 ); //too many elements, so chop off the extras
+						if( sFilter2.Right( 1 ) != _T("|") )
+							sFilter2 += _T('|');
+						int nFirstSeparator = sFilter2.Find( _T('|') );
+						if( nFirstSeparator == sFilter2.GetLength() - 1 )
+							sFilter2 += sFilter2; //only one element was provided, so just use the same text for both
+						else if( sFilter2.Find( _T('|'), nFirstSeparator + 1 ) != sFilter2.GetLength() - 1 )
+							sFilter2 = sFilter2.Left( sFilter2.Find( _T('|'), nFirstSeparator + 1 ) + 1 ); //too many elements, so chop off the extras
 					}
-					sFilterList += sFilter;
+					sFilterList += sFilter2;
 				}
 				if( GetStringArgument( pArgs, sCaption, true ) )
 					GetStringArgument( pArgs, sPath, true );
@@ -3314,8 +3314,8 @@ public:
 		BrowseWnd.m_ofn.nMaxFile = 8192;
 		BrowseWnd.m_ofn.lpstrFile = sResults.GetBuffer(8192);
 		int nStat = BrowseWnd.DoModal();
-		if (nStat == IDOK)  	
-		{		
+		if (nStat == IDOK)
+		{
 			// Convert the array to a list that can be returned
 			struct resbuf* prbFileList = NULL;
 			struct resbuf* prbTail = NULL;
@@ -3540,11 +3540,11 @@ public:
 		CFileFind finder;
 		BOOL bResult = finder.FindFile( sPath + sFilter );
 		while( bResult )
-		{	
+		{
 			bResult = finder.FindNextFile();
 			if( finder.IsDots() )
 				continue;
-			
+
 			if( !prbTail )
 			{
 				prbFiles = acutNewRb( RTSTR );

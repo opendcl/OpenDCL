@@ -238,7 +238,7 @@ const HICON CDclPicture::GetIcon() const
 		return NULL;
 	HICON hIcon;
 	m_hPicture.m_pPict->get_Handle( (OLE_HANDLE*)&hIcon );
-	return hIcon;			
+	return hIcon;
 }
 
 HICON CDclPicture::CloneIcon() const
@@ -290,7 +290,7 @@ short CDclPicture::GetPicType() const
 	return const_cast<CDclPicture*>(this)->m_hPicture.GetType();
 }
 
-void CDclPicture::Update( LPPICTURE pPicture ) 
+void CDclPicture::Update( LPPICTURE pPicture )
 {
 	CComQIPtr< IPictureDisp > pPictureDisp = pPicture;
 	m_hPicture.SetPictureDispatch( pPictureDisp );
@@ -381,7 +381,7 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile )
 	// create IStream* from global memory
 	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
 	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
+
 	// Create IPicture from image file
 	LPPICTURE lpPicture = NULL;
 	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
@@ -456,7 +456,7 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile )
 //  //savebug
 //  fprintf(pFile, "\nCPictureObject");
 //	writeInt(pFile, int(GetCurrentSaveVersion()));
-//	
+//
 //	writeInt(pFile, mnID);
 //	writeInt(pFile, msizePic.cx);
 //	writeInt(pFile, msizePic.cy);
@@ -529,7 +529,7 @@ void CDclPicture::Serialize(CArchive& ar)
 			}
 		}
 	}
-	else	
+	else
 	{
 		unsigned long nThisVersion;
 		ar >> nThisVersion;
@@ -545,9 +545,9 @@ void CDclPicture::Serialize(CArchive& ar)
 			CImageList tempImage;
 			tempImage.Read(&ar);
 			if (tempImage.m_hImageList != NULL)
-			{				
+			{
 				HICON hIcon = tempImage.ExtractIcon(0);
-				m_hPicture.CreateFromIcon(hIcon, TRUE);			
+				m_hPicture.CreateFromIcon(hIcon, TRUE);
 				tempImage.DeleteImageList();
 			}
 		}
@@ -578,7 +578,7 @@ void CDclPicture::Serialize(CArchive& ar)
 			mnID = -1;
 			return;
 		}
-		
+
 		if( nThisVersion == 2 || nThisVersion == 3 || nThisVersion >= 6 )
 		{
 			switch( nPictureType )
@@ -588,10 +588,10 @@ void CDclPicture::Serialize(CArchive& ar)
 			case PICTYPE_ENHMETAFILE:
 				{
 					try
-					{		
+					{
 						COleVariant var;
 						LoadPicture(ar, var);
-						CComQIPtr< IPictureDisp > pPicDisp( (var.vt == VT_DISPATCH)? var.pdispVal : NULL );	
+						CComQIPtr< IPictureDisp > pPicDisp( (var.vt == VT_DISPATCH)? var.pdispVal : NULL );
 						m_hPicture.SetPictureDispatch(pPicDisp);
 					}
 					catch(...) {}
@@ -604,7 +604,7 @@ void CDclPicture::Serialize(CArchive& ar)
 					if (tempImage.m_hImageList != NULL)
 					{
 						HICON hIcon = tempImage.ExtractIcon(0);
-						m_hPicture.CreateFromIcon(hIcon, TRUE);			
+						m_hPicture.CreateFromIcon(hIcon, TRUE);
 						tempImage.DeleteImageList();
 					}
 					break;
@@ -632,7 +632,7 @@ void CDclPicture::Serialize(CArchive& ar)
 					if (tempImage.m_hImageList != NULL)
 					{
 						HICON hIcon = tempImage.ExtractIcon(0);
-						m_hPicture.CreateFromIcon(hIcon, TRUE);			
+						m_hPicture.CreateFromIcon(hIcon, TRUE);
 						tempImage.DeleteImageList();
 					}
 					break;
@@ -651,7 +651,7 @@ IOStatus CDclPicture::ReadFromTextFile(std::ifstream &sFile, const CString &file
 	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
 	switch (iVersion) {
-		case 3 : 
+		case 3 :
 			return ReadFromTextFile3(sFile, fileName);
 			break;
 	}
@@ -679,7 +679,7 @@ IOStatus CDclPicture::ReadFromTextFile3(std::ifstream &sFile, const CString &fil
 		//  if (!readImage(sFile, fileName, img)) return statInvalidFormat;
 		//  HBITMAP hBitmap = img.Detach();
 		//  m_hPicture.CreateFromBitmap(hBitmap);
-		//} else if (iPicType == PICTYPE_METAFILE 
+		//} else if (iPicType == PICTYPE_METAFILE
 		//           || iPicType == PICTYPE_ENHMETAFILE) {
 		//  //Currently not handled
 		//} else if (iPicType == PICTYPE_ICON) {
@@ -688,7 +688,7 @@ IOStatus CDclPicture::ReadFromTextFile3(std::ifstream &sFile, const CString &fil
 		//  if (il.m_hImageList != NULL)
 		//  {
 		//    HICON hIcon = il.ExtractIcon(0);
-		//    m_hPicture.CreateFromIcon(hIcon, TRUE);			
+		//    m_hPicture.CreateFromIcon(hIcon, TRUE);
 		//    il.DeleteImageList();
 		//  }
 		//}
@@ -745,7 +745,7 @@ BOOL CDclPicture::PX_Picture(CArchive& ar, CPictureHolder& pict)
 	return PX_IUnknown(ar, pUnk, IID_IPicture);
 }
 
-BOOL CDclPicture::ExchangePersistentProp(CArchive& ar, 
+BOOL CDclPicture::ExchangePersistentProp(CArchive& ar,
 		LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault)
 {
 	ASSERT_POINTER(ppUnk, LPUNKNOWN);
@@ -794,12 +794,12 @@ BOOL CDclPicture::ExchangePersistentProp(CArchive& ar,
 
 					// and load the object normally
 
-					CLSID clsid;
-					if (SUCCEEDED(::ReadClassStm(pstm, &clsid)) &&
-							(SUCCEEDED(::CoCreateInstance(clsid, NULL,
+					CLSID clsidRead;
+					if (SUCCEEDED(::ReadClassStm(pstm, &clsidRead)) &&
+							(SUCCEEDED(::CoCreateInstance(clsidRead, NULL,
 								CLSCTX_SERVER | CLSCTX_REMOTE_SERVER,
 								iid, (void**)ppUnk)) ||
-							SUCCEEDED(::CoCreateInstance(clsid, NULL,
+							SUCCEEDED(::CoCreateInstance(clsidRead, NULL,
 								CLSCTX_SERVER & ~CLSCTX_REMOTE_SERVER,
 								iid, (void**)ppUnk))))
 					{

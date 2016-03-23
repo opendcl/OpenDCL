@@ -101,10 +101,7 @@ public:
 		{
 			static TCHAR szPlottersPath[MAX_PATH] = _T("");
 			if( !szPlottersPath[0] )
-			{
-				TCHAR szPlottersPath[MAX_PATH];
 				acedGetEnv( _T("PrinterConfigDir"), szPlottersPath );
-			}
 			return szPlottersPath;
 		}
 };

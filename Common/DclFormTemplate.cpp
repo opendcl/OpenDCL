@@ -28,14 +28,14 @@ static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLi
 	{
 		TDclControlPtr pDclControl = *iter;
 		const TPropertyList& Props = pDclControl->GetPropertyList();
-		for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
+		for( TPropertyList::const_iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
 		{
-			if( (*iter)->GetType() == PropImageList )
+			if( (*iterProp)->GetType() == PropImageList )
 			{//we have a winner
-				short idx = (*iter)->GetShortValue();
+				short idx = (*iterProp)->GetShortValue();
 				if( idx >= 0 && (size_t)idx < rImageLists.size() )
 					pDclControl->SetImageList( new CDclImageList( &rImageLists.at( idx )->GetImageList() ) );
-				pDclControl->RemoveProperty( (*iter)->GetID() );
+				pDclControl->RemoveProperty( (*iterProp)->GetID() );
 				break; //stop looking and ignore any additional PropImageList properties, since there should only be one
 			}
 		}
@@ -119,7 +119,7 @@ void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
 
 void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 {
-	//note: an assertion here indicates more than 1 instance of the form; perhaps 
+	//note: an assertion here indicates more than 1 instance of the form; perhaps
 	//an earlier instance didn't get destroyed when it should have been?
 	assert( mpDlgObject == NULL || pDlgObject == NULL );
 	mpDlgObject = pDlgObject;
@@ -248,7 +248,7 @@ bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, size_t idxNew )
 	return false;
 }
 
-void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool bUpdateChildren /*= true*/ )	
+void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool bUpdateChildren /*= true*/ )
 {
 	OnModified();
 	CString sRootName = pszRootName;
@@ -262,8 +262,8 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 		(*iter)->SetGlobalVariableName( sFormName );
 }
 
-void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )	
-{	
+void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
+{
 	OnModified();
 	GetControlProperties()->SetStringProperty( Prop::VarName, NULL );
 	if( !bUpdateChildren )
@@ -272,7 +272,7 @@ void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
 		(*iter)->ClearGlobalVariableName();
 }
 
-void CDclFormObject::ResetEventNames( bool bUpdateChildren /*= true*/ )	
+void CDclFormObject::ResetEventNames( bool bUpdateChildren /*= true*/ )
 {
 	OnModified();
 	GetControlProperties()->ResetEventNames();
@@ -327,7 +327,7 @@ UINT_PTR CDclFormObject::GetUniqueControlId()
 
 //IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
 //{
-//  POSITION pos;	
+//  POSITION pos;
 //  int nCount;
 //
 //  fprintf(pFile, "\nCDclFormObject");
@@ -367,7 +367,7 @@ UINT_PTR CDclFormObject::GetUniqueControlId()
 //
 //    if (!pControl->IsDeleted())
 //      pControl->WriteToTextFile(pFile, fileName);
-//  }		
+//  }
 //	return statOK;
 //}
 
@@ -415,7 +415,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			if( (GetAsyncKeyState( VK_CONTROL ) & KF_UP) == KF_UP )
 				TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
 		#endif //_DIAGNOSTIC
-		}		
+		}
 	}
 	else
 	{
@@ -470,7 +470,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 		}
 
 		unsigned short nCount;
-		ar >> nCount;	
+		ar >> nCount;
 		ClearControls();
 		while (nCount-- > 0)
 		{
@@ -586,7 +586,7 @@ IOStatus CDclFormObject::ReadFromTextFile(std::ifstream &sFile, const CString &f
 	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
 	switch (iVersion) {
-		case 4 : 
+		case 4 :
 			return ReadFromTextFile4(sFile, fileName);
 			break;
 	}
@@ -653,9 +653,9 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		if (stat != statOK)
 		{
 			delete pImageList;
-			size_t idx = rImageLists.size();
-			while( idx-- > 0 )
-				delete rImageLists.at( idx );
+			size_t idxImage = rImageLists.size();
+			while( idxImage-- > 0 )
+				delete rImageLists.at( idxImage );
 			return stat;
 		}
 		rImageLists.push_back( pImageList );
@@ -665,7 +665,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
 	if( !mDclControls.empty() )
 	{
-		TDclControlPtr pControl = GetControlProperties();		
+		TDclControlPtr pControl = GetControlProperties();
 
 		switch (mType)
 		{
@@ -684,7 +684,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		//	pControl->RemoveProperty( Prop::MinDialogHeight );
 		//	pControl->RemoveProperty( Prop::MaxDialogWidth );
 		//	pControl->RemoveProperty( Prop::MaxDialogHeight );
-		//	break;		
+		//	break;
 		}
 	}
 	return statOK;
@@ -896,7 +896,7 @@ LPCTSTR CDclFormObject::toString() const
 	if( mpDlgObject )
 		sInstance.Format( _T(" (DlgObject: %s)"), asString( mpDlgObject ) );
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("CDclControlobject [%s: %s%s]"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	_sntprintf( buf, _elements(buf), _T("CDclControlobject [%ls: %ls%ls]"), asString( mType ), (LPCTSTR)GetKeyPath(), (LPCTSTR)sInstance );
 	return buf;
 }
 

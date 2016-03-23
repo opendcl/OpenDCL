@@ -80,7 +80,7 @@ public:
 			sArg.Format( _T(" %.1f"), (double)_arg );
 			return sArg;
 			//ads_real rArg = static_cast<ads_real>(_arg);
-			//TCHAR szArg[32] = _T(""); 
+			//TCHAR szArg[32] = _T("");
 			//if( RTNORM == acdbRToS( rArg, 2, 20, szArg ) )
 			//	return CString( _T(' ') ) + szArg;
 			//return _T(" 0");

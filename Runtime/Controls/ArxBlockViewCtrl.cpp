@@ -64,7 +64,7 @@ CArxBlockViewCtrl::~CArxBlockViewCtrl()
 	if( mhSavedCursor )
 		DeleteObject( mhSavedCursor );
 	if( mhArrowCursor )
-		DeleteObject( mhArrowCursor );		
+		DeleteObject( mhArrowCursor );
 	if( mhZoomCursor )
 		DeleteObject( mhZoomCursor );
 	if( mhPanCursor )
@@ -196,12 +196,12 @@ void CArxBlockViewCtrl::DrawOrbitCircles(CDC* pDC /*= NULL*/ )
 {
 	if( mbPanning )
 		return;
-		
+
 	if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) != 1 )
 		return;
 
 	CDC* pdc = pDC? pDC : GetDC();
-		
+
 	CRect rcThis;
 	GetWindowRect(&rcThis);
 	ScreenToClient(rcThis);
@@ -210,32 +210,32 @@ void CArxBlockViewCtrl::DrawOrbitCircles(CDC* pDC /*= NULL*/ )
 
 	if (rcThis.Width() < rcThis.Height())
 		nSmallerSize = rcThis.Width() / 2;
-	else		
+	else
 		nSmallerSize = rcThis.Height() / 2;
 
 	int cX = rcThis.left + (rcThis.Width() / 2);
 	int cY = rcThis.top + (rcThis.Height() / 2);
-	
+
 	int sX = cX - nSmallerSize + nOrbitOffset;
 	int sY = cY - nSmallerSize + nOrbitOffset;
 	int eX = cX + nSmallerSize - nOrbitOffset;
 	int eY = cY + nSmallerSize - nOrbitOffset;
-	
+
 	CPen Pen(PS_SOLID, 1, RGB(0,255,0));
 	CPen* pOldPen = pdc->SelectObject(&Pen);
 
 	// draw the main circle
 	pdc->MoveTo(sX, sY);
-	pdc->Arc(sX, sY, eX, eY, sX, cY, eX, cY);		
-	pdc->Arc(sX, sY, eX, eY, eX, cY, sX, cY);		
+	pdc->Arc(sX, sY, eX, eY, sX, cY, eX, cY);
+	pdc->Arc(sX, sY, eX, eY, eX, cY, sX, cY);
 
 	// draw the outer circles
 	DrawOrbitQuadCircle(pdc, cX, sY);
 	DrawOrbitQuadCircle(pdc, cX, eY);
 	DrawOrbitQuadCircle(pdc, sX, cY);
 	DrawOrbitQuadCircle(pdc, eX, cY);
-	
-	pdc->SelectObject(pOldPen);			
+
+	pdc->SelectObject(pOldPen);
 	Pen.DeleteObject();
 
 	if( pDC == NULL )
@@ -249,8 +249,8 @@ void CArxBlockViewCtrl::DrawOrbitQuadCircle(CDC *pdc, int nX, int nY)
 	int eX = nX + (nOrbitQuadCircleDia / 2);
 	int eY = nY + (nOrbitQuadCircleDia / 2);
 	pdc->MoveTo(sX, sY);
-	pdc->Arc(sX, sY, eX, eY, sX, nY, eX, nY);		
-	pdc->Arc(sX, sY, eX, eY, eX, nY, sX, nY);		
+	pdc->Arc(sX, sY, eX, eY, sX, nY, eX, nY);
+	pdc->Arc(sX, sY, eX, eY, eX, nY, sX, nY);
 }
 
 bool CArxBlockViewCtrl::GetDwgSize( AcDbExtents& ext )
@@ -305,7 +305,7 @@ void CArxBlockViewCtrl::RefreshBlock()
 	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return;
- 
+
 	AcDbBlockTable* pTab = NULL;
 	Acad::ErrorStatus es = pDb->getBlockTable( pTab, AcDb::kForRead );
 	if( es != Acad::eOk )
@@ -315,7 +315,7 @@ void CArxBlockViewCtrl::RefreshBlock()
 		sBlockName = ACDB_MODEL_SPACE;
 	AcDbBlockTableRecord* pRec = NULL;
 	es = pTab->getAt( sBlockName, pRec, AcDb::kForRead );
-	pTab->close();	
+	pTab->close();
 	if( es != Acad::eOk )
 		return;
 	UpdateModel( pRec );
@@ -330,16 +330,16 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 	if( !pszFilename || !*pszFilename )
 		return false;
 
-	CString sPath = theWorkspace.FindFile( pszFilename ); 
+	CString sPath = theWorkspace.FindFile( pszFilename );
 	if( sPath.IsEmpty() )
-	{				
+	{
 		CString sMsg;
 		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 		theWorkspace.DisplayAlert( sMsg );
 		return false;
 	}
 	mpSourceDb = new AcDbDatabase(false, true);
-	Acad::ErrorStatus es = mpSourceDb->readDwgFile( sPath, _SH_DENYNO, false );
+	Acad::ErrorStatus es = mpSourceDb->readDwgFile( sPath );
 	mpSourceDb->closeInput( true );
 	if( es != Acad::eOk )
 	{
@@ -351,7 +351,7 @@ bool CArxBlockViewCtrl::PreLoadDwg( LPCTSTR pszFilename )
 		return false;
 	}
 	mbPreloaded = true;
-	return true;			
+	return true;
 }
 
 bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename )
@@ -366,9 +366,9 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, boo
 	if( !pszFilename || !*pszFilename )
 		return false;
 
-	CString sPath = theWorkspace.FindFile( pszFilename ); 
+	CString sPath = theWorkspace.FindFile( pszFilename );
 	if( sPath.IsEmpty() )
-	{				
+	{
 		CString sMsg;
 		sMsg.Format( theWorkspace.LoadResourceString( IDS_DWGNOTLOADING ), pszFilename );
 		theWorkspace.DisplayAlert( sMsg );
@@ -376,7 +376,7 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, boo
 	}
 
 	mpSourceDb = new AcDbDatabase(false, true);
-	Acad::ErrorStatus es = mpSourceDb->readDwgFile( sPath, _SH_DENYNO, false );
+	Acad::ErrorStatus es = mpSourceDb->readDwgFile( sPath );
 	mpSourceDb->closeInput( true );
 	if( es != Acad::eOk )
 	{
@@ -387,10 +387,10 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, boo
 		mpSourceDb = NULL;
 		return false;
 	}
-			
+
 	AcDbBlockTable* pBlockTable = NULL;
 	es = mpSourceDb->getBlockTable( pBlockTable, AcDb::kForRead );
-	if( es != Acad::eOk )    
+	if( es != Acad::eOk )
 	{
 		delete mpSourceDb;
 		mpSourceDb = NULL;
@@ -410,7 +410,7 @@ bool CArxBlockViewCtrl::DisplayDwg( LPCTSTR pszFilename, double dZoomFactor, boo
 	DisplayBTR( pModelSpace, dZoomFactor, bZoomExtents, nScaleType, vecViewDir );
 	pModelSpace->close();
 
-	return true; 
+	return true;
 }
 
 bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName )
@@ -429,10 +429,10 @@ bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName, double dZoomFactor, 
 	AcDbDatabase* pDb = ((mbPreloaded && mpSourceDb)? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return false;
-		
+
 	AcDbBlockTable* pBlockTable = NULL;
 	Acad::ErrorStatus es = pDb->getBlockTable( pBlockTable, AcDb::kForRead );
-	if( es != Acad::eOk )    
+	if( es != Acad::eOk )
 	{
 		delete mpSourceDb;
 		mpSourceDb = NULL;
@@ -491,7 +491,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxBlockViewCtrl message handlers
 
-BOOL CArxBlockViewCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
+BOOL CArxBlockViewCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	if( !GetGsView() || mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 0 )
 		return TRUE;
@@ -509,7 +509,7 @@ BOOL CArxBlockViewCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	return TRUE;
 }
 
-void CArxBlockViewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CArxBlockViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown( nFlags, point );
 
@@ -523,7 +523,7 @@ void CArxBlockViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mbPanning = false;
 			mbOrbiting = false;
 			StartUIDrag();
-			mStartPt = point;					
+			mStartPt = point;
 			mdPreviousZoomScale = 1.0;
 			break;
 		case 2: //pan
@@ -531,35 +531,35 @@ void CArxBlockViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mbPanning = true;
 			mbOrbiting = false;
 			StartUIDrag();
-			mStartPt = point;					
+			mStartPt = point;
 			break;
 		case 1: //orbit
 			mbZooming = false;
 			mbPanning = false;
 			mbOrbiting = true;
 			StartUIDrag();
-			mStartPt = point;					
+			mStartPt = point;
 			break;
 		}
 	}
 }
 
-void CArxBlockViewCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+void CArxBlockViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	//end orbit and pan
 	mbOrbiting = false;
 	mbZooming = false;
 	mbPanning = false;
-		
+
 	OnNeedRepaint( true );
 	EndUIDrag();
 	__super::OnLButtonUp( nFlags, point );
 }
 
-void CArxBlockViewCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
+void CArxBlockViewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnMButtonDown( nFlags, point );
-	
+
 	if( GetGsView() && mpTemplate->GetLongProperty( Prop::InterfaceMode ) != 0 )
 	{
 		mbPanning = true;
@@ -568,7 +568,7 @@ void CArxBlockViewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	}
 }
 
-void CArxBlockViewCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
+void CArxBlockViewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	__super::OnMButtonUp( nFlags, point );
 
@@ -578,10 +578,10 @@ void CArxBlockViewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	mbPanning = false;
 }
 
-void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	__super::OnMouseMove( nFlags, point );
-	
+
 	if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 0 )
 		return;
 
@@ -593,14 +593,14 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			CRect rcThis;
 			GetClientRect(&rcThis);
 			double zDelta = point.y - mStartPt.y;
-			
+
 			if (zDelta<0)
 			{
 				if (mdPreviousZoomScale != 1.0)
 				{
 					double dZoomScale = 1.0 - mdPreviousZoomScale;
 					dZoomScale = 1.0 - dZoomScale;
-					pView->zoom(dZoomScale);			
+					pView->zoom(dZoomScale);
 				}
 				zDelta = zDelta / rcThis.Height();
 				mdPreviousZoomScale = 1.0 - zDelta;
@@ -612,21 +612,21 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 				{
 					double dZoomScale = 1.0 - mdPreviousZoomScale;
 					dZoomScale = 1.0 - dZoomScale;
-					pView->zoom(dZoomScale);			
+					pView->zoom(dZoomScale);
 				}
 				zDelta = zDelta / rcThis.Height();
 				mdPreviousZoomScale = 1.0 - zDelta;
 				pView->zoom(mdPreviousZoomScale);
 			}
-			
+
 			mStartPt = point;
-			
+
 			if (zDelta != 0.0)
 			{
 				RedrawWindow();
 			}
 		}
-	
+
 		if (mbPanning)
 		{
 			//transform the point from device coordinates to
@@ -648,8 +648,8 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			int nViewportY = (view_rect.m_max.y - view_rect.m_min.y) + 1;
 
 			int centerX = int(float(nViewportX) / 2.0f) + view_rect.m_min.x;
-			int centerY = int(float(nViewportY) / 2.0f) + view_rect.m_min.y; 
-		
+			int centerY = int(float(nViewportY) / 2.0f) + view_rect.m_min.y;
+
 			const double radius  = min (nViewportX, nViewportY) * 0.4f;
 
 			// compute two vectors from last and new cursor positions:
@@ -680,16 +680,16 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			AcGeVector3d    work_vector (rotation_vector);
 			work_vector.z = 0.0f;                      // projection of rotation_vector onto xy plane
 
-			double          roll_angle      = atan2 (work_vector.x, 
+			double          roll_angle      = atan2 (work_vector.x,
 													 work_vector.y);        // assuming that the camera's up vector is "up",
-																			// this computes the angle between the up vector 
+																			// this computes the angle between the up vector
 																			// and the work vector, which is the roll required
 																			// to make the up vector coincident with the rotation_vector
 
 			double length = rotation_vector.length ();
 			double orbit_y_angle = (length != 0.0) ? acos (rotation_vector.z / length) + Half_Pi : Half_Pi;                   // represents inverse cosine of the dot product of the
 			if (length > 1.0f)                                              // rotation_vector and the up_vector divided by the
-				length = 1.0f;                                              // magnitude of both vectors.  We add pi/2 because we 
+				length = 1.0f;                                              // magnitude of both vectors.  We add pi/2 because we
 																			// are making the up-vector parallel to the the rotation
 			double          rotation_angle  = asin (length);                // vector ... up-vector is perpin. to the eye-vector.
 
@@ -700,7 +700,7 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			pView->orbit( rotation_angle, 0.0f);     // 3: orbit along x by rotation angle
 			pView->orbit( 0.0f, -orbit_y_angle);     // 4: orbit along y by the negation of 2
 			pView->roll(-roll_angle);               // 5: roll camera by the negation of 1
-			
+
 			RedrawWindow();
 			mStartPt = point;
 		}

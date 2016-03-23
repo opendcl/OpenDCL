@@ -17,6 +17,7 @@ class CArxPictureBoxCtrl : public CPictureBoxCtrl
 	CArxDragDropService mDragDropService;
 	bool mbTrackingMouse;
 	bool mbSkipOnClicked; //hack to skip erroneous OnClicked after OnDblClicked
+	bool mbLostFocus; //set true when WM_KILLFOCUS is received
 
 // Construction
 public:
@@ -42,7 +43,7 @@ protected:
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);

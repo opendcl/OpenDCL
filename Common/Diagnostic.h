@@ -154,7 +154,7 @@ const TCHAR* asString( const HDC hdc )
 	RECT rc;
 	GetClipBox( hdc, &rc );
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("[%d,%d]-[%d,%d]"), rc.left,rc.top, rc.right, rc.bottom );
+	_sntprintf( buf, _elements(buf), _T("[%ld,%ld]-[%ld,%ld]"), rc.left,rc.top, rc.right, rc.bottom );
 	return buf;
 }
 

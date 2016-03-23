@@ -21,7 +21,7 @@ CStgFile::CStgFile()
 	m_pStgStreamOpen = NULL;
 
 	m_pStreamOpen = NULL;
-	
+
 }
 
 CStgFile::~CStgFile()
@@ -68,20 +68,20 @@ BOOL	CStgFile::Enum( IStorage *pStg, LPCTSTR pszStgStart,
 	ASSERT( m_pStgRoot != NULL );
 
 
-	
+
 	if( pStg == NULL )
 		{
 		pStg = m_pStgRoot;
 		pszStgStart = _T("\\");
 		}
-	
+
 	//
 	//	Start the enumeration
 	//
 	ASSERT( pStg != NULL );
 	IEnumSTATSTG *pEnum = NULL;
 
-    HRESULT hRes = pStg->EnumElements( 0, NULL, 0, &pEnum );
+	HRESULT hRes = pStg->EnumElements( 0, NULL, 0, &pEnum );
 	ASSERT( pEnum != NULL );
 
 
@@ -117,12 +117,12 @@ BOOL	CStgFile::Enum( IStorage *pStg, LPCTSTR pszStgStart,
 				break;
 				}
 
-			
+
 			//
 			//	If Storage, must recurse to find others
 			//
 			IStorage *pStgSub = NULL;
-			HRESULT hRes = pStg->OpenStorage( StatStg.pwcsName,
+			hRes = pStg->OpenStorage( StatStg.pwcsName,
 					NULL, STGM_READWRITE | STGM_SHARE_EXCLUSIVE , NULL, 0, &pStgSub );
 
 			if( hRes == S_OK )
@@ -298,7 +298,7 @@ void CStgFile::Write( const void* lpBuf, UINT nCount )
 //
 void CStgFile::Close( void )
 {
-	
+
 	if( m_pStgRoot != NULL )
 		{
 		ASSERT( m_pStreamOpen != NULL );
@@ -339,7 +339,7 @@ void CStgFile::Close( void )
 BOOL CStgFile::Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pError )
 {
     USES_CONVERSION;                // needed for OLE2CT
-	
+
 //	ASSERT( m_pStreamOpen == NULL );		// nice cleanup?
 
 
@@ -348,7 +348,7 @@ BOOL CStgFile::Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pErr
 	if( m_pStgRoot != NULL )				// is it open?
 		{
 		ASSERT( m_pStreamOpen == NULL );		// nice cleanup?
-		
+
 		ASSERT( m_pStreamOpen == NULL );	// this should be normal
 		ASSERT( m_pStgStreamOpen == NULL );	// this should be normal
 
@@ -405,7 +405,7 @@ BOOL CStgFile::Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pErr
 		//
 		if( sStgDir != "" )
 			{
-			
+
 			sFileName = sStream;				// use just the stream portion
 
 			IStorage *pStg = NULL;
@@ -461,7 +461,7 @@ BOOL CStgFile::Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pErr
 BOOL	CStgFile::OpenStg( LPCTSTR pszFileStg )
 {
     USES_CONVERSION;                // needed for OLE2CT
-	
+
 	BOOL	fSuccess = FALSE;
 
 	CloseStg();						// close any previous
@@ -487,7 +487,7 @@ BOOL	CStgFile::OpenStg( LPCTSTR pszFileStg )
 BOOL	CStgFile::CreateStg( LPCTSTR pszFileStg )
 {
     USES_CONVERSION;                // needed for OLE2CT
-	
+
 	BOOL	fSuccess = FALSE;
 
 	CloseStg();						// close any previous
@@ -516,7 +516,7 @@ BOOL	CStgFile::CreateStg( LPCTSTR pszFileStg )
 //
 BOOL	CStgFile::CloseStg( void )
 {
-	
+
 	BOOL	fSuccess = FALSE;
 
 	//
@@ -563,7 +563,7 @@ BOOL	CStgFile::MkStg( LPCTSTR pszStg )
 {
     USES_CONVERSION;                // needed for OLE2CT
 
-	
+
 	BOOL	fSuccess = FALSE;
 
 	if( m_pStgRoot != NULL )		// only if currently open

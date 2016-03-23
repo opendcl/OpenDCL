@@ -153,7 +153,7 @@ static bool ResbufToVariantArg( resbuf*& pArgs, VARIANTARG& varArg )
 {
 	variant_t _arg;
 	switch( pArgs->restype )
-	{	
+	{
 		case RTREAL:
 		case RTANG:
 		case RTORINT:
@@ -181,13 +181,13 @@ static bool ResbufToVariantArg( resbuf*& pArgs, VARIANTARG& varArg )
 			}
 		case RTSTR:
 			{
-				_arg = pArgs->resval.rstring;				
+				_arg = pArgs->resval.rstring;
 				break;
 			}
 		case RTT:
 			{
 				_arg.vt = VT_BOOL;
-				_arg.boolVal = VARIANT_TRUE;				
+				_arg.boolVal = VARIANT_TRUE;
 				break;
 			}
 		case RTNIL:
@@ -200,7 +200,7 @@ static bool ResbufToVariantArg( resbuf*& pArgs, VARIANTARG& varArg )
 				else
 				{
 					_arg.vt = VT_BOOL;
-					_arg.boolVal = VARIANT_FALSE;				
+					_arg.boolVal = VARIANT_FALSE;
 				}
 				break;
 			}
@@ -231,8 +231,8 @@ static bool ResbufToVariantArg( resbuf*& pArgs, VARIANTARG& varArg )
 			}
 		default:
 			{
-				return false; 
-			}		
+				return false;
+			}
 	}
 	bool bSuccess = ((varArg.vt & VT_TYPEMASK) == VT_VARIANT ||
 									 (varArg.vt & VT_TYPEMASK) == VT_EMPTY ||
@@ -270,7 +270,7 @@ static bool ResbufToVariantArg( resbuf*& pArgs, VARIANTARG& varArg )
 	}
 
 	pArgs = pArgs->rbnext;
-	return true; 
+	return true;
 }
 
 
@@ -347,7 +347,7 @@ resbuf* VariantArgToResbuf( const VARIANTARG& varArg, const GUID& guidType, resb
 	case (VT_UNKNOWN | VT_BYREF): return (prbTail = IUnknownToRB( *var.ppunkVal ));
 	case VT_DISPATCH: return (prbTail = IDispatchToRB( var.pdispVal ));
 	case (VT_DISPATCH | VT_BYREF): return (prbTail = IDispatchToRB( *var.ppdispVal ));
-	}	
+	}
 	return (prbTail = acutNewRb( RTNIL ));
 }
 
@@ -381,7 +381,7 @@ static CString VariantArgToString( const VARIANTARG& varArg )
 	case (VT_BOOL | VT_BYREF): return ((*var.pboolVal == VARIANT_TRUE)? _T("T") : _T("NIL"));
 	case VT_ERROR: return LongToS( var.scode );
 	case (VT_ERROR | VT_BYREF): return LongToS( *var.pscode );
-	}	
+	}
 	return _T("NIL");
 }
 
@@ -428,7 +428,7 @@ public:
 typedef args_1< DISPPARAMS* > args_X;
 
 
-CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
+CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate)
 : CAxContainerCtrl(pTemplate, pPane, nID, false)
 , mArxServices( this )
 {
@@ -437,7 +437,7 @@ CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane*
 		mpTemplate->GetAxCtrlInitInfo()? (LPCTSTR)mpTemplate->GetAxCtrlInitInfo()->GetDisplayName() : _T("<UNKNOWN>"),
 		mpTemplate->GetWindow()->GetSafeHwnd(), this );
 
-	if( bCreate ) 
+	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
 
@@ -455,7 +455,7 @@ bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 }
 
 
-BOOL CArxAxContainerCtrl::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo ) 
+BOOL CArxAxContainerCtrl::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo )
 {
 	if( nCode == CN_EVENT && nID == GetTemplate()->GetControlInstance()->GetControlId() )
 		HandleAxEvent( (AFX_EVENT*)pExtra );
@@ -501,10 +501,10 @@ void CArxAxContainerCtrl::HandleAxEvent( AFX_EVENT* pEvent )
 				if( prbResult )
 				{
 					resbuf* pArgs = prbResult;
-					UINT idx = pDispParams->cArgs;
-					while( pArgs && idx > 0 )
+					UINT idxArg = pDispParams->cArgs;
+					while( pArgs && idxArg > 0 )
 					{
-						VARIANTARG& varArg = rVarArgs[--idx];
+						VARIANTARG& varArg = rVarArgs[--idxArg];
 						if( varArg.vt & VT_BYREF )
 							ResbufToVariantArg( pArgs, varArg );
 					}

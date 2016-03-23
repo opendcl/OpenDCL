@@ -131,14 +131,14 @@ static void ReturnPropertyValue( TPropertyPtr pProperty )
 						prbTail->rbnext = prbNew;
 					prbTail = prbNew;
 					const PropVal::TCStringArray& rStr = *iter;
-					for( PropVal::TCStringArray::const_iterator iter = rStr.begin();
-							 iter != rStr.end();
-							 ++iter )
+					for( PropVal::TCStringArray::const_iterator iterStr = rStr.begin();
+							 iterStr != rStr.end();
+							 ++iterStr )
 					{
 						prbTail->rbnext = acutNewRb( RTSTR );
 						prbTail = prbNew;
 						prbTail->rbnext = NULL;
-						acutNewString( *iter, prbTail->resval.rstring );
+						acutNewString( *iterStr, prbTail->resval.rstring );
 					}
 					prbTail->rbnext = acutNewRb( RTLE );
 					prbTail = prbTail->rbnext;
@@ -170,14 +170,14 @@ static void ReturnPropertyValue( TPropertyPtr pProperty )
 						prbTail->rbnext = prbNew;
 					prbTail = prbNew;
 					const PropVal::TIntArray& rInt = *iter;
-					for( PropVal::TIntArray::const_iterator iter = rInt.begin();
-							 iter != rInt.end();
-							 ++iter )
+					for( PropVal::TIntArray::const_iterator iterInt = rInt.begin();
+							 iterInt != rInt.end();
+							 ++iterInt )
 					{
 						prbTail->rbnext = acutNewRb( RTSHORT );
 						prbTail = prbNew;
 						prbTail->rbnext = NULL;
-						prbTail->resval.rint = *iter;
+						prbTail->resval.rint = *iterInt;
 					}
 					prbTail->rbnext = acutNewRb( RTLE );
 					prbTail = prbTail->rbnext;
@@ -190,7 +190,7 @@ static void ReturnPropertyValue( TPropertyPtr pProperty )
 				acedRetNil();
 		}
 		break;
-	}	
+	}
 }
 
 bool SetCtrlProperty( Prop::Id id )
@@ -280,7 +280,6 @@ ADSRESULT Control::SetProperty()
 
 		do
 		{
-			CString sPropName;
 			if( !GetStringArgument( pArgs, sPropName ) )
 			return RSERR; //invalid input
 
@@ -296,7 +295,7 @@ ADSRESULT Control::SetProperty()
 
 			if( !GetListEndArgument( pArgs ) )
 				return RSERR; //invalid input
-			
+
 		} while( GetListBeginArgument( pArgs, true ) );
 	}
 
@@ -391,7 +390,7 @@ ADSRESULT Control::SetFocus()
 		return RSERR;
 
 	CWnd* pCtrl = pDlgControl->GetControlWnd();
-	if( !pCtrl || !pCtrl->IsWindowVisible() )		
+	if( !pCtrl || !pCtrl->IsWindowVisible() )
 		return RSRSLT;
 
 	pCtrl->SetFocus();
@@ -418,7 +417,7 @@ ADSRESULT Control::TabOrder()
 		return RSERR;
 
 	CWnd* pCtrl = pDlgControl->GetControlWnd();
-	if( !pCtrl )		
+	if( !pCtrl )
 		return RSRSLT;
 
 	if( pCtrl->SetWindowPos( (nDirection? &CWnd::wndTop : &CWnd::wndBottom),
@@ -453,7 +452,7 @@ ADSRESULT Control::GetPos()
 }
 
 ADSRESULT Control::SetPos()
-{	
+{
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl;

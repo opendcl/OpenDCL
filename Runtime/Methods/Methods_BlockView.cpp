@@ -24,7 +24,7 @@ ADSRESULT BlockView::Clear()
 		return RSERR;
 
 	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->Clear();				
+	pCtrl->Clear();
 	pCtrl->RedrawWindow();
 
 	acedRetT();
@@ -94,7 +94,7 @@ ADSRESULT BlockView::Zoom()
 }
 
 ADSRESULT BlockView::PreLoadDwg()
-{	
+{
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
@@ -109,14 +109,14 @@ ADSRESULT BlockView::PreLoadDwg()
 		return RSERR;
 
 	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->Clear();				
+	pCtrl->Clear();
 	pCtrl->RedrawWindow();
 	if( pCtrl->PreLoadDwg( sFileName ) )
 		acedRetT();
 	return RSRSLT;
 }
 
-ADSRESULT BlockView::GetBlockSize()	
+ADSRESULT BlockView::GetBlockSize()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -172,7 +172,7 @@ ADSRESULT BlockView::GetDwgSize()
 
 
 ADSRESULT BlockView::GetBlockList()
-{	
+{
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
@@ -203,7 +203,7 @@ ADSRESULT BlockView::GetBlockList()
 	for( pIter->start(); !pIter->done(); pIter->step() )
 	{
 		AcDbBlockTableRecord* pBTR;
-		Acad::ErrorStatus es = pIter->getRecord( pBTR, AcDb::kForRead );
+		es = pIter->getRecord( pBTR, AcDb::kForRead );
 		if( es != Acad::eOk )
 			continue;
 		const ACHAR* pszBlockName = NULL;

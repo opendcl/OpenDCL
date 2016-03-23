@@ -19,15 +19,15 @@ struct DialogParams
 };
 
 
-//This class represents a single instance of an ODCL form in AutoCAD. Since the different dialog types 
-//have disparate base classes, it isn't possible to reference them via a common base class, so instead 
-//each specific dialog class exposes an instance of this interface via a member object and registers it 
-//with the global workspace. This interface must work correctly when the dialog it represents is 
-//windowless (usually before the window has been created, or after it is destroyed). The current ODCL 
-//implementation supports only one instance of a form at a time, so this class adds an informational 
-//pointer to the corresponding form object during construction (and removes it during destruction) in 
-//order to make it easy and deterministic for a form to find its corresponding dialog object. If support 
-//for multiple simultaneous form instances is added in the future, the informational pointer must either 
+//This class represents a single instance of an ODCL form in AutoCAD. Since the different dialog types
+//have disparate base classes, it isn't possible to reference them via a common base class, so instead
+//each specific dialog class exposes an instance of this interface via a member object and registers it
+//with the global workspace. This interface must work correctly when the dialog it represents is
+//windowless (usually before the window has been created, or after it is destroyed). The current ODCL
+//implementation supports only one instance of a form at a time, so this class adds an informational
+//pointer to the corresponding form object during construction (and removes it during destruction) in
+//order to make it easy and deterministic for a form to find its corresponding dialog object. If support
+//for multiple simultaneous form instances is added in the future, the informational pointer must either
 //be removed or replaced with a collection of pointers.*
 // * 2007-02-04 [ORW]
 

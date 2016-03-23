@@ -1339,7 +1339,7 @@ LPCTSTR CDclControlTemplate::toString() const
 	if( mpDlgControl )
 		sInstance.Format( _T(" (DlgControl: %s)"), asString( mpDlgControl ) );
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("CDclControlobject [%s: %s%s]"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	_sntprintf( buf, _elements(buf), _T("CDclControlobject [%ls: %ls%ls]"), asString( mType ), (LPCTSTR)GetKeyPath(), (LPCTSTR)sInstance );
 	return buf;
 }
 

@@ -227,18 +227,18 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxCtrl message handlers
 
-BOOL CTextBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CTextBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
 	{
 		if( mpTemplate->GetBooleanProperty( Prop::ReturnAsTab ) )
-			pMsg->wParam = VK_TAB;		
+			pMsg->wParam = VK_TAB;
 	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CTextBoxCtrl::PostNcDestroy() 
+void CTextBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
@@ -278,7 +278,7 @@ void CTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 }
 
-HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	if( hbrBackground )

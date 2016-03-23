@@ -1455,11 +1455,11 @@ public:
 				mpValue = new PropVal::TIntArrayList;
 			for(size_t idx = 0; idx < nSize; idx++)
 			{
-				unsigned long nSize;
-				ar >> nSize;
+				unsigned long nSizeList;
+				ar >> nSizeList;
 				mpValue->push_back( PropVal::TIntArray() );
 				PropVal::TIntArray& rIntV = mpValue->back();
-				for(size_t idx = 0; idx < nSize; idx++)
+				for(size_t idxV = 0; idxV < nSizeList; idxV++)
 				{
 					int nVal;
 					ar >> nVal;
@@ -1499,7 +1499,7 @@ public:
 				int nCounter2;
 				if (!readInt(sFile, nCounter2)) return statInvalidFormat;;
 				for (int j=0; j<nCounter2; j++)
-				{		
+				{
 					int nItem;
 					if (!readInt(sFile, nItem)) return statInvalidFormat;;
 					rInt.push_back(nItem);
@@ -1524,7 +1524,7 @@ CPropertyObject::CPropertyObject()
 : mpOwnerControl( NULL )
 , mbHidden( false )
 , mnID( Prop::_Private )
-{	
+{
 	SetType( PropInvalid );
 	SetFlags( 0 );
 }
@@ -1536,7 +1536,7 @@ CPropertyObject::CPropertyObject( CDclControlTemplate* pOwnerControl,
 : mpOwnerControl( pOwnerControl )
 , mbHidden( false )
 , mnID( nID )
-{	
+{
 	SetType( type );
 	SetFlags( dwFlags );
 }
@@ -1924,7 +1924,7 @@ void CPropertyObject::SetName( LPCTSTR pszName )
 {
 	if( mpValue )
 	{
-		OnChanging(); 
+		OnChanging();
 		mpValue->SetName( pszName );
 	}
 }
@@ -2033,7 +2033,7 @@ void CPropertyObject::Serialize(CArchive& ar)
 		if (GetType() == PropActiveXRunTime)
 			mbHidden = true; // if this property is a run time only activeX property, set it as hidden.
 		mpValue->FileIn(ar, nThisVersion);
-	}	
+	}
 }
 
 IOStatus CPropertyObject::ReadFromTextFile(std::ifstream &sFile)
@@ -2044,7 +2044,7 @@ IOStatus CPropertyObject::ReadFromTextFile(std::ifstream &sFile)
 	if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
 	switch (iVersion) {
-		case 5 : 
+		case 5 :
 			return ReadFromTextFile5(sFile);
 			break;
 	}

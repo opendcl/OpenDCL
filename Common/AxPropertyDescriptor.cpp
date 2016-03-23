@@ -111,13 +111,13 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 					bool bPtr = (vt == VT_PTR);
 					if( bPtr )
 						vt = (VT_BYREF | e.tdesc.lptdesc->vt);
-					if (vt == VT_USERDEFINED) 
+					if (vt == VT_USERDEFINED)
 						SetRefType( vt, pTypeInfo,
-												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
+												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype),
 												arg.clsid );
 					arg.vt = vt;
 					arg.optional = ((e.paramdesc.wParamFlags & PARAMFLAG_FOPT) != 0);
-					if( !!rbstrNames[n] && n < ctNames - 1 )	
+					if( !!rbstrNames[n] && n < ctNames - 1 )
 						arg.name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
 				}
 			}
@@ -136,7 +136,7 @@ AxPropertyDescriptor::AxPropertyDescriptor( const AxPropertyDescriptor& Src )
 {
 }
 
-AxPropertyDescriptor::~AxPropertyDescriptor(void) 
+AxPropertyDescriptor::~AxPropertyDescriptor(void)
 {
 }
 
@@ -225,7 +225,7 @@ HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, const VARIANTARG* rva
 	COleVariant varResult;
 	EXCEPINFO xinfo = { NULL };
 	UINT nErrArg = 0;
-	HRESULT hr = pObjectDisp->Invoke( mDispId, GUID_NULL, LOCALE_INVARIANT, 
+	HRESULT hr = pObjectDisp->Invoke( mDispId, GUID_NULL, LOCALE_INVARIANT,
 																		wFlags, &params, &varResult, &xinfo, &nErrArg );
 	delete[] rArgs;
 	return hr;
@@ -263,18 +263,18 @@ HRESULT AxPropertyDescriptor::PerPropertyBrowsing( LPOLEOBJECT pIObject )
 	for (ULONG i = 0; i < pStr.cElems; i++)
 	{
 		VARIANT vt;
-		hr = pPpb->GetPredefinedValue( GetDispId(), cadword.pElems[i], &vt ); 
+		hr = pPpb->GetPredefinedValue( GetDispId(), cadword.pElems[i], &vt );
 		ASSERT(SUCCEEDED(hr));
-		
+
 		mrEnum[i].Name = pStr.pElems[i]; //buf;
 		mrEnum[i].Var = vt;
 	}
 
 Cleanup:
 	CoTaskMemFree((void *)cadword.pElems);
-	for (ULONG i=0; i < (int) pStr.cElems; i++) 
-		CoTaskMemFree((void *)pStr.pElems[i]);  
-	CoTaskMemFree((void *)pStr.pElems); 
+	for (ULONG i=0; i < (int) pStr.cElems; i++)
+		CoTaskMemFree((void *)pStr.pElems[i]);
+	CoTaskMemFree((void *)pStr.pElems);
 
 	return hr;
 }
@@ -311,12 +311,12 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype 
 					VARDESC *pVarDesc;
 					mrEnum.resize( pTA->cVars );
 					for (int i = 0; i < pTA->cVars; i++)
-					{ 
+					{
 						if(SUCCEEDED(TheRefType->GetVarDesc( i, &pVarDesc )))
 						{
 							CComBSTR  bstrName;
-							if (SUCCEEDED(TheRefType->GetDocumentation(pVarDesc->memid, &bstrName, NULL,NULL,NULL ))) 
-							{   
+							if (SUCCEEDED(TheRefType->GetDocumentation(pVarDesc->memid, &bstrName, NULL,NULL,NULL )))
+							{
 								if (i == 0)
 									mType = pVarDesc->lpvarValue->vt;
 								mrEnum[i].Name = bstrName;
@@ -337,7 +337,7 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype 
 void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 {
 	BYTE nThisVersion = GetCurrentSaveVersion();
-	
+
 	if (ar.IsStoring())
 	{
 		ar << nThisVersion;
@@ -422,7 +422,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 		{
 			ar >> mrEnum[i].Name;
 			COleVariant var;
-			ar >> var; 
+			ar >> var;
 			mrEnum[i].Var = var;
 		}
 		for (size_t i = 0; i < ctParams; ++i)
@@ -469,9 +469,9 @@ IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPro
 	mInvKind = (INVOKEKIND)iKind;
 	for (size_t i = 0; i < (size_t)ctEnum; ++i)
 	{
-		CStringA sName;
-		if (!readString(sFile, sName)) return statInvalidFormat;
-		mrEnum[i].Name = sName;
+		CStringA sNameEnum;
+		if (!readString(sFile, sNameEnum)) return statInvalidFormat;
+		mrEnum[i].Name = sNameEnum;
 		COleVariant var;
 		if (!readOleVariant(sFile, var)) return statInvalidFormat;
 		mrEnum[i].Var = var;
@@ -479,9 +479,9 @@ IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPro
 	for (int i = 0; i < ctParams; ++i)
 	{
 		if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
-		CStringA sName;
-		if (!readString(sFile, sName)) return statInvalidFormat;
-		mrArgs[i].name = sName;
+		CStringA sNameType;
+		if (!readString(sFile, sNameType)) return statInvalidFormat;
+		mrArgs[i].name = sNameType;
 		if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
 	}
 

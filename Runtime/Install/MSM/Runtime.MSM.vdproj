@@ -27,8 +27,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_02D1A281C55D446985EB063FBF214D1F"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_03EFD96D87634200BD9D71238C988B14"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_04FF7D57B209D4F273169C7DE3775CBA"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -47,6 +59,12 @@
         {
         "MsmKey" = "8:_0DEE8E9065434D328B603370C4A73FE9"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_10FFE037015BA1C533DAEBFF90196B21"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -87,6 +105,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_283D13F6498A81042F457805EA81F7A4"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_29075FC0160044C4B50B0DE0230DB358"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -123,6 +147,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_48A934BF36F735C1C9BE7DA1CCD7AD78"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4B4A04D72EAA6AD798F095387344E0EC"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5F01CBD979764D32A263D1CF2D60B589"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -141,14 +177,38 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_69C308A76EABC968F7980F36773FBC65"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6DE4837A7FFF4FA3AF02D966560D4955"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_6E0718DEF65AD36DE788772D45BFBE2D"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6E5715FD15DD4E29B24AF90698FD38C4"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_782DE606FCCA41519095D876604FD6F7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7DC0F5D0BE821A68D9738036E76BC1D0"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -183,6 +243,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_94EF5B5142E34C8E936966B5A7090727"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -191,6 +257,12 @@
         {
         "MsmKey" = "8:_9812E29621284B3A978CE0ED1A09E771"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_99DA741C87C63DB2358245CF5047ADDC"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -207,6 +279,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A5F61C90CFCC0F9515B27554078EFFF0"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A90F8D638FC440CFBACC23823C863ECB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -215,6 +293,12 @@
         {
         "MsmKey" = "8:_AD6D02F9ED824EF59C97D95AC8419AF9"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B16A2704701A6671E0B9308CE8F40EF8"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -233,6 +317,12 @@
         {
         "MsmKey" = "8:_CC8B3E121DD24C45B4C7F2EDB9720238"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CD4F5FB869E1FF1CEB8D63DEA54316C0"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -267,6 +357,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DB26196E771D4F82238285992CBB686E"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DD5928D4C1CD4E28B595A25BB9B91235"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -285,8 +381,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E9FCA54CA9D049ACB208A988EE53DC39"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_EE39AFF4C55A45ECBDB74B23F9CF490F"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FAA5482A3AE6ABB88262560CB26F8034"
+        "OwnerKey" = "8:_9039F4808EE74112A8F09C5D1B6FD0D4"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -388,6 +496,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04FF7D57B209D4F273169C7DE3775CBA"
+            {
+            "SourcePath" = "8:RPCRT4.dll"
+            "TargetName" = "8:RPCRT4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0DEE8E9065434D328B603370C4A73FE9"
             {
             "SourcePath" = "8:..\\..\\DEU\\Content\\GNU-GPL.txt"
@@ -406,6 +534,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_10FFE037015BA1C533DAEBFF90196B21"
+            {
+            "SourcePath" = "8:WININET.dll"
+            "TargetName" = "8:WININET.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1A744C7ED6EE4DBBBDE137F992507636"
@@ -448,6 +596,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_283D13F6498A81042F457805EA81F7A4"
+            {
+            "SourcePath" = "8:api-ms-win-crt-heap-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-heap-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2A9498D38D554906887805747C8AF62B"
             {
             "SourcePath" = "8:..\\..\\RUS\\Content\\License.txt"
@@ -488,6 +656,86 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_48A934BF36F735C1C9BE7DA1CCD7AD78"
+            {
+            "SourcePath" = "8:api-ms-win-crt-runtime-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-runtime-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B4A04D72EAA6AD798F095387344E0EC"
+            {
+            "SourcePath" = "8:api-ms-win-crt-time-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-time-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_69C308A76EABC968F7980F36773FBC65"
+            {
+            "SourcePath" = "8:api-ms-win-crt-string-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-string-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6E0718DEF65AD36DE788772D45BFBE2D"
+            {
+            "SourcePath" = "8:api-ms-win-crt-math-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-math-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6E5715FD15DD4E29B24AF90698FD38C4"
             {
             "SourcePath" = "8:..\\..\\ENU\\Content\\License.txt"
@@ -506,6 +754,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7DC0F5D0BE821A68D9738036E76BC1D0"
+            {
+            "SourcePath" = "8:Runtime.Res.dll"
+            "TargetName" = "8:Runtime.Res.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8B8F2DF7134B4772914652CFBC49856E"
@@ -548,6 +816,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99DA741C87C63DB2358245CF5047ADDC"
+            {
+            "SourcePath" = "8:api-ms-win-crt-convert-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-convert-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9C30D91413D5434EB92277D6D7F371E9"
             {
             "SourcePath" = "8:..\\..\\ESM\\Content\\License.txt"
@@ -566,6 +854,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5F61C90CFCC0F9515B27554078EFFF0"
+            {
+            "SourcePath" = "8:api-ms-win-crt-stdio-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-stdio-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD6D02F9ED824EF59C97D95AC8419AF9"
@@ -588,6 +896,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B16A2704701A6671E0B9308CE8F40EF8"
+            {
+            "SourcePath" = "8:AVIFIL32.dll"
+            "TargetName" = "8:AVIFIL32.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA79E97FE69E437D95352C283D27A35C"
             {
             "SourcePath" = "8:..\\..\\ESM\\Content\\GNU-GPL.txt"
@@ -608,6 +936,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD4F5FB869E1FF1CEB8D63DEA54316C0"
+            {
+            "SourcePath" = "8:VERSION.dll"
+            "TargetName" = "8:VERSION.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D6EC1092587C430E87F704E972A80FDD"
             {
             "SourcePath" = "8:..\\..\\FRA\\Content\\GNU-GPL.txt"
@@ -626,6 +974,46 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB26196E771D4F82238285992CBB686E"
+            {
+            "SourcePath" = "8:api-ms-win-crt-utility-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-utility-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FAA5482A3AE6ABB88262560CB26F8034"
+            {
+            "SourcePath" = "8:api-ms-win-crt-filesystem-l1-1-0.dll"
+            "TargetName" = "8:api-ms-win-crt-filesystem-l1-1-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -742,11 +1130,33 @@
         }
         "MergeModule"
         {
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_02D1A281C55D446985EB063FBF214D1F"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc140_mfc_x86.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E9FCA54CA9D049ACB208A988EE53DC39"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc140_crt_x86.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:8.0.4.0"
+        "Version" = "8:8.0.5.0"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -756,14 +1166,14 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:"
+        "PostBuildEvent" = "8:\"$(ProjectDir)MSMPostBuild.bat\" \"$(BuiltOuputPath)\""
         "RunPostBuildEvent" = "3:0"
         }
         "ProjectOutput"
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_026ED025BBF34809B085A09A35C27791"
             {
-            "SourcePath" = "8:..\\..\\ARX.18.x64\\Release\\OpenDCL.x64.18.arx"
+            "SourcePath" = "8:..\\..\\ARX.18.x64\\Debug\\OpenDCL.x64.18.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -791,7 +1201,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0289BC09E2BB4491A45246A310B4521A"
             {
-            "SourcePath" = "8:..\\..\\BRX.15.x64\\Release\\OpenDCL.x64.15.brx"
+            "SourcePath" = "8:..\\..\\BRX.15.x64\\Debug\\OpenDCL.x64.15.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -819,7 +1229,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_03EFD96D87634200BD9D71238C988B14"
             {
-            "SourcePath" = "8:..\\..\\ARX.20\\Release\\OpenDCL.20.arx"
+            "SourcePath" = "8:..\\..\\ARX.20\\Debug\\OpenDCL.20.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -847,7 +1257,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0834932F7A474EAFB1BF7E3E027CE7AB"
             {
-            "SourcePath" = "8:..\\..\\BRX.10\\Release\\OpenDCL.10.brx"
+            "SourcePath" = "8:..\\..\\BRX.10\\Debug\\OpenDCL.10.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -875,7 +1285,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0BE01A1FD8CD490DAD9638748663B05B"
             {
-            "SourcePath" = "8:..\\..\\ZRX.2015\\Release\\OpenDCL.2015.zrx"
+            "SourcePath" = "8:..\\..\\ZRX.2015\\Debug\\OpenDCL.2015.zrx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -903,7 +1313,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1DFF416A975C41689CA0E4A840D5E221"
             {
-            "SourcePath" = "8:..\\..\\BRX.15\\Release\\OpenDCL.15.brx"
+            "SourcePath" = "8:..\\..\\BRX.15\\Debug\\OpenDCL.15.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -931,7 +1341,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1E65C652981041D4B7581C75F7B73AAF"
             {
-            "SourcePath" = "8:..\\..\\ARX.18\\Release\\OpenDCL.18.arx"
+            "SourcePath" = "8:..\\..\\ARX.18\\Debug\\OpenDCL.18.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -959,7 +1369,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_21BB4F976D9F449B8DB906B58769FC4A"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -987,7 +1397,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_279DFDCCBCC44B7B8359B3FB4AF5377E"
             {
-            "SourcePath" = "8:..\\..\\ENU\\Runtime.Res\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\ENU\\Runtime.Res\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D9B21004D7074CD69133DCADBACA6A8A"
@@ -1015,7 +1425,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_29075FC0160044C4B50B0DE0230DB358"
             {
-            "SourcePath" = "8:..\\..\\BRX.12\\Release\\OpenDCL.12.brx"
+            "SourcePath" = "8:..\\..\\BRX.12\\Debug\\OpenDCL.12.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1043,7 +1453,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_36E67301533B48C791CABAE8AA15C8E8"
             {
-            "SourcePath" = "8:..\\..\\BRX.9\\Release\\OpenDCL.9.brx"
+            "SourcePath" = "8:..\\..\\BRX.9\\Debug\\OpenDCL.9.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1071,7 +1481,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_379FA672087A4BBE80311FD5A9519AA3"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1099,7 +1509,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_449630E0CE8542B2872E4E4C49543E75"
             {
-            "SourcePath" = "8:..\\..\\ARX.19\\Release\\OpenDCL.19.arx"
+            "SourcePath" = "8:..\\..\\ARX.19\\Debug\\OpenDCL.19.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1127,7 +1537,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5F01CBD979764D32A263D1CF2D60B589"
             {
-            "SourcePath" = "8:..\\..\\BRX.16\\Release\\OpenDCL.16.brx"
+            "SourcePath" = "8:..\\..\\BRX.16\\Debug\\OpenDCL.16.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1155,7 +1565,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_620F97C9E5EC40CFBF9FE103D69EB3F4"
             {
-            "SourcePath" = "8:..\\..\\BRX.14.x64\\Release\\OpenDCL.x64.14.brx"
+            "SourcePath" = "8:..\\..\\BRX.14.x64\\Debug\\OpenDCL.x64.14.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1183,7 +1593,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_660C33FBA35144879311A7008F062E83"
             {
-            "SourcePath" = "8:..\\..\\DEU\\Runtime.Res\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\DEU\\Runtime.Res\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_23547504DD574D669C36F9C41B10788D"
@@ -1211,7 +1621,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6DE4837A7FFF4FA3AF02D966560D4955"
             {
-            "SourcePath" = "8:..\\..\\BRX.16.x64\\Release\\OpenDCL.x64.16.brx"
+            "SourcePath" = "8:..\\..\\BRX.16.x64\\Debug\\OpenDCL.x64.16.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1237,9 +1647,37 @@
                 {
                 }
             }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_782DE606FCCA41519095D876604FD6F7"
+            {
+            "SourcePath" = "8:..\\..\\ARX.21\\Debug\\OpenDCL.21.arx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{A5406DFB-A1D3-40FA-A8BA-3A6EF653817E}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_83641D0A86F04ADA8FE4BC71F8C37B0C"
             {
-            "SourcePath" = "8:..\\..\\GRX.2015\\Release\\OpenDCL.2015.grx"
+            "SourcePath" = "8:..\\..\\GRX.2015\\Debug\\OpenDCL.2015.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1267,7 +1705,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_837DA18C1C8D4911BB0E84AABE82F467"
             {
-            "SourcePath" = "8:..\\..\\ARX.20.x64\\Release\\OpenDCL.x64.20.arx"
+            "SourcePath" = "8:..\\..\\ARX.20.x64\\Debug\\OpenDCL.x64.20.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1295,7 +1733,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_86C6DCA6B4F94D45891D8CDFAF8DD27E"
             {
-            "SourcePath" = "8:..\\..\\GRX.2015.x64\\Release\\OpenDCL.x64.2015.grx"
+            "SourcePath" = "8:..\\..\\GRX.2015.x64\\Debug\\OpenDCL.x64.2015.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1323,7 +1761,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_8835DF5132FB4BDFAC5BFA87F4045AC6"
             {
-            "SourcePath" = "8:..\\..\\GRX.2016.x64\\Release\\OpenDCL.x64.2016.grx"
+            "SourcePath" = "8:..\\..\\GRX.2016.x64\\Debug\\OpenDCL.x64.2016.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1349,9 +1787,37 @@
                 {
                 }
             }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9039F4808EE74112A8F09C5D1B6FD0D4"
+            {
+            "SourcePath" = "8:..\\..\\ARX.21.x64\\Debug\\OpenDCL.x64.21.arx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{D0615EA6-5064-48CD-8B82-FDD6B618649F}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9812E29621284B3A978CE0ED1A09E771"
             {
-            "SourcePath" = "8:..\\..\\ESM\\Runtime.Res\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\ESM\\Runtime.Res\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_24AE9CCCB62C4E66953D94F5EBC964C5"
@@ -1379,7 +1845,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9FB43905CF6B4086B4DBB8FADAB6C721"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1407,7 +1873,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A90F8D638FC440CFBACC23823C863ECB"
             {
-            "SourcePath" = "8:..\\..\\FRA\\Runtime.Res\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\FRA\\Runtime.Res\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2799E127DC4444F48191C35493FC0F7B"
@@ -1435,7 +1901,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BA25A736B28B4A83A7955EA6D8128CF9"
             {
-            "SourcePath" = "8:..\\..\\GRX.2016\\Release\\OpenDCL.2016.grx"
+            "SourcePath" = "8:..\\..\\GRX.2016\\Debug\\OpenDCL.2016.grx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1463,7 +1929,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CC8B3E121DD24C45B4C7F2EDB9720238"
             {
-            "SourcePath" = "8:..\\..\\BRX.11\\Release\\OpenDCL.11.brx"
+            "SourcePath" = "8:..\\..\\BRX.11\\Debug\\OpenDCL.11.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1491,7 +1957,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CF44D0BF90124C9A89712C5C50076129"
             {
-            "SourcePath" = "8:..\\..\\BRX.13.x64\\Release\\OpenDCL.x64.13.brx"
+            "SourcePath" = "8:..\\..\\BRX.13.x64\\Debug\\OpenDCL.x64.13.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1519,7 +1985,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CFEDACDB05D54DA5AE3469985641F094"
             {
-            "SourcePath" = "8:..\\..\\RUS\\Runtime.Res\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\RUS\\Runtime.Res\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1D79A86534B04E499BC9DD4A0132C411"
@@ -1547,7 +2013,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D08FCB323B4C410E9094A76D1B2646E9"
             {
-            "SourcePath" = "8:..\\..\\ARX.17.x64\\Release\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17.x64\\Debug\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1575,7 +2041,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D5B11150A08D4A699918F95FDAE5346E"
             {
-            "SourcePath" = "8:..\\..\\ARX.19.x64\\Release\\OpenDCL.x64.19.arx"
+            "SourcePath" = "8:..\\..\\ARX.19.x64\\Debug\\OpenDCL.x64.19.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1603,7 +2069,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DD5928D4C1CD4E28B595A25BB9B91235"
             {
-            "SourcePath" = "8:..\\..\\ZRX.2014\\Release\\OpenDCL.2014.zrx"
+            "SourcePath" = "8:..\\..\\ZRX.2014\\Debug\\OpenDCL.2014.zrx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1631,7 +2097,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E4926B3E477F4EE0B98615F1B1188C22"
             {
-            "SourcePath" = "8:..\\..\\BRX.14\\Release\\OpenDCL.14.brx"
+            "SourcePath" = "8:..\\..\\BRX.14\\Debug\\OpenDCL.14.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1659,7 +2125,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E5994257798E4F518EC653EA21A4CCD8"
             {
-            "SourcePath" = "8:..\\..\\BRX.13\\Release\\OpenDCL.13.brx"
+            "SourcePath" = "8:..\\..\\BRX.13\\Debug\\OpenDCL.13.brx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -1687,7 +2153,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EE39AFF4C55A45ECBDB74B23F9CF490F"
             {
-            "SourcePath" = "8:..\\..\\CHS\\Runtime.Res\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\..\\CHS\\Runtime.Res\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_C18C3B705ED6413D877D286596C853EA"

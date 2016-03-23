@@ -29,7 +29,7 @@ CHyperlinkCtrl::~CHyperlinkCtrl()
 {
 }
 
-bool CHyperlinkCtrl::Create( CWnd* pParentWnd, UINT nID ) 
+bool CHyperlinkCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	CString sWndClass = AfxRegisterWndClass( CS_HREDRAW | CS_VREDRAW, mhHandCursor );
 	bool bSuccess = (__super::Create( sWndClass, GetWndCaption(), GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
@@ -81,13 +81,13 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CHyperlinkCtrl message handlers
 
-BOOL CHyperlinkCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CHyperlinkCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
 }
 
-HBRUSH CHyperlinkCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+HBRUSH CHyperlinkCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	return HandleCtlColor( pDC, nCtlColor );
 }
@@ -117,12 +117,12 @@ BOOL CHyperlinkCtrl::OnEraseBkgnd(CDC* pDC)
 	return TRUE;
 }
 
-__UINT_LRESULT CHyperlinkCtrl::OnNcHitTest(CPoint point) 
+__UINT_LRESULT CHyperlinkCtrl::OnNcHitTest(CPoint point)
 {
 	return HTCLIENT;
 }
 
-void CHyperlinkCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CHyperlinkCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// Call ShellExecute to run the file. For a URL, this will run the browser.
 	CString sHyperlink = mpTemplate->GetStringProperty( Prop::Hyperlink );
@@ -132,19 +132,19 @@ void CHyperlinkCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 	HINSTANCE hShell = ShellExecute( 0, _T("open"), sHyperlink, 0, 0, SW_SHOWNORMAL );
-	if ((UINT_PTR)hShell > 32) 
+	if ((UINT_PTR)hShell > 32)
 	{ // success!
 		mColorService.SetForegroundColor( g_colorVisited );
 		OnNeedRepaint();
 	}
-	else 
+	else
 	{
 		MessageBeep( MB_ICONERROR );
 		TRACE( _T("*** WARNING: CHyperlinkCtrl: unable to open hyperlink [%s]\n"), (LPCTSTR)sHyperlink );
-	}	
+	}
 }
 
-void CHyperlinkCtrl::PostNcDestroy() 
+void CHyperlinkCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;

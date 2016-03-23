@@ -7,9 +7,9 @@
 //
 // Free for non-commercial use.
 // You may change the code to your needs,
-// provided that credits to the original 
+// provided that credits to the original
 // author is given in the modified files.
-//  
+//
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -28,7 +28,7 @@ inline void CResizableDialog::Construct()
 	m_bUseMaxRect = FALSE;
 
 	m_bShowGrip = TRUE;
-	
+
 	m_bEnableSaveRestore = FALSE;
 
 	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
@@ -82,7 +82,7 @@ END_MESSAGE_MAP()
 // CResizableDialog message handlers
 
 
-BOOL CResizableDialog::OnInitDialog() 
+BOOL CResizableDialog::OnInitDialog()
 {
 	__super::OnInitDialog();
 
@@ -100,10 +100,10 @@ BOOL CResizableDialog::OnInitDialog()
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-void CResizableDialog::OnDestroy() 
+void CResizableDialog::OnDestroy()
 {
 	__super::OnDestroy();
-	
+
 	if (m_bEnableSaveRestore)
 		SaveWindowRect();
 }
@@ -127,10 +127,10 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 	return bResult;
 }
 
-void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
+void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
-	
+
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
@@ -140,7 +140,7 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
-__UINT_LRESULT CResizableDialog::OnNcHitTest(CPoint point) 
+__UINT_LRESULT CResizableDialog::OnNcHitTest(CPoint point)
 {
 	CPoint pt = point;
 	ScreenToClient( &pt );
@@ -150,11 +150,11 @@ __UINT_LRESULT CResizableDialog::OnNcHitTest(CPoint point)
 		if( (m_rcGripRect.right - pt.x) + (m_rcGripRect.bottom - pt.y) <= m_rcGripRect.Width() )
 			return HTBOTTOMRIGHT; // and in size grip
 	}
-	
+
 	return __super::OnNcHitTest(point);
 }
 
-void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	if (!m_bInitDone)
 		return;
@@ -181,37 +181,37 @@ void CResizableDialog::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
 	ASSERT(tl_type != NOANCHOR);
 
 	// get control's window class
-	
+
 	CString st;
 	GetClassName(wnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
 	st.MakeUpper();
 
-	
+
 	// wnd classes that don't redraw client area correctly
 	// when the hor scroll pos changes due to a resizing
 	BOOL hscroll = FALSE;
-	
+
 	// wnd classes that need refresh when resized
 	BOOL refresh = FALSE;
-	
+
 	// get dialog's and control's rect
 	CRect wndrc, objrc;
 
 	GetClientRect(&wndrc);
 	::GetWindowRect(wnd, &objrc);
 	ScreenToClient(&objrc);
-	
+
 	CSize tl_margin, br_margin;
 
 	if (br_type == NOANCHOR)
 		br_type = tl_type;
-	
+
 	// calculate margin for the top-left corner
 
 	tl_margin.cx = objrc.left - wndrc.Width() * tl_type.cx / 100;
 	tl_margin.cy = objrc.top - wndrc.Height() * tl_type.cy / 100;
-	
+
 	// calculate margin for the bottom-right corner
 
 	br_margin.cx = objrc.right - wndrc.Width() * br_type.cx / 100;
@@ -236,18 +236,18 @@ void CResizableDialog::ArrangeLayout()
 	while (pos != NULL)
 	{
 		pl = (Layout*)m_plLayoutList.GetNext(pos);
-	
+
 		CRect objrc, newrc;
 		CWnd* wnd = CWnd::FromHandle(pl->hwnd); // temporary solution
 
 		wnd->GetWindowRect(&objrc);
 		ScreenToClient(&objrc);
-		
+
 		// calculate new top-left corner
 
 		newrc.left = pl->tl_margin.cx + wndrc.Width() * pl->tl_type.cx / 100;
 		newrc.top = pl->tl_margin.cy + wndrc.Height() * pl->tl_type.cy / 100;
-		
+
 		// calculate new bottom-right corner
 
 		newrc.right = pl->br_margin.cx + wndrc.Width() * pl->br_type.cx / 100;
@@ -262,14 +262,14 @@ void CResizableDialog::ArrangeLayout()
 				// needs repainting, due to horiz scrolling
 				int diff = newrc.Width() - objrc.Width();
 				int max = wnd->GetScrollLimit(SB_HORZ);
-			
+
 				if (max > 0 && wnd->GetScrollPos(SB_HORZ) > max - diff)
 				{
 
 					wnd->MoveWindow(&newrc);
 					wnd->Invalidate();
 					//wnd->UpdateWindow();
-					
+
 					//add = FALSE;
 				}
 			}
@@ -279,7 +279,7 @@ void CResizableDialog::ArrangeLayout()
 				wnd->MoveWindow(&newrc);
 				wnd->Invalidate();
 				//wnd->UpdateWindow();
-				
+
 				//add = FALSE;
 			}
 
@@ -376,7 +376,7 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, LPCTSTR pszEntry)
 // either in the registry or a private .INI file
 // depending on your application settings
 
-#define PROFILE_FMT 	_T("%d,%d,%d,%d,%d,%d")
+#define PROFILE_FMT 	_T("%ld,%ld,%ld,%ld,%ud,%ud")
 
 void CResizableDialog::SaveWindowRect()
 {
@@ -386,7 +386,7 @@ void CResizableDialog::SaveWindowRect()
 	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
 	wp.length = sizeof(WINDOWPLACEMENT);
 	GetWindowPlacement(&wp);
-	
+
 	RECT& rc = wp.rcNormalPosition;	// alias
 
 	data.Format(PROFILE_FMT, rc.left, rc.top,
@@ -401,10 +401,10 @@ void CResizableDialog::LoadWindowRect()
 	WINDOWPLACEMENT wp;
 
 	data = AfxGetApp()->GetProfileString(m_sSection, m_sEntry);
-	
+
 	if (data.IsEmpty())	// never saved before
 		return;
-	
+
 	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
 	wp.length = sizeof(WINDOWPLACEMENT);
 	GetWindowPlacement(&wp);

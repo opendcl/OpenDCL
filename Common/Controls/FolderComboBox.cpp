@@ -31,8 +31,8 @@ bool CFolderComboBox::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwSt
 	{
 		OpenTheme();
 		CRect rcTree( 0, 0, rectWnd.Width(), 120 );
-		DWORD dwStyle = (WS_POPUP | WS_BORDER | WS_VSCROLL | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_HASBUTTONS);
-		bSuccess = mPopupCtrl.Create( this, rcTree, dwStyle, 0 );
+		DWORD dwStylePopup = (WS_POPUP | WS_BORDER | WS_VSCROLL | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_HASBUTTONS);
+		bSuccess = mPopupCtrl.Create( this, rcTree, dwStylePopup, 0 );
 		if( bSuccess && (dwStyle & WS_DISABLED) )
 			mfState.setDisabled();
 	}
@@ -122,7 +122,7 @@ void CFolderComboBox::AddPath( LPCTSTR pszPath )
 }
 
 CString CFolderComboBox::GetSelectedPath()
-{	
+{
 	return mPopupCtrl.GetSelectedPath();
 }
 
@@ -158,7 +158,7 @@ int CFolderComboBox::Dir(UINT attr, LPCTSTR lpszWildCard)
 	CFileFind finder;
 	BOOL bResult = finder.FindFile( sPath + lpszWildCard );
 	while( bResult )
-	{	
+	{
 		bResult = finder.FindNextFile();
 		if( !finder.IsDirectory() )
 			continue;
@@ -439,7 +439,7 @@ LRESULT CFolderComboBox::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return __super::WindowProc(message, wParam, lParam);
 }
 
-BOOL CFolderComboBox::PreTranslateMessage(MSG* pMsg) 
+BOOL CFolderComboBox::PreTranslateMessage(MSG* pMsg)
 {
 	switch( pMsg->message )
 	{
@@ -500,7 +500,7 @@ BOOL CFolderComboBox::OnCommand(WPARAM wParam, LPARAM lParam)
 	return bResult;
 }
 
-void CFolderComboBox::OnCancelMode() 
+void CFolderComboBox::OnCancelMode()
 {
 	mbDropLock = false;
 	//mUIState = kNormal;
@@ -508,7 +508,7 @@ void CFolderComboBox::OnCancelMode()
 	Invalidate();
 }
 
-void CFolderComboBox::OnLButtonDown(UINT nFlags, CPoint point) 
+void CFolderComboBox::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	mPopupCtrl.EnableTracking( false );
 	mfState.setPressed();
@@ -527,12 +527,12 @@ void CFolderComboBox::OnLButtonUp(UINT nFlags, CPoint point)
 	Invalidate();
 }
 
-void CFolderComboBox::OnLButtonDblClk(UINT nFlags, CPoint point) 
+void CFolderComboBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	OnLButtonDown(nFlags, point);
 }
 
-void CFolderComboBox::OnDestroy() 
+void CFolderComboBox::OnDestroy()
 {
 	if( mPopupCtrl.m_hWnd )
 		mPopupCtrl.DestroyWindow();

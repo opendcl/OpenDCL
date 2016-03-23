@@ -77,10 +77,20 @@ static TDclControlPtr FindPaperCombo( TDclFormPtr pForm )
 		return NULL;
 	TDclControlList listCombos;
 	pForm->FindControls( CtlComboBox, listCombos );
+	size_t ctSkipLinked = 0;
 	for( TDclControlList::iterator iter = listCombos.begin(); iter != listCombos.end(); ++iter )
 	{
-		if( (*iter)->GetLongProperty(Prop::ComboBoxStyle) == ComboStyle::PlotterPaperSizes )
-			return *iter;
+		if ((*iter)->GetLongProperty(Prop::ComboBoxStyle) == ComboStyle::Plotters)
+		{
+			if ((*iter)->GetControlInstance())
+				++ctSkipLinked;
+		}
+		if ((*iter)->GetLongProperty(Prop::ComboBoxStyle) == ComboStyle::PlotterPaperSizes)
+		{
+			if (ctSkipLinked == 0)
+				return *iter;
+			--ctSkipLinked;
+		}
 	}
 	return NULL;
 }

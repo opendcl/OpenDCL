@@ -58,7 +58,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxTextBoxCtrl message handlers
 
-BOOL CArxTextBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CArxTextBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
 	{
@@ -68,7 +68,7 @@ BOOL CArxTextBoxCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CArxTextBoxCtrl::OnChange() 
+void CArxTextBoxCtrl::OnChange()
 {
 	CString sOldValue = mpTemplate->GetStringProperty( Prop::Text );
 	__super::OnChange();
@@ -77,17 +77,17 @@ void CArxTextBoxCtrl::OnChange()
 		GetArxServices()->HandleEvent( Prop::EventEditChanged, args_S( sNewValue ) );
 }
 
-void CArxTextBoxCtrl::OnErrspace() 
+void CArxTextBoxCtrl::OnErrspace()
 {
 	GetArxServices()->HandleEvent( Prop::EventOutOfMemory );
 }
 
-void CArxTextBoxCtrl::OnMaxtext() 
+void CArxTextBoxCtrl::OnMaxtext()
 {
 	GetArxServices()->HandleEvent( Prop::EventMaxText );
 }
 
-void CArxTextBoxCtrl::OnUpdate() 
+void CArxTextBoxCtrl::OnUpdate()
 {
 	if( IsWindowVisible() )
 		GetArxServices()->HandleEvent( Prop::EventUpdate, args_S( mpTemplate->GetStringProperty( Prop::Text ) ) );
@@ -116,13 +116,13 @@ void CArxTextBoxCtrl::OnKillFocus( CWnd* pFocus )
 		resbuf rbValue = { NULL, RTSTR };
 		CString sVal = mpTemplate->GetStringProperty( Prop::Text );
 		rbValue.resval.rstring = sVal.LockBuffer();
-    acedPutSym( _T("$value"), &rbValue );
+		acedPutSym( _T("$value"), &rbValue );
 		resbuf rbEvent = { NULL, RTSTR };
 		rbEvent.resval.rstring = sEvent.LockBuffer();
 		resbuf* prbResult = NULL;
-		acedInvoke( &rbEvent, &prbResult ); 
-		if( prbResult ) 
-			acutRelRb( prbResult ); 
+		acedInvoke( &rbEvent, &prbResult );
+		if( prbResult )
+			acutRelRb( prbResult );
 		GetParent()->GetParent()->EnableWindow( FALSE );
 		GetParent()->EnableWindow( TRUE );
 	}

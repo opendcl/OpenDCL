@@ -34,7 +34,7 @@ class CFontComboHandler : public CComboHandler
 	public:
 		CFontInfo( DWORD nFlags = 0 ) : mnFlags( nFlags ), mbInUse( false ) {}
 		CFontInfo( const CFontInfo& FontInfo )
-		{	
+		{
 			mnFlags = FontInfo.mnFlags;
 			mbInUse = FontInfo.mbInUse;
 		}
@@ -92,16 +92,16 @@ protected:
 
 			// Lets make a CDC for ease of use
 			CDC *pDC = CDC::FromHandle( lpDIS->hDC );
-			
+
 			ASSERT(pDC); // Attached failed
-			
+
 			CRect rc( lpDIS->rcItem );
-			
+
 			// Save off context attributes
 			int nIndexDC = pDC->SaveDC();
 
 			CBrush brushFill;
-			
+
 			// Draw selection state
 			if (lpDIS->itemState & ODS_SELECTED)
 			{
@@ -125,13 +125,13 @@ protected:
 				mImageList.Draw( pDC, 0, CPoint( rc.left,rc.top ), ILD_TRANSPARENT );
 			else if( Info.GetFlags() == 6 )
 				mImageList.Draw( pDC, 1, CPoint( rc.left,rc.top ), ILD_TRANSPARENT );
-			
+
 			int nX = rc.left; // Save for lines
 
 			rc.left += 17; // Text Position
-			
+
 			pDC->TextOut( rc.left, rc.top, sCurFont );
-			
+
 			if( pCombo->GetItemData( lpDIS->itemID ) == 1 )
 			{
 				if( pCombo->GetItemData( lpDIS->itemID + 1 ) != 1 )
@@ -145,7 +145,7 @@ protected:
 					pDC->LineTo( rc.right, rc.top + tm.tmHeight + 2 );
 				}
 			}
-			
+
 			// Draw focus rectangle
 			if( lpDIS->itemState & ODS_FOCUS )
 				pDC->DrawFocusRect( &lpDIS->rcItem );
@@ -157,7 +157,7 @@ protected:
 		{
 			mmapFonts.clear();
 			// get the list of existing AutoCAD shx fonts
-			CString sFontPath = GetFontPath();	
+			CString sFontPath = GetFontPath();
 			CFileFind finder;
 			BOOL bResult = finder.FindFile(sFontPath + _T("\\*.shx"));
 			while (bResult)
@@ -185,7 +185,7 @@ protected:
 			finder.Close();
 
 			EnumerateFonts( pCombo );
-			
+
 			// add the sysytem fonts manually because they are not added otherwise
 			pCombo->AddString( _T("MS Shell Dlg"));
 			pCombo->AddString( _T("MS Sans Serif"));
@@ -229,9 +229,9 @@ protected:
 				pCombo->GetLBText( 6, sMRUFont7 );
 				if( !sMRUFont7.IsEmpty() )
 				{
-					std::map< tstring, CFontInfo >::iterator iter = mmapFonts.find( (LPCTSTR)sMRUFont7 );
-					if( iter != mmapFonts.end() )
-						iter->second.SetInUse( false );
+					std::map< tstring, CFontInfo >::iterator iterFont = mmapFonts.find( (LPCTSTR)sMRUFont7 );
+					if( iterFont != mmapFonts.end() )
+						iterFont->second.SetInUse( false );
 					pCombo->DeleteString( 6 );
 				}
 			}
@@ -272,8 +272,8 @@ protected:
 			CString sChar;
 			CString sAcadPrefix;
 			CString sCompile;
-			struct resbuf rb; 
-			acedGetVar(_T("ACADPREFIX"), &rb); 
+			struct resbuf rb;
+			acedGetVar(_T("ACADPREFIX"), &rb);
 			sAcadPrefix = rb.resval.rstring;
 			for (int i=0; i<sAcadPrefix.GetLength(); i++)
 			{

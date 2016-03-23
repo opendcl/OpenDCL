@@ -206,7 +206,7 @@ static void SetupFont(TDclControlPtr pControl)
 	AddAxProp(pControl, 5, _T("Underline"), _T("Indicates if the font is to be Underline."), VT_BOOL);
 	AddAxProp(pControl, 6, _T("Strikethrough"), _T("Indicates if the font is to be Strikethrough."), VT_BOOL);
 	AddAxProp(pControl, 7, _T("Weight"), _T("Indicates the weight of the font to be used."), VT_I2);
-	AddAxProp(pControl, 8, _T("Charset"), _T("Indicates the charset of the font to be used."), VT_I2);	
+	AddAxProp(pControl, 8, _T("Charset"), _T("Indicates the charset of the font to be used."), VT_I2);
 }
 
 static void SetupPicture(TDclControlPtr pControl)
@@ -215,7 +215,7 @@ static void SetupPicture(TDclControlPtr pControl)
 	AddAxProp(pControl, 2, _T("HPal"), _T("Retrieve or set the Handle to the Palette."), VT_I4);
 	AddAxProp(pControl, 3, _T("Type"), _T("Retrieve the picture type."), VT_I2, true, false);
 	AddAxProp(pControl, 4, _T("Width"), _T("Retrieve the picture Width."), VT_I4, true, false);
-	AddAxProp(pControl, 5, _T("Height"), _T("Retrieve the picture Height."), VT_I4, true, false);	
+	AddAxProp(pControl, 5, _T("Height"), _T("Retrieve the picture Height."), VT_I4, true, false);
 }
 
 
@@ -274,7 +274,7 @@ HRESULT CAxContainerCtrl::GetOleDispatch( IDispatch** ppDispatch )
 }
 
 HRESULT CAxContainerCtrl::GetOleObject( IOleObject** ppOleObject )
-{	
+{
 	IUnknown* pUnknown = GetControlUnknown();
 	if( !pUnknown )
 		return E_NOINTERFACE;
@@ -319,7 +319,7 @@ bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 				sProgId.MakeReverse();
 				sProgId = sProgId.Right( sProgId.GetLength() - sProgId.SpanIncluding( _T("0123456789.") ).GetLength() );
 				sProgId.MakeReverse();
-				HRESULT hr = CLSIDFromProgID( CStringW( sProgId ), &clsid );
+				hr = CLSIDFromProgID( CStringW( sProgId ), &clsid );
 				if( SUCCEEDED(hr) && clsid != pAxCtrlInitInfo->GetClsid() )
 					bSuccess = Create( clsid, pParentWnd, dwStyle, nID, rcCtrl, pOleStreamFile, bstrLicenseKey );
 			}
@@ -647,8 +647,8 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 			if( !pAxPropDesc->GetName().IsEmpty() )
 			{
 				// find an instance of the property with the name of the one we have.
-				// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
-				// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
+				// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET,
+				// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same
 				// name inside one CPropertyObject object.
 
 				UINT nDecorator = 2;
@@ -720,21 +720,21 @@ bool CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl )
 			if( TheAttr && pAxCtrlInitInfo->GetClsid() == TheAttr->guid )
 			{
 				ExtractPropertyInfo( pDclControl, TheInfo, NULL, true );
-				ExtractMethodInfo( pDclControl, TheInfo );	
+				ExtractMethodInfo( pDclControl, TheInfo );
 				CComBSTR bstrDoc;
 				CComBSTR bstrName;
 				mpTypeLib->GetDocumentation( lIter, &bstrName, &bstrDoc, NULL, NULL );
 				if( bstrName.Length() > 0 )
 				{
-					TAxCtrlInitInfoPtr pAxCtrlInitInfo = pDclControl->GetAxCtrlInitInfo();
-					if( pAxCtrlInitInfo )
-						pAxCtrlInitInfo->SetDisplayName( CString( bstrName ) );
+					TAxCtrlInitInfoPtr pAxCtrlInitInfoTI = pDclControl->GetAxCtrlInitInfo();
+					if( pAxCtrlInitInfoTI )
+						pAxCtrlInitInfoTI->SetDisplayName( CString( bstrName ) );
 				}
 			}
 			TheInfo->ReleaseTypeAttr( TheAttr );
 			TheInfo->Release();
 		}
-	}               
+	}
 	return true;
 }
 
@@ -749,7 +749,7 @@ bool CAxContainerCtrl::GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPag
 	HRESULT hr = pOleObject->QueryInterface( &pSpecify );
 	if( FAILED(hr) )
 		return( false );
-	 
+
 	CAUUID pages = { 0, NULL };
 	hr = pSpecify->GetPages( &pages );
 	if( FAILED(hr) )
@@ -759,7 +759,7 @@ bool CAxContainerCtrl::GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPag
 		aclsidPages.Add( pages.pElems[iPage] );
 
 	CoTaskMemFree( pages.pElems );
-	
+
 	return true;
 }
 
@@ -808,7 +808,7 @@ HRESULT CAxContainerCtrl::SaveToStream()
 	CComPtr< IPersistStream > pPersistStream;
 	hr = pOleObject->QueryInterface( &pPersistStream );
 	if( SUCCEEDED(hr) )
-		hr = pPersistStream->Save( pStream, TRUE );	  
+		hr = pPersistStream->Save( pStream, TRUE );
 	else
 	{
 		CComPtr< IPersistStreamInit > pPersistStreamInit;
@@ -846,7 +846,7 @@ HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, const VARIANTARG
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainerCtrl message handlers
 
-BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);

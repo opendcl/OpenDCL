@@ -50,7 +50,7 @@ static HBITMAP BitmapFromDib (
 		HPALETTE   hpal)
 {
 	LPBITMAPINFOHEADER  lpbi;
-	HPALETTE            hpalT;
+	HPALETTE            hpalT = NULL;
 	HDC                 hdc;
 	HBITMAP             hbm;
 
@@ -218,7 +218,7 @@ bool CArxBlockListCtrl::LoadDwg( LPCTSTR pszFilename )
 		}
 
 		mpLoadedDwg = new AcDbDatabase( false, true );
-		Acad::ErrorStatus es = mpLoadedDwg->readDwgFile( sPath, _SH_DENYNO, false );
+		Acad::ErrorStatus es = mpLoadedDwg->readDwgFile( sPath );
 		if( es != Acad::eOk )
 		{
 			CString sMsg;

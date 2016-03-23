@@ -1,82 +1,90 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
+    <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="FullDebug|Win32">
+    <ProjectConfiguration Include="FullDebug|x64">
       <Configuration>FullDebug</Configuration>
-      <Platform>Win32</Platform>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
+    <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{67B081F2-1D31-4A3D-803D-9AB7493AEAFC}</ProjectGuid>
-    <RootNamespace>OpenDCL.20</RootNamespace>
+    <ProjectGuid>{D0615EA6-5064-48CD-8B82-FDD6B618649F}</ProjectGuid>
+    <RootNamespace>OpenDCL.x64.21</RootNamespace>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="VI\ARX.20.x86.props" />
+    <Import Project="VI\ARX.21.x64.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="VI\ARX.20.x86.props" />
+    <Import Project="VI\ARX.21.x64.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="VI\ARX.20.x86.props" />
+    <Import Project="VI\ARX.21.x64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'">true</LinkIncremental>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'">false</GenerateManifest>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RootNameSpace)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'">$(RootNameSpace)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RootNameSpace)</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</GenerateManifest>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(RootNameSpace)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">$(RootNameSpace)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(RootNameSpace)</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
     <ClCompile>
+      <AdditionalOptions>/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;_WINDOWS;_CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level1</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <DisableSpecificWarnings>4471</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4471;4838;5026;5027</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -90,22 +98,31 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
     <ClCompile>
+      <AdditionalOptions>/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;ARX_MODULE;_DEBUG;AC_FULL_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;_WINDOWS;_CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1;ARX_MODULE;_DEBUG;AC_FULL_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level1</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <DisableSpecificWarnings>4471</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4471;4838;5026;5027</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -119,22 +136,30 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
       <IgnoreSpecificDefaultLibraries>msvcrt</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;_WINDOWS;_CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level1</WarningLevel>
-      <DisableSpecificWarnings>4471</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4471;4838;5026;5027</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -143,11 +168,11 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>rpcrt4.lib;VFW32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -186,10 +211,11 @@
     <ClCompile Include="..\ModelessDlg.cpp" />
     <ClCompile Include="..\OptionsTabDlg.cpp" />
     <ClCompile Include="..\PaletteDlg.cpp" />
+    <ClCompile Include="..\..\Common\ResizableDialog.cpp" />
     <ClCompile Include="..\StdAfx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\TabPageDlg.cpp" />
     <ClCompile Include="..\UpdateCheck.cpp" />
@@ -229,6 +255,11 @@
     <ClCompile Include="..\Controls\ArxPlotStyleTableComboBoxCtrl.cpp" />
     <ClCompile Include="..\Controls\ArxPrinterComboBoxCtrl.cpp" />
     <ClCompile Include="..\Controls\ArxProgressBarCtrl.cpp" />
+    <ClCompile Include="..\Controls\ArxR16LinetypeComboBoxCtrl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Controls\ArxRadioButtonCtrl.cpp" />
     <ClCompile Include="..\Controls\ArxRectangleCtrl.cpp" />
     <ClCompile Include="..\Controls\ArxScrollBarCtrl.cpp" />
@@ -238,6 +269,7 @@
     <ClCompile Include="..\Controls\ArxTabStripCtrl.cpp" />
     <ClCompile Include="..\Controls\ArxTextBoxCtrl.cpp" />
     <ClCompile Include="..\Controls\ArxTextButtonCtrl.cpp" />
+    <ClCompile Include="..\..\Common\Controls\ImageTreeCtrl.cpp" />
     <ClCompile Include="..\Methods\ArgumentsRetrieval.cpp" />
     <ClCompile Include="..\Methods\InvokeMethod.cpp" />
     <ClCompile Include="..\Methods\Methods_ActiveX.cpp" />
@@ -298,7 +330,6 @@
     <ClCompile Include="..\..\Common\Project.cpp" />
     <ClCompile Include="..\..\Common\PropertyNames.cpp" />
     <ClCompile Include="..\..\Common\PropertyObject.cpp" />
-    <ClCompile Include="..\..\Common\ResizableDialog.cpp" />
     <ClCompile Include="..\..\Common\SafeImageListWrite.cpp" />
     <ClCompile Include="..\..\Common\StdDropSource.cpp" />
     <ClCompile Include="..\..\Common\StgFile.cpp" />
@@ -330,7 +361,6 @@
     <ClCompile Include="..\..\Common\Controls\HtmlCtrl.cpp" />
     <ClCompile Include="..\..\Common\Controls\HyperlinkCtrl.cpp" />
     <ClCompile Include="..\..\Common\Controls\ImageComboBoxCtrl.cpp" />
-    <ClCompile Include="..\..\Common\Controls\ImageTreeCtrl.cpp" />
     <ClCompile Include="..\..\Common\Controls\LabelCtrl.cpp" />
     <ClCompile Include="..\..\Common\Controls\ListBoxCtrl.cpp" />
     <ClCompile Include="..\..\Common\Controls\ListViewCtrl.cpp" />
@@ -354,6 +384,7 @@
     <ResourceCompile Include="..\ARX.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Source\OpenDCL 8.0\Runtime\Methods\Methods_Project.h" />
     <ClInclude Include="..\..\Common\Controls\ListCtrlHdr.h" />
     <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h" />
     <ClInclude Include="..\..\Common\DclImageList.h" />
@@ -382,6 +413,7 @@
     <ClInclude Include="..\FolderBrowseDlg.h" />
     <ClInclude Include="..\LinetypeDlg.h" />
     <ClInclude Include="..\LineWeightDlg.h" />
+    <ClInclude Include="..\LocalRes.h" />
     <ClInclude Include="..\MainFileDlg.h" />
     <ClInclude Include="..\Methods\Methods_ImageList.h" />
     <ClInclude Include="..\Methods\Methods_Project.h" />
@@ -389,6 +421,7 @@
     <ClInclude Include="..\ModelessDlg.h" />
     <ClInclude Include="..\OptionsTabDlg.h" />
     <ClInclude Include="..\PaletteDlg.h" />
+    <ClInclude Include="..\..\Common\ResizableDialog.h" />
     <ClInclude Include="..\Resource.h" />
     <ClInclude Include="..\RuntimeRes.h" />
     <ClInclude Include="..\RuntimeRes.Local.h" />
@@ -434,9 +467,9 @@
     <ClInclude Include="..\Controls\ArxPrinterComboBoxCtrl.h" />
     <ClInclude Include="..\Controls\ArxProgressBarCtrl.h" />
     <CustomBuildStep Include="..\Controls\ArxR16LinetypeComboBoxCtrl.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='FullDebug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuildStep>
     <ClInclude Include="..\Controls\ArxRadioButtonCtrl.h" />
     <ClInclude Include="..\Controls\ArxRectangleCtrl.h" />
@@ -447,6 +480,7 @@
     <ClInclude Include="..\Controls\ArxTabStripCtrl.h" />
     <ClInclude Include="..\Controls\ArxTextBoxCtrl.h" />
     <ClInclude Include="..\Controls\ArxTextButtonCtrl.h" />
+    <ClInclude Include="..\..\Common\Controls\ComboFilter.h" />
     <ClInclude Include="..\Controls\DimStyleComboHandler.h" />
     <ClInclude Include="..\Controls\FontComboHandler.h" />
     <ClInclude Include="..\Controls\LayerComboHandler.h" />
@@ -499,6 +533,7 @@
     <ClInclude Include="..\..\Common\DclControlTemplate.h" />
     <ClInclude Include="..\..\Common\DclControlProp.h" />
     <ClInclude Include="..\..\Common\DclFormTemplate.h" />
+    <ClInclude Include="..\..\Common\DclFormTypes.h" />
     <ClInclude Include="..\..\Common\Diagnostic.h" />
     <ClInclude Include="..\..\Common\DialogControl.h" />
     <ClInclude Include="..\..\Common\DialogObject.h" />
@@ -524,7 +559,6 @@
     <ClInclude Include="..\..\Common\PropertyObject.h" />
     <ClInclude Include="..\..\Common\PtrTypes.h" />
     <ClInclude Include="..\..\Common\RefCountedPtr.h" />
-    <ClInclude Include="..\..\Common\ResizableDialog.h" />
     <ClInclude Include="..\..\Common\SafeImageListWrite.h" />
     <ClInclude Include="..\..\Common\StdDropSource.h" />
     <ClInclude Include="..\..\Common\StgFile.h" />
@@ -547,7 +581,6 @@
     <ClInclude Include="..\..\Common\Controls\ComboCtrl.h" />
     <ClInclude Include="..\..\Common\Controls\ComboEditCtrl.h" />
     <ClInclude Include="..\..\Common\Controls\ComboExCtrl.h" />
-    <ClInclude Include="..\..\Common\Controls\ComboFilter.h" />
     <ClInclude Include="..\..\Common\Controls\ComboHandler.h" />
     <ClInclude Include="..\..\Common\Controls\ComboStyles.h" />
     <ClInclude Include="..\..\Common\Controls\CurrencyFilter.h" />
@@ -607,16 +640,16 @@
     <ClInclude Include="..\..\Common\Controls\XPStyleButtonST.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\LibPNG\LibPNG.32\LibPNG.32.vcxproj">
-      <Project>{d927ca66-88db-45fa-a926-8f85cd424a30}</Project>
+    <ProjectReference Include="..\..\Library\LibPNG\LibPNG.64\LibPNG.64.vcxproj">
+      <Project>{4825da58-c0c2-4947-ae4e-b3bd7b836739}</Project>
       <Private>true</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\ZLib\ZLib.32\ZLib.32.vcxproj">
-      <Project>{a459ef20-fc54-44d3-b922-9d872e52a1fd}</Project>
+    <ProjectReference Include="..\..\Library\ZLib\ZLib.64\ZLib.64.vcxproj">
+      <Project>{a459ef20-fc55-44d3-b922-9d872e52a1fd}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\ENU\Runtime.Res\Runtime.Res.ENU.vcxproj">
@@ -629,7 +662,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="..\ARX.rc" />
+      <UserProperties RESOURCE_FILE="..\ARX.rc" VCBuildHookBuildToolVersion="VC9" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

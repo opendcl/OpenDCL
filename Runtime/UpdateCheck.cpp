@@ -59,7 +59,7 @@ ATOM trayIconWndClass()
 	static ATOM wcTrayIcon = 0;
 	if( !wcTrayIcon )
 	{
-		WNDCLASS stMsgWnd = 
+		WNDCLASS stMsgWnd =
 		{
 			0,
 			TrayIconWndProc,
@@ -424,7 +424,6 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		}
 		case WM_DESTROY:
 		{
-			NOTIFYICONDATA NI;
 			ZeroMemory( &NI, sizeof(NI) );
 		#ifdef NOTIFYICONDATA_V1_SIZE
 			NI.cbSize = (isUsingShellV1()? NOTIFYICONDATA_V1_SIZE : sizeof(NOTIFYICONDATA));
