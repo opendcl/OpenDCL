@@ -98,7 +98,7 @@ public:
 					pDC->Rectangle( &rcColor );
 					pDC->SelectObject( pOldPen );
 					rcColor.DeflateRect( 1, 1 );
-					COLORREF crFill = 
+					COLORREF crFill =
 						(lprop.color.isByColor()? RGB(lprop.color.red(),lprop.color.green(),lprop.color.blue()) :
 																			GetRGBColor( lprop.color.colorIndex() ));
 					CBrush brFill( crFill );
@@ -133,7 +133,7 @@ public:
 			if( !pCurDb )
 				return true;
 			AcDbLayerTable* pLayerTable;
-			Acad::ErrorStatus es = 
+			Acad::ErrorStatus es =
 				pCurDb->getSymbolTable( pLayerTable, AcDb::kForRead );
 			if( es != Acad::eOk )
 				return false;

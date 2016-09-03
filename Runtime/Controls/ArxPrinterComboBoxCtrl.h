@@ -25,12 +25,11 @@ public:
 	void SetPaperSizeCombo( TDclControlPtr pPaperCombo );
 
 protected:
-	virtual void OnListChanged();
 
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
- 
+
 protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg void OnCbnSelchange();

@@ -297,8 +297,8 @@ public:
 					pFilter->ConvertForDisplay( sText );
 				}
 			}
-			__super::OnApply();
 			ApplyValue( sText );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -459,8 +459,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCheck() == BST_CHECKED );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -587,8 +587,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCurSel() );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -685,8 +685,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCurSel() );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{

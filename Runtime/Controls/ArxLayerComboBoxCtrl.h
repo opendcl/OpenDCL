@@ -24,9 +24,9 @@ class CArxLayerComboBoxCtrl : public CArxComboBoxCtrl
 		~CDocReactor()
 			{ if( mpHandler ) acDocManager->removeReactor( this ); }
 		void documentActivated(AcApDocument* pActivatedDoc)
-			{ if( mpCombo ) mpHandler->PopulateList(mpCombo); }
+			{ if( mpCombo ) mpCombo->ResetContent(); }
 		void documentDestroyed(const char* filename)
-			{ if( mpCombo ) mpHandler->PopulateList(mpCombo); }
+			{ if( mpCombo ) mpCombo->ResetContent(); }
 	} mDocReactor;
 
 public:

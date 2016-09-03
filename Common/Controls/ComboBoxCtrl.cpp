@@ -126,28 +126,7 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	//	break;
 	case Prop::List:
 		{
-			mbIgnoreChange = true;
 			ResetContent();
-			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
-			const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-			if( prString )
-			{
-				for( size_t idx = 0; idx < prString->size(); ++idx )
-				{
-					int idxNewItem = AddString( prString->at( idx ) );
-					if( idxNewItem < 0 )
-						continue;
-					if( prInt && idx < prInt->size() )
-						SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
-				}
-			}
-			if( (GetStyle() & CBS_SORT) )
-			{
-				mbIgnoreChange = false;
-				OnListChanged(); //in case the list is sorted, to update the List property
-				mbIgnoreChange = true;
-			}
-			mbIgnoreChange = false;
 		}
 		break;
 	case Prop::ItemData:
@@ -258,18 +237,18 @@ LRESULT CComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return lResult;
 }
 
-BOOL CComboBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CComboBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
 	{
 		if( mpTemplate->GetBooleanProperty( Prop::ReturnAsTab ) )
-			pMsg->wParam = VK_TAB;		
+			pMsg->wParam = VK_TAB;
 	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CComboBoxCtrl::PostNcDestroy() 
+void CComboBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
@@ -317,11 +296,39 @@ LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 	CString sSelection;
 	GetWindowText( sSelection );
 	Default();
-	OnListChanged();
 
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
-		pHandler->PopulateList( this );
+	{
+		mbIgnoreChange = true;
+		pHandler->PopulateList(this);
+		mbIgnoreChange = false;
+		OnListChanged();
+	}
+	else
+	{
+		TPropertyPtr pProp = mpTemplate->GetPropertyObject( Prop::List );
+		if( pProp )
+		{
+			const PropVal::TCStringArray* prString =  pProp->GetConstStringArrayPtr();
+			const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
+			if( prString )
+			{
+				mbIgnoreChange = true;
+				for( size_t idx = 0; idx < prString->size(); ++idx )
+				{
+					int idxNewItem = AddString( prString->at( idx ) );
+					if( idxNewItem < 0 )
+						continue;
+					if( prInt && idx < prInt->size() )
+						SetItemData( idxNewItem, (DWORD_PTR)prInt->at( idx ) );
+				}
+				mbIgnoreChange = false;
+			}
+			if( (GetStyle() & CBS_SORT) )
+				OnListChanged(); //in case the list is sorted, to update the List property
+		}
+	}
 	if( !sSelection.IsEmpty() )
 	{
 		int idx = FindStringExact( -1, sSelection );

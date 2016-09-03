@@ -57,6 +57,8 @@ static FT_acedLineWeightDialog GetProc(void)
 	HMODULE hmodApi = GetModuleHandle( _T("brx15.dll") );
 #elif (_BRXTARGET == 16)
 	HMODULE hmodApi = GetModuleHandle( _T("brx16.dll") );
+#elif (_BRXTARGET == 17)
+	HMODULE hmodApi = GetModuleHandle( _T("brx17.dll") );
 #elif (_BRXTARGET)
 	#error Unknown BRX target!
 #else
