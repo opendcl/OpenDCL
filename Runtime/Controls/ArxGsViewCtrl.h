@@ -112,7 +112,7 @@ protected:
 					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
 					if( pAcadColor )
 						mpDevice->setBackgroundColor( GsColorConvertor( GetRGBColor( pAcadColor->GetLongValue() ) ) );
-							
+
 					CRect rect;
 					mpCtrl->GetClientRect( &rect);
 					onSize( rect.Width(), rect.Height() );
@@ -314,7 +314,7 @@ protected:
 
 public:
 	void SetHighlight( const COLORREF& clrHighlight );
-	void RemoveHighlight();	
+	void RemoveHighlight();
 	void DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 									 bool bZoomExtents, int nScaleType,
 									 const AcGeVector3d& vecViewDir );

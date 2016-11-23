@@ -28,7 +28,7 @@
 
 #if defined(_BRXTARGET) && defined(AC_FULL_DEBUG)
 #undef _BRXTARGET
-#define _BRXTARGET 16
+#define _BRXTARGET 17
 #endif
 
 //-----------------------------------------------------------------------------

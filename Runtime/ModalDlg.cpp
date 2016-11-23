@@ -33,7 +33,7 @@ CModalDlg::CModalDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogPa
 }
 
 
-CModalDlg::~CModalDlg()	
+CModalDlg::~CModalDlg()
 {
 }
 
@@ -74,18 +74,18 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CModalDlg message handlers
 
-BOOL CModalDlg::OnInitDialog() 
+BOOL CModalDlg::OnInitDialog()
 {
 	__super::OnInitDialog();
 
 	return TRUE; //return TRUE so the dialog manager does its own control focus work
 }
 
-int CModalDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CModalDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
+
 	EnableToolTips (TRUE);
 	return 0;
 }
@@ -98,18 +98,18 @@ void CModalDlg::OnMove(int x, int y)
 	GetArxServices()->HandleEvent( Prop::FormEventMove, false, args_NN( x, y ) );
 }
 
-void CModalDlg::OnSize(UINT nType, int cx, int cy) 
+void CModalDlg::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	if( !IsIgnoreSizing() && IsWindowVisible() )
-	{	
+	{
 		GetArxServices()->HandleEvent( Prop::FormEventSize, false,
 																	 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																						mpTemplate->GetLongProperty( Prop::Height ) ) );
-	}	
+	}
 }
 
-void CModalDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
+void CModalDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	__super::OnShowWindow(bShow, nStatus);
 	GetArxServices()->HandleEvent( Prop::FormEventShow, false );
@@ -121,7 +121,7 @@ void CModalDlg::OnOK()
 {
 	if( IsClosing() || IsCloseAllowed( false ) )
 	{
-    if( GetArxServices()->HandleEvent( Prop::FormEventOnOk, false ) )
+		if( GetArxServices()->HandleEvent( Prop::FormEventOnOk, false ) )
 			return;
 		__super::OnOK();
 		CloseDialog(IDOK);
@@ -132,17 +132,17 @@ void CModalDlg::OnCancel()
 {
 	if( IsClosing() || IsCloseAllowed( true ) )
 	{
-    if( GetArxServices()->HandleEvent( Prop::FormEventOnCancel, false ) )
+		if( GetArxServices()->HandleEvent( Prop::FormEventOnCancel, false ) )
 			return;
 		__super::OnCancel();
 		CloseDialog(IDCANCEL);
 	}
 }
 
-BOOL CModalDlg::PreTranslateMessage(MSG* pMsg) 
-{	
+BOOL CModalDlg::PreTranslateMessage(MSG* pMsg)
+{
 	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
-  {
+	{
 		if	(pMsg->message == WM_KEYDOWN &&
 			(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
 		{
@@ -156,7 +156,7 @@ BOOL CModalDlg::PreTranslateMessage(MSG* pMsg)
 		TDialogControlPtr pControl = GetControlPane()->FindControl( pMsg->hwnd );
 		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
-  }	
-	
+	}
+
 	return __super::PreTranslateMessage(pMsg);
 }

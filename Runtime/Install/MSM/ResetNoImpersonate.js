@@ -31,13 +31,13 @@ var msidbCustomActionTypeNoImpersonate = 2048
 try
 {
 	WScript.Echo("Unsetting 'NoImpersonate' flag for deferred custom actions in\r\n  '" + filespec + "'...");
-	sql = "SELECT Action, Type FROM `CustomAction`";
+	sql = "SELECT Target, Type FROM `CustomAction`";
 	view = database.OpenView(sql);
 	view.Execute();
 	record = view.Fetch();
 	while (record)
 	{
-		if (record.IntegerData(2) &  msidbCustomActionTypeInScript)
+		if (((record.IntegerData(2) & msidbCustomActionTypeInScript) != 0) && (record.StringData(1).indexOf("User") >= 0))
 		{
 			record.IntegerData(2) &= ~msidbCustomActionTypeNoImpersonate;
 			view.Modify(msiViewModifyUpdate, record);

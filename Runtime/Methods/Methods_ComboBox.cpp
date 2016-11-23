@@ -162,6 +162,13 @@ ADSRESULT ComboBox::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
+	TPropertyPtr pListProp = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( pListProp )
+	{
+		PropVal::TCStringArray* prsList = pListProp->GetStringArrayPtr();
+		prsList->clear();
+	}
+
 	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
 	pCtrl->ResetContent();
 	acedRetT();

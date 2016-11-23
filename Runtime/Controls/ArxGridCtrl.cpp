@@ -311,10 +311,14 @@ protected:
 
 typedef CAcUiComboEditCtrl< CAcUiArrowHeadComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiArrowComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiPlotStyleNamesComboBoxEx, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleNameComboEditCtrl;
+#if (_ZRXTARGET != 2017)
 typedef CAcUiComboEditCtrl< CAcUiPlotStyleTablesComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleTableComboEditCtrl;
+#endif
 typedef CAcUiComboEditCtrl< CAcUiStringComboBox, CBS_DROPDOWN > CAcUiStringComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiNumericComboBox, CBS_DROPDOWN > CAcUiUnitsComboEditCtrl;
+#if (_ZRXTARGET != 2017)
 typedef CAcUiComboEditCtrl< CAcUiAngleComboBox, CBS_DROPDOWN > CAcUiAngleComboEditCtrl;
+#endif
 typedef CAcUiComboEditCtrl< CAcUiSymbolComboBox, CBS_DROPDOWN > CAcUiSymbolComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiColorComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiColorComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiLineWeightComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiLineWeightComboEditCtrl;
@@ -607,7 +611,12 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid::AcadColors: return new CAcUiColorComboEditCtrl( this, nRow, nCol );
 		case Grid::TextStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CTextStyleComboHandler );
 		case Grid::PlotStyleNames: return new CAcUiPlotStyleNameComboEditCtrl( this, nRow, nCol );
-		case Grid::PlotStyleTables: return new CAcUiPlotStyleTableComboEditCtrl( this, nRow, nCol );
+		case Grid::PlotStyleTables:
+	#if (_ZRXTARGET != 2017)
+			return new CAcUiPlotStyleTableComboEditCtrl( this, nRow, nCol );
+	#else
+			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
+	#endif //(_ACADTARGET >= 17)
 		case Grid::PlotterList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CPrinterComboHandler );
 		case Grid::Fonts: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CFontComboHandler );
 		//case Grid::DriveList: return __super::CreateEditControl( nRow, nCol );
@@ -626,13 +635,23 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid::DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid::DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid::Strings_Combo: return new CAcUiStringComboEditCtrl( this, nRow, nCol );
-		case Grid::AngleUnits_Combo: return new CAcUiAngleComboEditCtrl( this, nRow, nCol );
+		case Grid::AngleUnits_Combo:
+	#if (_ZRXTARGET != 2017)
+			return new CAcUiAngleComboEditCtrl( this, nRow, nCol );
+	#else
+			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
+	#endif //(_ACADTARGET >= 17)
 		case Grid::Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CIntegerFilter ) );
 		case Grid::Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUnitsNumericFilter ) );
 		//case Grid::UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUpperCaseFilter ) );
 		//case Grid::LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
 		case Grid::Symbols: return new CAcUiSymbolEditCtrl( this, nRow, nCol );
-		case Grid::Symbols_Combo: return new CAcUiSymbolComboEditCtrl( this, nRow, nCol );
+		case Grid::Symbols_Combo:
+	#if (_ZRXTARGET != 2017)
+			return new CAcUiSymbolComboEditCtrl( this, nRow, nCol );
+	#else
+			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
+	#endif //(_ACADTARGET >= 17)
 		//default: return new CTextBoxEditCtrl( this, nRow, nCol );
 	}
 	return __super::CreateEditControl( nRow, nCol );

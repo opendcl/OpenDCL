@@ -7,6 +7,10 @@
 #include "ArxControlServices.h"
 #include "R2006AcUiMRUComboBoxFixup.h"
 
+#if (_ZRXTARGET == 2017)
+#undef CAcUiPlotStyleTablesComboBox
+#define CAcUiPlotStyleTablesComboBox CAcUiMRUComboBox
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxPlotStyleTableComboBoxCtrl window

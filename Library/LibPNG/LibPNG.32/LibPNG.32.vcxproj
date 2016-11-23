@@ -73,6 +73,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ZLib\ZLib.32\ZLib.32.vcxproj">
       <Project>{a459ef20-fc54-44d3-b922-9d872e52a1fd}</Project>
+      <Private>false</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

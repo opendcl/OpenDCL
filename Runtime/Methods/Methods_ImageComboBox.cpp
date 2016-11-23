@@ -10,7 +10,7 @@
 
 
 static void ReturnItem( const COMBOBOXEXITEM& cbi )
-{	
+{
 	resbuf* prbRet = acutBuildList( RTSTR, cbi.pszText,
 																	RTSHORT, cbi.iImage,
 																	RTSHORT, cbi.iSelectedImage,
@@ -18,10 +18,10 @@ static void ReturnItem( const COMBOBOXEXITEM& cbi )
 																	RTNONE );
 
 	if( prbRet )
-	{ 	    
-		acedRetList( prbRet );		
-		acutRelRb( prbRet ); 
-	} 
+	{
+		acedRetList( prbRet );
+		acutRelRb( prbRet );
+	}
 }
 
 ADSRESULT ImageComboBox::AddString()
@@ -158,6 +158,13 @@ ADSRESULT ImageComboBox::Clear()
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
+
+	TPropertyPtr pListProp = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( pListProp )
+	{
+		PropVal::TCStringArray* prsList = pListProp->GetStringArrayPtr();
+		prsList->clear();
+	}
 
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 	pCtrl->ResetContent();

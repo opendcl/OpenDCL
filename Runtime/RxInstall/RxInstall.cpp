@@ -1,6 +1,6 @@
 // RxInstall.cpp : Install-time AutoCAD ObjectARX module demand-load setup
 //
-// Copyright 2007 - 2014 ManuSoft. All Rights Reserved.
+// Copyright 2007 - 2016 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -387,7 +387,7 @@ public:
 	enum Platform { kNone = 0, kAutoCAD, kBricscad, kZWCAD, kGstarCAD };
 	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
 											kBRX13 = 13, kBRX14 = 14, kBRX15 = 15, kBRX16 = 16, kBRX17 = 17,
-											kZRX2014 = 14, kZRX2015 = 15,
+											kZRX2014 = 14, kZRX2015 = 15, kZRX2017 = 17,
 											kGRX2015 = 15, kGRX2016 = 16,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, kARX2015 = 20, kARX2017 = 21, };
@@ -524,6 +524,8 @@ public:
 		kBricscad17x64 =     (kX64Architecture | kBricscadPlatform | (kBRX17 << shftMajorVer) | 0),
 		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 		kZWCAD2015x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2015 << shftMajorVer) | 0),
+		kZWCAD2017x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2017 << shftMajorVer) | 0),
+		kZWCAD2017x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2017 << shftMajorVer) | 0),
 		kGstarCAD2015x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
 		kGstarCAD2015x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
 		kGstarCAD2016x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2016 << shftMajorVer) | 0),
@@ -534,9 +536,9 @@ public:
 		{
 			if( platform() == kAutoCAD && majorVersion() < kARX2004 )
 				return (isHKLMAccessible()? HKEY_LOCAL_MACHINE : NULL);
-			if( !bWantHKLM )
-				return HKEY_CURRENT_USER;
-			return (isHKLMAccessible()? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER);
+			if( bWantHKLM && isHKLMAccessible() )
+				return HKEY_LOCAL_MACHINE;
+			return HKEY_CURRENT_USER;
 		}
 	String GetTargetAppRegKey() const
 		{
@@ -571,12 +573,6 @@ public:
 					sRootKey = _T("SOFTWARE\\ZWSOFT\\ZWCAD\\");
 					String sMajor( 2000 + majorVersion() );
 					sRootKey += sMajor;
-					switch( architecture() )
-					{
-					case kX64:
-						sRootKey += _T("x64");
-						break;
-					}
 				}
 				break;
 			case kGstarCAD:
@@ -770,6 +766,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 	EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2016x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2014x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2015x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	//EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2017x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -799,6 +796,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2015x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2016x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		//EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2017x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad15x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -817,9 +815,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 	}
 }
 
-extern "C"
-__declspec(dllexport)
-UINT __stdcall RxInstall( MSIHANDLE hInstall )
+UINT RxInstall( MSIHANDLE hInstall, bool bWantHKLM )
 {
 	String sInstallDir;
 #ifdef _USEMSILIB
@@ -829,16 +825,7 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	sCustomData.ReleaseBuffer( cchCustomData );
 	if( cchCustomData <= 0 )
 		return ERROR_INVALID_DATA;
-	bool bWantHKLM = false;
-	int nToken = sCustomData.Find( _T('>') );
-	if( nToken >= 0 )
-	{
-		bWantHKLM = (sCustomData[nToken + 1] == _T('1'));
-		sCustomData = sCustomData.Left( nToken );
-	}
 	sInstallDir = sCustomData;
-#else
-	bool bWantHKLM = true;
 #endif
 
 	// Decide whether to autostart the OPENDCLDEMO command on next startup
@@ -870,6 +857,20 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	else
 		InstallAllTargets( sInstallDir, bWantHKLM, bLoadOnNextStartup );
 	return ERROR_SUCCESS;
+}
+
+extern "C"
+__declspec(dllexport)
+UINT __stdcall RxInstallMachine( MSIHANDLE hInstall )
+{
+	return RxInstall( hInstall, true );
+}
+
+extern "C"
+__declspec(dllexport)
+UINT __stdcall RxInstallUser( MSIHANDLE hInstall )
+{
+	return RxInstall( hInstall, false );
 }
 
 bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot, bool bX64 = false )
@@ -934,6 +935,7 @@ void UninstallAllTargets( HKEY hkRoot )
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V17"), hkRoot );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2014"), hkRoot );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2015"), hkRoot );
+	//RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2017"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R16.0"), hkRoot );
 	if( IsWow64() )
@@ -953,6 +955,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V16x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V17x64"), hkRoot, true );
+		//RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2017"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R16.0"), hkRoot, true );
 	}
@@ -960,9 +963,16 @@ void UninstallAllTargets( HKEY hkRoot )
 
 extern "C"
 __declspec(dllexport)
-UINT __stdcall RxUninstall( MSIHANDLE hInstall )
+UINT __stdcall RxUninstallMachine( MSIHANDLE hInstall )
 {
 	UninstallAllTargets( HKEY_LOCAL_MACHINE );
+	return ERROR_SUCCESS;
+}
+
+extern "C"
+__declspec(dllexport)
+UINT __stdcall RxUninstallUser( MSIHANDLE hInstall )
+{
 	UninstallAllTargets( HKEY_CURRENT_USER );
 	return ERROR_SUCCESS;
 }

@@ -450,11 +450,17 @@ BOOL CAcadDockBarHost::OnEraseBkgnd(CDC* pDC)
 
 void CAcadDockBarHost::OnClose()
 {
+#if(_BRXTARGET >= 17)
+	bool bMustDestroy = !IsFloating(); //BRX17+ only destroys the window in OnClose() if floating
+#endif
 	__super::OnClose();
 #if defined(_BRXTARGET) && (_BRXTARGET <= 15)
 #if (_BRXTARGET <= 14)
 	SendMessage( WM_COMMAND, ID_ADUI_HIDEBAR, 0 );
 #endif
 	DestroyWindow();
+#elif(_BRXTARGET >= 17)
+	if (bMustDestroy)
+		DestroyWindow();
 #endif
 }

@@ -67,14 +67,38 @@ public:
 			CDC *pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 			int nIndexDC = pDC->SaveDC();
 			CRect rc( lpDrawItemStruct->rcItem );
-			CBrush brushFill;
-			if( lpDrawItemStruct->itemState & ODS_SELECTED )
+
+			DcTheme Theme( pCombo->m_hWnd, VSCLASS_COMBOBOX, pDC->GetSafeHdc() );
+			if (Theme)
 			{
-				pDC->FillSolidRect( rc, GetSysColor( COLOR_HIGHLIGHT ) );
-				pDC->SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
+				if (lpDrawItemStruct->itemState & ODS_SELECTED)
+				{
+					pDC->FillSolidRect(rc, GetSysColor(COLOR_HIGHLIGHT));
+					pDC->SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
+				}
+				else if (lpDrawItemStruct->itemState & ODS_DISABLED)
+				{
+					Theme.DrawThemeBackground(CP_BACKGROUND, CBTBS_DISABLED, &rc, NULL);
+					pDC->SetTextColor(GetSysColor(COLOR_GRAYTEXT));
+				}
+				else
+				{
+					Theme.DrawThemeBackground(CP_BACKGROUND, CBTBS_NORMAL, &rc, NULL);
+					pDC->SetTextColor(GetSysColor(COLOR_BTNTEXT));
+				}
 			}
 			else
-				pDC->FillSolidRect( rc, pDC->GetBkColor() );
+			{
+				if (lpDrawItemStruct->itemState & ODS_SELECTED)
+				{
+					pDC->FillSolidRect(rc, GetSysColor(COLOR_HIGHLIGHT));
+					pDC->SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
+				}
+				else if (lpDrawItemStruct->itemState & ODS_DISABLED)
+					pDC->FillSolidRect(rc, GetSysColor(COLOR_3DFACE));
+				else
+					pDC->FillSolidRect(rc, pDC->GetBkColor());
+			}
 
 			int idxItem = (int)lpDrawItemStruct->itemID;
 			if(idxItem >= 0)
@@ -108,6 +132,7 @@ public:
 				}
 				rc.left += 48; // Text Position
 				rc.top++;
+				pDC->SetBkMode(TRANSPARENT);
 				pDC->TextOut( rc.left, rc.top, sName );
 			}
 			if( lpDrawItemStruct->itemState & ODS_FOCUS )
