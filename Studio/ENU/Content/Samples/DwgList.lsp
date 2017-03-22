@@ -27,7 +27,14 @@
 
 ;|«OpenDCL Event Handlers»|;
 
-(defun c:DwgListForm_DwgList1_OnDblClicked (/ filename)
+(defun c:DwgList/DwgListForm#OnInitialize (/)
+  (dcl-ComboBox-AddPath DwgList/DwgListForm/ComboBox1
+    (dcl-DWGList-GetDir DwgList/DwgListForm/DwgList1)
+  )
+  (princ)
+)
+
+(defun c:DwgList/DwgListForm/DwgList1#OnDblClicked (/ filename)
   (if (and (Setq filename (dcl-DWGList-GetFileName DwgList/DwgListForm/DwgList1))
                  (equal (strcase (substr filename (- (strlen filename) 3) 4)) ".DWG"))
     (dcl-sendstring (strcat "_-INSERT " filename "\n"))
@@ -35,13 +42,17 @@
   (princ)
 )
 
-(defun c:DwgList/DwgListForm/cmdUP#OnClicked (/)
-  (setq sPath (strcat (dcl-ComboBox-GetDir DwgList/DwgListForm/ComboBox1)
-            "\\.."
-        )
+(defun c:DwgList/DwgListForm/cmdUP#OnClicked (/ path)
+  (setq path (dcl-DWGList-GetDir DwgList/DwgListForm/DwgList1))
+  (cond
+    ( (= path ""))
+    ( (wcmatch path "::*"))
+    ( (dcl-DWGList-Dir DwgList/DwgListForm/DwgList1 (strcat path "\\.."))
+      (dcl-ComboBox-AddPath DwgList/DwgListForm/ComboBox1
+        (dcl-DWGList-GetDir DwgList/DwgListForm/DwgList1)
+      )
+    )
   )
-  (dcl-ComboBox-Dir DwgList/DwgListForm/ComboBox1 sPath)
-  (dcl-DWGList-Dir DwgList/DwgListForm/DwgList1 sPath)
   (princ)
 )
 

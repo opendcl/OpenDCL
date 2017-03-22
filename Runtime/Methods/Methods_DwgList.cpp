@@ -67,6 +67,7 @@ ADSRESULT DwgList::GetDir()
 	CArxDwgListCtrl* pCtrl = (CArxDwgListCtrl*)pDlgControl->GetControlWnd();
 	CString sPath = pCtrl->GetDragTextPrefix();
 	sPath.TrimRight( _T("\\/") );
+	sPath += _T('\\');
 	acedRetStr( sPath );
 	return RSRSLT;
 }

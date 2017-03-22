@@ -609,7 +609,10 @@ ADSRESULT ComboBox::GetDir()
 
 	CArxFolderComboCtrl* pCtrl = (CArxFolderComboCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetStr( pCtrl->GetSelectedPath() );
+	CString sPath = pCtrl->GetSelectedPath();
+	sPath.TrimRight( _T("\\/") );
+	sPath += _T('\\');
+	acedRetStr( sPath );
 	return RSRSLT;
 }
 

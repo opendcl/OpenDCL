@@ -29,11 +29,21 @@ public:
 			if( !pLayoutManager ) 
 				return false;
 			CString sLayout = pLayoutManager->findActiveLayout( true );
+#if (_ARXTARGET >= 22)
+			AcDbObjectId idLayout = pLayoutManager->findLayoutNamed( sLayout );
+			if( idLayout.isNull() ) 
+				return true;
+			AcDbObjectPointer< AcDbLayout > pLayout;
+			pLayout.open( idLayout, AcDb::kForWrite );
+			if( pLayout.openStatus() != Acad::eOk ) 
+				return true;
+#else
 			AcDbLayout* pLayoutObj = pLayoutManager->findLayoutNamed( sLayout, true );
 			if( !pLayoutObj ) 
 				return true;
 			AcDbObjectPointer< AcDbLayout > pLayout;
 			pLayout.acquire( pLayoutObj );
+#endif
 			AcDbPlotSettingsValidator* pPlotSettingsValidator = acdbHostApplicationServices()->plotSettingsValidator();
 			assert( pPlotSettingsValidator != NULL );
 			if( !pPlotSettingsValidator ) 
