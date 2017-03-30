@@ -34,6 +34,10 @@ public:
 	virtual void GetClientArea( CRect& rect );
 	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
 	virtual bool OnClosing();
+#if defined(_BRXTARGET) && (_BRXTARGET == 17)
+	HICON SetIcon(HICON, BOOL) { return NULL; }
+	HICON GetIcon(BOOL) const { return NULL; }
+#endif
 
 private:
 	virtual bool CanFrameworkTakeFocus();
