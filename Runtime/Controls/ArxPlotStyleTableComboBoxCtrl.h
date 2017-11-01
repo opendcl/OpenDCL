@@ -7,7 +7,7 @@
 #include "ArxControlServices.h"
 #include "R2006AcUiMRUComboBoxFixup.h"
 
-#if (_ZRXTARGET == 2017)
+#if (_ZRXTARGET >= 2017) && (_ZRXTARGET <= 2018)
 #undef CAcUiPlotStyleTablesComboBox
 #define CAcUiPlotStyleTablesComboBox CAcUiMRUComboBox
 #endif

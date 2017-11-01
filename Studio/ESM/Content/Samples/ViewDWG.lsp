@@ -28,11 +28,11 @@
 
 ;|«OpenDCL Event Handlers»|;
 
-(defun c:DwgPreview_Cancel_Clicked ()
+(defun c:ViewDWG/DwgPreview/Cancel#OnClicked ()
 	(dcl-Form-Close ViewDWG/DwgPreview)
 )
 
-(defun c:DwgPreview_Browse_Clicked ( / )
+(defun c:ViewDWG/DwgPreview/Browse#OnClicked ( / )
 	(setq sFileName (GetFiled "Select a drawing file" "" "dwg" 8));_ get the path to a dwg file
 	(if sFileName
 		(progn

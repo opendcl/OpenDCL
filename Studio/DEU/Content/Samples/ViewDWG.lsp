@@ -29,11 +29,11 @@
 
 ;|«OpenDCL Event Handlers»|;
 
-(defun c:DwgPreview_Cancel_Clicked ()
+(defun c:ViewDWG/DwgPreview/Cancel#OnClicked ()
 	(dcl-Form-Close ViewDWG/DwgPreview)
 )
 
-(defun c:DwgPreview_Browse_Clicked ( / )
+(defun c:ViewDWG/DwgPreview/Browse#OnClicked ( / )
 	(setq sFileName (GetFiled "Zeichnungsdatei wählen" "" "dwg" 8)); wählt eine Zeichnungsdatei
 	(if sFileName
 		(progn

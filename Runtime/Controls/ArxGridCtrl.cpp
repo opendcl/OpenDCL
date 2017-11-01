@@ -311,12 +311,12 @@ protected:
 
 typedef CAcUiComboEditCtrl< CAcUiArrowHeadComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiArrowComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiPlotStyleNamesComboBoxEx, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleNameComboEditCtrl;
-#if (_ZRXTARGET != 2017)
+#if !((_ZRXTARGET >= 2017) && (_ZRXTARGET <= 2018))
 typedef CAcUiComboEditCtrl< CAcUiPlotStyleTablesComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiPlotStyleTableComboEditCtrl;
 #endif
 typedef CAcUiComboEditCtrl< CAcUiStringComboBox, CBS_DROPDOWN > CAcUiStringComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiNumericComboBox, CBS_DROPDOWN > CAcUiUnitsComboEditCtrl;
-#if (_ZRXTARGET != 2017)
+#if !((_ZRXTARGET >= 2017) && (_ZRXTARGET <= 2018))
 typedef CAcUiComboEditCtrl< CAcUiAngleComboBox, CBS_DROPDOWN > CAcUiAngleComboEditCtrl;
 #endif
 typedef CAcUiComboEditCtrl< CAcUiSymbolComboBox, CBS_DROPDOWN > CAcUiSymbolComboEditCtrl;
@@ -612,7 +612,7 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid::TextStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CTextStyleComboHandler );
 		case Grid::PlotStyleNames: return new CAcUiPlotStyleNameComboEditCtrl( this, nRow, nCol );
 		case Grid::PlotStyleTables:
-	#if (_ZRXTARGET != 2017)
+	#if !((_ZRXTARGET >= 2017) && (_ZRXTARGET <= 2018))
 			return new CAcUiPlotStyleTableComboEditCtrl( this, nRow, nCol );
 	#else
 			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
@@ -636,7 +636,7 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid::DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid::Strings_Combo: return new CAcUiStringComboEditCtrl( this, nRow, nCol );
 		case Grid::AngleUnits_Combo:
-	#if (_ZRXTARGET != 2017)
+	#if !((_ZRXTARGET >= 2017) && (_ZRXTARGET <= 2018))
 			return new CAcUiAngleComboEditCtrl( this, nRow, nCol );
 	#else
 			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
@@ -647,7 +647,7 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		//case Grid::LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
 		case Grid::Symbols: return new CAcUiSymbolEditCtrl( this, nRow, nCol );
 		case Grid::Symbols_Combo:
-	#if (_ZRXTARGET != 2017)
+	#if !((_ZRXTARGET >= 2017) && (_ZRXTARGET <= 2018))
 			return new CAcUiSymbolComboEditCtrl( this, nRow, nCol );
 	#else
 			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
