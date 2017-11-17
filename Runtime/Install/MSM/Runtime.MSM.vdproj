@@ -858,7 +858,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:8.2.1.1"
+        "Version" = "8:8.2.1.2"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -1379,7 +1379,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_4888C502E58C4A799CBAA5E670F97C9C"
             {
-            "SourcePath" = "8:..\\..\\ZRX.2018.x64\\Release\\OpenDCL.2018.x64.zrx"
+            "SourcePath" = "8:..\\..\\ZRX.2018.x64\\Release\\OpenDCL.x64.2018.zrx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
@@ -2163,7 +2163,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F92C6AFC323A48D196E633DE6A41BAFF"
             {
-            "SourcePath" = "8:..\\..\\ZRX.2017.x64\\Release\\OpenDCL.2017.x64.zrx"
+            "SourcePath" = "8:..\\..\\ZRX.2017.x64\\Release\\OpenDCL.x64.2017.zrx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
