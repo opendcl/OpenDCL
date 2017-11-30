@@ -1422,6 +1422,9 @@ public:
 					disableAutostartForApp( _T("Bricsys\\Bricscad"), false );
 					disableAutostartForApp( _T("Bricsys\\Bricscad"), true );
 					disableAutostartForApp( _T("ZWSOFT\\ZWCAD"), false );
+					disableAutostartForApp( _T("ZWSOFT\\ZWCAD"), true );
+					disableAutostartForApp( _T("GstarSoft\\GstarCAD"), false );
+					disableAutostartForApp( _T("GstarSoft\\GstarCAD"), true );
 				}
 			}
 		}
