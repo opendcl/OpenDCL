@@ -43,6 +43,7 @@ public:
 	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 // ListBoxCtrl Interface

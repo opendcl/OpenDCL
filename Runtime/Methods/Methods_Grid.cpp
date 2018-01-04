@@ -84,7 +84,7 @@ ADSRESULT Grid::AddColumns()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		if( -1 == pCtrl->InsertColumn( pCtrl->GetColumnCount(), sCaption, nFormat, nColWidth, nImage ) )
+		if( -1 == pCtrl->InsertColumn( pCtrl->GetColumnCount(), sCaption, nFormat, pDlgControl->FromDIP( nColWidth ), nImage ) )
 			return RSRSLT;
 
 		if( !GetListBeginArgument( pArgs, true ) )
@@ -153,7 +153,7 @@ ADSRESULT Grid::InsertColumn()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	if( -1 == pCtrl->InsertColumn( nInsertIdx, sCaption, nFormat, nColWidth, nImage ) )
+	if( -1 == pCtrl->InsertColumn( nInsertIdx, sCaption, nFormat, pDlgControl->FromDIP( nColWidth ), nImage ) )
 		return RSRSLT;
 
 	acedRetT();
@@ -550,7 +550,7 @@ ADSRESULT Grid::HitPointTest()
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
 	int nRow = -1, nCol = -1;
-	pCtrl->CellHitTest( CPoint( nX, nY ), nRow, nCol );
+	pCtrl->CellHitTest( pDlgControl->FromDIP( CPoint( nX, nY ) ), nRow, nCol );
 	ReturnRowCol( nRow, nCol );
 	return RSRSLT;
 }
@@ -699,7 +699,7 @@ ADSRESULT Grid::GetColumnWidth()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetLong( pCtrl->GetColumnWidth( nCol ) );
+	acedRetLong( pCtrl->ToDIP( pCtrl->GetColumnWidth( nCol ) ) );
 	return RSRSLT;
 }
 
@@ -724,7 +724,7 @@ ADSRESULT Grid::SetColumnWidth()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	if( pCtrl->SetColumnWidth( nCol, nColWidth ) )
+	if( pCtrl->SetColumnWidth( nCol, pCtrl->FromDIP( nColWidth ) ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -746,7 +746,7 @@ ADSRESULT Grid::CalcColumnWidth()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetLong( pCtrl->GetStringWidth( sText ) );
+	acedRetLong( pDlgControl->ToDIP( pCtrl->GetStringWidth( sText ) ) );
 	return RSRSLT;
 }
 

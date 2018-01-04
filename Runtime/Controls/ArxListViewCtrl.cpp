@@ -61,19 +61,19 @@ END_MESSAGE_MAP()
 
 void CArxListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonDown(nFlags, point);
 }
 
 void CArxListViewCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	__super::OnLButtonUp(nFlags, point);
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 void CArxListViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonDblClk(nFlags, point);
 	if( GetCapture() )
 		GetArxServices()->HandleEvent( Prop::EventDblClicked, args_NN( -1, -1 ) );
@@ -81,13 +81,13 @@ void CArxListViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CArxListViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxListViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonDblClk(nFlags, point);
 }
 
@@ -215,25 +215,25 @@ void CArxListViewCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CArxListViewCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxListViewCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
 void CArxListViewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxListViewCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
@@ -251,7 +251,7 @@ void CArxListViewCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxListViewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMouseMove(nFlags, point);
 }
 

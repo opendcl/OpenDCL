@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "OpenDCL Studio"
             VALUE "FileVersion", "8, 2, 0, 1"
             VALUE "InternalName", "OpenDCL.Editor"
-            VALUE "LegalCopyright", "Copyright © 2017 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalCopyright", "Copyright © 2018 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"

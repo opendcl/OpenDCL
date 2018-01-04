@@ -116,10 +116,18 @@ BEGIN_MESSAGE_MAP(CSlideCtrl, CSliderCtrl)
 	ON_WM_VSCROLL_REFLECT()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CSlideCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CSlideCtrl message handlers
+
+LRESULT CSlideCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CSlideCtrl::HScroll(UINT nSBCode, UINT nPos)
 {

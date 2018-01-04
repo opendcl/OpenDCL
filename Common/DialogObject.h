@@ -125,6 +125,7 @@ public:
 	virtual CString GetWndCaption() const; //get window caption from properties
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size
 	virtual void ApplyPosition(); //move control window to new position
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 
 	// for properties without specific handlers
 	virtual bool ApplyProperty( TPropertyPtr pProp );

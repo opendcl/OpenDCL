@@ -84,6 +84,7 @@ void CMainFileDlg::OnDestroy()
 	mpDlgObject->SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
+	mpDlgObject->ToDIP( rcThis.TopLeft() );
 	mpDlgObject->GetArxServices()->HandleEvent( Prop::FormEventClose, false, args_NN( rcThis.left, rcThis.top ) );
 	__super::OnDestroy();
 }
@@ -155,6 +156,7 @@ void CMainFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 		rcMain.MoveToXY( 0, 0 );
 		mpDlgObject->MoveWindow( &rcMain );
 		CRect rcDlg = mpDlgObject->GetEffectiveClientRect();
+		mpDlgObject->ToDIP(rcDlg);
 		int nNewWidth = rcDlg.Width();
 		int nNewHeight = rcDlg.Height();
 		mpDlgObject->GetTemplate()->SetLongProperty( Prop::Width, nNewWidth );

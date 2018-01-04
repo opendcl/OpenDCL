@@ -715,7 +715,7 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 
 void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonDown(nFlags, point);
 	if( !mCurrentCell )
 		return;
@@ -723,13 +723,13 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
@@ -792,32 +792,32 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonUp(nFlags, point);
 	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, MK_RBUTTON, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, MK_RBUTTON, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnContextMenu(pTarget, point);
 }
 
 void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMouseMove(nFlags, point);
 }
 

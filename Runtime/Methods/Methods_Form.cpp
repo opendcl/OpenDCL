@@ -67,6 +67,7 @@ ADSRESULT Form::Close()
 
 	CPoint ptXlate( 0, 0 );
 	pDlgObject->GetControlWnd()->ClientToScreen( &ptXlate );
+	pDlgObject->ToDIP( ptXlate );
 	resbuf rbPosition = { NULL, RTPOINT };
 	rbPosition.resval.rpoint[X] = ptXlate.x;
 	rbPosition.resval.rpoint[Y] = ptXlate.y;

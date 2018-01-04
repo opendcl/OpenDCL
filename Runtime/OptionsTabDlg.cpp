@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(COptionsTabDlg, CAcUiTabChildDialog)
 	ON_REGISTERED_MESSAGE(refWM_RECALCLAYOUT(),OnRecalcLayout)
 	ON_WM_ERASEBKGND()
 	ON_WM_CTLCOLOR()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &COptionsTabDlg::OnDpiChanged)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -110,6 +111,12 @@ BOOL COptionsTabDlg::OnMainDialogHelp()
 	return TRUE;
 }
 
+LRESULT COptionsTabDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
+
 LRESULT COptionsTabDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return __super::WindowProc(message, wParam, lParam);
@@ -153,6 +160,8 @@ void COptionsTabDlg::OnSize(UINT nType, int cx, int cy)
 	//__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() )
 		return;
+	cx = ToDIP( cx );
+	cy = ToDIP( cy );
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
 	GetArxServices()->HandleEvent( Prop::FormEventSize, false, args_NN( cx, cy ) );

@@ -60,6 +60,8 @@ bool CDialogObject::CenterDialog()
 
 bool CDialogObject::MoveDialog( long nNewLeft, long nNewTop )
 {
+	nNewLeft = FromDIP(nNewLeft);
+	nNewTop = FromDIP(nNewTop);
 	return
 		(GetTopLevelWnd()->SetWindowPos( NULL, nNewLeft, nNewTop, 0, 0,
 																		 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER ) != FALSE);
@@ -77,6 +79,8 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 {
 	mpTemplate->SetLongProperty( Prop::Width, nNewWidth );
 	mpTemplate->SetLongProperty( Prop::Height, nNewHeight );
+	nNewWidth = FromDIP(nNewWidth);
+	nNewHeight = FromDIP(nNewHeight);
 	nNewWidth += GetNCWidth();
 	nNewHeight += GetNCHeight();
 	bool bIgnoreSizing = IgnoreSizing();
@@ -213,10 +217,44 @@ void CDialogObject::ApplyPosition()
 	if( IsEnumeratingProperties() )
 		return; //defer
 	bool bIgnoreSizing = IgnoreSizing();
+	long nWidth = FromDIP( mpTemplate->GetLongProperty( Prop::Width ) );
+	long nHeight = FromDIP( mpTemplate->GetLongProperty( Prop::Height ) );
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
-																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
-																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+																	nWidth + GetNCWidth(),
+																	nHeight + GetNCHeight(),
 																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	mpControlPane->RecalcLayout();
+	IgnoreSizing( bIgnoreSizing );
+}
+
+void CDialogObject::HandleDpiChanged()
+{
+	bool bChanged = mpControlPane->CheckDpiChanged();
+	if( !bChanged )
+		return;
+	__super::HandleDpiChanged();
+	//scaling should occur about the cursor (if dragging) or the centerpoint
+	CRect rectWindow;
+	GetTopLevelWnd()->GetWindowRect( &rectWindow );
+	CRect rectClient;
+	GetTopLevelWnd()->GetClientRect( &rectClient );
+	SetNCWidth( rectWindow.Width() - rectClient.Width() );
+	SetNCHeight( rectWindow.Height() - rectClient.Height() );
+	OnApplyMinMaxSize( NULL );
+	CPoint ptFocus;
+	if( !GetCapture() || (FALSE == GetCursorPos( &ptFocus )) )
+		ptFocus = rectWindow.CenterPoint();
+	long nNewWidth = FromDIP( mpTemplate->GetLongProperty( Prop::Width ) );
+	long nNewHeight = FromDIP( mpTemplate->GetLongProperty( Prop::Height ) );
+	long nLeftShift = (ptFocus.x - rectWindow.left) * (rectClient.Width() - nNewWidth) / rectWindow.Width();
+	long nTopShift = (ptFocus.y - rectWindow.top) * (rectClient.Height() - nNewHeight) / rectWindow.Height();
+	bool bIgnoreSizing = IgnoreSizing();
+	GetTopLevelWnd()->SetWindowPos( NULL,
+																	rectWindow.left + nLeftShift,
+																	rectWindow.top + nTopShift,
+																	nNewWidth + GetNCWidth(),
+																	nNewHeight + GetNCHeight(),
+																	SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
 	IgnoreSizing( bIgnoreSizing );
 }
@@ -305,10 +343,10 @@ bool CDialogObject::OnApplyHeight( TPropertyPtr pProp )
 bool CDialogObject::OnApplyMinMaxSize( TPropertyPtr pProp )
 {
 	assert(mpTemplate != NULL);
-	mnMinWidth = mpTemplate->GetLongProperty(Prop::MinDialogWidth);
-	mnMinHeight = mpTemplate->GetLongProperty(Prop::MinDialogHeight);
-	mnMaxWidth = mpTemplate->GetLongProperty(Prop::MaxDialogWidth);
-	mnMaxHeight = mpTemplate->GetLongProperty(Prop::MaxDialogHeight);
+	mnMinWidth = FromDIP( mpTemplate->GetLongProperty( Prop::MinDialogWidth ) );
+	mnMinHeight = FromDIP( mpTemplate->GetLongProperty( Prop::MinDialogHeight ) );
+	mnMaxWidth = FromDIP( mpTemplate->GetLongProperty( Prop::MaxDialogWidth ) );
+	mnMaxHeight = FromDIP( mpTemplate->GetLongProperty( Prop::MaxDialogHeight ) );
 	return true;
 }
 

@@ -147,17 +147,24 @@ void CScrollBarCtrl::OnScroll(UINT nSBCode, UINT nPos)
 
 
 BEGIN_MESSAGE_MAP(CScrollBarCtrl, CScrollBar)
-	ON_WM_HSCROLL_REFLECT()	
+	ON_WM_HSCROLL_REFLECT()
 	ON_WM_VSCROLL_REFLECT()
 	ON_WM_SETFOCUS()
 	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CScrollBarCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CScrollBarCtrl message handlers
+
+LRESULT CScrollBarCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CScrollBarCtrl::OnSetFocus(CWnd* pOldWnd) 
 {

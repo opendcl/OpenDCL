@@ -197,7 +197,6 @@ CRoundSliderCtrl::~CRoundSliderCtrl()
 }
 
 BEGIN_MESSAGE_MAP(CRoundSliderCtrl, CSliderCtrl)
-	//{{AFX_MSG_MAP(CRoundSliderCtrl)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
@@ -207,7 +206,6 @@ BEGIN_MESSAGE_MAP(CRoundSliderCtrl, CSliderCtrl)
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_MESSAGE(WM_SETFONT, &CRoundSliderCtrl::OnSetFont)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CRoundSliderCtrl::PreSubclassWindow() 

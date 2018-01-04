@@ -84,9 +84,9 @@ void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		if( dwDropEffect != DROPEFFECT_NONE )
 			return;
 	}
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	if (mbLostFocus)
 		return; //one of the event handlers caused loss of focus
@@ -110,9 +110,9 @@ void CArxPictureBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 
 void CArxPictureBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnLButtonUp(nFlags, point);
 	mbSkipOnClicked = false;
@@ -120,27 +120,27 @@ void CArxPictureBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CArxPictureBoxCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnMButtonUp(nFlags, point);
 }
@@ -155,7 +155,7 @@ void CArxPictureBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		if( GetArxServices()->HandleEvent( Prop::EventMouseEntered ) )
 			return;
 	}
-	if( GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnMouseMove(nFlags, point);
 }
@@ -170,41 +170,41 @@ LRESULT CArxPictureBoxCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 
 BOOL CArxPictureBoxCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseWheel, args_NNNN( nFlags, zDelta, pt.x, pt.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseWheel, args_NNNN( nFlags, zDelta, ToDIP( pt.x ), ToDIP( pt.y ) ) ) )
 		return FALSE;
 	return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CArxPictureBoxCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	CString sEventDblClick = mpTemplate->GetStringProperty( Prop::EventRightDblClick );
 	if( sEventDblClick.IsEmpty() )
 		sEventDblClick = mpTemplate->GetStringProperty( Prop::EventRightClick );
 	if( GetArxServices()->HandleEvent( sEventDblClick ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnRButtonDblClk(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxPictureBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	if( GetArxServices()->HandleEvent( Prop::EventRightClick ) )
 		return;
-	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnRButtonUp(nFlags, point);
 }
@@ -225,7 +225,7 @@ void CArxPictureBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	CString sEventDblClick = mpTemplate->GetStringProperty( Prop::EventDblClicked );
 	if( sEventDblClick.IsEmpty() )
@@ -233,7 +233,7 @@ void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	if( GetArxServices()->HandleEvent( sEventDblClick ) )
 		return;
 	mbSkipOnClicked = true;
-	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) ) )
+	if( GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) ) )
 		return;
 	__super::OnLButtonDblClk(nFlags, point);
 }

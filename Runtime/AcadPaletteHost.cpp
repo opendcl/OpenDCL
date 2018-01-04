@@ -241,8 +241,14 @@ void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 CSize CAcadPaletteHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 {
 	if( !mpDlgObject->IsResizable() )
-		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
-									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
+	{
+		CSize sizeDefault( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
+											 mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+		mpDlgObject->FromDIP( sizeDefault );
+		sizeDefault.cx += mpDlgObject->GetNCWidth();
+		sizeDefault.cy += mpDlgObject->GetNCHeight();
+		return sizeDefault;
+	}
 	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
 	CSize szMin( 0, 0 );
 	CSize szMax( 0, 0 );
@@ -270,12 +276,21 @@ CSize CAcadPaletteHost::CalcDynamicLayout(int nLength, DWORD nMode)
 	long lTitleBarWidth = (IsFloating()? 20 : 0);
 
 	if( mszMRUSize.cx < 0 || mszMRUSize.cy < 0 )
+	{
 		mszMRUSize.SetSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
 												mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+		mpDlgObject->FromDIP( mszMRUSize );
+	}
 
 	if( !mpDlgObject->IsResizable() )
-		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth() + lTitleBarWidth,
-									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
+	{
+		CSize sizeDefault( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + lTitleBarWidth,
+											 mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+		mpDlgObject->FromDIP( sizeDefault );
+		sizeDefault.cx += mpDlgObject->GetNCWidth();
+		sizeDefault.cy += mpDlgObject->GetNCHeight();
+		return sizeDefault;
+	}
 
 	CSize sizeDefault(mszMRUSize.cx, mszMRUSize.cy);
 	if (nLength > 0)

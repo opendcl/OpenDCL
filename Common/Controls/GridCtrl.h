@@ -244,6 +244,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DWORD GetWndStyle() const;
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 public:
@@ -359,4 +360,5 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseHover(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

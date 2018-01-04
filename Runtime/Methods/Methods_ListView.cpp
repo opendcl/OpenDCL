@@ -96,7 +96,7 @@ ADSRESULT ListView::AddColumns()
 		if (nColWidth != -1)
 		{
 			column.mask |= LVCF_WIDTH;
-			column.cx = nColWidth;
+			column.cx = pDlgControl->FromDIP( nColWidth );
 		}
 		if (nImage != -1)
 		{
@@ -542,7 +542,7 @@ ADSRESULT ListView::HitPointTest()
 
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
-	LVHITTESTINFO lvhti = { { nX, nY } };
+	LVHITTESTINFO lvhti = { { pDlgControl->FromDIP( nX ), pDlgControl->FromDIP( nY ) } };
 	if( -1 != pCtrl->SubItemHitTest( &lvhti ) )
 		ReturnRowCol( lvhti.iItem, lvhti.iSubItem );
 	return RSRSLT;
@@ -595,7 +595,7 @@ ADSRESULT ListView::GetColumnWidth()
 
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetColumnWidth( nCol ) );
+	acedRetInt( pDlgControl->ToDIP( pCtrl->GetColumnWidth( nCol ) ) );
 	return RSRSLT;
 }
 
@@ -620,7 +620,7 @@ ADSRESULT ListView::SetColumnWidth()
 
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
-	if( pCtrl->SetColumnWidth( nCol, nColWidth ) )
+	if( pCtrl->SetColumnWidth( nCol, pDlgControl->FromDIP( nColWidth ) ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -642,7 +642,7 @@ ADSRESULT ListView::CalcColumnWidth()
 
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetStringWidth( sText ) );
+	acedRetInt( pDlgControl->ToDIP( pCtrl->GetStringWidth( sText ) ) );
 	return RSRSLT;
 }
 

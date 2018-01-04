@@ -26,6 +26,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return CFilteredEditCtrl::GetColorService(); }
@@ -42,4 +43,5 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

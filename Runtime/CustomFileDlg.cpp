@@ -295,31 +295,31 @@ void CCustomFileDlg::SavePosition()
 {
 	if( !IsWindow( m_hWnd ) )
 		return;
+	CRect rcWnd;
+	mMainFileDlg.GetWindowRect( &rcWnd );
 	CWinApp* pApp = AfxGetApp();
-	CRect rcThis;
-	mMainFileDlg.GetWindowRect( &rcThis );
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
-	pApp->WriteProfileInt( sProfileName, _T("Width"), rcThis.Width() );
-	pApp->WriteProfileInt( sProfileName, _T("Height"), rcThis.Height() );
-	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcThis.left );
-	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcThis.top );
+	pApp->WriteProfileInt( sProfileName, _T("Width"), mpTemplate->GetLongProperty( Prop::Width ) );
+	pApp->WriteProfileInt( sProfileName, _T("Height"), mpTemplate->GetLongProperty( Prop::Height ) );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcWnd.left );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcWnd.top );
 }
 
-CRect CCustomFileDlg::ReadPosition() const
+void CCustomFileDlg::ReadPosition(POINT& ptTopLeft, SIZE& size) const
 {
-	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
-	rcRet.left = pApp->GetProfileInt( sProfileName, _T("TopLeftX"), -100 );
-	rcRet.top = pApp->GetProfileInt( sProfileName, _T("TopLeftY"), -100 );
-	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, _T("Width"), -100 );
-	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, _T("Height"), -100 );
-	return rcRet;
+	ptTopLeft.x = pApp->GetProfileInt( sProfileName, _T("TopLeftX"), INT_MIN );
+	ptTopLeft.y = pApp->GetProfileInt( sProfileName, _T("TopLeftY"), INT_MIN );
+	size.cx = pApp->GetProfileInt( sProfileName, _T("Width"), -1 );
+	size.cy = pApp->GetProfileInt( sProfileName, _T("Height"), -1 );
 }
 
 void CCustomFileDlg::OnInitializationComplete()
 {
-	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
+	CPoint ptSaved( INT_MIN, INT_MIN );
+	CSize sizeSaved( -1, -1 );
+	ReadPosition(ptSaved, sizeSaved); //get the saved position before it gets overwritten during SetWindowPos()
 
 	CRect rectWindow;
 	mMainFileDlg.GetWindowRect( &rectWindow );
@@ -327,8 +327,8 @@ void CCustomFileDlg::OnInitializationComplete()
 	mMainFileDlg.GetClientRect( &rectClient );
 	SetNCWidth( rectWindow.Width() - rectClient.Width() );
 	SetNCHeight( rectWindow.Height() - rectClient.Height() );
-	mpTemplate->SetLongProperty( Prop::Width, rectClient.Width() );
-	mpTemplate->SetLongProperty( Prop::Height, rectClient.Height() );
+	mpTemplate->SetLongProperty( Prop::Width, ToDIP( rectClient.Width() ) );
+	mpTemplate->SetLongProperty( Prop::Height, ToDIP( rectClient.Height() ) );
 	MoveWindow( &rectClient );
 	ApplyPropertiesEnum();
 
@@ -354,33 +354,34 @@ void CCustomFileDlg::OnInitializationComplete()
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(mMainFileDlg.m_hWnd), &rectParent );
 	if( mptInitial.x > INT_MIN )
-		rectWindow.MoveToX( mptInitial.x );
-	else if( rectSaved.left >= rcDesktop.left - 10 && rectSaved.left < rcDesktop.right - 10 )
-		rectWindow.MoveToX( rectSaved.left );
+		rectWindow.MoveToX( FromDIP( mptInitial.x ) );
+	else if( ptSaved.x >= rcDesktop.left - 10 && ptSaved.x < rcDesktop.right - 10 )
+		rectWindow.MoveToX( ptSaved.x );
 	else
 		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
 	if( mptInitial.y > INT_MIN )
-		rectWindow.MoveToY( mptInitial.y );
-	else if( rectSaved.top >= rcDesktop.top - 10 && rectSaved.top < rcDesktop.right - 10 )
-		rectWindow.MoveToY( rectSaved.top );
+		rectWindow.MoveToY( FromDIP( mptInitial.y ) );
+	else if( ptSaved.y >= rcDesktop.top - 10 && ptSaved.y < rcDesktop.right - 10 )
+		rectWindow.MoveToY( ptSaved.y );
 	else
 		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
 	if( IsResizable() )
 	{
 		if( msizeInitial.cx > 0 )
-			rectWindow.right = rectWindow.left + msizeInitial.cx;
-		else if( rectSaved.right > rectSaved.left )
-			rectWindow.right = rectWindow.left + rectSaved.Width();
+			rectWindow.right = rectWindow.left + FromDIP( msizeInitial.cy ) + GetNCWidth();
+		else if( sizeSaved.cx > 0 )
+			rectWindow.right = rectWindow.left + FromDIP( sizeSaved.cx ) + GetNCWidth();
 		if( msizeInitial.cy > 0 )
-			rectWindow.bottom = rectWindow.top + msizeInitial.cy;
-		else if( rectSaved.bottom > rectSaved.top )
-			rectWindow.bottom = rectWindow.top + rectSaved.Height();
+			rectWindow.bottom = rectWindow.top + FromDIP( msizeInitial.cy ) + GetNCHeight();
+		else if( sizeSaved.cy > 0 )
+			rectWindow.bottom = rectWindow.top + FromDIP( sizeSaved.cy ) + GetNCHeight();
 	}
 	if( mMainFileDlg.GetStyle() & WS_CHILD )
 		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );
 
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
 	mMainFileDlg.MoveWindow( &rectWindow, FALSE );
+	mpControlPane->CheckDpiChanged();
 	IgnoreSizing( false );
 }
 
@@ -397,8 +398,15 @@ BEGIN_MESSAGE_MAP(CCustomFileDlg, CFileDialog)
 	ON_MESSAGE(WM_FILEDLG_GETSELECTEDFILES, OnGetSelectedFiles)
 	ON_COMMAND(ID_HELP, OnHelp)
 	ON_WM_WINDOWPOSCHANGED()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CCustomFileDlg::OnDpiChanged)
 END_MESSAGE_MAP()
 
+
+LRESULT CCustomFileDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CCustomFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {

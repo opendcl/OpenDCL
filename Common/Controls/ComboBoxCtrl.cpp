@@ -211,11 +211,18 @@ BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_MESSAGE(CB_SETITEMDATA, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CComboBoxCtrl::OnResetContent)
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CComboBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CComboBoxCtrl message handlers
+
+LRESULT CComboBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 LRESULT CComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {

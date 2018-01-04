@@ -145,7 +145,7 @@ void CArxTabStripCtrl::ShowTab( size_t nPageIndex )
 		TC_ITEM tcItem;
 		tcItem.mask = TCIF_PARAM;
 		GetItem( i, &tcItem );
-		
+
 		if( nPageIndex == tcItem.lParam )
 			return; //the tab is already showing
 		if( nPageIndex > tcItem.lParam )
@@ -156,12 +156,12 @@ void CArxTabStripCtrl::ShowTab( size_t nPageIndex )
 	}
 
 	CString sTabCaption = mpTemplate->GetPropertyListItem( Prop::TabsCaption, nPageIndex );
-				
+
 	int nImage = -1;
 	TPropertyPtr pImageListProp = mpTemplate->GetPropertyObject(Prop::TabsImageList);
 	if (pImageListProp && nPageIndex < pImageListProp->GetIntArrayPtr()->size())
 		nImage = pImageListProp->GetIntArrayPtr()->at( nPageIndex );
-				
+
 	InsertItem( idxToInsertAt, sTabCaption, nImage );
 	TC_ITEM tcItem;
 	tcItem.mask = TCIF_PARAM;

@@ -226,6 +226,13 @@ DWORD CGridCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CGridCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::ColumnWidths ) );
+}
+
 bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -282,6 +289,7 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 			long lNewHeight = pProp->GetLongValue();
 			if( lNewHeight <= 0 )
 				lNewHeight = 24;
+			lNewHeight = FromDIP( lNewHeight );
 			if( mnRowHeight == lNewHeight )
 				break;
 			mnRowHeight = lNewHeight;
@@ -318,7 +326,7 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 			const PropVal::TIntArray* prnWidths = pProp->GetConstIntArrayPtr();
 			size_t idxMax = prnWidths? prnWidths->size() : 0;
 			for( int idxColumn = idxMax - 1; idxColumn >= 0; --idxColumn )
-				SetColumnWidth( idxColumn, prnWidths->at( idxColumn ) );
+				SetColumnWidth( idxColumn, FromDIP( prnWidths->at( idxColumn ) ) );
 		}
 		else
 			ApplyCellFormatChanges( false );
@@ -820,7 +828,7 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 		{
 			PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetIntArrayPtr();
 			if( prnWidths && prnWidths->size() >= (size_t)nRet )
-				prnWidths->insert( prnWidths->begin() + nRet, nWidth );
+				prnWidths->insert( prnWidths->begin() + nRet, ToDIP( nWidth ) );
 			PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();
 			if( prsCaptions && prsCaptions->size() >= (size_t)nRet )
 				prsCaptions->insert( prsCaptions->begin() + nRet, sHeading );
@@ -1030,7 +1038,7 @@ void CGridCtrl::SetupColumns()
 		if( prsCaptions && idxColumn < prsCaptions->size() )
 			sCaption = prsCaptions->at( idxColumn );
 		InsertColumn( idxColumn, sCaption, nAlignment,
-									((prnWidths && idxColumn < prnWidths->size())? prnWidths->at( idxColumn ) : 50),
+									FromDIP( (prnWidths && idxColumn < prnWidths->size())? prnWidths->at( idxColumn ) : 50 ),
 									((prnImages && idxColumn < prnImages->size())? prnImages->at( idxColumn ) : -1) );
 	}
 	mbIgnoreChange = false;
@@ -1938,11 +1946,18 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE, &CGridCtrl::OnMouseLeave)
 	ON_MESSAGE(WM_MOUSEHOVER, &CGridCtrl::OnMouseHover)
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CGridCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CGridCtrl message handlers
+
+LRESULT CGridCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {

@@ -15,6 +15,7 @@ BEGIN_MESSAGE_MAP(CTabPageDlg, CDialog)
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_SHOWWINDOW()
 	ON_WM_CTLCOLOR()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CTabPageDlg::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
@@ -24,11 +25,13 @@ CTabPageDlg::CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rec
 , mColorService()
 , mbRecalcQueued( false )
 {
+	GetControlPane()->CheckDpiChanged(); //reset mnDPI to zero for tab page control pane
 	IgnoreSizing();
 	CDialog::Create( IDD_TABPAGE, pTabCtrl );
 	ShowWindow( SW_HIDE );
 	MoveWindow( &rectPane) ;
 	IgnoreSizing( false );
+	ToDIP( rectPane );
 	mpTemplate->SetLongProperty( Prop::Width, rectPane.Width() );
 	mpTemplate->SetLongProperty( Prop::Height, rectPane.Height() );
 	ApplyPropertiesEnum();
@@ -45,9 +48,11 @@ void CTabPageDlg::ApplyPosition()
 	if( IsEnumeratingProperties() )
 		return; //defer
 	bool bIgnoreSizing = IgnoreSizing();
+	long lWidth = FromDIP( mpTemplate->GetLongProperty( Prop::Width ) );
+	long lHeight = FromDIP( mpTemplate->GetLongProperty( Prop::Height ) );
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
-																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
-																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+																	lWidth + GetNCWidth(),
+																	lHeight + GetNCHeight(),
 																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
 	if( GetTopLevelWnd()->IsWindowVisible() )
 		mpControlPane->RecalcLayout();
@@ -58,6 +63,12 @@ void CTabPageDlg::ApplyPosition()
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabPageDlg message handlers
+
+LRESULT CTabPageDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 LRESULT CTabPageDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -91,8 +102,8 @@ void CTabPageDlg::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() )
 		return;
-	mpTemplate->SetLongProperty( Prop::Width, cx );
-	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpTemplate->SetLongProperty( Prop::Width, ToDIP( cx ) );
+	mpTemplate->SetLongProperty( Prop::Height, ToDIP( cy ) );
 	if( IsWindowVisible() )
 		mpControlPane->RecalcLayout();
 	else

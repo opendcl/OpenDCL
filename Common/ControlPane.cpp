@@ -23,6 +23,8 @@ CControlPane::CControlPane()
 , mpHostDlg( NULL )
 , mbRecalcInProgress( false )
 , mbDeferWindowPos( false )
+, mbDpiChanged( false )
+, mnDPI( 0 )
 {
 }
 
@@ -33,6 +35,8 @@ CControlPane::CControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg)
 , mpHostDlg( pHostDlg )
 , mbRecalcInProgress( false )
 , mbDeferWindowPos( false )
+, mbDpiChanged( false )
+, mnDPI( 0 )
 {
 }
 
@@ -44,6 +48,32 @@ CRect CControlPane::GetControlArea() const
 {
 	assert( mpDlgObject != NULL );
 	return mpDlgObject->GetWndRect();
+}
+
+UINT CControlPane::GetDpi() const
+{
+	if ( mnDPI == 0 )
+	{
+		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
+		if( pParentForm )
+		{
+			CDialogObject* pParentDlg = pParentForm->GetFormInstance();
+			if( pParentDlg )
+			{
+				CControlPane* pParentPane = pParentDlg->GetControlPane();
+				return pParentPane->GetDpi();
+			}
+		}
+		CWnd* pWnd = mpHostDlg;
+		while( (pWnd && pWnd->GetStyle() & WS_CHILD) != 0 )
+			pWnd = pWnd->GetParent();
+		HWND hwnd = pWnd->GetSafeHwnd();
+		int nDPI = (int)GetDpiForWindow( hwnd );
+		if ( !hwnd )
+			return nDPI;
+		mnDPI = nDPI;
+	}
+	return mnDPI;
 }
 
 void CControlPane::TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
@@ -140,10 +170,11 @@ void CControlPane::RecalcLayout()
 	DisableUndoManager DisableUndo( mpSourceForm->GetUndoManager() ); //no need to record undo during recalc
 
 	mbRecalcInProgress = true;
-	TraceFmt( _T("CControlPane(%s)::RecalcLayout() [%d x %d]\r\n"),
+	TraceFmt( _T("CControlPane(%s)::RecalcLayout() [%d x %d / %udpi]\r\n"),
 						asString( mpSourceForm ),
 						mpSourceForm->GetFormSize().cx,
-						mpSourceForm->GetFormSize().cy );
+						mpSourceForm->GetFormSize().cy,
+						GetDpi() );
 	mPendingRecalc.clear();
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
@@ -161,6 +192,7 @@ void CControlPane::RecalcLayout()
 		RecalcControlPos( pControl );
 	}
 	mbRecalcInProgress = false;
+	mbDpiChanged = false;
 }
 
 void CControlPane::InvalidateControls()
@@ -254,8 +286,13 @@ void CControlPane::RecalcControlPos( TDclControlPtr pDclControl )
 	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) );
 	pDlgControl->ApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
 	mbDeferWindowPos = false;
-	CRect rcAfter = pDlgControl->GetWndRect();
-	if( rcAfter != rcBefore )
+	bool applyPos = mbDpiChanged;
+	if ( !applyPos )
+	{
+		CRect rcAfter = pDlgControl->GetWndRect();
+		applyPos = (TRUE == (rcAfter != rcBefore));
+	}
+	if ( applyPos )
 		ApplyPosition( TDialogControlLockedPtr( pDlgControl ) );
 	mbDeferWindowPos = bWasDeferWindowPos;
 }
@@ -312,12 +349,14 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 	if( pWndToMove->GetStyle() & WS_CHILD )
 		pWndToMove->GetParent()->ScreenToClient( &rcCtrl );
 	CRect rcNew = pDlgControl->GetWndRect();
+	pDlgControl->FromDIP(rcNew);
 	if( rcNew == rcCtrl )
 		return; //no-op
-	TraceFmt( _T("CControlPane(%s)::ApplyPosition(%s @ [%d,%d/%dx%d])\r\n"),
+	TraceFmt( _T("CControlPane(%s)::ApplyPosition(%s @ [%d,%d/%dx%d/%udpi])\r\n"),
 						asString( this ),
 						asString( pDlgControl ),
-						rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height() );
+						rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height(),
+						GetDpi() );
 	UINT nFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER;
 	if( rcNew.Size() == rcCtrl.Size() )
 		nFlags |= SWP_NOSIZE;
@@ -342,6 +381,30 @@ void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )
 	if( bHide && !IsInvisibleControlAllowed( pDlgControl ) )
 		bHide = false;
 	pWndToMove->ShowWindow( bHide? SW_HIDE : SW_SHOW );
+}
+
+bool CControlPane::CheckDpiChanged()
+{
+	UINT nOldDPI = mnDPI;
+	mnDPI = 0; //force recalc
+	UINT nNewDPI = GetDpi();
+	if ( nOldDPI == nNewDPI )
+		return false;
+	mbDpiChanged = true;
+	if( mpSourceForm && !IsDpiAwarePerMonitorV2( mpHostDlg->GetTopLevelParent()->GetSafeHwnd() ) )
+	{
+		TDclControlList& Controls = mpSourceForm->mDclControls;
+		for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
+		{
+			ControlType type = (*iter)->GetType();
+			if( type == _CtlForm )
+				continue;
+			CDialogControl* pDlgControl = (*iter)->GetControlInstance();
+			if( pDlgControl )
+				pDlgControl->HandleDpiChanged( );
+		}
+	}
+	return (nOldDPI != mnDPI);
 }
 
 void CControlPane::SetFirstControlFocus() const

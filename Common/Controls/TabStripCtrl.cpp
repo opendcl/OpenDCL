@@ -60,6 +60,26 @@ DWORD CTabStripCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CTabStripCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyPropertiesEnum();
+	TPropertyPtr pTabsProp = mpTemplate->GetPropertyObject( Prop::TabsCaption );
+	if( !pTabsProp )
+		return;
+	const TProjectPtr pProject = mpTemplate->GetOwnerProject();
+	TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
+	for( size_t idxTab = pTabsProp->size(); idxTab > 0; --idxTab )
+	{
+		TDclFormPtr pChildForm = pProject->FindDclTabChildForm( pOwnerForm->GetUniqueName(), idxTab - 1 );
+		if( !pChildForm )
+			continue;
+		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
+		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
+		pDlgObject->HandleDpiChanged();
+	}
+}
+
 bool CTabStripCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -89,14 +109,14 @@ bool CTabStripCtrl::ApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::MinTabWidth:
-		SetMinTabWidth( pProp->GetLongValue() );
+		SetMinTabWidth( FromDIP( pProp->GetLongValue() ) );
 		if( !IsEnumeratingProperties() )
 		{
 			if( mpTemplate->GetBooleanProperty( Prop::TabFixedWidth ) )
 			{
 				CRect rectTab;
 				GetItemRect( 0, &rectTab );
-				SetItemSize( CSize( pProp->GetLongValue(), rectTab.Height() ) );
+				SetItemSize( CSize( FromDIP( pProp->GetLongValue() ), rectTab.Height() ) );
 			}
 			SetupTabs();
 		}
@@ -136,7 +156,7 @@ bool CTabStripCtrl::ApplyProperty( TPropertyPtr pProp )
 			CRect rectTab;
 			GetItemRect( 0, &rectTab );
 			CSize sizeTabs;
-			sizeTabs.cx = mpTemplate->GetLongProperty( Prop::MinTabWidth );
+			sizeTabs.cx = FromDIP( mpTemplate->GetLongProperty( Prop::MinTabWidth ) );
 			if( sizeTabs.cx < 0 )
 				sizeTabs.cx = rectTab.Width();
 			sizeTabs.cy = rectTab.Height();
@@ -219,7 +239,7 @@ void CTabStripCtrl::SetupTabs()
 			TabCtrlItem.iImage = pImageListProp->GetConstIntArrayPtr()->at(i);
 			TabCtrlItem.mask |= TCIF_IMAGE;
 		}
-					
+
 		// add the new tab
 		InsertItem(i, &TabCtrlItem );
 
@@ -268,10 +288,10 @@ void CTabStripCtrl::OnUsedAreaChanged()
 	const TProjectPtr pProject = mpTemplate->GetOwnerProject();
 	TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
 	CRect rcControlArea = GetUsedArea();
+	ToDIP( rcControlArea );
 	long lNewLeft = rcControlArea.left;
 	long lNewTop = rcControlArea.top;
-	long lNewWidth = rcControlArea.Width();
-	long lNewHeight = rcControlArea.Height();
+	CSize sizeNew = rcControlArea.Size();
 	for( size_t idxTab = pTabsProp->size(); idxTab > 0; --idxTab )
 	{
 		TDclFormPtr pChildForm = pProject->FindDclTabChildForm( pOwnerForm->GetUniqueName(), idxTab - 1 );
@@ -286,17 +306,21 @@ void CTabStripCtrl::OnUsedAreaChanged()
 			if( lNewLeft != rcPage.left || lNewTop != rcPage.top )
 				pDlgObject->MoveDialog( lNewLeft, lNewTop );
 		}
-		if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
+		if( sizeNew.cx != pFormProps->GetLongProperty( Prop::Width ) )
 		{
 			bChanged = true;
 			if( pDlgObject )
-				pDlgObject->SetPosWidth( lNewWidth );
+				pDlgObject->SetPosWidth( sizeNew.cx );
+			else
+				pFormProps->SetLongProperty( Prop::Width, sizeNew.cx );
 		}
-		if( lNewHeight != pFormProps->GetLongProperty( Prop::Height ) )
+		if( sizeNew.cy != pFormProps->GetLongProperty( Prop::Height ) )
 		{
 			bChanged = true;
 			if( pDlgObject )
-				pDlgObject->SetPosHeight( lNewHeight );
+				pDlgObject->SetPosHeight( sizeNew.cy );
+			else
+				pFormProps->SetLongProperty( Prop::Height, sizeNew.cy );
 		}
 		if( bChanged && pDlgObject )
 			pDlgObject->ApplyPosition();
@@ -313,11 +337,18 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
 	ON_WM_CTLCOLOR()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CTabStripCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabStripCtrl message handlers
+
+LRESULT CTabStripCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CTabStripCtrl::OnDestroy() 
 {	

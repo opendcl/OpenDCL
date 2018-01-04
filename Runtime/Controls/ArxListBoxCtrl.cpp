@@ -54,7 +54,9 @@ bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData, 
 			CString sControl;
 			if( pSourceDclControl->GetType() != _CtlForm )
 				sControl = pSourceDclControl->GetKeyName();
-			GetArxServices()->HandleEvent( sDropControlEvent, args_SSSP( sProject, sForm, sControl, point ) );
+			CPoint ptDIP = point;
+			ToDIP( ptDIP );
+			GetArxServices()->HandleEvent( sDropControlEvent, args_SSSP( sProject, sForm, sControl, ptDIP ) );
 			return true;
 		}
 
@@ -86,7 +88,7 @@ END_MESSAGE_MAP()
 
 void CArxListBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMouseMove(nFlags, point);
 }
 

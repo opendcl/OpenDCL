@@ -33,7 +33,9 @@ CSplitterCtrl::~CSplitterCtrl()
 
 bool CSplitterCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
-	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+	CRect rcWnd = GetWndRect();
+	FromDIP( rcWnd );
+	bool bSuccess = (__super::Create( NULL, GetWndStyle(), rcWnd, pParentWnd, nID ) != FALSE);
 	if( bSuccess )
 		bSuccess = (ModifyStyleEx( 0, WS_EX_TRANSPARENT ) != FALSE);
 	mbIgnoreSizing = false;
@@ -146,11 +148,18 @@ BEGIN_MESSAGE_MAP(CSplitterCtrl, CStatic)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CSplitterCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CSplitterCtrl message handlers
+
+LRESULT CSplitterCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CSplitterCtrl::PreTranslateMessage(MSG* pMsg) 
 {
@@ -237,8 +246,8 @@ void CSplitterCtrl::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if( !mbIgnoreSizing )
 	{
-		SetPosWidth( cx );
-		SetPosHeight( cy );
+		SetPosWidth( ToDIP( cx ) );
+		SetPosHeight( ToDIP( cy ) );
 	}
 }
 
@@ -248,6 +257,7 @@ void CSplitterCtrl::OnMove(int x, int y)
 	if( !mbIgnoreSizing )
 	{
 		CRect rcThis = GetEffectiveWindowRect();
+		ToDIP( rcThis );
 		SetPosLeft( rcThis.left );
 		SetPosTop( rcThis.top );
 		mpControlPane->RecalcLayout();
@@ -271,6 +281,7 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	CPoint ptNew = point - mptDragStart;
 	ClientToScreen( &ptNew );
 	mpControlPane->GetHostDialog()->ScreenToClient( &ptNew );
+	ToDIP( ptNew );
 	CRect rcNew = ValidatePosition( CRect( ptNew, CSize( 0, 0 ) ) );
 	if( mbVertical )
 	{

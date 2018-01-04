@@ -136,7 +136,7 @@ void CArxTextBoxCtrl::OnKillFocus( CWnd* pFocus )
 
 void CArxTextBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMouseMove(nFlags, point);
 }
 

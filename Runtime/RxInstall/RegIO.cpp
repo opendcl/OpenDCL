@@ -1,6 +1,6 @@
 // RegIO.cpp : Registry access class implementation
 //
-// Copyright 2007 - 2014 ManuSoft. All Rights Reserved.
+// Copyright 2007 - 2018 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted

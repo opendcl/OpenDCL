@@ -92,10 +92,18 @@ BEGIN_MESSAGE_MAP(CSpinnerCtrl, CSpinButtonCtrl)
 	ON_NOTIFY_REFLECT(UDN_DELTAPOS, OnDeltapos)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CSpinnerCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CSpinnerCtrl message handlers
+
+LRESULT CSpinnerCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CSpinnerCtrl::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult) 
 {

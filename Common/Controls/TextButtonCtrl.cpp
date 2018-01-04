@@ -64,11 +64,18 @@ BEGIN_MESSAGE_MAP(CTextButtonCtrl, CButton)
 	ON_WM_KILLFOCUS()
 	ON_WM_NCPAINT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CTextButtonCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextButtonCtrl message handlers
+
+LRESULT CTextButtonCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CTextButtonCtrl::PreTranslateMessage(MSG* pMsg) 
 {

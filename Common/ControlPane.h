@@ -6,6 +6,7 @@
 #include "DialogControl.h"
 #include "Project.h"
 #include "DclFormTemplate.h"
+#include "DpiAwarenessAPI.h"
 #include <list>
 
 class CDialogObject;
@@ -16,7 +17,7 @@ enum Prop::Id;
 /////////////////////////////////////////////////////////////////////////////
 // CControlPane window
 
-class CControlPane
+class CControlPane : public DpiAwareness
 {
 public:
 	typedef std::list< TDialogControlPtr > TDialogControls;
@@ -31,6 +32,8 @@ protected:
 	bool mbRecalcInProgress;
 	TDclControlList mPendingRecalc;
 	bool mbDeferWindowPos;
+	mutable bool mbDpiChanged;
+	mutable UINT mnDPI;
 
 // Construction
 protected:
@@ -60,12 +63,14 @@ public:
 	void RemoveControl( CDialogControl* pDlgControl );
 	void RecalcControlPos( TDclControlPtr pControl );
 	void SetFirstControlFocus() const;
+	bool CheckDpiChanged();
 
 protected:
 	void InvalidateControls();
 	virtual void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
 	virtual void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
 	virtual bool IsInvisibleControlAllowed( TDialogControlPtr pDlgControl ) const { return true; }
+	virtual UINT GetDpi() const;
 
 // Implementation
 public:

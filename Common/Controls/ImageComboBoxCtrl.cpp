@@ -302,11 +302,18 @@ BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_MESSAGE(CB_SETITEMDATA, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CImageComboBoxCtrl::OnResetContent)
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CImageComboBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageComboBoxCtrl message handlers
+
+LRESULT CImageComboBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 LRESULT CImageComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {

@@ -206,12 +206,17 @@ void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 {
 	if( !mpDlgObject->IsResizable() )
-		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
-									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+	{
+		CSize sizeDefault( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
+											 mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+		mpDlgObject->FromDIP( sizeDefault );
+		return sizeDefault;
+	}
 #if (defined(_BRXTARGET) && _BRXTARGET <= 10)
 	CSize sizeDefault;
 	sizeDefault.cx = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width );
 	sizeDefault.cy = mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height );
+	mpDlgObject->FromDIP( sizeDefault );
 #else
 	CSize sizeDefault = __super::CalcFixedLayout( bStretch, bHorz );
 #endif

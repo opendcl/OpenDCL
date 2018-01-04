@@ -34,6 +34,7 @@ public:
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 	virtual bool OnApplyToolTip( TPropertyPtr pProp );
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Interface
@@ -63,4 +64,5 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

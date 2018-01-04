@@ -241,8 +241,8 @@ void CPaletteDlg::ApplyPosition()
 		return;
 	//if( !IsFloating() )
 	//	return;
-	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
-	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
+	long lWidth = FromDIP( mpTemplate->GetLongProperty( Prop::Width ) );
+	long lHeight = FromDIP( mpTemplate->GetLongProperty( Prop::Height ) );
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
 	pTopLevelWnd->SetWindowPos( NULL, 0, 0,
 															lWidth + GetNCWidth(),
@@ -348,11 +348,18 @@ BEGIN_MESSAGE_MAP(CPaletteDlg, CDialog)
 	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CPaletteDlg::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CPaletteDlg message handlers
+
+LRESULT CPaletteDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -367,8 +374,8 @@ int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
 									SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
-		mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
-		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
+		mpTemplate->SetLongProperty( Prop::Width, ToDIP( rcClient.Width() ) );
+		mpTemplate->SetLongProperty( Prop::Height, ToDIP( rcClient.Height() ) );
 	}
 	else
 	{
@@ -386,7 +393,7 @@ int CPaletteDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
 	GetArxServices()->HandleEvent( Prop::FormEventMove,
-																 args_NN( rcWindow.left, rcWindow.top ) );
+																 args_NN( ToDIP( rcWindow.left ), ToDIP( rcWindow.top ) ) );
 	GetArxServices()->HandleEvent( Prop::FormEventSize,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
@@ -423,7 +430,7 @@ void CPaletteDlg::OnMove(int x, int y)
 	__super::OnMove(x, y);
 	if( IsIgnoreSizing() )
 		return;
-	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( x, y ) );
+	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( ToDIP( x ), ToDIP( y ) ) );
 }
 
 void CPaletteDlg::OnSize(UINT nType, int cx, int cy)
@@ -431,8 +438,8 @@ void CPaletteDlg::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() || !IsResizable() )
 		return;
-	mpTemplate->SetLongProperty( Prop::Width, cx );
-	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpTemplate->SetLongProperty( Prop::Width, ToDIP( cx ) );
+	mpTemplate->SetLongProperty( Prop::Height, ToDIP( cy ) );
 	mpControlPane->RecalcLayout();
 	GetArxServices()->HandleEvent( Prop::FormEventSize,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
@@ -465,6 +472,7 @@ bool CPaletteDlg::OnClosing()
 		return true;
 	SetClosing();
 	CRect rcThis = GetEffectiveWindowRect();
+	ToDIP( rcThis.TopLeft() );
 	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
 	if( /*!mbHiding && */!IsFloating() )
 		mHostPaletteSet.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here

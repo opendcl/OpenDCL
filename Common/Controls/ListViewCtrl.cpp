@@ -98,6 +98,15 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+void CListViewCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::IconXSpacing ) );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::IconYSpacing ) );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::ColumnWidths ) );
+}
+
 bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -144,7 +153,7 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 					nImageListIconSizeX = pImageList->GetSize().cx;
 			}
 			CSize sizeIconSpacing( GetControlWnd()->SendMessage( LVM_GETITEMSPACING ) );
-			sizeIconSpacing.cx = pProp->GetLongValue() + nImageListIconSizeX;
+			sizeIconSpacing.cx = FromDIP( pProp->GetLongValue() ) + nImageListIconSizeX;
 			SetIconSpacing( sizeIconSpacing );
 			break;
 		}
@@ -160,7 +169,7 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 					nImageListIconSizeY = pImageList->GetSize().cy;
 			}
 			CSize sizeIconSpacing( GetControlWnd()->SendMessage( LVM_GETITEMSPACING ) );
-			sizeIconSpacing.cy = pProp->GetLongValue() + nImageListIconSizeY;
+			sizeIconSpacing.cy = FromDIP( pProp->GetLongValue() ) + nImageListIconSizeY;
 			SetIconSpacing( sizeIconSpacing );
 			break;
 		}
@@ -258,7 +267,7 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 			{
 				HDITEM hdi;
 				hdi.mask = HDI_WIDTH;
-				hdi.cxy = prInt->at(--idx);
+				hdi.cxy = FromDIP( prInt->at(--idx) );
 				if( !pHdrCtrl->SetItem( idx, &hdi ) )
 					bFailed = true;
 			}
@@ -747,12 +756,18 @@ BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_INSERTITEM, &CListViewCtrl::OnLvnInsertitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, &CListViewCtrl::OnLvnDeleteitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, &CListViewCtrl::OnLvnDeleteallitems)
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CListViewCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CListViewCtrl message handlers
 
+LRESULT CListViewCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CListViewCtrl::OnDestroy() 
 {

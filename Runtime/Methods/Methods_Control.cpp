@@ -438,6 +438,7 @@ ADSRESULT Control::GetPos()
 		return RSERR;
 
 	CRect rcControl = pDlgControl->GetEffectiveWindowRect();
+	pDlgControl->ToDIP( rcControl );
 
 	resbuf rbHeight = { NULL, RTSHORT };
 	rbHeight.resval.rint = rcControl.Height();
@@ -484,6 +485,8 @@ ADSRESULT Control::SetPos()
 			return RSRSLT;
 		if( lWidth >= 0 || lHeight >= 0 )
 		{
+			lWidth = pDlgControl->FromDIP( lWidth );
+			lHeight = pDlgControl->FromDIP( lHeight );
 			CRect rcDlg = pDlg->GetEffectiveWindowRect();
 			if( lWidth < 0 )
 				lWidth = rcDlg.Width();
@@ -563,6 +566,8 @@ ADSRESULT Control::ShowToolTip()
 		pCtrlWnd->GetWindowRect( &rcCtrl );
 		pt = rcCtrl.CenterPoint();
 	}
+	else
+		pDlgControl->FromDIP( pt );
 
 	PPTOOLTIP_INFO TI;
 	if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )

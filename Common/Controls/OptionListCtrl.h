@@ -35,6 +35,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyProperty( TPropertyPtr pProp );
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Operations
@@ -57,4 +58,5 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

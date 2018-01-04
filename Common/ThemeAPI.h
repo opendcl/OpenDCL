@@ -5,7 +5,7 @@
 // if they are available; else they return E_NOTIMPL or default value (e.g. when running on an 
 // earlier version of Windows).
 //
-// Copyright 2013 - 2014 ManuSoft. All Rights Reserved.
+// Copyright 2013 - 2018 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted

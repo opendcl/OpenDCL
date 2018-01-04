@@ -75,7 +75,6 @@ protected:
 	virtual bool SetKnob(const CPoint& pt);
 	virtual void PostMessageToParent(const int nTBCode) const;
 
-	//{{AFX_MSG(CRoundSliderCtrl)
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
@@ -85,7 +84,7 @@ protected:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg LRESULT OnSetFont(WPARAM wParam, LPARAM lParam);
-	//}}AFX_MSG
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 
 	DECLARE_MESSAGE_MAP()
 

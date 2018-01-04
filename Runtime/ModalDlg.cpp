@@ -95,7 +95,7 @@ void CModalDlg::OnMove(int x, int y)
 	__super::OnMove(x, y);
 	if( IsIgnoreSizing() || !IsWindowVisible() )
 		return;
-	GetArxServices()->HandleEvent( Prop::FormEventMove, false, args_NN( x, y ) );
+	GetArxServices()->HandleEvent( Prop::FormEventMove, false, args_NN( ToDIP( x ), ToDIP( y ) ) );
 }
 
 void CModalDlg::OnSize(UINT nType, int cx, int cy)

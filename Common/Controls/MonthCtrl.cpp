@@ -84,11 +84,18 @@ bool CMonthCtrl::ApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CMonthCtrl, CMonthCalCtrl)
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CMonthCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CMonthCtrl message handlers
+
+LRESULT CMonthCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CMonthCtrl::PostNcDestroy() 
 {

@@ -1,6 +1,6 @@
 // RxInstall.cpp : Install-time AutoCAD ObjectARX module demand-load setup
 //
-// Copyright 2007 - 2017 ManuSoft. All Rights Reserved.
+// Copyright 2007 - 2018 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -949,7 +949,7 @@ void UninstallAllTargets( HKEY hkRoot )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R20.0"), hkRoot );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R20.1"), hkRoot );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R21.0"), hkRoot );
-	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R21.1"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R22.0"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), hkRoot );
@@ -980,7 +980,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R20.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R20.1"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R21.0"), hkRoot, true );
-		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R21.1"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R22.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );

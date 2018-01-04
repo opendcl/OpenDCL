@@ -58,7 +58,7 @@ protected:
 protected:
 friend class CMainFileDlg;
 	void SavePosition();
-	CRect ReadPosition() const;
+	void ReadPosition(POINT& ptTopLeft, SIZE& size) const;
 	void OnInitializationComplete();
 
 // CDialogObject overrides
@@ -98,4 +98,5 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

@@ -70,11 +70,18 @@ BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_LBUTTONDOWN()
 	ON_CONTROL_REFLECT(BN_CLICKED, &CCheckBoxCtrl::OnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CCheckBoxCtrl::OnDoubleclicked)
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CCheckBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CCheckBoxCtrl message handlers
+
+LRESULT CCheckBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CCheckBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {

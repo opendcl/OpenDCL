@@ -5,6 +5,7 @@
 #include "FontCollection.h"
 #include "DclControlTemplate.h"
 #include "PropertyIds.h"
+#include "DialogObject.h"
 
 
 CFontCollection::CFontCollection()
@@ -21,7 +22,7 @@ CFontCollection::~CFontCollection()
 	}
 }
 
-CFont* CFontCollection::GetFont(TDclControlPtr pControl, CWnd *pWnd)
+CFont* CFontCollection::GetFont(TDclControlPtr pControl, CControlPane *pWnd)
 {
 	if (pControl->GetPropertyObject(Prop::FontName) == NULL)
 		return NULL;
@@ -32,17 +33,18 @@ CFont* CFontCollection::GetFont(TDclControlPtr pControl, CWnd *pWnd)
 	stTargetFont.lfWeight = (pControl->GetBooleanProperty(Prop::FontBold)? FW_BOLD : FW_NORMAL);
 	stTargetFont.lfItalic = pControl->GetBooleanProperty(Prop::FontItalic);
 	stTargetFont.lfUnderline = pControl->GetBooleanProperty(Prop::FontUnderline);
-	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::FontStrikeout);
+	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::FontStrikeout);if (pWnd)
 	if( nFontSize > 0 )
 	{ //calculate point size
-		HWND hwndControl = (pWnd? pWnd->m_hWnd : ::GetDesktopWindow());
+		HWND hwndControl = (pWnd? pWnd->GetHostDialog()->m_hWnd : ::GetDesktopWindow());
 		HDC hDC = ::GetDC( hwndControl );
 		int nPixelsY = GetDeviceCaps( hDC, LOGPIXELSY );
 		::ReleaseDC( hwndControl, hDC );
-		stTargetFont.lfHeight = -::MulDiv( nFontSize,	nPixelsY, 72 );
+		stTargetFont.lfHeight = -::MulDiv( nFontSize, nPixelsY, 72 );
 	}
 	else
-		stTargetFont.lfHeight = nFontSize;
+		stTargetFont.lfHeight = (pWnd? pWnd->GetDialogObject()->FromDIP( nFontSize ) : nFontSize);
+	TraceFmt( _T("CFontCollection::GetFont(%s) => (%s/%d)\r\n"), asString( pControl ), stTargetFont.lfFaceName, stTargetFont.lfHeight );
 
 	POSITION pos = mFonts.GetHeadPosition();
 	while( pos )

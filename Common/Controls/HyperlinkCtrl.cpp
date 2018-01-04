@@ -75,11 +75,18 @@ BEGIN_MESSAGE_MAP(CHyperlinkCtrl, CWnd)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_MESSAGE(WM_SETFONT, &CHyperlinkCtrl::OnSetFont)
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CHyperlinkCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CHyperlinkCtrl message handlers
+
+LRESULT CHyperlinkCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CHyperlinkCtrl::PreTranslateMessage(MSG* pMsg)
 {

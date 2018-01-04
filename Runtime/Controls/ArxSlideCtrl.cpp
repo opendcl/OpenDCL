@@ -69,5 +69,5 @@ void CArxSlideCtrl::OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxSlideCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove(nFlags, point);
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }

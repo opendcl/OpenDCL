@@ -84,6 +84,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 	virtual bool OnApplyForegroundColor( TPropertyPtr pProp );
@@ -125,4 +126,5 @@ protected:
 	afx_msg void OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteallitems(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

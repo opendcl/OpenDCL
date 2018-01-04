@@ -96,7 +96,8 @@ HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 						pDC->SetBkMode( TRANSPARENT );
 					int nDCInfo = pDC->SaveDC();
 					HBRUSH hbrBackground = (HBRUSH)pHostDlg->GetControlWnd()->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pHostDlg->GetControlWnd()->m_hWnd );
-					pDC->RestoreDC(nDCInfo);
+					if (nDCInfo != 0 )
+						pDC->RestoreDC(nDCInfo);
 					if( hbrBackground )
 						return hbrBackground;
 				}
@@ -316,6 +317,73 @@ CRect CDialogControl::GetEffectiveClientRect() const
 		pWndChildOfHost->GetClientRect( &rcClient );
 	}
 	return rcClient;
+}
+
+void CDialogControl::HandleDpiChanged()
+{
+	OnApplyFont( mpTemplate->GetPropertyObject( Prop::FontSize ) );
+}
+
+long CDialogControl::FromDIP( long nDIP ) const
+{
+	mpControlPane->FromDIP( &nDIP, 1 );
+	return nDIP;
+}
+
+long CDialogControl::ToDIP( long nDDP ) const
+{
+	mpControlPane->ToDIP( &nDDP, 1 );
+	return nDDP;
+}
+
+POINT& CDialogControl::FromDIP( POINT& pt ) const
+{
+	mpControlPane->FromDIP( &pt.x, 2 );
+	return pt;
+}
+
+POINT& CDialogControl::ToDIP( POINT& pt ) const
+{
+	mpControlPane->ToDIP( &pt.x, 2 );
+	return pt;
+}
+
+SIZE& CDialogControl::FromDIP( SIZE& size ) const
+{
+	mpControlPane->FromDIP( &size.cx, 2 );
+	return size;
+}
+
+SIZE& CDialogControl::ToDIP( SIZE& size ) const
+{
+	mpControlPane->ToDIP( &size.cx, 2 );
+	return size;
+}
+
+RECT& CDialogControl::FromDIP( RECT& rect ) const
+{
+	mpControlPane->FromDIP( &rect.left, 4 );
+	return rect;
+}
+
+RECT& CDialogControl::ToDIP( RECT& rect ) const
+{
+	mpControlPane->ToDIP( &rect.left, 4 );
+	return rect;
+}
+
+POINT& CDialogControl::FromPhysical( POINT& point ) const
+{
+	HWND hwnd = GetHWnd();
+	DpiAwarenessHelper::PhysicalToLogicalPoint( hwnd, &point );
+	return point;
+}
+
+POINT& CDialogControl::ToPhysical( POINT& point ) const
+{
+	HWND hwnd = GetHWnd();
+	DpiAwarenessHelper::LogicalToPhysicalPoint( hwnd, &point );
+	return point;
 }
 
 void CDialogControl::SetPosLeft( long lNewLeft )
@@ -789,7 +857,7 @@ bool CDialogControl::OnApplyToolTip( TPropertyPtr pProp )
 
 bool CDialogControl::OnApplyFont( TPropertyPtr pProp )
 {
-	mpControlWnd->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControlWnd ) );
+	mpControlWnd->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControlPane ) );
 	OnNeedRepaint();
 	return true;
 }

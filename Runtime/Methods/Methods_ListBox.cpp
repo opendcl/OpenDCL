@@ -506,7 +506,7 @@ ADSRESULT ListBox::HitPointTest()
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
 	BOOL bOutside;
-	UINT nItem = pCtrl->ItemFromPoint( CPoint( nX, nY ), bOutside );
+	UINT nItem = pCtrl->ItemFromPoint( pDlgControl->FromDIP( CPoint( nX, nY ) ), bOutside );
 	acedRetInt( (int)nItem );
 	return RSRSLT;
 }

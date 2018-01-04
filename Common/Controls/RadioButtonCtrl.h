@@ -41,4 +41,5 @@ protected:
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

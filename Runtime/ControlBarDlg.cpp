@@ -81,12 +81,12 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 		break;
 	case 3:
 		// set the form to only dock on the top or bottom sides
-		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
+		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
 		break;
 	case 4:
 		// set the form to only dock on the any side
-		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
+		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
 		break;
 	case 5:
@@ -232,8 +232,8 @@ void CControlBarDlg::ApplyPosition()
 		return;
 	//if( !IsFloating() )
 	//	return;
-	long lWidth = mpTemplate->GetLongProperty(Prop::Width);
-	long lHeight = mpTemplate->GetLongProperty(Prop::Height);
+	long lWidth = FromDIP( mpTemplate->GetLongProperty( Prop::Width ) );
+	long lHeight = FromDIP( mpTemplate->GetLongProperty( Prop::Height ) );
 	CWnd* pTopLevelWnd = GetTopLevelWnd();
 	//TODO: in Bricscad, the top level window refuses to resize because CalcDynamicLayout
 	//gets called when it shouldn't, and overrides the desired size
@@ -295,11 +295,18 @@ BEGIN_MESSAGE_MAP(CControlBarDlg, CDialog)
 	ON_WM_MOVE()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CControlBarDlg::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CControlBarDlg message handlers
+
+LRESULT CControlBarDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
@@ -325,8 +332,8 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
 									SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
-		mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
-		mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
+		mpTemplate->SetLongProperty( Prop::Width, ToDIP( rcClient.Width() ) );
+		mpTemplate->SetLongProperty( Prop::Height, ToDIP( rcClient.Height() ) );
 	}
 	else
 		IgnoreSizing( false );
@@ -339,7 +346,7 @@ int CControlBarDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );	
 	GetArxServices()->HandleEvent( Prop::FormEventMove,
-																 args_NN( rcWindow.left, rcWindow.top ) );
+																 args_NN( ToDIP( rcWindow.left ), ToDIP( rcWindow.top ) ) );
 	GetArxServices()->HandleEvent( Prop::FormEventSize,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
@@ -366,7 +373,7 @@ void CControlBarDlg::OnMove(int x, int y)
 	__super::OnMove(x, y);
 	if( IsIgnoreSizing() )
 		return;
-	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( x, y ) );
+	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( ToDIP( x ), ToDIP( y ) ) );
 }
 
 void CControlBarDlg::OnSize(UINT nType, int cx, int cy) 
@@ -374,8 +381,8 @@ void CControlBarDlg::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	if( IsIgnoreSizing() || !IsResizable() )
 		return;
-	mpTemplate->SetLongProperty( Prop::Width, cx );
-	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpTemplate->SetLongProperty( Prop::Width, ToDIP( cx ) );
+	mpTemplate->SetLongProperty( Prop::Height, ToDIP( cy ) );
 	mpControlPane->RecalcLayout();
 	GetArxServices()->HandleEvent( Prop::FormEventSize,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
@@ -417,7 +424,7 @@ bool CControlBarDlg::OnClosing()
 		return true;
 	SetClosing();
 	CRect rcThis = GetEffectiveWindowRect();
-	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
+	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( ToDIP( rcThis.left ), ToDIP( rcThis.top ) ) );
 	if( !mbHiding && !IsFloating() )
 		mHostControlBar.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

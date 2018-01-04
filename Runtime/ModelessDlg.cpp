@@ -131,7 +131,7 @@ void CModelessDlg::OnMove(int x, int y)
 	__super::OnMove(x, y);
 	if( IsIgnoreSizing() || !IsWindowVisible() )
 		return;
-	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( x, y ) );
+	GetArxServices()->HandleEvent( Prop::FormEventMove, args_NN( ToDIP( x ), ToDIP( y ) ) );
 }
 
 void CModelessDlg::OnSize(UINT nType, int cx, int cy) 

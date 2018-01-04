@@ -428,16 +428,16 @@ void CArxAcadSlideCtrl::OnPaint()
 
 void CArxAcadSlideCtrl::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	GetArxServices()->HandleEvent( Prop::EventRightDblClick );
 	CWnd::OnRButtonDblClk(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	GetArxServices()->HandleEvent( Prop::EventRightClick );	
-	GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	CWnd::OnRButtonUp(nFlags, point);
 }
 
@@ -522,36 +522,36 @@ void CArxAcadSlideCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		GetArxServices()->HandleEvent( Prop::EventClicked );	
 		return;
 	}
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonDown(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonUp(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxAcadSlideCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventMMouse, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonUp(nFlags, point);
 }
 
@@ -566,19 +566,19 @@ void CArxAcadSlideCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		if( _TrackMouseEvent( &tm ) )
 			mbTrackingMouse = true;
 	}
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 BOOL CArxAcadSlideCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseWheel, args_NNNN( nFlags, zDelta, pt.x, pt.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseWheel, args_NNNN( nFlags, zDelta, ToDIP( pt.x ), ToDIP( pt.y ) ) );
 	return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CArxAcadSlideCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventRMouse, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonDown(nFlags, point);
 }
 
@@ -603,8 +603,8 @@ LRESULT CArxAcadSlideCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 
 void CArxAcadSlideCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) );
-	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventLMouse, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnLButtonDblClk(nFlags, point);
 }
 

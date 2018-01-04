@@ -25,6 +25,7 @@ CArxControlPane::CArxControlPane( TDclFormPtr pSourceForm, CWnd* pHostDlg )
 						(LPCTSTR)pSourceForm->GetKeyPath(), (CDclFormObject*)pSourceForm,
 						(LPCTSTR)CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
 						pHostDlg->m_hWnd, this );
+	mnDPI = (int)GetDpiForWindow( adsw_acadMainWnd() );
 }
 
 CArxControlPane::~CArxControlPane()

@@ -610,6 +610,9 @@
     <ClCompile Include="..\..\Common\Controls\ListCtrlHdr.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Common\DpiAwarenessAPI.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\ARX.rc">
@@ -1354,6 +1357,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Common\Controls\ListCtrlHdr.h">
       <Filter>Common\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\DpiAwarenessAPI.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

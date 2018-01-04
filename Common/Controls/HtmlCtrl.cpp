@@ -86,11 +86,18 @@ bool CHtmlCtrl::ApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CHtmlCtrl, CHtmlBrowser)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CHtmlCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CHtmlCtrl message handlers
+
+LRESULT CHtmlCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 HRESULT CHtmlCtrl::OnGetHostInfo(DOCHOSTUIINFO *pInfo)
 {

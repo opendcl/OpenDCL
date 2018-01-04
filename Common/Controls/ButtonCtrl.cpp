@@ -161,11 +161,18 @@ void CButtonCtrl::SetResourceIcon(UINT idIcon)
 BEGIN_MESSAGE_MAP(CButtonCtrl, CXPStyleButtonST)
 	ON_WM_KILLFOCUS()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CButtonCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxCtrl message handlers
+
+LRESULT CButtonCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CButtonCtrl::PreSubclassWindow() 
 {

@@ -50,11 +50,18 @@ bool CRectangleCtrl::ApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CRectangleCtrl, CStatic)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CRectangleCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CRectangleCtrl message handlers
+
+LRESULT CRectangleCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CRectangleCtrl::PreTranslateMessage(MSG* pMsg) 
 {

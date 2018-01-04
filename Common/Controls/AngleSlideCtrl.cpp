@@ -64,10 +64,17 @@ BEGIN_MESSAGE_MAP(CAngleSlideCtrl, CRoundSliderCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CAngleSlideCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CAngleSlideCtrl message handlers
+
+LRESULT CAngleSlideCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CAngleSlideCtrl::HScroll(UINT nSBCode, UINT nPos)
 {

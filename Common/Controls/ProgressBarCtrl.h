@@ -51,4 +51,5 @@ protected:
 	afx_msg void OnPaint();
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

@@ -88,6 +88,12 @@ bool COptionListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+void COptionListCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
+}
+
 bool COptionListCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -98,7 +104,7 @@ bool COptionListCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::RowHeight:
 		{
 			long nNewHeight = pProp->GetLongValue();
-			mnRowHeight = nNewHeight > 0? nNewHeight : 20;
+			mnRowHeight = FromDIP( nNewHeight > 0? nNewHeight : 20 );
 			SetItemHeight( 0, mnRowHeight );
 			break;
 		}
@@ -174,11 +180,18 @@ BEGIN_MESSAGE_MAP(COptionListCtrl, CListBox)
 	ON_WM_ERASEBKGND()
 	ON_WM_DRAWITEM_REFLECT()
 	ON_WM_NCHITTEST()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &COptionListCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // COptionListCtrl message handlers
+
+LRESULT COptionListCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 LRESULT COptionListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {

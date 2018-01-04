@@ -47,11 +47,18 @@ BEGIN_MESSAGE_MAP(CFrameCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CFrameCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CFrameCtrl message handlers
+
+LRESULT CFrameCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CFrameCtrl::PreTranslateMessage(MSG* pMsg) 
 {

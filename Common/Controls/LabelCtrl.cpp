@@ -90,11 +90,18 @@ bool CLabelCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CLabelCtrl, CStatic)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CLabelCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CLabelCtrl message handlers
+
+LRESULT CLabelCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CLabelCtrl::PreTranslateMessage(MSG* pMsg) 
 {

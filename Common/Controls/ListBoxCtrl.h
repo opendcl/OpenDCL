@@ -29,6 +29,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual bool ApplyPropertiesEnum();
 	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
 	virtual bool ApplyProperty( TPropertyPtr pProp );
@@ -55,4 +56,5 @@ protected:
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnCbnSelchange();
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

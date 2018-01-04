@@ -46,7 +46,7 @@ public:
 
 protected:
 	void SavePosition();
-	CRect ReadPosition() const;
+	void ReadPosition(POINT& ptTopLeft, SIZE& size) const;
 	void UpdateGripPos();
 
 protected:
@@ -65,4 +65,5 @@ protected:
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

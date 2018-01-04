@@ -39,4 +39,5 @@ protected:
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnNMThemeChanged(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

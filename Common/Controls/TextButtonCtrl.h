@@ -28,6 +28,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	virtual void HandleDpiChanged() { __super::HandleDpiChanged(); }
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -41,4 +42,5 @@ protected:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnNcPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

@@ -62,6 +62,12 @@ DWORD CListBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CListBoxCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::ColumnWidth ) );
+}
+
 bool CListBoxCtrl::ApplyPropertiesEnum()
 {
 	bool bSuccess = __super::ApplyPropertiesEnum();
@@ -107,7 +113,7 @@ bool CListBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 			long lWidth = pProp->GetLongValue();
 			if( lWidth <= 0 )
 				lWidth = 1;
-			SetColumnWidth( lWidth );
+			SetColumnWidth( FromDIP( lWidth ) );
 		}
 		break;
 	case Prop::DisableNoScroll:
@@ -369,10 +375,18 @@ BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_MESSAGE(LB_ADDFILE, &CListBoxCtrl::OnModifyContent)
 	ON_MESSAGE(LB_SETITEMDATA, &CListBoxCtrl::OnModifyContent)
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CListBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CListBoxCtrl message handlers
+
+LRESULT CListBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CListBoxCtrl::PostNcDestroy() 
 {

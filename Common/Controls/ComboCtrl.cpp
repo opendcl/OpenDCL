@@ -48,7 +48,7 @@ void CComboCtrl::GetRawWindowText( CString& sText )
 BEGIN_MESSAGE_MAP(CComboCtrl, _TComboBase)
 	ON_WM_KILLFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_CONTROL_REFLECT(CBN_EDITCHANGE, OnEditchange)
+	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CComboCtrl::OnEditchange)
 END_MESSAGE_MAP()
 
 

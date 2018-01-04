@@ -42,4 +42,5 @@ protected:
 	afx_msg void OnClicked();
 	afx_msg void OnDoubleclicked();
 	afx_msg void OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

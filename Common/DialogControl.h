@@ -22,7 +22,6 @@ class CControlManager;
 enum Prop::Id;
 enum ControlType;
 
-
 struct ControlParams
 {
 };
@@ -93,7 +92,6 @@ typedef RefCountedPtr< class CDialogControl > TDialogControlPtr;
 typedef LockedPtr< class CDialogControl > TDialogControlLockedPtr;
 
 
-
 class CDialogControl
 {
 protected:
@@ -134,6 +132,19 @@ public:
 	virtual bool Focus();
 	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates
 	virtual CRect GetEffectiveClientRect() const; //return control's client rect
+
+	// Automatic DPI scaling
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
+	long FromDIP( long nDIP ) const;
+	long ToDIP( long nDDP ) const;
+	POINT& FromDIP( POINT& pt ) const;
+	POINT& ToDIP( POINT& pt ) const;
+	SIZE& FromDIP( SIZE& size ) const;
+	SIZE& ToDIP( SIZE& size ) const;
+	RECT& FromDIP( RECT& rect ) const;
+	RECT& ToDIP( RECT& rect ) const;
+	POINT& FromPhysical( POINT& point ) const;
+	POINT& ToPhysical( POINT& point ) const;
 
 	// Set position property and sync related properties
 	virtual void SetPosLeft( long lNewLeft );

@@ -70,11 +70,18 @@ BEGIN_MESSAGE_MAP(CRadioButtonCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_REFLECT(BCN_HOTITEMCHANGE, &CRadioButtonCtrl::OnBnHotItemChange)
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CRadioButtonCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CRadioButtonCtrl message handlers
+
+LRESULT CRadioButtonCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 LRESULT CRadioButtonCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {

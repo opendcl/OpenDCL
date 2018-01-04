@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "OpenDCL ARX Interface"
             VALUE "FileVersion", "8, 2, 2, 1"
             VALUE "InternalName", "OpenDCL.Runtime"
-            VALUE "LegalCopyright", "Copyright © 2017 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalCopyright", "Copyright © 2018 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.*.arx"
             VALUE "ProductName", "OpenDCL Runtime"

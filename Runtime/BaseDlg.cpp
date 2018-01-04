@@ -41,26 +41,24 @@ void CBaseDlg::SavePosition()
 {
 	if( !IsWindow( m_hWnd ) )
 		return;
+	CRect rcWnd;
+	GetWindowRect( &rcWnd );
 	CWinApp* pApp = AfxGetApp();
-	CRect rcThis;
-	GetWindowRect( &rcThis );
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath(); 
-	pApp->WriteProfileInt( sProfileName, _T("Width"), rcThis.Width() );
-	pApp->WriteProfileInt( sProfileName, _T("Height"), rcThis.Height() );
-	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcThis.left );
-	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcThis.top );
+	pApp->WriteProfileInt( sProfileName, _T("Width"), mpTemplate->GetLongProperty( Prop::Width ) );
+	pApp->WriteProfileInt( sProfileName, _T("Height"), mpTemplate->GetLongProperty( Prop::Height ) );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcWnd.left );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcWnd.top );
 }
 
-CRect CBaseDlg::ReadPosition() const
+void CBaseDlg::ReadPosition(POINT& ptTopLeft, SIZE& size) const
 {	
-	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
-	rcRet.left = pApp->GetProfileInt( sProfileName, _T("TopLeftX"), -5000 );
-	rcRet.top = pApp->GetProfileInt( sProfileName, _T("TopLeftY"), -5000 );
-	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, _T("Width"), -5000 );
-	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, _T("Height"), -5000 );
-	return rcRet;
+	ptTopLeft.x = pApp->GetProfileInt( sProfileName, _T("TopLeftX"), INT_MIN );
+	ptTopLeft.y = pApp->GetProfileInt( sProfileName, _T("TopLeftY"), INT_MIN );
+	size.cx = pApp->GetProfileInt( sProfileName, _T("Width"), -1 );
+	size.cy = pApp->GetProfileInt( sProfileName, _T("Height"), -1 );
 }
 
 void CBaseDlg::UpdateGripPos()
@@ -95,15 +93,24 @@ BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_TIMER()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CBaseDlg::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CBaseDlg message handlers
 
+LRESULT CBaseDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
+
 BOOL CBaseDlg::OnInitDialog()
 {
-	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
+	CPoint ptSaved( INT_MIN, INT_MIN );
+	CSize sizeSaved( -1, -1 );
+	ReadPosition(ptSaved, sizeSaved); //get the saved position before it gets overwritten during SetWindowPos()
 	ApplyProperty( mpTemplate->GetPropertyObject( Prop::AllowResizing ) );
 	ApplyProperty( mpTemplate->GetPropertyObject( Prop::TitleBar ) );
 
@@ -111,8 +118,8 @@ BOOL CBaseDlg::OnInitDialog()
 
 	CRect rectWindow;
 	GetWindowRect( &rectWindow );
-	rectWindow.right = rectWindow.left + mpTemplate->GetLongProperty( Prop::Width ) + GetNCWidth();
-	rectWindow.bottom = rectWindow.top + mpTemplate->GetLongProperty( Prop::Height ) + GetNCHeight();
+	rectWindow.right = rectWindow.left + FromDIP( mpTemplate->GetLongProperty( Prop::Width ) ) + GetNCWidth();
+	rectWindow.bottom = rectWindow.top + FromDIP( mpTemplate->GetLongProperty( Prop::Height ) ) + GetNCHeight();
 
 	CRect rcDesktop;
 	GetDesktopWindow()->GetClientRect( &rcDesktop );
@@ -129,33 +136,34 @@ BOOL CBaseDlg::OnInitDialog()
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
 	if( mptInitial.x > INT_MIN )
-		rectWindow.MoveToX( mptInitial.x );
-	else if( rectSaved.left >= rcDesktop.left - 10 && rectSaved.left < rcDesktop.right - 10 )
-		rectWindow.MoveToX( rectSaved.left );
+		rectWindow.MoveToX( FromDIP( mptInitial.x ) );
+	else if( ptSaved.x >= rcDesktop.left - 10 && ptSaved.x < rcDesktop.right - 10 )
+		rectWindow.MoveToX( ptSaved.x );
 	else
 		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
 	if( mptInitial.y > INT_MIN )
-		rectWindow.MoveToY( mptInitial.y );
-	else if( rectSaved.top >= rcDesktop.top - 10 && rectSaved.top < rcDesktop.right - 10 )
-		rectWindow.MoveToY( rectSaved.top );
+		rectWindow.MoveToY( FromDIP( mptInitial.y ) );
+	else if( ptSaved.y >= rcDesktop.top - 10 && ptSaved.y < rcDesktop.right - 10 )
+		rectWindow.MoveToY( ptSaved.y );
 	else
 		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
 	if( IsResizable() )
 	{
 		if( msizeInitial.cx > 0 )
-			rectWindow.right = rectWindow.left + msizeInitial.cx;
-		else if( rectSaved.right > rectSaved.left )
-			rectWindow.right = rectWindow.left + rectSaved.Width();
+			rectWindow.right = rectWindow.left + FromDIP( msizeInitial.cy ) + GetNCWidth();
+		else if( sizeSaved.cx > 0 )
+			rectWindow.right = rectWindow.left + FromDIP( sizeSaved.cx ) + GetNCWidth();
 		if( msizeInitial.cy > 0 )
-			rectWindow.bottom = rectWindow.top + msizeInitial.cy;
-		else if( rectSaved.bottom > rectSaved.top )
-			rectWindow.bottom = rectWindow.top + rectSaved.Height();
+			rectWindow.bottom = rectWindow.top + FromDIP( msizeInitial.cy ) + GetNCHeight();
+		else if( sizeSaved.cy > 0 )
+			rectWindow.bottom = rectWindow.top + FromDIP( sizeSaved.cy ) + GetNCHeight();
 	}
+	mpTemplate->SetLongProperty( Prop::Width, ToDIP( rectWindow.Width() - GetNCWidth() ) );
+	mpTemplate->SetLongProperty( Prop::Height, ToDIP( rectWindow.Height() - GetNCHeight() ) );
 	if( GetStyle() & WS_CHILD )
 		GetParent()->ScreenToClient( &rectWindow );
 	MoveWindow( &rectWindow, FALSE );
-	mpTemplate->SetLongProperty( Prop::Width, rectWindow.Width() - GetNCWidth() );
-	mpTemplate->SetLongProperty( Prop::Height, rectWindow.Height() - GetNCHeight() );
+	mpControlPane->CheckDpiChanged();
 	ApplyPropertiesEnum();
 	IgnoreSizing( false );
 
@@ -165,7 +173,7 @@ BOOL CBaseDlg::OnInitDialog()
 
 	GetArxServices()->HandleEvent( Prop::FormEventInitialize, false );
 	GetArxServices()->HandleEvent( Prop::FormEventMove, false,
-																 args_NN( rectWindow.left, rectWindow.top ) );
+																 args_NN( ToDIP( rectWindow.left ), ToDIP( rectWindow.top ) ) );
 	GetArxServices()->HandleEvent( Prop::FormEventSize, false,
 																 args_NN( mpTemplate->GetLongProperty( Prop::Width ),
 																					mpTemplate->GetLongProperty( Prop::Height ) ) );
@@ -198,7 +206,7 @@ void CBaseDlg::OnDestroy()
 	SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
+	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( ToDIP( rcThis.left ), ToDIP( rcThis.top ) ) );
 	DestroyIcon( SetIcon(NULL, FALSE) );
 	GetControlPane()->CleanUpControls();	
 	__super::OnDestroy();
@@ -267,8 +275,8 @@ void CBaseDlg::OnSize(UINT nType, int cx, int cy)
 	UpdateGripPos();
 	if( IsIgnoreSizing() )
 		return;
-	mpTemplate->SetLongProperty( Prop::Width, cx );
-	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpTemplate->SetLongProperty( Prop::Width, ToDIP( cx ) );
+	mpTemplate->SetLongProperty( Prop::Height, ToDIP( cy ) );
 	mpControlPane->RecalcLayout();
 	//RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
@@ -300,7 +308,11 @@ void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 	if( IsIgnoreSizing() )
 		return;
 	if( ((lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE)) != (SWP_NOSIZE | SWP_NOMOVE)) )
+	{
+		if( (lpwndpos->flags & SWP_NOMOVE) == 0 )
+			HandleDpiChanged();
 		SavePosition();
+	}
 }
 
 BOOL CBaseDlg::OnEraseBkgnd(CDC* pDC)

@@ -76,6 +76,12 @@ DWORD CArxDwgListCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CArxDwgListCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
+}
+
 bool CArxDwgListCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -85,7 +91,7 @@ bool CArxDwgListCtrl::ApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::RowHeight:
 		{
-			mnRowHeight = pProp->GetLongValue();
+			mnRowHeight = FromDIP( pProp->GetLongValue() );
 			OnNeedRepaint( true );
 			break;
 		}
@@ -319,7 +325,7 @@ void CArxDwgListCtrl::OnSetFocus(CWnd* pOldWnd)
 
 void CArxDwgListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMouseMove(nFlags, point);
 }
 

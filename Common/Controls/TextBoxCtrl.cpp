@@ -56,6 +56,12 @@ DWORD CTextBoxCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CTextBoxCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::MarginLeft ) );
+}
+
 bool CTextBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -111,13 +117,13 @@ bool CTextBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 		}
 	case Prop::MarginLeft:
 		{
-			SetMargins( pProp->GetLongValue(), mpTemplate->GetLongProperty( Prop::MarginRight ) );
+			SetMargins( FromDIP( pProp->GetLongValue() ), FromDIP( mpTemplate->GetLongProperty( Prop::MarginRight ) ) );
 			break;
 		}
 	case Prop::MarginRight:
 		{
 			if( !IsEnumeratingProperties() )
-				SetMargins( mpTemplate->GetLongProperty( Prop::MarginLeft ), pProp->GetLongValue() );
+				SetMargins( FromDIP( mpTemplate->GetLongProperty( Prop::MarginLeft ) ), FromDIP( pProp->GetLongValue() ) );
 			break;
 		}
 	case Prop::ReadOnly:
@@ -221,11 +227,18 @@ BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CTextBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxCtrl message handlers
+
+LRESULT CTextBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CTextBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {

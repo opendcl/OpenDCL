@@ -383,11 +383,18 @@ BEGIN_MESSAGE_MAP(CImageTreeCtrl, CTreeCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_GETDLGCODE()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CImageTreeCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageTreeCtrl message handlers
+
+LRESULT CImageTreeCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CImageTreeCtrl::PreTranslateMessage(MSG* pMsg) 
 {

@@ -336,7 +336,7 @@ void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	mLBState = down;
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	if( !GetGsView() )
 		return;
 	
@@ -360,25 +360,25 @@ void CArxGsViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		GetArxServices()->HandleEvent( Prop::EventClicked );	
 	mLBState = up;
 	OnNeedRepaint( false );
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 void CArxGsViewCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
 	__super::OnMButtonDown( nFlags, point );
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 void CArxGsViewCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	__super::OnMButtonUp( nFlags, point );
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 void CArxGsViewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove( nFlags, point );
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 __UINT_LRESULT CArxGsViewCtrl::OnNcHitTest(CPoint point) 
@@ -404,14 +404,14 @@ void CArxGsViewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDblClk(nFlags, point);
 	mLBState = dblclk;
-	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 void CArxGsViewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
 	__super::OnRButtonDblClk(nFlags, point);
 	mRBState = dblclk;
-	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 }
 
 void CArxGsViewCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
@@ -421,7 +421,7 @@ void CArxGsViewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	else if( mRBState == down )
 		GetArxServices()->HandleEvent( Prop::EventRightClick );	
 	mRBState = up;
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonUp(nFlags, point);
 }
 
@@ -445,13 +445,13 @@ BOOL CArxGsViewCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CArxGsViewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDblClick, args_NNNN( 4, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CArxGsViewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	mRBState = down;
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnRButtonDown(nFlags, point);
 }

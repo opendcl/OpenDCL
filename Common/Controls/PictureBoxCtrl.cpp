@@ -324,11 +324,18 @@ BEGIN_MESSAGE_MAP(CPictureBoxCtrl, CPictureBox)
 	ON_WM_NCHITTEST()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CPictureBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CPictureBoxCtrl message handlers
+
+LRESULT CPictureBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 void CPictureBoxCtrl::PostNcDestroy() 
 {

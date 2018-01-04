@@ -196,11 +196,18 @@ BEGIN_MESSAGE_MAP(CProgressBarCtrl, CProgressCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CProgressBarCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CProgressBarCtrl message handlers
+
+LRESULT CProgressBarCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CProgressBarCtrl::PreTranslateMessage(MSG* pMsg) 
 {

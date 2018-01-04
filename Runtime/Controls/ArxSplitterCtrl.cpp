@@ -38,17 +38,19 @@ bool CArxSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 void CArxSplitterCtrl::SavePosition() const
 {
-	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpTemplate->GetKeyPath(); 
 	CRect rectCurrent;
 	GetWindowRect( &rectCurrent );
 	GetParent()->ScreenToClient( &rectCurrent );
-	AfxGetApp()->WriteProfileInt( sProfileName, _T("Position"), IsVertical()? rectCurrent.left : rectCurrent.top );
+	CWinApp* pApp = AfxGetApp();
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpTemplate->GetKeyPath(); 
+	pApp->WriteProfileInt( sProfileName, _T("Position"), mpTemplate->GetLongProperty( IsVertical()? Prop::Left : Prop::Top ) );
 }
 
 bool CArxSplitterCtrl::ReadPosition()
 {	
+	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpTemplate->GetKeyPath(); 
-	long lPos = AfxGetApp()->GetProfileInt( sProfileName, _T("Position"), -1 );
+	long lPos = pApp->GetProfileInt( sProfileName, _T("Position"), -1 );
 	if( lPos < 0 )
 		return false;
 	CRect rcControlArea = mpControlPane->GetControlArea();
@@ -87,6 +89,7 @@ void CArxSplitterCtrl::OnMove(int x, int y)
 	__super::OnMove(x, y);
 	SavePosition();
 	CRect rcWnd = GetEffectiveWindowRect();
+	ToDIP( rcWnd );
 	GetArxServices()->HandleEvent( Prop::EventSplitterMoved,
 																 args_NNNN( rcWnd.left, rcWnd.top, rcWnd.Width(), rcWnd.Height() ) );
 }

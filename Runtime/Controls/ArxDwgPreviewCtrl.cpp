@@ -329,7 +329,7 @@ void CArxDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy)
 
 void CArxDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, point.x, point.y ) );
+	GetArxServices()->HandleEvent( Prop::EventMouseMove, args_NNN( nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
 	CWnd::OnMouseMove(nFlags, point);
 }
 

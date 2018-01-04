@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\Common\Controls\ListCtrlHdr.cpp" />
     <ClCompile Include="..\..\Common\DclAxCtrlInitInfo.cpp" />
     <ClCompile Include="..\..\Common\DclImageList.cpp" />
+    <ClCompile Include="..\..\Common\DpiAwarenessAPI.cpp" />
     <ClCompile Include="..\..\Common\ThemeAPI.cpp" />
     <ClCompile Include="..\AcadBlockInsertDropTarget.cpp" />
     <ClCompile Include="..\AcadDockBarHost.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="..\..\Common\Controls\ListCtrlHdr.h" />
     <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h" />
     <ClInclude Include="..\..\Common\DclImageList.h" />
+    <ClInclude Include="..\..\Common\DpiAwarenessAPI.h" />
     <ClInclude Include="..\..\Common\ThemeAPI.h" />
     <ClInclude Include="..\..\Common\UxThemeVI.h" />
     <ClInclude Include="..\AcadBlockInsertDropTarget.h" />

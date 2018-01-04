@@ -42,11 +42,18 @@ DWORD CAnimationCtrl::GetWndStyle() const
 BEGIN_MESSAGE_MAP(CAnimationCtrl, CAnimateCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CAnimationCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CAnimationCtrl message handlers
+
+LRESULT CAnimationCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 BOOL CAnimationCtrl::PreTranslateMessage(MSG* pMsg) 
 {

@@ -84,11 +84,18 @@ bool CFolderComboCtrl::ApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CFolderComboCtrl, CFolderComboBox)
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_REFLECT(NM_THEMECHANGED, &CFolderComboCtrl::OnNMThemeChanged)
+	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CFolderComboCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderComboCtrl message handlers
+
+LRESULT CFolderComboCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	HandleDpiChanged();
+	return 0;
+}
 
 LRESULT CFolderComboCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
