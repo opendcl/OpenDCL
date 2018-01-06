@@ -26,6 +26,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
@@ -34,6 +35,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	
 	virtual HRESULT OnGetHostInfo(DOCHOSTUIINFO *pInfo);
+	virtual void OnDocumentComplete(LPCTSTR lpszURL);
 	virtual BOOL PreTranslateMessage( MSG* pMsg );	
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);

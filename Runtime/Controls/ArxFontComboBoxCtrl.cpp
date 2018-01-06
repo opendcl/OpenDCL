@@ -56,7 +56,7 @@ CRect CArxFontComboBoxCtrl::GetWndRect() const
 	//		long lListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
 	//		long lNewHeight = 16 * ((lListHeight + 13) / 16) + 3; //make it an integral height, + 2 pixels for the border
 	//		mpTemplate->SetLongProperty( Prop::DropDownHeight, lNewHeight );
-	//		rcWnd.bottom += (lNewHeight - lListHeight); //to prevent autoscrolling
+	//		rcWnd.bottom += FromDIP( lNewHeight - lListHeight ); //to prevent autoscrolling
 	//		break;
 	//	}
 	//}

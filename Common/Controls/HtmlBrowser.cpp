@@ -4,6 +4,9 @@
 #include "StdAfx.h"
 #include "HtmlBrowser.h" 
 
+#if (_MSC_VER <= 1400)
+#define OLECMDID_OPTICAL_ZOOM ((OLECMDID)63)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CHtmlBrowser
@@ -47,6 +50,11 @@ CString CHtmlBrowser::GetLocationURL() const
 	m_pBrowserApp->get_LocationURL(&bstr);
 	CString retVal(bstr);
 	return retVal;
+}
+
+HRESULT CHtmlBrowser::OnUpdateUI()
+{
+	return __super::OnUpdateUI();
 }
 
 void CHtmlBrowser::Navigate( LPCTSTR lpszURL, DWORD dwFlags /* = 0 */,
@@ -132,10 +140,10 @@ void CHtmlBrowser::LoadHtmlCode( const CString& sHtmlCode )
 		return;
 
 	CComPtr< IUnknown > pUnkBrowser;
-  HRESULT hr = m_pBrowserApp->QueryInterface( IID_IUnknown,  (void**)&pUnkBrowser );
+	HRESULT hr = m_pBrowserApp->QueryInterface( IID_IUnknown,  (void**)&pUnkBrowser );
 	
 	if ( SUCCEEDED(hr) )
-  {
+	{
 		// Create a stream containing the HTML.
 		int cchHtml = sHtmlCode.GetLength() + 1;
 		HGLOBAL hHTMLText = GlobalAlloc( GPTR, sizeof(CHAR) * cchHtml );
@@ -146,27 +154,27 @@ void CHtmlBrowser::LoadHtmlCode( const CString& sHtmlCode )
 			hr = CreateStreamOnHGlobal( hHTMLText, TRUE, &pStream );
 			if ( SUCCEEDED(hr) )
 			{
-			   // Call the helper function to load the Web Browser from the stream.
-			   LoadWebBrowserFromStream(m_pBrowserApp, pStream);
+				 // Call the helper function to load the Web Browser from the stream.
+				 LoadWebBrowserFromStream(m_pBrowserApp, pStream);
 			}
 		}
-  }
+	}
 }
 
 // load the html code into memory
 HRESULT CHtmlBrowser::LoadWebBrowserFromStream(IWebBrowser* pWebBrowser, IStream* pStream)
 {
-  // Retrieve the document object.
+	// Retrieve the document object.
 	CComPtr< IDispatch > pHtmlDoc;
-  HRESULT hr = pWebBrowser->get_Document( &pHtmlDoc );
+	HRESULT hr = pWebBrowser->get_Document( &pHtmlDoc );
 	if( !pHtmlDoc )
 	{
 		Navigate2( _T("about:blank") );
 		if( SUCCEEDED(hr) )
 			hr = pWebBrowser->get_Document( &pHtmlDoc );
 	}
-  if( SUCCEEDED(hr) && pHtmlDoc )
-  {
+	if( SUCCEEDED(hr) && pHtmlDoc )
+	{
 		// Query for IPersistStreamInit.
 		CComPtr< IPersistStreamInit > pPersistStreamInit;
 		hr = pHtmlDoc->QueryInterface( IID_IPersistStreamInit,  (void**)&pPersistStreamInit );
@@ -180,7 +188,7 @@ HRESULT CHtmlBrowser::LoadWebBrowserFromStream(IWebBrowser* pWebBrowser, IStream
 				hr = pPersistStreamInit->Load( pStream );
 			}
 		}
-  }
+	}
 	return hr;
 }
 
@@ -258,6 +266,11 @@ CString CHtmlBrowser::GetHtmlText()
 	CComBSTR html;
 	pTxtRange->get_htmlText(&html);
 	return (LPCWSTR)html;
+}
+
+HRESULT CHtmlBrowser::SetOpticalZoom( long nZoomPercentage )
+{
+	return m_pBrowserApp->ExecWB( OLECMDID_OPTICAL_ZOOM, OLECMDEXECOPT_DONTPROMPTUSER, COleVariant(nZoomPercentage, VT_I4), NULL );
 }
 
 

@@ -45,7 +45,7 @@ CRect CComboBoxCtrl::GetWndRect() const
 	if( (GetComboStyle() & CBS_DROPDOWN) != 0 )
 	{
 		long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
-		rectCombo.bottom += nListHeight;
+		rectCombo.bottom += FromDIP( nListHeight );
 	}
 	return rectCombo;
 }
@@ -116,7 +116,7 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	//			SetWindowPos( pPrevWnd, rcOld.left, rcOld.top, 0, 0, SWP_NOSIZE | SWP_NOSENDCHANGING );
 	//			if( (dwOldComboStyle & CBS_DROPDOWN) != 0 )
 	//			{
-	//				mpTemplate->SetLongProperty( Prop::Height, rcOld.Height() + mpTemplate->GetLongProperty( Prop::DropDownHeight ) );
+	//				mpTemplate->SetLongProperty( Prop::Height, ToDIP( rcOld.Height() ) + mpTemplate->GetLongProperty( Prop::DropDownHeight ) );
 	//				ApplyPosition();
 	//			}
 	//			::DestroyWindow( hwndOld );

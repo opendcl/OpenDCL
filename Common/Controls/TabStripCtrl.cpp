@@ -303,6 +303,7 @@ void CTabStripCtrl::OnUsedAreaChanged()
 		if( pDlgObject )
 		{
 			CRect rcPage = pDlgObject->GetEffectiveWindowRect();
+			ToDIP( rcPage );
 			if( lNewLeft != rcPage.left || lNewTop != rcPage.top )
 				pDlgObject->MoveDialog( lNewLeft, lNewTop );
 		}

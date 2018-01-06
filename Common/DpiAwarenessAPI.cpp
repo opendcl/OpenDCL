@@ -59,6 +59,9 @@ private:
 	typedef BOOL (STDAPICALLTYPE *F_SetDialogDpiChangeBehavior)( HWND hDlg, DIALOG_DPI_CHANGE_BEHAVIORS mask, DIALOG_DPI_CHANGE_BEHAVIORS values );
 	typedef DIALOG_DPI_CHANGE_BEHAVIORS (STDAPICALLTYPE *F_GetDialogDpiChangeBehavior)( HWND hDlg );
 	typedef BOOL (STDAPICALLTYPE *F_AreDpiAwarenessContextsEqual)( DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB );
+	typedef DPI_AWARENESS_CONTEXT (STDAPICALLTYPE *F_SetThreadDpiAwarenessContext)( DPI_AWARENESS_CONTEXT dpiContext );
+	typedef BOOL (STDAPICALLTYPE *F_SetProcessDpiAwarenessContext)( DPI_AWARENESS_CONTEXT dpiContext );
+	typedef HRESULT (STDAPICALLTYPE *F_SetProcessDpiAwareness)( PROCESS_DPI_AWARENESS value );
 
 	//auto-init pointer to NULL
 	template< typename FType > class FPtr
@@ -92,6 +95,9 @@ private:
 	FPtr< F_SetDialogDpiChangeBehavior > mpfSetDialogDpiChangeBehavior;
 	FPtr< F_GetDialogDpiChangeBehavior > mpfGetDialogDpiChangeBehavior;
 	FPtr< F_AreDpiAwarenessContextsEqual > mpfAreDpiAwarenessContextsEqual;
+	FPtr< F_SetThreadDpiAwarenessContext > mpfSetThreadDpiAwarenessContext;
+	FPtr< F_SetProcessDpiAwarenessContext > mpfSetProcessDpiAwarenessContext;
+	FPtr< F_SetProcessDpiAwareness > mpfSetProcessDpiAwareness;
 
 
 	#define CHECK(name) return check(mpf##name,#name)? mpf##name.asFPtr()
@@ -117,6 +123,9 @@ public:
 	BOOL SetDialogDpiChangeBehavior( HWND hDlg, DIALOG_DPI_CHANGE_BEHAVIORS mask, DIALOG_DPI_CHANGE_BEHAVIORS values ) { CHECK(SetDialogDpiChangeBehavior)( hDlg, mask, values ) : FALSE; }
 	DIALOG_DPI_CHANGE_BEHAVIORS GetDialogDpiChangeBehavior( HWND hDlg ) { CHECK(GetDialogDpiChangeBehavior)( hDlg ) : DDC_DEFAULT; }
 	BOOL AreDpiAwarenessContextsEqual( DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB ) { CHECK(AreDpiAwarenessContextsEqual)( dpiContextA, dpiContextB ) : FALSE; }
+	DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext ) { CHECK(SetThreadDpiAwarenessContext)( dpiContext ) : DPI_AWARENESS_CONTEXT_UNAWARE; }
+	BOOL SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext ) { CHECK(SetProcessDpiAwarenessContext)( dpiContext ) : FALSE; }
+	HRESULT SetProcessDpiAwareness( PROCESS_DPI_AWARENESS value ) { CHECK(SetProcessDpiAwareness)( value ) : E_NOTIMPL; }
 };
 
 
@@ -223,6 +232,21 @@ DIALOG_DPI_CHANGE_BEHAVIORS DpiAwarenessHelper::GetDialogDpiChangeBehavior( HWND
 BOOL DpiAwarenessHelper::AreDpiAwarenessContextsEqual( DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB )
 {
 	return DPI.AreDpiAwarenessContextsEqual( dpiContextA, dpiContextB );
+}
+
+DPI_AWARENESS_CONTEXT DpiAwarenessHelper::SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext )
+{
+	return DPI.SetThreadDpiAwarenessContext( dpiContext );
+}
+
+BOOL DpiAwarenessHelper::SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext )
+{
+	return DPI.SetProcessDpiAwarenessContext( dpiContext );
+}
+
+HRESULT DpiAwarenessHelper::SetProcessDpiAwareness( PROCESS_DPI_AWARENESS value )
+{
+	return DPI.SetProcessDpiAwareness( value );
 }
 
 

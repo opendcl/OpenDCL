@@ -54,6 +54,12 @@ DWORD CHtmlCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CHtmlCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	SetOpticalZoom( FromDIP( 100 ) );
+}
+
 bool CHtmlCtrl::ApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::ApplyProperty( pProp ) )
@@ -107,6 +113,11 @@ HRESULT CHtmlCtrl::OnGetHostInfo(DOCHOSTUIINFO *pInfo)
 	if( pInfo )
 		pInfo->dwFlags |= DOCHOSTUIFLAG_NO3DOUTERBORDER;
 	return S_OK;
+}
+void CHtmlCtrl::OnDocumentComplete(LPCTSTR lpszURL)
+{
+	__super::OnDocumentComplete(lpszURL);
+	SetOpticalZoom( FromDIP( 100 ) );
 }
 
 BOOL CHtmlCtrl::PreTranslateMessage(MSG* pMsg) 

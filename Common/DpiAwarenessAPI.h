@@ -128,6 +128,9 @@ public:
 	static BOOL SetDialogDpiChangeBehavior( HWND hDlg, DIALOG_DPI_CHANGE_BEHAVIORS mask, DIALOG_DPI_CHANGE_BEHAVIORS values );
 	static DIALOG_DPI_CHANGE_BEHAVIORS GetDialogDpiChangeBehavior( HWND hDlg );
 	static BOOL AreDpiAwarenessContextsEqual( DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB );
+	static DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext );
+	static BOOL SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext );
+	static HRESULT SetProcessDpiAwareness( PROCESS_DPI_AWARENESS value );
 };
 
 class DpiAwareness : public DpiAwarenessHelper

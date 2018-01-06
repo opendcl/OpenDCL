@@ -1,6 +1,6 @@
 //JavaScript utlities used by the OpenDCL documentation files
 //
-// Copyright 2014 OpenDCL Consortium
+// Copyright 2018 OpenDCL Consortium
 // All Rights Reserved
 
 

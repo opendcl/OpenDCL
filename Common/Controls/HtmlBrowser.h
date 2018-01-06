@@ -32,6 +32,7 @@ public:
 	HRESULT LoadWebBrowserFromStream( IWebBrowser* pWebBrowser, IStream* pStream );
 	void LoadHtmlCode( const CString& sHtmlCode );
 	CString GetHtmlText();
+	HRESULT SetOpticalZoom( long nZoomPercentage ); //set optical zoom percentage
 
 protected:
 	virtual void OnStatusTextChange(LPCTSTR lpszText) {} //eat 'em, else they mess up the AutoCAD status bar
@@ -43,6 +44,7 @@ protected:
 																	CByteArray& baPostedData,
 																	LPCTSTR lpszHeaders,
 																	BOOL* pbCancel );
+	virtual HRESULT OnUpdateUI();
 
 // Generated message map functions
 protected:

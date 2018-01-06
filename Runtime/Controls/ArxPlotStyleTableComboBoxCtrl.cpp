@@ -37,7 +37,7 @@ CRect CArxPlotStyleTableComboBoxCtrl::GetWndRect() const
 	long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
 	if( nListHeight < 40 )
 		nListHeight = 40;
-	rectCombo.bottom += nListHeight;
+	rectCombo.bottom += FromDIP( nListHeight );;
 	return rectCombo;
 }
 
