@@ -2212,15 +2212,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{954FF5F7-9D7F-4D59-96F8-77C2B07E4875}"
-        "PackageCode" = "8:{FC134434-FEAB-4653-97E2-35CD32206107}"
+        "ProductCode" = "8:{8B934B02-CBA7-42F1-9E4D-999D7158EB1D}"
+        "PackageCode" = "8:{7334BC4C-BAF4-4D98-9628-E76F8CD118F6}"
         "UpgradeCode" = "8:{9BE5DB7C-1263-4235-90AC-B4E5E907789D}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:9.0.0002"
+        "ProductVersion" = "8:9.0.0101"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2346,7 +2346,7 @@
                                                     "Condition" = "8:"
                                                     "Transitive" = "11:FALSE"
                                                     "ValueTypes" = "3:1"
-                                                    "Value" = "8:\"[TARGETDIR]OPENDCL STUDIO.EXE\" %1"
+                                                    "Value" = "8:\"[TARGETDIR]OpenDCL Studio.exe\" \"%1\""
                                                     }
                                                 }
                                             }

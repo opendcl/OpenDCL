@@ -49,6 +49,7 @@ public:
 	virtual CRect GetEffectiveClientRect() const;
 	virtual bool ApplyProperty( TPropertyPtr pProp );
 protected:
+	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
 	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size

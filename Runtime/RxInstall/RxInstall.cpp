@@ -392,7 +392,7 @@ public:
 											kGRX2015 = 15, kGRX2016 = 16, kGRX2017 = 17, kGRX2018 = 18,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, kARX2015 = 20,
-											kARX2017 = 21, kARX2018 = 22, };
+											kARX2017 = 21, kARX2018 = 22, kARX2019 = 23, };
 	typedef char TByte;
 	TargetModule( Architecture architecture, Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
 		: mArchitecture( architecture )
@@ -512,6 +512,8 @@ public:
 		kAutoCAD2017x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2017 << shftMajorVer) | 0),
 		kAutoCAD2018x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2018 << shftMajorVer) | 0),
 		kAutoCAD2018x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2018 << shftMajorVer) | 0),
+		kAutoCAD2019x86 =    (kX86Architecture | kAutoCADPlatform | (kARX2019 << shftMajorVer) | 0),
+		kAutoCAD2019x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2019 << shftMajorVer) | 0),
 		kBricscad9_3 =       (kX86Architecture | kBricscadPlatform | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =        (kX86Architecture | kBricscadPlatform | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =        (kX86Architecture | kBricscadPlatform | (kBRX11 << shftMajorVer) | 0),
@@ -812,6 +814,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2016x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2017x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2018x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2019x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	if( IsWow64() )
 	{
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2015x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -837,6 +840,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2016x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2017x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2018x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2019x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	}
 }
 
@@ -950,6 +954,7 @@ void UninstallAllTargets( HKEY hkRoot )
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R20.1"), hkRoot );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R21.0"), hkRoot );
 	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R22.0"), hkRoot );
+	RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R23.0"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V9"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V10"), hkRoot );
 	RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V11"), hkRoot );
@@ -981,6 +986,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R20.1"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R21.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R22.0"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R23.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );

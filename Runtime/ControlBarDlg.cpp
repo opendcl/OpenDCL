@@ -262,6 +262,17 @@ bool CControlBarDlg::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CControlBarDlg::OnApplyCaption( TPropertyPtr pProp )
+{
+	CString sCaption = pProp->GetStringValue();
+	mHostControlBar.SetWindowText( sCaption );
+	CWnd* pTop = GetTopLevelWnd();
+	if( pTop != &mHostControlBar )
+		pTop->SetWindowText( sCaption );
+	OnNeedRepaint();
+	return true;
+}
+
 bool CControlBarDlg::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
