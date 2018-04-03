@@ -310,11 +310,11 @@ void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
 	HGDIOBJ OldPen = SelectObject(hdc, pen);
 	
 	MoveToEx(hdc, sX, sY, &point);
-	LineTo(hdc, eX, eY);		
+	LineTo(hdc, eX, eY);
 	SetPixel(hdc, sX, sY, rgb);
 	SetPixel(hdc, eX, eY, rgb);
 
-	SelectObject(hdc, OldPen);			
+	SelectObject(hdc, OldPen);
 	DeleteObject(pen);
 
 	// then releasing the DC itself
@@ -339,9 +339,9 @@ void CPictureBox::DrawArc(int sX, int sY, int eX, int eY, int saX, int saY, int 
 	HGDIOBJ OldPen = SelectObject(hdc, pen);
 	
 	MoveToEx(hdc, sX, sY, &point);
-	Arc(hdc, sX, sY, eX, eY, saX, saY, eaX, eaY);		
+	Arc(hdc, sX, sY, eX, eY, saX, saY, eaX, eaY);
 
-	SelectObject(hdc, OldPen);			
+	SelectObject(hdc, OldPen);
 	DeleteObject(pen);
 	
 	// then releasing the DC itself
@@ -361,7 +361,7 @@ void CPictureBox::DrawCircle(int sX, int sY, int eX, int eY, COLORREF rgb)
 	Arc(hdc, sX, sY, eX, eY, sX, cY, eX, cY);
 	Arc(hdc, sX, sY, eX, eY, eX, cY, sX, cY);
 
-	SelectObject(hdc, OldPen);			
+	SelectObject(hdc, OldPen);
 	DeleteObject(pen);
 		
 	// then releasing the DC itself

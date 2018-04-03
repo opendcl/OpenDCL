@@ -65,7 +65,8 @@ ADSRESULT PictureBox::DrawLine()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawLine( nStartX, nStartY, nEndX, nEndY, crColor );
+		pCtrl->DrawLine( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nEndX ), pDlgControl->FromDIP( nEndY ), crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -124,7 +125,7 @@ ADSRESULT PictureBox::DrawPoint()
 		if( bNestedList && !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawPoint( nX, nY, crColor );
+		pCtrl->DrawPoint( pDlgControl->FromDIP( nX ), pDlgControl->FromDIP( nY ), crColor );
 		
 	} while( (bNestedList = GetListBeginArgument( pArgs, true ), bNestedList) );
 
@@ -193,7 +194,8 @@ ADSRESULT PictureBox::DrawEdge()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawEdge( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, nBorder );
+		pCtrl->DrawEdge( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth + 1 ), pDlgControl->FromDIP( nStartY + nHeight + 1 ), nBorder );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -258,7 +260,8 @@ ADSRESULT PictureBox::DrawFocusRect()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawFocusRect( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1 );
+		pCtrl->DrawFocusRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth + 1 ), pDlgControl->FromDIP( nStartY + nHeight + 1 ) );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -327,7 +330,8 @@ ADSRESULT PictureBox::DrawRect()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawRect( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, crColor );
+		pCtrl->DrawRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth ), pDlgControl->FromDIP( nStartY + nHeight ), crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -396,7 +400,8 @@ ADSRESULT PictureBox::DrawSolidRect()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawFillRect( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, crColor );
+		pCtrl->DrawFillRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth ), pDlgControl->FromDIP( nStartY + nHeight ), crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -528,8 +533,9 @@ ADSRESULT PictureBox::DrawArc()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawArc( nCenterX - nRadius, nCenterY - nRadius, nCenterX + nRadius, nCenterY + nRadius,
-										nStartAngleX, nStartAngleY, nEndAngleX, nEndAngleY, crColor );
+		pCtrl->DrawArc( pDlgControl->FromDIP( nCenterX - nRadius ), pDlgControl->FromDIP( nCenterY - nRadius ),
+			pDlgControl->FromDIP( nCenterX + nRadius ), pDlgControl->FromDIP( nCenterY + nRadius ),
+			nStartAngleX, nStartAngleY, nEndAngleX, nEndAngleY, crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -598,7 +604,8 @@ ADSRESULT PictureBox::DrawCircle()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawCircle( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, crColor );
+		pCtrl->DrawCircle( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth + 1 ), pDlgControl->FromDIP( nStartY + nHeight + 1 ), crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -671,7 +678,8 @@ ADSRESULT PictureBox::DrawHatchRect()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawHatchRect( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, crColor, nPattern );
+		pCtrl->DrawHatchRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth + 1 ), pDlgControl->FromDIP( nStartY + nHeight + 1 ), crColor, nPattern );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -758,7 +766,8 @@ ADSRESULT PictureBox::DrawWrappedText()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawWrappedText( nStartX, nStartY, nStartX + nWidth + 1, crFore, crBack, sText, sJustification );
+		pCtrl->DrawWrappedText( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth + 1 ), crFore, crBack, sText, sJustification );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -790,6 +799,7 @@ ADSRESULT PictureBox::GetTextExtent()
 	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
 	CSize szExt;
 	pCtrl->GetTextExtent( sText, szExt );
+	pDlgControl->ToDIP(szExt);
 	resbuf rbHeight = { NULL, RTSHORT };
 	rbHeight.resval.rint = szExt.cy;
 	resbuf rbWidth = { &rbHeight, RTSHORT };
@@ -873,7 +883,8 @@ ADSRESULT PictureBox::DrawText()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawText( nStartX, nStartY, crFore, crBack, sText, sJustification, (bDisabled? 1 : 0) );
+		pCtrl->DrawText( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			crFore, crBack, sText, sJustification, (bDisabled? 1 : 0) );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -950,7 +961,8 @@ ADSRESULT PictureBox::PaintPicture()
 				return RSERR; //invalid input
 		}
 
-		pCtrl->PaintPicture( nStartX, nStartY, nPicID, (bEnabled? 1 : 0), (bMasked? 1 : 0) );
+		pCtrl->PaintPicture( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			nPicID, (bEnabled? 1 : 0), (bMasked? 1 : 0) );
 		
 	} while( GetListBeginArgument( pArgs, true ) || ((bAsPt = Get3dPointArgument( pArgs, pt, true )), bAsPt) );
 

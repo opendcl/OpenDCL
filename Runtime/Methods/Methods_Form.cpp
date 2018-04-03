@@ -40,7 +40,7 @@ ADSRESULT Form::Center()
 	}
 	else
 	{
-		if( pDlgObject->CenterAndResizeDialog( nX, nY ) )
+		if( pDlgObject->CenterAndResizeDialog( pDlgObject->FromDIP( nX ), pDlgObject->FromDIP( nY ) ) )
 			acedRetT();
 	}
 
@@ -373,7 +373,7 @@ ADSRESULT Form::Resize()
 	if( !pDlgObject )
 		return RSRSLT; //dialog not found
 
-	if( pDlgObject->ResizeDialog( nNewWidth, nNewHeight ) )
+	if( pDlgObject->ResizeDialog( pDlgObject->FromDIP( nNewWidth ), pDlgObject->FromDIP( nNewHeight ) ) )
 		acedRetT();
 
 	return (RSRSLT) ;

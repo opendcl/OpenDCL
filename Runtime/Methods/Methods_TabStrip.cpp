@@ -154,6 +154,7 @@ ADSRESULT TabStrip::GetControlArea()
 
 	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
 	CRect rcClient = pCtrl->GetTabPageAt( pCtrl->GetCurTabPage() )->GetWndRect();
+	pDlgControl->ToDIP( rcClient );
 	resbuf rbHeight = { NULL, RTSHORT };
 	rbHeight.resval.rint = rcClient.Height();
 	resbuf rbWidth = { &rbHeight, RTSHORT };

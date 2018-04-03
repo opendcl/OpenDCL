@@ -149,7 +149,8 @@ ADSRESULT SlideView::VectorImage()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawLine( nStartX, nStartY, nEndX, nEndY, crColor );
+		pCtrl->DrawLine( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nEndX ), pDlgControl->FromDIP( nEndY ), crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -216,7 +217,8 @@ ADSRESULT SlideView::FillImage()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawFillRect( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, crColor );
+		pCtrl->DrawFillRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth ), pDlgControl->FromDIP( nStartY + nHeight ), crColor );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 
@@ -302,7 +304,9 @@ ADSRESULT SlideView::SlideImage()
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
 
-		pCtrl->DrawASlide( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, sFilename, (sSlideName.IsEmpty()? NULL : (LPCTSTR)sSlideName) );
+		pCtrl->DrawASlide( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nWidth ), pDlgControl->FromDIP( nStartY + nHeight ),
+			sFilename, (sSlideName.IsEmpty()? NULL : (LPCTSTR)sSlideName) );
 		
 	} while( GetListBeginArgument( pArgs, true ) );
 

@@ -482,7 +482,7 @@ ADSRESULT ImageComboBox::GetDroppedWidth()
 
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetDroppedWidth() );
+	acedRetInt( pDlgControl->ToDIP( pCtrl->GetDroppedWidth() ) );
 	return RSRSLT;
 }
 
@@ -503,7 +503,7 @@ ADSRESULT ImageComboBox::SetDroppedWidth()
 
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
-	if( CB_ERR != pCtrl->SetDroppedWidth( nWidth ) )
+	if( CB_ERR != pCtrl->SetDroppedWidth( pDlgControl->FromDIP( nWidth ) ) )
 		acedRetT();
 	return RSRSLT;
 }

@@ -2212,15 +2212,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{04E8E668-9A33-4F6B-888D-F47A4AE3EF18}"
-        "PackageCode" = "8:{C4B90ED1-BB43-4DF8-8F0B-86091E17AFB5}"
+        "ProductCode" = "8:{735DC3F2-BC47-440A-9496-35CB59079169}"
+        "PackageCode" = "8:{6B61BEDD-B904-446B-88FC-C0C896904C6D}"
         "UpgradeCode" = "8:{13AE30FE-5152-40D5-B724-3BE317FC4DF2}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:9.0.0101"
+        "ProductVersion" = "8:9.0.0102"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3026,7 +3026,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_77D4F61D81CE4E1E88FFD6E7CA07D973"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4E2DB0D02AA74C02BD382CF959A2D3D9"
@@ -3082,7 +3082,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8C5E9444C474B7D863DEF04E4D144B1"
             {
-            "SourcePath" = "8:..\\Win32\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Win32\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
@@ -3110,7 +3110,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F8AAB33771054A08AC7C353BDBB36453"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
