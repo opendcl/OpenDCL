@@ -71,6 +71,7 @@
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
 #include "UpdateCheck.h"
+#include "DpiAwarenessAPI.h"
 
 
 //-----------------------------------------------------------------------------
@@ -2223,7 +2224,9 @@ public:
 			break;
 		}
 
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawLine(nStartX, nStartY, nEndX, nEndY, nLineColor);
+		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
+		pDlgControl->DrawLine( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nEndX ), pDlgControl->FromDIP( nEndY ), nLineColor );
 
 		return (RSRSLT) ;
 	}
@@ -2304,7 +2307,9 @@ public:
 			break;
 		}
 
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawFillRect(nStartX, nStartY, nStartX + nEndX, nStartY + nEndY, nLineColor);
+		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
+		pDlgControl->DrawFillRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
+			pDlgControl->FromDIP( nStartX + nEndX ), pDlgControl->FromDIP( nStartY + nEndY ), nLineColor );
 
 		return (RSRSLT) ;
 	}
@@ -2328,9 +2333,10 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
+		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
 		CRect rc;
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->GetClientRect(&rc);
-		acedRetInt(rc.Width());
+		pDlgControl->GetClientRect(&rc);
+		acedRetInt(pDlgControl->ToDIP(rc.Width()));
 
 		return (RSRSLT) ;
 	}
@@ -2354,9 +2360,10 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
+		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
 		CRect rc;
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->GetClientRect(&rc);
-		acedRetInt(rc.Height());
+		pDlgControl->GetClientRect(&rc);
+		acedRetInt(pDlgControl->ToDIP(rc.Height()));
 
 		return (RSRSLT) ;
 	}
@@ -2445,6 +2452,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
+		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
 		int nBracket = sFilename.Find(_T('('));
 		if (nBracket == -1)
 		{ //no slide library specified
@@ -2457,7 +2465,8 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, NULL);
+			pDlgControl->DrawASlide( pDlgControl->FromDIP( nX ), pDlgControl->FromDIP( nY ),
+				pDlgControl->FromDIP( nWidth ), pDlgControl->FromDIP( nHeight ), sPath, NULL );
 		}
 		else
 		{ //displaying a slide library
@@ -2472,7 +2481,8 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, sLibName);
+			pDlgControl->DrawASlide( pDlgControl->FromDIP( nX ), pDlgControl->FromDIP( nY ),
+				pDlgControl->FromDIP( nWidth ), pDlgControl->FromDIP( nHeight ), sPath, sLibName );
 		}
 		acedRetT();
 
@@ -2541,10 +2551,20 @@ public:
 		CRect rcWorkArea;
 		if( SystemParametersInfo( SPI_GETWORKAREA, 0, &rcWorkArea, 0 ) > 0 )
 		{
+			int width = rcWorkArea.Height();
+			int height = rcWorkArea.Width();
+#ifdef MONITOR_DEFAULTTOPRIMARY
+			static const POINT ptZero = { 0, 0 };
+			HMONITOR primaryMonitor = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
+			UINT dpiX = 96, dpiY = 96;
+			DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
+			width = MulDiv( width, dpiX, 96 );
+			height = MulDiv( height, dpiY, 96 );
+#endif
 			resbuf rbHeight = {NULL, RTSHORT};
-			rbHeight.resval.rint = rcWorkArea.Height();
+			rbHeight.resval.rint = height;
 			resbuf rbWidth = {&rbHeight, RTSHORT};
-			rbWidth.resval.rint = rcWorkArea.Width();
+			rbWidth.resval.rint = width;
 			acedRetList(&rbWidth);
 		}
 
@@ -3152,6 +3172,14 @@ public:
 
 		CPoint pt;
 		GetCursorPos(&pt);
+#ifdef MONITOR_DEFAULTTOPRIMARY
+		static const POINT ptZero = { 0, 0 };
+		HMONITOR primaryMonitor = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
+		UINT dpiX = 96, dpiY = 96;
+		DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
+		pt.x = MulDiv( pt.x, dpiX, 96 );
+		pt.y = MulDiv( pt.y, dpiY, 96 );
+#endif
 		resbuf rbPoint = {NULL, RTPOINT};
 		rbPoint.resval.rpoint[X] = pt.x;
 		rbPoint.resval.rpoint[Y] = pt.y;
