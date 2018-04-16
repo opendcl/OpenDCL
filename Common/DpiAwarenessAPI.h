@@ -52,6 +52,12 @@ DECLARE_HANDLE(HMONITOR);
 #define HMONITOR_DECLARED
 #endif
 
+#ifndef MONITOR_DEFAULTTOPRIMARY
+#define MONITOR_DEFAULTTONULL       0x00000000
+#define MONITOR_DEFAULTTOPRIMARY    0x00000001
+#define MONITOR_DEFAULTTONEAREST    0x00000002
+#endif
+
 __if_not_exists(_DPI_AWARENESS)
 {
 typedef enum _DPI_AWARENESS { 
@@ -109,6 +115,7 @@ typedef enum _DIALOG_SCALING_BEHAVIOR {
 class DpiAwarenessHelper
 {
 public:
+	static HMONITOR MonitorFromPoint( POINT pt, DWORD dwFlags );
 	static HRESULT GetDpiForMonitor( HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY );
 	static UINT GetDpiForSystem();
 	static UINT GetDpiForWindow( HWND hwnd );

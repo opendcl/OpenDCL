@@ -2551,16 +2551,17 @@ public:
 		CRect rcWorkArea;
 		if( SystemParametersInfo( SPI_GETWORKAREA, 0, &rcWorkArea, 0 ) > 0 )
 		{
-			int width = rcWorkArea.Height();
-			int height = rcWorkArea.Width();
-#ifdef MONITOR_DEFAULTTOPRIMARY
+			int width = rcWorkArea.Width();
+			int height = rcWorkArea.Height();
 			static const POINT ptZero = { 0, 0 };
-			HMONITOR primaryMonitor = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-			UINT dpiX = 96, dpiY = 96;
-			DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
-			width = MulDiv( width, dpiX, 96 );
-			height = MulDiv( height, dpiY, 96 );
-#endif
+			HMONITOR primaryMonitor = DpiAwarenessHelper::MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
+			if( primaryMonitor )
+			{
+				UINT dpiX = 96, dpiY = 96;
+				DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
+				width = MulDiv( width, 96, dpiX );
+				height = MulDiv( height, 96, dpiY );
+			}
 			resbuf rbHeight = {NULL, RTSHORT};
 			rbHeight.resval.rint = height;
 			resbuf rbWidth = {&rbHeight, RTSHORT};
@@ -3172,14 +3173,15 @@ public:
 
 		CPoint pt;
 		GetCursorPos(&pt);
-#ifdef MONITOR_DEFAULTTOPRIMARY
 		static const POINT ptZero = { 0, 0 };
-		HMONITOR primaryMonitor = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-		UINT dpiX = 96, dpiY = 96;
-		DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
-		pt.x = MulDiv( pt.x, dpiX, 96 );
-		pt.y = MulDiv( pt.y, dpiY, 96 );
-#endif
+		HMONITOR primaryMonitor = DpiAwarenessHelper::MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
+		if( primaryMonitor )
+		{
+			UINT dpiX = 96, dpiY = 96;
+			DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
+			pt.x = MulDiv( pt.x, 96, dpiX );
+			pt.y = MulDiv( pt.y, 96, dpiY );
+		}
 		resbuf rbPoint = {NULL, RTPOINT};
 		rbPoint.resval.rpoint[X] = pt.x;
 		rbPoint.resval.rpoint[Y] = pt.y;

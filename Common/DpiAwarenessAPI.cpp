@@ -40,6 +40,7 @@ protected:
 
 private:
 	// API function type declarations
+	typedef HMONITOR (STDAPICALLTYPE *F_MonitorFromPoint)( POINT pt, DWORD dwFlags );
 	typedef HRESULT (STDAPICALLTYPE *F_GetDpiForMonitor)( HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY );
 	typedef UINT (STDAPICALLTYPE *F_GetDpiForSystem)();
 	typedef UINT (STDAPICALLTYPE *F_GetDpiForWindow)( HWND hwnd );
@@ -76,6 +77,7 @@ private:
 
 
 	// API function pointers
+	FPtr< F_MonitorFromPoint > mpfMonitorFromPoint;
 	FPtr< F_GetDpiForMonitor > mpfGetDpiForMonitor;
 	FPtr< F_GetDpiForSystem > mpfGetDpiForSystem;
 	FPtr< F_GetProcessDpiAwareness > mpfGetProcessDpiAwareness;
@@ -100,32 +102,33 @@ private:
 	FPtr< F_SetProcessDpiAwareness > mpfSetProcessDpiAwareness;
 
 
-	#define CHECK(name) return check(mpf##name,#name)? mpf##name.asFPtr()
+	#define CHECK(name, onfail) return (!check(mpf##name,#name))? (onfail) : mpf##name.asFPtr()
 
 public:
 	// API function stubs
-	HRESULT GetDpiForMonitor( HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY ) { CHECK(GetDpiForMonitor)( hmonitor, dpiType, dpiX, dpiY ) : E_NOTIMPL; }
-	UINT GetDpiForSystem() { CHECK(GetDpiForSystem)() : 96; }
-	HRESULT GetProcessDpiAwareness( HANDLE hprocess, PROCESS_DPI_AWARENESS* value ) { CHECK(GetProcessDpiAwareness)( hprocess, value ) : E_NOTIMPL; }
-	UINT GetDpiForWindow( HWND hwnd ) { CHECK(GetDpiForWindow)( hwnd ) : 96; }
-	int GetSystemMetricsForDpi( int nIndex, UINT dpi ) { CHECK(GetSystemMetricsForDpi)( nIndex, dpi ) : 0; }
-	DPI_AWARENESS_CONTEXT GetThreadDpiAwarenessContext() { CHECK(GetThreadDpiAwarenessContext)() : DPI_AWARENESS_CONTEXT_UNAWARE; }
-	DPI_AWARENESS_CONTEXT GetWindowDpiAwarenessContext( HWND hwnd ) { CHECK(GetWindowDpiAwarenessContext)( hwnd ) : DPI_AWARENESS_CONTEXT_UNAWARE; }
-	BOOL IsValidDpiAwarenessContext( DPI_AWARENESS_CONTEXT value ) { CHECK(IsValidDpiAwarenessContext)( value ) : FALSE; }
-	BOOL LogicalToPhysicalPoint( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint)( hwnd, lpPoint ) : FALSE; }
-	BOOL LogicalToPhysicalPointForPerMonitorDPI( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint)( hwnd, lpPoint ) : FALSE; }
-	BOOL PhysicalToLogicalPoint( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint)( hwnd, lpPoint ) : FALSE; }
-	BOOL PhysicalToLogicalPointForPerMonitorDPI( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint)( hwnd, lpPoint ) : FALSE; }
-	DPI_AWARENESS GetAwarenessFromDpiAwarenessContext( DPI_AWARENESS_CONTEXT value ) { CHECK(GetAwarenessFromDpiAwarenessContext)( value ) : DPI_AWARENESS_UNAWARE; }
-	BOOL SystemParametersInfoForDpi( UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni, UINT dpi ) { CHECK(SystemParametersInfoForDpi)( uiAction, uiParam, pvParam, fWinIni, dpi ) : FALSE; }
-	HTHEME OpenThemeDataForDpi( HWND hwnd, PCWSTR pszClassIdList, UINT dpi ) { CHECK(OpenThemeDataForDpi)( hwnd, pszClassIdList, dpi ) : NULL; }
-	BOOL AdjustWindowRectExForDpi( LPRECT lpRect, DWORD dwStyle, BOOL bMenu, DWORD dwExStyle, UINT dpi ) { CHECK(AdjustWindowRectExForDpi)( lpRect, dwStyle, bMenu, dwExStyle, dpi ) : FALSE; }
-	BOOL SetDialogDpiChangeBehavior( HWND hDlg, DIALOG_DPI_CHANGE_BEHAVIORS mask, DIALOG_DPI_CHANGE_BEHAVIORS values ) { CHECK(SetDialogDpiChangeBehavior)( hDlg, mask, values ) : FALSE; }
-	DIALOG_DPI_CHANGE_BEHAVIORS GetDialogDpiChangeBehavior( HWND hDlg ) { CHECK(GetDialogDpiChangeBehavior)( hDlg ) : DDC_DEFAULT; }
-	BOOL AreDpiAwarenessContextsEqual( DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB ) { CHECK(AreDpiAwarenessContextsEqual)( dpiContextA, dpiContextB ) : FALSE; }
-	DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext ) { CHECK(SetThreadDpiAwarenessContext)( dpiContext ) : DPI_AWARENESS_CONTEXT_UNAWARE; }
-	BOOL SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext ) { CHECK(SetProcessDpiAwarenessContext)( dpiContext ) : FALSE; }
-	HRESULT SetProcessDpiAwareness( PROCESS_DPI_AWARENESS value ) { CHECK(SetProcessDpiAwareness)( value ) : E_NOTIMPL; }
+	HMONITOR MonitorFromPoint( POINT pt, DWORD dwFlags ) { CHECK(MonitorFromPoint, NULL)( pt, dwFlags ); }
+	HRESULT GetDpiForMonitor( HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY ) { CHECK(GetDpiForMonitor, E_NOTIMPL)( hmonitor, dpiType, dpiX, dpiY ); }
+	UINT GetDpiForSystem() { CHECK(GetDpiForSystem, 96)(); }
+	HRESULT GetProcessDpiAwareness( HANDLE hprocess, PROCESS_DPI_AWARENESS* value ) { CHECK(GetProcessDpiAwareness, E_NOTIMPL)( hprocess, value ); }
+	UINT GetDpiForWindow( HWND hwnd ) { CHECK(GetDpiForWindow, 96)( hwnd ); }
+	int GetSystemMetricsForDpi( int nIndex, UINT dpi ) { CHECK(GetSystemMetricsForDpi, 0)( nIndex, dpi ); }
+	DPI_AWARENESS_CONTEXT GetThreadDpiAwarenessContext() { CHECK(GetThreadDpiAwarenessContext, DPI_AWARENESS_CONTEXT_UNAWARE)(); }
+	DPI_AWARENESS_CONTEXT GetWindowDpiAwarenessContext( HWND hwnd ) { CHECK(GetWindowDpiAwarenessContext, DPI_AWARENESS_CONTEXT_UNAWARE)( hwnd ); }
+	BOOL IsValidDpiAwarenessContext( DPI_AWARENESS_CONTEXT value ) { CHECK(IsValidDpiAwarenessContext, FALSE)( value ); }
+	BOOL LogicalToPhysicalPoint( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint, FALSE)( hwnd, lpPoint ); }
+	BOOL LogicalToPhysicalPointForPerMonitorDPI( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint, FALSE)( hwnd, lpPoint ); }
+	BOOL PhysicalToLogicalPoint( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint, FALSE)( hwnd, lpPoint ); }
+	BOOL PhysicalToLogicalPointForPerMonitorDPI( HWND hwnd, LPPOINT lpPoint ) { CHECK(LogicalToPhysicalPoint, FALSE)( hwnd, lpPoint ); }
+	DPI_AWARENESS GetAwarenessFromDpiAwarenessContext( DPI_AWARENESS_CONTEXT value ) { CHECK(GetAwarenessFromDpiAwarenessContext, DPI_AWARENESS_UNAWARE)( value ); }
+	BOOL SystemParametersInfoForDpi( UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni, UINT dpi ) { CHECK(SystemParametersInfoForDpi, FALSE)( uiAction, uiParam, pvParam, fWinIni, dpi ); }
+	HTHEME OpenThemeDataForDpi( HWND hwnd, PCWSTR pszClassIdList, UINT dpi ) { CHECK(OpenThemeDataForDpi, NULL)( hwnd, pszClassIdList, dpi ); }
+	BOOL AdjustWindowRectExForDpi( LPRECT lpRect, DWORD dwStyle, BOOL bMenu, DWORD dwExStyle, UINT dpi ) { CHECK(AdjustWindowRectExForDpi, FALSE)( lpRect, dwStyle, bMenu, dwExStyle, dpi ); }
+	BOOL SetDialogDpiChangeBehavior( HWND hDlg, DIALOG_DPI_CHANGE_BEHAVIORS mask, DIALOG_DPI_CHANGE_BEHAVIORS values ) { CHECK(SetDialogDpiChangeBehavior, FALSE)( hDlg, mask, values ); }
+	DIALOG_DPI_CHANGE_BEHAVIORS GetDialogDpiChangeBehavior( HWND hDlg ) { CHECK(GetDialogDpiChangeBehavior, DDC_DEFAULT)( hDlg ); }
+	BOOL AreDpiAwarenessContextsEqual( DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB ) { CHECK(AreDpiAwarenessContextsEqual, FALSE)( dpiContextA, dpiContextB ); }
+	DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext ) { CHECK(SetThreadDpiAwarenessContext, DPI_AWARENESS_CONTEXT_UNAWARE)( dpiContext ); }
+	BOOL SetProcessDpiAwarenessContext( DPI_AWARENESS_CONTEXT dpiContext ) { CHECK(SetProcessDpiAwarenessContext, FALSE)( dpiContext ); }
+	HRESULT SetProcessDpiAwareness( PROCESS_DPI_AWARENESS value ) { CHECK(SetProcessDpiAwareness, E_NOTIMPL)( value ); }
 };
 
 
@@ -138,6 +141,11 @@ static DpiAPImportTable& getDPI()
 #define DPI getDPI()
 
 // Dpi Aware API functions
+
+HMONITOR DpiAwarenessHelper::MonitorFromPoint( POINT pt, DWORD dwFlags )
+{
+	return DPI.MonitorFromPoint( pt, dwFlags );
+}
 
 HRESULT DpiAwarenessHelper::GetDpiForMonitor( HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY )
 {

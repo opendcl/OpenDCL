@@ -70,7 +70,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 /wd5038 /wd4774 /wd4840 /wd4623 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_WINDOWS;_CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -108,7 +108,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 /wd5038 /wd4774 /wd4840 /wd4623 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\Controls;..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_WINDOWS;_CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1;ARX_MODULE;_DEBUG;AC_FULL_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>

@@ -372,7 +372,7 @@ LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		else if( IsDescendant( mpDlgObject->GetTopLevelWnd(), pFocusWnd ) )
 		{
 			mhwndKeyboardFocus = pFocusWnd->m_hWnd;
-			if( IsWindowEnabled() )
+			if( IsWindowEnabled() && mpDlgObject->GetTopLevelWnd()->IsWindowEnabled() )
 			{
 				SetCapture();
 				SetCursor( LoadCursor( NULL, IDC_ARROW ) );
