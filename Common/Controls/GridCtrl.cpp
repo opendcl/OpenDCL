@@ -1328,98 +1328,98 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 	{
 	case Grid::CheckBoxes:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 14;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(14);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( sLabel.IsEmpty() )
-				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
+				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - FromDIP(14)) / 2 ); //center the icon in an empty cell
 			if( !bCalcOnly )
 			{
 				bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
 				DrawCheckBox( cdc, rcIcon, bChecked, bHighlight );
 			}
-			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(4); //shift label rect to leave space for image
 		}
 		break;
 	case Grid::OptionButtons:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 14;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(14);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( sLabel.IsEmpty() )
-				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
+				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - FromDIP(14)) / 2 ); //center the icon in an empty cell
 			if( !bCalcOnly )
 			{
 				bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
 				DrawOptionButton( cdc, rcIcon, bChecked, bHighlight );
 			}
-			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(4); //shift label rect to leave space for image
 		}
 		break;
 	case Grid::ArrowHead:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 14;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(14);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( !bCalcOnly )
 			{
 				int nCellImage = GetCellImage( nRow, nCol );
 				DrawArrow( cdc, rcIcon, nCellImage, sLabel );
 			}
-			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(4); //shift label rect to leave space for image
 		}
 		break;
 	case Grid::AcadColors:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 14;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(14);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( !bCalcOnly )
 			{
 				int nCellImage = GetCellImage( nRow, nCol );
 				DrawColor( cdc, rcIcon, nCellImage, sLabel );
 			}
-			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(4); //shift label rect to leave space for image
 		}
 		break;
 	case Grid::Fonts:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 14;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(14);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( !bCalcOnly )
 			{
 				int nFontImage = (GetCellText( nRow, nCol ).Right( 4 ) == _T(".shx")? 1 : 0);
 				DrawFontIcons( cdc, rcIcon, nFontImage, sLabel );
 			}
-			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(4); //shift label rect to leave space for image
 		}
 		break;
 	case Grid::AcadColorCell:
 	case Grid::TrueColorCell:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 14;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(14);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( !bCalcOnly )
 			{
 				int nCellImage = GetCellImage( nRow, nCol );
 				DrawColor( cdc, rcIcon, nCellImage, sLabel );
 			}
-			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(4); //shift label rect to leave space for image
 		}
 		break;
 	case Grid::LineWeightCell:
 		{
-			rcIcon += CSize( 4, 4 );
-			rcIcon.right = rcIcon.left + 48;
-			rcIcon.bottom = rcIcon.top + 14;
+			rcIcon += CSize( FromDIP(4), FromDIP(4) );
+			rcIcon.right = rcIcon.left + FromDIP(48);
+			rcIcon.bottom = rcIcon.top + FromDIP(14);
 			if( !bCalcOnly )
 			{
 				int nCellImage = GetCellImage( nRow, nCol );;
 				DrawLineWeight( cdc, rcIcon, nCellImage, sLabel );
 			}
-			rcLabel.left = rcIcon.right + 1; //shift label rect to leave space for image
+			rcLabel.left = rcIcon.right + FromDIP(1); //shift label rect to leave space for image
 		}
 		break;
 	default:
@@ -1448,7 +1448,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 					if( !bCalcOnly )
 					{
 						pImageList->Draw( &cdc,
-															nCellImage, CPoint( rcIcon.left + 1, rcIcon.top + 1 ),
+															nCellImage, CPoint( rcIcon.left + FromDIP(1), rcIcon.top + FromDIP(1) ),
 															(bHighlight? ILD_BLEND50 : 0) | ILD_TRANSPARENT | (lvi.state & LVIS_OVERLAYMASK) );
 					}
 				}
@@ -1462,8 +1462,8 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 
 	if( !sLabel.IsEmpty() )
 	{
-		rcLabel.top += 4;
-		rcLabel.left += 4;
+		rcLabel.top += FromDIP(4);
+		rcLabel.left += FromDIP(4);
 		cdc.SetBkMode( TRANSPARENT );
 		UINT fWordBreak = (bWordWrap? DT_WORDBREAK : DT_SINGLELINE);
 		if( !bCalcOnly )
@@ -1489,10 +1489,10 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight )
 {
 	CRect rc = rcIcon;
-	rc.right = rc.left + 14;
+	rc.right = rc.left + FromDIP(14);
 	if( rc.right > rcIcon.right )
 		rc.right = rcIcon.right;
-	rc.bottom = rc.top + 14;
+	rc.bottom = rc.top + FromDIP(14);
 	if( rc.bottom > rcIcon.bottom )
 		rc.bottom = rcIcon.bottom;
 	//CThemeHelperST* pTheme = GetThemeHelper();
@@ -1570,10 +1570,10 @@ void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, 
 void CGridCtrl::DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight )
 {
 	CRect rc = rcIcon;
-	rc.right = rc.left + 14;
+	rc.right = rc.left + FromDIP(14);
 	if( rc.right > rcIcon.right )
 		rc.right = rcIcon.right;
-	rc.bottom = rc.top + 14;
+	rc.bottom = rc.top + FromDIP(14);
 	if( rc.bottom > rcIcon.bottom )
 		rc.bottom = rcIcon.bottom;
 	WndTheme ButtonTheme( GetSafeHwnd(), L"BUTTON" );
@@ -1582,29 +1582,29 @@ void CGridCtrl::DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool
 	else
 	{
 		cdc.DrawEdge( &rc, EDGE_SUNKEN, BF_RECT );
-		rc.DeflateRect( 2, 2 );
+		rc.DeflateRect( FromDIP(2), FromDIP(2) );
 		CBrush brFill( cdc.GetBkColor() );
 		cdc.FillRect( &rc, &brFill );
 
 		if( bPressed )
 		{
-			rc.InflateRect( 4, 4 );
+			rc.InflateRect( FromDIP(4), FromDIP(4) );
 			CPen penBlack( PS_SOLID, 1, RGB(0,0,0) );
 			CPen* pOldPen = cdc.SelectObject( &penBlack );
-			cdc.MoveTo( rc.left + 5, rc.top + 7 );
-			cdc.LineTo( rc.left + 5, rc.top + 10 );
-			cdc.MoveTo( rc.left + 6, rc.top + 8 );
-			cdc.LineTo( rc.left + 6, rc.top + 11 );
-			cdc.MoveTo( rc.left + 7, rc.top + 9 );
-			cdc.LineTo( rc.left + 7, rc.top + 12 );
-			cdc.MoveTo( rc.left + 8, rc.top + 8 );
-			cdc.LineTo( rc.left + 8, rc.top + 11 );
-			cdc.MoveTo( rc.left + 9, rc.top + 7 );
-			cdc.LineTo( rc.left + 9, rc.top + 10 );
-			cdc.MoveTo( rc.left + 10, rc.top + 6 );
-			cdc.LineTo( rc.left + 10, rc.top + 9 );
-			cdc.MoveTo( rc.left + 11, rc.top + 5 );
-			cdc.LineTo( rc.left + 11, rc.top + 8 );
+			cdc.MoveTo( rc.left + FromDIP(5), rc.top + FromDIP(7) );
+			cdc.LineTo( rc.left + FromDIP(5), rc.top + FromDIP(10) );
+			cdc.MoveTo( rc.left + FromDIP(6), rc.top + FromDIP(8) );
+			cdc.LineTo( rc.left + FromDIP(6), rc.top + FromDIP(11) );
+			cdc.MoveTo( rc.left + FromDIP(7), rc.top + FromDIP(9) );
+			cdc.LineTo( rc.left + FromDIP(7), rc.top + FromDIP(12) );
+			cdc.MoveTo( rc.left + FromDIP(8), rc.top + FromDIP(8) );
+			cdc.LineTo( rc.left + FromDIP(8), rc.top + FromDIP(11) );
+			cdc.MoveTo( rc.left + FromDIP(9), rc.top + FromDIP(7) );
+			cdc.LineTo( rc.left + FromDIP(9), rc.top + FromDIP(10) );
+			cdc.MoveTo( rc.left + FromDIP(10), rc.top + FromDIP(6) );
+			cdc.LineTo( rc.left + FromDIP(10), rc.top + FromDIP(9) );
+			cdc.MoveTo( rc.left + FromDIP(11), rc.top + FromDIP(5) );
+			cdc.LineTo( rc.left + FromDIP(11), rc.top + FromDIP(8) );
 			cdc.SelectObject( &pOldPen );
 		}
 	}
@@ -1632,7 +1632,7 @@ void CGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CStr
 	}
 	cdc.Rectangle( &rcIcon );
 	CRect rcFill = rcIcon;
-	rcFill.DeflateRect( 1, 1 );
+	rcFill.DeflateRect( FromDIP(1), FromDIP(1) );
 	CBrush brFill( crFill );
 	cdc.FillRect( &rcFill, &brFill );
 }
@@ -1671,8 +1671,8 @@ void CGridCtrl::DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CSt
 	{
 		CPen penLW( PS_SOLID, 1, cdc.GetTextColor() );
 		CPen* pOldPen = cdc.SelectObject( &penLW );
-		cdc.MoveTo( rcIcon.left, rcIcon.top + 6 );
-		cdc.LineTo( rcIcon.right, rcIcon.top + 6 );
+		cdc.MoveTo( rcIcon.left, rcIcon.top + FromDIP(6) );
+		cdc.LineTo( rcIcon.right, rcIcon.top + FromDIP(6) );
 		cdc.SelectObject( pOldPen );
 		return;
 	}
@@ -1682,63 +1682,63 @@ void CGridCtrl::DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CSt
 		case 30:
 		case 35:
 		{
-			rc.top += 5;
-			rc.bottom = rc.top + 3;
+			rc.top += FromDIP(5);
+			rc.bottom = rc.top + FromDIP(3);
 			break;
 		}
 		case 40:
 		{
-			rc.top += 5;
-			rc.bottom = rc.top + 4;
+			rc.top += FromDIP(5);
+			rc.bottom = rc.top + FromDIP(4);
 			break;
 		}
 		case 50:
 		case 53:
 		{
-			rc.top += 4;
-			rc.bottom = rc.top + 5;
+			rc.top += FromDIP(4);
+			rc.bottom = rc.top + FromDIP(5);
 			break;
 		}
 		case 60:
 		{
-			rc.top += 4;
-			rc.bottom = rc.top + 6;
+			rc.top += FromDIP(4);
+			rc.bottom = rc.top + FromDIP(6);
 			break;
 		}
 		case 70:
 		{
-			rc.top += 3;
-			rc.bottom = rc.top + 7;
+			rc.top += FromDIP(3);
+			rc.bottom = rc.top + FromDIP(7);
 			break;
 		}
 		case 80:
 		{
-			rc.top += 3;
-			rc.bottom = rc.top + 8;
+			rc.top += FromDIP(3);
+			rc.bottom = rc.top + FromDIP(8);
 			break;
 		}
 		case 90:
 		{
-			rc.top += 3;
-			rc.bottom = rc.top + 9;
+			rc.top += FromDIP(3);
+			rc.bottom = rc.top + FromDIP(9);
 			break;
 		}
 		case 100:
 		case 106:
 		{
-			rc.top += 3;
-			rc.bottom = rc.top + 10;
+			rc.top += FromDIP(3);
+			rc.bottom = rc.top + FromDIP(10);
 			break;
 		}
 		case 120:
 		{
-			rc.top += 2;
-			rc.bottom = rc.top + 12;
+			rc.top += FromDIP(2);
+			rc.bottom = rc.top + FromDIP(12);
 			break;
 		}
 		default:
 		{
-			rc.bottom = rc.top + 14;
+			rc.bottom = rc.top + FromDIP(14);
 			break;
 		}
 	}
@@ -1984,7 +1984,7 @@ void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		if( mCurrentCell.row() == nRow && mCurrentCell.col() == nCol )
 		{
 			CRect rcFocus = GetCellRect( nRow, nCol, LVIR_BOUNDS );
-			rcFocus.DeflateRect( 1, 1 );
+			rcFocus.DeflateRect( FromDIP(1), FromDIP(1) );
 			pDC->DrawFocusRect( &rcFocus );
 		}
 
@@ -1996,7 +1996,7 @@ void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
 		CRect rcFocus;
 		GetItemRect( nRow, &rcFocus, LVIR_BOUNDS );
-		rcFocus.DeflateRect( 1, 1 );
+		rcFocus.DeflateRect( FromDIP(1), FromDIP(1) );
 		pDC->DrawFocusRect( &rcFocus );
 	}
 	return;
