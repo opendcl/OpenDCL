@@ -369,7 +369,7 @@ void CImageComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		return;
 	UINT nItemHeight = pHandler->GetItemHeight();
 	if( nItemHeight > 0 )
-		lpMeasureItemStruct->itemHeight = nItemHeight;
+		lpMeasureItemStruct->itemHeight = FromDIP(nItemHeight);
 }
 
 void CImageComboBoxCtrl::OnCbnDropdown()

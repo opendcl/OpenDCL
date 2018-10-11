@@ -122,15 +122,17 @@ protected:
 			if( iter != mmapFonts.end() )
 				Info = (iter->second);
 			if( Info.GetFlags() == 4 )
-				mImageList.Draw( pDC, 0, CPoint( rc.left,rc.top ), ILD_TRANSPARENT );
+				mImageList.Draw( pDC, 0, CPoint( rc.left, rc.bottom - 16 ), ILD_TRANSPARENT );
 			else if( Info.GetFlags() == 6 )
-				mImageList.Draw( pDC, 1, CPoint( rc.left,rc.top ), ILD_TRANSPARENT );
+				mImageList.Draw( pDC, 1, CPoint( rc.left, rc.bottom - 16 ), ILD_TRANSPARENT );
 
 			int nX = rc.left; // Save for lines
 
 			rc.left += 17; // Text Position
+			rc.bottom--;
 
-			pDC->TextOut( rc.left, rc.top, sCurFont );
+			pDC->SetTextAlign(TA_LEFT | TA_BASELINE);
+			pDC->TextOut( rc.left, rc.bottom - 2, sCurFont );
 
 			if( pCombo->GetItemData( lpDIS->itemID ) == 1 )
 			{

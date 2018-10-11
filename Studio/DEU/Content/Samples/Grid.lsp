@@ -26,7 +26,7 @@
   (princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 ;;;******************************************************************
 (defun c:Project1_Dcl-1_TB-Close_OnClicked () (dcl-Form-Close Grid/Dcl-1))
@@ -332,7 +332,7 @@ Argumente: nColumn: "      (itoa nColumn)
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -396,7 +396,3 @@ Argumente: nColumn: "      (itoa nColumn)
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

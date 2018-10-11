@@ -46,7 +46,7 @@
   (princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 (defun c:AllControls/Form1#OnInitialize (/ parent)
   (setq parent (dcl-Tree-AddParent AllControls/Form1/TreeControl1 "Baumstruktur" 0 -1 1))
@@ -96,7 +96,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -160,7 +160,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

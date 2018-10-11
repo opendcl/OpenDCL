@@ -6,7 +6,7 @@
 ;;;
 
 
-;|«Global Constants»|;
+;|*Global Constants*|;
 
 ;; Liste der Beispiele in der Form (Registerkarte Beispielname Lisp-Dateiname Beschreibung)
 (setq *OdclAllSamples '(
@@ -269,7 +269,7 @@
 )
 
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 (DEFUN c:AllSamples/Update#OnInitialize (/ curlang myver myver_string curver curver_string)
   (dcl-ListBox-Clear AllSamples/Update/lbxStatus)
@@ -464,7 +464,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
- ;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 2 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

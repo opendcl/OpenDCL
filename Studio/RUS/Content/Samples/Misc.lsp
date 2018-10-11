@@ -26,7 +26,7 @@
 	(princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 ;; this function gets fired when a tab gets changed
 (DEFUN c:DemoModal_TabControl1_Changed (nSelIndex / nCount)
@@ -156,7 +156,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -218,7 +218,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

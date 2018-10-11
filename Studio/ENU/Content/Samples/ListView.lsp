@@ -26,7 +26,7 @@
 	(princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 ;; This function will run everytime the form is loaded into AutoCAD
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
@@ -72,7 +72,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -134,7 +134,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

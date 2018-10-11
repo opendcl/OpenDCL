@@ -27,7 +27,7 @@
   (princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 ;; Diese Funktion wird automatisch ausgeführt, wenn der Dialog geladen wird.
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
@@ -74,7 +74,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -138,7 +138,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

@@ -31,7 +31,7 @@
   (princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 (defun c:splash/Form1#OnTimer ()
   (dcl-Control-SetCaption Splash/Form1/Label1 (strcat "Ich lade..." (itoa *Count*)))
@@ -45,7 +45,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -109,7 +109,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

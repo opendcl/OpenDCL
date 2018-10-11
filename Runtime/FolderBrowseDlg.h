@@ -23,5 +23,5 @@ public:
 
 private:
 	virtual BOOL SelChanged(LPCTSTR pszSelection, CString& csStatusText) { return TRUE; };
-	static int __stdcall CFolderBrowseDlg::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
+	static int __stdcall BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 };

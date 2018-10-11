@@ -110,8 +110,9 @@ public:
 				{
 					CRect rcImage( rc );
 					rcImage.left += 2;
+					rcImage.bottom -= 3;
 					rcImage.right = rcImage.left + 13;
-					rcImage.bottom = rcImage.top + 13;
+					rcImage.top = rcImage.bottom - 13;
 
 					CPoint point;
 					CRect rcColor( rcImage );
@@ -132,8 +133,10 @@ public:
 				}
 				rc.left += 48; // Text Position
 				rc.top++;
+				rc.bottom--;
 				pDC->SetBkMode(TRANSPARENT);
-				pDC->TextOut( rc.left, rc.top, sName );
+				pDC->SetTextAlign(TA_LEFT | TA_BASELINE);
+				pDC->TextOut( rc.left, rc.bottom - 2, sName );
 			}
 			if( lpDrawItemStruct->itemState & ODS_FOCUS )
 				pDC->DrawFocusRect( &lpDrawItemStruct->rcItem );

@@ -37,7 +37,7 @@
 	(and Tree/Main/chkTrack (= 1 (dcl-Control-GetValue Tree/Main/chkTrack)))
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 (defun c:Tree/Main#OnInitialize	(/ P1 P2)
 	(setq P1 (dcl-Tree-AddParent Tree/Main/tree "Erste Gruppe" 0 -1 1))
@@ -351,7 +351,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -415,7 +415,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

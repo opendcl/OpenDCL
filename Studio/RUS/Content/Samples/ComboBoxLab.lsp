@@ -13,7 +13,7 @@
 ;;
 
 
-;|«OpenDCL Global Constants»|;
+;|*OpenDCL Global Constants*|;
 
 
 ;; Ordered list of combo box styles, used to map display name to style value, and vice versa
@@ -278,7 +278,7 @@
 ))
 
 
-;|«OpenDCL Global Utility Functions»|;
+;|*OpenDCL Global Utility Functions*|;
 
 
 ;; Save a user setting in the registry
@@ -529,7 +529,7 @@
 )
 
 
-;|«Form-Agnostic Event Handler Implementation»|;
+;|*Form-Agnostic Event Handler Implementation*|;
 
 
 (defun *ComboBoxLab/$#OnInitialize ($form / grid row init-method)
@@ -905,7 +905,7 @@
 )
 
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 
 ;; Modeless form
@@ -1008,7 +1008,7 @@
 (defun c:ComboBoxLab/Palette/ComboBoxR#OnSetFocus (/) (*ComboBoxLab/$/ComboBoxR#OnSetFocus "Palette") (princ))
 
 
-;|«OpenDCL Main Function»|;
+;|*OpenDCL Main Function*|;
 
 
 (defun C:COMBOBOXLAB (/ cmdecho form-type first-run value)
@@ -1068,7 +1068,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -1130,7 +1130,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

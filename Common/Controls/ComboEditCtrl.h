@@ -138,7 +138,7 @@ protected:
 				return;
 			UINT nItemHeight = mpHandler->GetItemHeight();
 			if( nItemHeight > 0 )
-				lpMeasureItemStruct->itemHeight = nItemHeight;
+				lpMeasureItemStruct->itemHeight = host()->FromDIP(nItemHeight);
 		}
 	afx_msg void OnKillFocus()
 		{
