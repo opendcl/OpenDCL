@@ -7,37 +7,37 @@
 <title>Software-Verteilung</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Software-Verteilung</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-				<h4>Die Anwendung zusammenstellen</h4>
-		        <p>Die Zusammenstellung einer OpenDCL-Applikation unterscheidet sich kaum von jeder anderen AutoLISP-Applikation. Die meisten Entwickler entscheiden sich, den AutoLISP-Quellcode in ein schnell ladbares LISP-Format (*.fas) oder ein kompiliertes und gepacktes Format (*.vlx) f&uuml;r den Einsatz beim Endanwender zu konvertieren. M&ouml;glicherweise ist dieser Vorgang bei in-House-Applikationen nicht n&ouml;tig oder nicht erw&uuml;nscht.</p>
-		        <p>Bei der Zusammenstellung aller AutoLISP-Dateien ist es auch erforderlich, alle zugeh&ouml;rigen Dateien, wie OpenDCL-Projektdateien, Datendateien und unterst&uuml;tzende Dateien (z.B. Symbole, externe Bilder, Dias) mit einzubinden. Achten Sie dringend darauf, dass keine hardcodierten Verzeichnisse im Quellcode verwendet werden, damit die Applikation fehlerfrei l&auml;uft, wo immer sie installiert wurde.</p>
-		        <p>Ein allgemein verbreitetes Verfahren, die zugeh&ouml;rigen Dateien zu verwalten, ist, den Installationsordner der Applikation nicht als hardcodierten Verzeichnispfads zu verwenden,  sondern ihn zu den AutoCAD-Supportpfaden hinzuzuf&uuml;gen. Diese Herangehensweise ist allerdings zuweilen riskant, da Fehler entstehen k&ouml;nnten, wenn aus irgendeinem Grunde das Verzeichnis aus der Liste der AutoCAD-Supportpfade entfernt wurde oder der Wert der Supportpfad-Variable die maximal m&ouml;gliche L&auml;nge &uuml;berschreitet. Eine solide L&ouml;sung ist es, den Pfad in die Windows Registrierung als Registry-Eintrag der Applikation zu schreiben. Dieser Pfad kann dann (beispielsweise in Form einer globalen Variable) der gew&uuml;nschten Datei zur Laufzeit vorangestellt werden. </p>
-		        <p>Viele Entwickler wollen ihre OpenDCL-Projekte packen, so dass der Endanwender oder Dritte ihren Inhalt nicht sehen oder &auml;ndern k&ouml;nnen. Das normale Vorgehen, die *.odcl-Dateien separat von den verkn&uuml;pften AutoLISP-Dateien zu halten, macht dies unm&ouml;glich. OpenDCL stellt deshalb eine L&ouml;sung zur Verf&uuml;gung, wodurch die OpenDCL-Projektdaten direkt in den AutoLISP-Quellcode als Daten integriert werden k&ouml;nnen. Dies erm&ouml;glicht, dass diese Dateien in einer einzigen *.vlx, die sowohl den AutoLISP-Quellcode als auch die OpenDCL-Projektdaten enth&auml;lt, zusammen einkompiliert werden k&ouml;nnen. Das Einbetten der Projektdaten erfordert aber, dass ein OpenDCL-Projekt im OpenDCL-Studio mit einer *.lsp-Dateierweiterung gespeichert wird. Durch die manuelle Eingabe der Dateierweiterung *.lsp wird OpenDCL Studio die Projektdaten in einem nichtcodierten, reinen Textformat abspeichern, so dass der Inhalt direkt in den AutoLISP-Quellcode kopiert und anschlie&szlig;end mit der Funktion <a href="../Reference/Method/Project/Import.htm">(dcl_Project_Import)</a> geladen werden kann. </p>
-		        <h4>Die OpenDCL Laufzeitumgebung einbeziehen </h4>
-		        <p>Mit der OpenDCL-Applikation muss auch die OpenDCL-Laufzeitumgebung ausgeliefert werden. Um die Interoperabilit&auml;t zwischen verschiedenen OpenDCL-Applikationen auf dem System des Endanwenders sicherzustellen, muss die Laufzeitumgebung von OpenDCL mit dem Windows Installer installiert werden. Eine M&ouml;glichkeit, dies zu realisieren, ist die OpenDCL Laufzeitumgebung mit der MSI-Datei mit auszuliefern und die MSI-Datei w&auml;hrend der Installation auszuf&uuml;hren. Besser w&auml;re es jedoch, die Installation der Laufzeitumgebung mit der Installation der Applikation zusammenzuf&uuml;hren. Das geschieht mit Hilfe des OpenDCL Runtime Merge Modules (*.MSM), die in das Installationsskript der Applikation importiert werden kann. Die Unterst&uuml;tzung f&uuml;r diese Module variiert in Abh&auml;ngigkeit von der verwendeten Installer-Technologie. Werden von der verwendeten Installer-Technologie keine Merge-Module unterst&uuml;tzt, kann die MSM-Datei in diesem Fall nicht zur Anwendung kommen.</p>
-		        <p> Beide Methoden f&uuml;r die Bereitstellung der OpenDCL Laufzeitumgebung stellen sicher, dass die OpenDCL-Installationsdateien korrekt referenziert werden, so dass durch die Deinstallation einer OpenDCL-Applikation die Laufzeitumgebung nicht entfernt wird, sofern eine andere Applikation darauf weiterhin zugreifen kann bzw. die Laufzeitumgebung erst dann entfernt wird, wenn sie nicht l&auml;nger ben&ouml;tigt wird.</p>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">Software-Verteilung</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size:xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+        <h4>Die Anwendung zusammenstellen</h4>
+            <p>Die Zusammenstellung einer OpenDCL-Applikation unterscheidet sich kaum von jeder anderen AutoLISP-Applikation. Die meisten Entwickler entscheiden sich, den AutoLISP-Quellcode in ein schnell ladbares LISP-Format (*.fas) oder ein kompiliertes und gepacktes Format (*.vlx) f&uuml;r den Einsatz beim Endanwender zu konvertieren. M&ouml;glicherweise ist dieser Vorgang bei in-House-Applikationen nicht n&ouml;tig oder nicht erw&uuml;nscht.</p>
+            <p>Bei der Zusammenstellung aller AutoLISP-Dateien ist es auch erforderlich, alle zugeh&ouml;rigen Dateien, wie OpenDCL-Projektdateien, Datendateien und unterst&uuml;tzende Dateien (z.B. Symbole, externe Bilder, Dias) mit einzubinden. Achten Sie dringend darauf, dass keine hardcodierten Verzeichnisse im Quellcode verwendet werden, damit die Applikation fehlerfrei l&auml;uft, wo immer sie installiert wurde.</p>
+            <p>Ein allgemein verbreitetes Verfahren, die zugeh&ouml;rigen Dateien zu verwalten, ist, den Installationsordner der Applikation nicht als hardcodierten Verzeichnispfads zu verwenden,  sondern ihn zu den AutoCAD-Supportpfaden hinzuzuf&uuml;gen. Diese Herangehensweise ist allerdings zuweilen riskant, da Fehler entstehen k&ouml;nnten, wenn aus irgendeinem Grunde das Verzeichnis aus der Liste der AutoCAD-Supportpfade entfernt wurde oder der Wert der Supportpfad-Variable die maximal m&ouml;gliche L&auml;nge &uuml;berschreitet. Eine solide L&ouml;sung ist es, den Pfad in die Windows Registrierung als Registry-Eintrag der Applikation zu schreiben. Dieser Pfad kann dann (beispielsweise in Form einer globalen Variable) der gew&uuml;nschten Datei zur Laufzeit vorangestellt werden. </p>
+            <p>Viele Entwickler wollen ihre OpenDCL-Projekte packen, so dass der Endanwender oder Dritte ihren Inhalt nicht sehen oder &auml;ndern k&ouml;nnen. Das normale Vorgehen, die *.odcl-Dateien separat von den verkn&uuml;pften AutoLISP-Dateien zu halten, macht dies unm&ouml;glich. OpenDCL stellt deshalb eine L&ouml;sung zur Verf&uuml;gung, wodurch die OpenDCL-Projektdaten direkt in den AutoLISP-Quellcode als Daten integriert werden k&ouml;nnen. Dies erm&ouml;glicht, dass diese Dateien in einer einzigen *.vlx, die sowohl den AutoLISP-Quellcode als auch die OpenDCL-Projektdaten enth&auml;lt, zusammen einkompiliert werden k&ouml;nnen. Das Einbetten der Projektdaten erfordert aber, dass ein OpenDCL-Projekt im OpenDCL-Studio mit einer *.lsp-Dateierweiterung gespeichert wird. Durch die manuelle Eingabe der Dateierweiterung *.lsp wird OpenDCL Studio die Projektdaten in einem nichtcodierten, reinen Textformat abspeichern, so dass der Inhalt direkt in den AutoLISP-Quellcode kopiert und anschlie&szlig;end mit der Funktion <a href="../Reference/Method/Project/Import.htm">(dcl_Project_Import)</a> geladen werden kann. </p>
+            <h4>Die OpenDCL Laufzeitumgebung einbeziehen </h4>
+            <p>Mit der OpenDCL-Applikation muss auch die OpenDCL-Laufzeitumgebung ausgeliefert werden. Um die Interoperabilit&auml;t zwischen verschiedenen OpenDCL-Applikationen auf dem System des Endanwenders sicherzustellen, muss die Laufzeitumgebung von OpenDCL mit dem Windows Installer installiert werden. Eine M&ouml;glichkeit, dies zu realisieren, ist die OpenDCL Laufzeitumgebung mit der MSI-Datei mit auszuliefern und die MSI-Datei w&auml;hrend der Installation auszuf&uuml;hren. Besser w&auml;re es jedoch, die Installation der Laufzeitumgebung mit der Installation der Applikation zusammenzuf&uuml;hren. Das geschieht mit Hilfe des OpenDCL Runtime Merge Modules (*.MSM), die in das Installationsskript der Applikation importiert werden kann. Die Unterst&uuml;tzung f&uuml;r diese Module variiert in Abh&auml;ngigkeit von der verwendeten Installer-Technologie. Werden von der verwendeten Installer-Technologie keine Merge-Module unterst&uuml;tzt, kann die MSM-Datei in diesem Fall nicht zur Anwendung kommen.</p>
+            <p> Beide Methoden f&uuml;r die Bereitstellung der OpenDCL Laufzeitumgebung stellen sicher, dass die OpenDCL-Installationsdateien korrekt referenziert werden, so dass durch die Deinstallation einer OpenDCL-Applikation die Laufzeitumgebung nicht entfernt wird, sofern eine andere Applikation darauf weiterhin zugreifen kann bzw. die Laufzeitumgebung erst dann entfernt wird, wenn sie nicht l&auml;nger ben&ouml;tigt wird.</p>
 </div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <hr />
+  <div id="footer">
+    <p>Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+    Alle Rechte vorbehalten.</p>
+    <p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

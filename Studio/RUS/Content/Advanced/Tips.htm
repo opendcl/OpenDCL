@@ -6,31 +6,31 @@
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../Utility.js"></script><title>Tips and Techniques</title></head><body>
-	<table width="100%">
-		<tbody><tr>
-			<td nowrap="nowrap">
-				<div id="title">Советы и приемы</div>
-			</td>
-			<td align="right" valign="top">
+  <table width="100%">
+    <tbody><tr>
+      <td nowrap="nowrap">
+        <div id="title">Советы и приемы</div>
+      </td>
+      <td align="right" valign="top">
 <div id="hdrlink" style="font-size: xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
-					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
-				</div>
-			</td>
-		</tr>
-	</tbody></table>
-	<hr>
-	<div id="content">
-		<h4>Внешний вид диалогов и элементов управления <br>
+          <a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+          <a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
+        </div>
+      </td>
+    </tr>
+  </tbody></table>
+  <hr>
+  <div id="content">
+    <h4>Внешний вид диалогов и элементов управления <br>
 </h4>
-		<p>Многие элементы управления поддерживают цвета фона и
+    <p>Многие элементы управления поддерживают цвета фона и
 переднего плана. Установка цвета фона -24 (Прозрачный) приведет к тому,
 что элемент управления станет прозрачным. Установкацвета переднего плана в некоторых случаях зависит от свойства ' <a href="../Reference/Property/UseVisualStyle.htm">Использовать визуальный стиль</a>'. Когда элементы управления используют визуальный стиль, он может переопределить цвет переднего плана. Если требуется конкретный цвет элемента,
 лучше отключить использование визуального стиля. Обратите внимание, что
 визуальные стили доступны только в Windows XP и более поздних версиях,
 и только если они включены в настройках Windows.</p>
-		<p>Графические кнопки и элементы управления с картинками могут нарисовать изображения с прозрачными областями из пикселей со значением цвета RGB 192, 192, 192. Любые пиксели с этим цветом будут прозрачными.</p>
-		<p>Настройка
+    <p>Графические кнопки и элементы управления с картинками могут нарисовать изображения с прозрачными областями из пикселей со значением цвета RGB 192, 192, 192. Любые пиксели с этим цветом будут прозрачными.</p>
+    <p>Настройка
 шрифта элементов управления включает в себя обычные настройки шрифта,
 размера и стиля, однако в OpenDCL есть дополнительный свойство, которое
 определяет то, как размер шрифта рассчитывается во время выполнения.
@@ -40,8 +40,8 @@
 Данный алгоритм должен использоваться с осторожностью, так как это
 может привести к слишком маленьким или слишком большим размерам текста
 в элементах управления.</p>
-		<h4>Изменение свойств во время выполнения</h4>
-		<p>Изменение свойств элемента
+    <h4>Изменение свойств во время выполнения</h4>
+    <p>Изменение свойств элемента
 или формы во время выполнения - это очень мощная возможность, которая
 позволяет приложениям OpenDCL буквально изменять свой пользовательский
 интерфейс динамически во время их выполнения. Элементы управления могут
@@ -50,7 +50,7 @@
 разным элементам управления занимать одно и то же место на форме, что
 позволяет с помощью кода показывать и скрывать их так, чтобы только
 один или другой был виден в данный момент времени.</p>
-		<p>Большинство
+    <p>Большинство
 свойств форм и элементов управления хранятся в данных проекта. Такие
 свойства сохраняются между вызовами одной и той же формы. Это важно
 помнить, потому что в некоторых случаях состояние предыдущего диалога
@@ -58,22 +58,22 @@
 данные проекта могут быть перезагружены из файла проекта или быть
 сброшены непосредственно к исходным значениям. Например, код, который
 заполняет поле со списком при <a href="../Reference/Event/Initialize.htm">OnInitialize</a> должен учитывать возможность, что список уже был инициализирован либо сначала проверять его, или просто очищать его каждый раз перед заполнением.</p>
-		<p>В некоторых случаях, может быть полезно написать код AutoLISP
+    <p>В некоторых случаях, может быть полезно написать код AutoLISP
 для автоматизации ряда изменений в существующем OpenDCL проекте, а
 затем сохранить изменения обратно в файл. Например, следующий код
 открывает проект OpenDCL, перебирает каждый элемент управления в каждой
 форме и устанавливает метод масштабирования шрифта для каждого из них
 (масштабирование шрифта контролируется свойством '<a href="../Reference/Property/FontSize.htm">FontSize</a>'), затем сохраняет проекта с измененными данными&nbsp; в новый файл.</p>
-	    <blockquote>
+      <blockquote>
           <pre>(defun SetOdclFontSizeUnscaled (odclfile password newodclpath / project props fontsize)<br>  (setq project (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> odclfile))<br>  (if (not project) (exit))<br>  (foreach<br>    form (<a href="../Reference/Method/Project/GetForms.htm">dcl-Project-GetForms</a> project)<br>    (foreach<br>      control (<a href="../Reference/Method/Form/GetControls.htm">dcl-Form-GetControls</a> form)<br>      (progn (setq props (<a href="../Reference/Method/Control/GetProperties.htm">dcl-Control-GetProperties</a> control))<br>        (if (member "FontSize" props)<br>          (progn (setq fontsize (<a href="../Reference/Method/Control/GetProperty.htm">dcl-Control-GetProperty</a> control "FontSize"))<br>            (if (&gt; fontsize 0)<br>              (<a href="../Reference/Method/Control/SetProperty.htm">dcl-Control-SetProperty</a> control "FontSize" (- 0 fontsize))))))))<br>  (<a href="../Reference/Method/Project/SaveAs.htm">dcl-Project-SaveAs</a> project newodclpath password)<br>)</pre>
         </blockquote>
-	</div>
-	<hr>
+  </div>
+  <hr>
 <div id="footer">
-		<p>Авторские права © 2018 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
-		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
-	</div>
+    <p>Авторские права © 2019 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+    <p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+  </div>
 </body>
 </html>

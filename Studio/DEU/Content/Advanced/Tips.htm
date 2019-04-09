@@ -7,30 +7,30 @@
 <title>Tipps und Techniken</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Tipps und Techniken </div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-		<h4>Darstellung von Steuerelementen und Dialogen</h4>
-		<p>Viele Steuerelemente unterst&uuml;tzen Vordergrund- und Hintergrundfarben. Die Hintergrundfarbe -24 (f&uuml;r transparent) bewirkt, dass das Steuerelement durchsichtig erscheint. Die Einstellung der Vordergrundfarbe h&auml;ngt in einigen F&auml;llen von der Eigenschaft <a href="../Reference/Property/UseVisualStyle.htm">Use Visual Style</a> ab. Verwendet ein Steuerelement den visuellen Stil, kann das die explizit eingestellte Vordergrundfarbe &uuml;berschreiben. Ist die Farbe des Steuerelements wichtig, deaktivieren Sie die Eigenschaft <a href="../Reference/Property/UseVisualStyle.htm">Use Visual Style</a>. Bitte beachten Sie, dass visuelle Stile erst ab Windows XP zur Verf&uuml;gung stehen und auch nur, wenn sie in den Windows-Einstellungen aktiviert wurden.</p>
-		<p>Bildschaltfl&auml;chen und das Steuerelement Bild k&ouml;nnen Bilder transparant darstellen, wenn der zu maskierende Bereich die RGB-Farbe 192,192,192 hat. Jedes Pixel mit dieser Farbe wird maskiert, wenn das Bild angezeigt wird. </p>
-		<p>Die Einstellungen f&uuml;r das Schriftbild von Steuerelementen beinhaltet die Parameter Schriftart, Schriftgr&ouml;&szlig;e und den Stil. OpenDCL verf&uuml;gt &uuml;ber eine zus&auml;tzliche Eigenschaft, die bestimmt, wie die Schriftgr&ouml;&szlig;e zur Laufzeit berechnet werden soll. Vorgabem&auml;&szlig;ig ist die Eigenschaft auf &quot;Schriftgr&ouml;&szlig;e in Pixel&quot; gestellt. Wird statt dessen &quot;Bildschirmeinstellungen&quot; verwendet, berechnet sich die Schriftgr&ouml;&szlig;e in Abh&auml;ngigkeit von der Gr&ouml;&szlig;e der Bildschirmanzeige. Diese Einstellung ist aber mit Vorsicht zu genie&szlig;en, denn sie kann bewirken, dass Steuerelemente zu klein oder zu gro&szlig; f&uuml;r den darzustellenden Text darin sind.</p>
-		<h4>Eigenschaften zur Laufzeit ver&auml;ndern </h4>
-		<p>Das &Auml;ndern der Eigenschaften von Dialogen und Steuerelementen ist eine leistungsf&auml;hige Funktionalit&auml;t, mit der OpenDCL-Applikationen ihre Benutzersteuerung dynamisch zur Laufzeit &auml;ndern k&ouml;nnen. Steuerelemente k&ouml;nnen in Abh&auml;ngigkeit vom aktuellen Dialogstatus bzw. Programmablauf aktiviert oder deaktiviert und sogar aus- oder eingeblendet werden. Diese F&auml;higkeit erlaubt es auch, dass mehrere Steuerelemente den selben Platz auf dem Dialog beanspruchen k&ouml;nnen und lediglich das eine oder das andere Steuerelement zu gegebener Zeit angezeigt wird. </p>
-		<p>Die meisten Dialoge und Steuerelemente sind in den Projektdaten abgelegt. Die einmal gesetzten Eigenschaftswerte bleiben zwischen den Aufrufen der selben Dialogbox erhalten. Es ist sehr wichtig, dies im Hinterkopf zu behalten, denn in manchen Situationen sollte der vorherige Dialogzustand zwischen den Aufrufen zur&uuml;ckgesetzt werden. In diesen F&auml;llen k&ouml;nnen die Projektdaten aus der OpenDCL-Projektdatei neugeladen  oder die gesicherten Eigenschaften k&ouml;nnen direkt zu ihrem Ausgangswert zur&uuml;ckgesetzt werden. So muss darauf beispielsweise der Quellcode, der w&auml;hrend des Ereignisses <a href="../Reference/Event/Initialize.htm">OnInitialize</a> ein Listenfeld vorbereitet, darauf R&uuml;cksicht nehmen, denn das Listenfeld kann bereits initialisiert sein und schon Werte enthalten. In diesem Fall sollte der Quellcode vor dem Hinzuf&uuml;gen der Liste pr&uuml;fen, ob das Listenfeld bereits Werte enth&auml;lt oder jedes Mal den Inhalt des Listenfelds einfach bereinigen, bevor es angezeigt wird. </p>
-		<p>In einigen F&auml;llen kann es sinnvoll sein, AutoLISP-Code zu schreiben, um eine Serie von &Auml;nderungen an einem OpenDCL-Projekt vorzunehmen und anschlie&szlig;end wieder in eine Projektdatei zu schreiben. Der nachfolgende Quellcode zeigt beispielhaft, wie ein OpenDCL-Projekt ge&ouml;ffnet wird und jedes Steuerelement auf jedem Dialog durchlaufen wird, um die Methode der Skalierung der Schriftgr&ouml;&szlig;e zu &auml;ndern (Bitte beachten Sie, dass die Methode zur Skalierung der Schriftgr&ouml;&szlig;e durch dei Eigenschaft <a href="../Reference/Property/FontSize.htm">FontSize</a> gesteuert wird). Zum Abschluss werden die ge&auml;nderten Projektdaten in eine neue Datei geschrieben. </p>
-		<blockquote>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">Tipps und Techniken </div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size:xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <h4>Darstellung von Steuerelementen und Dialogen</h4>
+    <p>Viele Steuerelemente unterst&uuml;tzen Vordergrund- und Hintergrundfarben. Die Hintergrundfarbe -24 (f&uuml;r transparent) bewirkt, dass das Steuerelement durchsichtig erscheint. Die Einstellung der Vordergrundfarbe h&auml;ngt in einigen F&auml;llen von der Eigenschaft <a href="../Reference/Property/UseVisualStyle.htm">Use Visual Style</a> ab. Verwendet ein Steuerelement den visuellen Stil, kann das die explizit eingestellte Vordergrundfarbe &uuml;berschreiben. Ist die Farbe des Steuerelements wichtig, deaktivieren Sie die Eigenschaft <a href="../Reference/Property/UseVisualStyle.htm">Use Visual Style</a>. Bitte beachten Sie, dass visuelle Stile erst ab Windows XP zur Verf&uuml;gung stehen und auch nur, wenn sie in den Windows-Einstellungen aktiviert wurden.</p>
+    <p>Bildschaltfl&auml;chen und das Steuerelement Bild k&ouml;nnen Bilder transparant darstellen, wenn der zu maskierende Bereich die RGB-Farbe 192,192,192 hat. Jedes Pixel mit dieser Farbe wird maskiert, wenn das Bild angezeigt wird. </p>
+    <p>Die Einstellungen f&uuml;r das Schriftbild von Steuerelementen beinhaltet die Parameter Schriftart, Schriftgr&ouml;&szlig;e und den Stil. OpenDCL verf&uuml;gt &uuml;ber eine zus&auml;tzliche Eigenschaft, die bestimmt, wie die Schriftgr&ouml;&szlig;e zur Laufzeit berechnet werden soll. Vorgabem&auml;&szlig;ig ist die Eigenschaft auf &quot;Schriftgr&ouml;&szlig;e in Pixel&quot; gestellt. Wird statt dessen &quot;Bildschirmeinstellungen&quot; verwendet, berechnet sich die Schriftgr&ouml;&szlig;e in Abh&auml;ngigkeit von der Gr&ouml;&szlig;e der Bildschirmanzeige. Diese Einstellung ist aber mit Vorsicht zu genie&szlig;en, denn sie kann bewirken, dass Steuerelemente zu klein oder zu gro&szlig; f&uuml;r den darzustellenden Text darin sind.</p>
+    <h4>Eigenschaften zur Laufzeit ver&auml;ndern </h4>
+    <p>Das &Auml;ndern der Eigenschaften von Dialogen und Steuerelementen ist eine leistungsf&auml;hige Funktionalit&auml;t, mit der OpenDCL-Applikationen ihre Benutzersteuerung dynamisch zur Laufzeit &auml;ndern k&ouml;nnen. Steuerelemente k&ouml;nnen in Abh&auml;ngigkeit vom aktuellen Dialogstatus bzw. Programmablauf aktiviert oder deaktiviert und sogar aus- oder eingeblendet werden. Diese F&auml;higkeit erlaubt es auch, dass mehrere Steuerelemente den selben Platz auf dem Dialog beanspruchen k&ouml;nnen und lediglich das eine oder das andere Steuerelement zu gegebener Zeit angezeigt wird. </p>
+    <p>Die meisten Dialoge und Steuerelemente sind in den Projektdaten abgelegt. Die einmal gesetzten Eigenschaftswerte bleiben zwischen den Aufrufen der selben Dialogbox erhalten. Es ist sehr wichtig, dies im Hinterkopf zu behalten, denn in manchen Situationen sollte der vorherige Dialogzustand zwischen den Aufrufen zur&uuml;ckgesetzt werden. In diesen F&auml;llen k&ouml;nnen die Projektdaten aus der OpenDCL-Projektdatei neugeladen  oder die gesicherten Eigenschaften k&ouml;nnen direkt zu ihrem Ausgangswert zur&uuml;ckgesetzt werden. So muss darauf beispielsweise der Quellcode, der w&auml;hrend des Ereignisses <a href="../Reference/Event/Initialize.htm">OnInitialize</a> ein Listenfeld vorbereitet, darauf R&uuml;cksicht nehmen, denn das Listenfeld kann bereits initialisiert sein und schon Werte enthalten. In diesem Fall sollte der Quellcode vor dem Hinzuf&uuml;gen der Liste pr&uuml;fen, ob das Listenfeld bereits Werte enth&auml;lt oder jedes Mal den Inhalt des Listenfelds einfach bereinigen, bevor es angezeigt wird. </p>
+    <p>In einigen F&auml;llen kann es sinnvoll sein, AutoLISP-Code zu schreiben, um eine Serie von &Auml;nderungen an einem OpenDCL-Projekt vorzunehmen und anschlie&szlig;end wieder in eine Projektdatei zu schreiben. Der nachfolgende Quellcode zeigt beispielhaft, wie ein OpenDCL-Projekt ge&ouml;ffnet wird und jedes Steuerelement auf jedem Dialog durchlaufen wird, um die Methode der Skalierung der Schriftgr&ouml;&szlig;e zu &auml;ndern (Bitte beachten Sie, dass die Methode zur Skalierung der Schriftgr&ouml;&szlig;e durch dei Eigenschaft <a href="../Reference/Property/FontSize.htm">FontSize</a> gesteuert wird). Zum Abschluss werden die ge&auml;nderten Projektdaten in eine neue Datei geschrieben. </p>
+    <blockquote>
           <pre>(defun SetOdclFontSizeUnscaled (odclfile password newodclpath / project props fontsize)
   (setq project (<a href="../Reference/Method/Project/Load.htm">dcl_Project_Load</a> odclfile))
   (if (not project) (exit))
@@ -50,14 +50,14 @@
   (<a href="../Reference/Method/Project/SaveAs.htm">dcl_Project_SaveAs</a> project newodclpath password)
 )<span class="codecomment">; SetOdclFontSizeUnscaled</span></pre>
       </blockquote>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+    Alle Rechte vorbehalten.</p>
+    <p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

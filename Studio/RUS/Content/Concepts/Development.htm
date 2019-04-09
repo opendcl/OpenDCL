@@ -4,83 +4,83 @@
 
 
 
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta http-equiv="Content-Language" content="en-us">
-	<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-	<script type="text/javascript" src="../Utility.js"></script><title>Application Development</title></head><body>
-	<table width="100%">
-		<tbody><tr>
-			<td nowrap="nowrap">
-				<div id="title">Разработка приложения</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size: xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
-					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
-				</div>
-			</td>
-		</tr>
-	</tbody></table>
-	<hr>
-	<div id="content">
-		<p>Приложение OpenDCL состоит из кода AutoLISP&nbsp;
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="en-us">
+  <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../Utility.js"></script><title>Application Development</title></head><body>
+  <table width="100%">
+    <tbody><tr>
+      <td nowrap="nowrap">
+        <div id="title">Разработка приложения</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+          <a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
+        </div>
+      </td>
+    </tr>
+  </tbody></table>
+  <hr>
+  <div id="content">
+    <p>Приложение OpenDCL состоит из кода AutoLISP&nbsp;
 и данных проекта OpenDCL. Проект OpenDCL создается и редактируется в
 OpenDCL Studio и может существовать либо как отдельный .odcl файл либо
 в виде данных в коде AutoLISP. Встраивание проектных данных в код
 AutoLISP сложная тема, и рассматривается отдельно.</p>
-		<p>OpenDCL
+    <p>OpenDCL
 использует такую модель программирования, где события пользовательского
 интерфейса вызывают свои обработчики, выполняющие работу приложения.
 Как правило, OpenDCL включает код для загрузки и отображения формы
 наряду с обработчиками событий, управляющими формой во время ее
 отображения. Обработчики событий реагируют на действия пользователя,
 такие как нажатие кнопки или выбор пункта в списке.</p>
-		<p>В
+    <p>В
 коде
 AutoLISP перед отображением формы OpenDCL нужно сначала проверить, что
 исполняемый модуль OpenDCL загружен. Это можно сделать с помощью
 команды "_opendcl" вAutoCAD. Для этого нет необходимости проверять,
 загружен ли уже&nbsp; исполняемый модуль - если нет, то команда ничего
 не сделает. </p>
-		<blockquote>
-			<pre>(command "_OPENDCL")</pre>
-		</blockquote>
-		<p>Следующим
+    <blockquote>
+      <pre>(command "_OPENDCL")</pre>
+    </blockquote>
+    <p>Следующим
 шагом является загрузка данных проекта. Если данные проекта хранятся в
 файле, они могут быть загружены вызовом функции <a href="../Reference/Method/Project/Load.htm">(dcl-Project-Load)</a>. Если же данные проекта были встроены в код AutoLISP, то они могут быть загружены функцией <a href="../Reference/Method/Project/Import.htm">(dcl-Project-Import)</a>.</p>
-		<p>После того как данные проекта загружены, функция <a href="../Reference/Method/Form/Show.htm">
-				(dcl-Form-Show)</a>
+    <p>После того как данные проекта загружены, функция <a href="../Reference/Method/Form/Show.htm">
+        (dcl-Form-Show)</a>
 создает диалог (форму) и показывает его на экране. Когда отображается
 диалоговое окно, обработчики событий AutoLISP берут на себя управление
 формой, пока она не будет закрыта. Инициализация диалога должна быть
 сделана в обработчике событий под названием <a href="../Reference/Event/Initialize.htm">OnInitialize</a>. Ниже приводится типичный код для отображения простого модального диалога:</p>
-		<blockquote>
-			<pre>(defun C:MyCommand (/ Result)<br>	(command "_OPENDCL") <span class="codecomment">; загрузка исполняемого модуля OpenDCL</span>
-	(if (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> "MyProject") <span class="codecomment">; загрузка </span><span class="codecomment">данных </span><span class="codecomment">проекта из MyProject.odcl</span>
-		(progn
-			(setq Result (<a href="../Reference/Method/Form/Show.htm">dcl-Form-Show</a> MyProject/MyForm))<br>			<span class="codecomment">; Обратите внимание, что этот код не выполняется до *после* закрытия диалогового окна!</span>
-			(if (= Result 1) (DoSomething))
-		)
-	)
-	(princ)
+    <blockquote>
+      <pre>(defun C:MyCommand (/ Result)<br>  (command "_OPENDCL") <span class="codecomment">; загрузка исполняемого модуля OpenDCL</span>
+  (if (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> "MyProject") <span class="codecomment">; загрузка </span><span class="codecomment">данных </span><span class="codecomment">проекта из MyProject.odcl</span>
+    (progn
+      (setq Result (<a href="../Reference/Method/Form/Show.htm">dcl-Form-Show</a> MyProject/MyForm))<br>      <span class="codecomment">; Обратите внимание, что этот код не выполняется до *после* закрытия диалогового окна!</span>
+      (if (= Result 1) (DoSomething))
+    )
+  )
+  (princ)
 )</pre>
-			<pre>(defun <a href="../Reference/Event/Initialize.htm">c:MyProject/MyForm#OnInitialize</a> (/)<br>	(<a href="../Reference/Property/Caption.htm">dcl-Control-SetCaption</a> MyProject/MyForm/Label1 "Hello World!")<br>)</pre>
-			<pre>(defun <a href="../Reference/Event/Clicked.htm">c:MyProject/MyForm/CloseButton#OnClicked</a> (/)<br>	(<a href="../Reference/Method/Form/Close.htm">dcl-Form-Close</a> MyProject/MyForm)<br>)<br></pre>
-		</blockquote>
-		<p>Как
+      <pre>(defun <a href="../Reference/Event/Initialize.htm">c:MyProject/MyForm#OnInitialize</a> (/)<br>  (<a href="../Reference/Property/Caption.htm">dcl-Control-SetCaption</a> MyProject/MyForm/Label1 "Hello World!")<br>)</pre>
+      <pre>(defun <a href="../Reference/Event/Clicked.htm">c:MyProject/MyForm/CloseButton#OnClicked</a> (/)<br>  (<a href="../Reference/Method/Form/Close.htm">dcl-Form-Close</a> MyProject/MyForm)<br>)<br></pre>
+    </blockquote>
+    <p>Как
 вы можете видеть, код отображения диалогового окна очень прост.
 Работа по инициализации, управлению и реагированию на события диалога
 происходит в отдельных обработчиках событий, которые могут вызываться в
 то время когда диалог активен. Диалоговое окно закрывается, если
 вызывается обработчик события&nbsp; <a href="../Reference/Method/Form/Close.htm">(dcl-Form-Close)</a>. Обратите внимание, что для
-			<a href="../Reference/Method/Form/Close.htm">(dcl-Form-Close) </a>можно задать дополнительный код состояния , который затем передается на <a href="../Reference/Method/Form/Show.htm">
-				(dcl-Form-Show)</a>. Этот код состояния может быть использован для задания действий, которые должны быть выполнены после закрытия диалога.</p></div>
-	<hr>
-	<div id="footer">
-		<p>Авторские права © 2018 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
-		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
-	</div>
+      <a href="../Reference/Method/Form/Close.htm">(dcl-Form-Close) </a>можно задать дополнительный код состояния , который затем передается на <a href="../Reference/Method/Form/Show.htm">
+        (dcl-Form-Show)</a>. Этот код состояния может быть использован для задания действий, которые должны быть выполнены после закрытия диалога.</p></div>
+  <hr>
+  <div id="footer">
+    <p>Авторские права © 2019 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+    <p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+  </div>
 </body>
 </html>

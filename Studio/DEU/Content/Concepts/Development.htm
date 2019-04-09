@@ -1,152 +1,152 @@
 ﻿<html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta http-equiv="Content-Language" content="de">
-	<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-	<script type="text/javascript" src="../Utility.js"></script>
-	<title>Eine Anwendung entwickeln</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="de">
+  <link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../Utility.js"></script>
+  <title>Eine Anwendung entwickeln</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
-					Eine Anwendung entwickeln
-				</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size: xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
-						Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-		<p>
-			Eine OpenDCL-Applikation besteht aus AutoLISP Quellcode und einem oder mehreren
-			OpenDCL-Projekten. OpenDCL-Projekte werden im OpenDCL Studio erstellt und ver&auml;ndert.
-			OpenDCL Projekte k&ouml;nnen sowohl als separate *.odcl-Dateien existieren oder
-			im AutoLISP Quellcode integriert sein. Die Einbettung der OppenDCL-Projekte im AutoLISP-Quellcode
-			ist ein erweitertes Thema und wird daher an anderer Stelle erl&auml;utert.
-		</p>
-		<p>
-			OpenDCL nutzt ein ereignisbasiertes Programmmodell, bei dem Nutzereingaben Ereignisse
-			ausl&ouml;sen, in deren Funktionen die Arbeit in der Applikation gesteuert wird.
-			Eine typische OpenDCL-Applikation beinhaltet den Programmablauf zum Laden und Anzeigen
-			des Dialogs sowie die Ereignisfunktionen, die den Dialog steuern, wenn er angezeigt
-			wird. Ereignisfunktionen werden in Folge von Nutzereingaben ausgel&ouml;st, z.B.
-			wenn der Anwender auf eine Schaltfl&auml;che dr&uuml;ckt oder einen Eintrag in einer
-			Liste anklickt.
-		</p>
-		<p>
-			Der AutoLISP Code, der einen OpenDCL-Dialog anzeigt, muss auch sicherstellen, dass
-			die OpenDCL Laufzeitumgebung geladen ist. Idealerweise nutzen Sie daf&uuml;r die
-			Demand-Loading-Funktion von AutoCAD, indem Sie den Befehl OPENDCL ausf&uuml;hren.
-			Es ist nicht notwendig zu pr&uuml;fen, ob die Laufzeitumgebung bereits geladen ist
-			- es ist fast so, als mache der Befehl nichts.
-		</p>
-		<blockquote>
-			<pre>(command &quot;_OPENDCL&quot;)</pre>
-		</blockquote>
-		<p>
-			Im n&auml;chsten Schritt muss das Projekt geladen werden. Ist das OpenDCL-Projekt
-			in einer *.odcl-Datei gespeichert, kann es mit der Methode <a href="../Reference/Method/Project/Load.htm">
-				(dcl-Project-Load)</a> geladen werden. Haben Sie sich dazu entschieden, die Projektdaten
-			im AutoLISP-Quellcode einzubetten, k&ouml;nnen Sie das Projekt durch Aufruf der
-			Methode <a href="../Reference/Method/Project/Import.htm">(dcl-Project-Import)</a>
-			laden.
-		</p>
-		<p>
-			Sobald das Projekt geladen ist, kann der gew&uuml;nschte Dialog mit der Methode
-			<a href="../Reference/Method/Form/Show.htm">(dcl-Form-Show)</a> auf dem Bildschirm
-			angezeigt werden. Mit der Anzeige des Dialogs auf dem Bildschirm &uuml;bernehmen
-			die AutoLISP-Ereignisfunktionen die Kontrolle &uuml;ber den Dialog, bis dieser geschlossen
-			wird. Die Initialisierung des Dialogs wird in der Ereignisfunktion <a href="../Reference/Event/Initialize.htm">
-				OnInitialize</a> vorgenommen. Der folgende Code-Ausschnitt zeigt einen typischen
-			Programmablauf f&uuml;r die Anzeige eines einfachen modalen Dialogs:</p>
-		<blockquote>
-			<pre>(defun c:MyCommand (/ Result c:MyProject/MyForm#OnInitialize MyProject/MyForm/CloseButton#OnClicked)
-	(command &quot;_OPENDCL&quot;) <span class="codecomment">; Load OpenDCL Runtime</span>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          Eine Anwendung entwickeln
+        </div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+            Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <p>
+      Eine OpenDCL-Applikation besteht aus AutoLISP Quellcode und einem oder mehreren
+      OpenDCL-Projekten. OpenDCL-Projekte werden im OpenDCL Studio erstellt und ver&auml;ndert.
+      OpenDCL Projekte k&ouml;nnen sowohl als separate *.odcl-Dateien existieren oder
+      im AutoLISP Quellcode integriert sein. Die Einbettung der OppenDCL-Projekte im AutoLISP-Quellcode
+      ist ein erweitertes Thema und wird daher an anderer Stelle erl&auml;utert.
+    </p>
+    <p>
+      OpenDCL nutzt ein ereignisbasiertes Programmmodell, bei dem Nutzereingaben Ereignisse
+      ausl&ouml;sen, in deren Funktionen die Arbeit in der Applikation gesteuert wird.
+      Eine typische OpenDCL-Applikation beinhaltet den Programmablauf zum Laden und Anzeigen
+      des Dialogs sowie die Ereignisfunktionen, die den Dialog steuern, wenn er angezeigt
+      wird. Ereignisfunktionen werden in Folge von Nutzereingaben ausgel&ouml;st, z.B.
+      wenn der Anwender auf eine Schaltfl&auml;che dr&uuml;ckt oder einen Eintrag in einer
+      Liste anklickt.
+    </p>
+    <p>
+      Der AutoLISP Code, der einen OpenDCL-Dialog anzeigt, muss auch sicherstellen, dass
+      die OpenDCL Laufzeitumgebung geladen ist. Idealerweise nutzen Sie daf&uuml;r die
+      Demand-Loading-Funktion von AutoCAD, indem Sie den Befehl OPENDCL ausf&uuml;hren.
+      Es ist nicht notwendig zu pr&uuml;fen, ob die Laufzeitumgebung bereits geladen ist
+      - es ist fast so, als mache der Befehl nichts.
+    </p>
+    <blockquote>
+      <pre>(command &quot;_OPENDCL&quot;)</pre>
+    </blockquote>
+    <p>
+      Im n&auml;chsten Schritt muss das Projekt geladen werden. Ist das OpenDCL-Projekt
+      in einer *.odcl-Datei gespeichert, kann es mit der Methode <a href="../Reference/Method/Project/Load.htm">
+        (dcl-Project-Load)</a> geladen werden. Haben Sie sich dazu entschieden, die Projektdaten
+      im AutoLISP-Quellcode einzubetten, k&ouml;nnen Sie das Projekt durch Aufruf der
+      Methode <a href="../Reference/Method/Project/Import.htm">(dcl-Project-Import)</a>
+      laden.
+    </p>
+    <p>
+      Sobald das Projekt geladen ist, kann der gew&uuml;nschte Dialog mit der Methode
+      <a href="../Reference/Method/Form/Show.htm">(dcl-Form-Show)</a> auf dem Bildschirm
+      angezeigt werden. Mit der Anzeige des Dialogs auf dem Bildschirm &uuml;bernehmen
+      die AutoLISP-Ereignisfunktionen die Kontrolle &uuml;ber den Dialog, bis dieser geschlossen
+      wird. Die Initialisierung des Dialogs wird in der Ereignisfunktion <a href="../Reference/Event/Initialize.htm">
+        OnInitialize</a> vorgenommen. Der folgende Code-Ausschnitt zeigt einen typischen
+      Programmablauf f&uuml;r die Anzeige eines einfachen modalen Dialogs:</p>
+    <blockquote>
+      <pre>(defun c:MyCommand (/ Result c:MyProject/MyForm#OnInitialize MyProject/MyForm/CloseButton#OnClicked)
+  (command &quot;_OPENDCL&quot;) <span class="codecomment">; Load OpenDCL Runtime</span>
 
-	(defun <a href="../Reference/Event/Initialize.htm">c:MyProject/MyForm#OnInitialize</a> (/)
-		(<a href="../Reference/Property/Caption.htm">dcl-Control-SetCaption</a> MyProject/MyForm/Label1 &quot;Hello World!&quot;)
-	)<span class="codecomment">; c:MyProject/MyForm#OnInitialize</span>
+  (defun <a href="../Reference/Event/Initialize.htm">c:MyProject/MyForm#OnInitialize</a> (/)
+    (<a href="../Reference/Property/Caption.htm">dcl-Control-SetCaption</a> MyProject/MyForm/Label1 &quot;Hello World!&quot;)
+  )<span class="codecomment">; c:MyProject/MyForm#OnInitialize</span>
 
-	(defun <a href="../Reference/Event/Clicked.htm">c:MyProject/MyForm/CloseButton#OnClicked</a> (/)
-		(<a href="../Reference/Method/Form/Close.htm">dcl-Form-Close</a> MyProject/MyForm)
-	)<span class="codecomment">; c:MyProject/MyForm/CloseButton#OnClicked</span>
+  (defun <a href="../Reference/Event/Clicked.htm">c:MyProject/MyForm/CloseButton#OnClicked</a> (/)
+    (<a href="../Reference/Method/Form/Close.htm">dcl-Form-Close</a> MyProject/MyForm)
+  )<span class="codecomment">; c:MyProject/MyForm/CloseButton#OnClicked</span>
 
 
-	(if (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> &quot;MyProject&quot;) <span
-		class="codecomment">; Load project data from MyProject.odcl</span>
-		(progn
-			(setq Result (<a href="../Reference/Method/Form/Show.htm">dcl-Form-Show</a> MyProject/MyForm))
-			<span class="codecomment">; Note that this code does not execute until *after* the
-				dialog is closed!</span>
-			(if (= Result 1) (DoSomething))
-		)<span class="codecomment">; progn</span>
-	)<span class="codecomment">; if</span>
-	(princ)
+  (if (<a href="../Reference/Method/Project/Load.htm">dcl-Project-Load</a> &quot;MyProject&quot;) <span
+    class="codecomment">; Load project data from MyProject.odcl</span>
+    (progn
+      (setq Result (<a href="../Reference/Method/Form/Show.htm">dcl-Form-Show</a> MyProject/MyForm))
+      <span class="codecomment">; Note that this code does not execute until *after* the
+        dialog is closed!</span>
+      (if (= Result 1) (DoSomething))
+    )<span class="codecomment">; progn</span>
+  )<span class="codecomment">; if</span>
+  (princ)
 )<span class="codecomment">; c:MyCommand</span></pre>
-		</blockquote>
-		<p>
-			Wie Sie sehen k&ouml;nnen, ist der Programmablauf zum Anzeigen von Dialogen ist
-			sehr einfach. Die gesamte Arbeit des Initialisierens, Verwaltens und Steuerns von
-			Dialogereignissen wird &uuml;ber separate Ereignisfunktionen realisiert, die zur
-			Laufzeit des Dialogs ausgef&uuml;hrt werden. Der Dialog wird geschlossen, wenn eine
-			der Ereignisfunktionen die Methode <a href="../Reference/Method/Form/Close.htm">(dcl-Form-Close)</a>
-			aufruft. Beachten Sie, dass der Funktion <a href="../Reference/Method/Form/Close.htm">
-				(dcl-Form-Close)</a> optional ein Argument mit dem finalen Dialogstatus mitgegeben
-			werden kann, der als R&uuml;ckgabewert der Methode <a href="../Reference/Method/Form/Show.htm">
-				(dcl-Form-Show)</a> &uuml;bergeben wird. Dieser Statuscode kann dazu dienen, dass
-			etwas Bestimmtes passieren soll, sobald der Dialog geschlossen wurde.
-			<p>
-				Der folgende Code-Ausschnitt zeigt einen typischen Programmablauf f&uuml;r das kurzfristige
-				Ausblenden eines einfachen modalen Dialogs zur Wahl eines Punkts oder Objekts:
-				<blockquote>
-					<pre>(defun <a href="../Reference/Event/Initialize.htm">c:proj/form#OnInitialize</a> ()<br>  (princ &quot;Hier wird der komplette Dialog mit Inhalt gef&uuml;llt.&quot;)
+    </blockquote>
+    <p>
+      Wie Sie sehen k&ouml;nnen, ist der Programmablauf zum Anzeigen von Dialogen ist
+      sehr einfach. Die gesamte Arbeit des Initialisierens, Verwaltens und Steuerns von
+      Dialogereignissen wird &uuml;ber separate Ereignisfunktionen realisiert, die zur
+      Laufzeit des Dialogs ausgef&uuml;hrt werden. Der Dialog wird geschlossen, wenn eine
+      der Ereignisfunktionen die Methode <a href="../Reference/Method/Form/Close.htm">(dcl-Form-Close)</a>
+      aufruft. Beachten Sie, dass der Funktion <a href="../Reference/Method/Form/Close.htm">
+        (dcl-Form-Close)</a> optional ein Argument mit dem finalen Dialogstatus mitgegeben
+      werden kann, der als R&uuml;ckgabewert der Methode <a href="../Reference/Method/Form/Show.htm">
+        (dcl-Form-Show)</a> &uuml;bergeben wird. Dieser Statuscode kann dazu dienen, dass
+      etwas Bestimmtes passieren soll, sobald der Dialog geschlossen wurde.
+      <p>
+        Der folgende Code-Ausschnitt zeigt einen typischen Programmablauf f&uuml;r das kurzfristige
+        Ausblenden eines einfachen modalen Dialogs zur Wahl eines Punkts oder Objekts:
+        <blockquote>
+          <pre>(defun <a href="../Reference/Event/Initialize.htm">c:proj/form#OnInitialize</a> ()<br>  (princ &quot;Hier wird der komplette Dialog mit Inhalt gef&uuml;llt.&quot;)
 <br>)<span class="codecomment">; c:proj/form#OnInitialize</span>
 
 (defun <a href="../Reference/Event/Clicked.htm">c:proj/form/pb_accept</a> ()
-	(dcl-form-close proj/form 0)<br>)<span class="codecomment">; c:proj/form/pb_accept</span> 
+  (dcl-form-close proj/form 0)<br>)<span class="codecomment">; c:proj/form/pb_accept</span> 
 
 (defun <a href="../Reference/Event/Clicked.htm">c:proj/form/pb_select</a> ()
-	(dcl-form-close proj/form 1)
+  (dcl-form-close proj/form 1)
 )<span class="codecomment">; c:proj/form/pb_select </span>
 
 (defun <a href="../Reference/Event/Clicked.htm">c:proj/form/pb_cancel</a> ()
-	(<a href="../Reference/Method/Form/Close.htm">dcl-form-close</a> proj/form 2)
+  (<a href="../Reference/Method/Form/Close.htm">dcl-form-close</a> proj/form 2)
 )<span class="codecomment">; c:proj/form/pb_cancel </span>
 
 (setq isSchleife T)
 (while isSchleife
-	(setq isSchleife nil) <span class="codecomment">;; um Endlosschleife bei ESC zu vermeiden</span>
-	(setq intErgebnis (<a href="../Reference/Method/Form/Show.htm">dcl-form-show</a> proj/form))
-	(cond
-		((= intErgebnis 0) (princ &quot;Hier passiert was.&quot;))
-		((= intErgebnis 1) (princ &quot;Hier wird ein Objekt oder Punkt gew&auml;hlt.&quot;) (setq isSchleife T))
-		((= intErgebnis 2) (princ &quot;Hier passiert nichts.&quot;))
-	)<span class="codecomment">; cond</span>
+  (setq isSchleife nil) <span class="codecomment">;; um Endlosschleife bei ESC zu vermeiden</span>
+  (setq intErgebnis (<a href="../Reference/Method/Form/Show.htm">dcl-form-show</a> proj/form))
+  (cond
+    ((= intErgebnis 0) (princ &quot;Hier passiert was.&quot;))
+    ((= intErgebnis 1) (princ &quot;Hier wird ein Objekt oder Punkt gew&auml;hlt.&quot;) (setq isSchleife T))
+    ((= intErgebnis 2) (princ &quot;Hier passiert nichts.&quot;))
+  )<span class="codecomment">; cond</span>
 )<span class="codecomment">; while</span></pre>
-				</blockquote>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>
-			Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-			Alle Rechte vorbehalten.</p>
-		<p>
-			OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
-				OpenDCL Consortium</a>.</p>
-		<p>
-			AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
-				target="_blank">Autodesk, Inc.</a></p>
-		<p>
-			Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
-				target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+        </blockquote>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      Alle Rechte vorbehalten.</p>
+    <p>
+      OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+        OpenDCL Consortium</a>.</p>
+    <p>
+      AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+        target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

@@ -8,26 +8,26 @@
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../Utility.js"></script><title>Modal vs. Modeless</title></head><body>
-	<table width="100%">
-		<tbody><tr>
-			<td nowrap="nowrap">
-				<div id="title">Модальные и Немодальные диалоги<a href="file:///E:/OpenDCL%20local/OpenDCL.RUS/Content/Concepts/Modality.htm"></a></div>
-			</td>
-			<td align="right" valign="top">
+  <table width="100%">
+    <tbody><tr>
+      <td nowrap="nowrap">
+        <div id="title">Модальные и Немодальные диалоги<a href="file:///E:/OpenDCL%20local/OpenDCL.RUS/Content/Concepts/Modality.htm"></a></div>
+      </td>
+      <td align="right" valign="top">
       <div id="hdrlink" style="font-size: xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
-					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
-				</div>
+          <a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+          <a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
+        </div>
 </td></tr></tbody></table><hr>
-	<div id="content">
-		<p>Модальные
+  <div id="content">
+    <p>Модальные
 диалоги отключают окно AutoCAD, пока сами не будут закрыты. Модальными
 диалогами легче управлять, потому что состояние AutoCAD остается
 неизменным в течение всей работы диалога. Модальные диалоги возвращают
 код свего статуса когда они закрываются, и, как правило основной код
 приложения выполняет дополнительные действия в зависимости от этого
 статуса.</p>
-		<p>Немодальные диалоги представляют дополнительные
+    <p>Немодальные диалоги представляют дополнительные
 проблемы. Немодальные диалоги могут работать одновременно с выполнением
 приложения AutoCAD и должны учитывать изменения в состоянии AutoCAD,
 такие как открытие или закрытиедокумента . Кроме того, поскольку каждый
@@ -35,13 +35,13 @@
 активация нового документа означает, что обработчики событий,
 определенные в отключенном документе больше не будут доступны в новом
 активизированном документе.</p>
-		<p>Эти означает, что единственный способ управлять немодальным диалогом - обеспечить определение
+    <p>Эти означает, что единственный способ управлять немодальным диалогом - обеспечить определение
 обработчиков событий в каждом новом файле чертежа. На практике это
 обычно означает, что файл приложения Lisp (или файлы) должны быть
 загружены с помощью файла acaddoc.lsp или аналогичным методом, который
 автоматически загружает прописанные в нем файлы каждый раз при открытии
 нового документа.</p>
-		<p>Кроме того, так как диалог может быть уже
+    <p>Кроме того, так как диалог может быть уже
 активным во время запуска нового документа (или, например, при открытии
 второго файла чертежа), то он должен действовать соответственно.
 Например, если приложение должно прочитать некоторые параметры
@@ -50,7 +50,7 @@
 событии <a href="../Reference/Event/Initialize.htm">OnInitialize</a>, она выполнится только один раз, при активации диалога.
 Если приложение должно определить во время выполнения открыт ли уже
 диалог или нет, то можно использовать выражение следующего типа:</p>
-	    <blockquote>
+      <blockquote>
           <pre>(and MyProject-MyForm (<a href="../Reference/Method/Form/IsActive.htm">dcl-Form-IsActive</a> MyProject-MyForm))</pre>
         </blockquote>
         <p>В
@@ -73,12 +73,12 @@ state»), или когда пользователь переключается 
 обработчик события может выполняться и синхронно, но вместо вызова
 документо-зависимых функций, можно записать новую команду для
 выполнения прямо в контексте документа с помощью функции <a href="../Reference/Function/SendString.htm">(dcl-SendString)</a>.</p></div>
-	<hr>
+  <hr>
 <div id="footer">
-		<p>Авторские права © 2018 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
-		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
-	</div>
+    <p>Авторские права © 2019 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+    <p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+  </div>
 </body>
 </html>

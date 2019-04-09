@@ -1,133 +1,133 @@
 ﻿<html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta http-equiv="Content-Language" content="de">
-	<link rel="StyleSheet" href="../../../WinHelp.css" type="text/css" media="screen,print">
-	<script type="text/javascript" src="../../../Utility.js"></script>
-	<title>Form-Show</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="de">
+  <link rel="StyleSheet" href="../../../WinHelp.css" type="text/css" media="screen,print">
+  <script type="text/javascript" src="../../../Utility.js"></script>
+  <title>Form-Show</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
-					<img border="0" src="../../images/Method.png" width="16" height="16">
-					Form-Show</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size: xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
-						Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
-		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
-			bordercolor="#111111">
-			<tr>
-				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
-					Funktionsname
-				</th>
-				<td bgcolor="#CCFF99">
-					dcl-Form-Show
-				</td>
-			</tr>
-			<tr>
-				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
-					Syntax &nbsp;
-					<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax1);"
-						style="width: 22px; height: 20px">
-						<img src="../../images/Clipboard.png" width="15" height="13" /></button>
-				</th>
-				<td bgcolor="#CCFF99">
-					<code id="syntax1">(dcl-Form-Show <i><a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-						<font color="#FF0000">{intPositionX [als <a href="../../DataType/Long.htm">Long</a>]}
-							{intPositionY [als <a href="../../DataType/Long.htm">Long</a>]}</font>)</code>
-				</td>
-			</tr>
-			<tr>
-				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
-					Syntax &nbsp;
-					<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax2);"
-						style="width: 22px; height: 20px">
-						<img src="../../images/Clipboard.png" width="15" height="13" /></button><br />
-					(Dateiwahldialog)
-				</th>
-				<td bgcolor="#CCFF99">
-					<code id="syntax2">(dcl-Form-Show <i><a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-						<font color="#FF0000">{strInitialDirectory [als <a href="../../DataType/String.htm">
-							String</a>]} {strInitialFilename [als <a href="../../DataType/String.htm">String</a>]}
-							{strDefaultExtension [als <a href="../../DataType/String.htm">String</a>]}</font>)</code>
-				</td>
-			</tr>
-			<tr>
-				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
-					Rückgabewert
-				</th>
-				<td bgcolor="#CCFF99">
-					<a href="../../DataType/Long.htm">Long</a>, <a href="../../DataType/String.htm">String</a>
-					oder Liste von <a href="../../DataType/String.htm">Strings</a>
-				</td>
-			</tr>
-			<tr>
-				<th bgcolor="#FFCC99" align="left" valign="top" nowrap>
-					Anwendbar auf
-				</th>
-				<td bgcolor="#CCFF99">
-					<a href="../../Form/ControlBar.htm">Andockbares Fenster </a>, <a href="../../Form/FileDialog.htm">
-						Dateiwahldialog</a>, <a href="../../Form/ModalDialog.htm">Modaler Dialog</a>,
-					<a href="../../Form/ModelessDialog.htm">Nichtmodaler Dialog</a>, <a href="../../Form/Palette.htm">
-						Palette</a>
-				</td>
-			</tr>
-		</table>
-		<p>
-			Diese Methode instanziert einen neuen OpenDCL-Dialog. Die optionalen Argumente intPositionX
-			und intPositionY bewirken, dass der Dialog an einer ganz bestimmten Stelle auf dem
-			Bildschirm eingeblendet wird. Der Dateiwahldialog verwendet eine andere Syntax mit
-			den optionalen Argumenten f&uuml;r das Anfangsverzeichnis, einem Vorschlag f&uuml;r
-			einen Dateinamen und der voreingestellten Dateierweiterung. Bitte beachten Sie bei
-			modalen und nichtmodalen Dialogen auch den Abschnitt <a href="../../../Concepts/Modality.htm">
-				Modal vs. nichtmodal</a>.
-		</p>
-		<p>
-			Ist der angegebene Dialog ein modaler Dialog, wird diese Methode solange nicht abgeschlossen,
-			bis der Dialog geschlossen wird. Dabei wird ein Wert zur&uuml;ckgegeben, der den
-			Dialogstatus anzeigt. Wurde der Dialog abgebrochen, z.B. durch Dr&uuml;cken der
-			ESC-Taste, ist der R&uuml;ckgabewert 2. Wurde der Dialog durch Dr&uuml;cken der
-			Eingabetaste beendet, gibt die Funktion den Wert 1 zur&uuml;ck. Wird der Dialog
-			durch die Methode <a href="Close.htm">Form-Close</a> geschlossen, k&ouml;nnen der
-			Methode Form_Close Werte &uuml;bergeben werden, die als R&uuml;ckgabewerte der Methode
-			Form_Show &uuml;bergeben werden k&ouml;nnen und nutzerspezifische Dialogstati anzeigen.
-		</p>
-		<p>
-			Ist der angegebene Dialog ein nichtmodaler Dialog, wird diese Methode sofort beendet
-			und ein Bezeichner zur&uuml;ckgegeben, der mit jedem Mal hochgez&auml;hlt wird,
-			wenn ein neuer Dialog aufgerufen wird.</p>
-		<p>
-			Ist der angegebene Dialog ein Dateiwahldialog, wird diese Methode solange nicht
-			abgeschlossen, bis der Dialog geschlossen wird. L&auml;sst der Dateiwahldialog die
-			Auswahl mehrerer Dateien zu, wird eine Liste der markierten Dateinamen zur&uuml;ckgegeben,
-			andernfalls wird ein einzelner Dateiname als <a href="../../DataType/String.htm">String</a>
-			zur&uuml;ckgegeben.</p>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>
-			Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-			Alle Rechte vorbehalten.</p>
-		<p>
-			OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
-				OpenDCL Consortium</a>.</p>
-		<p>
-			AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
-				target="_blank">Autodesk, Inc.</a></p>
-		<p>
-			Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
-				target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
+          <img border="0" src="../../images/Method.png" width="16" height="16">
+          Form-Show</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen
+            Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
+    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse"
+      bordercolor="#111111">
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Funktionsname
+        </th>
+        <td bgcolor="#CCFF99">
+          dcl-Form-Show
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Syntax &nbsp;
+          <button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax1);"
+            style="width: 22px; height: 20px">
+            <img src="../../images/Clipboard.png" width="15" height="13" /></button>
+        </th>
+        <td bgcolor="#CCFF99">
+          <code id="syntax1">(dcl-Form-Show <i><a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
+            <font color="#FF0000">{intPositionX [als <a href="../../DataType/Long.htm">Long</a>]}
+              {intPositionY [als <a href="../../DataType/Long.htm">Long</a>]}</font>)</code>
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Syntax &nbsp;
+          <button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax2);"
+            style="width: 22px; height: 20px">
+            <img src="../../images/Clipboard.png" width="15" height="13" /></button><br />
+          (Dateiwahldialog)
+        </th>
+        <td bgcolor="#CCFF99">
+          <code id="syntax2">(dcl-Form-Show <i><a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
+            <font color="#FF0000">{strInitialDirectory [als <a href="../../DataType/String.htm">
+              String</a>]} {strInitialFilename [als <a href="../../DataType/String.htm">String</a>]}
+              {strDefaultExtension [als <a href="../../DataType/String.htm">String</a>]}</font>)</code>
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Rückgabewert
+        </th>
+        <td bgcolor="#CCFF99">
+          <a href="../../DataType/Long.htm">Long</a>, <a href="../../DataType/String.htm">String</a>
+          oder Liste von <a href="../../DataType/String.htm">Strings</a>
+        </td>
+      </tr>
+      <tr>
+        <th bgcolor="#FFCC99" align="left" valign="top" nowrap>
+          Anwendbar auf
+        </th>
+        <td bgcolor="#CCFF99">
+          <a href="../../Form/ControlBar.htm">Andockbares Fenster </a>, <a href="../../Form/FileDialog.htm">
+            Dateiwahldialog</a>, <a href="../../Form/ModalDialog.htm">Modaler Dialog</a>,
+          <a href="../../Form/ModelessDialog.htm">Nichtmodaler Dialog</a>, <a href="../../Form/Palette.htm">
+            Palette</a>
+        </td>
+      </tr>
+    </table>
+    <p>
+      Diese Methode instanziert einen neuen OpenDCL-Dialog. Die optionalen Argumente intPositionX
+      und intPositionY bewirken, dass der Dialog an einer ganz bestimmten Stelle auf dem
+      Bildschirm eingeblendet wird. Der Dateiwahldialog verwendet eine andere Syntax mit
+      den optionalen Argumenten f&uuml;r das Anfangsverzeichnis, einem Vorschlag f&uuml;r
+      einen Dateinamen und der voreingestellten Dateierweiterung. Bitte beachten Sie bei
+      modalen und nichtmodalen Dialogen auch den Abschnitt <a href="../../../Concepts/Modality.htm">
+        Modal vs. nichtmodal</a>.
+    </p>
+    <p>
+      Ist der angegebene Dialog ein modaler Dialog, wird diese Methode solange nicht abgeschlossen,
+      bis der Dialog geschlossen wird. Dabei wird ein Wert zur&uuml;ckgegeben, der den
+      Dialogstatus anzeigt. Wurde der Dialog abgebrochen, z.B. durch Dr&uuml;cken der
+      ESC-Taste, ist der R&uuml;ckgabewert 2. Wurde der Dialog durch Dr&uuml;cken der
+      Eingabetaste beendet, gibt die Funktion den Wert 1 zur&uuml;ck. Wird der Dialog
+      durch die Methode <a href="Close.htm">Form-Close</a> geschlossen, k&ouml;nnen der
+      Methode Form_Close Werte &uuml;bergeben werden, die als R&uuml;ckgabewerte der Methode
+      Form_Show &uuml;bergeben werden k&ouml;nnen und nutzerspezifische Dialogstati anzeigen.
+    </p>
+    <p>
+      Ist der angegebene Dialog ein nichtmodaler Dialog, wird diese Methode sofort beendet
+      und ein Bezeichner zur&uuml;ckgegeben, der mit jedem Mal hochgez&auml;hlt wird,
+      wenn ein neuer Dialog aufgerufen wird.</p>
+    <p>
+      Ist der angegebene Dialog ein Dateiwahldialog, wird diese Methode solange nicht
+      abgeschlossen, bis der Dialog geschlossen wird. L&auml;sst der Dateiwahldialog die
+      Auswahl mehrerer Dateien zu, wird eine Liste der markierten Dateinamen zur&uuml;ckgegeben,
+      andernfalls wird ein einzelner Dateiname als <a href="../../DataType/String.htm">String</a>
+      zur&uuml;ckgegeben.</p>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>
+      Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+      Alle Rechte vorbehalten.</p>
+    <p>
+      OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">
+        OpenDCL Consortium</a>.</p>
+    <p>
+      AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com"
+        target="_blank">Autodesk, Inc.</a></p>
+    <p>
+      Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com"
+        target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

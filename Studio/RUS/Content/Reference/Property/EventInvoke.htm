@@ -7,23 +7,23 @@
 <title>Event Invoke</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
                   <img border="0" src="../images/Property.png" width="16" height="16"> 
                   Event Invoke</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
-					<a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
-	<div id="content">
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size:xx-small;">
+          <a href="http://opendcl.com/go?forum" target="_blank">Support Forum</a><br />
+          <a href="http://opendcl.com/go?bugreport&new" target="_blank">Report A Bug</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Friendly Name</th>
@@ -59,14 +59,14 @@
             and <a href="../Form/Index.htm">Forms</a></td>
           </tr>
         </table>
-		<p>This property controls whether event handlers are called 
+    <p>This property controls whether event handlers are called 
         synchronously or asynchronously. A synchronous call causes the dialog 
         code to wait until the event handler returns before resuming; an 
         asynchronous event call allows the dialog code to continue running, and 
         the event handler is not executed until AutoCAD is ready to process 
         commands. This property is hidden and ignored for controls on modal 
         forms.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
+      <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
           <tr>
             <th nowrap>Value</th>
             <th nowrap>Meaning</th>
@@ -80,31 +80,31 @@
             <td>Asynchronous</td>
           </tr>
         </table>
-		<p>Event handlers that are called synchronously are limited in what they 
+    <p>Event handlers that are called synchronously are limited in what they 
         can safely do, because they run while the dialog code is in a suspended 
         state and AutoCAD is unable to process commands. For example, it is not 
         possible to call the AutoLISP (command) function from a synchronous 
         event handler.</p>
-		<p>Asynchronous event handlers in most cases will not execute until after the event 
+    <p>Asynchronous event handlers in most cases will not execute until after the event 
         that triggered it has passed, however an asynchronous event handler can 
         safely call the AutoLISP (command) function to process AutoCAD commands. 
         When a modeless dialog control's event handlers need to use the AutoLISP 
         (command) function, the Event Invoke property for the control must be 
         set to 1.</p>
-		<p>Any events that have return values are always called synchronously 
+    <p>Any events that have return values are always called synchronously 
         (otherwise the return value would be lost). Events called from modal 
         forms are always called synchronously, since modal forms by their nature 
         prevent AutoCAD from executing commands while they are active. Event 
         handlers in these cases must conform to the requirements for synchronous 
         events regardless of the Event Invoke property setting.</p>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>Авторские права © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Все права защищены.</p>
-		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
-	</div>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>Авторские права © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+    Все права защищены.</p>
+    <p>OpenDCL является товарным знаком <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+  </div>
 </body>
 </html>

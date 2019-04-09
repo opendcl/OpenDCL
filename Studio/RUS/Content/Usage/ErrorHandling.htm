@@ -8,29 +8,29 @@
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../Utility.js"></script><title>Error Handling</title></head><body>
-	<table width="100%">
-		<tbody><tr>
-			<td nowrap="nowrap">
-				<div id="title">Обработка ошибок</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size: xx-small;">
-					<a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
-					<a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
-				</div>
-			</td>
-		</tr>
-	</tbody></table>
-	<hr>
-	<div id="content">
-		<p>Существует
+  <table width="100%">
+    <tbody><tr>
+      <td nowrap="nowrap">
+        <div id="title">Обработка ошибок</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size: xx-small;">
+          <a href="http://opendcl.com/go?forum" target="_blank">Форум поддержки</a><br>
+          <a href="http://opendcl.com/go?bugreport&amp;new" target="_blank">Сообщить о баге</a>
+        </div>
+      </td>
+    </tr>
+  </tbody></table>
+  <hr>
+  <div id="content">
+    <p>Существует
 несколько различных ситуаций для обработки ошибок, с которыми
 встречаются при программировании OpenDCL: обработка стандартных ошибок
 AutoLISP, обработка ошибок ввода данных пользователем, и обработка
 ошибок исполняемого модуля OpenDCL. Обработку стандартных ошибок
 AutoLISP здесь рассматривать не будем.</p>
-		<h4>Обработка ошибок ввода данных пользователем</h4>
-		<p>Правильно
+    <h4>Обработка ошибок ввода данных пользователем</h4>
+    <p>Правильно
 спроектированный графический дизайн пользовательского интерфейса
 должен, по мере возможности, в первую очередь сам
 по себе предотвращать ошибки ввода данных пользователем. OpenDCL
@@ -40,7 +40,7 @@ AutoLISP здесь рассматривать не будем.</p>
 условий, апользователь смог совершить только действительно правильный
 ввод. Поэтому хороший пользовательский интерфейс является первой линией
 обороны против недопустимого ввода. </p>
-		<p>Обработка
+    <p>Обработка
 ошибок пользовательского ввода в формах OpenDCL должна производиться с
 помощью обработчиков событий отдельных элементов управления или же всей
 формы в целом. Некоторые элементы управления, такие как&nbsp; текстовые
@@ -48,24 +48,24 @@ AutoLISP здесь рассматривать не будем.</p>
 ввода. Использование таких элементов управления, какполя выпадающим со
 списком или переключателей может заранее ограничить ввод пользователем
 определенных значений. Для поддерживаемых форм событие <a href="../Reference/Event/CancelClose.htm">CancelClose</a> может быть использовано для проверки ввода в форме и предотвратить закрытие диалога если будет найден неверный ввод .</p>
-		<p>Ниже приведен стандартный сценарий использования события <a href="../Reference/Event/CancelClose.htm">CancelClose</a> :</p>
-			<pre>(defun HighlightFormErrors () <span class="codecomment">; возвращает T при ошибке, иначе - NIL</span>
-	(if (CheckForFormInputErrors) <span class="codecomment">; вызов проверяющей функции</span>
-		(progn
-			<span class="codecomment">;; Здесь можно указать на ошибку, отобразить окно сообщения с дополнительной информацией,</span>
-			<span class="codecomment">;; или сделать что-то, чтобы исправить ошибку (затем нужно вернуть NIL, если ошибка исправлена!)</span>
-			(<a href="../Reference/Function/MessageBox.htm">dcl-MessageBox</a> "Форма содержит недопустимые данные!" "Error" 2 4)<br>			T <span class="codecomment">; возвращаем T как признак найденной и не пока </span><span class="codecomment">нерешенной</span><span class="codecomment"> ошибки</span>
-		)
-	)
-	<span class="codecomment">; Обратите внимание, что эта функция возвращает NIL, если </span><span class="codecomment">никакие ошибки </span><span class="codecomment">не были найдены </span>
+    <p>Ниже приведен стандартный сценарий использования события <a href="../Reference/Event/CancelClose.htm">CancelClose</a> :</p>
+      <pre>(defun HighlightFormErrors () <span class="codecomment">; возвращает T при ошибке, иначе - NIL</span>
+  (if (CheckForFormInputErrors) <span class="codecomment">; вызов проверяющей функции</span>
+    (progn
+      <span class="codecomment">;; Здесь можно указать на ошибку, отобразить окно сообщения с дополнительной информацией,</span>
+      <span class="codecomment">;; или сделать что-то, чтобы исправить ошибку (затем нужно вернуть NIL, если ошибка исправлена!)</span>
+      (<a href="../Reference/Function/MessageBox.htm">dcl-MessageBox</a> "Форма содержит недопустимые данные!" "Error" 2 4)<br>      T <span class="codecomment">; возвращаем T как признак найденной и не пока </span><span class="codecomment">нерешенной</span><span class="codecomment"> ошибки</span>
+    )
+  )
+  <span class="codecomment">; Обратите внимание, что эта функция возвращает NIL, если </span><span class="codecomment">никакие ошибки </span><span class="codecomment">не были найдены </span>
 )
 
-(defun <a href="../Reference/Event/CancelClose.htm">c:Project1/Form1#OnCancelClose</a>( Canceling /)<br>	<span class="codecomment">;; Возвращает T, предотвращая </span><span class="codecomment">закрытие </span><span class="codecomment">формы (если нажата не "отмена"), и указывает на обнаруженные ошибки</span>
-	(and (/= 1 Canceling) (HighlightFormErrors)) <span class="codecomment">; Все равно разрешть</span><span class="codecomment"> закрыть</span><span class="codecomment"> форму, если была нажата "отмена"</span></pre>
-				<h4>Ошибки исполняемого модуля OpenDCL<br>
+(defun <a href="../Reference/Event/CancelClose.htm">c:Project1/Form1#OnCancelClose</a>( Canceling /)<br>  <span class="codecomment">;; Возвращает T, предотвращая </span><span class="codecomment">закрытие </span><span class="codecomment">формы (если нажата не "отмена"), и указывает на обнаруженные ошибки</span>
+  (and (/= 1 Canceling) (HighlightFormErrors)) <span class="codecomment">; Все равно разрешть</span><span class="codecomment"> закрыть</span><span class="codecomment"> форму, если была нажата "отмена"</span></pre>
+        <h4>Ошибки исполняемого модуля OpenDCL<br>
 </h4>
-				<p>Вызов встроенных функций OpenDCL может привести к двум типам ошибок: исключениям или функциональным сбоям.</p>
-				
+        <p>Вызов встроенных функций OpenDCL может привести к двум типам ошибок: исключениям или функциональным сбоям.</p>
+        
 <p>Исключения указывают на ошибку в коде, например, при передаче в
 фунцию неправильного типа аргумента, или аргумента с недопустимым
 значением. Если сообщения OpenDCL не подавляются (смотри <a href="../Reference/Function/SuppressMessages.htm">ПодавлениеСообщений</a>),
@@ -74,16 +74,16 @@ AutoLISP здесь рассматривать не будем.</p>
 остановившего работу программы. В сообщении отображается имя функции и
 индекс ее аргумента(нумерация с нуля), для которого произошло исключение. </p>
 
-				<p>Функциональные сбои обычно показаны как функция, возвращающая
+        <p>Функциональные сбои обычно показаны как функция, возвращающая
 NIL. Например, при попытке установить текущую выбор в списке на
 несуществующий элемент списка возвращает значение NIL. Такие типы
 ошибокпри желании можно обработатывать в коде, а в некоторых случаях просто игнорировать. </p></div>
-	<hr>
+  <hr>
 <div id="footer">
-		<p>Авторские права © 2018 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
-		<p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
-	</div>
+    <p>Авторские права © 2019 <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>. Все права защищены.</p>
+    <p>OpenDCL является товарным знаком <a href="http://www.opendcl.com/" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD и AutoLISP являются зарегистрированными торговыми марками компании <a href="http://www.autodesk.com/" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows является зарегистрированной торговой маркой компании <a href="http://www.microsoft.com/" target="_blank">Microsoft Corporation</a> в Соединенных Штатах и других странах.</p>
+  </div>
 </body>
 </html>

@@ -7,22 +7,22 @@
 <title>Event Invoke</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
                   <img border="0" src="../images/Property.png" width="16" height="16"> 
                   Event Invoke</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size:xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
 <div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
           <tr>
@@ -60,8 +60,8 @@
             und <a href="../Form/Index.htm">Dialoge</a></td>
           </tr>
         </table>
-		<p>Diese Eigenschaft bestimmt das Verhalten w&auml;hrend der Ereignisse, ob sie synchron oder asynchron ausgel&ouml;st werden. Der synchrone Aufruf bewirkt, dass die Dialogsteuerung das Ende der Ereignisfunktion abwartet, um fortzufahren. Das kann im Einzelfall bewirken, dass der Fokus auf dem Steuerelement verbleibt. Der asynchrone Aufruf bewirkt hingegen, dass der Dialog mit seinem Programm fortf&auml;hrt und die Ereignisfunktion solange nicht ausgef&uuml;hrt wird, bis AutoCAD bereit ist, die Ereignisfunktionen abzuarbeiten. Das kann man dann daran erkennen, dass das Steuerelement seinen Fokus an die AutoCAD-Befehlszeile bzw. den Zeichenbereich abgibt. Diese Eigenschaft steht in modalen Dialogen und Karteikartenreiter in den Optionen nicht zur Verf&uuml;gung und wird dort ignoriert. </p>
-		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
+    <p>Diese Eigenschaft bestimmt das Verhalten w&auml;hrend der Ereignisse, ob sie synchron oder asynchron ausgel&ouml;st werden. Der synchrone Aufruf bewirkt, dass die Dialogsteuerung das Ende der Ereignisfunktion abwartet, um fortzufahren. Das kann im Einzelfall bewirken, dass der Fokus auf dem Steuerelement verbleibt. Der asynchrone Aufruf bewirkt hingegen, dass der Dialog mit seinem Programm fortf&auml;hrt und die Ereignisfunktion solange nicht ausgef&uuml;hrt wird, bis AutoCAD bereit ist, die Ereignisfunktionen abzuarbeiten. Das kann man dann daran erkennen, dass das Steuerelement seinen Fokus an die AutoCAD-Befehlszeile bzw. den Zeichenbereich abgibt. Diese Eigenschaft steht in modalen Dialogen und Karteikartenreiter in den Optionen nicht zur Verf&uuml;gung und wird dort ignoriert. </p>
+    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
           <tr>
             <th nowrap>Wert</th>
             <th nowrap>Bedeutung</th>
@@ -76,23 +76,23 @@
             <td>asynchron</td>
           </tr>
         </table>
-		<p>Synchron ausgef&uuml;hrte Ereignisfunktionen k&ouml;nnen nur eingeschr&auml;nkt agieren, weil sie in einem verschobenen Zustand zum Programmablauf des Dialogs ablaufen und AutoCAD keine Befehle abarbeiten kann. So kann beispielsweise die AutoLISP-Funktion (command) nicht sicher ausgef&uuml;hrt werden. Das Erstellen und &Auml;ndern (auch via ActiveX) von Objekten und Sachdaten (als EED, LData und XRecordData) bleibt gegebenenfalls ohne Wirkung. In besonderen F&auml;llen k&ouml;nnen Sie innerhalb synchron ausgef&uuml;hrter Ereignisfunktionen von nichtmodalen Dialogen einen Befehl an der AutoCAD-Befehlszeile erzwingen, indem Sie ihn mit der Funktion <a href="../Function/SendString.htm">(dcl-sendstring)</a> aufrufen lassen. </p>
-		<blockquote>
-		  <pre>(dcl-sendstring &quot;MeinBefehl\n&quot;) <span class="codecomment">;; Mit dem Sonderzeichen \n initiieren Sie das Bet&auml;tigen der ENTER-Taste</span></pre>
+    <p>Synchron ausgef&uuml;hrte Ereignisfunktionen k&ouml;nnen nur eingeschr&auml;nkt agieren, weil sie in einem verschobenen Zustand zum Programmablauf des Dialogs ablaufen und AutoCAD keine Befehle abarbeiten kann. So kann beispielsweise die AutoLISP-Funktion (command) nicht sicher ausgef&uuml;hrt werden. Das Erstellen und &Auml;ndern (auch via ActiveX) von Objekten und Sachdaten (als EED, LData und XRecordData) bleibt gegebenenfalls ohne Wirkung. In besonderen F&auml;llen k&ouml;nnen Sie innerhalb synchron ausgef&uuml;hrter Ereignisfunktionen von nichtmodalen Dialogen einen Befehl an der AutoCAD-Befehlszeile erzwingen, indem Sie ihn mit der Funktion <a href="../Function/SendString.htm">(dcl-sendstring)</a> aufrufen lassen. </p>
+    <blockquote>
+      <pre>(dcl-sendstring &quot;MeinBefehl\n&quot;) <span class="codecomment">;; Mit dem Sonderzeichen \n initiieren Sie das Bet&auml;tigen der ENTER-Taste</span></pre>
   </blockquote>
-		<p>Asynchron ausgef&uuml;hrte Ereignisfunktionen werden in den meisten F&auml;llen solange nicht ausgef&uuml;hrt, bis das ausl&ouml;sende Ereignis beendet ist, daf&uuml;r kann das Ereignis die AutoLISP-Funktion (command) sicher aufrufen, um AutoLISP-Befehle abzuarbeiten. Verwendet ein Steuerelement in einem nichtmodalen Dialog die AutoLISP-Funktion (command), muss die Eigenschaft Event Invoke des Steuerelement auf 1 gesetzt werden. Bitte beachten Sie, dass die Funktionsnamen und ihre Argumente von asynchron ausgef&uuml;hrten Ereignisfunktionen im Stapel der in AutoCAD zuletzt ausgef&uuml;hrten Befehle erscheinen.</p>
-		<p>Ereignisse, die definitionsgem&auml;&szlig; einen R&uuml;ckgabewert von der Ereignisfunktion abfangen, werden grunds&auml;tzlich synchron ausgef&uuml;hrt, sonst w&uuml;rde ja der R&uuml;ckgabewert verlorengehen. Ereignisse der modalen Dialoge werden immer synchron ausgef&uuml;hrt, da sie naturgem&auml;&szlig; 
+    <p>Asynchron ausgef&uuml;hrte Ereignisfunktionen werden in den meisten F&auml;llen solange nicht ausgef&uuml;hrt, bis das ausl&ouml;sende Ereignis beendet ist, daf&uuml;r kann das Ereignis die AutoLISP-Funktion (command) sicher aufrufen, um AutoLISP-Befehle abzuarbeiten. Verwendet ein Steuerelement in einem nichtmodalen Dialog die AutoLISP-Funktion (command), muss die Eigenschaft Event Invoke des Steuerelement auf 1 gesetzt werden. Bitte beachten Sie, dass die Funktionsnamen und ihre Argumente von asynchron ausgef&uuml;hrten Ereignisfunktionen im Stapel der in AutoCAD zuletzt ausgef&uuml;hrten Befehle erscheinen.</p>
+    <p>Ereignisse, die definitionsgem&auml;&szlig; einen R&uuml;ckgabewert von der Ereignisfunktion abfangen, werden grunds&auml;tzlich synchron ausgef&uuml;hrt, sonst w&uuml;rde ja der R&uuml;ckgabewert verlorengehen. Ereignisse der modalen Dialoge werden immer synchron ausgef&uuml;hrt, da sie naturgem&auml;&szlig; 
 
 
  verhindern, dass AutoCAD Befehle ausf&uuml;hrt, solange diese Dialoge aktiv sind. Ereignisfunktionen m&uuml;ssen in diesen F&auml;llen die Anforderungen f&uuml;r synchrone Ereignisse erf&uuml;llen, unabh&auml;ngig von der Einstellung von Event Invoke.</p>
-	</div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  </div>
+  <hr />
+  <div id="footer">
+    <p>Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+    Alle Rechte vorbehalten.</p>
+    <p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

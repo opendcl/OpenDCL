@@ -26,7 +26,7 @@
 	(princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 (defun c:Animation/Form1#OnInitialize (/ fn avi)
 	(dcl-Animation-Load Animation/Form1/Animation1 (*ODCL:Samples-FindFile "Clock.avi"))
@@ -58,7 +58,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -120,7 +120,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

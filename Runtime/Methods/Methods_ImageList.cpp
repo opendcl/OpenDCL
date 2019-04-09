@@ -59,6 +59,9 @@ ADSRESULT ImageList::SetAt()
 	TImageListPtr pImageList;
 	if( !GetImageListArgument( pArgs, pImageList ) )
 		return RSERR; //wrong argument type
+	
+	if( !pImageList )
+		return RSERR; //invalid image list
 
 	long idxPic = -1;
 	if( !GetLongArgument( pArgs, idxPic ) )
@@ -91,9 +94,6 @@ ADSRESULT ImageList::SetAt()
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
-	
-	if( !pImageList )
-		return RSRSLT; //invalid image list
 
 	if( bDelete )
 	{

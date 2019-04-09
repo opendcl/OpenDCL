@@ -3357,7 +3357,9 @@ public:
 			{
 				resbuf* prbFile = acutNewRb(RTSTR);
 				CString sFilename = BrowseWnd.GetNextPathName(posFile);
-				sFilename.Replace( _T("\\\\"), _T("\\") ); //remove double backslashes added by MFC when files are in root folder
+				CString sFilenameCleanPath = sFilename.Mid(2);
+				sFilenameCleanPath.Replace( _T("\\\\"), _T("\\") ); //remove double backslashes added by MFC when files are in root folder
+				sFilename = sFilename.Left(2) + sFilenameCleanPath;
 				acutNewString(sFilename, prbFile->resval.rstring);
 				if (!prbTail)
 				{

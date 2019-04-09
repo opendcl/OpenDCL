@@ -60,7 +60,7 @@
     ); if
   ); check_thickness
 
-  ;|«OpenDCL Event Handlers»|;
+  ;|*OpenDCL Event Handlers*|;
 
   ;; This event is called before the form is shown.
   ;; It sets default values for the dialog and its controls.
@@ -182,7 +182,7 @@
   (princ)
 ); splitter
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################

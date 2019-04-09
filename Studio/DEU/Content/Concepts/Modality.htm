@@ -7,38 +7,38 @@
 <title>Modal vs. Nichtmodal</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">Modal vs. Nichtmodal</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">Modal vs. Nichtmodal</div>
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size:xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
 <div id="content">
-		<p>Modale Dialoge sperren das AutoCAD-Fenster solange, bis sie wieder geschlossen werden. Naturgem&auml;&szlig; k&ouml;nnen modale Dialoge einfacher verwaltet werden, weil AutoCAD in der Zwischenzeit unver&auml;ndert bleibt. Modale Dialoge geben einen Statuswert zur&uuml;ck, wenn sie geschlossen werden. Die Hauptfunktion der Applikation f&uuml;hrt dann auf den R&uuml;ckgabewert basierend weiterf&uuml;hrenden Code aus. </p>
-		<p>Nichtmodale Dialoge stellen eine gr&ouml;&szlig;ere Herausforderung dar. Da nichtmodale Dialoge w&auml;hrend der gesamten AutoCAD-Sitzung aktiv sein k&ouml;nnen, m&uuml;ssen sie mit dem wechselnden AutoCAD-Status umgehen k&ouml;nnen. Dazu geh&ouml;ren wechselnde aktive Dokumente genauso wie offene oder geschlossene Zeichnungen. Da dar&uuml;berhinaus jede AutoCAD-Zeichnung seinen eigenen AutoLISP Namensraum verwendet, bedeutet das Aktivieren eines neuen Dokuments, dass in dem nun deaktivierten Dokument die Ereignisse nicht mehr ausgel&ouml;st und auf sie zugegriffen werden k&ouml;nnen. </p>
-		<p>Das hat zur Folge, dass nichtmodale Dialoge nur verwaltet werden k&ouml;nnen, wenn sichergestellt ist, dass die Ereignisse in jeder neuen Zeichnung definiert sind. In der Praxis muss die LSP-, FAS- oder VLX-Datei der Applikation mit der acaddoc.lsp oder einer &auml;hnlichen Methode als Teil der Zeichnungsinitialisierung geladen werden. </p>
-	    <p>Zudem muss beim &Ouml;ffnen einer weiteren Zeichnung auf einen bereits ge&ouml;ffneten nichtmodalen Dialog reagiert werden. Liest beispielsweise die Applikation einige initialisierende Einstellungen aus der Windows-Registrierung, sollte dies nur geschehen, wenn der Dialog tats&auml;chlich erstmals aufgerufen wird. Eine derartige Initialisierung kann zum Beispiel in dem <a href="../Reference/Event/Initialize.htm">OnInitialize</a>-Ereignis Anwendung finden, dann wird es nur einmal ausgef&uuml;hrt, wenn der Dialog eingeblendet wird. Mit dem folgenden beispielhaften Ausdruck pr&uuml;fen Sie, ob der Dialog zur Laufzeit bereits aktiv ist: </p>
-		<blockquote>
+    <p>Modale Dialoge sperren das AutoCAD-Fenster solange, bis sie wieder geschlossen werden. Naturgem&auml;&szlig; k&ouml;nnen modale Dialoge einfacher verwaltet werden, weil AutoCAD in der Zwischenzeit unver&auml;ndert bleibt. Modale Dialoge geben einen Statuswert zur&uuml;ck, wenn sie geschlossen werden. Die Hauptfunktion der Applikation f&uuml;hrt dann auf den R&uuml;ckgabewert basierend weiterf&uuml;hrenden Code aus. </p>
+    <p>Nichtmodale Dialoge stellen eine gr&ouml;&szlig;ere Herausforderung dar. Da nichtmodale Dialoge w&auml;hrend der gesamten AutoCAD-Sitzung aktiv sein k&ouml;nnen, m&uuml;ssen sie mit dem wechselnden AutoCAD-Status umgehen k&ouml;nnen. Dazu geh&ouml;ren wechselnde aktive Dokumente genauso wie offene oder geschlossene Zeichnungen. Da dar&uuml;berhinaus jede AutoCAD-Zeichnung seinen eigenen AutoLISP Namensraum verwendet, bedeutet das Aktivieren eines neuen Dokuments, dass in dem nun deaktivierten Dokument die Ereignisse nicht mehr ausgel&ouml;st und auf sie zugegriffen werden k&ouml;nnen. </p>
+    <p>Das hat zur Folge, dass nichtmodale Dialoge nur verwaltet werden k&ouml;nnen, wenn sichergestellt ist, dass die Ereignisse in jeder neuen Zeichnung definiert sind. In der Praxis muss die LSP-, FAS- oder VLX-Datei der Applikation mit der acaddoc.lsp oder einer &auml;hnlichen Methode als Teil der Zeichnungsinitialisierung geladen werden. </p>
+      <p>Zudem muss beim &Ouml;ffnen einer weiteren Zeichnung auf einen bereits ge&ouml;ffneten nichtmodalen Dialog reagiert werden. Liest beispielsweise die Applikation einige initialisierende Einstellungen aus der Windows-Registrierung, sollte dies nur geschehen, wenn der Dialog tats&auml;chlich erstmals aufgerufen wird. Eine derartige Initialisierung kann zum Beispiel in dem <a href="../Reference/Event/Initialize.htm">OnInitialize</a>-Ereignis Anwendung finden, dann wird es nur einmal ausgef&uuml;hrt, wenn der Dialog eingeblendet wird. Mit dem folgenden beispielhaften Ausdruck pr&uuml;fen Sie, ob der Dialog zur Laufzeit bereits aktiv ist: </p>
+    <blockquote>
           <pre>(and (MyProject-MyForm (dcl-Form-IsActive MyProject-MyForm))</pre>
         </blockquote>
       <p>Zus&auml;tzlich zum Programmstart muss der Programmablauf auch mit mehreren Zeichnungen umgehen k&ouml;nnen und auf den Zustand reagieren, wenn alle Zeichnungen geschlossen werden (sogenannter &quot;NoDocState&quot;) oder wenn der Anwender zwischen mehreren offenen Zeichnungen hin- und herschaltet. Enth&auml;lt der nichtmodale Dialog zeichnungsabh&auml;ngige Einstellungen und Eigenschaften, sollten diese in den Ereignisfunktionen der aktivierten Ereignisse <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> und <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> aktualisiert und auf die neue Zeichnung hin angepasst werden.
       <p>Die Ereignisse nichtmodaler Dialoge werden normalerweise im Kontext der AutoCAD-Anwendung aufgerufen statt im Kontext der Zeichnungsdatei. AutoLISP-Code, der im Kontext der AutoCAD-Anwendung aufgerufen wird, kann nicht jede dokumentenabh&auml;ngige Funktion (wie die AutoLISP-Funktion (command)) aufrufen. Um dieses Problem zu umgehen, kann die Eigenschaft <a href="../Reference/Property/EventInvoke.htm">Event Invoke</a> des Steuerelements verwendet werden, damit die Ereignisfunktion asynchron im Kontext der Zeichnungsdatei aufgerufen wird, was es dann letztlich erlaubt, AutoLISP-Funktionen, wie (command) erfolgreich auszuf&uuml;hren. Alternativ kann die Ereignisfunktion synchron aufgerufen werden, statt jedoch die dokumentenabh&auml;ngigen Funktionen innerhalb der Ereignisfunktion zu verwenden, kann diese einfach einen Befehl mit Hilfe der OpenDCL-Funktion <a href="../Reference/Function/SendString.htm">(dcl-SendString)</a> im Kontext der Zeichnungsdatei aufrufen. 
 </div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <hr />
+  <div id="footer">
+    <p>Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+    Alle Rechte vorbehalten.</p>
+    <p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>

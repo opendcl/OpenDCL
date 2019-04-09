@@ -26,7 +26,7 @@
 	(princ)
 )
 
-;|«OpenDCL Event Handlers»|;
+;|*OpenDCL Event Handlers*|;
 
 (defun c:HTML/Dcl1#OnInitialize (/)               ;navigate to new url on HTML control
 	(dcl-Html-Navigate HTML/Dcl1/Html "http://www.opendcl.com")
@@ -119,7 +119,7 @@
 
 (princ)
 
-;|«OpenDCL Samples Epilog»|;
+;|*OpenDCL Samples Epilog*|;
 
 ;;;######################################################################
 ;;;######################################################################
@@ -181,7 +181,3 @@
 
 ;;;######################################################################
 ;;;######################################################################
-
-;|«Visual LISP© Format Options»
-(80 4 50 2 nil "end of " 80 50 0 0 2 nil nil nil T)
-;*** DO NOT add text below the comment! ***|;

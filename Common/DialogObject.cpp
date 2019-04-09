@@ -55,7 +55,7 @@ bool CDialogObject::CenterDialog()
 	CRect rcDlg = GetEffectiveWindowRect();
 	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - rcDlg.Width()) / 2,
 						 (::GetSystemMetrics(SM_CYSCREEN) - rcDlg.Height()) / 2 );
-	return MoveDialog( pt.x, pt.y );
+	return MoveDialog( ToDIP(pt.x), ToDIP(pt.y) );
 }
 
 bool CDialogObject::MoveDialog( long nNewLeft, long nNewTop )
@@ -86,7 +86,7 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	bool bIgnoreSizing = IgnoreSizing();
 	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - nNewHeight) / 2,
 						 (::GetSystemMetrics(SM_CYSCREEN) - nNewWidth) / 2 );
-	bool bSuccess = MoveDialog( pt.x, pt.y );
+	bool bSuccess = MoveDialog( ToDIP(pt.x), ToDIP(pt.y) );
 	GetControlPane()->RecalcLayout();
 	IgnoreSizing( bIgnoreSizing );
 	return bSuccess;

@@ -7,22 +7,22 @@
 <title>GetOLEColorValue</title>
 </head>
 <body>
-	<table width="100%">
-		<tr>
-			<td nowrap>
-				<div id="title">
+  <table width="100%">
+    <tr>
+      <td nowrap>
+        <div id="title">
                   <img border="0" src="../images/Function.png" width="16" height="16"> 
                   GetOLEColorValue</div>
-			</td>
-			<td align="right" valign="top">
-				<div id="hdrlink" style="font-size:xx-small;">
-					<a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
-					<a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<hr />
+      </td>
+      <td align="right" valign="top">
+        <div id="hdrlink" style="font-size:xx-small;">
+          <a href="http://opendcl.com/go?forum&de&post" target="_blank">Anmerkung zur deutschen Übersetzung melden</a><br />
+          <a href="http://opendcl.com/go?forum&de" target="_blank">Deutschsprachiges Forum</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <hr />
 <div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111">
           <tr>
@@ -41,14 +41,14 @@
             <td bgcolor="#CCFF99"><a href="../DataType/OLEColor.htm">OLEColor</a></td>
           </tr>
       </table>
-	<p>Diese Funktion konvertiert einen AutoCAD-ACI-Farbwert bzw. eine Windows-Systemfarbe in einen OLEColor-Farbwert f&uuml;r Anwendungen mit ActiveX-Eigenschaften und -Methoden.</p>
-		<p>Bitte beachten Sie, dass der OLEColor-Farbwert entgegen der Beschreibung in der AutoLISP-Hilfe nicht mit der AutoLISP-Funktion (acad_truecolordlg) verwendet werden kann. Autodesk verwendet hier einen anderen Farbwert.</p>
-		<blockquote>
+  <p>Diese Funktion konvertiert einen AutoCAD-ACI-Farbwert bzw. eine Windows-Systemfarbe in einen OLEColor-Farbwert f&uuml;r Anwendungen mit ActiveX-Eigenschaften und -Methoden.</p>
+    <p>Bitte beachten Sie, dass der OLEColor-Farbwert entgegen der Beschreibung in der AutoLISP-Hilfe nicht mit der AutoLISP-Funktion (acad_truecolordlg) verwendet werden kann. Autodesk verwendet hier einen anderen Farbwert.</p>
+    <blockquote>
 <pre>(setq lstRGB (list 123 234 56)) <span class="codecomment">;; Diese Farbe soll abgebildet werden</span> 
 (setq lstRGBForAcad (reverse lstRGB)) <span class="codecomment">;; Die Liste der RGB-Farbe muss zun&auml;chst umgedreht werden</span>
 (setq intRGBForAcad (+ (+ (lsh (caddr lstRGBForAcad) 16) (lsh (cadr lstRGBForAcad) 8)) (car lstRGBForAcad))) <span class="codecomment">;; Daraus l&auml;sst sich der Farbwert ableiten</span>
 (acad_truecolordlg (cons 420 intRGBForAcad) nil)</pre>
-	  </blockquote>
+    </blockquote>
           <p>
           Wollen Sie einem Bild-Steuerlemenent eine RGB-Farbe als Hintergrundfarbe zuweisen, verwenden Sie die Liste aus Rot, Gr&uuml;n, Blau direkt: </p>
           <blockquote>
@@ -57,13 +57,13 @@
 (setq intRGBForODCL (+ (+ (lsh (caddr lstRGBForODCL) 16) (lsh (cadr lstRGBForODCL) 8)) (car lstRGBForODCL)))  </pre>
           </blockquote>
 </div>
-	<hr />
-	<div id="footer">
-		<p>Copyright © 2018 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		Alle Rechte vorbehalten.</p>
-		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
-		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
-	</div>
+  <hr />
+  <div id="footer">
+    <p>Copyright © 2019 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+    Alle Rechte vorbehalten.</p>
+    <p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+    <p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+    <p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+  </div>
 </body>
 </html>
