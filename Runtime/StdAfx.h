@@ -26,11 +26,6 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
-#if defined(_BRXTARGET) && defined(AC_FULL_DEBUG)
-#undef _BRXTARGET
-#define _BRXTARGET 17
-#endif
-
 //-----------------------------------------------------------------------------
 //- 'DEBUG workaround' below prevents the MFC or ATL #include-s from pulling
 //- in "Afx.h" that would force the debug CRT through #pragma-s.
