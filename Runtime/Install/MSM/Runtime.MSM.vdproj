@@ -39,6 +39,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_07C6EF4E96C24665B377748A5974E309"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0834932F7A474EAFB1BF7E3E027CE7AB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -123,6 +129,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2C26E286CB0640B18564B05F338467D4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3053AA7D3E50430E977FC5161F7CE41A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3625B58BEA004BF480038DF83F8EAA1A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -148,6 +166,12 @@
         "Entry"
         {
         "MsmKey" = "8:_3933F264153D4C81BE661477FE2325FC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3B90EEAC2AA943D0AB8141335936C653"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1057,6 +1081,34 @@
                 {
                 }
             }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_07C6EF4E96C24665B377748A5974E309"
+            {
+            "SourcePath" = "8:..\\..\\ZRX.2020\\Release\\OpenDCL.2020.zrx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{5C3826FF-869F-426A-BB4C-E8F9DA26D01F}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0834932F7A474EAFB1BF7E3E027CE7AB"
             {
             "SourcePath" = "8:..\\..\\BRX.10\\Release\\OpenDCL.10.brx"
@@ -1337,6 +1389,62 @@
                 {
                 }
             }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2C26E286CB0640B18564B05F338467D4"
+            {
+            "SourcePath" = "8:..\\..\\GRX.2020.x64\\Release\\OpenDCL.x64.2020.grx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{A059C9F3-2C9B-4A1D-8EA0-03C481A940FC}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3053AA7D3E50430E977FC5161F7CE41A"
+            {
+            "SourcePath" = "8:..\\..\\GRX.2020\\Release\\OpenDCL.2020.grx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{964F30B3-6DA9-428D-BC74-0466BE1DD381}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3625B58BEA004BF480038DF83F8EAA1A"
             {
             "SourcePath" = "8:..\\..\\GRX.2017.x64\\Release\\OpenDCL.x64.2017.grx"
@@ -1472,6 +1580,34 @@
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{15153A97-19D0-4487-A517-CF24BBFFDBDA}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3B90EEAC2AA943D0AB8141335936C653"
+            {
+            "SourcePath" = "8:..\\..\\ZRX.2020.x64\\Release\\OpenDCL.x64.2020.zrx"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{1BA5B208-97C8-4AC8-9035-D81CAB314231}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
