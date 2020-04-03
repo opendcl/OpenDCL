@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DpiAwarenessAPI.h"
 
-// Copyright 2017 - 2019 ManuSoft. All Rights Reserved.
+// Copyright 2017 - 2020 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted

@@ -16,9 +16,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_ACADTARGET=21;_BRXTARGET=20;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSVC1410)\Include;$(MSVC1410)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(BRX20)\Lib64;$(MSVC1410)\Lib\AMD64;$(MSVC1410)\ATLMFC\Lib\AMD64;$(WindowsSdkDirIA64)\Lib\AMD64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BRX20)\Lib64;$(MSVC1410)\Lib\x64;$(MSVC1410)\ATLMFC\Lib\x64;$(WindowsSdkDirIA64)\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
     </Link>

@@ -97,7 +97,9 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 
 		COLORREF crFore = mColorService.GetForegroundColor();
 		AcCmColor clr;
+#if (_ARXTARGET < 24)
 		clr.setColorMethod( AcCmEntityColor::kByColor );
+#endif
 		clr.setRGB( GetRValue(crFore),
 								GetGValue(crFore),
 								GetBValue(crFore) );

@@ -15,9 +15,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_ACADTARGET=23;_ARXTARGET=23;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSVC1410)\Include;$(MSVC1410)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ARX2019)\Lib-Win32;$(MSVC1410)\Lib;$(MSVC1410)\ATLMFC\Lib;$(WindowsSdkDir)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ARX2019)\Lib-Win32;$(MSVC1410)\Lib\x86;$(MSVC1410)\ATLMFC\Lib\x86;$(WindowsSdkDir)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(OutDir)$(ProjectName).lib</ImportLibrary>
       <AdditionalDependencies>AcDrawBridge.lib</AdditionalDependencies>
