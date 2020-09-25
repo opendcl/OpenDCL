@@ -31,589 +31,589 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AcadBlockInsertDropTarget.cpp">
+    <ClCompile Include="..\..\AcadBlockInsertDropTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AcadDockBarHost.cpp">
+    <ClCompile Include="..\..\AcadDockBarHost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AcadPaletteHost.cpp">
+    <ClCompile Include="..\..\AcadPaletteHost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\acrxEntryPoint.cpp">
+    <ClCompile Include="..\..\acrxEntryPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ARX.cpp">
+    <ClCompile Include="..\..\ARX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxControlAcadDropTarget.cpp">
+    <ClCompile Include="..\..\ArxControlAcadDropTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxControlDropTarget.cpp">
+    <ClCompile Include="..\..\ArxControlDropTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxControlPane.cpp">
+    <ClCompile Include="..\..\ArxControlPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxControlServices.cpp">
+    <ClCompile Include="..\..\ArxControlServices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxDialogControl.cpp">
+    <ClCompile Include="..\..\ArxDialogControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxDialogObject.cpp">
+    <ClCompile Include="..\..\ArxDialogObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxDragDropService.cpp">
+    <ClCompile Include="..\..\ArxDragDropService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxProject.cpp">
+    <ClCompile Include="..\..\ArxProject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArxWorkspace.cpp">
+    <ClCompile Include="..\..\ArxWorkspace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\BaseDlg.cpp">
+    <ClCompile Include="..\..\BaseDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ControlBarDlg.cpp">
+    <ClCompile Include="..\..\ControlBarDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\CustomFileDlg.cpp">
+    <ClCompile Include="..\..\CustomFileDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\DelayedInvoke.cpp">
+    <ClCompile Include="..\..\DelayedInvoke.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\DocData.cpp">
+    <ClCompile Include="..\..\DocData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\FolderBrowseDlg.cpp">
+    <ClCompile Include="..\..\FolderBrowseDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\LinetypeDlg.cpp">
+    <ClCompile Include="..\..\LinetypeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\LineWeightDlg.cpp">
+    <ClCompile Include="..\..\LineWeightDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\MainFileDlg.cpp">
+    <ClCompile Include="..\..\MainFileDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ModalDlg.cpp">
+    <ClCompile Include="..\..\ModalDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ModelessDlg.cpp">
+    <ClCompile Include="..\..\ModelessDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\OptionsTabDlg.cpp">
+    <ClCompile Include="..\..\OptionsTabDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\PaletteDlg.cpp">
+    <ClCompile Include="..\..\PaletteDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ResizableDialog.cpp">
+    <ClCompile Include="..\..\..\Common\ResizableDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\StdAfx.cpp">
+    <ClCompile Include="..\..\StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\TabPageDlg.cpp">
+    <ClCompile Include="..\..\TabPageDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\UpdateCheck.cpp">
+    <ClCompile Include="..\..\UpdateCheck.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxAcadSlideCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxAcadSlideCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxAngleSlideCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxAngleSlideCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxAnimationCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxAnimationCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxArrowComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxArrowComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxAxContainerCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxAxContainerCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxBlockListCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxBlockListCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxBlockViewCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxBlockViewCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxCheckBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxCheckBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxColorComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxColorComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxDwgListCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxDwgListCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxDwgPreviewCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxDwgPreviewCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxFolderComboCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxFolderComboCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxFontComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxFontComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxFrameCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxFrameCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxGraphicButtonCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxGraphicButtonCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxGridCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxGridCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxGsViewCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxGsViewCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxHatchCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxHatchCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxHtmlCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxHtmlCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxHyperlinkCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxHyperlinkCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxImageComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxImageComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxImageTreeCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxImageTreeCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxLabelCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxLabelCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxLinetypeComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxLinetypeComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxLineweightComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxLineweightComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxListBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxListBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxListViewCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxListViewCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxMonthCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxMonthCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxOptionListCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxOptionListCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxPaperComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxPaperComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxPictureBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxPictureBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxPlotStyleNameComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxPlotStyleNameComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxPlotStyleTableComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxPlotStyleTableComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxPrinterComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxPrinterComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxProgressBarCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxProgressBarCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxR16LinetypeComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxR16LinetypeComboBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxRadioButtonCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxRadioButtonCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxRectangleCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxRectangleCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxScrollBarCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxScrollBarCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxSlideCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxSlideCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxSpinnerCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxSpinnerCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxSplitterCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxSplitterCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxTabStripCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxTabStripCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxTextBoxCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxTextBoxCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Controls\ArxTextButtonCtrl.cpp">
+    <ClCompile Include="..\..\Controls\ArxTextButtonCtrl.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\ArgumentsRetrieval.cpp">
+    <ClCompile Include="..\..\Methods\ArgumentsRetrieval.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\InvokeMethod.cpp">
+    <ClCompile Include="..\..\Methods\InvokeMethod.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ActiveX.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ActiveX.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Animation.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Animation.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_BinFile.cpp">
+    <ClCompile Include="..\..\Methods\Methods_BinFile.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_BlockList.cpp">
+    <ClCompile Include="..\..\Methods\Methods_BlockList.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_BlockView.cpp">
+    <ClCompile Include="..\..\Methods\Methods_BlockView.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Calendar.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Calendar.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ComboBox.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ComboBox.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Control.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Control.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_DwgList.cpp">
+    <ClCompile Include="..\..\Methods\Methods_DwgList.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_DwgPreview.cpp">
+    <ClCompile Include="..\..\Methods\Methods_DwgPreview.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_FileExplorer.cpp">
+    <ClCompile Include="..\..\Methods\Methods_FileExplorer.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Form.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Form.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Grid.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Grid.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Hatch.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Hatch.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Html.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Html.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ImageComboBox.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ImageComboBox.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ListBox.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ListBox.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ListView.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ListView.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_OptionList.cpp">
+    <ClCompile Include="..\..\Methods\Methods_OptionList.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_PictureBox.cpp">
+    <ClCompile Include="..\..\Methods\Methods_PictureBox.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ProgressBar.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ProgressBar.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_SlideView.cpp">
+    <ClCompile Include="..\..\Methods\Methods_SlideView.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_TabStrip.cpp">
+    <ClCompile Include="..\..\Methods\Methods_TabStrip.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_TextBox.cpp">
+    <ClCompile Include="..\..\Methods\Methods_TextBox.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Tree.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Tree.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AcadColorService.cpp">
+    <ClCompile Include="..\..\..\Common\AcadColorService.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AcadColorTable.cpp">
+    <ClCompile Include="..\..\..\Common\AcadColorTable.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AcadSld.cpp">
+    <ClCompile Include="..\..\..\Common\AcadSld.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ArchiveEx.cpp">
+    <ClCompile Include="..\..\..\Common\ArchiveEx.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AxEventDescriptor.cpp">
+    <ClCompile Include="..\..\..\Common\AxEventDescriptor.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AxInterfaceDescriptor.cpp">
+    <ClCompile Include="..\..\..\Common\AxInterfaceDescriptor.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AxMethodDescriptor.cpp">
+    <ClCompile Include="..\..\..\Common\AxMethodDescriptor.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AxPropertyDescriptor.cpp">
+    <ClCompile Include="..\..\..\Common\AxPropertyDescriptor.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Base64.cpp">
+    <ClCompile Include="..\..\..\Common\Base64.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\CeXDib.cpp">
+    <ClCompile Include="..\..\..\Common\CeXDib.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ControlPane.cpp">
+    <ClCompile Include="..\..\..\Common\ControlPane.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclControlTemplate.cpp">
+    <ClCompile Include="..\..\..\Common\DclControlTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclControlProp.cpp">
+    <ClCompile Include="..\..\..\Common\DclControlProp.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclFormTemplate.cpp">
+    <ClCompile Include="..\..\..\Common\DclFormTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DialogControl.cpp">
+    <ClCompile Include="..\..\..\Common\DialogControl.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DialogObject.cpp">
+    <ClCompile Include="..\..\..\Common\DialogObject.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DragDropService.cpp">
+    <ClCompile Include="..\..\..\Common\DragDropService.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ExtractAviSize.cpp">
+    <ClCompile Include="..\..\..\Common\ExtractAviSize.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Filing.cpp">
+    <ClCompile Include="..\..\..\Common\Filing.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\FontCollection.cpp">
+    <ClCompile Include="..\..\..\Common\FontCollection.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\FontSettings.cpp">
+    <ClCompile Include="..\..\..\Common\FontSettings.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ImageListObject.cpp">
+    <ClCompile Include="..\..\..\Common\ImageListObject.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\LayeredWindowHelperST.cpp">
+    <ClCompile Include="..\..\..\Common\LayeredWindowHelperST.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\OleFont.cpp">
+    <ClCompile Include="..\..\..\Common\OleFont.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\OleLicenseKey.cpp">
+    <ClCompile Include="..\..\..\Common\OleLicenseKey.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PictureBox.cpp">
+    <ClCompile Include="..\..\..\Common\PictureBox.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclPicture.cpp">
+    <ClCompile Include="..\..\..\Common\DclPicture.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PPDrawManager.cpp">
+    <ClCompile Include="..\..\..\Common\PPDrawManager.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PPHtmlDrawer.cpp">
+    <ClCompile Include="..\..\..\Common\PPHtmlDrawer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PPTooltip.cpp">
+    <ClCompile Include="..\..\..\Common\PPTooltip.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Project.cpp">
+    <ClCompile Include="..\..\..\Common\Project.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PropertyNames.cpp">
+    <ClCompile Include="..\..\..\Common\PropertyNames.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PropertyObject.cpp">
+    <ClCompile Include="..\..\..\Common\PropertyObject.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\SafeImageListWrite.cpp">
+    <ClCompile Include="..\..\..\Common\SafeImageListWrite.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\StdDropSource.cpp">
+    <ClCompile Include="..\..\..\Common\StdDropSource.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\StgFile.cpp">
+    <ClCompile Include="..\..\..\Common\StgFile.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ThemeHelperST.cpp">
+    <ClCompile Include="..\..\..\Common\ThemeHelperST.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\TipWnd.cpp">
+    <ClCompile Include="..\..\..\Common\TipWnd.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ToolTips.cpp">
+    <ClCompile Include="..\..\..\Common\ToolTips.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\AxTypeUtils.Cpp">
+    <ClCompile Include="..\..\..\Common\AxTypeUtils.Cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Workspace.cpp">
+    <ClCompile Include="..\..\..\Common\Workspace.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\AngleSlideCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\AngleSlideCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\AnimationCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\AnimationCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\AxContainerCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\AxContainerCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\BlockListCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\BlockListCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ButtonCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ButtonCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ButtonST.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ButtonST.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\CheckBoxCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\CheckBoxCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ComboBoxCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ComboCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ComboCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ComboExCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ComboExCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\DateTimeEditCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\DateTimeEditCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\DynamicButtonCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\DynamicButtonCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\EditCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\EditCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\FolderComboBox.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\FolderComboBox.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\FolderComboCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\FolderComboCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\FolderTreeCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\FolderTreeCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\FrameCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\FrameCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\GraphicButtonCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\GraphicButtonCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\GridCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\GridCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\HtmlBrowser.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\HtmlBrowser.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\HtmlCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\HtmlCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\HyperlinkCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\HyperlinkCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ImageComboBoxCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ImageComboBoxCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\LabelCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\LabelCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ListBoxCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ListBoxCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ListViewCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ListViewCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\MonthCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\MonthCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\OptionListCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\OptionListCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\PictureBoxCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\PictureBoxCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ProgressBarCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ProgressBarCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\RadioButtonCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\RadioButtonCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\RectangleCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\RectangleCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\RoundSliderCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\RoundSliderCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ScrollBarCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ScrollBarCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\SlideCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\SlideCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\SpinnerCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\SpinnerCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\SplitterCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\SplitterCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\TabStripCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\TabStripCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\TextBoxCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\TextBoxCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\TextButtonCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\TextButtonCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\XPStyleButtonST.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\XPStyleButtonST.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ImageTreeCtrl.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ImageTreeCtrl.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_Project.cpp">
+    <ClCompile Include="..\..\Methods\Methods_Project.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ThemeAPI.cpp">
+    <ClCompile Include="..\..\..\Common\ThemeAPI.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclImageList.cpp">
+    <ClCompile Include="..\..\..\Common\DclImageList.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DclAxCtrlInitInfo.cpp">
+    <ClCompile Include="..\..\..\Common\DclAxCtrlInitInfo.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\DwgThumbnail.cpp">
+    <ClCompile Include="..\..\DwgThumbnail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Methods\Methods_ImageList.cpp">
+    <ClCompile Include="..\..\Methods\Methods_ImageList.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Controls\ListCtrlHdr.cpp">
+    <ClCompile Include="..\..\..\Common\Controls\ListCtrlHdr.cpp">
       <Filter>Common\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\DpiAwarenessAPI.cpp">
+    <ClCompile Include="..\..\..\Common\DpiAwarenessAPI.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -623,751 +623,751 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\AcadBlockInsertDropTarget.h">
+    <ClInclude Include="..\..\AcadBlockInsertDropTarget.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AcadDockBarHost.h">
+    <ClInclude Include="..\..\AcadDockBarHost.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AcadPaletteHost.h">
+    <ClInclude Include="..\..\AcadPaletteHost.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxControlAcadDropTarget.h">
+    <ClInclude Include="..\..\ArxControlAcadDropTarget.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxControlDropTarget.h">
+    <ClInclude Include="..\..\ArxControlDropTarget.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxControlPane.h">
+    <ClInclude Include="..\..\ArxControlPane.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxControlServices.h">
+    <ClInclude Include="..\..\ArxControlServices.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxDialogControl.h">
+    <ClInclude Include="..\..\ArxDialogControl.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxDialogObject.h">
+    <ClInclude Include="..\..\ArxDialogObject.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxDragDropService.h">
+    <ClInclude Include="..\..\ArxDragDropService.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxProject.h">
+    <ClInclude Include="..\..\ArxProject.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArxWorkspace.h">
+    <ClInclude Include="..\..\ArxWorkspace.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AutoDocLock.h">
+    <ClInclude Include="..\..\AutoDocLock.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\BaseDlg.h">
+    <ClInclude Include="..\..\BaseDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ControlBarDlg.h">
+    <ClInclude Include="..\..\ControlBarDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\CustomFileDlg.h">
+    <ClInclude Include="..\..\CustomFileDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\DelayedInvoke.h">
+    <ClInclude Include="..\..\DelayedInvoke.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\DocData.h">
+    <ClInclude Include="..\..\DocData.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\EventArgs.h">
+    <ClInclude Include="..\..\EventArgs.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\FolderBrowseDlg.h">
+    <ClInclude Include="..\..\FolderBrowseDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\LinetypeDlg.h">
+    <ClInclude Include="..\..\LinetypeDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\LineWeightDlg.h">
+    <ClInclude Include="..\..\LineWeightDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\LocalRes.h">
+    <ClInclude Include="..\..\LocalRes.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\MainFileDlg.h">
+    <ClInclude Include="..\..\MainFileDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ModalDlg.h">
+    <ClInclude Include="..\..\ModalDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ModelessDlg.h">
+    <ClInclude Include="..\..\ModelessDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\OptionsTabDlg.h">
+    <ClInclude Include="..\..\OptionsTabDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PaletteDlg.h">
+    <ClInclude Include="..\..\PaletteDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ResizableDialog.h">
+    <ClInclude Include="..\..\..\Common\ResizableDialog.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Resource.h">
+    <ClInclude Include="..\..\Resource.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\RuntimeRes.h">
+    <ClInclude Include="..\..\RuntimeRes.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\RuntimeRes.Local.h">
+    <ClInclude Include="..\..\RuntimeRes.Local.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\StdAfx.h">
+    <ClInclude Include="..\..\StdAfx.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\StringCompare.h">
+    <ClInclude Include="..\..\StringCompare.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\TabPageDlg.h">
+    <ClInclude Include="..\..\TabPageDlg.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\UpdateCheck.h">
+    <ClInclude Include="..\..\UpdateCheck.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxAcadSlideCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxAcadSlideCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxAngleSlideCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxAngleSlideCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxAnimationCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxAnimationCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxArrowComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxArrowComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxAxContainerCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxAxContainerCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxBlockListCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxBlockListCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxBlockViewCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxBlockViewCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxCheckBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxCheckBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxColorComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxColorComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxDwgListCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxDwgListCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxDwgPreviewCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxDwgPreviewCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxFolderComboCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxFolderComboCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxFontComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxFontComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxFrameCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxFrameCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxGraphicButtonCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxGraphicButtonCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxGridCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxGridCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxGsViewCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxGsViewCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxHatchCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxHatchCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxHtmlCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxHtmlCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxHyperlinkCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxHyperlinkCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxImageComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxImageComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxImageTreeCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxImageTreeCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxLabelCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxLabelCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxLayerComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxLayerComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxLinetypeComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxLinetypeComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxLineweightComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxLineweightComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxListBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxListBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxListViewCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxListViewCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxMonthCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxMonthCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxOptionListCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxOptionListCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxPaperComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxPaperComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxPictureBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxPictureBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxPlotStyleNameComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxPlotStyleNameComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxPlotStyleTableComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxPlotStyleTableComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxPrinterComboBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxPrinterComboBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxProgressBarCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxProgressBarCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxRadioButtonCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxRadioButtonCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxRectangleCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxRectangleCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxScrollBarCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxScrollBarCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxSlideCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxSlideCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxSpinnerCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxSpinnerCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxSplitterCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxSplitterCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxTabStripCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxTabStripCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxTextBoxCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxTextBoxCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\ArxTextButtonCtrl.h">
+    <ClInclude Include="..\..\Controls\ArxTextButtonCtrl.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboFilter.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\DimStyleComboHandler.h">
+    <ClInclude Include="..\..\Controls\DimStyleComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\FontComboHandler.h">
+    <ClInclude Include="..\..\Controls\FontComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\LayerComboHandler.h">
+    <ClInclude Include="..\..\Controls\LayerComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\LinetypeComboHandler.h">
+    <ClInclude Include="..\..\Controls\LinetypeComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\PaperComboHandler.h">
+    <ClInclude Include="..\..\Controls\PaperComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\PrinterComboHandler.h">
+    <ClInclude Include="..\..\Controls\PrinterComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\R2006AcUiMRUComboBoxFixup.h">
+    <ClInclude Include="..\..\Controls\R2006AcUiMRUComboBoxFixup.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\TextStyleComboHandler.h">
+    <ClInclude Include="..\..\Controls\TextStyleComboHandler.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Controls\UnitsNumericFilter.h">
+    <ClInclude Include="..\..\Controls\UnitsNumericFilter.h">
       <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\ArgumentsRetrieval.h">
+    <ClInclude Include="..\..\Methods\ArgumentsRetrieval.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\InvokeMethod.h">
+    <ClInclude Include="..\..\Methods\InvokeMethod.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ActiveX.h">
+    <ClInclude Include="..\..\Methods\Methods_ActiveX.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Animation.h">
+    <ClInclude Include="..\..\Methods\Methods_Animation.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_BinFile.h">
+    <ClInclude Include="..\..\Methods\Methods_BinFile.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_BlockList.h">
+    <ClInclude Include="..\..\Methods\Methods_BlockList.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_BlockView.h">
+    <ClInclude Include="..\..\Methods\Methods_BlockView.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Calendar.h">
+    <ClInclude Include="..\..\Methods\Methods_Calendar.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ComboBox.h">
+    <ClInclude Include="..\..\Methods\Methods_ComboBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Control.h">
+    <ClInclude Include="..\..\Methods\Methods_Control.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_DwgList.h">
+    <ClInclude Include="..\..\Methods\Methods_DwgList.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_DwgPreview.h">
+    <ClInclude Include="..\..\Methods\Methods_DwgPreview.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_FileExplorer.h">
+    <ClInclude Include="..\..\Methods\Methods_FileExplorer.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Form.h">
+    <ClInclude Include="..\..\Methods\Methods_Form.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Grid.h">
+    <ClInclude Include="..\..\Methods\Methods_Grid.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Hatch.h">
+    <ClInclude Include="..\..\Methods\Methods_Hatch.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Html.h">
+    <ClInclude Include="..\..\Methods\Methods_Html.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ImageComboBox.h">
+    <ClInclude Include="..\..\Methods\Methods_ImageComboBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ListBox.h">
+    <ClInclude Include="..\..\Methods\Methods_ListBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ListView.h">
+    <ClInclude Include="..\..\Methods\Methods_ListView.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_OptionList.h">
+    <ClInclude Include="..\..\Methods\Methods_OptionList.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_PictureBox.h">
+    <ClInclude Include="..\..\Methods\Methods_PictureBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ProgressBar.h">
+    <ClInclude Include="..\..\Methods\Methods_ProgressBar.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_SlideView.h">
+    <ClInclude Include="..\..\Methods\Methods_SlideView.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_TabStrip.h">
+    <ClInclude Include="..\..\Methods\Methods_TabStrip.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_TextBox.h">
+    <ClInclude Include="..\..\Methods\Methods_TextBox.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Tree.h">
+    <ClInclude Include="..\..\Methods\Methods_Tree.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AcadColorService.h">
+    <ClInclude Include="..\..\..\Common\AcadColorService.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AcadColorTable.h">
+    <ClInclude Include="..\..\..\Common\AcadColorTable.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AcadSld.h">
+    <ClInclude Include="..\..\..\Common\AcadSld.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ArchiveEx.h">
+    <ClInclude Include="..\..\..\Common\ArchiveEx.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AxArg.h">
+    <ClInclude Include="..\..\..\Common\AxArg.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AxEventDescriptor.h">
+    <ClInclude Include="..\..\..\Common\AxEventDescriptor.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AxInterfaceDescriptor.h">
+    <ClInclude Include="..\..\..\Common\AxInterfaceDescriptor.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AxMethodDescriptor.h">
+    <ClInclude Include="..\..\..\Common\AxMethodDescriptor.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AxPropertyDescriptor.h">
+    <ClInclude Include="..\..\..\Common\AxPropertyDescriptor.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Base64.h">
+    <ClInclude Include="..\..\..\Common\Base64.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\CeXDib.h">
+    <ClInclude Include="..\..\..\Common\CeXDib.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ControlPane.h">
+    <ClInclude Include="..\..\..\Common\ControlPane.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ControlTypes.h">
+    <ClInclude Include="..\..\..\Common\ControlTypes.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclControlTemplate.h">
+    <ClInclude Include="..\..\..\Common\DclControlTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclControlProp.h">
+    <ClInclude Include="..\..\..\Common\DclControlProp.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclFormTemplate.h">
+    <ClInclude Include="..\..\..\Common\DclFormTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclFormTypes.h">
+    <ClInclude Include="..\..\..\Common\DclFormTypes.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Diagnostic.h">
+    <ClInclude Include="..\..\..\Common\Diagnostic.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DialogControl.h">
+    <ClInclude Include="..\..\..\Common\DialogControl.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DialogObject.h">
+    <ClInclude Include="..\..\..\Common\DialogObject.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DragDropService.h">
+    <ClInclude Include="..\..\..\Common\DragDropService.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ExtractAviSize.h">
+    <ClInclude Include="..\..\..\Common\ExtractAviSize.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Filing.h">
+    <ClInclude Include="..\..\..\Common\Filing.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\FontCollection.h">
+    <ClInclude Include="..\..\..\Common\FontCollection.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\FontSettings.h">
+    <ClInclude Include="..\..\..\Common\FontSettings.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\FormTypes.h">
+    <ClInclude Include="..\..\..\Common\FormTypes.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ImageListObject.h">
+    <ClInclude Include="..\..\..\Common\ImageListObject.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\LayeredWindowHelperST.h">
+    <ClInclude Include="..\..\..\Common\LayeredWindowHelperST.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\MemDC.h">
+    <ClInclude Include="..\..\..\Common\MemDC.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\OleFont.h">
+    <ClInclude Include="..\..\..\Common\OleFont.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\OleLicenseKey.h">
+    <ClInclude Include="..\..\..\Common\OleLicenseKey.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PictureBox.h">
+    <ClInclude Include="..\..\..\Common\PictureBox.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclPicture.h">
+    <ClInclude Include="..\..\..\Common\DclPicture.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PPDrawManager.h">
+    <ClInclude Include="..\..\..\Common\PPDrawManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PPHtmlDrawer.h">
+    <ClInclude Include="..\..\..\Common\PPHtmlDrawer.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PPTooltip.h">
+    <ClInclude Include="..\..\..\Common\PPTooltip.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Project.h">
+    <ClInclude Include="..\..\..\Common\Project.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PropertyIds.h">
+    <ClInclude Include="..\..\..\Common\PropertyIds.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PropertyNames.h">
+    <ClInclude Include="..\..\..\Common\PropertyNames.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PropertyObject.h">
+    <ClInclude Include="..\..\..\Common\PropertyObject.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PtrTypes.h">
+    <ClInclude Include="..\..\..\Common\PtrTypes.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\RefCountedPtr.h">
+    <ClInclude Include="..\..\..\Common\RefCountedPtr.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\SafeImageListWrite.h">
+    <ClInclude Include="..\..\..\Common\SafeImageListWrite.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\StdDropSource.h">
+    <ClInclude Include="..\..\..\Common\StdDropSource.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\StgFile.h">
+    <ClInclude Include="..\..\..\Common\StgFile.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ThemeHelperST.h">
+    <ClInclude Include="..\..\..\Common\ThemeHelperST.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\TipWnd.h">
+    <ClInclude Include="..\..\..\Common\TipWnd.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ToolTips.h">
+    <ClInclude Include="..\..\..\Common\ToolTips.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\UndoManager.h">
+    <ClInclude Include="..\..\..\Common\UndoManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\AxTypeUtils.h">
+    <ClInclude Include="..\..\..\Common\AxTypeUtils.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Workspace.h">
+    <ClInclude Include="..\..\..\Common\Workspace.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\AngleFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\AngleFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\AngleSlideCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\AngleSlideCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\AnimationCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\AnimationCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\AxContainerCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\AxContainerCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\BlockListCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\BlockListCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ButtonCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ButtonCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ButtonEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ButtonEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ButtonST.h">
+    <ClInclude Include="..\..\..\Common\Controls\ButtonST.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\CheckBoxCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\CheckBoxCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboBoxCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboBoxCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboExCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboExCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboHandler.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboHandler.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ComboStyles.h">
+    <ClInclude Include="..\..\..\Common\Controls\ComboStyles.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\CurrencyFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\CurrencyFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\CustomFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\CustomFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\DateFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\DateFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\DateTimeEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\DateTimeEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\DynamicButtonCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\DynamicButtonCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\EditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\EditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FilteredComboCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\FilteredComboCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FilteredComboExCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\FilteredComboExCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FilteredEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\FilteredEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FolderComboBox.h">
+    <ClInclude Include="..\..\..\Common\Controls\FolderComboBox.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FolderComboCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\FolderComboCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FolderTreeCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\FolderTreeCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\FrameCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\FrameCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\GraphicButtonCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\GraphicButtonCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\GridCellEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\GridCellEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\GridCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\GridCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\HtmlBrowser.h">
+    <ClInclude Include="..\..\..\Common\Controls\HtmlBrowser.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\HtmlCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\HtmlCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\HyperlinkCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\HyperlinkCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ImageComboBoxCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ImageComboBoxCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ImageComboEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ImageComboEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ImageTreeCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ImageTreeCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\InputFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\InputFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\IntegerFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\IntegerFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\LabelCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\LabelCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ListBoxCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ListBoxCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ListViewCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ListViewCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\LowerCaseFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\LowerCaseFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\MonthCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\MonthCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\MultilineFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\MultilineFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\NumericFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\NumericFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\OptionListCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\OptionListCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\PasswordFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\PasswordFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\PercentageFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\PercentageFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\PictureBoxCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\PictureBoxCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ProgressBarCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ProgressBarCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\RadioButtonCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\RadioButtonCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\RadioEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\RadioEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\RectangleCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\RectangleCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\RoundSliderCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\RoundSliderCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ScrollBarCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ScrollBarCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\SlideCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\SlideCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\SpinnerCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\SpinnerCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\SplitterCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\SplitterCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\SymbolNameFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\SymbolNameFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\TabStripCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\TabStripCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\TextBoxCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\TextBoxCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\TextBoxEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\TextBoxEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\TextBoxFilterTypes.h">
+    <ClInclude Include="..\..\..\Common\Controls\TextBoxFilterTypes.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\TextButtonCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\TextButtonCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\TimeFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\TimeFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ToggleEditCtrl.h">
+    <ClInclude Include="..\..\..\Common\Controls\ToggleEditCtrl.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\UnsignedIntegerFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\UnsignedIntegerFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\UpperCaseFilter.h">
+    <ClInclude Include="..\..\..\Common\Controls\UpperCaseFilter.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\XPStyleButtonST.h">
+    <ClInclude Include="..\..\..\Common\Controls\XPStyleButtonST.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_Project.h">
+    <ClInclude Include="..\..\Methods\Methods_Project.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ThemeAPI.h">
+    <ClInclude Include="..\..\..\Common\ThemeAPI.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\UxThemeVI.h">
+    <ClInclude Include="..\..\..\Common\UxThemeVI.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclImageList.h">
+    <ClInclude Include="..\..\..\Common\DclImageList.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DclAxCtrlInitInfo.h">
+    <ClInclude Include="..\..\..\Common\DclAxCtrlInitInfo.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\DwgThumbnail.h">
+    <ClInclude Include="..\..\DwgThumbnail.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Methods\Methods_ImageList.h">
+    <ClInclude Include="..\..\Methods\Methods_ImageList.h">
       <Filter>Methods\Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Controls\ListCtrlHdr.h">
+    <ClInclude Include="..\..\..\Common\Controls\ListCtrlHdr.h">
       <Filter>Common\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\DpiAwarenessAPI.h">
+    <ClInclude Include="..\..\..\Common\DpiAwarenessAPI.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
