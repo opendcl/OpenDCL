@@ -189,7 +189,7 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 	}
 	catch(...)
 	{
-	#if (_ARXTARGET < 20)
+#if !(_ARXTARGET >= 20 || _ZRXTARGET >= 2021)
 		/*identification number of the current viewport*/
 		struct resbuf   rb;
 		acedGetVar(_T("CVPORT"), &rb);
