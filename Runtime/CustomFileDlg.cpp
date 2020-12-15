@@ -149,11 +149,31 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 }
 
 
+__if_exists(CFileDialog::m_bVistaStyle)
+{
+	CNonVistaFileDialog::CNonVistaFileDialog(BOOL bOpenFileDialog, LPCTSTR lpszDefExt /*= NULL*/,
+		LPCTSTR lpszFileName /*= NULL*/, DWORD dwFlags /*= 0UL*/, LPCTSTR lpszFilter /*= NULL*/,
+		CWnd* pParentWnd /*= NULL*/)
+	: CFileDialog( bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd, 0UL, FALSE )
+	{
+	}
+}
+__if_not_exists(CFileDialog::m_bVistaStyle)
+{
+	CNonVistaFileDialog::CNonVistaFileDialog(BOOL bOpenFileDialog, LPCTSTR lpszDefExt /*= NULL*/,
+		LPCTSTR lpszFileName /*= NULL*/, DWORD dwFlags /*= 0UL*/, LPCTSTR lpszFilter /*= NULL*/,
+		CWnd* pParentWnd /*= NULL*/)
+		: CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
+	{
+	}
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDlg
 
 CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
-: CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
+: CNonVistaFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
 , CArxDialogObject( pSourceForm, this )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
 , mptInitial( pParams? pParams->position : CPoint(INT_MIN, INT_MIN) )
@@ -163,10 +183,6 @@ CCustomFileDlg::CCustomFileDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 , mnRightBorder( 0 )
 , mnBottomBorder( 0 )
 {
-__if_exists(m_bVistaStyle)
-{
-	m_bVistaStyle = FALSE;
-}
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();
@@ -472,9 +488,9 @@ BOOL CCustomFileDlg::OnInitDialog()
 		//add right and bottom borders for custom controls by calculating what the right and left borders
 		//are on the template, then add the same amount of border to this dialog.
 		mnRightBorder =
-			mpTemplate->GetLongProperty( Prop::Width ) - mpFileDlgCtrl->GetLongProperty( Prop::Width );
+			FromDIP(mpTemplate->GetLongProperty( Prop::Width ) - mpFileDlgCtrl->GetLongProperty( Prop::Width ));
 		mnBottomBorder =
-			mpTemplate->GetLongProperty( Prop::Height ) - mpFileDlgCtrl->GetLongProperty( Prop::Height );
+			FromDIP(mpTemplate->GetLongProperty( Prop::Height ) - mpFileDlgCtrl->GetLongProperty( Prop::Height ));
 
 		CRect rectWindow;
 		mMainFileDlg.GetWindowRect( &rectWindow );

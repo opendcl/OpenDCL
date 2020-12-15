@@ -25,10 +25,19 @@ struct FileDialogParams
 };
 
 
+// Shim base class that works correctly with old or new CFileDialog constructor
+class CNonVistaFileDialog : public CFileDialog
+{
+public:
+	CNonVistaFileDialog(BOOL bOpenFileDialog, LPCTSTR lpszDefExt = NULL, LPCTSTR lpszFileName = NULL,
+		DWORD dwFlags = 0UL, LPCTSTR lpszFilter = NULL, CWnd* pParentWnd = NULL);
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDlg dialog
 
-class CCustomFileDlg : public CFileDialog, public CArxDialogObject
+class CCustomFileDlg : public CNonVistaFileDialog, public CArxDialogObject
 {
 	CString msTitle;
 	CString msFilterList;

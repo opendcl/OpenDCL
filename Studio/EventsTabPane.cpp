@@ -464,7 +464,7 @@ void CEventsTabPane::OnDblClkEventstree()
 		return;
 
 	CString sItemText;
-	mEventsList.GetText( nCurSel, sItemText );   		
+	mEventsList.GetText( nCurSel, sItemText );
 	if( sItemText.IsEmpty() )
 		return;
 
@@ -476,7 +476,7 @@ void CEventsTabPane::OnDblClkEventstree()
 	ControlBrowserDlg.DoModal();
 }
 
-void CEventsTabPane::OnSelchangeEventstree() 
+void CEventsTabPane::OnSelchangeEventstree()
 {
 	if( !mpDclControl )
 		return;
@@ -486,7 +486,7 @@ void CEventsTabPane::OnSelchangeEventstree()
 		return;
 
 	CString sItemText;
-	mEventsList.GetText( nCurSel, sItemText );   		
+	mEventsList.GetText( nCurSel, sItemText );
 	if( sItemText.IsEmpty() )
 		return;
 
@@ -502,10 +502,16 @@ void CEventsTabPane::OnCheckChanged()
 {
 	int nCurSel = mEventsList.GetCurSel();
 	size_t idxProp = mEventsList.GetItemData( nCurSel );
+	bool bChecked = (mEventsList.GetCheck( nCurSel ) == BST_CHECKED);
 	CString sEventDefun;
-	if( mEventsList.GetCheck( nCurSel ) == BST_CHECKED )
+	if( bChecked )
 		sEventDefun = GetEvent( idxProp );
 	SetEvent( idxProp, sEventDefun );
+	
+	// update the defun edit box.
+	mDefunEdit.SetWindowText( GetEvent( idxProp ) );
+	GetDlgItem(IDC_COPYTOCLIPBOARD)->EnableWindow( bChecked? TRUE : FALSE );
+	GetDlgItem(IDC_ADDTOLISP)->EnableWindow( bChecked? TRUE : FALSE );
 }
 
 void CEventsTabPane::SetEvent( size_t idxProp, LPCTSTR pszEventDefun )

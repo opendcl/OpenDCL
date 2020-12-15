@@ -354,7 +354,7 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile )
 {
 	Clear();
 	// open file
-	HANDLE hFile = CreateFile(pszFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFile(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	if( INVALID_HANDLE_VALUE == hFile )
 		return false;
 
