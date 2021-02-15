@@ -10,11 +10,11 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>.\;..\..\;.\VI;$(GRX2020)\inc-x64;$(GRX2020)\inc\arx;$(GRX2020)\inc;$(MSVC14)\Include;$(MSVC14)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=1920;WINVER=0x0501;_WIN32_WINNT=0x501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=2020;WINVER=0x0501;_WIN32_WINNT=0x501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=1920;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=2020;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(GRX2020)\Lib-x64;$(MSVC14)\Lib\AMD64;$(MSVC14)\ATLMFC\Lib\AMD64;$(WindowsSdkDirIA64)\Lib\AMD64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -24,7 +24,7 @@
       <IgnoreSpecificDefaultLibraries>mfc100;mfcs100</IgnoreSpecificDefaultLibraries>
     </Link>
     <Midl>
-      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=1920;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ACADTARGET=19;_GRXTARGET=2020;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(GRX2020)\inc-x64;$(GRX2020)\inc\arx;$(GRX2020)\inc;$(MSVC14)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <GenerateStublessProxies>true</GenerateStublessProxies>
       <HeaderFileName>%(Filename).h</HeaderFileName>

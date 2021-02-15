@@ -88,6 +88,11 @@
 		__declspec(selectany) _ZDSSYMBOL_ENTRY __ZdsSymbolMap_old##name = { _RXST("dcl_") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
 		extern "C" __declspec(allocate("ZDSSYMBOL$__m")) __declspec(selectany) _ZDSSYMBOL_ENTRY* const __pZdsSymbolMap_old##name = &__ZdsSymbolMap_old##name ; \
 		ZCED_ZDSSYMBOL_ENTRY_PRAGMA(old##name)
+#elif (_GRXTARGET >= 2021)
+	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
+		__declspec(selectany) _GDSSYMBOL_ENTRY __GdsSymbolMap_##name = { _RXST("dcl-") _RXST(#name), classname::ads_dcl_ ##name, regFunc, -1 } ; \
+		extern "C" __declspec(allocate("GDSSYMBOL$__m")) __declspec(selectany) _GDSSYMBOL_ENTRY* __pGdsSymbolMap_##name = &__GdsSymbolMap_##name ; \
+		GCED_GDSSYMBOL_ENTRY_PRAGMA(name)
 #elif _GRXTARGET
 	#define ODCL_ACED_ADSSYMBOL_ENTRY_AUTO(classname, name, regFunc) \
 		_GDSSYMBOL_ENTRY __GdsSymbolMap_dcl__##name = { L"dcl-" L#name, classname::ads_dcl_ ##name, regFunc, (UINT)-1 , NULL } ; \
@@ -959,6 +964,19 @@ public:
 			#elif (_BRXTARGET)
 				if( nFunctionCode >= 0 && nFunctionCode < __adsRegisteredSymbols.length() )
 					return __adsRegisteredSymbols[nFunctionCode].getName();
+			#elif (_GRXTARGET >= 2021)
+				_GDSSYMBOL_ENTRY** ppAdsSymbolMapEntryFirst = &__pGdsSymbolMapEntryFirst + 1;
+				_GDSSYMBOL_ENTRY** ppAdsSymbolMapEntryLast = &__pGdsSymbolMapEntryFirst;
+				int paramIter = 0;
+				for (_GDSSYMBOL_ENTRY** ppEntry = ppAdsSymbolMapEntryFirst;
+					ppEntry < ppAdsSymbolMapEntryLast;
+					ppEntry++)
+				{
+					if (!*ppEntry)
+						continue;
+					if (paramIter++ == nFunctionCode)
+						return (*ppEntry)->pszName;
+				}
 			#elif (_GRXTARGET)
 				GcRxArxApp *pApp = (GcRxArxApp *)gcrxGetApp();
 				_GDSSYMBOL_ENTRY* pAdsSymbolMapEntry = pApp->m_pSymbolEntryFirst;
