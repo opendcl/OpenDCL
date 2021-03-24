@@ -990,7 +990,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:9.1.2.0"
+        "Version" = "8:9.1.3.0"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
