@@ -103,7 +103,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Controls;..\..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;P:\_\brxsdk\Inc64;P:\_\brxsdk\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Controls;..\..\Methods;$(SolutionDir)Library\ZLib;$(SolutionDir)Library\LibPNG;$(SolutionDir)Common;$(SolutionDir)Common\Controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_WINDOWS;ARX_MODULE;_DEBUG;AC_FULL_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -129,7 +129,6 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
       <IgnoreSpecificDefaultLibraries>msvcrt</IgnoreSpecificDefaultLibraries>
-      <AdditionalLibraryDirectories>$(BRX_SDK_PATH)\..\brxapi\lib\vc141x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

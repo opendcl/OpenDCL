@@ -615,7 +615,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\ARX.rc" />
+    <ResourceCompile Include="..\ARX.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AcadBlockInsertDropTarget.h">

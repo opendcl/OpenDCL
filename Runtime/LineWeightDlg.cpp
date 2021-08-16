@@ -7,7 +7,11 @@
 
 #ifdef _ZRXTARGET
 
-bool zcedLineWeightDialog(AcDb::LineWeight,bool,AcDb::LineWeight &);
+#if (_ZRXTARGET < 2022)
+	bool zcedLineWeightDialog(AcDb::LineWeight,bool,AcDb::LineWeight &);
+#else
+	bool zcedLineWeightDialog(AcDb::LineWeight,bool,AcDb::LineWeight &,AcDbDatabase*,HWND);
+#endif
 
 bool SelectLineWeightUI( /*in-out*/ AcDb::LineWeight& lw,
 												 /*in*/ bool bIncludeMetaTypes /*= true*/,
@@ -19,7 +23,11 @@ bool SelectLineWeightUI( /*in-out*/ AcDb::LineWeight& lw,
 		bParentEnabled = pParent->IsWindowEnabled();
 		pParent->EnableWindow( FALSE );
 	}
+#if (_ZRXTARGET < 2022)
 	bool bResult = zcedLineWeightDialog( lw, bIncludeMetaTypes, lw );
+#else
+	bool bResult = zcedLineWeightDialog( lw, bIncludeMetaTypes, lw, acdbCurDwg(), pParent->m_hWnd );
+#endif
 	if( pParent )
 		pParent->EnableWindow( bParentEnabled );
 	return bResult;
@@ -67,6 +75,8 @@ static FT_acedLineWeightDialog GetProc(void)
 	HMODULE hmodApi = GetModuleHandle(_T("brx20.dll"));
 #elif (_BRXTARGET == 21)
 	HMODULE hmodApi = GetModuleHandle(_T("brx21.dll"));
+#elif (_BRXTARGET == 22)
+	HMODULE hmodApi = GetModuleHandle(_T("brx22.dll"));
 #elif (_BRXTARGET)
 	#error Unknown BRX target!
 #else
