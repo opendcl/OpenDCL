@@ -471,7 +471,7 @@ public:
 					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
 				else if( prbTrueColor && prbTrueColor->restype == 420 )
 					pGridCtrl->SetCellTextImage( nRow, nCol, GetTrueColorDisplayName( DWORD(prbTrueColor->resval.rlong) ), -1 );
-				else
+				else if (prbResult->restype == 62 || prbResult->restype == RTSHORT || prbResult->restype == RTLONG)
 				{
 					int nColor = prbResult->resval.rint;
 					pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( nColor ), nColor );
