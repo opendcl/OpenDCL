@@ -10,6 +10,13 @@
 #include "ArxDragDropService.h"
 #include "AcadBlockInsertDropTarget.h"
 
+// [Owen Wengerd 2021-12-02]
+// Orbit gadget is disabled due to unsolvable crashes on Acad caused by some link
+// from the gs model used for the orbit gadget with the document current at the
+// time the model was created. This caused Acad to crash if the view control was
+// cleared after the connected document had already been closed.
+//#define USE_ORBIT_GADGET
+
 
 #if (_MFC_VER < 0x0800)
 #define __UINT_LRESULT UINT
@@ -61,7 +68,9 @@ protected:
 	#endif
 		AcGsDevice* mpDevice;
 		AcGsModel* mpModel;
+	#ifdef USE_ORBIT_GADGET
 		AcGsModel* mpGhostModel;
+	#endif
 		AcGsView* mpView;
 	public:
 		GsViewManager( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
@@ -74,7 +83,9 @@ protected:
 		#endif
 			, mpDevice( NULL )
 			, mpModel( NULL )
+		#ifdef USE_ORBIT_GADGET
 			, mpGhostModel( NULL )
+		#endif
 			, mpView( NULL )
 			{
 				acedEditor->addReactor(this);
@@ -121,16 +132,22 @@ protected:
 					mpView = mpKernel->createView();
 					mpModel = pManager->createAutoCADModel( *mpKernel ); //a model with open/close protocol
 
+				#ifdef USE_ORBIT_GADGET
 					//another model without open/close for the orbit gadget
 					mpGhostModel = mpKernel->createModel( AcGsModel::kDirect, 0, 0, 0 );
+				#endif //USE_ORBIT_GADGET
 				#else
 					mpView = mpFactory->createView();
 					mpModel = pManager->createAutoCADModel(); //a model with open/close protocol
 
+				#ifdef USE_ORBIT_GADGET
 					//another model without open/close for the orbit gadget
 					mpGhostModel = mpFactory->createModel( AcGsModel::kDirect, 0, 0, 0 );
+				#endif //USE_ORBIT_GADGET
 				#endif
+				#ifdef USE_ORBIT_GADGET
 					mpCtrl->AddUIDrawable( mpGhostModel, mpView );
+				#endif //USE_ORBIT_GADGET
 					mpDevice->add( mpView );
 					mpView->setView( AcGePoint3d(), AcGePoint3d( 0, 0, -1 ), AcGeVector3d( 0, 1, 0 ), 0.01, 0.01 );
 				}
@@ -175,11 +192,13 @@ protected:
 						mpKernel->deleteView( mpView );
 						mpView = NULL;
 					}
+				#ifdef USE_ORBIT_GADGET
 					if( mpGhostModel )
 					{
 						mpKernel->deleteModel( mpGhostModel );
 						mpGhostModel = NULL;
 					}
+				#endif //USE_ORBIT_GADGET
 					mpKernel->delRef();
 					mpKernel = NULL;
 				}
@@ -194,11 +213,13 @@ protected:
 						mpFactory->deleteView( mpView );
 						mpView = NULL;
 					}
+				#ifdef USE_ORBIT_GADGET
 					if( mpGhostModel )
 					{
 						mpFactory->deleteModel( mpGhostModel );
 						mpGhostModel = NULL;
 					}
+				#endif //USE_ORBIT_GADGET
 					mpFactory = NULL;
 				}
 			#endif
@@ -303,7 +324,9 @@ protected:
 	virtual bool CanShowHighlight() const { return true; }
 	virtual bool CanShowFocus() const { return false; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}
+#ifdef USE_ORBIT_GADGET
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
+#endif
 #if (_ACADTARGET >= 20)
 	virtual AcGiVisualStyle::Type GetVisualStyle() { return AcGiVisualStyle::kFlat; }
 #else

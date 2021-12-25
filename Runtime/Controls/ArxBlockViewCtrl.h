@@ -12,6 +12,7 @@
 #endif
 
 
+#ifdef USE_ORBIT_GADGET
 // Simple lighweight drawable to do orbit glyph
 //
 class OrbitGadget : public AcGiDrawable
@@ -54,8 +55,7 @@ public:
 				AcGeVector3d viewDir = m_pAcGsView->target()-m_pAcGsView->position();
 				const double radius  = min (nViewportX, nViewportY) * 0.4f*scale.scale();
 
-		// I removed this line because it was causing problems with loaded drawings.
-				//pViewportDraw->geometry().circle(m_pAcGsView->target(),radius,viewDir);
+				pViewportDraw->geometry().circle(m_pAcGsView->target(),radius,viewDir);
 				return;
 		}
 		virtual Adesk::Boolean  isPersistent    (void) const
@@ -77,6 +77,7 @@ public:
 		}
 	#endif
 };
+#endif //USE_ORBIT_GADGET
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -126,7 +127,9 @@ private:
 	HCURSOR mhPanCursor;
 	HCURSOR mhCrossCursor;
 	HCURSOR mhOrbitCursor;
+#ifdef USE_ORBIT_GADGET
 	OrbitGadget mOrbitGadget;
+#endif
 	bool mbZooming;
 	bool mbPanning;
 	bool mbOrbiting;
@@ -150,7 +153,9 @@ protected:
 	void EndUIDrag();
 	virtual bool CanShowHighlight() const;
 	virtual void PaintUI( CDC* pdc = NULL );
+#ifdef USE_ORBIT_GADGET
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView );
+#endif
 #if (_ARXTARGET >= 20)
 	virtual AcGiVisualStyle::Type GetVisualStyle();
 #else

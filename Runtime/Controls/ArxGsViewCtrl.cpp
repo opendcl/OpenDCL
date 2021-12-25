@@ -297,6 +297,40 @@ void CArxGsViewCtrl::OnPaint()
 	{
 		//update the gs view
 		pView->invalidate(); 
+#if (_BRXTARGET >= 17)
+		// BricsCAD does not draw attribute definitions unless the owner is modelspace or paperspace.
+		// This overrule is a hack that coerces the display system into drawing them.
+		class AttDefDrawOverrule : public AcGiDrawableOverrule
+		{
+		public:
+			AttDefDrawOverrule()
+			{
+				AcRxOverrule::addOverrule( AcDbAttributeDefinition::desc(), this );
+			}
+			~AttDefDrawOverrule()
+			{
+				AcRxOverrule::removeOverrule( AcDbAttributeDefinition::desc(), this );
+			}
+		protected:
+			virtual bool isApplicable( const AcRxObject* ) const { return true; }
+			virtual Adesk::UInt32 setAttributes( AcGiDrawable* pSubject, AcGiDrawableTraits* traits )
+			{
+				return (AcGiDrawableOverrule::setAttributes( pSubject, traits ) & ~AcGiDrawable::kDrawableIsInvisible);
+			}
+			virtual Adesk::Boolean worldDraw( AcGiDrawable* pSubject, AcGiWorldDraw* wd )
+			{
+				AcDbAttributeDefinition* pAttDef = (AcDbAttributeDefinition*)pSubject;
+				AcDbDatabase* pDb = pAttDef->database();
+				AcDbAttributeDefinition* pAttDefClone = pDb ? AcDbAttributeDefinition::cast( pAttDef->clone() ) : NULL;
+				if( !pAttDefClone )
+					return AcGiDrawableOverrule::worldDraw( pSubject, wd );
+				AcDbDatabase dbTemp( true, true );
+				dbTemp.addAcDbObject( pAttDefClone ); // must add to a database, else setOwnerId() fails
+				pAttDefClone->setOwnerId( pDb->currentSpaceId() );
+				return AcGiDrawableOverrule::worldDraw( pAttDefClone, wd );
+			}
+		} theAttDefDrawOverrule;
+#endif
 		pView->update();
 	}
 	PaintUI( &dc );

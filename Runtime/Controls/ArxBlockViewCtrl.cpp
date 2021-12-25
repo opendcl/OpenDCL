@@ -175,11 +175,13 @@ void CArxBlockViewCtrl::PaintUI( CDC* pdc /*= NULL*/ )
 		DrawOrbitCircles( pdc );
 }
 
+#ifdef USE_ORBIT_GADGET
 void CArxBlockViewCtrl::AddUIDrawable( AcGsModel* pModel, AcGsView* pView )
 {
 	pView->add( &mOrbitGadget, pModel );
 	mOrbitGadget.setGsView( pView );
 }
+#endif
 #if (_ARXTARGET >= 20)
 AcGiVisualStyle::Type CArxBlockViewCtrl::GetVisualStyle()
 {
