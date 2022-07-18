@@ -51,34 +51,8 @@ static FT_acedLineWeightDialog GetProc(void)
 		return pfProc;
 #if (_BRXTARGET == 9)
 	HMODULE hmodApi = GetModuleHandle( _T("brx.dll") );
-#elif (_BRXTARGET == 10)
-	HMODULE hmodApi = GetModuleHandle( _T("brx10.dll") );
-#elif (_BRXTARGET == 11)
-	HMODULE hmodApi = GetModuleHandle( _T("brx11.dll") );
-#elif (_BRXTARGET == 12)
-	HMODULE hmodApi = GetModuleHandle( _T("brx12.dll") );
-#elif (_BRXTARGET == 13)
-	HMODULE hmodApi = GetModuleHandle( _T("brx13.dll") );
-#elif (_BRXTARGET == 14)
-	HMODULE hmodApi = GetModuleHandle( _T("brx14.dll") );
-#elif (_BRXTARGET == 15)
-	HMODULE hmodApi = GetModuleHandle( _T("brx15.dll") );
-#elif (_BRXTARGET == 16)
-	HMODULE hmodApi = GetModuleHandle( _T("brx16.dll") );
-#elif (_BRXTARGET == 17)
-	HMODULE hmodApi = GetModuleHandle( _T("brx17.dll") );
-#elif (_BRXTARGET == 18)
-	HMODULE hmodApi = GetModuleHandle(_T("brx18.dll"));
-#elif (_BRXTARGET == 19)
-	HMODULE hmodApi = GetModuleHandle(_T("brx19.dll"));
-#elif (_BRXTARGET == 20)
-	HMODULE hmodApi = GetModuleHandle(_T("brx20.dll"));
-#elif (_BRXTARGET == 21)
-	HMODULE hmodApi = GetModuleHandle(_T("brx21.dll"));
-#elif (_BRXTARGET == 22)
-	HMODULE hmodApi = GetModuleHandle(_T("brx22.dll"));
-#elif (_BRXTARGET)
-	#error Unknown BRX target!
+#elif defined(_BRXTARGET)
+	HMODULE hmodApi = GetModuleHandle( _T("brx") _T(_stringify(_BRXTARGET)) _T(".dll") );
 #else
 	HMODULE hmodApi = GetModuleHandle( NULL );
 #endif
