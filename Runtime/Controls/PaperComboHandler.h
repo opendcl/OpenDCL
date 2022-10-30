@@ -29,7 +29,7 @@ public:
 			if( !pLayoutManager ) 
 				return false;
 			CString sLayout = pLayoutManager->findActiveLayout( true );
-#if (_ARXTARGET >= 22 || _ZRXTARGET >= 2021 || _BRXTARGET >= 22)
+#if (_ARXTARGET >= 22 || _ZRXTARGET >= 2021 || _GRXTARGET >= 2023 || _BRXTARGET >= 22)
 			AcDbObjectId idLayout = pLayoutManager->findLayoutNamed( sLayout );
 			if( idLayout.isNull() ) 
 				return true;

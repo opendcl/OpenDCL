@@ -13,7 +13,7 @@
 const int nOrbitOffset = 20;
 const int nOrbitQuadCircleDia = 19;
 
-#if (_ARXTARGET >= 20)
+#if (_ARXTARGET >= 20 || _GRXTARGET >= 2023)
 static AcGiVisualStyle::Type RenderModeToVisualStyle( long nRenderMode )
 {
 	switch( nRenderMode )
@@ -103,7 +103,7 @@ bool CArxBlockViewCtrl::ApplyProperty( TPropertyPtr pProp )
 			AcGsView* pView = GetGsView();
 			if( pView )
 			{
-			#if (_ARXTARGET >= 20)
+			#if (_ARXTARGET >= 20 || _GRXTARGET >= 2023)
 				pView->setVisualStyle( AcGiVisualStyle( RenderModeToVisualStyle( pProp->GetLongValue() ) ) );
 			#else
 				pView->setMode( (AcGsView::RenderMode)pProp->GetLongValue() );
@@ -182,7 +182,7 @@ void CArxBlockViewCtrl::AddUIDrawable( AcGsModel* pModel, AcGsView* pView )
 	mOrbitGadget.setGsView( pView );
 }
 #endif
-#if (_ARXTARGET >= 20)
+#if (_ARXTARGET >= 20 || _GRXTARGET >= 2023)
 AcGiVisualStyle::Type CArxBlockViewCtrl::GetVisualStyle()
 {
 	return RenderModeToVisualStyle( mpTemplate->GetLongProperty( Prop::RenderMode ) );

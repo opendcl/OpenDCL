@@ -156,7 +156,7 @@ protected:
 #ifdef USE_ORBIT_GADGET
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView );
 #endif
-#if (_ARXTARGET >= 20)
+#if (_ARXTARGET >= 20 || _GRXTARGET >= 2023)
 	virtual AcGiVisualStyle::Type GetVisualStyle();
 #else
 	virtual AcGsView::RenderMode GetRenderMode();

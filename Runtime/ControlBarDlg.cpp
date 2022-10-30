@@ -120,7 +120,7 @@ bool CControlBarDlg::CreateModeless( UINT nID )
 	mHostControlBar.EnableDocking( dwDockableSides );
 
 	mHostControlBar.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
-#ifdef _GRXTARGET
+#if defined(_GRXTARGET) && (_GRXTARGET <= 2022)
 	if (mptInitPos.x >= 0 && mptInitPos.y >= 0)
 	{
 		if (!IsFloating())

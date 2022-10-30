@@ -391,8 +391,10 @@ public:
 											kBRX22 = 22, kBRX23 = 23,
 											kZRX2014 = 14, kZRX2015 = 15, kZRX2017 = 17, kZRX2018 = 18,
 											kZRX2019 = 19, kZRX2020 = 20, kZRX2021 = 21, kZRX2022 = 22,
+											kZRX2023 = 23,
 											kGRX2015 = 15, kGRX2016 = 16, kGRX2017 = 17, kGRX2018 = 18,
 											kGRX2019 = 19, kGRX2020 = 20, kGRX2021 = 21, kGRX2022 = 22,
+											kGRX2023 = 23,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, kARX2015 = 20,
 											kARX2017 = 21, kARX2018 = 22, kARX2019 = 23, kARX2021 = 24, };
@@ -558,6 +560,8 @@ public:
 		kZWCAD2021x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2021 << shftMajorVer) | 0),
 		kZWCAD2022x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2022 << shftMajorVer) | 0),
 		kZWCAD2022x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2022 << shftMajorVer) | 0),
+		kZWCAD2023x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2023 << shftMajorVer) | 0),
+		kZWCAD2023x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2023 << shftMajorVer) | 0),
 		kGstarCAD2015x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
 		kGstarCAD2015x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
 		kGstarCAD2016x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2016 << shftMajorVer) | 0),
@@ -574,6 +578,7 @@ public:
 		kGstarCAD2021x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2021 << shftMajorVer) | 0),
 		kGstarCAD2022x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2022 << shftMajorVer) | 0),
 		kGstarCAD2022x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2022 << shftMajorVer) | 0),
+		kGstarCAD2023x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2023 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -825,6 +830,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2020x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2021x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2022x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+	EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2023x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad9_3, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad10, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	EnumerateRegTargets( TargetModule( TargetModule::kBricscad11, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -865,12 +871,14 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2020x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2021x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2022x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2023x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2017x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2018x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2019x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2020x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2021x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2022x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2023x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad15x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -1032,6 +1040,7 @@ void UninstallAllTargets( HKEY hkRoot )
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2020"), hkRoot );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2021"), hkRoot );
 	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2022"), hkRoot );
+	RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2023"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R16.0"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R17.0"), hkRoot );
@@ -1040,6 +1049,7 @@ void UninstallAllTargets( HKEY hkRoot )
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R20"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R21"), hkRoot );
 	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R22"), hkRoot );
+	RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R23"), hkRoot );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R17.1"), hkRoot, true );
@@ -1075,6 +1085,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2020"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2021"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2022"), hkRoot, true );
+		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2023"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R16.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R17.0"), hkRoot, true );
@@ -1083,6 +1094,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R20"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R21"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R22"), hkRoot, true );
+		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R23"), hkRoot, true );
 	}
 }
 

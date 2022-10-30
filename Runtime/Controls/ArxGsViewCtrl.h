@@ -25,7 +25,7 @@
 #endif
 
 
-#if defined(_GRXTARGET)
+#if defined(_GRXTARGET) && (_GRXTARGET <= 2022)
 #define GsColorConvertor(x) x
 #else
 class GsColorConvertor
@@ -265,7 +265,7 @@ protected:
 				if( mpView == pView )
 					clear();
 			}
-	#if (_GRXTARGET)
+	#if defined(_GRXTARGET) && (_GRXTARGET <= 2022)
 		virtual void gsToBeUnloaded( OdGsModule* pModule )
 			{
 				assert( pModule != NULL );
