@@ -70,6 +70,13 @@ namespace Grid
 		Symbols         = 42,
 		Symbols_Combo   = 43,
 	};
+
+	enum CellAlignment
+	{
+		AlignLeft       = 0,
+		AlignCenter     = 1,
+		AlignRight      = 2,
+	};
 };
 
 struct _CellData

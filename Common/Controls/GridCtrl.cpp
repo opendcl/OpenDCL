@@ -837,7 +837,16 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 				prnImages->insert( prnImages->begin() + nRet, nImageIndex );
 			PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();
 			if( prnAlignment && prnAlignment->size() >= (size_t)nRet )
-				prnAlignment->insert( prnAlignment->begin() + nRet, nFormat );
+			{
+				int nJustification = Grid::AlignLeft;
+				switch ( nFormat )
+				{
+					case LVCFMT_LEFT: nJustification = Grid::AlignLeft; break;
+					case LVCFMT_CENTER: nJustification = Grid::AlignCenter; break;
+					case LVCFMT_RIGHT: nJustification = Grid::AlignRight; break;
+				}
+				prnAlignment->insert( prnAlignment->begin() + nRet, nJustification );
+			}
 			PropVal::TIntArray* prnStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();
 			if( prnStyles && prnStyles->size() >= (size_t)nRet )
 				prnStyles->insert( prnStyles->begin() + nCol, Grid::Runtime );
@@ -1018,26 +1027,20 @@ void CGridCtrl::SetupColumns()
 		idxMax = prnAlignment->size();
 	for( size_t idxColumn = 0; idxColumn < idxMax; ++idxColumn )
 	{
-		int nAlignment = HDF_LEFT;
+		Grid::CellAlignment nAlignment = Grid::AlignLeft;
 		if( prnAlignment && idxColumn < prnAlignment->size() )
-		{
-			switch( prnAlignment->at( idxColumn ) )
-			{
-			case 1:
-				nAlignment = HDF_CENTER;
-				break;
-			case 2:
-				nAlignment = HDF_RIGHT;
-				break;
-			default:
-				nAlignment = HDF_LEFT;
-				break;
-			}
-		}
+			nAlignment = (Grid::CellAlignment)prnAlignment->at(idxColumn);
 		CString sCaption;
 		if( prsCaptions && idxColumn < prsCaptions->size() )
 			sCaption = prsCaptions->at( idxColumn );
-		InsertColumn( idxColumn, sCaption, nAlignment,
+		int nFormat = LVCFMT_LEFT;
+		switch ( nAlignment )
+		{
+			case Grid::AlignLeft: nFormat = LVCFMT_LEFT; break;
+			case Grid::AlignCenter: nFormat = LVCFMT_CENTER; break;
+			case Grid::AlignRight: nFormat = LVCFMT_RIGHT; break;
+		}
+		InsertColumn( idxColumn, sCaption, nFormat,
 									FromDIP( (prnWidths && idxColumn < prnWidths->size())? prnWidths->at( idxColumn ) : 50 ),
 									((prnImages && idxColumn < prnImages->size())? prnImages->at( idxColumn ) : -1) );
 	}
@@ -1477,8 +1480,15 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize
 		}
 		UINT fAlignment = 0;
 		const PropVal::TIntArray* pColAlignments = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();
-		if( pColAlignments && nCol >= 0 && (size_t)nCol < pColAlignments->size() )
-			fAlignment |= pColAlignments->at( nCol );
+		if (pColAlignments && nCol >= 0 && (size_t)nCol < pColAlignments->size())
+		{
+			switch ( pColAlignments->at( nCol ) )
+			{
+				case Grid::AlignLeft: fAlignment |= DT_LEFT; break;
+				case Grid::AlignCenter: fAlignment |= DT_CENTER; break;
+				case Grid::AlignRight: fAlignment |= DT_RIGHT; break;
+			}
+		}
 		UINT fCalcRect = (bCalcOnly? DT_CALCRECT : 0);
 		cdc.DrawText( sLabel, -1, &rcLabel, (DT_NOPREFIX | DT_NOCLIP | fAlignment | fWordBreak | fCalcRect) );
 		rcBounds.UnionRect( &rcBounds, &rcLabel );

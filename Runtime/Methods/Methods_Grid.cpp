@@ -63,18 +63,12 @@ ADSRESULT Grid::AddColumns()
 		{
 			switch( nJustification )
 			{
-			case 1:
-				nFormat = LVCFMT_CENTER;
-				break;
-			case 2:
-				nFormat = LVCFMT_RIGHT;
-				break;
-			case 0:
-				nFormat = LVCFMT_LEFT;
-				break;
-			default:
-				HandleArgValueError( pArgs );
-				return RSERR;
+				case Grid::AlignLeft: nFormat = LVCFMT_LEFT; break;
+				case Grid::AlignCenter: nFormat = LVCFMT_CENTER; break;
+				case Grid::AlignRight: nFormat = LVCFMT_RIGHT; break;
+				default:
+					HandleArgValueError( pArgs );
+					return RSERR;
 			}
 
 			if( GetIntArgument( pArgs, nColWidth, true ) )
@@ -127,18 +121,12 @@ ADSRESULT Grid::InsertColumn()
 	{
 		switch( nJustification )
 		{
-		case 1:
-			nFormat = LVCFMT_CENTER;
-			break;
-		case 2:
-			nFormat = LVCFMT_RIGHT;
-			break;
-		case 0:
-			nFormat = LVCFMT_LEFT;
-			break;
-		default:
-			HandleArgValueError( pArgs );
-			return RSERR;
+			case Grid::AlignLeft: nFormat = LVCFMT_LEFT; break;
+			case Grid::AlignCenter: nFormat = LVCFMT_CENTER; break;
+			case Grid::AlignRight: nFormat = LVCFMT_RIGHT; break;
+			default:
+				HandleArgValueError( pArgs );
+				return RSERR;
 		}
 
 		if( GetIntArgument( pArgs, nColWidth, true ) )
