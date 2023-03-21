@@ -458,7 +458,13 @@ void CPaletteDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		return;
 
 	//mbHiding = !IsClosing() && !bShow;
+#if !defined(_GRXTARGET) || (_GRXTARGET >= 2023)
+	mHostPaletteSet.DelayShow(bShow);
+#endif
 	__super::OnShowWindow(bShow, nStatus);
+#if !defined(_GRXTARGET) || (_GRXTARGET >= 2023)
+	mHostPaletteSet.m_pDockSite->DelayRecalcLayout();
+#endif
 }
 
 BOOL CPaletteDlg::PreTranslateMessage(MSG* pMsg)

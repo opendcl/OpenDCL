@@ -83,7 +83,11 @@ bool CAcadDockBarHost::Create( LPCTSTR lpszTitle, CRect rect, UINT nID )
 	{
 	CWnd* pPinBtn = GetDlgItem( idPinBtn );
 	if( pPinBtn )
+#if (_GRXTARGET >= 2023)
+		pPinBtn->ShowWindow(SW_HIDE);
+#else
 		pPinBtn->DestroyWindow();
+#endif
 	}
 	return true;
 }

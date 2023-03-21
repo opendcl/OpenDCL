@@ -411,7 +411,13 @@ void CControlBarDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	GetArxServices()->HandleEvent( Prop::FormEventShow );	
 
 	mbHiding = !IsClosing() && !bShow;
+#if !defined(_GRXTARGET) || (_GRXTARGET >= 2023)
+	mHostControlBar.DelayShow(bShow);
+#endif
 	__super::OnShowWindow(bShow, nStatus);
+#if !defined(_GRXTARGET) || (_GRXTARGET >= 2023)
+	mHostControlBar.m_pDockSite->DelayRecalcLayout();
+#endif
 }
 
 void CControlBarDlg::PostNcDestroy() 
