@@ -33,6 +33,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_04FF7D57B209D4F273169C7DE3775CBA"
+        "OwnerKey" = "8:_0834932F7A474EAFB1BF7E3E027CE7AB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_057CF49C98814B8292A7D6163BBFD3BC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -71,6 +77,18 @@
         {
         "MsmKey" = "8:_0DEE8E9065434D328B603370C4A73FE9"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0EA7E908DD74D836B58A5D8103892397"
+        "OwnerKey" = "8:_0834932F7A474EAFB1BF7E3E027CE7AB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_10FFE037015BA1C533DAEBFF90196B21"
+        "OwnerKey" = "8:_0834932F7A474EAFB1BF7E3E027CE7AB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -465,6 +483,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CD4F5FB869E1FF1CEB8D63DEA54316C0"
+        "OwnerKey" = "8:_0834932F7A474EAFB1BF7E3E027CE7AB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CE5B371BE49E4DD19255862B32C05E61"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -680,6 +704,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04FF7D57B209D4F273169C7DE3775CBA"
+            {
+            "SourcePath" = "8:RPCRT4.dll"
+            "TargetName" = "8:RPCRT4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0DEE8E9065434D328B603370C4A73FE9"
             {
             "SourcePath" = "8:..\\..\\DEU\\Content\\GNU-GPL.txt"
@@ -698,6 +742,46 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0EA7E908DD74D836B58A5D8103892397"
+            {
+            "SourcePath" = "8:MSVCP80.dll"
+            "TargetName" = "8:MSVCP80.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_10FFE037015BA1C533DAEBFF90196B21"
+            {
+            "SourcePath" = "8:WININET.dll"
+            "TargetName" = "8:WININET.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1A744C7ED6EE4DBBBDE137F992507636"
@@ -900,6 +984,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD4F5FB869E1FF1CEB8D63DEA54316C0"
+            {
+            "SourcePath" = "8:VERSION.dll"
+            "TargetName" = "8:VERSION.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_FA83AE53F88349D086940AF3A7AE6817"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D6EC1092587C430E87F704E972A80FDD"
             {
             "SourcePath" = "8:..\\..\\FRA\\Content\\GNU-GPL.txt"
@@ -1038,7 +1142,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049"
-        "Version" = "8:9.2.0.4"
+        "Version" = "8:9.2.0.5"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"

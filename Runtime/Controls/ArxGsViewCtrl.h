@@ -172,8 +172,11 @@ protected:
 					{
 						if( mpView )
 						{
-						#if !defined(_ZRXTARGET) && !(defined(_ARXTARGET) && (_ARXTARGET <= 17))
-							mpView->eraseAll(); //causes crash in AutoCAD 2007 and earlier [ORW 2012-07-20] //and ZWCAD+ [ORW 2014-06-20]
+						#if !defined(_ZRXTARGET) && !(defined(_ARXTARGET) && (_ARXTARGET <= 17)) && !defined(_GRXTARGET)
+							//causes crash in AutoCAD 2007 and earlier [ORW 2012-07-20]
+							//and ZWCAD+ [ORW 2014-06-20]
+							//and GStarCAD 2023 [ORW 2023-03-31]
+							mpView->eraseAll();
 						#endif
 							mpDevice->erase( mpView );
 						}
@@ -189,7 +192,10 @@ protected:
 				#endif
 					if( mpView )
 					{
+					#if !defined(_GRXTARGET)
+						//crashes GStarCAD 2023 [ORW 2023-03-31]
 						mpKernel->deleteView( mpView );
+					#endif
 						mpView = NULL;
 					}
 				#ifdef USE_ORBIT_GADGET
