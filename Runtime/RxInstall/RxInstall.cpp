@@ -388,7 +388,7 @@ public:
 	enum MajorVersion { kBRX9 = 9, kBRX10 = 10, kBRX11 = 11, kBRX12 = 12,
 											kBRX13 = 13, kBRX14 = 14, kBRX15 = 15, kBRX16 = 16, kBRX17 = 17,
 											kBRX18 = 18, kBRX19 = 19, kBRX20 = 20, kBRX21 = 21,
-											kBRX22 = 22, kBRX23 = 23,
+											kBRX22 = 22, kBRX23 = 23, kBRX24 = 24,
 											kZRX2014 = 14, kZRX2015 = 15, kZRX2017 = 17, kZRX2018 = 18,
 											kZRX2019 = 19, kZRX2020 = 20, kZRX2021 = 21, kZRX2022 = 22,
 											kZRX2023 = 23,
@@ -547,6 +547,7 @@ public:
 		kBricscad21x64 =     (kX64Architecture | kBricscadPlatform | (kBRX21 << shftMajorVer) | 0),
 		kBricscad22x64 =     (kX64Architecture | kBricscadPlatform | (kBRX22 << shftMajorVer) | 0),
 		kBricscad23x64 =     (kX64Architecture | kBricscadPlatform | (kBRX23 << shftMajorVer) | 0),
+		kBricscad24x64 =     (kX64Architecture | kBricscadPlatform | (kBRX24 << shftMajorVer) | 0),
 		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 		kZWCAD2015x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2015 << shftMajorVer) | 0),
 		kZWCAD2017x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2017 << shftMajorVer) | 0),
@@ -891,6 +892,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad21x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad22x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad23x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad24x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -1082,6 +1084,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V21x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V22x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V23x64"), hkRoot, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V24x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2017"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2018"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2019"), hkRoot, true );
