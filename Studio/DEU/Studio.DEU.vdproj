@@ -201,6 +201,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6049E3ABC1DC4C7A8F4E27591D2F5446"
+        "OwnerKey" = "8:_EFEAA11A7FB34DABA7378353D9CAA185"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_64B30F8006A841E98C1C6C680EC5DC8E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -245,6 +251,12 @@
         {
         "MsmKey" = "8:_7D16455FA9FA4A3EA06FF6E5D708607F"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_826C89F9F1884529A6413F6FDD95A2B9"
+        "OwnerKey" = "8:_EFEAA11A7FB34DABA7378353D9CAA185"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2213,7 +2225,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
         "ProductCode" = "8:{79A81CC6-2298-43F4-99C1-12A386E10A2C}"
-        "PackageCode" = "8:{69B1C9B5-3AB4-4927-ABE8-3EF0AFFFC7FE}"
+        "PackageCode" = "8:{5303847E-226F-476D-AADB-723EDF6CE373}"
         "UpgradeCode" = "8:{9BE5DB7C-1263-4235-90AC-B4E5E907789D}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -3021,6 +3033,34 @@
         }
         "MergeModule"
         {
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6049E3ABC1DC4C7A8F4E27591D2F5446"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc110_mfc_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_826C89F9F1884529A6413F6FDD95A2B9"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc110_crt_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "ProjectOutput"
         {
