@@ -225,7 +225,9 @@ public:
 			DWORD dwAcUiStyle = ((_AcUiStyle == (DWORD)-1)?
 														(AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS | AC_ES_SHOW_ERRMSG) :
 														_AcUiStyle);
+#ifndef _ZRXTARGET //SetStyleMask() crashes in ZWCAD 2022/2023 (maybe earlier versions as well)
 			SetStyleMask( dwAcUiStyle );
+#endif
 			SetFont( pGridCtrl->GetFont() );
 			GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
