@@ -559,7 +559,7 @@ bool readOleVariant(std::ifstream &sFile, COleVariant& var)
 			return readInt(sFile, var.intVal);
 		default :
 			MessageBoxA(NULL, "Error: Reading OLE Variant!", "OpenDCL Error", MB_OK);
-			return false;
+			break;
 	}
 	return false;
 }

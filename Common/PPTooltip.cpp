@@ -1831,9 +1831,9 @@ HWND CPPToolTip::FindToolBarItem(POINT point, PPTOOLTIP_INFO & ti)
 				CRect rect;
 				//ENG: Searching an toolbar's item under mouse
 				//RUS: Поиск элемента панели инструментов находящегося под курсором
-				for (int i = 0; i < count; i++)
+				for (int i2 = 0; i2 < count; i2++)
 				{
-					pBar->GetItemRect(i, rect);
+					pBar->GetItemRect(i2, rect);
 					if (rect.PtInRect(point))
 					{
 						//ENG: Toolbar's item was found

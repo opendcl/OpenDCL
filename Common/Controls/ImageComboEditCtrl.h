@@ -73,7 +73,7 @@ public:
 					COMBOBOXEXITEM cbi = 
 					{
 						(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT),
-						idx,
+						INT_PTR(idx),
 						sListText.LockBuffer(),
 						sListText.GetLength() + 1,
 						nImage,

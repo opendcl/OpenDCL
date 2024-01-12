@@ -537,10 +537,10 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 	CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
 	if( !pHeaderCtrl )
 		return false;
-	size_t ctColumns = (size_t)pHeaderCtrl->GetItemCount();
-	if( nCol < 0 || (size_t)nCol >= ctColumns )
+	int ctColumns = pHeaderCtrl->GetItemCount();
+	if( nCol < 0 || nCol >= ctColumns )
 		return false;
-	size_t ctRows = GetItemCount();
+	int ctRows = GetItemCount();
 	if( ctRows <= 1 )
 		return true;
 	std::vector< UINT > rnSortXForm;
@@ -553,7 +553,7 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 	while( !bDoneSorting )
 	{
 		bDoneSorting = true;
-		for( size_t idxRow = 1; idxRow < ctRows; ++idxRow )
+		for( int idxRow = 1; idxRow < ctRows; ++idxRow )
 		{
 			size_t idxLo = rnSortXForm[idxRow - 1];
 			size_t idxHi = rnSortXForm[idxRow];
@@ -586,12 +586,12 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 	typedef std::pair< UINT, std::vector< TItemState > > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
-	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	for( int idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
 		TRowState& RowState = rGridState[idxRow];
 		RowState.second.resize( ctColumns );
 		RowState.first = GetItemState( idxRow, ~UINT(0) );
-		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
+		for( int idxCol = 0; idxCol < ctColumns; ++idxCol )
 		{
 			TCHAR szText[MAX_PATH];
 			LV_ITEM lvi = { LVIF_TEXT | LVIF_IMAGE, idxRow, idxCol, 0, 0, szText, MAX_PATH, -1 };
@@ -601,11 +601,11 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 			ItemState.second = lvi.pszText;
 		}
 	}
-	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	for( int idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
 		size_t idxOldRow = rnSortXForm[idxRow];
 		TRowState& RowState = rGridState[idxOldRow];
-		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
+		for( int idxCol = 0; idxCol < ctColumns; ++idxCol )
 		{
 			const TItemState& ItemState = RowState.second[idxCol];
 			SetItemTextImage( idxRow, idxCol, ItemState.second, ItemState.first );
@@ -622,10 +622,10 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 	CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
 	if( !pHeaderCtrl )
 		return false;
-	size_t ctColumns = pHeaderCtrl->GetItemCount();
-	if( nCol < 0 || (size_t)nCol >= ctColumns )
+	int ctColumns = pHeaderCtrl->GetItemCount();
+	if( nCol < 0 || nCol >= ctColumns )
 		return false;
-	size_t ctRows = GetItemCount();
+	int ctRows = GetItemCount();
 	if( ctRows <= 1 )
 		return true;
 	std::vector< size_t > rnSortXForm;
@@ -638,7 +638,7 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 	while( !bDoneSorting )
 	{
 		bDoneSorting = true;
-		for( size_t idxRow = 1; idxRow < ctRows; ++idxRow )
+		for( int idxRow = 1; idxRow < ctRows; ++idxRow )
 		{
 			size_t idxLo = rnSortXForm[idxRow - 1];
 			size_t idxHi = rnSortXForm[idxRow];
@@ -671,12 +671,12 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 	typedef std::pair< UINT, std::vector< TItemState > > TRowState;
 	std::vector< TRowState > rGridState;
 	rGridState.resize( ctRows );
-	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	for( int idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
 		TRowState& RowState = rGridState[idxRow];
 		RowState.second.resize( ctColumns );
 		RowState.first = GetItemState( idxRow, ~UINT(0) );
-		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
+		for( int idxCol = 0; idxCol < ctColumns; ++idxCol )
 		{
 			TCHAR szText[MAX_PATH];
 			LV_ITEM lvi = { LVIF_TEXT | LVIF_IMAGE, idxRow, idxCol, 0, 0, szText, MAX_PATH, -1 };
@@ -686,11 +686,11 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 			ItemState.second = lvi.pszText;
 		}
 	}
-	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	for( int idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
 		size_t idxOldRow = rnSortXForm[idxRow];
 		TRowState& RowState = rGridState[idxOldRow];
-		for( size_t idxCol = 0; idxCol < ctColumns; ++idxCol )
+		for( int idxCol = 0; idxCol < ctColumns; ++idxCol )
 		{
 			const TItemState& ItemState = RowState.second[idxCol];
 			SetItemTextImage( idxRow, idxCol, ItemState.second, ItemState.first );

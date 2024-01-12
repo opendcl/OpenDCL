@@ -137,7 +137,7 @@ bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 					COMBOBOXEXITEM cbi =
 					{
 						(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT),
-						idx,
+						INT_PTR(idx),
 						sItemLabel.LockBuffer(),
 						-1,
 						nImage,

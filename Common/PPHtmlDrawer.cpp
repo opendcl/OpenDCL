@@ -2378,7 +2378,7 @@ SIZE CPPHtmlDrawer::DrawHtmlString (CPPString & sHtml, LPCRECT lpRect)
 								{
 									//ENG: Image with shadow or not?
 									//RUS: Изображение с тенью или нет
-									BOOL bShadow = IsImageWithShadow(si);
+									bShadow = IsImageWithShadow(si);
 									
 									//ENG: Retrieves an original size of an image
 									//RUS: Получаем оригинальный размер изображения
@@ -4203,7 +4203,7 @@ CPPString CPPHtmlDrawer::GetParameterString(CPPString & str, int & nIndex, TCHAR
 			if (_T('"') == str.GetAt(nIndex))
 			{
 				nIndex++;
-				TCHAR ch = GetIndexNextChars(str, nIndex, _T("\""));
+				ch = GetIndexNextChars(str, nIndex, _T("\""));
 				if (_T('"') == ch)
 				{
 					nIndex ++;

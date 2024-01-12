@@ -304,7 +304,7 @@ HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		return mbrReadOnly;
 	}
 	return NULL;
-	return CAcadColorService::GetTransparentBrush();
+	//return CAcadColorService::GetTransparentBrush();
 }
 
 BOOL CTextBoxCtrl::OnEraseBkgnd(CDC* pDC)
@@ -314,5 +314,5 @@ BOOL CTextBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return TRUE;
-	return __super::OnEraseBkgnd( pDC );
+	//return __super::OnEraseBkgnd( pDC );
 }

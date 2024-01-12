@@ -618,9 +618,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\ARX.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="..\..\ARX.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AcadBlockInsertDropTarget.h">
@@ -1370,10 +1368,5 @@
     <ClInclude Include="..\..\..\Common\DpiAwarenessAPI.h">
       <Filter>Common</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuildStep Include="..\Controls\ArxR16LinetypeComboBoxCtrl.h">
-      <Filter>Controls</Filter>
-    </CustomBuildStep>
   </ItemGroup>
 </Project>

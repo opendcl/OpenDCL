@@ -532,7 +532,7 @@ void CGridCtrl::SetCellStyle( int nRow, int nCol, Grid::CellStyle nStyle, int im
 		}
 	case Grid::SwitchableIcons:
 		{
-			LVITEM lvi = { LVIF_STATE, nRow, nCol, (altImage << 12), LVIS_STATEIMAGEMASK };
+			LVITEM lvi = { LVIF_STATE, nRow, nCol, (UINT(altImage) << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
 		}

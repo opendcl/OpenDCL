@@ -143,11 +143,10 @@ BOOL CAcadPaletteHost::OnCommand (WPARAM wParam, LPARAM lParam)
 
 bool CAcadPaletteHost::CanFrameworkTakeFocus ()
 {
+	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
 	if( !__super::CanFrameworkTakeFocus() )
 		return false;
 	return (!mpDlgObject->IsKeepFocus() && mbMouseLeft );
-	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
-	return false;
 }
 
 void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )

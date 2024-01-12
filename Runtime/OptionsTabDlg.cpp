@@ -178,7 +178,7 @@ LRESULT COptionsTabDlg::OnRecalcLayout(WPARAM wParam, LPARAM lParam)
 BOOL COptionsTabDlg::OnEraseBkgnd(CDC* pDC)
 {
 	return TRUE;
-	return __super::OnEraseBkgnd(pDC);
+	//return __super::OnEraseBkgnd(pDC);
 }
 
 HBRUSH COptionsTabDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)

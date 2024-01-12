@@ -114,9 +114,8 @@ END_MESSAGE_MAP()
 
 bool CAcadDockBarHost::CanFrameworkTakeFocus ()
 {
-	return (!mpDlgObject->IsKeepFocus() && mbMouseLeft );
 	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
-	return false;
+	return (!mpDlgObject->IsKeepFocus() && mbMouseLeft );
 }
 
 void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )

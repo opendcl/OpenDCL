@@ -8,7 +8,7 @@
 BOOL RequestLicenseKey(CString &strLicenseKey, CLSID clsid)
 {
 	CComBSTR bstrLicenseKey;
-	LPCLASSFACTORY2 pClassFactory;
+	CComPtr<IClassFactory2> pClassFactory;
 
 	// Create an instance of the object and query it for
 	//  the IClassFactory2 interface.
@@ -21,53 +21,55 @@ BOOL RequestLicenseKey(CString &strLicenseKey, CLSID clsid)
 		{
 			if (licinfo.fRuntimeKeyAvail)
 			{
-			HRESULT hr;
+				HRESULT hr;
 
-			// The object has a runtime License key, so request it.
-			hr = pClassFactory->RequestLicKey(0, &bstrLicenseKey);
+				// The object has a runtime License key, so request it.
+				hr = pClassFactory->RequestLicKey(0, &bstrLicenseKey);
 
-			if (SUCCEEDED(hr))
-			{
-				if(bstrLicenseKey.Length() == 0)
+				if (SUCCEEDED(hr))
 				{
-					strLicenseKey = L"<Object returned a NULL license key>";
-					return FALSE;
+					if(bstrLicenseKey.Length() == 0)
+					{
+						strLicenseKey = L"<Object returned a NULL license key>";
+						return FALSE;
+					}
+					else
+					{
+						strLicenseKey = bstrLicenseKey;
+						return TRUE;
+					}
 				}
 				else
 				{
-					strLicenseKey = bstrLicenseKey;
-					return TRUE;
-				}
-			}
-			else
-			 // Requesting the License key failed.
-			 switch(hr)
-			 {
-				case E_NOTIMPL:
-					strLicenseKey = L"<The object's class factory does not support run-time license keys>";
-					return FALSE;
-					break;
+					// Requesting the License key failed.
+					switch(hr)
+					{
+					case E_NOTIMPL:
+						strLicenseKey = L"<The object's class factory does not support run-time license keys>";
+						return FALSE;
+						break;
 
-				case E_UNEXPECTED:
-					strLicenseKey = L"<An unexpected error occurred when requesting the run-time license key>";
-					return FALSE;
-					break;
+					case E_UNEXPECTED:
+						strLicenseKey = L"<An unexpected error occurred when requesting the run-time license key>";
+						return FALSE;
+						break;
 
-				case E_OUTOFMEMORY:
-					strLicenseKey = L"<The object's class factory was unable to allocate the license key>";
-					return FALSE;
-					break;
+					case E_OUTOFMEMORY:
+						strLicenseKey = L"<The object's class factory was unable to allocate the license key>";
+						return FALSE;
+						break;
 
-				case CLASS_E_NOTLICENSED:
-					strLicenseKey = L"<The object's class factory supports run-time licensing, but the current machine\r\n"
-													L"itself is not licensed. Thus, a run-time key is not available on this machine>";
-					return FALSE;
-					break;
+					case CLASS_E_NOTLICENSED:
+						strLicenseKey = L"<The object's class factory supports run-time licensing, but the current machine\r\n"
+														L"itself is not licensed. Thus, a run-time key is not available on this machine>";
+						return FALSE;
+						break;
 
-				default:
-					strLicenseKey = L"<An unknown error occurred when requesting the license key>";
-					return FALSE;
-					break;
+					default:
+						strLicenseKey = L"<An unknown error occurred when requesting the license key>";
+						return FALSE;
+						break;
+					}
 				}
 			}
 			else
@@ -81,9 +83,6 @@ BOOL RequestLicenseKey(CString &strLicenseKey, CLSID clsid)
 	   strLicenseKey = L"<Unable to get the licensing capabilities of the object's class factory>";
 		 return FALSE;
 		}
-
-		// Make sure you release the reference to the class factory.
-		pClassFactory->Release();
 	}
 	else
 	{

@@ -652,7 +652,7 @@ void CArxBlockViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			int centerX = int(float(nViewportX) / 2.0f) + view_rect.m_min.x;
 			int centerY = int(float(nViewportY) / 2.0f) + view_rect.m_min.y;
 
-			const double radius  = min (nViewportX, nViewportY) * 0.4f;
+			const double radius  = float(min (nViewportX, nViewportY)) * 0.4f;
 
 			// compute two vectors from last and new cursor positions:
 

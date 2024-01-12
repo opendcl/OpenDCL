@@ -83,7 +83,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4471;4838;5026;5027</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4388;4471;4710;4711;4838;5026;5027;5039;5045;5204;5246</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -100,6 +100,7 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">
@@ -120,7 +121,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4471;4838;5026;5027</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4388;4471;4710;4711;4838;5026;5027;5039;5045;5204;5246</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -156,7 +157,7 @@
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level1</WarningLevel>
-      <DisableSpecificWarnings>4471;4838;5026;5027</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4388;4471;4710;4711;4838;5026;5027;5039;5045;5204;5246</DisableSpecificWarnings>
       <AdditionalOptions>/d2FH4- /Wall /wd4100 /wd4820 /wd4365 /wd4668 /wd4917 /wd4640 /wd4244 /wd4061 /wd4062 /wd4625 /wd4626 /wd4267 /wd4571 /wd4555 /wd4242 /wd4238 /wd4245 /wd4266 /wd4239 /wd4386 /wd4018 /wd4389 /wd4287 /wd4350 /wd5038 /wd4774 /wd4840 /wd4623 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
@@ -172,6 +173,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

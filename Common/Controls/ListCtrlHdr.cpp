@@ -87,14 +87,17 @@ void CListCtrlHdr::CHdrTipWnd::Show(int nCol)
 
 bool CListCtrlHdr::TooltipHitTest(const CPoint& point, int& nCol) const
 {
-	nCol = -1;
+__if_not_exists(CHeaderCtrl::HitTest)
+{
+	return false;
+}
 __if_exists(CHeaderCtrl::HitTest)
 {
+	nCol = -1;
 	HDHITTESTINFO htiHeader = { point, 0, -1 };
 	nCol = const_cast< CListCtrlHdr* >(this)->HitTest(&htiHeader);
 	return (htiHeader.flags == HHT_ONHEADER);
 }
-	return false;
 }
 
 void CListCtrlHdr::PreSubclassWindow()

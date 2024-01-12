@@ -163,7 +163,7 @@ ADSRESULT AxControl::Invoke()
 		acedRetT();
 	else
 	{
-		DISPPARAMS params = { rArgs.GetData(), NULL, rArgs.GetSize(), 0 };
+		DISPPARAMS params = { rArgs.GetData(), NULL, UINT(rArgs.GetSize()), 0 };
 		acedRetAxResult( varResult, pMethod->GetReturnGuid(), &params );
 	}
 	return RSRSLT;
@@ -209,7 +209,7 @@ ADSRESULT AxObject::Get()
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
 	resbuf* pArgC = pArgs;
-	size_t ctArgs = 0;
+	UINT ctArgs = 0;
 	while( pArgC )
 	{
 		pArgC = pArgC->rbnext;
@@ -217,7 +217,7 @@ ADSRESULT AxObject::Get()
 	}
 	pArgC = pArgs;
 	COleVariant* rvarArgs = (ctArgs > 0? new COleVariant[ctArgs] : NULL);
-	for( size_t idx = 0; idx < ctArgs; ++idx )
+	for( UINT idx = 0; idx < ctArgs; ++idx )
 	{
 		if( !GetVariantArgument( pArgs, rvarArgs[ctArgs - idx - 1], AxArg() ) )
 		{
@@ -279,7 +279,7 @@ ADSRESULT AxObject::Put()
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
 	resbuf* pArgC = pArgs;
-	size_t ctArgs = 0;
+	UINT ctArgs = 0;
 	while( pArgC )
 	{
 		pArgC = pArgC->rbnext;
@@ -287,7 +287,7 @@ ADSRESULT AxObject::Put()
 	}
 	pArgC = pArgs;
 	COleVariant* rvarArgs = (ctArgs > 0? new COleVariant[ctArgs] : NULL);
-	for( size_t idx = 0; idx < ctArgs; ++idx )
+	for( UINT idx = 0; idx < ctArgs; ++idx )
 	{
 		if( !GetVariantArgument( pArgs, rvarArgs[ctArgs - idx - 1], AxArg() ) )
 		{
@@ -350,7 +350,7 @@ ADSRESULT AxObject::Invoke()
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAMETHOD, (LPCTSTR)sMethodName );
 
 	resbuf* pArgC = pArgs;
-	size_t ctArgs = 0;
+	UINT ctArgs = 0;
 	while( pArgC )
 	{
 		pArgC = pArgC->rbnext;
@@ -358,7 +358,7 @@ ADSRESULT AxObject::Invoke()
 	}
 	pArgC = pArgs;
 	COleVariant* rvarArgs = (ctArgs > 0? new COleVariant[ctArgs] : NULL);
-	for( size_t idx = 0; idx < ctArgs; ++idx )
+	for( UINT idx = 0; idx < ctArgs; ++idx )
 	{
 		if( !GetVariantArgument( pArgs, rvarArgs[ctArgs - idx - 1], AxArg() ) )
 		{
