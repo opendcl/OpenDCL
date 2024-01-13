@@ -577,7 +577,7 @@
       <Project>{a459ef20-fc54-44d3-b922-9d872e52a1fd}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\ENU\Runtime.Res\Runtime.Res.ENU.vcxproj">
+    <ProjectReference Include="..\..\Localized\ENU\Runtime.Res\Runtime.Res.ENU.vcxproj">
       <Project>{93b7675d-d34d-4371-8ef2-cdaeb0aca23e}</Project>
       <Private>true</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -682,7 +682,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="ENU\HTMLHelp.ENU.vcxproj">
+    <ProjectReference Include="Localized\ENU\HTMLHelp.ENU.vcxproj">
       <Project>{5783a6a0-7850-4a77-b36b-bc792e16dea4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <Private>true</Private>
@@ -690,7 +690,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="ENU\Studio.Res\Studio.Res.ENU.vcxproj">
+    <ProjectReference Include="Localized\ENU\Studio.Res\Studio.Res.ENU.vcxproj">
       <Project>{dd1c51a8-ef8c-44cb-93b9-e5e8d194c07f}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

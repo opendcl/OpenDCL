@@ -87,7 +87,7 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 		cchBuildFolder = sResRootDbg.Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
 		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 ).MakeReverse();
 		CString sLanguageDirDbg;
-		sLanguageDirDbg.Format( _T("..\\%s\\Runtime.Res\\Debug\\"), (LPCTSTR)sLanguage );
+		sLanguageDirDbg.Format( _T("..\\Localized\\%s\\Runtime.Res\\Debug\\"), (LPCTSTR)sLanguage );
 		CString sLocalResPathDbg = sResRootDbg + sLanguageDirDbg + sResModuleFilename;
 		HMODULE hmodLocalRes = LoadLibrary( sLocalResPathDbg );
 	#endif
