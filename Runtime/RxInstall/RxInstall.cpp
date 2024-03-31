@@ -397,7 +397,8 @@ public:
 											kGRX2023 = 23, kGRX2024 = 24,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, kARX2015 = 20,
-											kARX2017 = 21, kARX2018 = 22, kARX2019 = 23, kARX2021 = 24, };
+											kARX2017 = 21, kARX2018 = 22, kARX2019 = 23, kARX2021 = 24,
+											kARX2025 = 25, };
 	typedef char TByte;
 	TargetModule( Architecture architecture, Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
 		: mArchitecture( architecture )
@@ -524,6 +525,7 @@ public:
 		kAutoCAD2022x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2021 << shftMajorVer) | 1),
 		kAutoCAD2023x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2021 << shftMajorVer) | 2),
 		kAutoCAD2024x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2021 << shftMajorVer) | 3),
+		kAutoCAD2025x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2025 << shftMajorVer) | 0),
 		kBricscad9_3 =       (kX86Architecture | kBricscadPlatform | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =        (kX86Architecture | kBricscadPlatform | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =        (kX86Architecture | kBricscadPlatform | (kBRX11 << shftMajorVer) | 0),
@@ -912,6 +914,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2022x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2023x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2024x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2025x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	}
 }
 
@@ -1074,6 +1077,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R24.1"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R24.2"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R24.3"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R25.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );
