@@ -330,7 +330,9 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainerCtrl *axContainer)
 				
 		LOGFONT lf;
 		memset(&lf, 0, sizeof(LOGFONT));
-		lf.lfHeight = ::MulDiv( ::MulDiv(cyFontSize.Lo, GetDeviceCaps(::GetDC(NULL), LOGPIXELSY), 72), -1, 10000 );
+		HDC hdc = ::GetDC(NULL);
+		lf.lfHeight = ::MulDiv( ::MulDiv(cyFontSize.Lo, GetDeviceCaps(hdc, LOGPIXELSY), 72), -1, 10000 );
+		::ReleaseDC(NULL, hdc);
 		lf.lfWidth = 0;
 		lstrcpyn(lf.lfFaceName, sFontName, _elements(lf.lfFaceName));
 		lf.lfItalic = bFontItalic;

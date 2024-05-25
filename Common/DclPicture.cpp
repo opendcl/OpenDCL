@@ -901,6 +901,7 @@ void CDclPicture::CalcLogicalSize()
 	msizePic.SetSize( lPicWidth, lPicHeight );
 
 	// convert coordinates from units to logical units
-	CDC* pDC = CDC::FromHandle( ::GetDC( NULL ) );
-	pDC->HIMETRICtoLP( &msizePic );
+	CDC DC;
+	DC.Attach( ::GetDC(NULL) );
+	DC.HIMETRICtoLP( &msizePic );
 }
