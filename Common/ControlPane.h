@@ -55,6 +55,7 @@ public:
 	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
 	bool IsModal() const;
 	bool IsClosing() const;
+	virtual bool IsInvisibleControlAllowed( TDialogControlPtr pDlgControl ) const { return true; }
 
 // Operations
 public:
@@ -69,7 +70,6 @@ protected:
 	void InvalidateControls();
 	virtual void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
 	virtual void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
-	virtual bool IsInvisibleControlAllowed( TDialogControlPtr pDlgControl ) const { return true; }
 	virtual UINT GetDpi() const;
 
 // Implementation

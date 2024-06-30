@@ -36,7 +36,7 @@ bool CSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 	CRect rcWnd = GetWndRect();
 	FromDIP( rcWnd );
 	bool bSuccess = (__super::Create( NULL, GetWndStyle(), rcWnd, pParentWnd, nID ) != FALSE);
-	if( bSuccess )
+	if( bSuccess && mpControlPane->IsInvisibleControlAllowed( TDialogControlLockedPtr( this ) ) )
 		bSuccess = (ModifyStyleEx( 0, WS_EX_TRANSPARENT ) != FALSE);
 	mbIgnoreSizing = false;
 
@@ -187,6 +187,8 @@ void CSplitterCtrl::PostNcDestroy()
 
 __UINT_LRESULT CSplitterCtrl::OnNcHitTest(CPoint point)
 {
+	if ( !mpControlPane->IsInvisibleControlAllowed( TDialogControlLockedPtr( this ) ) )
+		return HTCLIENT;
 	return (mbVertical? HTLEFT : HTTOP);
 }
 

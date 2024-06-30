@@ -184,7 +184,6 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 	#endif
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 
-		DWORD dwExStyle = GetExtendedStyle();
 		EnableToolTips(FALSE);
 		mTipWnd.Create();
 

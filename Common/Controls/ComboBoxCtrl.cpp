@@ -22,6 +22,7 @@ CComboBoxCtrl::CComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UIN
 
 CComboBoxCtrl::~CComboBoxCtrl()
 {
+	delete mpHandler;
 }
 
 bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )

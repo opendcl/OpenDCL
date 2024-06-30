@@ -240,8 +240,19 @@ BOOL CStdioUnicodeFile::IsUnicode()
 	if( nPos != 0 )
 		return FALSE; //if we're starting anywhere but the beginning, assume Ansi
 	WORD wchTest;
-	if( sizeof(wchTest) == Read( &wchTest, sizeof(wchTest) ) && wchTest == 0xFEFF )
-		return TRUE;
+	if ( sizeof(wchTest) == Read( &wchTest, sizeof(wchTest) ) )
+	{
+		switch ( wchTest )
+		{
+			case 0xFEFF: return TRUE;
+			case 0xBBEF:
+			{
+				BYTE utf8Test;
+				if ( sizeof(utf8Test) == Read( &utf8Test, sizeof(utf8Test) ) && utf8Test == 0xBF )
+					return FALSE;
+			}
+		}
+	}
 	Seek( 0, FILE_BEGIN ); //reset the file pointer
 	return FALSE;
 }

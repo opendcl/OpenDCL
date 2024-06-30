@@ -201,6 +201,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6D04EA4353794E2293C55F4AB786BCED"
+        "OwnerKey" = "8:_989ED344671F4D5989BDC71B28A77FAD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6D69B61B72CD46ECBF1A9A2B88E52F3A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -383,6 +389,12 @@
         {
         "MsmKey" = "8:_C9FD58D6E90C4AACB8EB71002A408724"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CA3347232E1044DE9810214197AD8D8E"
+        "OwnerKey" = "8:_989ED344671F4D5989BDC71B28A77FAD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2212,15 +2224,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{C8330540-BBFD-4D85-937B-AEC8DF8148B9}"
-        "PackageCode" = "8:{8776405D-2AAD-4FBC-9B0B-64E96BA7866D}"
+        "ProductCode" = "8:{45C497A5-00AA-4E58-94A8-185DB1606351}"
+        "PackageCode" = "8:{50C306F4-2012-47BF-BB1B-2F138C72433A}"
         "UpgradeCode" = "8:{AF16E7D3-800C-4BE7-BA12-B9C62FF78F51}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:9.2.0301"
+        "ProductVersion" = "8:9.2.0302"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3021,6 +3033,34 @@
         }
         "MergeModule"
         {
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6D04EA4353794E2293C55F4AB786BCED"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc110_mfc_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_CA3347232E1044DE9810214197AD8D8E"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc110_crt_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "ProjectOutput"
         {

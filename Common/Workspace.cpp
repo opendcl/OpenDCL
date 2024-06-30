@@ -77,7 +77,7 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 		cchBuildFolder = sResRootDbg.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
 		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 ).MakeReverse();
 		CString sLanguageDirDbg;
-		sLanguageDirDbg.Format( _T("%s\\Studio.Res\\Debug\\"), (LPCTSTR)sLanguage );
+		sLanguageDirDbg.Format( _T("Localized\\%s\\Studio.Res\\Debug\\"), (LPCTSTR)sLanguage );
 		CString sLocalResPathDbg = sResRootDbg + sLanguageDirDbg + sResModuleFilename;
 		HMODULE hmodLocalRes = LoadLibrary( sLocalResPathDbg );
 	#else
@@ -211,6 +211,7 @@ CString CWorkspace::GetLanguageSubfolderPath(void) const
 	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
 	cchBuildFolder = sLangSubfolder.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
 	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
+	sLangSubfolder += _T("Localized\\");
 	sLanguage += _T("\\Content");
 #endif
 	sLangSubfolder = sLangSubfolder + sLanguage + _T("\\");
