@@ -90,7 +90,7 @@ BEGIN
             VALUE "FileDescription", "OpenDCL Runtime Installation Helper"
             VALUE "FileVersion", "2.0.1.5"
             VALUE "InternalName", "OpenDCL.RxInstall"
-            VALUE "LegalCopyright", "Copyright © 2024 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalCopyright", "Copyright © 2025 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "ProductName", "OpenDCL"
             VALUE "ProductVersion", "2.0.1.5"

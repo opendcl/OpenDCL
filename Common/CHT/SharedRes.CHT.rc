@@ -1,0 +1,471 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\SharedRes.Local.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "..\\SharedRes.Local.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#include ""l.chs\\AfxRes.rc""\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "Res\\OpenDCL.ico"
+IDI_HELP                ICON                    "Res\\Help.ico"
+IDI_INFO                ICON                    "Res\\Info.ico"
+IDI_WARN                ICON                    "Res\\Warn.ico"
+IDI_ERR                 ICON                    "Res\\Error.ico"
+IDI_LABEL               ICON                    "Res\\Label.ico"
+IDI_FILTER              ICON                    "Res\\Filter.ico"
+IDI_PICK                ICON                    "Res\\Pick.ico"
+IDI_SELECT              ICON                    "Res\\Select.ico"
+IDI_FOLDER              ICON                    "Res\\Folder.ico"
+IDI_PICKSMALL           ICON                    "Res\\PickSmall.ico"
+IDI_SHXFONT             ICON                    "Res\\SHXFont.ico"
+IDI_TTFONT              ICON                    "Res\\TTFont.ico"
+IDI_LARGEBLOCK          ICON                    "Res\\LargeBlock.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ARROWHEADS          BITMAP                  "Res\\ArrowHeads.bmp"
+IDB_OPTBTN              BITMAP                  "Res\\OptionButton.bmp"
+IDB_OPTBTNSEL           BITMAP                  "Res\\OptionButtonSel.bmp"
+IDB_OPTBTNH             BITMAP                  "Res\\OptionButtonH.bmp"
+IDB_OPTBTNSELH          BITMAP                  "Res\\OptionButtonSelH.bmp"
+IDB_OPTBTND             BITMAP                  "Res\\OptionButtonD.bmp"
+IDB_OPTBTNSELD          BITMAP                  "Res\\OptionButtonSelD.bmp"
+IDB_FOLDER              BITMAP                  "Res\\Folder.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_OHAND               CURSOR                  "Res\\Hand.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_NONE                "<None>"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_COLOR               "顏色"   	
+    IDS_ODCFILTER           "OpenDCL 項目 (*.odcl,*.odcl.lsp)|*.odcl;*.odcl.lsp||"
+    IDS_SECONDTEXT          "秒"
+    IDS_SECONDSTEXT         "秒"
+    IDS_MINUTETEXT          "分"
+    IDS_MINUTESTEXT         "分"
+    IDS_REMAININGTEXT       "剩餘"
+    IDS_COLORDISPLAYTEXT    "顏色 %d"
+    IDS_OPTION1             "選項1"
+    IDS_OPTION2             "選項2"
+    IDS_OPTION3             "選項3"
+    IDS_FILEDLGFILTERDEF    "AutoCAD 圖面|*.dwg;*.dxf|AutoLISP 檔案 (*.lsp,*.fas;*.vlx;*.des)|*.lsp;*.fas;*.vlx;*.des|"
+    IDS_SELFOLDER           "選擇資料夾"
+    IDS_OPEN                "打開"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TRUE                "是"
+    IDS_FALSE               "否"
+    IDS_LISPTYPE_BOOLEAN    "Boolean"
+    IDS_LISPTYPE_INTEGER    "Integer"
+    IDS_LISPTYPE_LONG       "Long"
+    IDS_LISPTYPE_FLOAT      "Float"
+    IDS_LISPTYPE_STRING     "String"
+    IDS_LISPTYPE_HANDLE     "Handle"
+    IDS_LISPTYPE_VARIANT    "Variant"
+    IDS_LISPTYPE_AXOBJECT   "AxObject"
+    IDS_LISPTYPE_OLECOLOR   "OLEColor"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_NAME           "名稱"
+    IDS_PROP_CUSTOM         "嚮導"
+    IDS_PROP_AUTOSIZE       "自動尺寸"
+    IDS_PROP_BORDERSTYLE    "邊框風格"
+    IDS_PROP_BTNSTYLE       "風格"
+    IDS_PROP_CAPTION        "標題"
+    IDS_PROP_CANCEL         "取消"
+    IDS_PROP_COMBOBOXSTL    "風格"
+    IDS_PROP_DEFAULT        "默認值"
+    IDS_PROP_ENABLE         "可用"
+    IDS_EVENT_BTNCLICKED    "ButtonClicked"
+    IDS_EVENT_CLICKED       "Clicked"
+    IDS_EVENT_DBLCLICKED    "DblClicked"
+    IDS_EVENT_EDITCHANGED   "EditChanged"
+    IDS_EVENT_NODECLICKED   "NodeClicked"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_SELCHANGED    "SelChanged"
+    IDS_PROP_FILTERSTYLE    "過濾類型"	
+    IDS_PROP_HEIGHT         "高度"
+    IDS_PROP_IMAGELIST      "圖像列表"	
+    IDS_PROP_LARGECHNGE     "大修改"
+    IDS_PROP_LEFT           "左"
+    IDS_PROP_LIST           "列表"
+    IDS_PROP_MAXVAL         "最大值"
+    IDS_PROP_MINVAL         "最小值"
+    IDS_PROP_MULTIROW       "多行"
+    IDS_PROP_ORIENTATION    "定位"
+    IDS_PROP_PICTURE        "圖片"
+    IDS_PROP_RECTSTYLE      "風格"
+    IDS_PROP_SMALLCHNG      "小修改"
+    IDS_PROP_TABSCAPTION    "標籤標題"
+    IDS_PROP_TABSIMAGELIST  "標籤圖像"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TABSTTTLIST    "標籤提示"
+    IDS_PROP_TEXT           "文字"
+    IDS_PROP_TICKFRQCY      "滴答頻率"
+    IDS_PROP_TITLEBARTEXT   "標題欄文字"	
+    IDS_PROP_TTT            "提示標題"
+    IDS_PROP_TOP            "上"
+    IDS_PROP_VALUE          "值"
+    IDS_PROP_VISIBLE        "可見"
+    IDS_PROP_WIDTH          "寬"
+    IDS_PROP_SHOWTICKS      "顯示記號"
+    IDS_PROP_READONLY       "只讀"
+    IDS_PROP_JUSTIFICATION  "對齊"	
+    IDS_PROP_MARGINLEFT     "左邊距"
+    IDS_PROP_MARGINRIGHT    "右邊距"
+    IDS_PROP_TEXTLIMIT      "字數限制"	
+    IDS_PROP_AUTOHSCROLL    "自動水平滾動條"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_AUTOVSCROLL    "自動垂直滾動"
+    IDS_PROP_DROPDOWNHEIGHT "下拉高度" 
+    IDS_PROP_MULTICOL       "多列"
+    IDS_PROP_SELECTSTYLE    "選擇風格"
+    IDS_PROP_NOINTEGRALHEIGHT "無固定高度"	
+    IDS_PROP_SORTED         "排序的"
+    IDS_PROP_USETABSTOPS    "使用標籤停留"
+    IDS_PROP_DISABLENOSCROLL "禁用無滾動條"
+    IDS_PROP_HSCROLL        "水平滾動條"
+    IDS_PROP_VSCROLL        "垂直滾動條"
+    IDS_PROP_COLWIDTH       "列寬"
+    IDS_PROP_SMOOTHPROG     "平滑進度"
+    IDS_PROP_AUTOWRAP       "自動折行"
+    IDS_PROP_HYPERLINK      "URL連結"
+    IDS_PROP_TAB_JUSTIFIED  "標籤對齊"
+    IDS_PROP_TAB_STYLE      "標籤風格"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TAB_LABEL_ALIGN "標籤記對齊"
+    IDS_PROP_TAB_FIXEDWIDTH "標籤固定寬度"
+    IDS_PROP_URLLINKTYPE    "鏈接類型"
+    IDS_PROP_MINTABWIDTH    "最小標籤寬度"
+    IDS_PROP_TABSELECTED    "標籤被選中"
+    IDS_PROP_ITEMDATA       "物體數據"
+    IDS_PROP_BTN_CAPTIONS   "按鈕標題"
+    IDS_PROP_BTN_IMAGES     "按鈕圖標"
+    IDS_PROP_BTN_TOOLTIPS   "按鈕提示標題"
+    IDS_PROP_BTN_STYLES     "按鈕風格"
+    IDS_PROP_USETOPFROMBOTTOM "模式:從下邊界到頂部"
+    IDS_PROP_USEBOTTOMFROMBOTTOM "模式:從下邊界到底部"
+    IDS_PROP_USELEFTFROMRIGHT "模式:從右邊界到左邊"
+    IDS_PROP_USERIGHTFROMRIGHT "模式:從右邊界到右邊"
+    IDS_PROP_TOPFROMBOTTOM  "從下邊界到頂部"
+    IDS_PROP_BOTTOMFROMBOTTOM "從下邊界到底部"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_LEFTFROMRIGHT  "從右邊界到左邊"
+    IDS_PROP_RIGHTFROMRIGHT "從右邊界到右邊"
+    IDS_PROP_RESIZABLE      "允許縮放"
+    IDS_PROP_FORMCONTROLABILITY "事件發生"
+    IDS_PROP_MULTISELECT    "最大選擇數"
+    IDS_EVENT_GETDAYSTATE   "GetDayState"
+    IDS_EVENT_SELECT        "Select"
+    IDS_EVENT_KILLFOCUS     "KillFocus"
+    IDS_EVENT_OUTOFMEM      "OutOfMemory"
+    IDS_EVENT_RCLICK        "RightClick"
+    IDS_EVENT_RDBLCLICK     "RightDblClick"
+    IDS_EVENT_RETURN        "Return"
+    IDS_EVENT_SETFOCUS      "SetFocus"
+    IDS_EVENT_BGNLBLEDIT    "BeginLabelEdit"
+    IDS_EVENT_DELETEITEM    "DeleteItem"
+    IDS_EVENT_EDITLABELITEM "EndLabelEdit"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_ITEMEXPANED   "ItemExpanded"
+    IDS_EVENT_ITEMEXPANDING "ItemExpanding"
+    IDS_EVENT_KEYDOWN       "KeyDown"
+    IDS_EVENT_SELCHANGING   "SelChanging"
+    IDS_EVENT_CHANGED       "Changed"
+    IDS_EVENT_MAXTEXT       "MaxText"
+    IDS_EVENT_UPDATE        "Update"
+    IDS_EVENT_DROPDOWN      "DropDown"
+    IDS_EVENT_SCROLL        "Scroll"
+    IDS_EVENT_RELEASEDCAPTURE "ReleasedCapture"
+    IDS_PROP_FONTUNDERLINE  "下劃線"
+    IDS_PROP_FONTITALIC     "斜體"
+    IDS_PROP_FONTBOLD       "粗體"
+    IDS_PROP_FONTSIZE       "字體大小"
+    IDS_PROP_FONTNAME       "字體"
+    IDS_PROP_FONTSTRIKEOUT  "字體刪除線"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FONTCOLOR      "字體顏色"
+    IDS_PROP_BLOCKNAME      "塊名"
+    IDS_PROP_FILENAME       "文件名"
+    IDS_PROP_COLOR          "(顏色)"
+    IDS_PROP_CFGTABCAPTION  "設置標籤文字"
+    IDS_PROP_INTERFACEMODE  "接口模式"
+    IDS_EVENT_FORMCLOSE     "Close"
+    IDS_EVENT_FORMINIT      "Initialize"
+    IDS_EVENT_FORMSIZE      "Size"
+    IDS_EVENT_FORMSHOW      "Show"
+    IDS_EVENT_DOCACTIVATE   "DocActivated"
+    IDS_EVENT_CFGCANCEL     "Cancel"
+    IDS_EVENT_CFGOK         "OK"
+    IDS_EVENT_CFGHELP       "Help"
+    IDS_EVENT_CFGAPPLY      "Apply"
+    IDS_PROP_ACADBKCOLOR    "背景顏色"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SHOWSELALWAYS  "始終顯示選擇"
+    IDS_PROP_INDENT         "縮進"
+    IDS_PROP_HASLINES       "連線"
+    IDS_PROP_LINESATROOT    "連線到根部"
+    IDS_PROP_HASBUTTONS     "有按鈕"
+    IDS_PROP_EDITLABELS     "編輯標籤"
+    IDS_PROP_HASCHECKBOXES  "有檢查框"
+    IDS_PROP_TITLEBARICON   "標題欄圖標"
+    IDS_EVENT_KEYUP         "按鍵放開"
+    IDS_EVENT_MOUSEDOWN     "滑鼠按下"
+    IDS_EVENT_MOUSEUP       "滑鼠放開"
+    IDS_EVENT_MOUSEMOVE     "滑鼠移到"
+    IDS_EVENT_MOUSEMOVEDOFF "滑鼠移開"
+    IDS_EVENT_MOUSEDBLCLICK "滑鼠雙點擊"
+    IDS_EVENT_MOUSEWHEEL    "滑鼠滾輪"
+    IDS_EVENT_PAINT         "Paint"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEMASK        "使用遮罩"
+    IDS_PROP_SHOWEDITBOX    "顯示編輯框"
+    IDS_EVENT_NAVCOMPLETE   "NavigationComplete"
+    IDS_PROP_INPUTFILTER    "輸入過濾"
+    IDS_PROP_TABORDER       "標籤次序"
+    IDS_PROP_SHOWORBITCIRCLES "顯示軌跡圈"
+    IDS_PROP_ISTABSTOP      "TAB停留"
+    IDS_EVENT_MOUSEENTERED  "MouseEntered"
+    IDS_PROP_GROUP          "開始組合"
+    IDS_PROP_MOUSEOVERPICT  "鼠標經過圖片"
+    IDS_PROP_RENDERMODE     "著色模式"
+    IDS_EVENT_RETURNPRESSED "ReturnPressed"
+    IDS_EVENT_FORMCANCELCLOSE "CancelClose"
+    IDS_EVENT_LMOUSE        "LMouse"
+    IDS_EVENT_MMOUSE        "MMouse"
+    IDS_EVENT_RMOUSE        "RMouse"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_ZORDER         "Z次序"
+    IDS_PROP_LISTVIEWSTYLE  "風格"
+    IDS_PROP_LVSORT         "排序"
+    IDS_PROP_ICONALIGN      "圖標對齊"	
+    IDS_PROP_BLOCKLISTSTYLE "風格"
+    IDS_PROP_AUTOARRANGE    "圖標自動排列"
+    IDS_PROP_COLHEADER      "列標題"
+    IDS_PROP_LABELWRAP      "標籤換行"
+    IDS_PROP_ALLOWSCROLLING "允許滾動"
+    IDS_PROP_MULTISELECTION "多項選擇"
+    IDS_PROP_ICONXSPACING   "圖標橫向間距"
+    IDS_PROP_ICONYSPACING   "圖標縱向間距"
+    IDS_EVENT_DRAGDROPTOACAD "拖曳到AutoCAD"
+    IDS_EVENT_DRAGDROPFROMCTRL "從控制項拖曳"
+    IDS_EVENT_DRAGDROPFROMOTHER "從其他拖曳"
+    IDS_EVENT_DRAGDROPBEGIN "拖曳開始"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_DRAGNDROPALLOWBEGIN "允許拖動/釋放開始"
+    IDS_PROP_DRAGNDROPALLOWDROP "拖動/釋放允許釋放"
+    IDS_PROP_GRIDLINES      "表格線"
+    IDS_PROP_FULLROWSELECT  "整行選擇"
+    IDS_PROP_MINDLGWIDTH    "最小對話框寬度"
+    IDS_PROP_MAXDLGWIDTH    "最大對話框寬度"
+    IDS_PROP_MINDLGHEIGHT   "最小對話框高度"
+    IDS_PROP_MAXDLGHEIGHT   "最大對話框高度"
+    IDS_EVENT_COLCLICK      "ColumnClick"
+    IDS_PROP_FONTSIZESTYLE  "字體大小風格"
+    IDS_PROP_FORECOLOR      "前景顏色"
+    IDS_PROP_TRANSPARENT    "透明"
+    IDS_EVENT_SCROLLED      "Scrolled"
+    IDS_PROP_DOCSIDES       "可固定邊"
+    IDS_PROP_DOCDEFAULT     "默認固定"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_EVENTINVOKE    "引發事件"
+    IDS_PROP_RETURNASTAB    "回車當Tab鍵"
+    IDS_PROP_SINGLECLICKEXPAND "單個展開"
+    IDS_PROP_ACTIVEXPROPPAGES "(ActiveX 嚮導)"
+    IDS_PROP_ROWHEIGHT      "行高"
+    IDS_PROP_CURSELINDEX    "當前的選擇"
+    IDS_PROP_CONTROLBROWSER "(對像瀏覽)"
+    IDS_PROP_VARNAME        "(變量名)"
+    IDS_PROP_FILEDLGSTYLE   "風格"
+    IDS_PROP_ASREADONLY     "只讀"
+    IDS_PROP_CREATIONPROMPT "創建提示"
+    IDS_PROP_DEFAULTEXTENSION "默認(文件名)後綴"
+    IDS_PROP_EXTCANBEDIFF   "(文件名)名後綴可以不同"
+    IDS_PROP_FILEMUSTEXIST  "文件必須存在"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FILTER         "過濾"
+    IDS_PROP_OVERWRITEPROMPT 	"重寫提示"
+    IDS_PROP_PATHMUSTEXIST  "路徑必須存在"
+    IDS_PROP_SHOWCANCEL     "顯示取消"
+    IDS_PROP_SHOWHELP       "顯示幫助"
+    IDS_PROP_SHOWNAMELABEL  "顯示名稱標記"
+    IDS_PROP_SHOWNAMETEXTBOX "顯示名稱文本框"
+    IDS_PROP_SHOWOK         "顯示確定"
+    IDS_PROP_SHOWREADONLYCHECKBOX "顯示只讀檢查框"
+    IDS_PROP_SHOWTYPECOMBOBOX "顯示組合框類型"
+    IDS_PROP_SHOWTYPELABEL  "顯示類型標籤"
+    IDS_EVENT_FOLDERCHANGED "FolderChanged"
+    IDS_EVENT_HELP          "Help"
+    IDS_EVENT_TYPECHANGED   "TypeChanged"
+    IDS_PROP_INSERTTYPE     "插入或參照"
+    IDS_PROP_ROWHEADER      "行頭"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_COLUMN_CAPTIONS "列標題"
+    IDS_PROP_COLUMN_ALIGNMENTS "列排列方式"
+    IDS_PROP_COLUMN_IMAGES  "列圖像"
+    IDS_PROP_COLUMN_WIDTHS  "列寬度"
+    IDS_PROP_COLUMN_STYLES  "列風格"
+    IDS_PROP_COLUMN_DEFAULTIMAGES "列默認圖像"
+    IDS_PROP_COLUMN_ALTERNATEIMAGES "列交替圖像"
+    IDS_PROP_COLUMN_LISTITEMS "列下拉列表物體"
+    IDS_PROP_COLUMN_LISTIMAGES "列下拉列表圖像"
+    IDS_PROP_ALTERNATINGCOLOR "交替顏色"
+    IDS_PROP_ALTORIENTATION "交替定向"
+    IDS_PROP_TOOLTIP_MAINTEXT "提示"
+    IDS_PROP_TOOLTIP_PICTURE "提示圖像"
+    IDS_PROP_TOOLTIP_AVIFILENAME "提示Avi文件名"
+    IDS_PROP_TOOLTIP_LINE   "提示分隔線"
+    IDS_PROP_TOOLTIP_TITLECOLOR "提示標題顏色"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SPLITTERSTYLE  "邊框風格"
+    IDS_PROP_CLOSESTINSIDE  "內部最靠近"
+    IDS_PROP_CLOSESTOUTSIDE "外部最靠近"
+    IDS_PROP_HATCHSCALE     "填充比例"
+    IDS_EVENT_SPLITTERMOVED "SplitterMoved"
+    IDS_PROP_CAPTION_SECOND "標題(秒)"
+    IDS_PROP_CAPTION_SECONDS "標題(秒)"
+    IDS_PROP_CAPTION_MINUTE "標題(分)"
+    IDS_PROP_CAPTION_MINUTES "標題(分)"
+    IDS_PROP_DISPLAYSECONDS "顯示秒數"
+    IDS_PROP_DISPLAY_PERCENTAGE "顯示百分比"
+    IDS_EVENT_FORM_ONOK     "OK"
+    IDS_PROP_TITLEBAR       "標題欄"
+    IDS_EVENT_FORM_ONCANCEL "Cancel"
+    IDS_PROP_TOOLTIP_BALLOON "提示氣球"
+    IDS_EVENT_FORM_ENTERINGNODOCSTATE "EnteringNoDocState"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEVISUALSTYLE "使用視覺風格"
+    IDS_PROP_CAPTION_REMAINING "標題(剩餘)"
+    IDS_PROP_PROGRESSLEGEND "圖例類型"
+    IDS_PROP_KEEPFOCUS      "保持焦點"
+    IDS_PROP_LISTIMAGES     "List Images"
+    IDS_EVENT_DRAGOVERFROMCONTROL "DragOverFromControl"
+    IDS_EVENT_FORM_ONMOVE   "Move"
+    IDS_EVENT_DOCUMENTCOMPLETE "DocumentComplete"
+    IDS_EVENT_FORM_ONTIMER  "Timer"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "l.chs\AfxRes.rc"
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED

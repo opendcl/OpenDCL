@@ -1,0 +1,262 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\..\..\RuntimeRes.Local.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+    "..\\..\\RuntimeRes.Local.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "#include ""SharedRes.CHT.rc""\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDI_CROSS               CURSOR                  "Res\\Cross.cur"
+IDI_ORBIT               CURSOR                  "Res\\Orbit.cur"
+IDI_PAN                 CURSOR                  "Res\\Pan.cur"
+IDI_ZOOM                CURSOR                  "Res\\Zoom.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CFGTAB DIALOG  0, 0, 128, 87
+STYLE DS_SETFONT | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+END
+
+IDD_BASEDLG DIALOGEX 0, 0, 78, 18
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN
+CAPTION "對話框"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
+IDD_BASERESIZABLEDLG DIALOGEX 0, 0, 78, 17
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_CLIPCHILDREN
+CAPTION "對話框"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
+IDD_TABPAGE DIALOGEX 0, 0, 120, 80
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
+IDD_CUSTOM_FILE_DIALOG DIALOGEX 0, 0, 276, 146
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CTEXT           "這是一個標準控件的開始!",1119,0,0,275,145,NOT WS_VISIBLE
+END
+
+IDD_DOCKINGDLGHOST DIALOGEX 0, 0, 186, 94
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_LAYERTHAWED         ICON                    "Res\\LayerThawed.ico"
+IDI_LAYERFROZEN         ICON                    "Res\\LayerFrozen.ico"
+IDI_LAYEROFF            ICON                    "Res\\LayerOff.ico"
+IDI_LAYERON             ICON                    "Res\\LayerOn.ico"
+IDI_PLOTTER             ICON                    "Res\\Plotter.ico"
+IDI_PRINTER             ICON                    "Res\\Printer.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 9, 3, 0, 1
+ PRODUCTVERSION 9, 3, 0, 1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "OpenDCL Consortium"
+            VALUE "FileDescription", "OpenDCL Runtime Resources - Chinese"
+            VALUE "FileVersion", "9, 3, 0, 1"
+            VALUE "InternalName", "OpenDCL.Runtime"
+            VALUE "LegalCopyright", "Copyright c 2025 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalTrademarks", "OpenDCL(tm)"
+            VALUE "OriginalFilename", "Runtime.Res.dll"
+            VALUE "ProductName", "OpenDCL Runtime"
+            VALUE "ProductVersion", "9, 3, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_CFGTAB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 121
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 80
+    END
+
+    IDD_BASEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 62
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 11
+    END
+
+    IDD_BASERESIZABLEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 68
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 10
+    END
+
+    IDD_TABPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 113
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 73
+    END
+
+    IDD_DOCKINGDLGHOST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_OLDERSLD            "舊版本格式幻燈片文件 AutoCAD V9之前的文件無法在OpenDCL中顯示."
+    IDS_DWGNOTLOADING       "無法讀取圖形文件: %s"
+    IDS_ERR_INVALIDARGUMENTTYPE "預期的: %s\r\n收到的: %s"
+    IDS_AUTOUPDATECHECK     "自動更新檢查(&U)"
+    IDS_CLOSEMENU           "關閉菜單(&C)"
+    IDS_BANNER              "\nOpenDCL Runtime [%s] 已加載\n"
+    IDS_ERR_ARGEXCEPTION    "OpenDCL函數參數處理發生異常!\r\n\r\nError: %s\r\n函數: %s\r\n參數: %s"
+    IDS_ERR_TITLE           "OpenDCL Runtime 錯誤"
+    IDS_ERR_NOTAPROPERTY    "屬性 <%s> 未找到"
+    IDS_ERR_NOTAMETHOD      "方法 <%s> 未找到"
+    IDS_ERRNOTDIRPICKERCOMBO "組合框不是目錄拾取類型"
+    IDS_ERRNOTCOLORCOMBO    "組合框不是顏色類型"
+    IDS_ERRNOTLINEWEIGHTCOMBO "組合框不是線寬類型"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ARG_NIL             "不允許NIL值"
+    IDS_ARG_NOTENOUGH       "參數太少"
+    IDS_ARG_WRONGTYPE       "參數類型錯誤"
+    IDS_ARG_TOOMANY         "參數太多"
+    IDS_ARG_INVALID         "參數無效"
+    IDS_ARG_NOINSTANCE      "沒有對象實例"
+    IDS_ARG_IMAGENOTFOUND   "沒有指定編號的圖像"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PROJECTLOADFAILURE  "項目加載失敗!\r\n文件未找到 或讀取時發生錯誤.\r\n\r\n[%s]"
+    IDS_ERR_AXPARAM         "ActiveX參數錯誤 (%s)"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "SharedRes.CHT.rc"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -526,6 +526,7 @@ public:
 		kAutoCAD2023x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2021 << shftMajorVer) | 2),
 		kAutoCAD2024x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2021 << shftMajorVer) | 3),
 		kAutoCAD2025x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2025 << shftMajorVer) | 0),
+		kAutoCAD2026x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2025 << shftMajorVer) | 1),
 		kBricscad9_3 =       (kX86Architecture | kBricscadPlatform | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =        (kX86Architecture | kBricscadPlatform | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =        (kX86Architecture | kBricscadPlatform | (kBRX11 << shftMajorVer) | 0),
@@ -928,6 +929,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2023x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2024x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2025x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2026x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	}
 }
 
@@ -1092,6 +1094,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R24.2"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R24.3"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R25.0"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R25.1"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );
