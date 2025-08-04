@@ -118,7 +118,9 @@
 		ACED_ADSSYMBOL_ENTRY_PRAGMA(old##name)
 #endif
 
-#ifdef _BRXTARGET
+#if (_BRXTARGET >= 26)
+#define theRxApp (*static_cast<CARXApp*>(acrxGetApp()))
+#elif defined(_BRXTARGET)
 #define theRxApp singleInstanceEpObject
 #else
 #define theRxApp entryPointObject

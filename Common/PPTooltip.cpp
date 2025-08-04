@@ -1723,7 +1723,7 @@ CString CPPToolTip::CreateDebugCell(CString sTitle, LPCTSTR lpszDescription)
 {
 	CString str;
 	str.Format(_T("<tr><td width=70 bgcolor=buttonface>%s</td><td width=130 bgcolor=window>%s</td></tr>"),
-		sTitle, GetMaxDebugString(lpszDescription));
+		(LPCTSTR)sTitle, (LPCTSTR)GetMaxDebugString(lpszDescription));
 	return str;
 } //End of CreateDebugCell
 

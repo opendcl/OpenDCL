@@ -1070,7 +1070,7 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 	if (!bSuccess)
 	{
 		CString sArgErr;
-		sArgErr.Format( theWorkspace.LoadResourceString( IDS_ERR_INVALIDARGUMENTTYPE ), VTToString( type.vt ), VTToString( varArg.vt ) );
+		sArgErr.Format( theWorkspace.LoadResourceString( IDS_ERR_INVALIDARGUMENTTYPE ), (LPCTSTR)VTToString( type.vt ), (LPCTSTR)VTToString( varArg.vt ) );
 		HandleArgError( pArgs, odcl::argWrongType, sArgErr );
 		return false;
 	}

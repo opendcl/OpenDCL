@@ -354,7 +354,7 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainerCtrl *axContainer)
 		font.SetStrikethrough(dlg.m_cf.lpLogFont->lfStrikeOut);		
 
 		static BYTE parms[] = VTS_DISPATCH;
-		axContainer->InvokeHelper(GetPutDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, font);
+		axContainer->InvokeHelper(GetPutDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, (LPDISPATCH)font);
 		axContainer->SaveToStream();
 	}
 	catch(...)

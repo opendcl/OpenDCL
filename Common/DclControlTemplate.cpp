@@ -939,7 +939,7 @@ void CDclControlTemplate::ResetEventNames()
 				if( !pProp->GetStringValue().IsEmpty() )
 				{
 					CString sEventName;
-					sEventName.Format( _T("c:%s#On%s"), GetVarName(), pProp->GetName() );
+					sEventName.Format( _T("c:%s#On%s"), (LPCTSTR)GetVarName(), (LPCTSTR)pProp->GetName() );
 					pProp->SetStringValue( sEventName );
 				}
 			}

@@ -389,12 +389,13 @@ public:
 											kBRX13 = 13, kBRX14 = 14, kBRX15 = 15, kBRX16 = 16, kBRX17 = 17,
 											kBRX18 = 18, kBRX19 = 19, kBRX20 = 20, kBRX21 = 21,
 											kBRX22 = 22, kBRX23 = 23, kBRX24 = 24, kBRX25 = 25,
+											kBRX26 = 26,
 											kZRX2014 = 14, kZRX2015 = 15, kZRX2017 = 17, kZRX2018 = 18,
 											kZRX2019 = 19, kZRX2020 = 20, kZRX2021 = 21, kZRX2022 = 22,
 											kZRX2023 = 23, kZRX2024 = 24, kZRX2025 = 25,
 											kGRX2015 = 15, kGRX2016 = 16, kGRX2017 = 17, kGRX2018 = 18,
 											kGRX2019 = 19, kGRX2020 = 20, kGRX2021 = 21, kGRX2022 = 22,
-											kGRX2023 = 23, kGRX2024 = 24, kGRX2025 = 25,
+											kGRX2023 = 23, kGRX2024 = 24, kGRX2025 = 25, kGRX2026 = 26,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, kARX2015 = 20,
 											kARX2017 = 21, kARX2018 = 22, kARX2019 = 23, kARX2021 = 24,
@@ -552,6 +553,7 @@ public:
 		kBricscad23x64 =     (kX64Architecture | kBricscadPlatform | (kBRX23 << shftMajorVer) | 0),
 		kBricscad24x64 =     (kX64Architecture | kBricscadPlatform | (kBRX24 << shftMajorVer) | 0),
 		kBricscad25x64 =     (kX64Architecture | kBricscadPlatform | (kBRX25 << shftMajorVer) | 0),
+		kBricscad26x64 =     (kX64Architecture | kBricscadPlatform | (kBRX26 << shftMajorVer) | 0),
 		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 		kZWCAD2015x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2015 << shftMajorVer) | 0),
 		kZWCAD2017x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2017 << shftMajorVer) | 0),
@@ -590,6 +592,7 @@ public:
 		kGstarCAD2023x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2023 << shftMajorVer) | 0),
 		kGstarCAD2024x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2024 << shftMajorVer) | 0),
 		kGstarCAD2025x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2025 << shftMajorVer) | 0),
+		kGstarCAD2026x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2026 << shftMajorVer) | 0),
 	};
 
 	HKEY GetTargetRootRegKey( bool bWantHKLM = true ) const
@@ -889,6 +892,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2023x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2024x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2025x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2026x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2017x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2018x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2019x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -911,6 +915,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad23x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad24x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad25x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad26x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -1108,6 +1113,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V23x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V24x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V25x64"), hkRoot, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V26x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2017"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2018"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2019"), hkRoot, true );
@@ -1128,6 +1134,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R23"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R24"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R25"), hkRoot, true );
+		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R26"), hkRoot, true );
 	}
 }
 

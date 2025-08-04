@@ -252,6 +252,7 @@ static Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand =
 	{
 	case Acad::eNoDocument:
 	case Acad::eBufferTooSmall:
+	case Acad::eDocumentSwitchDisabled:
 		{
 			new DelayedCommand( pDoc, sCmd.LockBuffer() );
 			es = Acad::eOk;

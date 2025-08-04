@@ -41,7 +41,7 @@ CStgFile::~CStgFile()
 		CStringArray *pSA = (CStringArray *)pContext;
 		ASSERT( pSA != NULL );
 		CString sStream;
-		sStream.Format( _T("%s%s"), pszStgPrefix, CString( pStat->pwcsName ) );
+		sStream.Format( _T("%s%s"), pszStgPrefix, (LPCTSTR)CString( pStat->pwcsName ) );
 		pSA->Add( sStream );
 		}
 	return( TRUE );
@@ -131,7 +131,7 @@ BOOL	CStgFile::Enum( IStorage *pStg, LPCTSTR pszStgStart,
 
 				CString sStg( StatStg.pwcsName );
 				CString sStgStart;
-				sStgStart.Format( _T("%s%s\\"), pszStgStart, sStg );
+				sStgStart.Format( _T("%s%s\\"), pszStgStart, (LPCTSTR)sStg );
 
 				Enum( pStgSub, sStgStart, pFuncCallback, pContextCallback );
 
