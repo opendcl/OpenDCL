@@ -17,7 +17,7 @@ public:
 	virtual ~CDimStyleComboHandler() {}
 
 public:
-	virtual bool PopulateList( CComboBox* pCombo )
+	bool PopulateList( CComboBox* pCombo ) override
 		{
 			CAutoDocReadLock CurDocLock;
 			AcDbDatabase* pCurDb = acdbHostApplicationServices()->workingDatabase();

@@ -164,7 +164,7 @@ BOOL	CStgFile::Enum( IStorage *pStg, LPCTSTR pszStgStart,
 // ////////////////////////////////////////////////////////////
 
 
-ULONGLONG CStgFile::Seek( LONG lOff, UINT nFrom )
+ULONGLONG CStgFile::Seek( LONGLONG lOff, UINT nFrom )
 {
 	ULONGLONG nSeek = 0;
 
@@ -230,7 +230,7 @@ UINT CStgFile::Read( void* lpBuf, UINT nCount )
 //
 //	Get length from stream
 //
-ULONGLONG CStgFile::GetLength()
+ULONGLONG CStgFile::GetLength() const
 {
 	ULONGLONG length = 0;
 

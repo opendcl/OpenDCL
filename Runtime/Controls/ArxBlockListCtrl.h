@@ -50,11 +50,11 @@ protected:
 		~CEdReactor()
 			{ acedEditor->removeReactor( this ); }
 
-		virtual void endInsert( AcDbDatabase* pTo )
+		void endInsert( AcDbDatabase* pTo ) override
 			{ if( pTo ) mpCtrl->RefreshBlockList(); }
-		virtual void endDeepClone( AcDbIdMapping& idMap )
+		void endDeepClone( AcDbIdMapping& idMap ) override
 			{ mpCtrl->RefreshBlockList(); }
-		virtual void commandEnded( LPCTSTR cmdStr )
+		void commandEnded( LPCTSTR cmdStr ) override
 			{ if( lstrcmp( cmdStr, _T("PURGE") ) == 0 ) mpCtrl->RefreshBlockList(); }
 	} mEdReactor;
 	friend CEdReactor;
@@ -66,11 +66,11 @@ public:
 
 // DialogControl Interface
 public:
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
-	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	COleDropTarget* GetDropOnAcadTarget() override { return &mBlockInsertDropTarget; }
+	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override; //called to get drag data from this control
 
 // ListBoxCtrl Interface
 	virtual LPCTSTR GetDragTextPrefix() const { return GetLoadedDwg(); }

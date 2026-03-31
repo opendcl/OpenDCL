@@ -72,18 +72,18 @@ friend class CMainFileDlg;
 
 // CDialogObject overrides
 public:
-	virtual FormType GetType() const { return FrmFileDlg; }
-	virtual CWnd* GetTopLevelWnd() { return &mMainFileDlg; }
-	virtual bool IsModeless() const { return false; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return true; }
-	virtual void CloseDialog(int nStatus);
-	virtual INT_PTR DoModal();
-	virtual bool Show(bool bShow = true) { return false; }
+	FormType GetType() const override { return FrmFileDlg; }
+	CWnd* GetTopLevelWnd() override { return &mMainFileDlg; }
+	bool IsModeless() const override { return false; }
+	bool IsDockable() const override { return false; }
+	bool IsResizable() const override { return true; }
+	void CloseDialog(int nStatus) override;
+	INT_PTR DoModal() override;
+	bool Show(bool bShow = true) override { return false; }
 protected:
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
-	virtual bool IsAsyncEvents() const { return false; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
+	bool OnApplyResizable( TPropertyPtr pProp ) override; //Prop::AllowResizing
+	bool IsAsyncEvents() const override { return false; }
 
 protected:	
 	DECLARE_MESSAGE_MAP()
@@ -99,13 +99,13 @@ protected:
 	afx_msg LRESULT OnGetSelectedFiles( WPARAM wParam, LPARAM lParam );
 
 	afx_msg void OnHelp();
-	virtual BOOL OnFileNameOK();
-	virtual void OnFileNameChange();	
-	virtual void OnFolderChange();
-	virtual void OnTypeChange();
+	BOOL OnFileNameOK() override;
+	void OnFileNameChange() override;
+	void OnFolderChange() override;
+	void OnTypeChange() override;
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

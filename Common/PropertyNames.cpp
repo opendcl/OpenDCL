@@ -108,7 +108,8 @@ LPCTSTR PropNameMap::GetApiName( Prop::Id eProp )
 Prop::Id PropNameMap::GetId( LPCTSTR pszName )
 {
 	Initialize();
-	T_MapNameToId::const_iterator iter = mmapApiNameToId.find( toLString( tstring( pszName ) ) );
+	tstring key ( pszName );
+	T_MapNameToId::const_iterator iter = mmapApiNameToId.find( toLString( key ) );
 	if( iter != mmapApiNameToId.end() )
 		return iter->second;
 	return Prop::_Private;

@@ -35,8 +35,8 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL OnInitDialog();
-	virtual BOOL OnApply();
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	BOOL OnInitDialog() override;
+	BOOL OnApply() override;
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 	afx_msg void OnSelchangeOptionlist();
 };

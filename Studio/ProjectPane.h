@@ -62,17 +62,17 @@ public:
 	void EditSelectedItem();
 
 public:
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
+	BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) override;
 	
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	BOOL PreCreateWindow(CREATESTRUCT& cs) override;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	virtual void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView);
+	void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) override;
 	afx_msg void OnDblclk(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult);

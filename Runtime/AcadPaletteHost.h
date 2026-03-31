@@ -32,33 +32,35 @@ public:
 public:
 	virtual bool Create( LPCTSTR lpszTitle, CRect rect );
 	virtual void GetClientArea( CRect& rect );
-	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
-	virtual bool OnClosing();
+	void SizeChanged (CRect *lpRect, BOOL bFloating, int flags) override;
+	bool OnClosing() override;
 #if defined(_BRXTARGET) && (_BRXTARGET == 17)
 	HICON SetIcon(HICON, BOOL) { return NULL; }
 	HICON GetIcon(BOOL) const { return NULL; }
 #endif
 
 private:
-	virtual bool CanFrameworkTakeFocus();
-	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
-	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+	bool CanFrameworkTakeFocus() override;
+	void OnUserSizing(UINT fwSide, LPRECT pRect) override;
+	CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz ) override;
 #if defined(_BRXTARGET) && (_BRXTARGET <= 15)
-	virtual CSize CalcDynamicLayout(int nLength, DWORD nMode);
+	CSize CalcDynamicLayout(int nLength, DWORD nMode) override;
 #endif
-	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);
-	virtual void GetMinimumSize(CSize& size);
-	virtual void GetMaximumSize(CSize& size);
-	virtual void TitleBarLocationUpdated( AdUiTitleBarLocation newLoc );
-	virtual BOOL Load(IUnknown*);
-	virtual BOOL Save(IUnknown*);
+#if !defined(_GRXTARGET)
+	void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight) override;
+#endif
+	void GetMinimumSize(CSize& size) override;
+	void GetMaximumSize(CSize& size) override;
+	void TitleBarLocationUpdated( AdUiTitleBarLocation newLoc ) override;
+	BOOL Load(IUnknown*) override;
+	BOOL Save(IUnknown*) override;
 
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL OnCommand (WPARAM wParam, LPARAM lParam);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL OnCommand (WPARAM wParam, LPARAM lParam) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
@@ -66,7 +68,7 @@ protected:
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnFrameChanged(WPARAM wParam, LPARAM lParam);
-	afx_msg void PostNcDestroy();
+	void PostNcDestroy() override;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

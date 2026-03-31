@@ -12,8 +12,6 @@
 #include "Workspace.h"
 #include "ControlPane.h"
 
-const int SHX_FONTTYPE = 6;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxFontComboBoxCtrl

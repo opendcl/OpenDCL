@@ -34,20 +34,20 @@ public:
 	virtual ~CPropertyValue() {}
 
 	//attributes
-	virtual PropertyType GetType() const = 0;
-	virtual DWORD SetFlags( DWORD dwFlags ) { DWORD dwOld = mdwFlags; mdwFlags = dwFlags; return dwOld; }
-	virtual DWORD GetFlags() const { return mdwFlags; }
+	PropertyType GetType() const override = 0;
+	DWORD SetFlags( DWORD dwFlags ) override { DWORD dwOld = mdwFlags; mdwFlags = dwFlags; return dwOld; }
+	DWORD GetFlags() const override { return mdwFlags; }
 
 	//operations
-	virtual void clear() = 0;
+	void clear() override = 0;
 
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const = 0;
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) = 0;
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const = 0;
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) = 0;
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override = 0;
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override = 0;
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override = 0;
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override = 0;
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toString() const
+	LPCTSTR toString() const override
 		{
 			static TCHAR buf[1024];
 			_sntprintf( buf, _elements(buf), _T("[%s/%s] %s"), asString( GetType() ), asString( mdwFlags ), toStringPropVal() );
@@ -68,19 +68,19 @@ public:
 	virtual ~CNamedPropertyValue() {}
 
 	//attributes
-	virtual LPCTSTR GetName() const { return msDisplayName; }
-	virtual void SetName( LPCTSTR pszName ) { msDisplayName = pszName; }
+	LPCTSTR GetName() const override { return msDisplayName; }
+	void SetName( LPCTSTR pszName ) override { msDisplayName = pszName; }
 
 	//operations
-	virtual void clear() { msDisplayName.Empty(); }
+	void clear() override { msDisplayName.Empty(); }
 
 	//simple types
-	virtual bool GetValue( CString& v ) const { v = msDisplayName; return true; }
-	virtual bool SetValue( const CString& v ) { msDisplayName = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { msDisplayName = v; return true; }
+	bool GetValue( CString& v ) const override { v = msDisplayName; return true; }
+	bool SetValue( const CString& v ) override { msDisplayName = v; return true; }
+	bool SetValue( const LPCTSTR v ) override { msDisplayName = v; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toString() const
+	LPCTSTR toString() const override
 		{
 			static TCHAR buf[1024];
 			_sntprintf( buf, _elements(buf), _T("[%s/%s/\"%s\"] %s"), asString( GetType() ), asString( GetFlags() ), (LPCTSTR)msDisplayName, toStringPropVal() );
@@ -100,15 +100,15 @@ class CPropertyValueInvalid : public PropVal::CPropertyValue
 protected:
 	CPropertyValueInvalid( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ) {}
 public:
-	virtual PropertyType GetType() const { return PropInvalid; }
-	virtual void clear() {}
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) { return statOK; }
+	PropertyType GetType() const override { return PropInvalid; }
+	void clear() override {}
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override { fprintf(pFile, "PropInvalid"); return statOK; }
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override { return statOK; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return _T("<void value>"); }
+	LPCTSTR toStringPropVal() const override { return _T("<void value>"); }
 #endif
 };
 
@@ -119,28 +119,28 @@ class CPropertyValueLong : public PropVal::CPropertyValue
 protected:
 	CPropertyValueLong( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ), mValue( -1 ) {}
 public:
-	virtual PropertyType GetType() const { return PropLong; }
-	virtual void clear() { mValue = -1; }
+	PropertyType GetType() const override { return PropLong; }
+	void clear() override { mValue = -1; }
 
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropLong");
 	//		writeLong( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( long& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const long& v ) { mValue = v; return true; }
-	virtual bool GetValue( unsigned long& v ) const { v = (unsigned long)mValue; return true; }
-	virtual bool SetValue( const unsigned long& v ) { mValue = (long)v; return true; }
-	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
-	virtual bool SetValue( const CString& v )
+	bool GetValue( long& v ) const override { v = mValue; return true; }
+	bool SetValue( const long& v ) override { mValue = v; return true; }
+	bool GetValue( unsigned long& v ) const override { v = (unsigned long)mValue; return true; }
+	bool SetValue( const unsigned long& v ) override { mValue = (long)v; return true; }
+	bool GetValue( CString& v ) const override { v.Format(_T("%d"), mValue); return true; }
+	bool SetValue( const CString& v ) override
 		{
 			if (v.GetAt(1) == _T('@'))
 				mValue += _tstol(v.Mid(1));
@@ -148,7 +148,7 @@ public:
 				mValue = _tstol(v);
 			return true;
 		}
-	virtual bool SetValue( const LPCTSTR v )
+	bool SetValue( const LPCTSTR v ) override
 		{
 			if (!v)
 				mValue = 0;
@@ -160,7 +160,7 @@ public:
 		}
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -171,17 +171,17 @@ class CPropertyValueString : public PropVal::CPropertyValue
 protected:
 	CPropertyValueString( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ), mValue() {}
 public:
-	virtual PropertyType GetType() const { return PropString; }
-	virtual void clear() { mValue.Empty(); }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropString; }
+	void clear() override { mValue.Empty(); }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropString");
 	//		writeString( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			CStringA sValue;
 			if( !readString( sFile, sValue ) ) return statInvalidFormat;
@@ -189,14 +189,14 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( long& v ) const { v = _tstol(mValue); return true; }
-	virtual bool SetValue( const long& v ) { mValue.Format(_T("%d"), v); return true; }
-	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const CString& v ) { mValue = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = v; return true; }
+	bool GetValue( long& v ) const override { v = _tstol(mValue); return true; }
+	bool SetValue( const long& v ) override { mValue.Format(_T("%d"), v); return true; }
+	bool GetValue( CString& v ) const override { v = mValue; return true; }
+	bool SetValue( const CString& v ) override { mValue = v; return true; }
+	bool SetValue( const LPCTSTR v ) override { mValue = v; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			static TCHAR buf[1024];
 			_sntprintf( buf, _elements(buf), _T("\"%s\""), (LPCTSTR)mValue );
@@ -212,33 +212,33 @@ class CPropertyValueDouble : public PropVal::CPropertyValue
 protected:
 	CPropertyValueDouble( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ), mValue( 0 ) {}
 public:
-	virtual PropertyType GetType() const { return PropDouble; }
-	virtual void clear() { mValue = 0; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropDouble; }
+	void clear() override { mValue = 0; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropDouble");
 	//		writeDouble( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readDouble( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( double& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const double& v ) { mValue = v; return true; }
-	virtual bool SetValue( const short& v ) { mValue = v; return true; }
-	virtual bool SetValue( const unsigned short& v ) { mValue = v; return true; }
-	virtual bool SetValue( const long& v ) { mValue = v; return true; }
-	virtual bool SetValue( const unsigned long& v ) { mValue = v; return true; }
-	virtual bool GetValue( CString& v ) const { v.Format(_T("%f"), mValue); return true; }
-	virtual bool SetValue( const CString& v ) { mValue = _tstof(v); return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstof(v); return true; }
+	bool GetValue( double& v ) const override { v = mValue; return true; }
+	bool SetValue( const double& v ) override { mValue = v; return true; }
+	bool SetValue( const short& v ) override { mValue = v; return true; }
+	bool SetValue( const unsigned short& v ) override { mValue = v; return true; }
+	bool SetValue( const long& v ) override { mValue = v; return true; }
+	bool SetValue( const unsigned long& v ) override { mValue = v; return true; }
+	bool GetValue( CString& v ) const override { v.Format(_T("%f"), mValue); return true; }
+	bool SetValue( const CString& v ) override { mValue = _tstof(v); return true; }
+	bool SetValue( const LPCTSTR v ) override { mValue = _tstof(v); return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -260,41 +260,41 @@ protected:
 		return sTrue;
 	}
 public:
-	virtual PropertyType GetType() const { return PropBool; }
-	virtual void clear() { mValue = false; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropBool; }
+	void clear() override { mValue = false; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 	{
 		BOOL bVal = mValue? TRUE : FALSE;
 		ar << bVal;
 		return statOK;
 	}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 	{
 		BOOL bVal;
 		ar >> bVal;
 		mValue = (bVal != FALSE);
 		return statOK;
 	}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropBool");
 	//		writeBool( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readBool( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( bool& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const bool& v ) { mValue = v; return true; }
-	virtual bool GetValue( long& v ) const { v = mValue? 1 : 0; return true; }
-	virtual bool GetValue( CString& v ) const { v = (mValue? s_true() : s_false()); return true; }
-	virtual bool SetValue( const CString& v ) { mValue = (v.CompareNoCase(_T("True")) == 0 || v.CompareNoCase(s_true()) == 0); return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = (lstrcmpi(v, _T("True")) == 0 || lstrcmpi(v, s_true()) == 0); return true; }
+	bool GetValue( bool& v ) const override { v = mValue; return true; }
+	bool SetValue( const bool& v ) override { mValue = v; return true; }
+	bool GetValue( long& v ) const override { v = mValue? 1 : 0; return true; }
+	bool GetValue( CString& v ) const override { v = (mValue? s_true() : s_false()); return true; }
+	bool SetValue( const CString& v ) override { mValue = (v.CompareNoCase(_T("True")) == 0 || v.CompareNoCase(s_true()) == 0); return true; }
+	bool SetValue( const LPCTSTR v ) override { mValue = (lstrcmpi(v, _T("True")) == 0 || lstrcmpi(v, s_true()) == 0); return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -305,29 +305,29 @@ class CPropertyValueEnum : public PropVal::CPropertyValue
 protected:
 	CPropertyValueEnum( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ), mValue( -1 ) {}
 public:
-	virtual PropertyType GetType() const { return PropEnum; }
-	virtual void clear() { mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropEnum; }
+	void clear() override { mValue = -1; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropEnum");
 	//		writeLong( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( long& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const long& v ) { mValue = v; return true; }
-	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
-	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = (v? _tstol(v) : 0); return true; }
+	bool GetValue( long& v ) const override { v = mValue; return true; }
+	bool SetValue( const long& v ) override { mValue = v; return true; }
+	bool GetValue( CString& v ) const override { v.Format(_T("%d"), mValue); return true; }
+	bool SetValue( const CString& v ) override { mValue = _tstol(v); return true; }
+	bool SetValue( const LPCTSTR v ) override { mValue = (v? _tstol(v) : 0); return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -338,17 +338,17 @@ class CPropertyValueEvent : public PropVal::CPropertyValue
 protected:
 	CPropertyValueEvent( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ) {}
 public:
-	virtual PropertyType GetType() const { return PropEvent; }
-	virtual void clear() { mValue.Empty(); }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropEvent; }
+	void clear() override { mValue.Empty(); }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropEvent");
 	//		writeString( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			CStringA sValue;
 			if( !readString( sFile, sValue ) ) return statInvalidFormat;
@@ -356,12 +356,12 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const CString& v ) { mValue = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = v; return true; }
+	bool GetValue( CString& v ) const override { v = mValue; return true; }
+	bool SetValue( const CString& v ) override { mValue = v; return true; }
+	bool SetValue( const LPCTSTR v ) override { mValue = v; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return (LPCTSTR)mValue; }
+	LPCTSTR toStringPropVal() const override { return (LPCTSTR)mValue; }
 #endif
 };
 
@@ -372,30 +372,30 @@ class CPropertyValuePicture : public PropVal::CPropertyValue
 protected:
 	CPropertyValuePicture( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ), mValue( -1 ) {}
 public:
-	virtual PropertyType GetType() const { return PropPicture; }
-	virtual void clear() { mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropPicture; }
+	void clear() override { mValue = -1; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropPicture");
 	//		writeLong( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( long& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const long& v ) { mValue = v; return true; }
-	virtual bool SetValue( const short& v ) { mValue = v; return true; }
-	virtual bool GetValue( CString& v ) const { if( mValue <= 0 ) v.Empty(); else v.Format(_T("%d"), mValue); return true; }
-	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
-	virtual bool SetValue( const LPCTSTR v ) { mValue = (v? _tstol(v) : 0); return true; }
+	bool GetValue( long& v ) const override { v = mValue; return true; }
+	bool SetValue( const long& v ) override { mValue = v; return true; }
+	bool SetValue( const short& v ) override { mValue = v; return true; }
+	bool GetValue( CString& v ) const override { if( mValue <= 0 ) v.Empty(); else v.Format(_T("%d"), mValue); return true; }
+	bool SetValue( const CString& v ) override { mValue = _tstol(v); return true; }
+	bool SetValue( const LPCTSTR v ) override { mValue = (v? _tstol(v) : 0); return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -405,18 +405,18 @@ class CPropertyValueCustom : public PropVal::CPropertyValue
 protected:
 	CPropertyValueCustom( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ) {}
 public:
-	virtual PropertyType GetType() const { return PropCustom; }
-	virtual void clear() {}
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) { return statOK; }
+	PropertyType GetType() const override { return PropCustom; }
+	void clear() override {}
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override { fprintf(pFile, "PropCustom"); return statOK; }
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override { return statOK; }
 
-	virtual bool GetValue( long& v ) const { v = 0; return true; }
-	virtual bool GetValue( CString& v ) const { v.Empty(); return true; }
+	bool GetValue( long& v ) const override { v = 0; return true; }
+	bool GetValue( CString& v ) const override { v.Empty(); return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return _T("<Custom>"); }
+	LPCTSTR toStringPropVal() const override { return _T("<Custom>"); }
 #endif
 };
 
@@ -427,28 +427,28 @@ class CPropertyValueImageList : public PropVal::CNamedPropertyValue
 protected:
 	CPropertyValueImageList( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mValue( -1 ) {}
 public:
-	virtual PropertyType GetType() const { return PropImageList; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropImageList; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); mValue = -1; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropImageList");
 	//		writeShort( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readShort( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( short& v ) const { v = short(mValue); return true; }
-	virtual bool SetValue( const short& v ) { mValue = v; return true; }
-	virtual bool GetValue( long& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const long& v ) { mValue = short(v); return true; }
+	bool GetValue( short& v ) const override { v = short(mValue); return true; }
+	bool SetValue( const short& v ) override { mValue = v; return true; }
+	bool GetValue( long& v ) const override { v = mValue; return true; }
+	bool SetValue( const long& v ) override { mValue = short(v); return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -459,26 +459,26 @@ class CPropertyValueOLEColor : public PropVal::CPropertyValue
 protected:
 	CPropertyValueOLEColor( CPropertyObject* pProperty ) : PropVal::CPropertyValue( pProperty ) {}
 public:
-	virtual PropertyType GetType() const { return PropOLEColor; }
-	virtual void clear() { mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropOLEColor; }
+	void clear() override { mValue = -1; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override { ar << mValue; return statOK; }
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override { ar >> mValue; return statOK; }
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropOLEColor");
 	//		writeDWORD( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			return readDWORD( sFile, mValue )? statOK : statInvalidFormat;
 		}
 
-	virtual bool GetValue( unsigned long& v ) const { v = mValue; return true; }
-	virtual bool SetValue( const unsigned long& v ) { mValue = v; return true; }
+	bool GetValue( unsigned long& v ) const override { v = mValue; return true; }
+	bool SetValue( const unsigned long& v ) override { mValue = v; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+	LPCTSTR toStringPropVal() const override { return asString( mValue ); }
 #endif
 };
 
@@ -490,10 +490,10 @@ protected:
 	CPropertyValueStringArray( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueStringArray() { delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropStringArray; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropStringArray; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	size_t size() const override { return mpValue? mpValue->size() : 0; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{ //changing from CStringList to std::vector< CString > in version 6 [ORW]
 			if (nVersion <= 5)
 			{
@@ -512,7 +512,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{ //changing from CStringList to std::vector< CString > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
@@ -540,7 +540,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropStringArray");
 	//		int nSize = (int)(mpValue? mpValue->size() : 0);
@@ -549,7 +549,7 @@ public:
 	//			writeString(pFile, mpValue->at(idx));
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			int iCount;
@@ -564,7 +564,7 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( CString& v ) const
+	bool GetValue( CString& v ) const override
 		{
 			v.Empty();
 			if( mpValue )
@@ -579,7 +579,7 @@ public:
 			}
 			return true;
 		}
-	virtual bool SetValue( const CString& v )
+	bool SetValue( const CString& v ) override
 		{
 			clear();
 			if( v.IsEmpty() )
@@ -596,15 +596,15 @@ public:
 				mpValue->push_back( v.Tokenize( _T("|"), idxToken ) );
 			return true;
 		}
-	virtual bool SetValue( const LPCTSTR v )
+	bool SetValue( const LPCTSTR v ) override
 		{
 			return SetValue( CString( v ) );
 		}
-	virtual bool GetValue( PropVal::TCStringArray* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( PropVal::TCStringArray**& v ) { v = &mpValue; return true; }
+	bool GetValue( PropVal::TCStringArray* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( PropVal::TCStringArray**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+	LPCTSTR toStringPropVal() const override { return mpValue? asString( *mpValue ) : _T("<null>"); }
 #endif
 };
 
@@ -616,10 +616,10 @@ protected:
 	CPropertyValueIntArray( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueIntArray() { delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropIntArray; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropIntArray; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	size_t size() const override { return mpValue? mpValue->size() : 0; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
 			if (nVersion <= 5)
 			{
@@ -638,7 +638,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
@@ -677,7 +677,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropIntArray");
 	//		int nSize = (int)(mpValue? mpValue->size() : 0);
@@ -686,7 +686,7 @@ public:
  //       writeInt(pFile, mpValue->at(i));
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			int iCount;
@@ -702,7 +702,7 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( CString& v ) const
+	bool GetValue( CString& v ) const override
 		{
 			v.Empty();
 			if( mpValue )
@@ -719,7 +719,7 @@ public:
 			}
 			return true;
 		}
-	virtual bool SetValue( const CString& v )
+	bool SetValue( const CString& v ) override
 		{
 			clear();
 			if( v.IsEmpty() )
@@ -736,15 +736,15 @@ public:
 				mpValue->push_back( _tstol( v.Tokenize( _T("|"), idxToken ) ) );
 			return true;
 		}
-	virtual bool SetValue( const LPCTSTR v )
+	bool SetValue( const LPCTSTR v ) override
 		{
 			return SetValue( CString( v ) );
 		}
-	virtual bool GetValue( PropVal::TIntArray* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( PropVal::TIntArray**& v ) { v = &mpValue; return true; }
+	bool GetValue( PropVal::TIntArray* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( PropVal::TIntArray**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+	LPCTSTR toStringPropVal() const override { return mpValue? asString( *mpValue ) : _T("<null>"); }
 #endif
 };
 
@@ -756,9 +756,9 @@ protected:
 	CPropertyValueActiveXPropPages( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXPropPages(){ delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropActiveXPropPages; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropActiveXPropPages; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -766,7 +766,7 @@ public:
 				const_cast<CPropertyValueActiveXPropPages*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -774,7 +774,7 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropActiveXPropPages");
 	//		if( !mpValue )
@@ -783,7 +783,7 @@ public:
 	//			mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -795,11 +795,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			if( !mpValue )
 				return _T("<null>");
@@ -816,10 +816,10 @@ protected:
 	CPropertyValueActiveXProp( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXProp(){ delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropActiveXProp; }
-	virtual bool IsReadOnly() const { return (mpValue? !(mpValue->GetPropPut() || mpValue->GetPropPutRef()) : true); }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropActiveXProp; }
+	bool IsReadOnly() const override { return (mpValue? !(mpValue->GetPropPut() || mpValue->GetPropPutRef()) : true); }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{
 			ar << msDisplayName;
 			if( !mpValue )
@@ -828,7 +828,7 @@ public:
 				const_cast<CPropertyValueActiveXProp*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{
 			clear();
 			ar >> msDisplayName;
@@ -839,7 +839,7 @@ public:
 				msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropActiveXProp");
 	//		writeString(pFile, msDisplayName);
@@ -848,7 +848,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			msDisplayName.Empty();
@@ -923,7 +923,7 @@ public:
 			return true;
 		}
 
-	virtual bool GetValue( long& v ) const
+	bool GetValue( long& v ) const override
 		{
 			v = -1;
 			COleVariant varValue;
@@ -934,14 +934,14 @@ public:
 			v = varValue.lVal;
 			return true;
 		}
-	virtual bool SetValue( const long& v )
+	bool SetValue( const long& v ) override
 		{
 			const COleVariant varValue( v, VT_I4 );
 			if( !SetVariantValue( varValue ) )
 				return false;
 			return true;
 		}
-	virtual bool GetValue( unsigned long& v ) const
+	bool GetValue( unsigned long& v ) const override
 		{
 			v = ~0;
 			COleVariant varValue;
@@ -952,14 +952,14 @@ public:
 			v = varValue.ulVal;
 			return true;
 		}
-	virtual bool SetValue( const unsigned long& v )
+	bool SetValue( const unsigned long& v ) override
 		{
 			const COleVariant varValue( (long)v, VT_UI4 );
 			if( !SetVariantValue( varValue ) )
 				return false;
 			return true;
 		}
-	virtual bool GetValue( bool& v ) const
+	bool GetValue( bool& v ) const override
 		{
 			v = false;
 			COleVariant varValue;
@@ -970,14 +970,14 @@ public:
 			v = (varValue.boolVal == VARIANT_TRUE);
 			return true;
 		}
-	virtual bool SetValue( const bool& v )
+	bool SetValue( const bool& v )
 		{
 			const COleVariant varValue( v? VARIANT_TRUE : VARIANT_FALSE );
 			if( !SetVariantValue( varValue ) )
 				return false;
 			return true;
 		}
-	virtual bool GetValue( CString& v ) const
+	bool GetValue( CString& v ) const
 		{
 			v.Empty();
 			variant_t varValue;
@@ -993,23 +993,23 @@ public:
 			v = varValue;
 			return true;
 		}
-	virtual bool SetValue( const CString& v )
+	bool SetValue( const CString& v ) override
 		{
 			const COleVariant varValue( v );
 			if( !SetVariantValue( varValue ) )
 				return false;
 			return true;
 		}
-	virtual bool SetValue( const LPCTSTR v )
+	bool SetValue( const LPCTSTR v ) override
 		{
 			return SetValue( CString( v ) );
 		}
 
-	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			if( !mpValue )
 				return _T("<null>");
@@ -1026,9 +1026,9 @@ protected:
 	CPropertyValueActiveXEnum( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXEnum(){ delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropActiveXEnum; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropActiveXEnum; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -1036,7 +1036,7 @@ public:
 				const_cast<CPropertyValueActiveXEnum*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -1045,7 +1045,7 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropActiveXEnum");
 	//		if( !mpValue )
@@ -1053,7 +1053,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -1065,11 +1065,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			if( !mpValue )
 				return _T("<null>");
@@ -1086,15 +1086,15 @@ protected:
 	CPropertyValueActiveXEvent( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXEvent(){ delete mpValue; }
 public:
-	virtual LPCTSTR GetName() const
+	LPCTSTR GetName() const
 		{
 			if( !mpValue )
 				return NULL;
 			return mpValue->GetEvent()->GetName();
 		}
-	virtual PropertyType GetType() const { return PropActiveXEvent; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropActiveXEvent; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{
 			ar << msDisplayName;
 			if( !mpValue )
@@ -1103,7 +1103,7 @@ public:
 				const_cast<CPropertyValueActiveXEvent*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{
 			clear();
 			ar >> msDisplayName;
@@ -1112,7 +1112,7 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXEvent");
 	//		writeString(pFile, msDisplayName);
@@ -1121,7 +1121,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			msDisplayName.Empty();
@@ -1137,11 +1137,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			if( !mpValue )
 				return _T("<null>");
@@ -1158,9 +1158,9 @@ protected:
 	CPropertyValueActiveXRunTime( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXRunTime(){ delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropActiveXRunTime; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropActiveXRunTime; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -1168,7 +1168,7 @@ public:
 				const_cast<CPropertyValueActiveXRunTime*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -1177,7 +1177,7 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropActiveXRunTime");
 	//		if( !mpValue )
@@ -1185,7 +1185,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -1198,11 +1198,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			if( !mpValue )
 				return _T("<null>");
@@ -1219,10 +1219,10 @@ protected:
 	CPropertyValueActiveXMethods( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXMethods(){ delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropActiveXMethods; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual size_t size() const { return ((mpValue && mpValue->GetMethods())? mpValue->GetMethods()->size() : 0); }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropActiveXMethods; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	size_t size() const override { return ((mpValue && mpValue->GetMethods())? mpValue->GetMethods()->size() : 0); }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -1230,7 +1230,7 @@ public:
 				const_cast<CPropertyValueActiveXMethods*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -1239,7 +1239,7 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropActiveXMethods");
 	//		if( !mpValue )
@@ -1247,7 +1247,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			if( !mpValue )
@@ -1260,11 +1260,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( AxInterfaceDescriptor**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const
+	LPCTSTR toStringPropVal() const override
 		{
 			if( !mpValue )
 				return _T("<null>");
@@ -1281,10 +1281,10 @@ protected:
 	CPropertyValueStringArrayList( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueStringArrayList() { delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropStringArrayList; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropStringArrayList; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	size_t size() const override { return mpValue? mpValue->size() : 0; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
 			if (nVersion <= 5)
 			{
@@ -1324,7 +1324,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
@@ -1370,7 +1370,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropStringArrayList");
 	//		writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
@@ -1387,7 +1387,7 @@ public:
 	//		}
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			int iArrayCount;
@@ -1410,11 +1410,11 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( PropVal::TCStringArrayList* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( PropVal::TCStringArrayList**& v ) { v = &mpValue; return true; }
+	bool GetValue( PropVal::TCStringArrayList* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( PropVal::TCStringArrayList**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+	LPCTSTR toStringPropVal() const override { return mpValue? asString( *mpValue ) : _T("<null>"); }
 #endif
 };
 
@@ -1426,10 +1426,10 @@ protected:
 	CPropertyValueIntArrayList( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueIntArrayList() { delete mpValue; }
 public:
-	virtual PropertyType GetType() const { return PropIntArrayList; }
-	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
+	PropertyType GetType() const override { return PropIntArrayList; }
+	void clear() override { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	size_t size() const override { return mpValue? mpValue->size() : 0; }
+	IOStatus FileOut( CArchive& ar, BYTE nVersion ) const override
 		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
 			ar << unsigned long(mpValue? mpValue->size() : 0);
 			if( mpValue )
@@ -1446,7 +1446,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
+	IOStatus FileIn( CArchive& ar, BYTE nVersion ) override
 		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
 			clear();
 			unsigned long nSize;
@@ -1468,7 +1468,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
+	//IOStatus FileOut( FILE* pFile, BYTE nVersion ) const override
 	//	{
 	//		fprintf(pFile, "PropIntArrayList");
 	//		writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
@@ -1485,7 +1485,7 @@ public:
 	//		}
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
+	IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) override
 		{
 			clear();
 			int nCounter;
@@ -1508,11 +1508,11 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( PropVal::TIntArrayList* const*& v ) const { v = &mpValue; return true; }
-	virtual bool GetValue( PropVal::TIntArrayList**& v ) { v = &mpValue; return true; }
+	bool GetValue( PropVal::TIntArrayList* const*& v ) const override { v = &mpValue; return true; }
+	bool GetValue( PropVal::TIntArrayList**& v ) override { v = &mpValue; return true; }
 
 #ifdef _DIAGNOSTIC
-	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+	LPCTSTR toStringPropVal() const override { return mpValue? asString( *mpValue ) : _T("<null>"); }
 #endif
 };
 
@@ -2003,17 +2003,17 @@ void CPropertyObject::Serialize(CArchive& ar)
 		if (nThisVersion <= 5) //changing from long to short in version 6 [ORW]
 		{
 			long lID;
-			ar >> long(lID);
+			ar >> lID;
 			mnID = (Prop::Id)lID;
 		}
 		else
 		{
 			short nID;
-			ar >> short(nID);
+			ar >> nID;
 			mnID = (Prop::Id)nID;
 		}
 		long lType;
-		ar >> long(lType);
+		ar >> lType;
 		SetType( (PropertyType)lType );
 
 		if( nThisVersion >= 7 )
@@ -2025,11 +2025,11 @@ void CPropertyObject::Serialize(CArchive& ar)
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 		{
 			BOOL bHidden;
-			ar >> BOOL(bHidden);
+			ar >> bHidden;
 			mbHidden = (bHidden != FALSE);
 		}
 		else
-			ar >> bool(mbHidden); // get the flag that indicates this property is to be hidden
+			ar >> mbHidden; // get the flag that indicates this property is to be hidden
 		if (GetType() == PropActiveXRunTime)
 			mbHidden = true; // if this property is a run time only activeX property, set it as hidden.
 		mpValue->FileIn(ar, nThisVersion);

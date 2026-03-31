@@ -17,9 +17,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 public:
 	void SetPaperSizeCombo( TDclControlPtr pPaperCombo );
@@ -31,6 +31,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	afx_msg void OnCbnSelchange();
 };

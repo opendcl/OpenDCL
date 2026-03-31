@@ -24,15 +24,15 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
 
 protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnChange();
 	afx_msg void OnErrspace();
 	afx_msg void OnMaxtext();

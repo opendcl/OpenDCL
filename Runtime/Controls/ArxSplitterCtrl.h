@@ -25,8 +25,8 @@ protected:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
 
 protected:
 	DECLARE_MESSAGE_MAP();

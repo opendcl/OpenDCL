@@ -65,6 +65,8 @@
 #endif
 
 
+#include <memory>
+
 //- ObjectARX and OMF headers needs this
 #include <map>
 #include <algorithm>

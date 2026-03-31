@@ -23,9 +23,9 @@ public:
 			static const CString sFilter = _T("0123456789-/ ");
 			return sFilter;
 		}
-	virtual bool FilterInput( TCHAR& chInput ) const { return true; }
-	virtual bool FilterInput( CString& sInput ) const { return true; }
-	virtual bool ConvertForDisplay( CString& sRaw ) const //convert raw text to displayable string
+	bool FilterInput( TCHAR& chInput ) const override { return true; }
+	bool FilterInput( CString& sInput ) const override { return true; }
+	bool ConvertForDisplay( CString& sRaw ) const override //convert raw text to displayable string
 		{
 			if( sRaw.IsEmpty() )
 				return true;
@@ -35,7 +35,7 @@ public:
 			sRaw = dt.Format( VAR_DATEVALUEONLY );
 			return true;
 		}
-	virtual bool OnValidateInput( CString& sInput ) //return false to reject final input
+	bool OnValidateInput( CString& sInput ) override //return false to reject final input
 		{
 			if( !sInput.IsEmpty() )
 			{

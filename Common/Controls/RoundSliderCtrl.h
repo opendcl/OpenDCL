@@ -66,8 +66,8 @@ public:
 
 	//{{AFX_VIRTUAL(CRoundSliderCtrl)
 	protected:
-	virtual void PreSubclassWindow();
-	virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
+	void PreSubclassWindow() override;
+	BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID) override;
 	//}}AFX_VIRTUAL
 
 protected:
@@ -90,8 +90,8 @@ protected:
 
 #ifdef _DEBUG
 public:
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif // _DEBUG
 };
 

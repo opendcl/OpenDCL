@@ -47,8 +47,8 @@ public:
 	virtual ~CPropertyWizard();
 
 public:
-	virtual INT_PTR DoModal();
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	INT_PTR DoModal() override;
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
 protected:
 	bool Initialize(void);

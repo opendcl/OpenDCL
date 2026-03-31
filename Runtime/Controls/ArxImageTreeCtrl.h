@@ -17,10 +17,10 @@ class CArxImageTreeCtrl : public CImageTreeCtrl
 	{
 	public:
 		CArxImageTreeControlServices( CDialogControl* pDlgControl ) : CArxControlServices( pDlgControl ) {}
-		virtual bool HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
-																				const CPoint& point, DROPEFFECT& dwEffect ) const
+		bool HandleDragOverControl( COleDataObject* pDataObject, DWORD dwKeyState,
+																const CPoint& point, DROPEFFECT& dwEffect ) const override
 			{ return false; } //force it to use the tree control's custom OnDragOver event handler
-		virtual bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT& dwEffect, DROPEFFECT dwAllowed, const CPoint& point ) const
+		bool HandleDropOnControl( COleDataObject* pDataObject, DROPEFFECT& dwEffect, DROPEFFECT dwAllowed, const CPoint& point ) const override
 			{ return false; } //force it to use the tree control's custom OnDrop event handler
 	} mArxServices;
 	CArxDragDropService mDragDropService;
@@ -32,11 +32,11 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState ) override;
+	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;
 
 	BOOL SetItemText( HTREEITEM hItem, LPCTSTR lpszItem );
 

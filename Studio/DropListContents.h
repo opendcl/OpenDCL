@@ -25,8 +25,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDropListContents)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+protected:
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -34,8 +34,8 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDropListContents)
-	virtual void OnOK();
-	virtual BOOL OnInitDialog();
+	void OnOK() override;
+	BOOL OnInitDialog() override;
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

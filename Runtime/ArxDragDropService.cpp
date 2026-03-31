@@ -37,7 +37,8 @@ public:
 		: COleDropSource()
 		, mpCtrl( pCtrl )
 		{}
-	virtual BOOL OnBeginDrag(CWnd* pWnd)
+	operator COleDropSource* () { return this; }
+	BOOL OnBeginDrag(CWnd* pWnd) override
 	{
 		ASSERT_VALID(this);
 
@@ -212,7 +213,7 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 		CSize sizDragRect( GetSystemMetrics( SM_CXDOUBLECLK ), GetSystemMetrics( SM_CYDOUBLECLK ) );
 		ptScreen.Offset( -sizDragRect.cx / 2, -sizDragRect.cy / 2 );
 		CRect rcDragRegion( ptScreen, sizDragRect );
-		dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource? mpDropSource : &OdclDropSource( mpDlgControl->GetControlWnd() ) );
+		dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource? mpDropSource : OdclDropSource( mpDlgControl->GetControlWnd() ) );
 	}
 	if( pAcadDropTarget )
 		acedEndOverrideDropTarget( pAcadDropTarget );

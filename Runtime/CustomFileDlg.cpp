@@ -33,8 +33,8 @@ const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("OpenDCL.File
 //public:
 //	CArxFileDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
 //		: CArxDialogControl( pTemplate, pPane, pControl ) {}
-//	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-//	virtual CRect GetWndRect() const
+//	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
+//	CRect GetWndRect() const override
 //		{
 //			return CRect( 0, 0,
 //										mpTemplate->GetLongProperty(Prop::Width),

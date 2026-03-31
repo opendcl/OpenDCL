@@ -22,13 +22,13 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
 
 protected:
-	virtual void OnAppCmd( LPCTSTR lpszWhere ); //override to handle links to "app:mumble...".
-	virtual void OnNavigateComplete2( LPCTSTR strURL );
-	virtual void OnDocumentComplete( LPCTSTR lpszURL );
+	void OnAppCmd( LPCTSTR lpszWhere ) override; //override to handle links to "app:mumble...".
+	void OnNavigateComplete2( LPCTSTR strURL ) override;
+	void OnDocumentComplete( LPCTSTR lpszURL ) override;
 
 // Generated message map functions
 protected:

@@ -30,15 +30,15 @@ public:
 
 // Overrides
 public:
-	virtual BOOL OnSetActive();
-	virtual BOOL OnApply();
+	BOOL OnSetActive() override;
+	BOOL OnApply() override;
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult);
 
 protected:

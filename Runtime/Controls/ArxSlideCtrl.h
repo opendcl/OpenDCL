@@ -21,10 +21,10 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
 
-	virtual void OnPositionChanged( int nNewPos, bool bNotify = true );
+	void OnPositionChanged( int nNewPos, bool bNotify = true ) override;
 
 	// Generated message map functions
 protected:

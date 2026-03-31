@@ -25,20 +25,20 @@ public:
 	virtual bool IsMultiplePropsChanged() const;
 
 	// CUndoManager base class implementation
-	virtual void setEnabled( bool bEnabled = true );
-	virtual size_t size() const { return mUndoStack.size(); }
-	virtual bool AddAction( CUndoAction* pAction );
-	virtual bool Undo( size_t ctActions = 1 );
-	virtual bool GetUndoableActions( CStringArray& rsUndoActions, size_t ctMax = 0 );
-	virtual bool SaveProject();
-	virtual bool BeginGroup( LPCTSTR pszDisplayName );
-	virtual bool EndGroup();
-	virtual bool SelectForm( TDclFormPtr pForm );
-	virtual bool AddForm( TDclFormPtr pForm );
-	virtual bool DeleteForm( TDclFormPtr pForm );
-	virtual bool SelectControl( TDclControlPtr pDclControl );
-	virtual bool AddControl( TDclControlPtr pDclControl );
-	virtual bool DeleteControl( TDclControlPtr pDclControl );
-	virtual bool ReorderControl( TDclControlPtr pDclControl );
-	virtual bool PropertyChange( TPropertyPtr pProperty );
+	void setEnabled( bool bEnabled = true ) override;
+	size_t size() const override { return mUndoStack.size(); }
+	bool AddAction( CUndoAction* pAction ) override;
+	bool Undo( size_t ctActions = 1 ) override;
+	bool GetUndoableActions( CStringArray& rsUndoActions, size_t ctMax = 0 ) override;
+	bool SaveProject() override;
+	bool BeginGroup( LPCTSTR pszDisplayName ) override;
+	bool EndGroup() override;
+	bool SelectForm( TDclFormPtr pForm ) override;
+	bool AddForm( TDclFormPtr pForm ) override;
+	bool DeleteForm( TDclFormPtr pForm ) override;
+	bool SelectControl( TDclControlPtr pDclControl ) override;
+	bool AddControl( TDclControlPtr pDclControl ) override;
+	bool DeleteControl( TDclControlPtr pDclControl ) override;
+	bool ReorderControl( TDclControlPtr pDclControl ) override;
+	bool PropertyChange( TPropertyPtr pProperty ) override;
 };

@@ -132,7 +132,7 @@ bool COptionListCtrl::ApplyProperty( TPropertyPtr pProp )
 			{				
 				CString sOption = pProp->GetStringItem( idx );
 				int nNewItem = AddString( sOption );
-				SetItemData( nNewItem, (idx == nCurSel)? 1 : 0 );
+				SetItemData( nNewItem, (idx == static_cast<size_t>( nCurSel ))? 1 : 0 );
 			}
 			ResetTooltips();
 			if( nCurSel >= 0 && nCurSel >= (int)nMax )

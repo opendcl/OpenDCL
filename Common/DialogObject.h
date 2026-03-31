@@ -116,26 +116,26 @@ protected:
 
 	// Windows painting helpers
 protected:
-	virtual BOOL HandleEraseBkgnd( CDC* pDC );
+	BOOL HandleEraseBkgnd( CDC* pDC ) override;
 
 	// Creation & Property Application
 public:
-	virtual CRect GetWndRect() const; //get window position from properties
-	virtual DWORD GetWndStyle() const; //get window style from properties
-	virtual CString GetWndCaption() const; //get window caption from properties
-	virtual void OnFrameChanged(); //called by member functions that change the non-client size
-	virtual void ApplyPosition(); //move control window to new position
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
+	CRect GetWndRect() const override; //get window position from properties
+	DWORD GetWndStyle() const override; //get window style from properties
+	CString GetWndCaption() const override; //get window caption from properties
+	void OnFrameChanged() override; //called by member functions that change the non-client size
+	void ApplyPosition() override; //move control window to new position
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
 
 	// for properties without specific handlers
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 	// handlers for specific properties
-	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp ); //Prop::BackgroundColor
-	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::TitleBarText
+	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override; //Prop::BackgroundColor
+	bool OnApplyCaption( TPropertyPtr pProp ) override; //Prop::TitleBarText
+	bool OnApplyWidth( TPropertyPtr pProp ) override; //Prop::Width
+	bool OnApplyHeight( TPropertyPtr pProp ) override; //Prop::Height
 	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
-	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
-	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
 	virtual bool OnApplyMinMaxSize( TPropertyPtr pProp ); //min/max width properties
 	virtual bool OnApplyIcon( TPropertyPtr pProp ); //Prop::TitleBarIcon
 	virtual bool OnApplyTitleBar( TPropertyPtr pProp ); //Prop::TitleBar

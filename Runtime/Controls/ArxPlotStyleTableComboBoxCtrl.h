@@ -25,13 +25,14 @@ public:
 
 // DialogControl Interface
 public:
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CRect GetWndRect() const override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override; //Prop::UseVisualStyle
+
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CRect GetWndRect() const;
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 
 protected:
 	virtual void OnListChanged();
@@ -40,9 +41,9 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual afx_msg void PostNcDestroy();
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void PostNcDestroy() override;
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 	afx_msg void OnSetFocus(CWnd* pOldWnd);

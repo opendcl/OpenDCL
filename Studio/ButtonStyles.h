@@ -35,22 +35,22 @@ protected:
 // Construction
 public:
 	CButtonStyles( TDclControlPtr pControl );
-	~CButtonStyles();
+	virtual ~CButtonStyles();
 
 public:
 	void DisplayDesc(int nSetting);
 
 // Overrides
 public:
-	virtual BOOL OnApply();
+	BOOL OnApply() override;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CButtonStyles)
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnStyle0();
 	afx_msg void OnStyle1();
 	afx_msg void OnStyle2();

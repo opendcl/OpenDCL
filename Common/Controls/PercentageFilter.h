@@ -18,7 +18,7 @@ public:
 
 // CInputFilter overrides
 public:
-	virtual bool ConvertForDisplay( CString& sRaw ) const //convert raw text to displayable string
+	bool ConvertForDisplay( CString& sRaw ) const override //convert raw text to displayable string
 		{
 			if( !__super::ConvertForDisplay( sRaw ) )
 				return false;
@@ -26,7 +26,7 @@ public:
 				sRaw += _T('%');
 			return true;
 		}
-	virtual bool OnValidateInput( CString& sInput ) //return false to reject final input
+	bool OnValidateInput( CString& sInput ) override //return false to reject final input
 		{
 			sInput.TrimRight( _T("%") );
 			return __super::OnValidateInput( sInput );

@@ -62,16 +62,16 @@ public:
 
 public:
 	//CWorkspace overrides
-	virtual CString GetLocalResourceModuleFilename() const { return _T("Runtime.Res.dll"); }
-	virtual CString GetSettingsRegPath(void) const { return _T("Software\\OpenDCL\\Runtime"); }
-	virtual CString GetUserProfilePrefix() const;
-	virtual HMODULE GetThisModule(void) const;
-	virtual HMODULE GetResourceModule() const;
-	virtual CString GetLanguage(void) const;
-	virtual FontSettings GetDefaultFontSettings() const;
-	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
-	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
-	virtual CString FindFile( LPCTSTR pszFilePath ) const;
+	CString GetLocalResourceModuleFilename() const override { return _T("Runtime.Res.dll"); }
+	CString GetSettingsRegPath(void) const override { return _T("Software\\OpenDCL\\Runtime"); }
+	CString GetUserProfilePrefix() const override;
+	HMODULE GetThisModule(void) const override;
+	HMODULE GetResourceModule() const override;
+	CString GetLanguage(void) const override;
+	FontSettings GetDefaultFontSettings() const override;
+	bool DisplayAlert( LPCTSTR pszMessage ) const override; //display alert dialog; returns true if displayed, false if suppressed
+	bool DisplayStatus( LPCTSTR pszMessage ) const override; //display modeless status message; returns true if displayed, false if suppressed
+	CString FindFile( LPCTSTR pszFilePath ) const override;
 
 	//Searching
 	TArxProjectPtr FindProject( LPCTSTR pszKeyName ) const;

@@ -136,7 +136,7 @@ ADSRESULT AxControl::Invoke()
 	// here we need to search the methods to find the one requested.
 	std::vector< RefCountedPtr< AxMethodDescriptor > > *vMethods = pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods();
 	RefCountedPtr< AxMethodDescriptor > pMethod;
-	for (int i = 0; i < vMethods->size(); i++)
+	for ( size_t i = 0; i < vMethods->size(); i++ )
 	{
 		RefCountedPtr< AxMethodDescriptor > pMethodCheck = vMethods->at(i);
 		if (pMethodCheck->GetName() == sMethodName)
@@ -769,7 +769,7 @@ bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 		ctArgs = ctParams;
 	rArgs.SetSize( ctArgs );
 
-	for (int idxArg = 0; idxArg < ctArgs; idxArg++)
+	for ( size_t idxArg = 0; idxArg < ctArgs; idxArg++ )
 	{
 		if (!GetVariantArgument( pArgs,
 														 rArgs[ctArgs - idxArg - 1],

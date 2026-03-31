@@ -66,6 +66,15 @@
 #include <vector>
 #include <map>
 
+#define ODCL_PPTOOLTIP_CHANGES //required for C++20 compatibility
+#ifdef ODCL_PPTOOLTIP_CHANGES
+inline CSize& defaultCSize()
+{
+	static CSize theDefault;
+	return theDefault;
+}
+#endif
+
 //ENG: Comments a next line if you never use a tooltip for a menu
 //RUS: Закоментируйте следующую строку, если вы не планируете использовать тултип для элементов меню
 //#define PPTOOLTIP_USE_MENU
@@ -315,10 +324,19 @@ public:
 	void AddTool(CWnd * pWnd, PPTOOLTIP_INFO & ti);
 	//To compatible with old version of CPPToolTip
 	void AddTool(CWnd * pWnd, DWORD dwIdString, HICON hIcon, LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+#ifdef ODCL_PPTOOLTIP_CHANGES
+	void AddTool(CWnd * pWnd, DWORD dwIdString, DWORD dwIdIcon, CSize & szIcon = defaultCSize(), LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+#else
 	void AddTool(CWnd * pWnd, DWORD dwIdString, DWORD dwIdIcon, CSize & szIcon = CSize(0, 0), LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+#endif
 	void AddTool(CWnd * pWnd, LPCTSTR lpszString, HICON hIcon, LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+#ifdef ODCL_PPTOOLTIP_CHANGES
+	void AddTool(CWnd * pWnd, LPCTSTR lpszString, DWORD dwIdIcon, CSize & szIcon = defaultCSize(), LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+	void AddTool(CWnd * pWnd, LPCTSTR lpszString, DWORD dwIdBitmap, COLORREF crMask, CSize & szBitmap = defaultCSize(), LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+#else
 	void AddTool(CWnd * pWnd, LPCTSTR lpszString, DWORD dwIdIcon, CSize & szIcon = CSize(0, 0), LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
 	void AddTool(CWnd * pWnd, LPCTSTR lpszString, DWORD dwIdBitmap, COLORREF crMask, CSize & szBitmap = CSize(0, 0), LPCRECT lpRectBounds = NULL, DWORD dwIDTool = 0);
+#endif
 	void RemoveTool(CWnd * pWnd, LPCRECT lpRectBounds = NULL);
 	void RemoveAllTools();
 
@@ -330,9 +348,17 @@ public:
 
 	//Help tooltip
 	void ShowHelpTooltip (LPPOINT pt, DWORD dwIdText, HICON hIcon = NULL);
+#ifdef ODCL_PPTOOLTIP_CHANGES
+	void ShowHelpTooltip (LPPOINT pt, DWORD dwIdText, DWORD dwIdIcon, CSize & szIcon = defaultCSize());
+#else
 	void ShowHelpTooltip (LPPOINT pt, DWORD dwIdText, DWORD dwIdIcon, CSize & szIcon = CSize(0, 0));
+#endif
 	void ShowHelpTooltip (LPPOINT pt, LPCTSTR lpszString, HICON hIcon = NULL);
+#ifdef ODCL_PPTOOLTIP_CHANGES
+	void ShowHelpTooltip (LPPOINT pt, LPCTSTR lpszString, DWORD dwIdIcon, CSize & szIcon = defaultCSize());
+#else
 	void ShowHelpTooltip (LPPOINT pt, LPCTSTR lpszString, DWORD dwIdIcon, CSize & szIcon = CSize(0, 0));
+#endif
 	void ShowHelpTooltip (LPPOINT pt, PPTOOLTIP_INFO & ti);
 	void HideTooltip();
 

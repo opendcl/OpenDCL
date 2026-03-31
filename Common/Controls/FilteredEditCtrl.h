@@ -29,6 +29,6 @@ public:
 		}
 
 public:
-	virtual CInputFilter* GetInputFilter() { return mpFilter; }
+	CInputFilter* GetInputFilter() override { return mpFilter; }
 	virtual void SetInputFilter( CInputFilter* pFilter ) { delete mpFilter; mpFilter = pFilter; }
 };

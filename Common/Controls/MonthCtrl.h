@@ -23,17 +23,17 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
 
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

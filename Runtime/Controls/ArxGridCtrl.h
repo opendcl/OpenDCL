@@ -21,17 +21,17 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 protected:
-	virtual void OnSelectionChanged();
-	virtual void OnEditCurCell();
-	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
-	virtual void OnEndEditCurCell();
-	virtual void DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell = CSize(0, 0), bool bCalcOnly = false );
-	virtual void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
+	void OnSelectionChanged() override;
+	void OnEditCurCell() override;
+	CGridCellEditCtrl* CreateEditControl( int nRow, int nCol ) override;
+	void OnEndEditCurCell() override;
+	void DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell = CSize(0, 0), bool bCalcOnly = false ) override;
+	void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText ) override;
 
 protected:
 	DECLARE_MESSAGE_MAP()

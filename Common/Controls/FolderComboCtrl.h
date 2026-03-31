@@ -22,21 +22,21 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CRect GetWndRect() const;
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual void OnThemeRequested( WndTheme& Theme ) const { if( !Theme ) Theme.Attach( GetFolderComboBoxTheme(), GetHWnd() ); }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CRect GetWndRect() const override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	void OnThemeRequested( WndTheme& Theme ) const override { if( !Theme ) Theme.Attach( GetFolderComboBoxTheme(), GetHWnd() ); }
 
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage( MSG* pMsg );
+	LRESULT WindowProc( UINT message, WPARAM wParam, LPARAM lParam ) override;
+	afx_msg void PostNcDestroy() override;
+	BOOL PreTranslateMessage( MSG* pMsg ) override;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnNMThemeChanged(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);

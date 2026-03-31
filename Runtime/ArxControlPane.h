@@ -33,5 +33,5 @@ public:
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const;
 
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
+	TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID ) override;
 };

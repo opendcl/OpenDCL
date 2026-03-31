@@ -434,7 +434,7 @@ ADSRESULT ListView::GetRowItems()
 
 	resbuf* prbResult = NULL;
 	resbuf* prbTail = NULL;
-	for( int idxCol = 0; idxCol < ctCol; ++idxCol )
+	for( size_t idxCol = 0; idxCol < ctCol; ++idxCol )
 	{
 		if( prbTail )
 		{

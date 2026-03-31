@@ -38,15 +38,15 @@ public:
 
 // Overrides
 public:
-	virtual BOOL OnApply();
+	BOOL OnApply() override;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnSelchangeSystemcolorlist();
 	afx_msg void OnSelchangeColorcombo();
 	afx_msg void OnChangeEdit();

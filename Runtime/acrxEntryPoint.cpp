@@ -835,20 +835,20 @@ public:
 
 // COleDropTarget Overrides
 protected:
-	virtual DROPEFFECT OnDragEnter( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point )
+	DROPEFFECT OnDragEnter( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point ) override
 		{
 			if( GetOdclFilename( pDataObject ) )
 				return DROPEFFECT_COPY;
 			return DROPEFFECT_NONE;
 		}
-	virtual DROPEFFECT OnDragOver( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point )
+	DROPEFFECT OnDragOver( CWnd* pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point ) override
 		{
 			if( GetOdclFilename( pDataObject ) )
 				return DROPEFFECT_COPY;
 			return DROPEFFECT_NONE;
 		}
-	virtual void OnDragLeave( CWnd* pWnd ) {}
-	virtual BOOL OnDrop( CWnd* pWnd, COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point )
+	void OnDragLeave( CWnd* pWnd ) override {}
+	BOOL OnDrop( CWnd* pWnd, COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point ) override
 		{
 			LPCTSTR pszFilename = GetOdclFilename( pDataObject );
 			if( !pszFilename )
@@ -856,8 +856,8 @@ protected:
 			TArxProjectPtr pProject = theArxWorkspace.LoadProjectFile( pszFilename, NULL, true );
 			return (pProject != NULL);
 		}
-	virtual DROPEFFECT OnDropEx( CWnd* pWnd, COleDataObject* pDataObject,
-															 DROPEFFECT dropDefault, DROPEFFECT dropList, CPoint point)
+	DROPEFFECT OnDropEx( CWnd* pWnd, COleDataObject* pDataObject,
+											 DROPEFFECT dropDefault, DROPEFFECT dropList, CPoint point) override
 		{ return DROPEFFECT_NONE; } //returning DROPEFFECT_NONE will cause OnDrop to be called instead
 
 	static LPCTSTR GetOdclFilename( COleDataObject* pDataObject )
@@ -1140,7 +1140,7 @@ protected:
 public:
 	CARXApp () : AcRxArxApp () {}
 
-	virtual AcRx::AppRetCode On_kInitAppMsg (void *pkt) {
+	AcRx::AppRetCode On_kInitAppMsg (void *pkt) override {
 
 		if( !theWorkspace.GetLocalResourceModule() )
 		{
@@ -1177,7 +1177,7 @@ public:
 		return (retCode) ;
 	}
 
-	virtual AcRx::AppRetCode On_kUnloadAppMsg (void *pkt) {
+	AcRx::AppRetCode On_kUnloadAppMsg (void *pkt) override {
 	#ifdef _USE_ODCL_DROPTARGET
 		acedRemoveDropTarget( &mOdclDropTarget );
 	#endif
@@ -1197,7 +1197,7 @@ public:
 		return (retCode) ;
 	}
 
-	virtual AcRx::AppRetCode On_kInvkSubrMsg (void *pkt) {
+	AcRx::AppRetCode On_kInvkSubrMsg (void *pkt) override {
 		acedRetNil();
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kInvkSubrMsg (pkt) ;
 
@@ -1256,7 +1256,7 @@ public:
 		return (retCode) ;
 	}
 
-	virtual AcRx::AppRetCode On_kLoadDwgMsg (void *pkt) {
+	AcRx::AppRetCode On_kLoadDwgMsg (void *pkt) override {
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kLoadDwgMsg (pkt) ;
 
 		static bool bInitialized = false;
@@ -1314,7 +1314,7 @@ public:
 		return (retCode) ;
 	}
 
-	virtual AcRx::AppRetCode On_kInitDialogMsg (void *pkt) {
+	AcRx::AppRetCode On_kInitDialogMsg (void *pkt) override {
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kInitDialogMsg (pkt) ;
 
 		//find config panes in the loaded projects and add their tabs
@@ -1323,7 +1323,7 @@ public:
 		return (retCode) ;
 	}
 
-	virtual void RegisterServerComponents () {
+	void RegisterServerComponents () override {
 	}
 
 
@@ -1684,7 +1684,7 @@ public:
 		resbuf rbArg = {NULL, RTSTR};
 		rbArg.resval.rstring = sTempFile.LockBuffer();
 		resbuf rbCallee = {&rbArg, RTSTR};
-		rbCallee.resval.rstring = _T("c:loadlisp");
+		rbCallee.resval.rstring = (ACHAR*)_T("c:loadlisp");
 		resbuf* prbResult = NULL;
 		if (acedInvoke(&rbCallee, &prbResult) != RTNORM)
 			return RSERR;
@@ -3151,7 +3151,7 @@ public:
 			sBlockName = sBlockName.SpanExcluding(_T("."));
 		}
 
-		acedXrefAttach(sPath, sBlockName, NULL, NULL, &ptBase, &AcGeScale3d(1, 1, 1), &dblRotation, Adesk::kFalse);
+		acedXrefAttach(sPath, sBlockName, NULL, NULL, &ptBase, &AcGeScale3d::kIdentity, &dblRotation, Adesk::kFalse);
 
 		return (RSRSLT) ;
 	}

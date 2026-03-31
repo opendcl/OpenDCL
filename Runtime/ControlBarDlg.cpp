@@ -444,6 +444,10 @@ bool CControlBarDlg::OnClosing()
 	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( ToDIP( rcThis.left ), ToDIP( rcThis.top ) ) );
 	if( !mbHiding && !IsFloating() )
 		mHostControlBar.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
+#if (_ZRXTARGET)
+	else
+		mHostControlBar.PostMessage(WM_CLOSE);
+#endif
 	return true;
 }
 

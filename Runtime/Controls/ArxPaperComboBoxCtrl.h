@@ -15,9 +15,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 	// Generated message map functions
 protected:

@@ -24,12 +24,12 @@ public:
 	CFormVarNameUpdate( TDclFormPtr pDclForm, LPCTSTR pszFormName = NULL, CWnd* pParent = NULL );
 
 public:
-	virtual INT_PTR DoModal();
+	INT_PTR DoModal() override;
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual void OnOK();
-	virtual BOOL OnInitDialog();
+	void OnOK() override;
+	BOOL OnInitDialog() override;
 	afx_msg void OnCtrlcheck();
 };

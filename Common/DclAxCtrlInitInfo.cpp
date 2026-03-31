@@ -20,7 +20,7 @@ CDclAxCtrlInitInfo::CDclAxCtrlInitInfo( const CDclAxCtrlInitInfo& Src )
 
 CDclAxCtrlInitInfo::CDclAxCtrlInitInfo( const CLSID& clsid, LPCTSTR pszLicenseKey /*= NULL*/, LPCTSTR pszProgId /*= NULL*/ )
 	: mClsid( clsid )
-	, msProgId( (pszProgId && *pszProgId)? pszProgId : GetAxProgId( clsid ) )
+	, msProgId( (pszProgId && *pszProgId)? pszProgId : (LPCTSTR)GetAxProgId( clsid ) )
 	, msLicenseKey( pszLicenseKey )
 {
 }

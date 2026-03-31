@@ -65,17 +65,17 @@ protected:
 
 // Overrides
 public:
-	virtual BOOL OnApply();	
+	BOOL OnApply() override;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual BOOL OnInitDialog();
-	virtual BOOL OnSetActive();
+	BOOL OnInitDialog() override;
+	BOOL OnSetActive() override;
 	afx_msg void OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnAdd();
 	afx_msg void OnDelete();

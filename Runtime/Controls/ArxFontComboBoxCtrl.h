@@ -19,16 +19,16 @@ public:
 
 // DialogControl Interface
 public:
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CRect GetWndRect() const;
-	virtual DWORD GetWndStyle() const;
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CRect GetWndRect() const override;
+	DWORD GetWndStyle() const override;
 
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
  
 protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	afx_msg void OnCbnCloseup();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKillfocus();

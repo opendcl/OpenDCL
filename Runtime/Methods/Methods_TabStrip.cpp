@@ -29,7 +29,7 @@ ADSRESULT TabStrip::SetTabCaption()
 		return RSERR;
 
 	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::TabsCaption );
-	if( nIndex < 0 || nIndex >= pItemList->size() )
+	if( nIndex < 0 || static_cast<size_t>( nIndex ) >= pItemList->size() )
 		return RSRSLT;
 	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
 	PropVal::TCStringArray::iterator iterAt = pItems->begin();

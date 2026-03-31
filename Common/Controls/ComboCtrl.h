@@ -39,9 +39,9 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual LRESULT WindowProc( UINT message, WPARAM wParam, LPARAM lParam );
-	virtual void PreSubclassWindow();
-	virtual BOOL PreTranslateMessage( MSG* pMsg );
+	LRESULT WindowProc( UINT message, WPARAM wParam, LPARAM lParam ) override;
+	void PreSubclassWindow() override;
+	BOOL PreTranslateMessage( MSG* pMsg ) override;
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
 	afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
 	afx_msg void OnEditchange();

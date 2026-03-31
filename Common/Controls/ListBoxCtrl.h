@@ -27,18 +27,18 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual bool ApplyPropertiesEnum();
-	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
-	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
-	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
-	virtual void OnDragLeave();
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	bool ApplyPropertiesEnum() override;
+	void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast ) override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override;
+	DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState ) override;
+	DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState ) override;
+	void OnDragLeave() override;
+	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;
 
 	virtual bool IsMultiSelect() const { return ((GetStyle() & (LBS_EXTENDEDSEL | LBS_MULTIPLESEL)) != 0); }
 	virtual LPCTSTR GetDragTextPrefix() const { return NULL; }
@@ -49,8 +49,8 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );

@@ -20,7 +20,7 @@ public:
 	virtual ~CPaperComboHandler() {}
 
 public:
-	virtual bool PopulateList( CComboBox* pCombo )
+	bool PopulateList( CComboBox* pCombo ) override
 		{
 			CWaitCursor WaitCursor;
 			CAutoDocWriteLock CurDocLock;

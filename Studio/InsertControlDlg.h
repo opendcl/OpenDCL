@@ -29,8 +29,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CInsertControlDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+protected:
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -44,7 +44,7 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CInsertControlDlg)
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnControlsDblClk();
 	afx_msg void OnControlsSelChange();
 	afx_msg void OnRegister();

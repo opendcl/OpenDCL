@@ -24,20 +24,20 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
 
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 	
-	virtual HRESULT OnGetHostInfo(DOCHOSTUIINFO *pInfo);
-	virtual void OnDocumentComplete(LPCTSTR lpszURL);
-	virtual BOOL PreTranslateMessage( MSG* pMsg );	
-	virtual afx_msg void PostNcDestroy();
+	HRESULT OnGetHostInfo(DOCHOSTUIINFO *pInfo) override;
+	void OnDocumentComplete(LPCTSTR lpszURL) override;
+	BOOL PreTranslateMessage( MSG* pMsg ) override;
+	void PostNcDestroy() override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);

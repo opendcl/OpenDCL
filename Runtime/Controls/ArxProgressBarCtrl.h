@@ -23,9 +23,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual void ApplyPosition(); //move control window to new position
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	void ApplyPosition() override; //move control window to new position
 
 protected:
 	DECLARE_MESSAGE_MAP()

@@ -22,28 +22,28 @@ class CTabPageDlg : public CDialog, public CArxDialogObject
 // Construction
 public:
 	CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
-	~CTabPageDlg();
+	virtual ~CTabPageDlg();
 
 // CDialogObject overrides
 public:
-	virtual FormType GetType() const { return FrmTabPage; }
-	virtual bool IsModeless() const { return true; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return false; }
-	virtual void CloseDialog(int nStatus) {}
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-	virtual void ApplyPosition(); //move control window to new position
+	FormType GetType() const override { return FrmTabPage; }
+	bool IsModeless() const override { return true; }
+	bool IsDockable() const override { return false; }
+	bool IsResizable() const override { return false; }
+	void CloseDialog(int nStatus) override {}
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
+	void ApplyPosition() override; //move control window to new position
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);

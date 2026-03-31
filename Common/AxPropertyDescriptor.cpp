@@ -334,6 +334,8 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype 
 }
 
 
+#pragma warning(push)
+#pragma warning(disable: 4866)
 void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 {
 	BYTE nThisVersion = GetCurrentSaveVersion();
@@ -438,6 +440,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 	}
 
 }
+#pragma warning(pop)
 
 IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion )
 {

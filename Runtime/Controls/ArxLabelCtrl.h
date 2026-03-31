@@ -28,8 +28,8 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
 
 // Generated message map functions
 protected:

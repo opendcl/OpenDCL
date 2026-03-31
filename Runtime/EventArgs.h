@@ -41,7 +41,7 @@ template<> class arg_t< int > : arg_b
 public:
 	typedef int type;
 	arg_t( int arg ) : _arg( arg ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prb = acutNewRb( RTLONG );
 			if( !prb )
@@ -49,7 +49,7 @@ public:
 			prb->resval.rlong = static_cast<long>(_arg);
 			return prb;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			CString sArg;
 			sArg.Format( _T(" %d"), _arg );
@@ -63,7 +63,7 @@ template<> class arg_t< DWORD_PTR > : arg_b
 public:
 	typedef DWORD_PTR type;
 	arg_t( DWORD_PTR arg ) : _arg( arg ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			if( !_arg )
 				return acutNewRb( RTNIL );
@@ -74,7 +74,7 @@ public:
 			prb->resval.rlname[1] = odcl::ptrHandle;
 			return prb;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			CString sArg;
 			sArg.Format( _T(" %.1f"), (double)_arg );
@@ -93,7 +93,7 @@ template<> class arg_t< CPoint > : arg_b
 public:
 	typedef CPoint type;
 	arg_t( const CPoint& arg ) : _arg( arg ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prb = acutNewRb( RTPOINT );
 			if( !prb )
@@ -103,7 +103,7 @@ public:
 			prb->resval.rpoint[2] = 0;
 			return prb;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			CString sArg;
 			sArg.Format( _T(" '(%d %d)"), _arg.x, _arg.y );
@@ -117,7 +117,7 @@ template<> class arg_t< acedDwgPoint > : arg_b
 public:
 	typedef acedDwgPoint type;
 	arg_t( const acedDwgPoint arg ) { _arg[0] = arg[0]; _arg[1] = arg[1]; _arg[2] = arg[2]; }
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prb = acutNewRb( RT3DPOINT );
 			if( !prb )
@@ -127,7 +127,7 @@ public:
 			prb->resval.rpoint[2] = _arg[2];
 			return prb;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			CString sArg;
 			sArg.Format( _T(" '(%.8g %.8g %.8g)"), _arg[0], _arg[1], _arg[2] );
@@ -141,7 +141,7 @@ template<> class arg_t< LPCTSTR > : arg_b
 public:
 	typedef LPCTSTR type;
 	arg_t( LPCTSTR arg ) : _arg( arg ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prb = acutNewRb( RTSTR );
 			if( !prb )
@@ -153,7 +153,7 @@ public:
 			}
 			return prb;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			CString sArg( _arg );
 			sArg.Replace( _T("\\"), _T("\\\\") );
@@ -174,7 +174,7 @@ template<> class arg_t< TCHAR > : arg_b
 public:
 	typedef TCHAR type;
 	arg_t( TCHAR arg ) : _arg( arg ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prb = acutNewRb( RTSTR );
 			if( !prb )
@@ -187,7 +187,7 @@ public:
 			}
 			return prb;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			CString sArg( _arg );
 			sArg.Replace( _T("\\"), _T("\\\\") );
@@ -211,8 +211,8 @@ class args_1 : public arg_b
 	const arg_t< t1 > arg1;
 public:
 	args_1( t1 _arg1 ) : arg1( _arg1 ) {}
-	virtual resbuf* asResbuf() const { return arg1.asResbuf(); }
-	virtual CString asString() const { return arg1.asString(); }
+	resbuf* asResbuf() const override { return arg1.asResbuf(); }
+	CString asString() const override { return arg1.asString(); }
 };
 
 template< typename t1, typename t2 >
@@ -222,7 +222,7 @@ class args_2 : public arg_b
 	const arg_t< t2 > arg2;
 public:
 	args_2( t1 _arg1, t2 _arg2 ) : arg1( _arg1 ), arg2( _arg2 ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prbHead = arg1.asResbuf();
 			if( prbHead )
@@ -231,7 +231,7 @@ public:
 				prbHead = arg2.asResbuf();
 			return prbHead;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			return arg1.asString() + arg2.asString();
 		}
@@ -245,7 +245,7 @@ class args_3 : public arg_b
 	const arg_t< t3 > arg3;
 public:
 	args_3( t1 _arg1, t2 _arg2, t3 _arg3 ) : arg1( _arg1 ), arg2( _arg2 ), arg3( _arg3 ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prbArg1 = arg1.asResbuf();
 			resbuf* prbArg2 = arg2.asResbuf();
@@ -268,7 +268,7 @@ public:
 			}
 			return prbArg3;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			return arg1.asString() + arg2.asString() + arg3.asString();
 		}
@@ -284,7 +284,7 @@ class args_4 : public arg_b
 public:
 	args_4( t1 _arg1, t2 _arg2, t3 _arg3, t4 _arg4 )
 		: arg1( _arg1 ), arg2( _arg2 ), arg3( _arg3 ), arg4( _arg4 ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prbArg1 = arg1.asResbuf();
 			resbuf* prbArg2 = arg2.asResbuf();
@@ -330,7 +330,7 @@ public:
 			}
 			return prbArg4;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			return arg1.asString() + arg2.asString() + arg3.asString() + arg4.asString();
 		}
@@ -347,7 +347,7 @@ class args_5 : public arg_b
 public:
 	args_5( t1 _arg1, t2 _arg2, t3 _arg3, t4 _arg4, t5 _arg5 )
 		: arg1( _arg1 ), arg2( _arg2 ), arg3( _arg3 ), arg4( _arg4 ), arg5( _arg5 ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			resbuf* prbArg1 = arg1.asResbuf();
 			resbuf* prbArg2 = arg2.asResbuf();
@@ -438,7 +438,7 @@ public:
 			}
 			return prbArg5;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			return arg1.asString() + arg2.asString() + arg3.asString() + arg4.asString() + arg5.asString();
 		}

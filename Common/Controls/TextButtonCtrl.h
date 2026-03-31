@@ -24,19 +24,19 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual void HandleDpiChanged() { __super::HandleDpiChanged(); }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	void HandleDpiChanged() override { __super::HandleDpiChanged(); }
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
 // Generated message map functions
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual afx_msg void PostNcDestroy();
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void PostNcDestroy() override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);

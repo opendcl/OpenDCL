@@ -40,5 +40,5 @@ public:
 	CAutoStudioDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControlWnd )
 		: CStudioDialogControl( pTemplate, pPane, pControlWnd ) { UpdateAllProperties( pTemplate ); }
 	virtual ~CAutoStudioDialogControl() { delete mpControlWnd; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
 };

@@ -1251,10 +1251,18 @@ DWORD CButtonST::SetIcon(int nIconIn, int nCxDesiredIn, int nCyDesiredIn, int nI
 	{
 		case NULL:
 			break;
+#ifdef ODCL_BUTTONST_CHANGES
+		case reinterpret_cast<ULONG_PTR>(BTNST_AUTO_GRAY):
+#else
 		case BTNST_AUTO_GRAY:
+#endif
 			hIconOut = BTNST_AUTO_GRAY;
 			break;
+#ifdef ODCL_BUTTONST_CHANGES
+		case reinterpret_cast<ULONG_PTR>(BTNST_AUTO_DARKER):
+#else
 		case BTNST_AUTO_DARKER:
+#endif
 			hIconOut = BTNST_AUTO_DARKER;
 			break;
 		default:
@@ -1343,10 +1351,18 @@ DWORD CButtonST::SetIcon(HICON hIconIn, HICON hIconOut)
 		{
 			switch (reinterpret_cast<LONG_PTR>(hIconOut))
 			{
+#ifdef ODCL_BUTTONST_CHANGES
+				case reinterpret_cast<ULONG_PTR>(BTNST_AUTO_GRAY):
+#else
 				case BTNST_AUTO_GRAY:
+#endif
 					hIconOut = CreateGrayscaleIcon(hIconIn);
 					break;
+#ifdef ODCL_BUTTONST_CHANGES
+				case reinterpret_cast<ULONG_PTR>(BTNST_AUTO_DARKER):
+#else
 				case BTNST_AUTO_DARKER:
+#endif
 					hIconOut = CreateDarkerIcon(hIconIn);
 					break;
 			} // switch
@@ -1413,10 +1429,18 @@ DWORD CButtonST::SetBitmaps(int nBitmapIn, COLORREF crTransColorIn, int nBitmapO
 	{
 		case NULL:
 			break;
+#ifdef ODCL_BUTTONST_CHANGES
+		case reinterpret_cast<ULONG_PTR>(BTNST_AUTO_GRAY):
+#else
 		case BTNST_AUTO_GRAY:
+#endif
 			hBitmapOut = (HBITMAP)BTNST_AUTO_GRAY;
 			break;
+#ifdef ODCL_BUTTONST_CHANGES
+		case reinterpret_cast<ULONG_PTR>(BTNST_AUTO_DARKER):
+#else
 		case BTNST_AUTO_DARKER:
+#endif
 			hBitmapOut = (HBITMAP)BTNST_AUTO_DARKER;
 			break;
 		default:

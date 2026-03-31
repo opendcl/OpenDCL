@@ -21,7 +21,7 @@ public:
 	LPCTSTR GetPassword() const { return msPassword; }
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
 };

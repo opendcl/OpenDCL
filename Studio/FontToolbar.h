@@ -43,8 +43,8 @@ protected:
 // Overrides
 	// ClassWizard generated virtual function overrides
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
 
 // Implementation
 protected:

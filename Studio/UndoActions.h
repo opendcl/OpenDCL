@@ -58,12 +58,12 @@ public:
 		: CUndoAction( Undo::SaveProject ), mpProject( pProject ) {}
 	virtual ~CSaveProjectUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const { return _T("SaveProject"); }
+	CString toString() const override { return _T("SaveProject"); }
 #endif
 };
 
@@ -75,12 +75,12 @@ public:
 		: CUndoAction( Undo::BeginGroup ), msDisplayName( pszDisplayName ) {}
 	virtual ~CBeginGroupUA() {}
 
-	virtual CString GetDisplayName() const { return msDisplayName; }
-	virtual bool Undo() { return true; }
+	CString GetDisplayName() const override { return msDisplayName; }
+	bool Undo() override { return true; }
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("BeginGroup[%s]"), (LPCTSTR)msDisplayName );
@@ -96,12 +96,12 @@ public:
 		: CUndoAction( Undo::EndGroup ) {}
 	virtual ~CEndGroupUA() {}
 
-	virtual CString GetDisplayName() const { return NULL; }
-	virtual bool Undo() { return true; }
+	CString GetDisplayName() const override { return NULL; }
+	bool Undo() override { return true; }
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const { return _T("EndGroup"); }
+	CString toString() const override { return _T("EndGroup"); }
 #endif
 };
 
@@ -114,12 +114,12 @@ public:
 		: CUndoAction( Undo::SelectForm ), mpForm( pNewForm ) {}
 	virtual ~CSelectFormUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("SelectForm[%s]"), (LPCTSTR)mpForm->GetKeyName() );
@@ -137,12 +137,12 @@ public:
 		: CUndoAction( Undo::AddForm ), mpForm( pNewForm ) {}
 	virtual ~CAddFormUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("AddForm[%s]"), (LPCTSTR)mpForm->GetKeyName() );
@@ -160,12 +160,12 @@ public:
 		: CUndoAction( Undo::DeleteForm ), mpForm( pNewForm ) {}
 	virtual ~CDeleteFormUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("DeleteForm[%s]"), (LPCTSTR)mpForm->GetKeyName() );
@@ -183,12 +183,12 @@ public:
 		: CUndoAction( Undo::SelectControl ), mpDclControl( pDclControl ) {}
 	virtual ~CSelectControlUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("SelectControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
@@ -206,12 +206,12 @@ public:
 		: CUndoAction( Undo::AddControl ), mpDclControl( pDclControl ) {}
 	virtual ~CAddControlUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("AddControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
@@ -229,12 +229,12 @@ public:
 	CDeleteControlUA( TDclControlPtr pDclControl );
 	virtual ~CDeleteControlUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("DeleteControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
@@ -252,12 +252,12 @@ public:
 	CReorderControlUA( TDclControlPtr pDclControl );
 	virtual ~CReorderControlUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("ReorderControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
@@ -276,12 +276,12 @@ public:
 	CPropertyChangeUA( TPropertyPtr pProperty );
 	virtual ~CPropertyChangeUA() {}
 
-	virtual CString GetDisplayName() const;
-	virtual bool Undo();
+	CString GetDisplayName() const override;
+	bool Undo() override;
 
 #ifdef _DIAGNOSTIC
 public:
-	virtual CString toString() const
+	CString toString() const override
 	{
 		CString sResult;
 		sResult.Format( _T("PropertyChange[%s/%s]"), (LPCTSTR)mpDclControl->GetKeyName(), GetPropertyApiName( mId ) );

@@ -21,10 +21,10 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
 
 // CBlockListCtrl Interface
 protected:
-	virtual bool HasSubItemImages() const { return false; }
+	bool HasSubItemImages() const override { return false; }
 };

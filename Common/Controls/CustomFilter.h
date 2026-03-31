@@ -24,13 +24,13 @@ public:
 		{
 			return msFilter;
 		}
-	virtual bool FilterInput( TCHAR& chInput ) const
+	bool FilterInput( TCHAR& chInput ) const override
 		{
 			if( msFilter.IsEmpty() )
 				return true;
 			return __super::FilterInput( chInput );
 		}
-	virtual bool FilterInput( CString& sInput ) const
+	bool FilterInput( CString& sInput ) const override
 		{
 			if( msFilter.IsEmpty() )
 				return true;

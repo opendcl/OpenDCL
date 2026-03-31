@@ -94,7 +94,7 @@ CFont* CFontCollection::GetFont(const CFont *pTargetFont, CWnd *pWnd)
 		CFont* pFont = mFonts.GetNext( pos );
 		LOGFONT stLogFont;
 		pFont->GetLogFont( &stLogFont );
-		if( stTargetFont.lfFaceName != stLogFont.lfFaceName )
+		if( lstrcmpi( stTargetFont.lfFaceName, stLogFont.lfFaceName ) != 0 )
 			continue;
 		if( stTargetFont.lfHeight != stLogFont.lfHeight )
 			continue;

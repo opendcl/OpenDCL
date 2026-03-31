@@ -36,9 +36,9 @@ protected:
 	BOOL ImageListReplacePicture( int idxPic, LPPICTUREDISP iPic );
 
 public:
-	virtual BOOL OnApply();
+	BOOL OnApply() override;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
@@ -48,7 +48,7 @@ protected:
 	afx_msg void OnAddimage();
 	afx_msg void OnRemoveimage();
 	afx_msg void OnChangeimage();
-	virtual BOOL OnInitDialog();
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	BOOL OnInitDialog() override;
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 };

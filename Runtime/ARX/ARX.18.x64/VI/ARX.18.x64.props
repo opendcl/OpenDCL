@@ -12,7 +12,7 @@
       <AdditionalIncludeDirectories>.\;..\..\;.\VI;$(ARX2010)\Inc-x64;$(ARX2010)\Inc;$(MSVC9)\Include;$(MSVC9)\ATLMFC\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_ACADTARGET=18;_ARXTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalOptions>/wd4265 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/wd4265 /wd4481 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_ACADTARGET=18;_ARXTARGET=18;%(PreprocessorDefinitions)</PreprocessorDefinitions>

@@ -86,6 +86,19 @@
 #define new DEBUG_NEW
 #endif
 
+#if (_MSC_VER < 1600)
+#define override
+
+#include <memory>
+namespace std
+{
+	template <class T> class unique_ptr : public auto_ptr<T>
+	{
+	public:
+		explicit unique_ptr(T* p = 0) : auto_ptr<T>(p) {}
+	};
+}
+#endif
 
 #include "RefCountedPtr.h"
 

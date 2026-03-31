@@ -28,9 +28,9 @@ public:
 	virtual ~CPrinterComboHandler() {}
 
 public:
-	virtual bool IsOwnerDrawn() const { return true; }
-	virtual bool IsAutoSorted() const { return false; }
-	virtual void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct )
+	bool IsOwnerDrawn() const override { return true; }
+	bool IsAutoSorted() const override { return false; }
+	void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct ) override
 		{
 			size_t idxItem = lpDrawItemStruct->itemID;
 			if( idxItem >= mrImage.size() )
@@ -57,7 +57,7 @@ public:
 				pDC->DrawFocusRect( &lpDrawItemStruct->rcItem );
 			pDC->RestoreDC( nIndexDC );
 		}
-	virtual bool PopulateList( CComboBox* pCombo )
+	bool PopulateList( CComboBox* pCombo ) override
 		{
 			assert( pCombo->GetCount() == 0 );
 			mrImage.clear();

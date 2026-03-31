@@ -29,12 +29,12 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
-	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
+	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
 
 public:
 	virtual bool IsAutoSized();
@@ -46,9 +46,9 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

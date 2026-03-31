@@ -89,9 +89,9 @@ public:
 		{}
 	virtual ~CDclControlNode() {}
 
-	virtual int image() const { return 5; }
-	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent );
-	virtual CString description( std::map< CString, CString >& params ) const
+	int image() const override { return 5; }
+	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override;
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sPath;
 			sPath.Format( _T("chm://Reference/Control/%s.htm"),
@@ -112,14 +112,14 @@ public:
 		, mpDclForm( pDclForm )
 		{}
 	virtual ~CDclFormNode() {}
-	virtual CString description( std::map< CString, CString >& params ) const
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sPath;
 			sPath.Format( _T("chm://Reference/Form/%s.htm"),
 										(LPCTSTR)GetFormApiName( mpDclForm ) );
 			return sPath;
 		}
-	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent );
+	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override;
 };
 
 class CDclProjectNode : public CTreeNode
@@ -132,12 +132,12 @@ public:
 		, mpProject( pProject )
 		{}
 	virtual ~CDclProjectNode() {}
-	virtual int image() const { return 1; }
-	virtual CString description( std::map< CString, CString >& params ) const
+	int image() const override { return 1; }
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			return _T("chm://Reference/DataType/Project.htm");
 		}
-	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent );
+	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override;
 };
 
 class CPropertyNode : public CTreeNode
@@ -153,8 +153,8 @@ public:
 	virtual ~CPropertyNode() {}
 	virtual TPropertyPtr prop() const { return mpProp; }
 
-	virtual int image() const { return 4; }
-	virtual CString description( std::map< CString, CString >& params ) const
+	int image() const override { return 4; }
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sPath;
 			sPath.Format( _T("chm://Reference/Property/%s.htm"),
@@ -198,8 +198,8 @@ public:
 	virtual ~CMethodNode() {}
 	virtual TDclControlPtr control() const { return mpDclControl; }
 
-	virtual int image() const { return 3; }
-	virtual CString description( std::map< CString, CString >& params ) const
+	int image() const override { return 3; }
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sPath;
 			sPath.Format( _T("chm://Reference/Method/%s"), (LPCTSTR)msFilename );
@@ -222,8 +222,8 @@ public:
 	virtual ~CEventNode() {}
 	virtual TPropertyPtr prop() const { return mpProp; }
 
-	virtual int image() const { return 2; }
-	virtual CString description( std::map< CString, CString >& params ) const
+	int image() const override { return 2; }
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			params[_T("<CONTROL-NAME>")] = mpProp->GetOwnerControl()->GetVarName();
 			CString sPath;
@@ -255,12 +255,12 @@ public:
 		{}
 	virtual ~CAxObjectNode() {}
 
-	virtual int image() const { return 5; }
-	virtual CString description( std::map< CString, CString >& params ) const
+	int image() const override { return 5; }
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			return _T("chm://Reference/DataType/AxObject.htm");
 		}
-	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
+	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override
 		{
 			CString sMethodsHtml;
 			addMethods( Browser, hParent, _T("AxObject"), sMethodsHtml );
@@ -285,7 +285,7 @@ public:
 	virtual ~CAxPropertyNode() {}
 	CAxContainerCtrl* axCont() const { return mpAxCont; }
 
-	virtual CString description( std::map< CString, CString >& params ) const
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sName = name();
 			params[_T("{TITLE}")] = sName;
@@ -314,7 +314,7 @@ public:
 			params[_T("{DESCRIPTION}")] = sDesc;
 			return _T("chm://Reference/Property/@Template.htm");
 		}
-	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
+	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override
 		{
 			if( mpIDesc->GetGuid() == GUID_NULL )
 				return true;
@@ -466,7 +466,7 @@ public:
 	virtual ~CAxMethodNode() {}
 	CAxContainerCtrl* axCont() const { return mpAxCont; }
 
-	virtual CString description( std::map< CString, CString >& params ) const
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sName = name();
 			params[_T("{TITLE}")] = sName;
@@ -487,7 +487,7 @@ public:
 			params[_T("{DESCRIPTION}")] = sDesc;
 			return _T("chm://Reference/Method/@Template.htm");
 		}
-	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
+	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override
 		{
 			if( mpMethodDesc->GetReturnGuid() == GUID_NULL )
 				return true;
@@ -619,7 +619,7 @@ public:
 
 protected:
 
-	virtual CString description( std::map< CString, CString >& params ) const
+	CString description( std::map< CString, CString >& params ) const override
 		{
 			CString sName = name();
 			params[_T("{TITLE}")] = sName;

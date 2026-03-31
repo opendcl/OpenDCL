@@ -34,8 +34,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CImageListContents)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+protected:
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -46,7 +46,7 @@ protected:
 	afx_msg void OnAdd();
 	afx_msg void OnDelete();
 	afx_msg void OnDestroy();
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnClickThelist(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkThelist(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEndlabeleditThelist(NMHDR* pNMHDR, LRESULT* pResult);
@@ -56,7 +56,7 @@ protected:
 	afx_msg void OnChangeEdit1();
 	afx_msg void OnSelchangeComboboxex();
 	afx_msg void OnUpdate();
-	virtual void OnOK();
+	void OnOK() override;
 	afx_msg void OnOdstatechangedThelist(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

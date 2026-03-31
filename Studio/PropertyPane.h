@@ -39,7 +39,7 @@ protected:
 // Overrides
 	// ClassWizard generated virtual function overrides
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 
 // Implementation
 public:

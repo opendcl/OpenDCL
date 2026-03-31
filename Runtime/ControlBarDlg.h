@@ -32,28 +32,28 @@ public:
 
 // CDialogObject overrides
 public:
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual FormType GetType() const { return FrmControlBar; }
-	virtual CWnd* GetTopLevelWnd();
-	virtual bool IsModeless() const { return true; }
-	virtual bool IsDockable() const { return !IsFloating(); }
-	virtual bool IsResizable() const { return mbResizable; }
-	virtual bool IsFloating() const;
-	virtual bool CreateModeless( UINT nID );
-	virtual void CloseDialog(int nStatus);
-	virtual bool CenterDialog();
-	virtual bool MoveDialog( long nNewLeft, long nNewTop );
-	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
-	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
-	virtual CRect GetEffectiveWindowRect() const;
-	virtual CRect GetEffectiveClientRect() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	FormType GetType() const override { return FrmControlBar; }
+	CWnd* GetTopLevelWnd() override;
+	bool IsModeless() const override { return true; }
+	bool IsDockable() const override { return !IsFloating(); }
+	bool IsResizable() const override { return mbResizable; }
+	bool IsFloating() const override;
+	bool CreateModeless( UINT nID ) override;
+	void CloseDialog(int nStatus) override;
+	bool CenterDialog() override;
+	bool MoveDialog( long nNewLeft, long nNewTop ) override;
+	bool ResizeDialog( long nNewWidth, long nNewHeight ) override;
+	bool CenterAndResizeDialog( long nNewWidth, long nNewHeight ) override;
+	CRect GetEffectiveWindowRect() const override;
+	CRect GetEffectiveClientRect() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 protected:
-	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
-	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-	virtual void OnFrameChanged(); //called by member functions that change the non-client size
-	virtual void ApplyPosition(); //move control window to new position
+	bool OnApplyCaption( TPropertyPtr pProp ) override; //Prop::Caption, Prop::TitleBarText
+	bool OnApplyResizable( TPropertyPtr pProp ) override; //Prop::AllowResizing
+	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
+	void OnFrameChanged() override; //called by member functions that change the non-client size
+	void ApplyPosition() override; //move control window to new position
 
 protected:
 friend class CAcadDockBarHost;
@@ -65,16 +65,16 @@ friend class CAcadDockBarHost;
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnTimer( UINT_PTR nID );
-	afx_msg void PostNcDestroy();
+	void PostNcDestroy() override;
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

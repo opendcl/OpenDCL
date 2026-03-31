@@ -18,7 +18,7 @@ public:
 
 // CInputFilter overrides
 public:
-	const CString& GetFilter() const
+	const CString& GetFilter() const override
 		{
 			static const CString sFilter = _T("DdGgRrNnSsEeWw 0123456789.'\"-");
 			return sFilter;

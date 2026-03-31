@@ -22,9 +22,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
 
 protected:
 	DECLARE_MESSAGE_MAP();

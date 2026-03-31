@@ -218,7 +218,7 @@ public:
 	{
 		mpDoc->inputPointManager()->removeInputContextReactor( this );
 	}
-	virtual void beginQuiescentState()
+	void beginQuiescentState() override
 	{
 		ads_queueexpr( sCmd.LockBuffer() );
 		delete this;

@@ -26,9 +26,9 @@ class CControlBrowser : public CResizableDialog
 	public:
 		NoNavigateBrowser( CControlBrowser& Browser ) : mBrowser( Browser ), mbEnableNavigate( false ) {}
 	protected:
-		virtual void OnDocumentComplete(LPCTSTR lpszURL);
-		virtual void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel);
-		virtual void OnCommandStateChange(long nCommand, BOOL bEnable);
+		void OnDocumentComplete(LPCTSTR lpszURL) override;
+		void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel) override;
+		void OnCommandStateChange(long nCommand, BOOL bEnable) override;
 	public:
 		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,
 									LPCTSTR lpszTargetFrameName = NULL,
@@ -79,14 +79,14 @@ protected:
 	//bool OnBeginClipboardCopy();
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-	virtual INT_PTR DoModal();
+	INT_PTR DoModal() override;
 protected:
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult);

@@ -23,9 +23,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 public:
 	void SetDwgListCtrl( CArxDwgListCtrl* pDwgList ) { mpDwgList = pDwgList; }
@@ -34,7 +34,7 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnCbnSelchange();
 	afx_msg void OnCbnDropdown();
 	afx_msg void OnCbnCloseup();

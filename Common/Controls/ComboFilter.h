@@ -18,7 +18,7 @@ public:
 	virtual ~CComboFilter() { delete mpFilter; }
 
 public:
-	virtual bool IsAutoSorted() const { return false; }
-	virtual bool PopulateList( CComboBox* pCombo ) { return false; }
-	virtual CInputFilter* GetInputFilter() const { return mpFilter; }
+	bool IsAutoSorted() const override { return false; }
+	bool PopulateList( CComboBox* pCombo ) override { return false; }
+	CInputFilter* GetInputFilter() const override { return mpFilter; }
 };

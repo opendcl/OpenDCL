@@ -248,11 +248,11 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual DWORD GetWndStyle() const;
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	DWORD GetWndStyle() const override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 public:
 	void SetCurCell( int nRow, int nCol );
@@ -325,7 +325,7 @@ protected:
 	virtual void OnEditCurCell() {}
 	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
 	virtual void OnEndEditCurCell() {}
-	virtual void DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell = CSize(0, 0), bool bCalcOnly = false );
+	virtual void DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell = CSize(0, 0), bool bCalcOnly = false );
 
 // Operations
 protected:
@@ -346,11 +346,11 @@ protected:
 
 // Generated message map functions
 protected:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual afx_msg void PostNcDestroy();
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	afx_msg void PostNcDestroy() override;
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
+	BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

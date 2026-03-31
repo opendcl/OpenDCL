@@ -57,7 +57,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 
 protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);

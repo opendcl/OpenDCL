@@ -38,27 +38,27 @@ public:
 
 // CView Overrides
 protected:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-	virtual void OnInitialUpdate(); // called first time after construct
-	virtual void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView);
+	BOOL PreCreateWindow(CREATESTRUCT& cs) override;
+	void OnDraw(CDC* pDC) override;  // overridden to draw this view
+	void OnInitialUpdate() override; // called first time after construct
+	void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) override;
 
 // Implementation
 public:
 	virtual ~CDclFormView();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif
 
 public:
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
+	BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) override;
 
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/);
+	void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/) override;
 	afx_msg void OnWindowNextForm();
 	afx_msg void OnUpdateWindowNextForm(CCmdUI *pCmdUI);
 	afx_msg void OnWindowPrevForm();

@@ -142,14 +142,14 @@ public:
 	CArchivePropExchange(CArchive& ar);
 
 // Operations
-	virtual BOOL ExchangeProp(LPCTSTR pszPropName, VARTYPE vtProp,
-				void* pvProp, const void* pvDefault = NULL);
-	virtual BOOL ExchangeBlobProp(LPCTSTR pszPropName, HGLOBAL* phBlob,
-				HGLOBAL hBlobDefault = NULL);
-	virtual BOOL ExchangeFontProp(LPCTSTR pszPropName, CFontHolder& font,
-				const FONTDESC* pFontDesc, LPFONTDISP pFontDispAmbient);
-	virtual BOOL ExchangePersistentProp(LPCTSTR pszPropName,
-				LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault);
+	BOOL ExchangeProp(LPCTSTR pszPropName, VARTYPE vtProp,
+				void* pvProp, const void* pvDefault = NULL) override;
+	BOOL ExchangeBlobProp(LPCTSTR pszPropName, HGLOBAL* phBlob,
+				HGLOBAL hBlobDefault = NULL) override;
+	BOOL ExchangeFontProp(LPCTSTR pszPropName, CFontHolder& font,
+				const FONTDESC* pFontDesc, LPFONTDISP pFontDispAmbient) override;
+	BOOL ExchangePersistentProp(LPCTSTR pszPropName,
+				LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault) override;
 
 // Implementation
 protected:
@@ -493,6 +493,8 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile )
 //}
 
 
+#pragma warning(push)
+#pragma warning(disable: 4866)
 void CDclPicture::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
@@ -510,7 +512,7 @@ void CDclPicture::Serialize(CArchive& ar)
 		case PICTYPE_METAFILE:
 		case PICTYPE_ENHMETAFILE:
 			{
-				_variant_t var( m_hPicture.GetPictureDispatch() );
+			  _variant_t var( m_hPicture.GetPictureDispatch() );
 				ar << COleVariant( var );
 				break;
 			}
@@ -522,7 +524,8 @@ void CDclPicture::Serialize(CArchive& ar)
 				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1);
 				ImageList.Add(hIconPic);
 				ar.Flush();
-				SafeImageListWrite( ImageList.m_hImageList, &CArchiveStream( &ar ) );
+				CArchiveStream is( &ar );
+				SafeImageListWrite( ImageList.m_hImageList, &is );
 				ar.Flush();
 				ImageList.DeleteImageList();
 				break;
@@ -642,6 +645,7 @@ void CDclPicture::Serialize(CArchive& ar)
 		CalcLogicalSize();
 	}
 }
+#pragma warning(pop)
 
 IOStatus CDclPicture::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {

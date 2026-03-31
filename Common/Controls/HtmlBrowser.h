@@ -35,16 +35,16 @@ public:
 	HRESULT SetOpticalZoom( long nZoomPercentage ); //set optical zoom percentage
 
 protected:
-	virtual void OnStatusTextChange(LPCTSTR lpszText) {} //eat 'em, else they mess up the AutoCAD status bar
 	virtual void OnAppCmd( LPCTSTR lpszWhere ) {} //override to handle links to "app:mumble...".
+	void OnStatusTextChange(LPCTSTR lpszText) override {} //eat 'em, else they mess up the AutoCAD status bar
 	// override to trap "app:" pseudo protocol
-	virtual void OnBeforeNavigate2( LPCTSTR lpszURL,
-																	DWORD nFlags,
-																	LPCTSTR lpszTargetFrameName,
-																	CByteArray& baPostedData,
-																	LPCTSTR lpszHeaders,
-																	BOOL* pbCancel );
-	virtual HRESULT OnUpdateUI();
+	void OnBeforeNavigate2( LPCTSTR lpszURL,
+													DWORD nFlags,
+													LPCTSTR lpszTargetFrameName,
+													CByteArray& baPostedData,
+													LPCTSTR lpszHeaders,
+													BOOL* pbCancel ) override;
+	HRESULT OnUpdateUI() override;
 
 // Generated message map functions
 protected:
@@ -52,10 +52,10 @@ protected:
 	
 	afx_msg void OnDestroy();
 	afx_msg int OnMouseActivate(CWnd* pDesktopWnd,UINT nHitTest,UINT message);
-	virtual afx_msg void PostNcDestroy();
-	virtual void PreSubclassWindow();
-	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void PostNcDestroy() override;
+	void PreSubclassWindow() override;
+	BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 };
 
  // Microsoft Systems Journal -- January 2000

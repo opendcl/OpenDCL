@@ -29,5 +29,5 @@ public:
 		}
 
 public:
-	virtual CInputFilter* GetInputFilter() { return mpFilter; }
+	CInputFilter* GetInputFilter() override { return mpFilter; }
 };

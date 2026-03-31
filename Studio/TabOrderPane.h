@@ -49,9 +49,9 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
+	BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();

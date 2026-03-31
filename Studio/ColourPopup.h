@@ -56,8 +56,8 @@ public:
 // Overrides
     // ClassWizard generated virtual function overrides
     //{{AFX_VIRTUAL(CColourPopup)
-    public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+public:
+    BOOL PreTranslateMessage(MSG* pMsg) override;
     //}}AFX_VIRTUAL
 
 // Implementation

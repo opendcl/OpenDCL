@@ -96,16 +96,16 @@ public:
 	void OnColumnHeaderClicked(int nIndex);
 
 	// Overrides
-	public:
-	virtual BOOL OnApply();
-	virtual void OnOK();
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+public:
+	BOOL OnApply() override;
+	void OnOK() override;
+	BOOL OnSetActive() override;
+protected:
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnInsert();
 	afx_msg void OnChangeText();
 	afx_msg void OnChangeWidth();

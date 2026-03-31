@@ -34,7 +34,7 @@ public:
 	virtual ~CTabOrderListBox();
 
 public:
-	virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
+	BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID) override;
 
 // Attributes
 public:
@@ -52,9 +52,9 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT /*lpMeasureItemStruct*/);
-	afx_msg void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void MeasureItem(LPMEASUREITEMSTRUCT /*lpMeasureItemStruct*/) override;
+	void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/) override;
 	afx_msg void OnSendtofront();
 	afx_msg void OnSendtoback();
 	afx_msg void OnMovebackby1();

@@ -28,14 +28,14 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
-	virtual bool OnApplyToolTip( TPropertyPtr pProp );
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast ) override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
+	bool OnApplyToolTip( TPropertyPtr pProp ) override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	CAcadColorService* GetColorService() override { return &mColorService; }
 
 // Interface
 public:
@@ -53,9 +53,9 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	afx_msg void PostNcDestroy();
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	void PostNcDestroy() override;
 	afx_msg void OnDestroy();
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);

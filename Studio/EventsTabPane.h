@@ -41,9 +41,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual BOOL OnInitDialog();
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
+	BOOL OnInitDialog() override;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnChangeDefunedit();
 	afx_msg void OnAddcancel();

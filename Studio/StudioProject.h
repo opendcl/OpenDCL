@@ -21,8 +21,8 @@ public:
 	CStudioProject( COpenDCLDoc* pDoc, LPCTSTR pszKeyName );
 	virtual ~CStudioProject();
 
-	virtual CDocument* GetDocument() const;
-	virtual CUndoManager* GetUndoManager() { return &mUndoManager; }
+	CDocument* GetDocument() const override;
+	CUndoManager* GetUndoManager() override { return &mUndoManager; }
 	void ClearDocument() { mpDocument = NULL; }
 	size_t UndoCount() const { return mUndoManager.size(); }
 	bool Undo( size_t ctActions = 1 );

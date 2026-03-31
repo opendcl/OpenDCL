@@ -12,8 +12,8 @@ public:
 	CStdioUnicodeFile(LPCTSTR lpszFileName, UINT nOpenFlags);
 	~CStdioUnicodeFile(void);
 
-	virtual void WriteString(LPCTSTR lpsz);
-	virtual BOOL ReadString(CString& rString);
+	void WriteString(LPCTSTR lpsz) override;
+	BOOL ReadString(CString& rString) override;
 
 protected:
 	BOOL ReadAnsiString( CStringA& rString );

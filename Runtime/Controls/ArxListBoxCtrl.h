@@ -22,15 +22,15 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnCbnSelchange();
 	afx_msg void OnDblclk();
 	afx_msg void OnKillfocus();

@@ -32,22 +32,22 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CRect ValidatePosition( const CRect& rcProposed ) const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyLeft( TPropertyPtr pProp ); //Prop::Left
-	virtual bool OnApplyTop( TPropertyPtr pProp ); //Prop::Top
-	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
-	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CRect ValidatePosition( const CRect& rcProposed ) const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyLeft( TPropertyPtr pProp ) override; //Prop::Left
+	bool OnApplyTop( TPropertyPtr pProp ) override; //Prop::Top
+	bool OnApplyWidth( TPropertyPtr pProp ) override; //Prop::Width
+	bool OnApplyHeight( TPropertyPtr pProp ) override; //Prop::Height
+	CAcadColorService* GetColorService() override { return &mColorService; }
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
 // Generated message map functions
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual afx_msg void PostNcDestroy();
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	afx_msg void PostNcDestroy() override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnPaint();

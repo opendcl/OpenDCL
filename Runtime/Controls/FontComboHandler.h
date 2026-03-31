@@ -82,9 +82,9 @@ public:
 	virtual ~CFontComboHandler() {}
 
 protected:
-	virtual bool IsOwnerDrawn() const { return true; }
-	virtual UINT GetItemHeight() const { return 16; }
-	virtual void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDIS )
+	bool IsOwnerDrawn() const override { return true; }
+	UINT GetItemHeight() const override { return 16; }
+	void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDIS ) override
 		{
 			ASSERT(lpDIS->CtlType == ODT_COMBOBOX); // We've gotta be a combo
 			if( lpDIS->itemID >= (UINT)pCombo->GetCount() )
@@ -155,7 +155,7 @@ protected:
 			// Restore State of context
 			pDC->RestoreDC( nIndexDC );
 		}
-	virtual bool PopulateList( CComboBox* pCombo )
+	bool PopulateList( CComboBox* pCombo ) override
 		{
 			mmapFonts.clear();
 			// get the list of existing AutoCAD shx fonts
@@ -210,7 +210,7 @@ protected:
 			}
 			return true;
 		}
-	virtual void OnDropdownClose( CComboBox* pCombo )
+	void OnDropdownClose( CComboBox* pCombo ) override
 		{
 			CString sFont;
 			pCombo->GetWindowText( sFont );

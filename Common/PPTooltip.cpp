@@ -24,6 +24,11 @@
 #undef TRACE
 #define TRACE __noop  //to prevent clutter of trace messages [ORW]
 
+#ifdef ODCL_PPTOOLTIP_CHANGES
+#if (__MSC_VER >= 1700)
+#pragma warning(disable: 5262)
+#endif
+#endif
 
 // allow multi-monitor-aware code on Win95 systems
 // comment out the first line if you already define it in another file

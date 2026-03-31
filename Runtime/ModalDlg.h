@@ -26,28 +26,28 @@ protected:
 
 // CDialogObject overrides
 public:
-	virtual FormType GetType() const { return FrmModalDlg; }
-	virtual bool IsModeless() const { return false; }
-	virtual bool IsDockable() const { return false; }
-	virtual void CloseDialog(int nStatus);
-	virtual INT_PTR DoModal();
-	//virtual bool Show(bool bShow = true) { return false; }
+	FormType GetType() const override { return FrmModalDlg; }
+	bool IsModeless() const override { return false; }
+	bool IsDockable() const override { return false; }
+	void CloseDialog(int nStatus) override;
+	INT_PTR DoModal() override;
+	//bool Show(bool bShow = true) override { return false; }
 protected:
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-	virtual bool IsAsyncEvents() const { return false; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
+	bool IsAsyncEvents() const override { return false; }
 
 // Overrides
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void OnOK();
-	virtual void OnCancel();
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void OnOK() override;
+	void OnCancel() override;
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg void OnMove(int x, int y);

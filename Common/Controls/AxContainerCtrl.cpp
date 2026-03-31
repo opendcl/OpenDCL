@@ -486,7 +486,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 		assert( SUCCEEDED(hr) );
 		if( FAILED(hr) )
 			continue;
-		std::auto_ptr< AxEventDescriptor > pAxEventDesc( new AxEventDescriptor( pFuncDesc, pTypeInfo, bUseAsType ) );
+		std::unique_ptr< AxEventDescriptor > pAxEventDesc( new AxEventDescriptor( pFuncDesc, pTypeInfo, bUseAsType ) );
 		pTypeInfo->ReleaseFuncDesc( pFuncDesc );
 
 		CString sEventName = pAxEventDesc->GetName();
@@ -562,7 +562,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 			continue;
 		if( pFuncDesc->invkind == DISPATCH_METHOD && ((LONG)pFuncDesc->memid < (LONG)(1<<16)) )
 		{
-			std::auto_ptr< AxMethodDescriptor > pAxMethodDesc( new AxMethodDescriptor( pFuncDesc, pTypeInfo ) );
+			std::unique_ptr< AxMethodDescriptor > pAxMethodDesc( new AxMethodDescriptor( pFuncDesc, pTypeInfo ) );
 			if( !pAxMethodDesc->GetName().IsEmpty() )
 			{
 				pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->push_back( pAxMethodDesc.release() );
@@ -601,7 +601,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 			assert( SUCCEEDED(hr) );
 			if( FAILED(hr) )
 				continue;
-			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pVarDesc, pTypeInfo ) );
+			std::unique_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pVarDesc, pTypeInfo ) );
 			pTypeInfo->ReleaseVarDesc( pVarDesc );
 
 			if( !pAxPropDesc->GetName().IsEmpty() )
@@ -641,7 +641,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 				 pFuncDesc->invkind == INVOKE_PROPERTYPUTREF) &&
 				(pFuncDesc->wFuncFlags & FUNCFLAG_FHIDDEN) == 0 )
 		{
-			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pFuncDesc, pTypeInfo, pIObject ) );
+			std::unique_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pFuncDesc, pTypeInfo, pIObject ) );
 			bool bBrowsable = !(pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE);
 
 			if( !pAxPropDesc->GetName().IsEmpty() )

@@ -40,8 +40,8 @@ protected:
 public:
 	virtual ~CStudioFrame();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif
 
 protected:  // control bar embedded members
@@ -65,9 +65,9 @@ protected:  // control bar embedded members
 
 // Overrides
 public:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	BOOL PreCreateWindow(CREATESTRUCT& cs) override;
+	BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext) override;
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
 
 // Generated message map functions
 protected:

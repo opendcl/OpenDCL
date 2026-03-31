@@ -23,13 +23,13 @@ public:
 			static const CString sFilter = _T("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 			return sFilter;
 		}
-	virtual bool FilterInput( TCHAR& chInput ) const //return false to disallow character, else fix it up
+	bool FilterInput( TCHAR& chInput ) const override //return false to disallow character, else fix it up
 		{
 			if( _istascii( chInput ) && _istlower( chInput ) )
 				chInput = _totupper( chInput );
 			return true;
 		}
-	virtual bool FilterInput( CString& sInput ) const //return false to discard input, else fix it up
+	bool FilterInput( CString& sInput ) const override //return false to discard input, else fix it up
 		{
 			sInput.MakeUpper();
 			return true;

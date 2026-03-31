@@ -2,6 +2,8 @@
 
 #define _ACADTARGET 16
 
+#define override
+
 //define ACHAR type
 typedef char ACHAR;
 #define ACRX_T(x) x
@@ -10,6 +12,16 @@ typedef char ACHAR;
 #include <TChar.h> //needed by acrxEntryPoint.cpp
 
 typedef unsigned char __RPC_FAR *RPC_CSTR;
+
+#include <memory>
+namespace std
+{
+	template <class T> class unique_ptr : public auto_ptr<T>
+	{
+	public:
+		explicit unique_ptr( T* p = 0 ) : auto_ptr<T>( p ) {}
+	};
+}
 
 
 //custom macro for use with command names that include special characters (e.g. hyphens)

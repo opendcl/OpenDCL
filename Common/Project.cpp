@@ -277,7 +277,7 @@ void CProject::DeletePicture( UINT_PTR nID )
 			TPropertyList& Props = (*iterControl)->GetPropertyList();
 			for( TPropertyList::iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
 			{
-				if( (*iterProp)->GetType() == PropPicture && (*iterProp)->GetLongValue() == nID )
+				if( (*iterProp)->GetType() == PropPicture && static_cast<size_t>( (*iterProp)->GetLongValue() ) == nID )
 				{
 					(*iterProp)->SetShortValue( -1 ); //reset the picture ID
 					if( (*iterControl)->GetControlInstance() )
@@ -354,7 +354,7 @@ TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentUniqueName, size_t n
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-		if ((*iterForm)->GetParentName() == pszParentUniqueName && (*iterForm)->GetTabIndex() == nTabIndex)
+		if ((*iterForm)->GetParentName() == pszParentUniqueName && static_cast<size_t>( (*iterForm)->GetTabIndex() ) == nTabIndex)
 			return (*iterForm);
 	}
 	return NULL;

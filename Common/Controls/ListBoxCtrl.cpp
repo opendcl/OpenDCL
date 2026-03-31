@@ -77,8 +77,8 @@ bool CListBoxCtrl::ApplyPropertiesEnum()
 	CRect rc;
 	GetWindowRect( &rc );
 	GetParent()->ScreenToClient( &rc );
-	MoveWindow( &CRect( 0, 0, 0, 0 ), FALSE );
-	MoveWindow( &rc );
+	MoveWindow( CRect( 0, 0, 0, 0 ), FALSE );
+	MoveWindow( rc );
 
 	return bSuccess;
 }

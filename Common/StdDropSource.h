@@ -1,6 +1,6 @@
 class CStdDropSource : public COleDropSource
 {
 public:
-	virtual SCODE QueryContinueDrag(BOOL bEscapePressed, DWORD dwKeyState);
-	virtual SCODE GiveFeedback(DROPEFFECT dropEffect);
+	SCODE QueryContinueDrag(BOOL bEscapePressed, DWORD dwKeyState) override;
+	SCODE GiveFeedback(DROPEFFECT dropEffect) override;
 };

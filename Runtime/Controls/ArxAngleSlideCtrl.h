@@ -21,11 +21,11 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
 
 // CRoundSliderCtrl Interface
-	virtual void PostMessageToParent( const int nTBCode ) const;
+	void PostMessageToParent( const int nTBCode ) const override;
 
 protected:
 	DECLARE_MESSAGE_MAP()

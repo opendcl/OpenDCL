@@ -24,21 +24,21 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return CFilteredEditCtrl::GetColorService(); }
-	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
-	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return CFilteredEditCtrl::GetColorService(); }
+	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override;
+	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;
+	HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor ) override;
 
 protected:
 	DECLARE_MESSAGE_MAP();
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual afx_msg void PostNcDestroy();
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void PostNcDestroy() override;
 	afx_msg void OnChange();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);

@@ -26,8 +26,8 @@ public:
 	virtual ~CArxDragDropService();
 
 public:
-	virtual bool RegisterControlAsDropTarget();
-	virtual bool RevokeControlAsDropTarget();
-	virtual COleDropTarget* GetCustomAcadDropTarget() const { return NULL; }
-	virtual DROPEFFECT BeginDragDrop( const CPoint& point );
+	bool RegisterControlAsDropTarget() override;
+	bool RevokeControlAsDropTarget() override;
+	COleDropTarget* GetCustomAcadDropTarget() const override { return NULL; }
+	DROPEFFECT BeginDragDrop( const CPoint& point ) override;
 };

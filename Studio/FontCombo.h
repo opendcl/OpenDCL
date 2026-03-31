@@ -78,11 +78,11 @@ protected:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CFontCombo)
-	public:
-	virtual void DeleteItem(LPDELETEITEMSTRUCT lpDeleteItemStruct);
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+public:
+	void DeleteItem(LPDELETEITEMSTRUCT lpDeleteItemStruct) override;
+	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
+	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	//}}AFX_VIRTUAL
 
 // Implementation

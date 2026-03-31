@@ -24,21 +24,21 @@ public:
 
 // Overrides
 public:
-	virtual BOOL CanCloseFrame(CFrameWnd* pFrame);
-	virtual void SetModifiedFlag(BOOL bModified = TRUE);
-	virtual BOOL SaveModified(); // return TRUE if ok to continue
-	virtual BOOL OnNewDocument();
-	virtual void OnCloseDocument();
-	afx_msg BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	afx_msg BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	virtual void Serialize(CArchive& ar);
+	BOOL CanCloseFrame(CFrameWnd* pFrame) override;
+	void SetModifiedFlag(BOOL bModified = TRUE) override;
+	BOOL SaveModified() override; // return TRUE if ok to continue
+	BOOL OnNewDocument() override;
+	void OnCloseDocument() override;
+	BOOL OnOpenDocument(LPCTSTR lpszPathName) override;
+	BOOL OnSaveDocument(LPCTSTR lpszPathName) override;
+	void Serialize(CArchive& ar) override;
 
 // Implementation
 public:
 	virtual ~COpenDCLDoc();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif
 
 protected:

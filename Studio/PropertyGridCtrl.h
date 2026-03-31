@@ -75,10 +75,10 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
+	BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

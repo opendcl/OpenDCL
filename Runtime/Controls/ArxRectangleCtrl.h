@@ -20,5 +20,5 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
 };

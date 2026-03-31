@@ -78,14 +78,15 @@ public:
 	//
 	//	Overrides to switch between external and document stream
 	//
-	virtual BOOL Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL );
-	virtual void Close( void );
-	virtual void Write( const void* lpBuf, UINT nCount );
-	virtual UINT Read( void* lpBuf, UINT nCount );
-	virtual ULONGLONG GetLength();
-	virtual void SeekToBegin();
-	virtual void Flush( );
-	virtual ULONGLONG Seek( LONG lOff, UINT nFrom );
+	virtual BOOL Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL ) override;
+	virtual void Close( void ) override;
+	virtual void Write( const void* lpBuf, UINT nCount ) override;
+	virtual UINT Read( void* lpBuf, UINT nCount ) override;
+	virtual ULONGLONG GetLength() const override;
+	virtual void Flush( ) override;
+	virtual ULONGLONG Seek( LONGLONG lOff, UINT nFrom ) override;
+
+	void SeekToBegin();
 
 
 // Overrides

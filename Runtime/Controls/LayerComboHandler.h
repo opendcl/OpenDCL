@@ -60,9 +60,9 @@ protected:
 	}
 
 public:
-	virtual bool IsOwnerDrawn() const { return true; }
-	virtual UINT GetItemHeight() const { return 16; }
-	virtual void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct )
+	bool IsOwnerDrawn() const override { return true; }
+	UINT GetItemHeight() const override { return 16; }
+	void DrawItem( CComboBox* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct ) override
 		{
 			CDC *pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 			int nIndexDC = pDC->SaveDC();
@@ -142,7 +142,7 @@ public:
 				pDC->DrawFocusRect( &lpDrawItemStruct->rcItem );
 			pDC->RestoreDC( nIndexDC );
 		}
-	virtual bool PopulateList( CComboBox* pCombo )
+	bool PopulateList( CComboBox* pCombo ) override
 		{
 			CString sSelected;
 			pCombo->GetWindowText(sSelected);

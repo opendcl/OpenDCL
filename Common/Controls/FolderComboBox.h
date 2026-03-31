@@ -127,9 +127,9 @@ protected:
 	afx_msg LRESULT OnCbSetCurSel( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnCbSetTopIndex( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnCbShowDropDown( WPARAM wParam, LPARAM lParam );
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	afx_msg void OnCancelMode();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);

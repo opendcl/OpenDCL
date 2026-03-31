@@ -17,8 +17,8 @@ public:
 	CPasswordFilter() {}
 	virtual ~CPasswordFilter() {}
 public:
-	virtual const CString& GetFilter() const { return msEmptyFilter; }
-	virtual bool FilterInput( TCHAR& chInput ) const { return true; }
-	virtual bool FilterInput( CString& sInput ) const { return true; }
-	virtual bool IsMaskedInput() const { return true; }
+	const CString& GetFilter() const override { return msEmptyFilter; }
+	bool FilterInput( TCHAR& chInput ) const override { return true; }
+	bool FilterInput( CString& sInput ) const override { return true; }
+	bool IsMaskedInput() const override { return true; }
 };

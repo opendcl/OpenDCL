@@ -279,9 +279,10 @@ ADSRESULT OptionList::SetButtonTooltip()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlOptionList ) )
 		return RSERR; //invalid input
 
-	int nItem;
-	if( !GetIntArgument( pArgs, nItem ) )
+	int nItemArg;
+	if( !GetIntArgument( pArgs, nItemArg ) )
 		return RSERR; //invalid input
+	size_t nItem = static_cast<size_t>( nItemArg );
 
 	CString sText;
 	if( !GetStringArgument( pArgs, sText ) )

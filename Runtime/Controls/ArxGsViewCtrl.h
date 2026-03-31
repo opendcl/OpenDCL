@@ -261,36 +261,36 @@ protected:
 		AcGsModel* GetGsModel() const { return mpModel; }
 		AcGsDevice* GetGsDevice() const { return mpDevice; }
 	protected:
-		virtual void goodbye( const AcDbDatabase* dwg )
+		void goodbye( const AcDbDatabase* dwg ) override
 			{
 				if( mpDb == dwg )
 					clear();
 			}
-		virtual void viewToBeDestroyed( AcGsView* pView )
+		void viewToBeDestroyed( AcGsView* pView ) override
 			{
 				if( mpView == pView )
 					clear();
 			}
 	#if defined(_GRXTARGET) && (_GRXTARGET <= 2022)
-		virtual void gsToBeUnloaded( OdGsModule* pModule )
+		void gsToBeUnloaded( OdGsModule* pModule ) override
 			{
 				assert( pModule != NULL );
 				clear();
 			}
 	#elif (_ACADTARGET >= 20)
-		virtual void gsToBeUnloaded( AcGsGraphicsKernel* pKernel )
+		void gsToBeUnloaded( AcGsGraphicsKernel* pKernel ) override
 			{
 				assert( mpKernel == pKernel );
 				clear();
 			}
 	#else
-		virtual void gsToBeUnloaded( AcGsClassFactory* pClassFactory )
+		void gsToBeUnloaded( AcGsClassFactory* pClassFactory ) override
 			{
 				assert( mpFactory == pClassFactory );
 				clear();
 			}
 	#endif
-		virtual void quitWillStart() //only reached in Bricscad v14.2.06 and later
+		void quitWillStart() override //only reached in Bricscad v14.2.06 and later
 			{
 			#if defined(_GRXTARGET) || (_ACADTARGET >= 20)
 				clear();
@@ -315,13 +315,14 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	COleDropTarget* GetDropOnAcadTarget() override { return &mBlockInsertDropTarget; }
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
 
 protected:
 	AcGsView* GetGsView() { return (mpGsManager? mpGsManager->GetGsView() : NULL); }
@@ -353,8 +354,8 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);

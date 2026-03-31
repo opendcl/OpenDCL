@@ -44,8 +44,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CPictureFolder)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+protected:
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -55,9 +55,9 @@ protected:
 	//{{AFX_MSG(CPictureFolder)
 	afx_msg void OnAdd();
 	afx_msg void OnDelete();
-	virtual void OnOK();
-	virtual void OnCancel();
-	virtual BOOL OnInitDialog();
+	void OnOK() override;
+	void OnCancel() override;
+	BOOL OnInitDialog() override;
 	afx_msg void OnSelchangePicturelist();
 	afx_msg void OnUpdate();
 	afx_msg void OnExport();

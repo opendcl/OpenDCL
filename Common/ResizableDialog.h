@@ -149,7 +149,7 @@ public:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CResizableDialog)
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

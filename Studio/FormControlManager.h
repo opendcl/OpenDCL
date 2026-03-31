@@ -38,8 +38,8 @@ public:
 	bool ActivateControlsInRect( const CRect& rc );
 
 protected:
-	//virtual void OnSelected( bool bSelected ) {}
-	virtual void DrawTrackerRect( LPCRECT lpRect, CWnd* pWndClipTo, CDC* pDC, CWnd* pWnd );
+	//void OnSelected( bool bSelected ) override {}
+	void DrawTrackerRect( LPCRECT lpRect, CWnd* pWndClipTo, CDC* pDC, CWnd* pWnd ) override;
 
 	// Generated message map functions
 protected:

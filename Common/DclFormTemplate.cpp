@@ -491,7 +491,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 					else
 					{
 						UINT_PTR nNewID = GetUniqueControlId();
-						if (nID == nNewID)
+						if (static_cast<UINT_PTR>( nID ) == nNewID)
 							++nNewID;
 						(*iter)->SetID( nNewID );
 					}

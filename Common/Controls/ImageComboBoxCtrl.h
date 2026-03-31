@@ -25,12 +25,12 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual CRect GetWndRect() const;
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
-	virtual CAcadColorService* GetColorService() { return CFilteredComboExCtrl::GetColorService(); }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	CRect GetWndRect() const override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override; //Prop::UseVisualStyle
+	CAcadColorService* GetColorService() override { return CFilteredComboExCtrl::GetColorService(); }
 
 public:
 	virtual DWORD GetComboStyle() const;
@@ -46,10 +46,10 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual afx_msg void PostNcDestroy();
-	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void PostNcDestroy() override;
+	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnCbnDropdown();
 	afx_msg void OnCbnCloseup();

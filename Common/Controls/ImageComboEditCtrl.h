@@ -135,7 +135,7 @@ public:
 			mpHandler = NULL;
 			delete pHandler;
 		}
-	virtual CInputFilter* GetInputFilter() { return mpHandler? mpHandler->GetInputFilter() : NULL; }
+	CInputFilter* GetInputFilter() override { return mpHandler? mpHandler->GetInputFilter() : NULL; }
 
 protected:
 	static const AFX_MSGMAP* PASCAL GetThisMessageMap()
@@ -152,13 +152,13 @@ protected:
 			static const AFX_MSGMAP messageMap =  { &__super::GetThisMessageMap, &_messageEntries[0] };
 			return &messageMap; \
 		}
-	virtual const AFX_MSGMAP* GetMessageMap() const
+	const AFX_MSGMAP* GetMessageMap() const override
 		{
 			return GetThisMessageMap();
 		}
 
 protected:
-	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+	afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override
 		{
 			if( mpHandler )
 				mpHandler->DrawItem( this, lpDrawItemStruct );

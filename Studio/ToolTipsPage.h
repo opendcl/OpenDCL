@@ -59,14 +59,14 @@ protected:
 
 // Overrides
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual BOOL OnApply();
-	virtual void OnOK();
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	BOOL OnApply() override;
+	void OnOK() override;
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnPreview();
 	afx_msg void OnBold();
 	afx_msg void OnItalic();

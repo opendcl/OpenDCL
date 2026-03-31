@@ -22,8 +22,8 @@ public:
 
 // DialogControl Interface
 public:
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 public:
 	void SetPicture( TPicturePtr pPict );
@@ -32,7 +32,7 @@ public:
 	TPicturePtr GetMouseOverPicture() const { return mpMouseOverPicture; }
 
 protected:
-	virtual void UpdateButtonGraphic();
+	void UpdateButtonGraphic() override;
 
 protected:
 	DECLARE_MESSAGE_MAP();

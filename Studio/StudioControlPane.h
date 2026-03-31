@@ -27,11 +27,11 @@ protected:
 
 // Implementation
 public:
-	virtual void ApplyPosition( TDialogControlPtr pDlgControl ); //move control window to new position
+	void ApplyPosition( TDialogControlPtr pDlgControl ) override; //move control window to new position
 
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
-	virtual void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
-	virtual void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
-	virtual bool IsInvisibleControlAllowed(  TDialogControlPtr pDlgControl ) const { return false; }
+	TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID ) override;
+	void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL ) override;
+	void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL ) override;
+	bool IsInvisibleControlAllowed(  TDialogControlPtr pDlgControl ) const override { return false; }
 };

@@ -2,6 +2,16 @@
 
 #define _ACADTARGET 17
 
+#include <memory>
+namespace std
+{
+	template <class T> class unique_ptr : public auto_ptr<T>
+	{
+	public:
+		explicit unique_ptr( T* p = 0 ) : auto_ptr<T>( p ) {}
+	};
+}
+
 
 //custom macro for use with command names that include special characters (e.g. hyphens)
 #define ACED_ARXCOMMAND_ENTRY_KEY_AUTO(classname, key, group, globCmd, locCmd, cmdFlags, UIContext) \

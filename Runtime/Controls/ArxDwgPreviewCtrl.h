@@ -35,16 +35,17 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
-	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	COleDropTarget* GetDropOnAcadTarget() override { return &mBlockInsertDropTarget; }
+	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override; //called to get drag data from this control
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void OnNeedRepaint( bool bRepaintBackground = false, bool bUpdateNow = false ) const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void OnNeedRepaint( bool bRepaintBackground = false, bool bUpdateNow = false ) const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
 
 protected:
 	void Reset();
@@ -63,8 +64,8 @@ private:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);

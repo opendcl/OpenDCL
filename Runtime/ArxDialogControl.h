@@ -20,7 +20,7 @@ public:
 	CArxDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl );
 	virtual ~CArxDialogControl();
 
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
 
 	static TDialogControlPtr Create( TDclControlPtr pTemplate, CControlPane* pPane,
 																	 UINT nID, ControlParams* pParams = NULL );

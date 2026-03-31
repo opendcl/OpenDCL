@@ -56,24 +56,24 @@ public:
 		{
 			DWORD dwStyle = (WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL | ES_WANTRETURN | ES_LEFT);
 			dwStyle |= _Style;
-			if( !Create( dwStyle, CalcRect( pGridCtrl->GetCellRect( nRow, nCol ) ), pGridCtrl, nID ) )
+			if( !_Base::Create( dwStyle, CalcRect( pGridCtrl->GetCellRect( nRow, nCol ) ), pGridCtrl, nID ) )
 				return;
 			DWORD dwAcUiStyle = ((_AcUiStyle == (DWORD)-1)?
 														(AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS | AC_ES_SHOW_ERRMSG) :
 														_AcUiStyle);
-			SetStyleMask( dwAcUiStyle );
-			SetFont( pGridCtrl->GetFont() );
-			SetWindowText( pGridCtrl->GetCellText( nRow, nCol ) );
-			SetSel( 0, -1, TRUE );
-			SetFocus();
+			_Base::SetStyleMask( dwAcUiStyle );
+			_Base::SetFont( pGridCtrl->GetFont() );
+			_Base::SetWindowText( pGridCtrl->GetCellText( nRow, nCol ) );
+			_Base::SetSel( 0, -1, TRUE );
+			_Base::SetFocus();
 		}
 	virtual ~CAcUiTextBoxEditCtrl()
 		{
 			CString sText;
-			GetWindowText( sText );
-			ConvertData( sText );
+			_Base::GetWindowText( sText );
+			_Base::ConvertData( sText );
 			mpGridCtrl->SetCellText( mnRow, mnCol, sText );
-			DestroyWindow();
+			_Base::DestroyWindow();
 		}
 };
 typedef CAcUiTextBoxEditCtrl< CAcUiStringEdit > CAcUiStringEditCtrl;
@@ -173,7 +173,7 @@ class CAcUiComboEditCtrl : public TAcUiBase, public CGridCellEditCtrl
 			, mpfShowDropdownHandler( pfShowDropdownHandler )
 			{}
 	protected:
-		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override
 			{
 				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
 				if( message == WM_COMMAND )
@@ -219,25 +219,25 @@ public:
 			rcCtrl.MoveToXY( 0, 0 );
 			DWORD dwComboStyle = (WS_VISIBLE | WS_CHILD | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS | CBS_AUTOHSCROLL);
 			dwComboStyle |= _Style;
-			if( !Create( dwComboStyle, rcCtrl, &mClippingWnd, 100 ) )
+			if( !_Base::Create( dwComboStyle, rcCtrl, &mClippingWnd, 100 ) )
 				return;
-			SetDroppedWidth( 200 );
+			_Base::SetDroppedWidth( 200 );
 			DWORD dwAcUiStyle = ((_AcUiStyle == (DWORD)-1)?
 														(AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS | AC_ES_SHOW_ERRMSG) :
 														_AcUiStyle);
 #ifndef _ZRXTARGET //SetStyleMask() crashes in ZWCAD 2022/2023 (maybe earlier versions as well)
-			SetStyleMask( dwAcUiStyle );
+			_Base::SetStyleMask( dwAcUiStyle );
 #endif
-			SetFont( pGridCtrl->GetFont() );
-			GetWindowRect( &rcCtrl );
+			_Base::SetFont( pGridCtrl->GetFont() );
+			_Base::GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
 			CRect rcClip;
 			rcClip.IntersectRect( &rcCtrl, CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
 			mClippingWnd.SetWindowPos( NULL, 0, 0, rcClip.Width(), rcClip.Height(),
 																 (SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
 			rcCtrl.MoveToY( rcCtrl.top + rcClip.Height() - rcCtrl.Height() );
-			SetWindowPos( NULL, 0, rcCtrl.top, 0, 0,
-										(SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
+			_Base::SetWindowPos( NULL, 0, rcCtrl.top, 0, 0,
+													 (SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
 			std::vector< tstring > rsComboList;
 			std::vector< int > rImage;
 			pGridCtrl->GetCellComboListItems( nRow, nCol, rsComboList, rImage );
@@ -245,43 +245,43 @@ public:
 			for( size_t idx = 0; idx < rsComboList.size(); ++idx )
 			{
 				LPCTSTR pszItem = rsComboList.at( idx ).c_str();
-				AddString( pszItem );
+				_Base::AddString( pszItem );
 				int nTextWidth = 0;
 				int nTextHeight = 0;
-				GetTextExtent( pszItem, nTextWidth, nTextHeight );
+				_Base::GetTextExtent( pszItem, nTextWidth, nTextHeight );
 				if( nTextWidth > nMinWidth )
 					nMinWidth = nTextWidth;
 			}
 			if( nMinWidth > (rcClip.Width() * 3) )
 				nMinWidth = rcClip.Width() * 3;
 			if( nMinWidth > 0 )
-				SetDroppedWidth( nMinWidth );
-			if( GetCount() == 0 )
+				_Base::SetDroppedWidth( nMinWidth );
+			if( _Base::GetCount() == 0 )
 			{
 				CRect rcWnd;
-				GetWindowRect( &rcWnd );
-				SetWindowPos( NULL, 0, 0, rcWnd.Width(), rcWnd.Height(), (SWP_NOZORDER | SWP_NOMOVE) );
+				_Base::GetWindowRect( &rcWnd );
+				_Base::SetWindowPos( NULL, 0, 0, rcWnd.Width(), rcWnd.Height(), (SWP_NOZORDER | SWP_NOMOVE) );
 			}
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
 			CAcUiComboHelper< TAcUiBase >::SetCurSelFromValue( this, pGridCtrl->GetCellImage( nRow, nCol ), sText );
-			SetWindowText( sText );
-			SetEditSel( 0, -1 );
+			_Base::SetWindowText( sText );
+			_Base::SetEditSel( 0, -1 );
 			mClippingWnd.ShowWindow( SW_SHOW );
-			SetFocus();
-			if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
-				ShowDropDown();
+			_Base::SetFocus();
+			if( (_Base::GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+				_Base::ShowDropDown();
 		}
 	virtual ~CAcUiComboEditCtrl()
 		{
 			CString sText;
-			GetWindowText( sText );
-			ConvertData( sText );
+			_Base::GetWindowText( sText );
+			_Base::ConvertData( sText );
 			mpGridCtrl->SetCellTextImage( mnRow, mnCol, sText, CAcUiComboHelper< TAcUiBase >::GetCellValue( this ) );
 			mClippingWnd.DestroyWindow();
 		}
 	__if_exists(TAcUiBase::OnSelectOther)
 	{
-	virtual BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel )
+	BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel ) override
 	{
 		mbInModalLoop = true;
 		BOOL bResult = __super::OnSelectOther( isOther2, curSel, newSel );
@@ -289,10 +289,10 @@ public:
 		return bResult;
 	}
 	}
-	virtual bool isInModalLoop() { return mbInModalLoop; }
+	bool isInModalLoop() override { return mbInModalLoop; }
 	void onShowDropdown( bool bShow )
 		{
-			if( !bShow && (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+			if( !bShow && (_Base::GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
 				mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 		}
 };
@@ -304,7 +304,7 @@ public:
 	{
 	}
 protected:
-	virtual BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel )
+	BOOL OnSelectOther( BOOL isOther2, int curSel, int& newSel ) override
 	{
 		CAutoDocWriteLock DocLock( acdbCurDwg() ); //must lock document or AutoCAD crashes when adding a new plot style
 		return __super::OnSelectOther(isOther2, curSel, newSel);
@@ -435,7 +435,7 @@ public:
 		#endif
 			resbuf rbColor = { &rbT };
 			resbuf rbFuncName = { &rbColor, RTSTR };
-			rbFuncName.resval.rstring = _T("acad_truecolordlg");
+			rbFuncName.resval.rstring = (ACHAR*)_T("acad_truecolordlg");
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
 			if( nCellImage == -1 )
 			{
@@ -848,7 +848,7 @@ void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CArxGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize(0, 0)*/, bool bCalcOnly /*= false*/ )
+void CArxGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(0, 0)*/, bool bCalcOnly /*= false*/ )
 {
 	__super::DrawCell( nRow, nCol, cdc, sizCell, bCalcOnly );
 }

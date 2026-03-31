@@ -212,7 +212,7 @@ protected:
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)

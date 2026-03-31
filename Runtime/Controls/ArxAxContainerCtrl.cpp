@@ -392,7 +392,7 @@ template<> class arg_t< DISPPARAMS* > : arg_b
 public:
 	typedef DISPPARAMS* type;
 	arg_t( DISPPARAMS* arg ) : _arg( arg ) {}
-	virtual resbuf* asResbuf() const
+	resbuf* asResbuf() const override
 		{
 			if( !_arg || _arg->cArgs == 0 )
 				return NULL;
@@ -411,7 +411,7 @@ public:
 			}
 			return prbHead;
 		}
-	virtual CString asString() const
+	CString asString() const override
 		{
 			if( !_arg || _arg->cArgs == 0 )
 				return _T("");

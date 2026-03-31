@@ -13,6 +13,7 @@
       <PreprocessorDefinitions>_ACADTARGET=17;_ARXTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalUsingDirectories>$(ARX2008X64)\Inc</AdditionalUsingDirectories>
+      <AdditionalOptions>/wd4481 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_ACADTARGET=17;_ARXTARGET=17;%(PreprocessorDefinitions)</PreprocessorDefinitions>

@@ -38,6 +38,8 @@
 #ifndef _BTNST_H
 #define _BTNST_H
 
+#define ODCL_BUTTONST_CHANGES //required for C++20 compatibility
+
 // Uncomment the following 2 lines to enable support for BCMenu class
 //#define	BTNST_USE_BCMENU
 //#include "BCMenu.h"

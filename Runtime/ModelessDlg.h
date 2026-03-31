@@ -29,25 +29,25 @@ public:
 
 // CDialogObject overrides
 public:
-	virtual FormType GetType() const { return FrmModelessDlg; }
-	virtual bool IsModeless() const { return true; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool CreateModeless( UINT nID );
-	virtual void CloseDialog(int nStatus);
+	FormType GetType() const override { return FrmModelessDlg; }
+	bool IsModeless() const override { return true; }
+	bool IsDockable() const override { return false; }
+	bool CreateModeless( UINT nID ) override;
+	void CloseDialog(int nStatus) override;
 protected:
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 // CDialog Overrides
 protected:
-	virtual void OnOK();
-	virtual void OnCancel();
+	void OnOK() override;
+	void OnCancel() override;
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL OnInitDialog();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL OnInitDialog() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg LRESULT onAcadKeepFocus(WPARAM, LPARAM);
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

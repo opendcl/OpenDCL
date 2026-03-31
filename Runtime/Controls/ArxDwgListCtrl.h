@@ -38,16 +38,16 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
-	virtual COleDropTarget* GetDropOnAcadTarget() { return &mBlockInsertDropTarget; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	COleDropTarget* GetDropOnAcadTarget() override { return &mBlockInsertDropTarget; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 // ListBoxCtrl Interface
-	virtual LPCTSTR GetDragTextPrefix() const;
+	LPCTSTR GetDragTextPrefix() const override;
 
 // Operations
 public:
@@ -59,8 +59,8 @@ protected:
 
 // Overrides
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
 
 protected:
 	DECLARE_MESSAGE_MAP()

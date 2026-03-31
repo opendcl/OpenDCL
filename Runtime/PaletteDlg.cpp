@@ -482,6 +482,10 @@ bool CPaletteDlg::OnClosing()
 	GetArxServices()->HandleEvent( Prop::FormEventClose, args_NN( rcThis.left, rcThis.top ) );
 	if( /*!mbHiding && */!IsFloating() )
 		mHostPaletteSet.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
+#if (_ZRXTARGET)
+	else
+		mHostPaletteSet.PostMessage(WM_CLOSE);
+#endif
 	return true;
 }
 

@@ -76,7 +76,8 @@ void CImageListObject::Serialize(CArchive& ar)
 		else
 		{
 			ar << false;
-			SafeImageListWrite( mImageList.m_hImageList, &CArchiveStream( &ar ) );
+			CArchiveStream is( &ar );
+			SafeImageListWrite( mImageList.m_hImageList, &is );
 		}
 	}
 	else

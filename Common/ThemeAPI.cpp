@@ -250,7 +250,7 @@ public:
 	HRESULT EnableThemeDialogTexture( HWND hwnd, DWORD dwFlags ) { CHECK(EnableThemeDialogTexture)( hwnd, dwFlags ) : E_NOTIMPL; }
 	BOOL IsThemeDialogTextureEnabled( HWND hwnd ) { CHECK(IsThemeDialogTextureEnabled)( hwnd ) : FALSE; }
 	DWORD GetThemeAppProperties( VOID ) { CHECK(GetThemeAppProperties)() : 0; }
-	void SetThemeAppProperties( DWORD dwFlags ) { CHECK(SetThemeAppProperties)( dwFlags ) : 0; }
+	void SetThemeAppProperties( DWORD dwFlags ) { CHECK(SetThemeAppProperties)( dwFlags ) : (void)0; }
 	HRESULT GetCurrentThemeName( LPWSTR pszThemeFileName, int cchMaxNameChars, LPWSTR pszColorBuff, int cchMaxColorChars, LPWSTR pszSizeBuff, int cchMaxSizeChars ) { CHECK(GetCurrentThemeName)( pszThemeFileName, cchMaxNameChars, pszColorBuff, cchMaxColorChars, pszSizeBuff, cchMaxSizeChars ) : E_NOTIMPL; }
 	HRESULT GetThemeDocumentationProperty( LPCWSTR pszThemeName, LPCWSTR pszPropertyName, LPWSTR pszValueBuff, int cchMaxValChars ) { CHECK(GetThemeDocumentationProperty)( pszThemeName, pszPropertyName, pszValueBuff, cchMaxValChars ) : E_NOTIMPL; }
 	HRESULT DrawThemeParentBackground( HWND hwnd, HDC hdc, const RECT* prc ) { CHECK(DrawThemeParentBackground)( hwnd, hdc, prc ) : E_NOTIMPL; }

@@ -19,8 +19,8 @@ class CArxDialogObject : public CDialogObject
 	public:
 		CDocReactor( CArxDialogObject* pDialogobject );
 		~CDocReactor();
-		virtual void documentActivated(AcApDocument* pActivatedDoc);
-		virtual void documentToBeDestroyed(AcApDocument* pDocToDestroy);
+		void documentActivated(AcApDocument* pActivatedDoc) override;
+		void documentToBeDestroyed(AcApDocument* pDocToDestroy) override;
 	} mDocReactor;
 
 public:
@@ -28,9 +28,9 @@ public:
 	virtual ~CArxDialogObject();
 
 public:
-	virtual const CControlPane* GetControlPane() const { return &mControlPane; }
-	virtual CControlPane* GetControlPane() { return &mControlPane; }
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	const CControlPane* GetControlPane() const override { return &mControlPane; }
+	CControlPane* GetControlPane() override { return &mControlPane; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
 
 public:
 	bool IsEnteringNoDocState() const { return mbEnteringNoDocState; }

@@ -313,12 +313,12 @@ void CArxGsViewCtrl::OnPaint()
 				AcRxOverrule::removeOverrule( AcDbAttributeDefinition::desc(), this );
 			}
 		protected:
-			virtual bool isApplicable( const AcRxObject* ) const { return true; }
-			virtual Adesk::UInt32 setAttributes( AcGiDrawable* pSubject, AcGiDrawableTraits* traits )
+			bool isApplicable( const AcRxObject* ) const override { return true; }
+			Adesk::UInt32 setAttributes( AcGiDrawable* pSubject, AcGiDrawableTraits* traits ) override
 			{
 				return (AcGiDrawableOverrule::setAttributes( pSubject, traits ) & ~AcGiDrawable::kDrawableIsInvisible);
 			}
-			virtual Adesk::Boolean worldDraw( AcGiDrawable* pSubject, AcGiWorldDraw* wd )
+			Adesk::Boolean worldDraw( AcGiDrawable* pSubject, AcGiWorldDraw* wd ) override
 			{
 				AcRxObject* pClone = pSubject->clone();
 				if ( !pClone )

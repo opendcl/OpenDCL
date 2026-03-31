@@ -38,11 +38,12 @@ public:
 
 // CDialogObject overrides
 public:
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	bool IsResizable() const override { return mbResizable; }
+	bool OnApplyResizable( TPropertyPtr pProp ) override; //Prop::AllowResizing
+
 	virtual const CDialogObject& GetDialogObject() const { return *this; }
 	virtual CDialogObject& GetDialogObject() { return *this; }
-	virtual bool IsResizable() const { return mbResizable; }
-	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 
 protected:
 	void SavePosition();
@@ -52,8 +53,8 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
-	virtual BOOL OnInitDialog();
+	void DoDataExchange(CDataExchange* pDX) override;	// DDX/DDV support
+	BOOL OnInitDialog() override;
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
@@ -61,9 +62,9 @@ protected:
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
   afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
-	afx_msg void PostNcDestroy();
+	void PostNcDestroy() override;
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

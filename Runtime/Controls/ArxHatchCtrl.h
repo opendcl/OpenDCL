@@ -22,7 +22,7 @@ public:
 
 // DialogControl Interface
 public:
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 // AcGsViewCtrl Interface
 protected:

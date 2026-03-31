@@ -392,14 +392,14 @@ public:
 											kBRX26 = 26,
 											kZRX2014 = 14, kZRX2015 = 15, kZRX2017 = 17, kZRX2018 = 18,
 											kZRX2019 = 19, kZRX2020 = 20, kZRX2021 = 21, kZRX2022 = 22,
-											kZRX2023 = 23, kZRX2024 = 24, kZRX2025 = 25,
+											kZRX2023 = 23, kZRX2024 = 24, kZRX2025 = 25, kZRX2026 = 26,
 											kGRX2015 = 15, kGRX2016 = 16, kGRX2017 = 17, kGRX2018 = 18,
 											kGRX2019 = 19, kGRX2020 = 20, kGRX2021 = 21, kGRX2022 = 22,
 											kGRX2023 = 23, kGRX2024 = 24, kGRX2025 = 25, kGRX2026 = 26,
 											kARX1 = 13, kARX2 = 14, kARX2000 = 15, kARX2004 = 16,
 											kARX2007 = 17, kARX2010 = 18, kARX2013 = 19, kARX2015 = 20,
 											kARX2017 = 21, kARX2018 = 22, kARX2019 = 23, kARX2021 = 24,
-											kARX2025 = 25, };
+											kARX2025 = 25, kARX2027 = 26, };
 	typedef char TByte;
 	TargetModule( Architecture architecture, Platform platform, MajorVersion majorVer, TByte minorVer, LPCTSTR pszInstallDir = NULL )
 		: mArchitecture( architecture )
@@ -528,6 +528,7 @@ public:
 		kAutoCAD2024x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2021 << shftMajorVer) | 3),
 		kAutoCAD2025x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2025 << shftMajorVer) | 0),
 		kAutoCAD2026x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2025 << shftMajorVer) | 1),
+		kAutoCAD2027x64 =    (kX64Architecture | kAutoCADPlatform | (kARX2027 << shftMajorVer) | 0),
 		kBricscad9_3 =       (kX86Architecture | kBricscadPlatform | (kBRX9 << shftMajorVer) | 3),
 		kBricscad10 =        (kX86Architecture | kBricscadPlatform | (kBRX10 << shftMajorVer) | 0),
 		kBricscad11 =        (kX86Architecture | kBricscadPlatform | (kBRX11 << shftMajorVer) | 0),
@@ -570,9 +571,10 @@ public:
 		kZWCAD2022x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2022 << shftMajorVer) | 0),
 		kZWCAD2023x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2023 << shftMajorVer) | 0),
 		kZWCAD2023x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2023 << shftMajorVer) | 0),
-		kZWCAD2024x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2023 << shftMajorVer) | 0),
+		kZWCAD2024x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2024 << shftMajorVer) | 0),
 		kZWCAD2024x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2024 << shftMajorVer) | 0),
 		kZWCAD2025x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2025 << shftMajorVer) | 0),
+		kZWCAD2026x64 =      (kX64Architecture | kZWCADPlatform | (kZRX2026 << shftMajorVer) | 0),
 		kGstarCAD2015x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
 		kGstarCAD2015x64 =      (kX64Architecture | kGstarCADPlatform | (kGRX2015 << shftMajorVer) | 0),
 		kGstarCAD2016x86 =      (kX86Architecture | kGstarCADPlatform | (kGRX2016 << shftMajorVer) | 0),
@@ -902,6 +904,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2023x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2024x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2025x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kZWCAD2026x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad13x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad14x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad15x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -935,6 +938,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2024x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2025x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2026x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2027x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 	}
 }
 
@@ -1100,6 +1104,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R24.3"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R25.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R25.1"), hkRoot, true );
+		RemoveAllRegTargets( _T("Autodesk\\AutoCAD\\R26.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V13x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V14x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V15x64"), hkRoot, true );
@@ -1123,6 +1128,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2023"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2024"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2025"), hkRoot, true );
+		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2026"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R15.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R16.0"), hkRoot, true );
 		RemoveAllRegTargets( _T("Gstarsoft\\GstarCAD\\R17.0"), hkRoot, true );

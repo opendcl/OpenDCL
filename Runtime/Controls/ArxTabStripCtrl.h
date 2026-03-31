@@ -34,9 +34,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const;
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const override;
 
 // Operations
 public:
@@ -66,5 +66,5 @@ protected:
 	afx_msg void OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult );	
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
 	afx_msg void OnSetFocus( CWnd* pOldWnd );
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 };

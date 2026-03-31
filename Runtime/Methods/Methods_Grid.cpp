@@ -390,7 +390,7 @@ ADSRESULT Grid::GetRowCells()
 	resbuf* prbResult = NULL;
 	resbuf* prbTail = NULL;
 	size_t ctCol = pCtrl->GetColumnCount();
-	for( int idxCol = 0; idxCol < ctCol; ++idxCol )
+	for( size_t idxCol = 0; idxCol < ctCol; ++idxCol )
 	{
 		if( prbTail )
 		{
@@ -538,7 +538,8 @@ ADSRESULT Grid::HitPointTest()
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
 	int nRow = -1, nCol = -1;
-	pCtrl->CellHitTest( pDlgControl->FromDIP( CPoint( nX, nY ) ), nRow, nCol );
+	CPoint pt( nX, nY );
+	pCtrl->CellHitTest( pDlgControl->FromDIP( pt ), nRow, nCol );
 	ReturnRowCol( nRow, nCol );
 	return RSRSLT;
 }

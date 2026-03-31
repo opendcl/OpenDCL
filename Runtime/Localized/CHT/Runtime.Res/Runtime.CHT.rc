@@ -121,8 +121,8 @@ IDI_PRINTER             ICON                    "Res\\Printer.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 9, 3, 1, 1
- PRODUCTVERSION 9, 3, 1, 1
+ FILEVERSION 9, 3, 2, 1
+ PRODUCTVERSION 9, 3, 2, 1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -139,13 +139,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Runtime Resources - Chinese"
-            VALUE "FileVersion", "9, 3, 1, 1"
+            VALUE "FileVersion", "9, 3, 2, 1"
             VALUE "InternalName", "OpenDCL.Runtime"
             VALUE "LegalCopyright", "Copyright c 2025 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "Runtime.Res.dll"
             VALUE "ProductName", "OpenDCL Runtime"
-            VALUE "ProductVersion", "9, 3, 1, 1"
+            VALUE "ProductVersion", "9, 3, 2, 1"
         END
     END
     BLOCK "VarFileInfo"

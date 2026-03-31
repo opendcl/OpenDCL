@@ -187,7 +187,7 @@ private:
 	typedef RefCountedPtr< T, R > _base;
 
 public:
-	LockedPtr( T* pTarget ) : _base( pTarget ) { Lock(); }
+	LockedPtr( T* pTarget ) : _base( pTarget ) { _base::Lock(); }
 	virtual ~LockedPtr(void) {}
 };
 
@@ -201,12 +201,17 @@ public:
 	RefCountedPtrAsIUnknown< _RefCountedPtr >( _RefCountedPtr& Src )
 	: R( Src )
 		{}
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1600)
+	RefCountedPtrAsIUnknown< _RefCountedPtr >( _RefCountedPtr&& Src )
+	: R( Src )
+		{}
+#endif
 
 	operator _RefCountedPtr() { return R; }
 
 	//IUnknown interface
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface( /*[in]*/ REFIID riid,
-																										/*[iid_is][out]*/ void __RPC_FAR *__RPC_FAR *ppvObject )
+	HRESULT STDMETHODCALLTYPE QueryInterface( /*[in]*/ REFIID riid,
+																						/*[iid_is][out]*/ void __RPC_FAR *__RPC_FAR *ppvObject ) override
 		{
 			if( !ppvObject )
 				return E_POINTER;
@@ -219,6 +224,6 @@ public:
 			*ppvObject = NULL;
 			return E_NOINTERFACE;
 		}
-	virtual ULONG STDMETHODCALLTYPE AddRef( void ) { return RefCounterBase::AddRef(); }
-	virtual ULONG STDMETHODCALLTYPE Release( void ) { return RefCounterBase::Release(); }
+	ULONG STDMETHODCALLTYPE AddRef( void ) override { return RefCounterBase::AddRef(); }
+	ULONG STDMETHODCALLTYPE Release( void ) override { return RefCounterBase::Release(); }
 };

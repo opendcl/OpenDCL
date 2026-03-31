@@ -32,7 +32,7 @@ protected:
 
 // Overrides
 protected:
-	virtual BOOL InitInstance();
+	BOOL InitInstance() override;
 
 // Implementation
 	DECLARE_MESSAGE_MAP()

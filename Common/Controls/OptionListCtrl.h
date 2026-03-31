@@ -32,11 +32,11 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	CAcadColorService* GetColorService() override { return &mColorService; }
 
 // Operations
 public:
@@ -45,10 +45,10 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual void PostNcDestroy();
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	void PostNcDestroy() override;
+	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	

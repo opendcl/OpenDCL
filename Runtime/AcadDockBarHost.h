@@ -28,28 +28,30 @@ public:
 public:
 	virtual bool Create( LPCTSTR lpszTitle, CRect rect, UINT nID );
 	virtual void GetClientArea(CRect &rect);
-	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
-	virtual bool OnClosing();
+	void SizeChanged (CRect *lpRect, BOOL bFloating, int flags) override;
+	bool OnClosing() override;
 
 private:
-	virtual bool CanFrameworkTakeFocus();
-	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
-	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
-	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
-	virtual BOOL AddCustomMenuItems(LPARAM hMenu);
+	bool CanFrameworkTakeFocus() override;
+	void OnUserSizing(UINT fwSide, LPRECT pRect) override;
+	CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz ) override;
+#if !defined(_GRXTARGET)
+	void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight) override;
+#endif
+	BOOL AddCustomMenuItems(LPARAM hMenu) override;
 
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void PostNcDestroy();
+	void PostNcDestroy() override;
 	afx_msg LRESULT OnFrameChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);

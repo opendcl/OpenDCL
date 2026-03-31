@@ -35,14 +35,14 @@ public:
 
 // Overrides
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
 // Implementation
 protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 
 protected:
 	DECLARE_MESSAGE_MAP()

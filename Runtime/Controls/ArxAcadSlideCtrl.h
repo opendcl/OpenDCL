@@ -27,7 +27,7 @@ class CArxAcadSlideCtrl : public CButton, public CDialogControl
 	public:
 		CArxSlide( CDialogControl& Ctrl ) : mCtrl( Ctrl ) {}
 	protected:
-		virtual COLORREF getBackgroundColor() const;
+		COLORREF getBackgroundColor() const override;
 	} mArxSlide;
 	bool mbTrackingMouse;
 	HBITMAP mhbmLast;
@@ -41,14 +41,15 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	CDragDropService* GetDragDropService() override { return &mDragDropService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void OnNeedRepaint( bool bRepaintBackground = false, bool bUpdateNow = false ) const override;
+	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
+	CAcadColorService* GetColorService() override { return &mColorService; }
+
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void OnNeedRepaint( bool bRepaintBackground = false, bool bUpdateNow = false ) const;
-	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Implementation
 public:
@@ -67,7 +68,7 @@ private:
 
 // Overrides
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 
 	// Generated message map functions
 protected:
@@ -94,7 +95,7 @@ protected:
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnSysColorChange();
-	afx_msg void PostNcDestroy();
+	void PostNcDestroy() override;
 
 protected:
 	DECLARE_MESSAGE_MAP()

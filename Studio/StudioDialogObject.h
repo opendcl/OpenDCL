@@ -83,33 +83,34 @@ protected:
 
 // CDialogObject Overrides
 public:
-	virtual FormType GetType() const;
-	virtual const CControlPane* GetControlPane() const { return &mControlPane; }
-	virtual CControlPane* GetControlPane() { return &mControlPane; }
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual bool IsModeless() const;
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const;
-	virtual HWND GetHWnd() const { return m_hWnd; }
-	virtual bool IsFloating() const { return false; }
-	virtual void CloseDialog(int nStatus = -1);
+	FormType GetType() const override;
+	const CControlPane* GetControlPane() const override { return &mControlPane; }
+	CControlPane* GetControlPane() override { return &mControlPane; }
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	bool IsModeless() const override;
+	bool IsDockable() const override { return false; }
+	bool IsResizable() const override;
+	HWND GetHWnd() const override { return m_hWnd; }
+	bool IsFloating() const override { return false; }
+	void CloseDialog(int nStatus = -1) override;
 protected:
-	virtual bool CreateModeless( UINT nID );
-	virtual DWORD GetWndStyle() const; //get window style from properties
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	bool CreateModeless( UINT nID ) override;
+	DWORD GetWndStyle() const override; //get window style from properties
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool OnApplyName( TPropertyPtr pProp ) override; //Prop::Name
+
 	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
-	virtual bool OnApplyName( TPropertyPtr pProp ); //Prop::Name
 
 public:
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
+	BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) override;
 
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual BOOL OnInitDialog();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL OnInitDialog() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnSelectPointerTool();
 	afx_msg void OnUpdateSelectPointerTool(CCmdUI *pCmdUI);
 	afx_msg void OnShiftLeft();

@@ -45,11 +45,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	virtual BOOL OnInitDialog();
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	BOOL OnInitDialog() override;
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) override;
 	void OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
 	void OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
-	BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
+	BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) override;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnToolboxPointer();

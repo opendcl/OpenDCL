@@ -8,9 +8,6 @@
 #include "ControlTypes.h"
 #include "Workspace.h"
 
-const TCHAR sIsPathed[] = _T(":\\");
-const TCHAR sNextLine[] = _T("\n");
-
 
 ADSRESULT SlideView::Load()
 {

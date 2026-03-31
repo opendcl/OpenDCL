@@ -187,7 +187,7 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 		if( (*iter)->GetParentForm() == mpTemplate->GetOwnerForm() )
 		{
 			CTabPageDlg* pNewPage = new CTabPageDlg( (*iter), this, rectPage, nId );
-			short nTabIndex = (*iter)->GetTabIndex();
+			size_t nTabIndex = static_cast<size_t>( (*iter)->GetTabIndex() );
 			if( rTabPages.size() <= nTabIndex )
 				rTabPages.resize( nTabIndex + 1 );
 			CTabPageDlg*& pPage = rTabPages[nTabIndex];

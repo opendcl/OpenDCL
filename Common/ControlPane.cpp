@@ -455,7 +455,7 @@ bool CControlPane::FindControl( HWND hwndControl, /*out*/ CString& sControlName 
 TDialogControlPtr CControlPane::FindControl( HWND hwndControl ) const
 {
 	if (!hwndControl)
-		return false;
+		return NULL;
 	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
 		if( (*iter)->GetControlWnd()->m_hWnd == hwndControl )

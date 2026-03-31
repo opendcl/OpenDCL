@@ -40,17 +40,17 @@ public:
   CPictureBox m_Preview;
 
 protected:
-	virtual BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	afx_msg void OnPreview();
 	afx_msg BOOL OnQueryNewPalette();
 	afx_msg void OnPaletteChanged(CWnd* pFocusWnd);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	virtual void OnFileNameChange();
-	virtual void OnFolderChange();
+	void OnFileNameChange() override;
+	void OnFolderChange() override;
 
 // Implementation
 #ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
+	void Dump(CDumpContext& dc) const override;
 #endif
 	DECLARE_MESSAGE_MAP()
 };

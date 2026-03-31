@@ -74,7 +74,7 @@ protected:
 
 	// Generated message map functions
 protected:
-	virtual void PostNcDestroy();
+	void PostNcDestroy() override;
 	afx_msg void OnDestroy();
 	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

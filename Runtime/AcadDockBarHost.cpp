@@ -238,11 +238,13 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 	return sizeDefault;
 }
 
+#if !defined(_GRXTARGET)
 void CAcadDockBarHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 {
 	// by not adjusting the pnMinWidth or pnMinHeight, the min pnMinWidth will become small enough
 	// that the OnResizeEvent will take care of the width size itself.
 }
+#endif
 
 void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 {

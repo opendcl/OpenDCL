@@ -62,10 +62,10 @@ public:
 // Overrides
     // ClassWizard generated virtual function overrides
     //{{AFX_VIRTUAL(CColourPicker)
-    public:
-    virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-    protected:
-    virtual void PreSubclassWindow();
+public:
+    void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
+protected:
+    void PreSubclassWindow() override;
     //}}AFX_VIRTUAL
 
 // Implementation

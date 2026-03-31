@@ -30,9 +30,9 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual bool ApplyProperty( TPropertyPtr pProp );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
 
 // Operations
 public:
@@ -62,7 +62,7 @@ public:
 
 	// Generated message map functions
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual BOOL DestroyWindow();
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	BOOL DestroyWindow() override;
 	//OnChildNotify has not been recreated yet.
 };

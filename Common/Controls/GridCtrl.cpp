@@ -63,7 +63,7 @@ class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCell
 	public:
 		CClippingWnd( CGridCtrl* pGridCtrl ) : mpGridCtrl( pGridCtrl ) {}
 	protected:
-		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override
 			{
 				LRESULT lResult = __super::WindowProc( message, wParam, lParam );
 				if( message == WM_COMMAND )
@@ -101,7 +101,7 @@ public:
 			GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
 			CRect rcClip;
-			rcClip.IntersectRect( &rcCtrl, &CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
+			rcClip.IntersectRect( &rcCtrl, CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
 			mClippingWnd.SetWindowPos( NULL, 0, 0, rcClip.Width(), rcClip.Height(),
 																 (SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
 			rcCtrl.MoveToY( rcCtrl.top + rcClip.Height() - rcCtrl.Height() );
@@ -1222,7 +1222,7 @@ bool CGridCtrl::ToggleCellState( int nRow, int nCol )
 	return true;
 }
 
-void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize& sizCell /*= CSize(0, 0)*/, bool bCalcOnly /*= false*/ )
+void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(0, 0)*/, bool bCalcOnly /*= false*/ )
 {
 	Grid::CellStyle nCellStyle = GetEffectiveCellStyle( nRow, nCol );
 	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };

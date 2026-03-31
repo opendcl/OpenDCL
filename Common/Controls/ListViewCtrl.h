@@ -37,7 +37,7 @@ public:
 	ListviewDropSource()
 		: COleDropSource()
 		{}
-	virtual BOOL OnBeginDrag(CWnd* pWnd)
+	BOOL OnBeginDrag(CWnd* pWnd) override
 	{
 		ASSERT_VALID(this);
 
@@ -82,17 +82,17 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual DWORD GetWndStyle() const;
-	virtual void HandleDpiChanged(); //handle relayed WM_DPICHANGED_AFTERPARENT message
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
-	virtual bool OnApplyForegroundColor( TPropertyPtr pProp );
-	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	virtual COleDropSource* GetDropSource() { return &mDropSource; }
-	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
-	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect );
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	DWORD GetWndStyle() const override;
+	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
+	bool OnApplyForegroundColor( TPropertyPtr pProp ) override;
+	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
+	COleDropSource* GetDropSource() override { return &mDropSource; }
+	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override; //called to get drag data from this control
+	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;
 
 protected:
 	int GetCurrentSubItem() const { return mnEditSubItem; }
@@ -119,8 +119,8 @@ protected:
 	afx_msg void OnBegindrag(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult);

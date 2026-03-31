@@ -340,9 +340,11 @@ CSize CAcadPaletteHost::CalcDynamicLayout(int nLength, DWORD nMode)
 }
 #endif
 
+#if !defined(_GRXTARGET)
 void CAcadPaletteHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 {
 }
+#endif
 
 void CAcadPaletteHost::GetMinimumSize(CSize& size)
 {

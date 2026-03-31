@@ -43,22 +43,22 @@ protected:
 
 // Operations
 public:
-	virtual void SetBackgroundColor( long nAcadColor )
+	void SetBackgroundColor( long nAcadColor ) override
 	{
 		__super::SetBackgroundColor( nAcadColor );
 		ResetButtonBackgroundColor();
 	}
-	virtual void SetBackgroundColor( COLORREF color )
+	void SetBackgroundColor( COLORREF color ) override
 	{
 		__super::SetBackgroundColor( color );
 		ResetButtonBackgroundColor();
 	}
-	virtual void SetForegroundColor( long nAcadColor )
+	void SetForegroundColor( long nAcadColor ) override
 	{
 		__super::SetForegroundColor( nAcadColor );
 		ResetButtonForegroundColor();
 	}
-	virtual void SetForegroundColor( COLORREF color )
+	void SetForegroundColor( COLORREF color ) override
 	{
 		__super::SetForegroundColor( color );
 		ResetButtonForegroundColor();
@@ -81,12 +81,12 @@ public:
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	CAcadColorService* GetColorService() override { return &mColorService; }
 
 protected:
-	virtual DWORD OnDrawBackground(CDC* pDC, CRect* pRect);
+	DWORD OnDrawBackground(CDC* pDC, CRect* pRect) override;
 	virtual bool IsUsingPresetGraphic() const { return mbUsingPresetGraphic; }
 	virtual void UpdateButtonGraphic() {}
 	void SetResourceIcon(UINT idIcon);
@@ -95,10 +95,10 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual void PreSubclassWindow();
+	void PreSubclassWindow() override;
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void PostNcDestroy();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	void PostNcDestroy() override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

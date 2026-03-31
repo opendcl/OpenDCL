@@ -92,7 +92,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
     if (!readInt(sFile, nCount)) return statInvalidFormat;
     while (nCount-- > 0)
     {
-			std::auto_ptr< AxMethodDescriptor > pMethod( new AxMethodDescriptor );
+			std::unique_ptr< AxMethodDescriptor > pMethod( new AxMethodDescriptor );
 			IOStatus stat = pMethod->ReadFromTextFile(sFile);
 			if (stat != statOK) return stat;
 			mpMethods->push_back(pMethod.release());		

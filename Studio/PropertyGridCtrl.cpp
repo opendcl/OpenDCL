@@ -213,11 +213,11 @@ public:
 			}
 			DestroyWindow();
 		}
-	virtual CWnd* GetControlWnd() { return this; }
+	CWnd* GetControlWnd() override { return this; }
 	template< UINT CommandId >
 		static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 			{ return new CCommandButtonEditCtrl( pGridCtrl, idxCell, CommandId ); }
-	virtual BOOL PreTranslateMessage( MSG* pMsg )
+	BOOL PreTranslateMessage( MSG* pMsg ) override
 		{
 			if( __super::PreTranslateMessage( pMsg ) )
 				return TRUE;
@@ -259,7 +259,7 @@ public:
 				OnApply();
 			DestroyWindow();
 		}
-	virtual CWnd* GetControlWnd() { return this; }
+	CWnd* GetControlWnd() override { return this; }
 	class NullInputFilter{};
 	template< typename TInputFilter >
 		static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
@@ -284,7 +284,7 @@ public:
 					CStudioDialogControl::UpdateProperty( pDclControl, pProp->GetID() );
 			}
 		}
-	virtual void OnApply() //must override in derived class to apply new property value
+	void OnApply() override //must override in derived class to apply new property value
 		{
 			CString sText;
 			GetWindowText( sText );
@@ -300,11 +300,11 @@ public:
 			ApplyValue( sText );
 			__super::OnApply();
 		}
-	virtual void OnCancel() //must override in derived class to revert to original property value
+	void OnCancel() override //must override in derived class to revert to original property value
 		{
 			__super::OnCancel();
 		}
-	virtual BOOL PreTranslateMessage( MSG* pMsg )
+	BOOL PreTranslateMessage( MSG* pMsg ) override
 		{
 			if( pMsg->message == WM_KEYDOWN )
 			{
@@ -361,7 +361,7 @@ public:
 		}
 	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CControlNameEditCtrl( pGridCtrl, idxCell ); }
-	void ApplyValue( LPCTSTR pszValue )
+	void ApplyValue( LPCTSTR pszValue ) override
 		{
 			CPropertyGridCtrl::TPropertySet PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			assert( PropSet.size() == 1 );
@@ -429,7 +429,7 @@ public:
 				OnApply();
 			DestroyWindow();
 		}
-	virtual CWnd* GetControlWnd() { return this; }
+	CWnd* GetControlWnd() override { return this; }
 	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CBooleanCheckBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( bool bValue )
@@ -457,16 +457,16 @@ public:
 				}
 			}
 		}
-	virtual void OnApply() //must override in derived class to apply new property value
+	void OnApply() override //must override in derived class to apply new property value
 		{
 			ApplyValue( GetCheck() == BST_CHECKED );
 			__super::OnApply();
 		}
-	virtual void OnCancel() //must override in derived class to revert to original property value
+	void OnCancel() override //must override in derived class to revert to original property value
 		{
 			__super::OnCancel();
 		}
-	virtual BOOL PreTranslateMessage( MSG* pMsg )
+	BOOL PreTranslateMessage( MSG* pMsg ) override
 		{
 			if( __super::PreTranslateMessage( pMsg ) )
 				return TRUE;
@@ -560,7 +560,7 @@ public:
 				OnApply();
 			DestroyWindow();
 		}
-	virtual CWnd* GetControlWnd() { return this; }
+	CWnd* GetControlWnd() override { return this; }
 	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CEnumComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
@@ -585,16 +585,16 @@ public:
 				}
 			}
 		}
-	virtual void OnApply() //must override in derived class to apply new property value
+	void OnApply() override //must override in derived class to apply new property value
 		{
 			ApplyValue( GetCurSel() );
 			__super::OnApply();
 		}
-	virtual void OnCancel() //must override in derived class to revert to original property value
+	void OnCancel() override //must override in derived class to revert to original property value
 		{
 			__super::OnCancel();
 		}
-	virtual BOOL PreTranslateMessage( MSG* pMsg )
+	BOOL PreTranslateMessage( MSG* pMsg ) override
 		{
 			if( __super::PreTranslateMessage( pMsg ) )
 				return TRUE;
@@ -657,7 +657,7 @@ public:
 				OnApply();
 			DestroyWindow();
 		}
-	virtual CWnd* GetControlWnd() { return this; }
+	CWnd* GetControlWnd() override { return this; }
 	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CPicFolderComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
@@ -683,16 +683,16 @@ public:
 				}
 			}
 		}
-	virtual void OnApply() //must override in derived class to apply new property value
+	void OnApply() override //must override in derived class to apply new property value
 		{
 			ApplyValue( GetCurSel() );
 			__super::OnApply();
 		}
-	virtual void OnCancel() //must override in derived class to revert to original property value
+	void OnCancel() override //must override in derived class to revert to original property value
 		{
 			__super::OnCancel();
 		}
-	virtual BOOL PreTranslateMessage( MSG* pMsg )
+	BOOL PreTranslateMessage( MSG* pMsg ) override
 		{
 			if( __super::PreTranslateMessage( pMsg ) )
 				return TRUE;

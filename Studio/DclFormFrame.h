@@ -26,15 +26,15 @@ protected:
 public:
 
 // Overrides
-	public:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+public:
+	BOOL PreCreateWindow(CREATESTRUCT& cs) override;
 
 // Implementation
 public:
 	virtual ~CDclFormFrame();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif
 
 // Generated message map functions

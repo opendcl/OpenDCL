@@ -110,11 +110,11 @@ class CArxBlockViewCtrl : public CArxGsViewCtrl
 		~CEdReactor()
 			{ acedEditor->removeReactor( this ); }
 
-		virtual void endInsert( AcDbDatabase* pTo )
+		void endInsert( AcDbDatabase* pTo ) override
 			{ if( pTo ) mpCtrl->RefreshBlock(); }
-		virtual void endDeepClone( AcDbIdMapping& idMap )
+		void endDeepClone( AcDbIdMapping& idMap ) override
 			{ mpCtrl->RefreshBlock(); }
-		virtual void commandEnded( LPCTSTR cmdStr )
+		void commandEnded( LPCTSTR cmdStr ) override
 			{ if( lstrcmp( cmdStr, _T("PURGE") ) == 0 ) mpCtrl->RefreshBlock(); }
 	} mEdReactor;
 
@@ -144,9 +144,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool ApplyProperty( TPropertyPtr pProp );
-	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	bool ApplyProperty( TPropertyPtr pProp ) override;
+	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override; //called to get drag data from this control
 
 protected:
 	void StartUIDrag();

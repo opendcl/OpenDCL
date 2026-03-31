@@ -47,6 +47,7 @@ template< typename T >
 const TCHAR* asString( const T& value, const size_t Size )
 {
 	static TCHAR buf[1024];
+	const TCHAR* asString( const long n );
 	_sntprintf( buf, _elements(buf), _T("%s [%s bytes]"), asString( value ), asString( (unsigned long)Size ) );
 	return buf;
 }

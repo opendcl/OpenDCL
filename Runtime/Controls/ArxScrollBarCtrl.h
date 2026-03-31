@@ -20,9 +20,9 @@ public:
 
 // DialogControl Interface
 public:
-	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	const CArxControlServices* GetArxServices() const override { return &mArxServices; }
+	bool Create( CWnd* pParentWnd, UINT nID ) override;
 
 protected:
-	virtual void OnScroll(UINT nSBCode, UINT nPos);
+	void OnScroll(UINT nSBCode, UINT nPos) override;
 };
