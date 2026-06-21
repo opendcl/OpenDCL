@@ -19,7 +19,7 @@ class CThemeHelperST;
 class CDragDropService;
 class CArxControlServices;
 class CControlManager;
-enum Prop::Id;
+namespace Prop { enum Id; }
 enum ControlType;
 
 struct ControlParams

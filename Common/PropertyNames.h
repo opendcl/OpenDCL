@@ -3,7 +3,7 @@
 #include <set>
 
 
-enum Prop::Id;
+namespace Prop { enum Id; }
 typedef std::set< Prop::Id > T_PropertyIdSet;
 
 

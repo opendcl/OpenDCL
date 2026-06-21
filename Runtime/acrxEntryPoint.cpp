@@ -2612,6 +2612,7 @@ public:
 		int fButtonStyle = 0;
 		int fIconStyle = 0;
 		bool bShowHelpButton = false;
+		unsigned int languageid = 0;
 		if( GetIntArgument( pArgs, fButtonStyle, true ) )
 		{
 			//convert the arguments into windows messagebox type flags
@@ -2643,7 +2644,8 @@ public:
 				case 4: dwMsgBoxType |= MB_ICONSTOP; break;
 				default: HandleArgValueError( pArgs ); return RSERR; //invalid argument value
 				}
-				GetBoolArgument( pArgs, bShowHelpButton, true );
+				if( GetBoolArgument( pArgs, bShowHelpButton, true ) )
+					GetUIntArgument( pArgs, languageid, true );
 			}
 		}
 
@@ -2653,7 +2655,7 @@ public:
 		if( bShowHelpButton )
 			dwMsgBoxType |= MB_HELP;
 
-		acedRetInt( MessageBox( theArxWorkspace.GetTopmostModalForm(), sMessage, sTitle, dwMsgBoxType ) );
+		acedRetInt( MessageBoxEx( theArxWorkspace.GetTopmostModalForm(), sMessage, sTitle, dwMsgBoxType, languageid ) );
 
 		return (RSRSLT) ;
 	}
@@ -3820,6 +3822,8 @@ static int DumpControl(void)
 }
 
 #endif //_DIAGNOSTIC
+
+#pragma warning(disable : 4838) // conversion from 'int' to 'UINT' requires a narrowing conversion
 
 ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCL, OpenDCL, ACRX_CMD_TRANSPARENT, NULL)
 ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCLDemo, OpenDCLDemo, ACRX_CMD_TRANSPARENT, NULL)
