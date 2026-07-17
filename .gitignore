@@ -1,0 +1,73 @@
+# Visual Studio / MSBuild
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+*.sdf
+*.opensdf
+ipch/
+*.aps
+*.ncb
+*.opt
+*.plg
+*.clw
+*.pdb
+*.idb
+*.ilk
+*.obj
+*.pch
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.log
+*.tlog
+*.lastbuildstate
+*.unsuccessfulbuild
+BuildLog.htm
+*.recipe
+*.iobj
+*.ipdb
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Ff]ull[Dd]ebug/
+x64/
+Win32/
+*.dll
+*.exe
+*.lib
+*.exp
+*.res
+*.bsc
+*.map
+
+# Intermediate / cache
+*.cache
+*.ipch
+*.VC.db-shm
+*.VC.db-wal
+
+# Installer / packaging (local only)
+*.msi
+*.msm
+*.cab
+*.zip
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+*.bak
+
+# Local tooling
+.vscode/
+*.code-workspace
