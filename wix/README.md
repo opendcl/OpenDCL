@@ -33,7 +33,7 @@ Primary outputs: **`wix\out\Release\`** only (no copies into `Runtime\Install\..
 Studio install layout (matches legacy MSI / app expectations):
 
 ```text
-{ProgramFiles}\OpenDCL Consortium\OpenDCL Studio\
+{ProgramFiles}\OpenDCL Studio\
   OpenDCL Studio.exe          # product root
   ENU\                        # (or DEU, …)
     Studio.Res.dll

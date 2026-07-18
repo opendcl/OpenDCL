@@ -48,13 +48,13 @@
       <MergeRef Id="OpenDCLRuntimeMerge" />
     </Feature>
 
+    <!-- INSTALLDIR matches historical vdproj: [ProgramFilesFolder][ProductName]
+         (not under a manufacturer subfolder). -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="ManufacturerFolder" Name="OpenDCL Consortium">
-          <Directory Id="INSTALLDIR" Name="OpenDCL Studio">
-            <Directory Id="LangFolder" Name="$(var.Lang)">
-              <Directory Id="SamplesFolder" Name="Samples" />
-            </Directory>
+        <Directory Id="INSTALLDIR" Name="OpenDCL Studio">
+          <Directory Id="LangFolder" Name="$(var.Lang)">
+            <Directory Id="SamplesFolder" Name="Samples" />
           </Directory>
         </Directory>
       </Directory>

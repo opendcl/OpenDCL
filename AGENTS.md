@@ -82,7 +82,7 @@ Outputs: **`wix/out/Release/`** only (gitignored). Details: `wix/README.md`.
 ### Studio install layout
 
 ```text
-{ProgramFiles}\OpenDCL Consortium\OpenDCL Studio\
+{ProgramFiles}\OpenDCL Studio\
   OpenDCL Studio.exe
   <LANG>\
     Studio.Res.dll, License.*, OpenDCL.chm, Samples\...
@@ -216,6 +216,11 @@ POSTs to `http://opendcl.com/version/vercheck.php`, which reads plain-text
 `version/version_dev.txt` (dev builds `OpenDCL Runtime Dev`). Update those files
 on the **opendcl.com** host to the new `A.B.C.D` so clients learn about the
 release. Details in `/code-sign-release`.
+
+**Pre-ship dry run (private):** compile/package/test installers without publishing
+lives in private **`opendcl/build-lab`** (`RELEASE.md`, skill `dry-run-release`) —
+not in this public tree.
+
 ## Quick command map
 
 | Goal | Start here |
