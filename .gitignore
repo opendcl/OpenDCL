@@ -78,5 +78,8 @@ OpenDCL.Compile.slnf
 # WiX generated fragments, objs, and built msm/msi
 wix/out/
 
+# Versioned package output (scripts/make-dist.ps1)
+dist/
+
 # Compiled HTML Help (built from Studio Content; not source)
 *.chm
