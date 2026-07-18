@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OpenDCL Runtime merge module (WiX v3).
+
+  Produces OpenDCL.Runtime.msm for:
+    - OpenDCL Runtime MSI
+    - OpenDCL Studio language MSIs
+    - Third-party installers that merge the Runtime
+
+  Module Guid matches the historical VS vdproj MSM so consumers that already
+  reference MergeModule.0C4E4759A6C24D0EBAE57719C3BCF049 keep continuity.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!-- Package/@Id is the modularization GUID (must stay stable for third-party consumers) -->
+  <Module Id="OpenDCL.Runtime"
+          Language="0"
+          Version="$(var.ModuleVersion)">
+    <Package Id="0C4E4759-A6C2-4D0E-BAE5-7719C3BCF049"
+             Manufacturer="OpenDCL Consortium"
+             InstallerVersion="200"
+             Platform="x86"
+             Description="OpenDCL Runtime"
+             Comments="OpenDCL Runtime merge module" />
+
+    <!-- Install root: Common Files\OpenDCL (same as historical MSM) -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="CommonFilesFolder">
+        <Directory Id="OpenDCLFolder" Name="OpenDCL">
+          <!-- Component group RuntimeModules injected via fragment -->
+          <Directory Id="LangENU" Name="ENU" />
+          <Directory Id="LangDEU" Name="DEU" />
+          <Directory Id="LangESM" Name="ESM" />
+          <Directory Id="LangRUS" Name="RUS" />
+          <Directory Id="LangCHS" Name="CHS" />
+          <Directory Id="LangFRA" Name="FRA" />
+          <Directory Id="LangCHT" Name="CHT" />
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <ComponentGroupRef Id="RuntimeModules" />
+    <ComponentGroupRef Id="RuntimeLangENU" />
+    <ComponentGroupRef Id="RuntimeLangDEU" />
+    <ComponentGroupRef Id="RuntimeLangESM" />
+    <ComponentGroupRef Id="RuntimeLangRUS" />
+    <ComponentGroupRef Id="RuntimeLangCHS" />
+    <ComponentGroupRef Id="RuntimeLangFRA" />
+    <ComponentGroupRef Id="RuntimeLangCHT" />
+
+    <!-- RxInstall custom actions (Binary table; not installed as a file) -->
+    <Binary Id="RxInstall" SourceFile="$(var.OpenDclRoot)\Runtime\RxInstall\Release\RxInstall.dll" />
+
+    <!-- Deferred install/uninstall; User CAs impersonate (historical ResetNoImpersonate.js) -->
+    <CustomAction Id="SetRxInstallMachine"
+                  Property="RxInstallMachine"
+                  Value="[CommonFilesFolder]OpenDCL\" />
+    <CustomAction Id="RxInstallMachine"
+                  BinaryKey="RxInstall"
+                  DllEntry="_RxInstallMachine@4"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="check" />
+
+    <CustomAction Id="SetRxInstallUser"
+                  Property="RxInstallUser"
+                  Value="[CommonFilesFolder]OpenDCL\" />
+    <CustomAction Id="RxInstallUser"
+                  BinaryKey="RxInstall"
+                  DllEntry="_RxInstallUser@4"
+                  Execute="deferred"
+                  Impersonate="yes"
+                  Return="check" />
+
+    <CustomAction Id="RxUninstallMachine"
+                  BinaryKey="RxInstall"
+                  DllEntry="_RxUninstallMachine@4"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="check" />
+    <CustomAction Id="RxUninstallUser"
+                  BinaryKey="RxInstall"
+                  DllEntry="_RxUninstallUser@4"
+                  Execute="deferred"
+                  Impersonate="yes"
+                  Return="check" />
+
+    <InstallExecuteSequence>
+      <!-- Match historical MSM: set property then run deferred install after StartServices -->
+      <Custom Action="SetRxInstallMachine" After="StartServices">
+        (ALLUSERS=1) AND NOT REMOVE~="ALL"
+      </Custom>
+      <Custom Action="RxInstallMachine" After="SetRxInstallMachine">
+        (ALLUSERS=1) AND NOT REMOVE~="ALL"
+      </Custom>
+      <Custom Action="SetRxInstallUser" After="RxInstallMachine">
+        (ALLUSERS&lt;&gt;1) AND NOT REMOVE~="ALL"
+      </Custom>
+      <Custom Action="RxInstallUser" After="SetRxInstallUser">
+        (ALLUSERS&lt;&gt;1) AND NOT REMOVE~="ALL"
+      </Custom>
+      <Custom Action="RxUninstallMachine" After="ProcessComponents">
+        (NOT UPGRADINGPRODUCTCODE AND ALLUSERS=1) AND REMOVE~="ALL" AND ProductState &lt;&gt; 1
+      </Custom>
+      <Custom Action="RxUninstallUser" After="RxUninstallMachine">
+        (NOT UPGRADINGPRODUCTCODE AND ALLUSERS&lt;&gt;1) AND REMOVE~="ALL" AND ProductState &lt;&gt; 1
+      </Custom>
+    </InstallExecuteSequence>
+  </Module>
+</Wix>

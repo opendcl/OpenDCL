@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OpenDCL Studio language MSI (WiX v3).
+
+  Preprocessor variables (set by build-wix.ps1):
+    Lang          e.g. ENU
+    ProductCode   language-specific product code
+    UpgradeCode   language-specific upgrade code
+    ProductLanguage LCID (1033, ...)
+    ArpComments   e.g. OpenDCL Studio (US English)
+    OpenDclRoot, ProductVersion, MsmPath
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!-- Product Id is auto-generated each build; UpgradeCode stays stable for upgrades -->
+  <Product Id="*"
+           Name="OpenDCL Studio"
+           Language="$(var.ProductLanguage)"
+           Version="$(var.ProductVersion)"
+           Manufacturer="OpenDCL Consortium"
+           UpgradeCode="$(var.UpgradeCode)">
+    <Package InstallerVersion="200"
+             Compressed="yes"
+             InstallScope="perMachine"
+             Description="OpenDCL Studio"
+             Comments="$(var.ArpComments)"
+             Manufacturer="OpenDCL Consortium" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of OpenDCL Studio is already installed."
+                  Schedule="afterInstallInitialize" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Property Id="ARPHELPLINK" Value="https://www.opendcl.com" />
+    <Property Id="ARPURLINFOABOUT" Value="https://www.opendcl.com" />
+    <Property Id="ARPCONTACT" Value="OpenDCL Consortium" />
+    <Property Id="ARPCOMMENTS" Value="$(var.ArpComments)" />
+
+    <!-- Studio: multi-res group #10 from Studio.Res.dll (extracted at package time).
+         Help/License: standalone multi-res ICOs (Fluent bases + OpenDCL crosshair badge).
+         Icon Id must end in .exe/.ico for Start Menu (ICE50). -->
+    <Icon Id="OpenDCLStudio.exe" SourceFile="$(var.IconStudio)" />
+    <Icon Id="OpenDCLHelp.ico" SourceFile="$(var.OpenDclRoot)\wix\ui\icons\OpenDCLHelp.ico" />
+    <Icon Id="OpenDCLLicense.ico" SourceFile="$(var.OpenDclRoot)\wix\ui\icons\OpenDCLLicense.ico" />
+    <Property Id="ARPPRODUCTICON" Value="OpenDCLStudio.exe" />
+
+    <Feature Id="Studio" Title="OpenDCL Studio" Level="1" Description="OpenDCL Studio application, help, and samples" Absent="disallow">
+      <ComponentGroupRef Id="StudioApp" />
+      <ComponentGroupRef Id="StudioSamples" />
+      <MergeRef Id="OpenDCLRuntimeMerge" />
+    </Feature>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ManufacturerFolder" Name="OpenDCL Consortium">
+          <Directory Id="INSTALLDIR" Name="OpenDCL Studio">
+            <Directory Id="LangFolder" Name="$(var.Lang)">
+              <Directory Id="SamplesFolder" Name="Samples" />
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuOpenDCL" Name="OpenDCL Studio" />
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+      <!-- Merge at TARGETDIR so the MSM's CommonFilesFolder\OpenDCL layout is preserved -->
+      <Merge Id="OpenDCLRuntimeMerge"
+             Language="0"
+             SourceFile="$(var.MsmPath)"
+             DiskId="1" />
+    </Directory>
+
+    <!-- WixUI with OpenDCL-branded banner/dialog and rich-text license -->
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.BannerBmp)" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.DialogBmp)" />
+  </Product>
+</Wix>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Thin OpenDCL Runtime MSI: merges OpenDCL.Runtime.msm.
+  Product codes/upgrade code match the historical VS Installer project.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!-- Product Id is auto-generated each build; UpgradeCode stays stable for upgrades -->
+  <Product Id="*"
+           Name="OpenDCL Runtime"
+           Language="0"
+           Version="$(var.ProductVersion)"
+           Manufacturer="OpenDCL Consortium"
+           UpgradeCode="A3675613-313B-47AC-8DD2-8707F33610AB">
+    <Package InstallerVersion="200"
+             Compressed="yes"
+             InstallScope="perMachine"
+             Description="OpenDCL Runtime"
+             Comments="OpenDCL Runtime"
+             Manufacturer="OpenDCL Consortium" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of OpenDCL Runtime is already installed."
+                  Schedule="afterInstallInitialize" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Property Id="ARPHELPLINK" Value="https://www.opendcl.com" />
+    <Property Id="ARPURLINFOABOUT" Value="https://www.opendcl.com" />
+    <Property Id="ARPCONTACT" Value="OpenDCL Consortium" />
+    <Property Id="ARPCOMMENTS" Value="OpenDCL Runtime" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="LIMITUI" Value="1" />
+
+    <Icon Id="ProductIcon" SourceFile="$(var.OpenDclRoot)\Runtime\Install\OpenDCL.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+
+    <Feature Id="Runtime" Title="OpenDCL Runtime" Level="1" Absent="disallow">
+      <MergeRef Id="OpenDCLRuntimeMerge" />
+    </Feature>
+
+    <!-- Merge at TARGETDIR so the MSM's own CommonFilesFolder\OpenDCL layout is preserved -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Merge Id="OpenDCLRuntimeMerge"
+             Language="0"
+             SourceFile="$(var.MsmPath)"
+             DiskId="1" />
+    </Directory>
+  </Product>
+</Wix>
