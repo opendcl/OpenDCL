@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout OpenDCL
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Show environment
         run: |
@@ -92,7 +92,7 @@ jobs:
             -OutDir "$env:GITHUB_WORKSPACE\dist\${{ steps.ver.outputs.file_ver }}"
 
       - name: Upload installers (unversioned WiX out)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: opendcl-wix-${{ inputs.configuration }}
           path: |
@@ -101,7 +101,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload installers (versioned dist)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: opendcl-dist-${{ steps.ver.outputs.file_ver }}
           path: dist/${{ steps.ver.outputs.file_ver }}/*

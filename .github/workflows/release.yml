@@ -61,7 +61,7 @@ jobs:
 
     steps:
       - name: Checkout OpenDCL
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Derive versions
         id: ver
@@ -94,7 +94,7 @@ jobs:
           & "$env:GITHUB_WORKSPACE\scripts\make-release.ps1" @args
 
       - name: Upload dist folder artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: opendcl-release-${{ steps.ver.outputs.file_ver }}
           path: dist/${{ steps.ver.outputs.file_ver }}/*
