@@ -48,15 +48,71 @@ Override versions when cutting a release:
 .\scripts\build-wix.ps1 -ModuleVersion 10.1.1.1 -ProductVersion 10.1.101
 ```
 
-## Post-package steps (manual today — automate later)
+## Post-package steps (WiX → dist → localization → sign → release)
 
-Historical release process after a successful build:
+After a successful `.\scripts\build-wix.ps1` (outputs in `wix\out\Release\`), prefer
+the **combined** helper:
 
-1. **`Build 9.0\!MakeNewDist.bat`** — versioned copies of MSM/MSI to the parent OpenDCL folder, plus prep/zip helpers.  
-2. **`@SignAll.bat`** / **`#Sign.bat`** — Authenticode-sign `*.ms?` with the local hardware token (secrets stay off git).
+```powershell
+# One-shot: package + versioned MSI/MSM + localization zips [+ sign]
+.\scripts\make-release.ps1 -ProductVersion 10.1.1.1 -Sign
+```
 
-A future dist script should rename from `wix\out\Release\` to versioned names, then sign, then publish (e.g. GitHub Releases).
+| Step | Script / workflow | Replaces |
+|------|-------------------|----------|
+| Full pipeline | `scripts/make-release.ps1` / **Make release** workflow | `!MakeNewDist` + localization zips + `@SignAll` |
+| Versioned installers only | `scripts/make-dist.ps1` | `!MakeNewDist.bat` COPY lines |
+| Localization zips | `scripts/make-localization-zips.ps1` | `!MakeLocalizationZips.bat` |
+| Authenticode sign | `scripts/sign-files.ps1` | `@SignAll.bat` / `#Sign.bat` |
+| Product GitHub Release | `.github/workflows/release.yml` (**Make release**) | Manual upload |
+| Package + dist (CI) | `.github/workflows/package.yml` | Ad-hoc package on build PC |
+| Localization-only refresh | `.github/workflows/localization-packs.yml` | Standalone translator packs |
 
+`make-release.ps1` writes everything under `dist\<ver>\`:
+
+```text
+OpenDCL.Runtime.<ver>.msi / .msm
+OpenDCL.Studio.<LANG>.<ver>.msi
+OpenDCL.<LANG>.zip                 # localization packs (same folder)
+```
+
+Example step-by-step (same result as `make-release.ps1` without `-Sign`):
+
+```powershell
+.\scripts\build-wix.ps1 -ModuleVersion 10.1.1.1 -ProductVersion 10.1.101
+.\scripts\make-dist.ps1 -ProductVersion 10.1.1.1
+.\scripts\make-localization-zips.ps1 -OutDir .\dist\10.1.1.1
+.\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 -CertThumbprint "<store-thumbprint>"
+gh release create "v10.1.1.1" .\dist\10.1.1.1\* --title "OpenDCL 10.1.1.1"
+```
+
+**Signing (YubiKey + SSL.com):** insert YubiKey, set `SIGN_CERT_THUMBPRINT` (or pass
+`-CertThumbprint`), run `sign-files.ps1` / `make-release.ps1 -Sign`, enter PIN when
+prompted. Default timestamp is `http://ts.ssl.com`. Never commit the PIN. See skill
+**`code-sign-release`**.
+
+Asset naming expected by [opendcl.github.io](https://opendcl.github.io/) /
+`assets/versions.js`:
+
+```text
+OpenDCL.Runtime.<ver>.msi / .msm
+OpenDCL.Studio.<LANG>.<ver>.msi
+```
+
+Tag: `v<ver>` (e.g. `v10.1.1.1`).
+
+**Localization packs** (translator zips, not installers):  
+`.\scripts\make-localization-zips.ps1` and workflow
+`.github/workflows/localization-packs.yml` (rolling GitHub Release
+`localization-packs`). Public UI: https://opendcl.github.io/localization/
+
+**Online help** refresh: skill `/sync-help-to-website` (Studio Content →
+`opendcl.github.io/HelpFiles/`).
+
+**Runtime update-check (manual):** after publishing a release, update
+`opendcl.com/version/version.txt` (stable) and/or `version_dev.txt` (dev) to the
+new `A.B.C.D` string. The Runtime POSTs to `/version/vercheck.php` — see skill
+`code-sign-release`.
 ## UI branding (Studio MSI)
 
 Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no stretch at build time):

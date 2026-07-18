@@ -1,0 +1,80 @@
+# Build translator localization zips and publish as a rolling GitHub Release.
+# Also produced by "Make release" (scripts/make-release.ps1) alongside installers.
+# Site: https://opendcl.github.io/localization/
+name: Localization packs
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to pack (branch/tag/SHA)"
+        required: true
+        default: "main"
+  push:
+    branches: [main]
+    paths:
+      - "Common/**"
+      - "Runtime/Localized/**"
+      - "Studio/Localized/**"
+      - "scripts/make-localization-zips.ps1"
+      - ".github/workflows/localization-packs.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: localization-packs
+  cancel-in-progress: true
+
+jobs:
+  packs:
+    name: Build and publish localization zips
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+
+      - name: Build zips
+        run: |
+          & ./scripts/make-localization-zips.ps1 -OutDir "$env:GITHUB_WORKSPACE/dist/localization"
+          Get-ChildItem dist/localization | Format-Table Name, Length
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: localization-packs
+          path: dist/localization/*.zip
+          if-no-files-found: error
+
+      - name: Publish rolling release localization-packs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = "localization-packs"
+          $title = "Localization packs (latest)"
+          $notes = @"
+          Per-language packs for translators (not full installers).
+
+          Each ``OpenDCL.<LANG>.zip`` contains SharedRes/Runtime/Studio .rc files and Studio help Content (HTML/images). Samples and CHM are omitted.
+
+          Regenerated from branch/ref of this workflow run. Prefer these downloads if you do not use git; submit changes via the [forum](https://www.opendcl.com/forum/) or a pull request.
+
+          Source: https://github.com/opendcl/OpenDCL
+          "@
+          $zips = Get-ChildItem "$env:GITHUB_WORKSPACE/dist/localization/*.zip" | ForEach-Object { $_.FullName }
+          if ($zips.Count -eq 0) { throw "No zips" }
+
+          # Delete existing rolling release/tag if present, then recreate
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release delete $tag --yes --cleanup-tag
+          }
+          gh release create $tag @zips --title $title --notes $notes --latest=false
+          if ($LASTEXITCODE -ne 0) { throw "gh release create failed" }
+          Write-Host "Published $tag with $($zips.Count) assets"

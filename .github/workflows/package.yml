@@ -1,0 +1,108 @@
+# Package OpenDCL with in-repo WiX (self-hosted Windows runner with VS + WiX + CAD SDKs).
+# Compile is optional; full Release compile usually runs on the same self-hosted agent.
+name: Package installers
+
+on:
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: "Build configuration (WiX out folder name)"
+        required: true
+        default: "Release"
+      product_version:
+        description: "Four-part product version for ModuleVersion (e.g. 10.1.1.1)"
+        required: true
+        default: "10.1.1.1"
+      msi_product_version:
+        description: "Three-part MSI ProductVersion (e.g. 10.1.101). Leave empty to derive."
+        required: false
+        default: ""
+      languages:
+        description: "Studio languages (empty = all). Example: ENU"
+        required: false
+        default: ""
+      localization:
+        description: "Also build OpenDCL.<LANG>.zip packs into dist/"
+        type: boolean
+        required: true
+        default: true
+
+concurrency:
+  group: opendcl-package
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: WiX package
+    runs-on: [self-hosted, Windows, opendcl-build]
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout OpenDCL
+        uses: actions/checkout@v4
+
+      - name: Show environment
+        run: |
+          Write-Host "Runner: $env:COMPUTERNAME"
+          Write-Host "Configuration: ${{ inputs.configuration }}"
+          $candle = "${env:ProgramFiles(x86)}\WiX Toolset v3.14\bin\candle.exe"
+          if (-not (Test-Path $candle)) { throw "WiX candle.exe not found: $candle" }
+          Write-Host "WiX: $candle"
+
+      - name: Derive MSI ProductVersion if needed
+        id: ver
+        run: |
+          $fileVer = "${{ inputs.product_version }}".Trim()
+          $msiVer = "${{ inputs.msi_product_version }}".Trim()
+          if (-not $msiVer) {
+            $parts = $fileVer.Split('.')
+            if ($parts.Count -lt 4) { throw "product_version must be A.B.C.D, got $fileVer" }
+            $patch = [int]$parts[2]; $build = [int]$parts[3]
+            $msiVer = "{0}.{1}.{2}" -f $parts[0], $parts[1], ($patch * 100 + $build)
+          }
+          "file_ver=$fileVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "msi_ver=$msiVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "ModuleVersion=$fileVer ProductVersion=$msiVer"
+
+      - name: Run build-wix.ps1
+        run: |
+          $args = @{
+            Configuration  = "${{ inputs.configuration }}"
+            ModuleVersion  = "${{ steps.ver.outputs.file_ver }}"
+            ProductVersion = "${{ steps.ver.outputs.msi_ver }}"
+          }
+          $langs = "${{ inputs.languages }}".Trim()
+          if ($langs) {
+            $args.Languages = @($langs -split '[,;\s]+' | Where-Object { $_ })
+          }
+          & "$env:GITHUB_WORKSPACE\scripts\build-wix.ps1" @args
+
+      - name: Make versioned dist folder
+        run: |
+          & "$env:GITHUB_WORKSPACE\scripts\make-dist.ps1" `
+            -ProductVersion "${{ steps.ver.outputs.file_ver }}" `
+            -Configuration "${{ inputs.configuration }}"
+
+      - name: Localization zips (into same dist folder)
+        if: ${{ inputs.localization }}
+        run: |
+          & "$env:GITHUB_WORKSPACE\scripts\make-localization-zips.ps1" `
+            -OutDir "$env:GITHUB_WORKSPACE\dist\${{ steps.ver.outputs.file_ver }}"
+
+      - name: Upload installers (unversioned WiX out)
+        uses: actions/upload-artifact@v4
+        with:
+          name: opendcl-wix-${{ inputs.configuration }}
+          path: |
+            wix/out/${{ inputs.configuration }}/*.msi
+            wix/out/${{ inputs.configuration }}/*.msm
+          if-no-files-found: error
+
+      - name: Upload installers (versioned dist)
+        uses: actions/upload-artifact@v4
+        with:
+          name: opendcl-dist-${{ steps.ver.outputs.file_ver }}
+          path: dist/${{ steps.ver.outputs.file_ver }}/*
+          if-no-files-found: error

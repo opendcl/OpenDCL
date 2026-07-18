@@ -1,0 +1,164 @@
+# Full release pipeline: WiX package → versioned dist → localization zips → sign → GitHub Release.
+# Signing needs a self-hosted runner with cert/token access (see skill code-sign-release).
+name: Make release
+
+on:
+  workflow_dispatch:
+    inputs:
+      product_version:
+        description: "Four-part version (tag v{ver}, asset names)"
+        required: true
+        default: "10.1.1.1"
+      configuration:
+        description: "WiX configuration folder name"
+        required: true
+        default: "Release"
+      package_first:
+        description: "Run WiX packaging before dist"
+        type: boolean
+        required: true
+        default: true
+      localization:
+        description: "Include OpenDCL.<LANG>.zip localization packs in the release"
+        type: boolean
+        required: true
+        default: true
+      sign:
+        description: "Authenticode-sign MSI/MSM before upload"
+        type: boolean
+        required: true
+        default: true
+      update_localization_latest:
+        description: "Also refresh rolling release tag localization-packs"
+        type: boolean
+        required: true
+        default: true
+      prerelease:
+        description: "Mark product GitHub Release as prerelease"
+        type: boolean
+        required: true
+        default: false
+      draft:
+        description: "Create draft product release only"
+        type: boolean
+        required: true
+        default: false
+
+concurrency:
+  group: opendcl-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Make release
+    runs-on: [self-hosted, Windows, opendcl-build]
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout OpenDCL
+        uses: actions/checkout@v4
+
+      - name: Derive versions
+        id: ver
+        run: |
+          $fileVer = "${{ inputs.product_version }}".Trim()
+          $parts = $fileVer.Split('.')
+          if ($parts.Count -lt 4) { throw "product_version must be A.B.C.D" }
+          $msiVer = "{0}.{1}.{2}" -f $parts[0], $parts[1], ([int]$parts[2] * 100 + [int]$parts[3])
+          "file_ver=$fileVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "msi_ver=$msiVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "tag=v$fileVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: make-release.ps1 (package + dist + localization [+ sign])
+        env:
+          SIGN_CERT_THUMBPRINT: ${{ secrets.SIGN_CERT_THUMBPRINT }}
+          SIGN_PFX_PATH: ${{ secrets.SIGN_PFX_PATH }}
+          SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
+          SIGN_CERT_FILE: ${{ secrets.SIGN_CERT_FILE }}
+          SIGN_CSP_NAME: ${{ secrets.SIGN_CSP_NAME }}
+          SIGN_KEY_CONTAINER: ${{ secrets.SIGN_KEY_CONTAINER }}
+        run: |
+          $args = @{
+            ProductVersion    = "${{ steps.ver.outputs.file_ver }}"
+            MsiProductVersion = "${{ steps.ver.outputs.msi_ver }}"
+            Configuration     = "${{ inputs.configuration }}"
+          }
+          if ("${{ inputs.package_first }}" -ne "true") { $args.SkipPackage = $true }
+          if ("${{ inputs.localization }}" -ne "true") { $args.SkipLocalization = $true }
+          if ("${{ inputs.sign }}" -eq "true") { $args.Sign = $true }
+          & "$env:GITHUB_WORKSPACE\scripts\make-release.ps1" @args
+
+      - name: Upload dist folder artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: opendcl-release-${{ steps.ver.outputs.file_ver }}
+          path: dist/${{ steps.ver.outputs.file_ver }}/*
+          if-no-files-found: error
+
+      - name: Create product GitHub Release (v*)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ver = "${{ steps.ver.outputs.file_ver }}"
+          $tag = "${{ steps.ver.outputs.tag }}"
+          $dir = Join-Path $env:GITHUB_WORKSPACE "dist\$ver"
+          $assets = @(Get-ChildItem $dir -File | ForEach-Object { $_.FullName })
+          if ($assets.Count -eq 0) { throw "No assets in $dir" }
+
+          $extra = @()
+          if ("${{ inputs.prerelease }}" -eq "true") { $extra += "--prerelease" }
+          if ("${{ inputs.draft }}" -eq "true") { $extra += "--draft" }
+
+          $hasLoc = [bool](Get-ChildItem $dir -Filter "OpenDCL.*.zip" -File -ErrorAction SilentlyContinue)
+          $notes = @"
+          OpenDCL $ver (WiX installers).
+
+          - Runtime MSI/MSM and Studio language MSIs
+          $(if ($hasLoc) { "- Localization packs: ``OpenDCL.<LANG>.zip`` (for translators)" } else { "" })
+
+          Online localization downloads: https://opendcl.github.io/localization/
+          "@
+
+          if (gh release view $tag 2>$null) {
+            Write-Host "Release $tag exists — uploading/clobbering assets"
+            gh release upload $tag @assets --clobber
+          } else {
+            gh release create $tag @assets --title "OpenDCL $ver" --notes $notes @extra
+          }
+          if ($LASTEXITCODE -ne 0) { throw "gh release failed ($LASTEXITCODE)" }
+          Write-Host "Published $tag with $($assets.Count) assets"
+
+      - name: Refresh rolling localization-packs release
+        if: ${{ inputs.localization && inputs.update_localization_latest }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ver = "${{ steps.ver.outputs.file_ver }}"
+          $dir = Join-Path $env:GITHUB_WORKSPACE "dist\$ver"
+          $zips = @(Get-ChildItem $dir -Filter "OpenDCL.*.zip" -File | ForEach-Object { $_.FullName })
+          if ($zips.Count -eq 0) {
+            Write-Host "No localization zips; skip rolling release"
+            return
+          }
+          $tag = "localization-packs"
+          $title = "Localization packs (latest)"
+          $notes = @"
+          Per-language packs for translators (not installers).
+
+          Last refreshed from product release **v$ver**.
+
+          Each ``OpenDCL.<LANG>.zip`` contains SharedRes/Runtime/Studio .rc files and Studio help Content.
+          Site: https://opendcl.github.io/localization/
+          "@
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release delete $tag --yes --cleanup-tag
+          }
+          gh release create $tag @zips --title $title --notes $notes --latest=false
+          if ($LASTEXITCODE -ne 0) { throw "localization-packs release failed" }
+          Write-Host "Updated $tag ($($zips.Count) zips)"
