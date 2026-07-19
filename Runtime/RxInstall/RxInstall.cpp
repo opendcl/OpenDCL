@@ -389,7 +389,7 @@ public:
 											kBRX13 = 13, kBRX14 = 14, kBRX15 = 15, kBRX16 = 16, kBRX17 = 17,
 											kBRX18 = 18, kBRX19 = 19, kBRX20 = 20, kBRX21 = 21,
 											kBRX22 = 22, kBRX23 = 23, kBRX24 = 24, kBRX25 = 25,
-											kBRX26 = 26,
+											kBRX26 = 26, kBRX27 = 27,
 											kZRX2014 = 14, kZRX2015 = 15, kZRX2017 = 17, kZRX2018 = 18,
 											kZRX2019 = 19, kZRX2020 = 20, kZRX2021 = 21, kZRX2022 = 22,
 											kZRX2023 = 23, kZRX2024 = 24, kZRX2025 = 25, kZRX2026 = 26,
@@ -556,6 +556,7 @@ public:
 		kBricscad24x64 =     (kX64Architecture | kBricscadPlatform | (kBRX24 << shftMajorVer) | 0),
 		kBricscad25x64 =     (kX64Architecture | kBricscadPlatform | (kBRX25 << shftMajorVer) | 0),
 		kBricscad26x64 =     (kX64Architecture | kBricscadPlatform | (kBRX26 << shftMajorVer) | 0),
+		kBricscad27x64 =     (kX64Architecture | kBricscadPlatform | (kBRX27 << shftMajorVer) | 0),
 		kZWCAD2014x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2014 << shftMajorVer) | 0),
 		kZWCAD2015x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2015 << shftMajorVer) | 0),
 		kZWCAD2017x86 =      (kX86Architecture | kZWCADPlatform | (kZRX2017 << shftMajorVer) | 0),
@@ -703,55 +704,69 @@ public:
 			}
 			return GetSiblingModulePath( sAppFilename );
 		}
+	// True if the demand-load module file for this target exists under installDir
+	// (OpenDCL folder). Custom subset installers only ship some hosts; skip the rest.
+	bool IsModulePresent( LPCTSTR pszModifier = NULL ) const
+	{
+		String sPath = GetTargetModulePath( pszModifier );
+		if( sPath.IsEmpty() )
+			return false;
+		DWORD dwAttr = GetFileAttributes( sPath );
+		if( dwAttr == INVALID_FILE_ATTRIBUTES )
+			return false;
+		return ((dwAttr & FILE_ATTRIBUTE_DIRECTORY) == 0);
+	}
 	void CreateDemandLoadEntry( RegKey& rkDemandLoad, bool bLoadOnStartup = false, LPCTSTR pszModifier = NULL ) const
+	{
+		if( !rkDemandLoad )
+			return;
+		const bool bModernLoader =
+			(platform() == kBricscad) ||
+			(platform() == kZWCAD) ||
+			(platform() == kGstarCAD) ||
+			(platform() == kAutoCAD && majorVersion() >= kARX2004);
+		if( bModernLoader )
 		{
-			if( !rkDemandLoad )
-				return;
-			if( platform() == kBricscad ||
-					platform() == kZWCAD ||
-					platform() == kGstarCAD ||
-					(platform() == kAutoCAD && majorVersion() >= kARX2004) )
+			rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( pszModifier ) );
+			rkDemandLoad.SetValue( REGKEY_DESCRIPTION, GetAppLongName() );
+			if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
+				rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest | (bLoadOnStartup? kOnAutoCADStartup : 0) );
 			{
-				rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( pszModifier ) );
-				rkDemandLoad.SetValue( REGKEY_DESCRIPTION, GetAppLongName() );
-				if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
-					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest | (bLoadOnStartup? kOnAutoCADStartup : 0) );
-				{
-					RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
-					LPCTSTR* rpszCommands = NULL;
-					int idx = GetRxCommandArray( rpszCommands );
-					while( idx-- > 0 )
-						rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
-				}
-			}
-			else
-			{
-				LPCTSTR pszKey = rkDemandLoad.Key();
-				size_t cchHKLM = lstrlen( REGKEY_HKEY_LOCAL_MACHINE );
-				TCHAR* pszRegPath = new TCHAR[cchHKLM + 1 + lstrlen( pszKey ) + 1];
-				lstrcpy( pszRegPath, REGKEY_HKEY_LOCAL_MACHINE );
-				pszRegPath[cchHKLM] = _T('\\');
-				lstrcpy( pszRegPath + cchHKLM + 1, pszKey );
-				rkDemandLoad.SetValue( REGVAL_REGPATH, pszRegPath );
-				delete [] pszRegPath;
-				if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
-					rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest | (bLoadOnStartup? kOnAutoCADStartup : 0) );
-				{
-					RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true, KEY_WRITE );
-					rkLoader.SetValue( _MODULE, GetTargetModulePath( pszModifier ) );
-				}
-				{
-					RegKey rkName( REGKEY_NAME, rkDemandLoad, true, KEY_WRITE );
-					rkName.SetValue( GetAppLongName(), GetAppLongName() );
-				}
-				{
-					RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
-					LPCTSTR* rpszCommands = NULL;
-					for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
-						rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
-				}
+				RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
+				LPCTSTR* rpszCommands = NULL;
+				int idx = GetRxCommandArray( rpszCommands );
+				while( idx-- > 0 )
+					rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
 			}
 		}
+		else
+		{
+			LPCTSTR pszKey = rkDemandLoad.Key();
+			size_t cchHKLM = lstrlen( REGKEY_HKEY_LOCAL_MACHINE );
+			TCHAR* pszRegPath = new TCHAR[cchHKLM + 1 + lstrlen( pszKey ) + 1];
+			lstrcpy( pszRegPath, REGKEY_HKEY_LOCAL_MACHINE );
+			pszRegPath[cchHKLM] = _T('\\');
+			lstrcpy( pszRegPath + cchHKLM + 1, pszKey );
+			rkDemandLoad.SetValue( REGVAL_REGPATH, pszRegPath );
+			delete [] pszRegPath;
+			if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
+				rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest | (bLoadOnStartup? kOnAutoCADStartup : 0) );
+			{
+				RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true, KEY_WRITE );
+				rkLoader.SetValue( _MODULE, GetTargetModulePath( pszModifier ) );
+			}
+			{
+				RegKey rkName( REGKEY_NAME, rkDemandLoad, true, KEY_WRITE );
+				rkName.SetValue( GetAppLongName(), GetAppLongName() );
+			}
+			{
+				RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
+				LPCTSTR* rpszCommands = NULL;
+				for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
+					rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
+			}
+		}
+	}
 };
 
 
@@ -785,6 +800,12 @@ void RxSelfInstallImp( const TargetModule& Target, LPCTSTR pszTargetKey, bool bW
 bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, bool bLoadOnStartup = false )
 {
 	bool bX64 = (Target.architecture() == TargetModule::kX64);
+	// Only register hosts for which this package actually installed a module.
+	// Full product has every OpenDCL.*.arx|brx|grx|zrx; custom WiX subsets only
+	// include selected modules, so missing files must not get demand-load keys.
+	if( !Target.IsModulePresent( bX64? _T("x64") : NULL ) )
+		return false;
+
 	String sRootKey = Target.GetTargetAppRegKey();
 	HKEY hkTargetRoot = Target.GetTargetRootRegKey( bWantHKLM );
 	RegKey rkTarget( sRootKey, hkTargetRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
@@ -833,6 +854,8 @@ bool EnumerateRegTargets( const TargetModule& Target, bool bWantHKLM = true, boo
 	return true;
 }
 
+// Registers demand-load for each known host target *if* the corresponding module
+// file exists under pszInstallDir (see EnumerateRegTargets / moduleBinaryPresent).
 void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStartup )
 {
 	EnumerateRegTargets( TargetModule( TargetModule::kGstarCAD2015x86, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -922,6 +945,7 @@ void InstallAllTargets( LPCTSTR pszInstallDir, bool bWantHKLM, bool bLoadOnStart
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad24x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad25x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kBricscad26x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
+		EnumerateRegTargets( TargetModule( TargetModule::kBricscad27x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2008x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2009x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
 		EnumerateRegTargets( TargetModule( TargetModule::kAutoCAD2010x64, pszInstallDir ), bWantHKLM, bLoadOnStartup );
@@ -1122,6 +1146,7 @@ void UninstallAllTargets( HKEY hkRoot )
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V24x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V25x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V26x64"), hkRoot, true );
+		RemoveAllRegTargets( _T("Bricsys\\Bricscad\\V27x64"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2017"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2018"), hkRoot, true );
 		RemoveAllRegTargets( _T("ZWSOFT\\ZWCAD\\2019"), hkRoot, true );
