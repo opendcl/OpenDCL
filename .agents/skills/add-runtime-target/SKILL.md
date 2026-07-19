@@ -158,23 +158,27 @@ Installer packaging is **WiX Toolset v3** in this repo (`scripts/build-wix.ps1`,
 `wix/`). The Runtime MSM file list comes from an explicit inventory in
 `scripts/build-wix.ps1`:
 
-1. Add the new module’s **Release output path** to the `$RuntimeModules` array
-   (same relative shape as existing entries), e.g.:
+1. Add the new module’s **catalog path** to `$RuntimeModuleCatalogRels` in
+   `scripts/build-wix.ps1` (use `{Config}` for the harvest folder), e.g.:
 
    ```text
-   Runtime\ARX\ARX.27.x64\Release\OpenDCL.x64.27.arx
-   Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx
-   Runtime\GRX\GRX.2028.x64\Release\OpenDCL.x64.2028.grx
-   Runtime\ZRX\ZRX.2026.x64\Release\OpenDCL.x64.2026.zrx
+   Runtime\ARX\ARX.27.x64\{Config}\OpenDCL.x64.27.arx
+   Runtime\BRX\BRX.27.x64\{Config}\OpenDCL.x64.27.brx
+   Runtime\GRX\GRX.2028.x64\{Config}\OpenDCL.x64.2028.grx
+   Runtime\ZRX\ZRX.2026.x64\{Config}\OpenDCL.x64.2026.zrx
    ```
 
 2. Place it with the correct platform group (ARX / BRX / GRX / ZRX) for readability.
 3. **Do not** hand-edit `wix/out/gen/OpenDCL.Runtime.Files.wxs` — that fragment is
-   regenerated at package build time from `$RuntimeModules` (and is gitignored).
+   regenerated at package build time from the selected catalog (and is gitignored).
 4. Component GUIDs are **stable MD5 seeds** of the module file name; no manual GUID
    assignment is required when adding a new module.
 5. Align the shipped file name with `RootNamespace` + extension
    (`OpenDCL.x64.<ver>.arx|brx|grx|zrx`).
+6. Packaging modes (same script):
+   - **Full product** (default): all catalog modules + all languages; historical MSM GUID.
+   - **Custom**: `-Runtimes` / `-ModuleSet Selected|Available` / `-Languages` →
+     `OpenDCL.Runtime.custom.msm` with seed GUIDs (dev/subset installers).
 
 **Do not** add system DLL “detected dependencies.” WiX packages only intentional
 product files (modules, `Runtime.Res`, licenses, Studio app/help/samples).
@@ -252,8 +256,12 @@ Only commit if the user asked.
 
 ### BricsCAD (BRX)
 
-- Folder `BRX.<ver>.x64`, extension `.brx`, env-style `$(BRX26)`.
+- Folder `BRX.<ver>.x64`, extension `.brx`, env-style `$(BRX26)` / `$(BRX27)`.
 - `_ACADTARGET` in props is often a compatibility value (commonly `24` in recent BRX props) while `_BRXTARGET` carries the BricsCAD major.
+- RxInstall: `kBRX<ver>`, `kBricscad<ver>x64`, install enumerate, uninstall `Bricsys\Bricscad\V<ver>x64`.
+- WiX: `Runtime\BRX\BRX.<ver>.x64\Release\OpenDCL.x64.<ver>.brx` in `$RuntimeModules`.
+- CMake experiment: matrix row + optional nested Win32 RxInstall; packaging resolves
+  classic or `out\` layout via `Resolve-ProductFile` in `build-wix.ps1`.
 
 ### GstarCAD (GRX)
 

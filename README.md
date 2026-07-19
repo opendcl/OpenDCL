@@ -2,7 +2,8 @@
 
 OpenDCL is a modern dialog and UI toolkit for AutoLISP programmers. It replaces AutoCAD’s limited DCL (Dialog Control Language) with Windows forms and controls for use in AutoCAD and compatible platforms (BricsCAD, ZWCAD, GstarCAD, and others as supported by each release).
 
-This repository is the **source code** for OpenDCL Studio and Runtime (version 9.x line, currently **9.3.3.1** at trunk HEAD).
+This repository is the **source code** for OpenDCL Studio and Runtime (product
+version **10.1.1.1** — see `Runtime/ARX.rc` FILEVERSION / PRODUCTVERSION).
 
 ## Links
 

@@ -15,12 +15,13 @@
   <Module Id="OpenDCL.Runtime"
           Language="0"
           Version="$(var.ModuleVersion)">
-    <Package Id="0C4E4759-A6C2-4D0E-BAE5-7719C3BCF049"
+    <!-- ModulePackageId: full ship uses historical 0C4E4759-…; custom subsets use a seed GUID. -->
+    <Package Id="$(var.ModulePackageId)"
              Manufacturer="OpenDCL Consortium"
              InstallerVersion="200"
              Platform="x86"
-             Description="OpenDCL Runtime"
-             Comments="OpenDCL Runtime merge module" />
+             Description="$(var.RuntimeProductName)"
+             Comments="$(var.RuntimeProductName) merge module" />
 
     <!-- Install root: Common Files\OpenDCL (same as historical MSM) -->
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -47,8 +48,9 @@
     <ComponentGroupRef Id="RuntimeLangFRA" />
     <ComponentGroupRef Id="RuntimeLangCHT" />
 
-    <!-- RxInstall custom actions (Binary table; not installed as a file) -->
-    <Binary Id="RxInstall" SourceFile="$(var.OpenDclRoot)\Runtime\RxInstall\Release\RxInstall.dll" />
+    <!-- RxInstall custom actions (Binary table; not installed as a file).
+         Path resolved by scripts/build-wix.ps1 (classic or CMake out/ layout). -->
+    <Binary Id="RxInstall" SourceFile="$(var.RxInstallDll)" />
 
     <!-- Deferred install/uninstall; User CAs impersonate (historical ResetNoImpersonate.js) -->
     <CustomAction Id="SetRxInstallMachine"

@@ -3,22 +3,30 @@
   Build OpenDCL installers with WiX Toolset v3 (MSM + Runtime MSI + Studio MSIs).
 
 .DESCRIPTION
-  Expects a prior Release compile of OpenDCL (ARX/BRX/GRX/ZRX modules, Runtime.Res,
-  RxInstall, Studio exe / Studio.Res, help CHM, samples).
+  Supports two packaging modes:
+
+  **Full product release** (default): every catalog runtime module + all UI
+  languages. Missing Release outputs fail the build. MSM keeps the historical
+  modularization GUID for third-party consumers.
+
+  **Custom / subset**: package only chosen or available runtimes and language(s)
+  (typical CMake dev flow: BRX.27 + ENU). Outputs use a ".custom" name suffix
+  and distinct MSM/MSI identity GUIDs so they never collide with the ship MSM.
+
+  Product files resolve classic paths first, then CMake out\ layout
+  (see Resolve-ProductFile).
 
   Outputs (default under <repo>\wix\out\Release):
-    OpenDCL.Runtime.msm          -- kept for third-party installer authors
-    OpenDCL.Runtime.msi
-    OpenDCL.Studio.<LANG>.msi    -- ENU DEU ESM RUS CHS FRA CHT
-
-  Does NOT use .vdproj. Layout: scripts\build-wix.ps1 + wix\ next to OpenDCL.sln.
+    OpenDCL.Runtime.msm[.custom]
+    OpenDCL.Runtime.msi[.custom]
+    OpenDCL.Studio.<LANG>.msi
 
 .PARAMETER OpenDclRoot
   Path to compiled OpenDCL tree. Defaults to this repository root (where
   OpenDCL.sln lives).
 
 .PARAMETER Configuration
-  Currently only Release outputs are harvested (default Release).
+  Build configuration folder to harvest (default Release).
 
 .PARAMETER ProductVersion
   MSI 3-part ProductVersion. Default 10.1.101 encodes file version 10.1.1.1
@@ -29,6 +37,28 @@
 
 .PARAMETER WixBin
   Path to candle.exe/light.exe directory. Auto-detected if empty.
+
+.PARAMETER Languages
+  UI language codes to package (ENU, DEU, …). Empty = all catalog languages
+  for full mode; with -AvailableLanguages, empty means “every language that
+  has Runtime.Res present”.
+
+.PARAMETER Runtimes
+  Runtime IDs and/or families to package, e.g. BRX.27.x64, ARX.26.x64, BRX, ARX.
+  Empty with default -ModuleSet Full = entire catalog. Required for -ModuleSet Selected.
+
+.PARAMETER ModuleSet
+  Full      — all catalog modules (default); missing files fail.
+  Selected  — only -Runtimes (each must resolve); missing files fail.
+  Available — catalog (optionally filtered by -Runtimes) where files exist;
+              skip missing modules.
+
+.PARAMETER AvailableLanguages
+  Include only languages whose Runtime.Res.dll resolves. When set without
+  -Languages, scans all catalog languages.
+
+.PARAMETER SkipStudio / SkipRuntimeMsi / SkipMsm
+  Skip individual package steps.
 #>
 [CmdletBinding()]
 param(
@@ -39,6 +69,10 @@ param(
   [string] $WixBin = "",
   [string] $OutDir = "",
   [string[]] $Languages = @(),
+  [string[]] $Runtimes = @(),
+  [ValidateSet("Full", "Selected", "Available")]
+  [string] $ModuleSet = "Full",
+  [switch] $AvailableLanguages,
   [switch] $SkipStudio,
   [switch] $SkipRuntimeMsi,
   [switch] $SkipMsm
@@ -102,6 +136,59 @@ function Assert-File([string] $path) {
   if (-not (Test-Path -LiteralPath $path)) {
     throw "Required build output missing: $path"
   }
+}
+
+function Resolve-ProductFile([string] $rel) {
+  <#
+    Resolve a classic relative product path under $OpenDclRoot.
+    Search order:
+      1) OpenDclRoot\<rel>              classic tree or staged outputs
+      2) OpenDclRoot\out\<rel>          CMake binary dir layout
+      3) RepoRoot\<rel>                 source assets (licenses, icons) when
+                                        -OpenDclRoot is a CMake build tree
+  #>
+  $candidates = [System.Collections.Generic.List[string]]::new()
+  [void]$candidates.Add((Join-Path $OpenDclRoot $rel))
+  [void]$candidates.Add((Join-Path $OpenDclRoot (Join-Path "out" $rel)))
+  if ($RepoRoot -and ($RepoRoot -ne $OpenDclRoot)) {
+    [void]$candidates.Add((Join-Path $RepoRoot $rel))
+  }
+  foreach ($c in $candidates) {
+    if (Test-Path -LiteralPath $c) { return (Resolve-Path -LiteralPath $c).Path }
+  }
+  # Prefer reporting the classic path under OpenDclRoot in errors
+  return $candidates[0]
+}
+
+function Test-ProductFile([string] $rel) {
+  $full = Resolve-ProductFile $rel
+  return (Test-Path -LiteralPath $full)
+}
+
+function Get-RuntimeIdFromRel([string] $rel) {
+  # Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx → BRX.27.x64
+  $parts = $rel -split '[\\/]'
+  if ($parts.Count -ge 3) { return $parts[2] }
+  return [IO.Path]::GetFileNameWithoutExtension($rel)
+}
+
+function Get-RuntimeFamilyFromId([string] $id) {
+  if ($id -match '^(ARX|BRX|GRX|ZRX)') { return $Matches[1] }
+  return ""
+}
+
+function Test-RuntimeSelector([string] $id, [string[]] $selectors) {
+  if (-not $selectors -or $selectors.Count -eq 0) { return $true }
+  $family = Get-RuntimeFamilyFromId $id
+  foreach ($raw in $selectors) {
+    $sel = "$raw".Trim()
+    if (-not $sel) { continue }
+    if ($sel -eq $id) { return $true }
+    if ($sel -eq $family) { return $true }
+    # Wildcard / -like patterns (e.g. BRX.2*, *.27.x64)
+    if ($sel -match '[\*\?]' -and ($id -like $sel)) { return $true }
+  }
+  return $false
 }
 
 # Extract full multi-resolution RT_GROUP_ICON resources from a PE into .ico files.
@@ -203,100 +290,205 @@ function Export-StudioAppIcon([string] $studioResDll, [string] $destIco) {
   return $destIco
 }
 
-# --- Inventory of Runtime product files (intentional; no Detected Dependencies) ---
-$RuntimeModules = @(
+# --- Catalog of Runtime product files (intentional; no Detected Dependencies) ---
+# Paths use {Config} for the harvest configuration (default Release).
+$RuntimeModuleCatalogRels = @(
   # ARX
-  "Runtime\ARX\ARX.16\Release\OpenDCL.16.arx",
-  "Runtime\ARX\ARX.17\Release\OpenDCL.17.arx",
-  "Runtime\ARX\ARX.17.x64\Release\OpenDCL.x64.17.arx",
-  "Runtime\ARX\ARX.18\Release\OpenDCL.18.arx",
-  "Runtime\ARX\ARX.18.x64\Release\OpenDCL.x64.18.arx",
-  "Runtime\ARX\ARX.19\Release\OpenDCL.19.arx",
-  "Runtime\ARX\ARX.19.x64\Release\OpenDCL.x64.19.arx",
-  "Runtime\ARX\ARX.20\Release\OpenDCL.20.arx",
-  "Runtime\ARX\ARX.20.x64\Release\OpenDCL.x64.20.arx",
-  "Runtime\ARX\ARX.21\Release\OpenDCL.21.arx",
-  "Runtime\ARX\ARX.21.x64\Release\OpenDCL.x64.21.arx",
-  "Runtime\ARX\ARX.22\Release\OpenDCL.22.arx",
-  "Runtime\ARX\ARX.22.x64\Release\OpenDCL.x64.22.arx",
-  "Runtime\ARX\ARX.23\Release\OpenDCL.23.arx",
-  "Runtime\ARX\ARX.23.x64\Release\OpenDCL.x64.23.arx",
-  "Runtime\ARX\ARX.24.x64\Release\OpenDCL.x64.24.arx",
-  "Runtime\ARX\ARX.25.x64\Release\OpenDCL.x64.25.arx",
-  "Runtime\ARX\ARX.26.x64\Release\OpenDCL.x64.26.arx",
+  "Runtime\ARX\ARX.16\{Config}\OpenDCL.16.arx",
+  "Runtime\ARX\ARX.17\{Config}\OpenDCL.17.arx",
+  "Runtime\ARX\ARX.17.x64\{Config}\OpenDCL.x64.17.arx",
+  "Runtime\ARX\ARX.18\{Config}\OpenDCL.18.arx",
+  "Runtime\ARX\ARX.18.x64\{Config}\OpenDCL.x64.18.arx",
+  "Runtime\ARX\ARX.19\{Config}\OpenDCL.19.arx",
+  "Runtime\ARX\ARX.19.x64\{Config}\OpenDCL.x64.19.arx",
+  "Runtime\ARX\ARX.20\{Config}\OpenDCL.20.arx",
+  "Runtime\ARX\ARX.20.x64\{Config}\OpenDCL.x64.20.arx",
+  "Runtime\ARX\ARX.21\{Config}\OpenDCL.21.arx",
+  "Runtime\ARX\ARX.21.x64\{Config}\OpenDCL.x64.21.arx",
+  "Runtime\ARX\ARX.22\{Config}\OpenDCL.22.arx",
+  "Runtime\ARX\ARX.22.x64\{Config}\OpenDCL.x64.22.arx",
+  "Runtime\ARX\ARX.23\{Config}\OpenDCL.23.arx",
+  "Runtime\ARX\ARX.23.x64\{Config}\OpenDCL.x64.23.arx",
+  "Runtime\ARX\ARX.24.x64\{Config}\OpenDCL.x64.24.arx",
+  "Runtime\ARX\ARX.25.x64\{Config}\OpenDCL.x64.25.arx",
+  "Runtime\ARX\ARX.26.x64\{Config}\OpenDCL.x64.26.arx",
   # BRX
-  "Runtime\BRX\BRX.9\Release\OpenDCL.9.brx",
-  "Runtime\BRX\BRX.10\Release\OpenDCL.10.brx",
-  "Runtime\BRX\BRX.11\Release\OpenDCL.11.brx",
-  "Runtime\BRX\BRX.12\Release\OpenDCL.12.brx",
-  "Runtime\BRX\BRX.13\Release\OpenDCL.13.brx",
-  "Runtime\BRX\BRX.13.x64\Release\OpenDCL.x64.13.brx",
-  "Runtime\BRX\BRX.14\Release\OpenDCL.14.brx",
-  "Runtime\BRX\BRX.14.x64\Release\OpenDCL.x64.14.brx",
-  "Runtime\BRX\BRX.15\Release\OpenDCL.15.brx",
-  "Runtime\BRX\BRX.15.x64\Release\OpenDCL.x64.15.brx",
-  "Runtime\BRX\BRX.16\Release\OpenDCL.16.brx",
-  "Runtime\BRX\BRX.16.x64\Release\OpenDCL.x64.16.brx",
-  "Runtime\BRX\BRX.17\Release\OpenDCL.17.brx",
-  "Runtime\BRX\BRX.17.x64\Release\OpenDCL.x64.17.brx",
-  "Runtime\BRX\BRX.18\Release\OpenDCL.18.brx",
-  "Runtime\BRX\BRX.18.x64\Release\OpenDCL.x64.18.brx",
-  "Runtime\BRX\BRX.19\Release\OpenDCL.19.brx",
-  "Runtime\BRX\BRX.19.x64\Release\OpenDCL.x64.19.brx",
-  "Runtime\BRX\BRX.20\Release\OpenDCL.20.brx",
-  "Runtime\BRX\BRX.20.x64\Release\OpenDCL.x64.20.brx",
-  "Runtime\BRX\BRX.21.x64\Release\OpenDCL.x64.21.brx",
-  "Runtime\BRX\BRX.22.x64\Release\OpenDCL.x64.22.brx",
-  "Runtime\BRX\BRX.23.x64\Release\OpenDCL.x64.23.brx",
-  "Runtime\BRX\BRX.24.x64\Release\OpenDCL.x64.24.brx",
-  "Runtime\BRX\BRX.25.x64\Release\OpenDCL.x64.25.brx",
-  "Runtime\BRX\BRX.26.x64\Release\OpenDCL.x64.26.brx",
+  "Runtime\BRX\BRX.9\{Config}\OpenDCL.9.brx",
+  "Runtime\BRX\BRX.10\{Config}\OpenDCL.10.brx",
+  "Runtime\BRX\BRX.11\{Config}\OpenDCL.11.brx",
+  "Runtime\BRX\BRX.12\{Config}\OpenDCL.12.brx",
+  "Runtime\BRX\BRX.13\{Config}\OpenDCL.13.brx",
+  "Runtime\BRX\BRX.13.x64\{Config}\OpenDCL.x64.13.brx",
+  "Runtime\BRX\BRX.14\{Config}\OpenDCL.14.brx",
+  "Runtime\BRX\BRX.14.x64\{Config}\OpenDCL.x64.14.brx",
+  "Runtime\BRX\BRX.15\{Config}\OpenDCL.15.brx",
+  "Runtime\BRX\BRX.15.x64\{Config}\OpenDCL.x64.15.brx",
+  "Runtime\BRX\BRX.16\{Config}\OpenDCL.16.brx",
+  "Runtime\BRX\BRX.16.x64\{Config}\OpenDCL.x64.16.brx",
+  "Runtime\BRX\BRX.17\{Config}\OpenDCL.17.brx",
+  "Runtime\BRX\BRX.17.x64\{Config}\OpenDCL.x64.17.brx",
+  "Runtime\BRX\BRX.18\{Config}\OpenDCL.18.brx",
+  "Runtime\BRX\BRX.18.x64\{Config}\OpenDCL.x64.18.brx",
+  "Runtime\BRX\BRX.19\{Config}\OpenDCL.19.brx",
+  "Runtime\BRX\BRX.19.x64\{Config}\OpenDCL.x64.19.brx",
+  "Runtime\BRX\BRX.20\{Config}\OpenDCL.20.brx",
+  "Runtime\BRX\BRX.20.x64\{Config}\OpenDCL.x64.20.brx",
+  "Runtime\BRX\BRX.21.x64\{Config}\OpenDCL.x64.21.brx",
+  "Runtime\BRX\BRX.22.x64\{Config}\OpenDCL.x64.22.brx",
+  "Runtime\BRX\BRX.23.x64\{Config}\OpenDCL.x64.23.brx",
+  "Runtime\BRX\BRX.24.x64\{Config}\OpenDCL.x64.24.brx",
+  "Runtime\BRX\BRX.25.x64\{Config}\OpenDCL.x64.25.brx",
+  "Runtime\BRX\BRX.26.x64\{Config}\OpenDCL.x64.26.brx",
+  "Runtime\BRX\BRX.27.x64\{Config}\OpenDCL.x64.27.brx",
   # GRX
-  "Runtime\GRX\GRX.2015\Release\OpenDCL.2015.grx",
-  "Runtime\GRX\GRX.2015.x64\Release\OpenDCL.x64.2015.grx",
-  "Runtime\GRX\GRX.2016\Release\OpenDCL.2016.grx",
-  "Runtime\GRX\GRX.2016.x64\Release\OpenDCL.x64.2016.grx",
-  "Runtime\GRX\GRX.2017\Release\OpenDCL.2017.grx",
-  "Runtime\GRX\GRX.2017.x64\Release\OpenDCL.x64.2017.grx",
-  "Runtime\GRX\GRX.2018\Release\OpenDCL.2018.grx",
-  "Runtime\GRX\GRX.2018.x64\Release\OpenDCL.x64.2018.grx",
-  "Runtime\GRX\GRX.2019\Release\OpenDCL.2019.grx",
-  "Runtime\GRX\GRX.2019.x64\Release\OpenDCL.x64.2019.grx",
-  "Runtime\GRX\GRX.2020\Release\OpenDCL.2020.grx",
-  "Runtime\GRX\GRX.2020.x64\Release\OpenDCL.x64.2020.grx",
-  "Runtime\GRX\GRX.2021\Release\OpenDCL.2021.grx",
-  "Runtime\GRX\GRX.2021.x64\Release\OpenDCL.x64.2021.grx",
-  "Runtime\GRX\GRX.2022\Release\OpenDCL.2022.grx",
-  "Runtime\GRX\GRX.2022.x64\Release\OpenDCL.x64.2022.grx",
-  "Runtime\GRX\GRX.2023.x64\Release\OpenDCL.x64.2023.grx",
-  "Runtime\GRX\GRX.2024.x64\Release\OpenDCL.x64.2024.grx",
-  "Runtime\GRX\GRX.2025.x64\Release\OpenDCL.x64.2025.grx",
-  "Runtime\GRX\GRX.2026.x64\Release\OpenDCL.x64.2026.grx",
-  "Runtime\GRX\GRX.2027.x64\Release\OpenDCL.x64.2027.grx",
+  "Runtime\GRX\GRX.2015\{Config}\OpenDCL.2015.grx",
+  "Runtime\GRX\GRX.2015.x64\{Config}\OpenDCL.x64.2015.grx",
+  "Runtime\GRX\GRX.2016\{Config}\OpenDCL.2016.grx",
+  "Runtime\GRX\GRX.2016.x64\{Config}\OpenDCL.x64.2016.grx",
+  "Runtime\GRX\GRX.2017\{Config}\OpenDCL.2017.grx",
+  "Runtime\GRX\GRX.2017.x64\{Config}\OpenDCL.x64.2017.grx",
+  "Runtime\GRX\GRX.2018\{Config}\OpenDCL.2018.grx",
+  "Runtime\GRX\GRX.2018.x64\{Config}\OpenDCL.x64.2018.grx",
+  "Runtime\GRX\GRX.2019\{Config}\OpenDCL.2019.grx",
+  "Runtime\GRX\GRX.2019.x64\{Config}\OpenDCL.x64.2019.grx",
+  "Runtime\GRX\GRX.2020\{Config}\OpenDCL.2020.grx",
+  "Runtime\GRX\GRX.2020.x64\{Config}\OpenDCL.x64.2020.grx",
+  "Runtime\GRX\GRX.2021\{Config}\OpenDCL.2021.grx",
+  "Runtime\GRX\GRX.2021.x64\{Config}\OpenDCL.x64.2021.grx",
+  "Runtime\GRX\GRX.2022\{Config}\OpenDCL.2022.grx",
+  "Runtime\GRX\GRX.2022.x64\{Config}\OpenDCL.x64.2022.grx",
+  "Runtime\GRX\GRX.2023.x64\{Config}\OpenDCL.x64.2023.grx",
+  "Runtime\GRX\GRX.2024.x64\{Config}\OpenDCL.x64.2024.grx",
+  "Runtime\GRX\GRX.2025.x64\{Config}\OpenDCL.x64.2025.grx",
+  "Runtime\GRX\GRX.2026.x64\{Config}\OpenDCL.x64.2026.grx",
+  "Runtime\GRX\GRX.2027.x64\{Config}\OpenDCL.x64.2027.grx",
   # ZRX
-  "Runtime\ZRX\ZRX.2014\Release\OpenDCL.2014.zrx",
-  "Runtime\ZRX\ZRX.2015\Release\OpenDCL.2015.zrx",
-  "Runtime\ZRX\ZRX.2017\Release\OpenDCL.2017.zrx",
-  "Runtime\ZRX\ZRX.2017.x64\Release\OpenDCL.x64.2017.zrx",
-  "Runtime\ZRX\ZRX.2018\Release\OpenDCL.2018.zrx",
-  "Runtime\ZRX\ZRX.2018.x64\Release\OpenDCL.x64.2018.zrx",
-  "Runtime\ZRX\ZRX.2019\Release\OpenDCL.2019.zrx",
-  "Runtime\ZRX\ZRX.2019.x64\Release\OpenDCL.x64.2019.zrx",
-  "Runtime\ZRX\ZRX.2020\Release\OpenDCL.2020.zrx",
-  "Runtime\ZRX\ZRX.2020.x64\Release\OpenDCL.x64.2020.zrx",
-  "Runtime\ZRX\ZRX.2021\Release\OpenDCL.2021.zrx",
-  "Runtime\ZRX\ZRX.2021.x64\Release\OpenDCL.x64.2021.zrx",
-  "Runtime\ZRX\ZRX.2022\Release\OpenDCL.2022.zrx",
-  "Runtime\ZRX\ZRX.2022.x64\Release\OpenDCL.x64.2022.zrx",
-  "Runtime\ZRX\ZRX.2023\Release\OpenDCL.2023.zrx",
-  "Runtime\ZRX\ZRX.2023.x64\Release\OpenDCL.x64.2023.zrx",
-  "Runtime\ZRX\ZRX.2025.x64\Release\OpenDCL.x64.2025.zrx"
+  "Runtime\ZRX\ZRX.2014\{Config}\OpenDCL.2014.zrx",
+  "Runtime\ZRX\ZRX.2015\{Config}\OpenDCL.2015.zrx",
+  "Runtime\ZRX\ZRX.2017\{Config}\OpenDCL.2017.zrx",
+  "Runtime\ZRX\ZRX.2017.x64\{Config}\OpenDCL.x64.2017.zrx",
+  "Runtime\ZRX\ZRX.2018\{Config}\OpenDCL.2018.zrx",
+  "Runtime\ZRX\ZRX.2018.x64\{Config}\OpenDCL.x64.2018.zrx",
+  "Runtime\ZRX\ZRX.2019\{Config}\OpenDCL.2019.zrx",
+  "Runtime\ZRX\ZRX.2019.x64\{Config}\OpenDCL.x64.2019.zrx",
+  "Runtime\ZRX\ZRX.2020\{Config}\OpenDCL.2020.zrx",
+  "Runtime\ZRX\ZRX.2020.x64\{Config}\OpenDCL.x64.2020.zrx",
+  "Runtime\ZRX\ZRX.2021\{Config}\OpenDCL.2021.zrx",
+  "Runtime\ZRX\ZRX.2021.x64\{Config}\OpenDCL.x64.2021.zrx",
+  "Runtime\ZRX\ZRX.2022\{Config}\OpenDCL.2022.zrx",
+  "Runtime\ZRX\ZRX.2022.x64\{Config}\OpenDCL.x64.2022.zrx",
+  "Runtime\ZRX\ZRX.2023\{Config}\OpenDCL.2023.zrx",
+  "Runtime\ZRX\ZRX.2023.x64\{Config}\OpenDCL.x64.2023.zrx",
+  "Runtime\ZRX\ZRX.2025.x64\{Config}\OpenDCL.x64.2025.zrx"
 )
 
-$RuntimeLangs = @("ENU", "DEU", "ESM", "RUS", "CHS", "FRA", "CHT")
+$AllRuntimeLangs = @("ENU", "DEU", "ESM", "RUS", "CHS", "FRA", "CHT")
+
+# Historical MSM modularization GUID — full product only (third-party merge identity).
+$FullModulePackageId = "0C4E4759-A6C2-4D0E-BAE5-7719C3BCF049"
+$FullRuntimeUpgradeCode = "A3675613-313B-47AC-8DD2-8707F33610AB"
+
+$RuntimeModuleCatalog = @(
+  foreach ($tmpl in $RuntimeModuleCatalogRels) {
+    $rel = $tmpl.Replace("{Config}", $Configuration)
+    $id = Get-RuntimeIdFromRel $rel
+    [pscustomobject]@{
+      Id     = $id
+      Family = Get-RuntimeFamilyFromId $id
+      Rel    = $rel
+    }
+  }
+)
+
+# --- Module selection ---
+if ($ModuleSet -eq "Selected" -and (-not $Runtimes -or $Runtimes.Count -eq 0)) {
+  throw "-ModuleSet Selected requires -Runtimes (e.g. -Runtimes BRX.27.x64,ARX.26.x64)."
+}
+if ($ModuleSet -eq "Full" -and $Runtimes -and $Runtimes.Count -gt 0) {
+  # Convenience: -Runtimes without Selected implies Selected
+  $ModuleSet = "Selected"
+  Write-Host "Note: -Runtimes set; using ModuleSet=Selected"
+}
+
+$selectedCatalog = @($RuntimeModuleCatalog | Where-Object {
+  Test-RuntimeSelector $_.Id $Runtimes
+})
+
+if ($ModuleSet -eq "Available") {
+  $RuntimeModules = @(
+    foreach ($m in $selectedCatalog) {
+      if (Test-ProductFile $m.Rel) { $m.Rel }
+    }
+  )
+  $skippedMods = @($selectedCatalog | Where-Object { -not (Test-ProductFile $_.Rel) } | ForEach-Object { $_.Id })
+  if ($skippedMods.Count -gt 0) {
+    Write-Host ("Available: skipping missing modules ({0}): {1}" -f $skippedMods.Count, ($skippedMods -join ", "))
+  }
+}
+else {
+  # Full or Selected — all selected must exist (assert later)
+  $RuntimeModules = @($selectedCatalog | ForEach-Object { $_.Rel })
+}
+
+if ($RuntimeModules.Count -eq 0) {
+  throw "No runtime modules selected (ModuleSet=$ModuleSet). Build modules or adjust -Runtimes."
+}
+
+# --- Language selection ---
 if ($Languages -and $Languages.Count -gt 0) {
   $RuntimeLangs = @($Languages | ForEach-Object { "$_".ToUpperInvariant() })
+  foreach ($lang in $RuntimeLangs) {
+    if ($AllRuntimeLangs -notcontains $lang) {
+      throw "Unknown language '$lang'. Catalog: $($AllRuntimeLangs -join ', ')"
+    }
+  }
 }
+else {
+  $RuntimeLangs = @($AllRuntimeLangs)
+}
+
+if ($AvailableLanguages) {
+  $presentLangs = @()
+  foreach ($lang in $RuntimeLangs) {
+    $resRel = "Runtime\Localized\$lang\Runtime.Res\$Configuration\Runtime.Res.dll"
+    if (Test-ProductFile $resRel) { $presentLangs += $lang }
+    else { Write-Host "AvailableLanguages: skip $lang (no Runtime.Res)" }
+  }
+  $RuntimeLangs = $presentLangs
+  if ($RuntimeLangs.Count -eq 0) {
+    throw "No languages with Runtime.Res found under OpenDclRoot."
+  }
+}
+
+$isFullProduct = (
+  $ModuleSet -eq "Full" -and
+  $RuntimeModules.Count -eq $RuntimeModuleCatalog.Count -and
+  $RuntimeLangs.Count -eq $AllRuntimeLangs.Count -and
+  -not $AvailableLanguages
+)
+
+if ($isFullProduct) {
+  $PackageSuffix = ""
+  $ModulePackageId = $FullModulePackageId
+  $RuntimeUpgradeCode = $FullRuntimeUpgradeCode
+  $RuntimeProductName = "OpenDCL Runtime"
+  $RuntimeArpComments = "OpenDCL Runtime"
+}
+else {
+  $PackageSuffix = ".custom"
+  $modSeed = ($selectedCatalog | Where-Object { $RuntimeModules -contains $_.Rel } | ForEach-Object { $_.Id } | Sort-Object) -join ","
+  $langSeed = ($RuntimeLangs | Sort-Object) -join ","
+  $ModulePackageId = Get-StableGuid "opendcl.runtime.msm.custom|mods=$modSeed|langs=$langSeed"
+  $RuntimeUpgradeCode = Get-StableGuid "opendcl.runtime.msi.upgrade.custom|mods=$modSeed|langs=$langSeed"
+  $RuntimeProductName = "OpenDCL Runtime (custom)"
+  $RuntimeArpComments = "OpenDCL Runtime custom ($modSeed / $langSeed)"
+}
+
+$selectedIds = @(
+  $RuntimeModuleCatalog |
+    Where-Object { $RuntimeModules -contains $_.Rel } |
+    ForEach-Object { $_.Id }
+)
 
 $StudioLangMeta = @{
   ENU = @{ ProductCode = "BA22A3D6-E594-45CD-BB25-12ADD982C87A"; UpgradeCode = "F8AB94DC-2F57-4C29-8842-E2BB5F898E6C"; LangId = 1033; Comments = "OpenDCL Studio (US English)" }
@@ -335,32 +527,35 @@ function New-RuntimeFilesFragment {
   [void]$sb.AppendLine('    <ComponentGroup Id="RuntimeModules">')
 
   foreach ($rel in $RuntimeModules) {
-    $full = Join-Path $OpenDclRoot $rel
+    $full = Resolve-ProductFile $rel
     Assert-File $full
     $name = [IO.Path]::GetFileName($full)
     $cid = "mod_" + (Get-SafeId $name)
     $guid = Get-StableGuid "opendcl.runtime.module|$name"
-    $src = $full -replace '\\', '\\'
     # WiX Source can use single backslashes in XML; escape & only
     $srcXml = $full.Replace('&', '&amp;')
     [void]$sb.AppendLine((Write-ComponentXml -ComponentId $cid -Guid $guid -DirectoryId "OpenDCLFolder" -SourcePath $srcXml -FileName $name))
   }
   [void]$sb.AppendLine('    </ComponentGroup>')
 
-  foreach ($lang in $RuntimeLangs) {
+  # Always emit ComponentGroups for every catalog language so Module ComponentGroupRefs stay valid.
+  # Unselected languages get empty groups (no payload).
+  foreach ($lang in $AllRuntimeLangs) {
     [void]$sb.AppendLine("    <ComponentGroup Id=`"RuntimeLang$lang`">")
-    $files = @(
-      @{ Rel = "Runtime\Localized\$lang\Runtime.Res\Release\Runtime.Res.dll"; Name = "Runtime.Res.dll" },
-      @{ Rel = "Runtime\Localized\$lang\Content\License.txt"; Name = "License.txt" },
-      @{ Rel = "Runtime\Localized\$lang\Content\GNU-GPL.txt"; Name = "GNU-GPL.txt" }
-    )
-    foreach ($f in $files) {
-      $full = Join-Path $OpenDclRoot $f.Rel
-      Assert-File $full
-      $cid = "rt_" + $lang + "_" + (Get-SafeId $f.Name)
-      $guid = Get-StableGuid "opendcl.runtime.lang|$lang|$($f.Name)"
-      $srcXml = $full.Replace('&', '&amp;')
-      [void]$sb.AppendLine((Write-ComponentXml -ComponentId $cid -Guid $guid -DirectoryId "Lang$lang" -SourcePath $srcXml -FileName $f.Name))
+    if ($RuntimeLangs -contains $lang) {
+      $files = @(
+        @{ Rel = "Runtime\Localized\$lang\Runtime.Res\$Configuration\Runtime.Res.dll"; Name = "Runtime.Res.dll" },
+        @{ Rel = "Runtime\Localized\$lang\Content\License.txt"; Name = "License.txt" },
+        @{ Rel = "Runtime\Localized\$lang\Content\GNU-GPL.txt"; Name = "GNU-GPL.txt" }
+      )
+      foreach ($f in $files) {
+        $full = Resolve-ProductFile $f.Rel
+        Assert-File $full
+        $cid = "rt_" + $lang + "_" + (Get-SafeId $f.Name)
+        $guid = Get-StableGuid "opendcl.runtime.lang|$lang|$($f.Name)"
+        $srcXml = $full.Replace('&', '&amp;')
+        [void]$sb.AppendLine((Write-ComponentXml -ComponentId $cid -Guid $guid -DirectoryId "Lang$lang" -SourcePath $srcXml -FileName $f.Name))
+      }
     }
     [void]$sb.AppendLine('    </ComponentGroup>')
   }
@@ -588,28 +783,41 @@ Write-Host "OutDir          : $OutDir"
 Write-Host "ProductVersion  : $ProductVersion"
 Write-Host "ModuleVersion   : $ModuleVersion"
 Write-Host "WixBin          : $WixBin"
+Write-Host "ModuleSet       : $ModuleSet"
+Write-Host "Full product    : $isFullProduct"
+Write-Host "Package suffix  : $(if ($PackageSuffix) { $PackageSuffix } else { '(none — ship identity)' })"
+Write-Host "Runtimes ($($selectedIds.Count)) : $($selectedIds -join ', ')"
+Write-Host "Languages       : $($RuntimeLangs -join ', ')"
+Write-Host "ModulePackageId : $ModulePackageId"
 Write-Host ""
 
-Assert-File (Join-Path $OpenDclRoot "Runtime\RxInstall\Release\RxInstall.dll")
-Assert-File (Join-Path $OpenDclRoot "Runtime\Install\OpenDCL.ico")
+$RxInstallDll = Resolve-ProductFile "Runtime\RxInstall\$Configuration\RxInstall.dll"
+Assert-File $RxInstallDll
+# Source tree assets always live under the packaging repo (not the CMake binary dir).
+Assert-File (Join-Path $RepoRoot "Runtime\Install\OpenDCL.ico")
+Write-Host "RxInstall.dll   : $RxInstallDll"
 
 # --- 1) Runtime MSM ---
-$msmPath = Join-Path $OutDir "OpenDCL.Runtime.msm"
+$msmName = "OpenDCL.Runtime$PackageSuffix.msm"
+$msmPath = Join-Path $OutDir $msmName
 if ($SkipMsm) {
   if (-not (Test-Path $msmPath)) { throw "SkipMsm set but MSM not found: $msmPath" }
-  Write-Host "==== Reusing OpenDCL.Runtime.msm ===="
+  Write-Host "==== Reusing $msmName ===="
   Write-Host "OK $msmPath ($([math]::Round((Get-Item $msmPath).Length/1MB,1)) MB)"
 }
 else {
-  Write-Host "==== Building OpenDCL.Runtime.msm ===="
+  Write-Host "==== Building $msmName ===="
   $runtimeFilesWxs = New-RuntimeFilesFragment
   Invoke-CandleLight `
     -WxsFiles @((Join-Path $WixRoot "Runtime\OpenDCL.Runtime.wxs"), $runtimeFilesWxs) `
     -OutFile $msmPath `
     -ObjectPrefix "msm_" `
     -Defines @{
-      OpenDclRoot    = $OpenDclRoot
-      ModuleVersion  = $ModuleVersion
+      OpenDclRoot      = $OpenDclRoot
+      ModuleVersion    = $ModuleVersion
+      RxInstallDll     = $RxInstallDll
+      ModulePackageId  = $ModulePackageId
+      RuntimeProductName = $RuntimeProductName
     }
 
   if (-not (Test-Path $msmPath)) { throw "MSM not produced: $msmPath" }
@@ -618,24 +826,35 @@ else {
 
 # --- 2) Runtime MSI ---
 if (-not $SkipRuntimeMsi) {
-  Write-Host "==== Building OpenDCL.Runtime.msi ===="
-  $runtimeMsi = Join-Path $OutDir "OpenDCL.Runtime.msi"
+  $msiName = "OpenDCL.Runtime$PackageSuffix.msi"
+  Write-Host "==== Building $msiName ===="
+  $runtimeMsi = Join-Path $OutDir $msiName
+  # Icon path: prefer OpenDclRoot, fall back to packaging repo (CMake binary dir as root).
+  $runtimeIco = Join-Path $RepoRoot "Runtime\Install\OpenDCL.ico"
   Invoke-CandleLight `
     -WxsFiles @((Join-Path $WixRoot "Runtime\OpenDCL.Runtime.MSI.wxs")) `
     -OutFile $runtimeMsi `
     -ObjectPrefix "rtmsi_" `
     -Defines @{
-      OpenDclRoot    = $OpenDclRoot
-      ProductVersion = $ProductVersion
-      MsmPath        = $msmPath
+      OpenDclRoot         = $OpenDclRoot
+      ProductVersion      = $ProductVersion
+      MsmPath             = $msmPath
+      RuntimeUpgradeCode  = $RuntimeUpgradeCode
+      RuntimeProductName  = $RuntimeProductName
+      RuntimeArpComments  = $RuntimeArpComments
+      RuntimeIcon         = $runtimeIco
     }
   Write-Host "OK $runtimeMsi"
 }
 
 # --- 3) Studio language MSIs ---
 if (-not $SkipStudio) {
-  Assert-File (Join-Path $OpenDclRoot "Studio\Win32\Release\OpenDCL Studio.exe")
-  Assert-File (Join-Path $OpenDclRoot "Studio\OpenDCL.ico")
+  Assert-File (Resolve-ProductFile "Studio\Win32\$Configuration\OpenDCL Studio.exe")
+  $studioIco = Join-Path $RepoRoot "Studio\OpenDCL.ico"
+  if (-not (Test-Path -LiteralPath $studioIco)) {
+    $studioIco = Resolve-ProductFile "Studio\OpenDCL.ico"
+  }
+  Assert-File $studioIco
 
   $uiBmps = Resolve-WixUiBitmaps -WixRoot $WixRoot -GenDir $GenDir
   $bannerBmp = $uiBmps.BannerBmp

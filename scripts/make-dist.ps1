@@ -73,8 +73,12 @@ Write-Host "Source: $SourceDir"
 Write-Host "Dest:   $DestDir"
 Write-Host "Ver:    $ProductVersion"
 
+# Full ship identity
 Copy-Versioned "OpenDCL.Runtime.msi" "OpenDCL.Runtime.$ProductVersion.msi"
 Copy-Versioned "OpenDCL.Runtime.msm" "OpenDCL.Runtime.$ProductVersion.msm"
+# Custom subset packages (build-wix -ModuleSet Selected|Available)
+Copy-Versioned "OpenDCL.Runtime.custom.msi" "OpenDCL.Runtime.custom.$ProductVersion.msi"
+Copy-Versioned "OpenDCL.Runtime.custom.msm" "OpenDCL.Runtime.custom.$ProductVersion.msm"
 foreach ($lang in $langs) {
   Copy-Versioned "OpenDCL.Studio.$lang.msi" "OpenDCL.Studio.$lang.$ProductVersion.msi"
 }

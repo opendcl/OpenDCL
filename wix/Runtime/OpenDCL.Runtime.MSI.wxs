@@ -6,16 +6,16 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <!-- Product Id is auto-generated each build; UpgradeCode stays stable for upgrades -->
   <Product Id="*"
-           Name="OpenDCL Runtime"
+           Name="$(var.RuntimeProductName)"
            Language="0"
            Version="$(var.ProductVersion)"
            Manufacturer="OpenDCL Consortium"
-           UpgradeCode="A3675613-313B-47AC-8DD2-8707F33610AB">
+           UpgradeCode="$(var.RuntimeUpgradeCode)">
     <Package InstallerVersion="200"
              Compressed="yes"
              InstallScope="perMachine"
-             Description="OpenDCL Runtime"
-             Comments="OpenDCL Runtime"
+             Description="$(var.RuntimeProductName)"
+             Comments="$(var.RuntimeArpComments)"
              Manufacturer="OpenDCL Consortium" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of OpenDCL Runtime is already installed."
@@ -25,14 +25,14 @@
     <Property Id="ARPHELPLINK" Value="https://www.opendcl.com" />
     <Property Id="ARPURLINFOABOUT" Value="https://www.opendcl.com" />
     <Property Id="ARPCONTACT" Value="OpenDCL Consortium" />
-    <Property Id="ARPCOMMENTS" Value="OpenDCL Runtime" />
+    <Property Id="ARPCOMMENTS" Value="$(var.RuntimeArpComments)" />
     <Property Id="ARPNOMODIFY" Value="1" />
     <Property Id="LIMITUI" Value="1" />
 
-    <Icon Id="ProductIcon" SourceFile="$(var.OpenDclRoot)\Runtime\Install\OpenDCL.ico" />
+    <Icon Id="ProductIcon" SourceFile="$(var.RuntimeIcon)" />
     <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
 
-    <Feature Id="Runtime" Title="OpenDCL Runtime" Level="1" Absent="disallow">
+    <Feature Id="Runtime" Title="$(var.RuntimeProductName)" Level="1" Absent="disallow">
       <MergeRef Id="OpenDCLRuntimeMerge" />
     </Feature>
 

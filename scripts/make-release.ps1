@@ -30,11 +30,22 @@
 .PARAMETER SkipLocalization
   Skip building OpenDCL.<LANG>.zip packs.
 
+.PARAMETER Runtimes / ModuleSet / AvailableLanguages / SkipStudio
+  Forwarded to build-wix.ps1 for custom subset packages. Full product release
+  is the default (all modules + all languages). Custom sets produce
+  OpenDCL.Runtime.custom.* under wix\out and are not the ship MSM identity.
+
 .PARAMETER Sign
   Run sign-files.ps1 on the dist folder (uses SIGN_* env vars / parameters).
 
 .EXAMPLE
   .\scripts\make-release.ps1 -ProductVersion 10.1.1.1 -Sign
+
+.EXAMPLE
+  # Dev custom installer (BRX 27 + ENU only, no Studio)
+  .\scripts\make-release.ps1 -ProductVersion 10.1.1.1 `
+    -Runtimes BRX.27.x64 -Languages ENU -ModuleSet Selected `
+    -SkipStudio -SkipLocalization
 #>
 [CmdletBinding()]
 param(
@@ -44,6 +55,12 @@ param(
   [string] $MsiProductVersion = "",
   [string] $Configuration = "Release",
   [string[]] $Languages = @(),
+  [string[]] $Runtimes = @(),
+  [ValidateSet("Full", "Selected", "Available")]
+  [string] $ModuleSet = "Full",
+  [switch] $AvailableLanguages,
+  [switch] $SkipStudio,
+  [switch] $SkipRuntimeMsi,
   [switch] $SkipPackage,
   [switch] $SkipLocalization,
   [switch] $Sign,
@@ -89,10 +106,17 @@ if (-not $SkipPackage) {
     Configuration    = $Configuration
     ModuleVersion    = $ProductVersion
     ProductVersion   = $MsiProductVersion
+    ModuleSet        = $ModuleSet
   }
   if ($Languages -and $Languages.Count -gt 0) {
     $wixArgs.Languages = $Languages
   }
+  if ($Runtimes -and $Runtimes.Count -gt 0) {
+    $wixArgs.Runtimes = $Runtimes
+  }
+  if ($AvailableLanguages) { $wixArgs.AvailableLanguages = $true }
+  if ($SkipStudio) { $wixArgs.SkipStudio = $true }
+  if ($SkipRuntimeMsi) { $wixArgs.SkipRuntimeMsi = $true }
   & (Join-Path $scripts "build-wix.ps1") @wixArgs
   if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "build-wix.ps1 failed ($LASTEXITCODE)" }
 }

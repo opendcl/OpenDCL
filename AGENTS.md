@@ -100,12 +100,26 @@ Defaults live in `scripts/build-wix.ps1` (`-ProductVersion`, `-ModuleVersion`).
 Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-…`) stable.
 Component GUIDs are stable MD5 seeds of logical paths.
 
-Runtime module inventory: **`$RuntimeModules`** in `build-wix.ps1`. Do not hand-edit
-`wix/out/gen/*.wxs`.
+Runtime module **catalog** lives in `scripts/build-wix.ps1` (`$RuntimeModuleCatalogRels`).
+Do not hand-edit `wix/out/gen/*.wxs`. Paths resolve classic first, then CMake
+`out\<classic-rel>` via `Resolve-ProductFile`. RxInstall Binary CA uses
+candle define `RxInstallDll`.
+
+Packaging modes:
+- **Full product** (default): all catalog modules + all langs → `OpenDCL.Runtime.msm`
+  with historical modularization GUID.
+- **Custom**: `-Runtimes` / `-ModuleSet Selected|Available` / language filters →
+  `OpenDCL.Runtime.custom.msm` with seed GUIDs (safe for local/dev installers).
+
+Newest BRX ship row: `Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx`
+(registry `Bricsys\Bricscad\V27x64`).
 
 ### Demand-load commands (`RxInstall`)
 
-`Runtime/RxInstall/RxInstall.cpp` registers CAD Application keys:
+`Runtime/RxInstall/RxInstall.cpp` registers CAD Application keys for each known
+host target **only when the matching module file exists** under the install
+folder (`Common Files\OpenDCL\OpenDCL*.arx|brx|grx|zrx`). Full product packages
+include every module; custom WiX subsets therefore register only what they ship.
 
 - **Runtime-only:** Commands = `OPENDCL`
 - **Studio installed:** Commands = `OPENDCL` + **`OPENDCLDEMO`**
@@ -243,3 +257,17 @@ not in this public tree.
 2. Read `wix/README.md` for packaging.
 3. Prefer copying the nearest existing host/language project over inventing layout.
 4. Ask before force-pushing, signing binaries, or publishing releases.
+
+## CAD SDK debug trees
+
+FullDebug links against **host debug** import libraries. Those directories are proprietary.
+Do **not** open, list, search, or copy contents of CAD SDK debug folders.
+Configure paths only via `BrxDebugLibs`, `OPENDCL_*_FULLDEBUG_LIBDIR`, or documented
+`SDK_LIB_FULLDEBUG` relative paths — never by discovering files inside debug trees.
+
+## Machine MSBuild overlays
+
+- `local.props` — optional, next to generated .sln (gitignored if under the repo).
+- `<parent-of-checkout>/dev.props` — optional shared machine file (outside the repo).
+  Imported **after** local.props so it can override include/lib paths and `BRX_PATH`.
+  Do not open or scan proprietary CAD debug trees when editing these files.
