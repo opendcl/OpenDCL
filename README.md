@@ -36,9 +36,9 @@ Studio/              OpenDCL Studio (dialog editor) + localized help content
 
 **Requirements (typical):**
 
-- Microsoft Visual Studio (solution historically built with VS 2017; newer VS may work with retargeting)
-- Windows desktop C++ / MFC toolset
+- Microsoft Visual Studio with the Windows desktop C++ / MFC workload (the solution uses a mix of Platform Toolsets; a current VS host is fine when older toolsets are available—see Daffodil below)
 - ObjectARX / BRX / ZRX / GRX SDKs for the CAD platforms you intend to target (not included in this repository)
+- **[Daffodil](https://github.com/manusoft-gh/manusoft-daffodil)** when building **pre-VS2015** Platform Toolsets (`v70`–`v120`, and related XP variants). Those toolsets are required by older AutoCAD / BricsCAD / GstarCAD / ZWCAD runtime modules and are **not** shipped with modern Visual Studio alone. Install Daffodil so MSBuild can resolve those Platform Toolsets under a current VS host. Targets that use VS2015+ toolsets (`v140` and later) do not need Daffodil.
 
 Build the solution in **Release** configuration for the platform(s) you need. Exact project matrix and SDK paths depend on your local CAD SDK install layout.
 
