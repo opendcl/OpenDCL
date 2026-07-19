@@ -1,0 +1,114 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "OFF",
+        "OPENDCL_BUILD_RXINSTALL": "ON",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_LANGS": "ENU"
+      }
+    },
+    {
+      "name": "vs2022-x64-dev",
+      "displayName": "VS2022 x64 — BRX.27.x64 (dev default)",
+      "inherits": "base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "BRX.27.x64",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
+      }
+    },
+    {
+      "name": "vs2022-x64-brx-latest",
+      "displayName": "VS2022 x64 — BRX.27.x64 only",
+      "inherits": "vs2022-x64-dev"
+    },
+    {
+      "name": "vs2022-x64-arx-latest",
+      "displayName": "VS2022 x64 — ARX.26.x64 only",
+      "inherits": "base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "ARX.26.x64",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
+      }
+    },
+    {
+      "name": "vs2022-x64-arx-modern",
+      "displayName": "VS2022 x64 — ARX 24–26",
+      "inherits": "base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "ARX.24.x64;ARX.25.x64;ARX.26.x64",
+        "OPENDCL_RUNTIME_AUTO": "ON"
+      }
+    },
+    {
+      "name": "vs2022-x64-auto",
+      "displayName": "VS2022 x64 — auto-detect all SDKs",
+      "inherits": "base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "ON",
+        "OPENDCL_ENABLE_ZRX": "ON",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_TARGETS": ""
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "vs2022-x64-dev-release",
+      "configurePreset": "vs2022-x64-dev",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2022-x64-dev-debug",
+      "configurePreset": "vs2022-x64-dev",
+      "configuration": "Debug"
+    },
+    {
+      "name": "vs2022-x64-arx-latest-release",
+      "configurePreset": "vs2022-x64-arx-latest",
+      "configuration": "Release"
+    }
+  ]
+}

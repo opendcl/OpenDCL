@@ -83,3 +83,11 @@ dist/
 
 # Compiled HTML Help (built from Studio Content; not source)
 *.chm
+
+# CMake experiment
+/build/
+
+
+# Machine / solution-local MSBuild overrides (do not commit)
+local.props
+**/local.props

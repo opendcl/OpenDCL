@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -255,11 +255,6 @@
     <ClCompile Include="..\..\Controls\ArxPlotStyleTableComboBoxCtrl.cpp" />
     <ClCompile Include="..\..\Controls\ArxPrinterComboBoxCtrl.cpp" />
     <ClCompile Include="..\..\Controls\ArxProgressBarCtrl.cpp" />
-    <ClCompile Include="..\..\Controls\ArxR16LinetypeComboBoxCtrl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='FullDebug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\Controls\ArxRadioButtonCtrl.cpp" />
     <ClCompile Include="..\..\Controls\ArxRectangleCtrl.cpp" />
     <ClCompile Include="..\..\Controls\ArxScrollBarCtrl.cpp" />
