@@ -9,6 +9,15 @@ option(OPENDCL_BUILD_STUDIO "Build OpenDCL Studio.exe + Studio.Res (static MFC)"
 option(OPENDCL_BUILD_RXINSTALL "Build RxInstall CA (Win32 nested from x64; sources in main .sln)" ON)
 option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
 
+# VS generators are one platform per configure. On an x64 configure, optionally
+# nest a Win32 binary dir and expose OpenDCL_Win32 so one .sln builds both
+# (same idea as nested RxInstall). Shared OPENDCL_OUTPUT_ROOT so packaging sees
+# out/Studio/Win32 and out/Runtime/<x86 ids> next to x64 outputs.
+option(OPENDCL_NEST_WIN32
+  "When configuring x64 with the VS generator, also configure/build Win32 under <bin>/win32" OFF)
+option(OPENDCL_WIN32_IN_ALL
+  "Make nested Win32 part of the default ALL_BUILD (full ship); otherwise build OpenDCL_Win32 explicitly" OFF)
+
 option(OPENDCL_ENABLE_ARX "Consider AutoCAD (ARX) runtime targets" ON)
 option(OPENDCL_ENABLE_BRX "Consider BricsCAD (BRX) runtime targets" ON)
 option(OPENDCL_ENABLE_GRX "Consider GstarCAD (GRX) runtime targets" ON)

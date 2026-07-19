@@ -52,7 +52,7 @@ Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64
 | ENU CHM | Target `OpenDCL_StudioHelp_ENU` (depends from Studio); needs HTML Help Workshop `hhc.exe`. Output `Studio/Localized/ENU/Content/OpenDCL.chm` (gitignored). |
 | Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: classic first, then CMake `out\…`. |
 | Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` (©). Do not re-save as UTF-8. |
-| Full classic parity | Presets `vs2022-x64-full` + `vs2022-win32-full` (all families AUTO, all langs, Studio). Helper: `scripts/build-cmake-full.ps1`. Diff vs classic/Releases: `scripts/compare-cmake-classic.ps1`. |
+| Full classic parity | Preset **`vs2022-full`**: one x64 `.sln` + nested Win32 (`OpenDCL_Win32` / ALL_BUILD), shared `out/`, all families AUTO, all langs, Studio. Helper: `scripts/build-cmake-full.ps1`. Diff: `scripts/compare-cmake-classic.ps1`. |
 
 Sibling repos (typical under the same `Source/` parent):
 

@@ -53,31 +53,30 @@ cmake --build --preset vs2022-x64-arx-latest-release
 # Auto-detect every installed CAD SDK (x64)
 cmake --preset vs2022-x64-auto
 
-# Classic full-ship matrix (all families AUTO, all langs, Studio, RxInstall)
-cmake --preset vs2022-x64-full --fresh
-cmake --build --preset vs2022-x64-full-release
-# x86 host modules + Win32 Studio (separate binary dir):
-cmake --preset vs2022-win32-full --fresh
-cmake --build --preset vs2022-win32-full-release
+# One .sln: x64 targets + nested Win32 (OpenDCL_Win32 / ALL_BUILD)
+cmake --preset vs2022-full --fresh
+cmake --build --preset vs2022-full-release
+# Shared out/: x64 modules + Win32 modules + Studio x64/Win32
 
 # Or one-shot configure+build(+package Available set):
 .\scripts\build-cmake-full.ps1 -Fresh -Package
 # Compare CMake out/ + packages to classic tree / Releases\v9.3.3.1:
 .\scripts\compare-cmake-classic.ps1 `
   -ClassicRoot . `
-  -CMakeRoot build\vs2022-x64-full `
+  -CMakeRoot build\vs2022-full `
   -ClassicPackageDir P:\Work\OpenDCL\Releases\v9.3.3.1 `
   -CMakePackageDir wix\out\cmake-full-Release
 ```
 
 | Preset | Role |
 | --- | --- |
-| `vs2022-x64-full` | All x64 runtimes (skip missing SDKs), all 7 langs, Studio static MFC+/MT, RxInstall |
-| `vs2022-win32-full` | Same for Win32/x86 host modules + Win32 Studio |
+| **`vs2022-full`** | **Preferred full ship:** x64 VS solution + **nested Win32** (`OPENDCL_NEST_WIN32` + `OPENDCL_WIN32_IN_ALL`), shared `out/`, all families AUTO, all 7 langs, Studio, RxInstall |
+| `vs2022-x64-full` | Same matrix **without** nested Win32 |
+| `vs2022-win32-full` | Standalone Win32-only binary dir (optional) |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules **`/MDd`** (all families); non-modules FullDebug→Debug outputs |
 
-**Note:** VS multi-config is **one platform per configure**. Full classic parity needs **both** presets (or `build-cmake-full.ps1`). Packaging with `-OpenDclRoot build\vs2022-x64-full` still picks Win32 modules from RepoRoot classic paths / `build\vs2022-win32-full\out` via `Resolve-ProductFile` when present.
+**How dual-arch works:** CMake’s VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. `vs2022-full` configures **x64** as the main `.sln`, then nests `build/vs2022-full/win32` (`-A Win32`) with the **same** `OPENDCL_OUTPUT_ROOT=…/out`. Target **`OpenDCL_Win32`** (and ALL_BUILD when `OPENDCL_WIN32_IN_ALL=ON`) builds the Win32 tree for the active config. Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\` (and `win32\out\` if used).
 
 **Sticky cache:** `cmake --preset …` does **not** overwrite existing
 `CMakeCache.txt` entries. A prior configure with empty

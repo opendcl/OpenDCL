@@ -94,8 +94,8 @@
       }
     },
     {
-      "name": "vs2022-x64-full",
-      "displayName": "VS2022 x64 — classic full ship matrix (all SDKs + all langs + Studio)",
+      "name": "vs2022-full",
+      "displayName": "VS2022 full ship — x64 .sln + nested Win32 (all SDKs/langs/Studio)",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -111,12 +111,23 @@
         "OPENDCL_RUNTIME_AUTO": "ON",
         "OPENDCL_RUNTIME_TARGETS": "",
         "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
-        "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT"
+        "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
+        "OPENDCL_NEST_WIN32": "ON",
+        "OPENDCL_WIN32_IN_ALL": "ON"
+      }
+    },
+    {
+      "name": "vs2022-x64-full",
+      "displayName": "VS2022 x64 only — full matrix (no nested Win32)",
+      "inherits": "vs2022-full",
+      "cacheVariables": {
+        "OPENDCL_NEST_WIN32": "OFF",
+        "OPENDCL_WIN32_IN_ALL": "OFF"
       }
     },
     {
       "name": "vs2022-win32-full",
-      "displayName": "VS2022 Win32 — classic x86 matrix (all SDKs + langs + Studio)",
+      "displayName": "VS2022 Win32 only — x86 matrix (standalone binary dir)",
       "inherits": "base",
       "architecture": {
         "value": "Win32",
@@ -132,7 +143,8 @@
         "OPENDCL_RUNTIME_AUTO": "ON",
         "OPENDCL_RUNTIME_TARGETS": "",
         "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
-        "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT"
+        "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
+        "OPENDCL_NEST_WIN32": "OFF"
       }
     }
   ],
@@ -153,19 +165,24 @@
       "configuration": "Release"
     },
     {
-      "name": "vs2022-x64-full-release",
-      "configurePreset": "vs2022-x64-full",
+      "name": "vs2022-full-release",
+      "configurePreset": "vs2022-full",
       "configuration": "Release"
     },
     {
-      "name": "vs2022-x64-full-debug",
-      "configurePreset": "vs2022-x64-full",
+      "name": "vs2022-full-debug",
+      "configurePreset": "vs2022-full",
       "configuration": "Debug"
     },
     {
-      "name": "vs2022-x64-full-fulldebug",
-      "configurePreset": "vs2022-x64-full",
+      "name": "vs2022-full-fulldebug",
+      "configurePreset": "vs2022-full",
       "configuration": "FullDebug"
+    },
+    {
+      "name": "vs2022-x64-full-release",
+      "configurePreset": "vs2022-x64-full",
+      "configuration": "Release"
     },
     {
       "name": "vs2022-win32-full-release",

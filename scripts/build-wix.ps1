@@ -143,13 +143,15 @@ function Resolve-ProductFile([string] $rel) {
     Resolve a classic relative product path under $OpenDclRoot.
     Search order:
       1) OpenDclRoot\<rel>              classic tree or staged outputs
-      2) OpenDclRoot\out\<rel>          CMake binary dir layout
-      3) RepoRoot\<rel>                 source assets (licenses, icons) when
+      2) OpenDclRoot\out\<rel>          CMake binary dir layout (shared x64+Win32 out)
+      3) OpenDclRoot\win32\out\<rel>    nested Win32 under vs2022-full (if separate out)
+      4) RepoRoot\<rel>                 source assets / classic mirrors when
                                         -OpenDclRoot is a CMake build tree
   #>
   $candidates = [System.Collections.Generic.List[string]]::new()
   [void]$candidates.Add((Join-Path $OpenDclRoot $rel))
   [void]$candidates.Add((Join-Path $OpenDclRoot (Join-Path "out" $rel)))
+  [void]$candidates.Add((Join-Path $OpenDclRoot (Join-Path "win32\out" $rel)))
   if ($RepoRoot -and ($RepoRoot -ne $OpenDclRoot)) {
     [void]$candidates.Add((Join-Path $RepoRoot $rel))
   }
