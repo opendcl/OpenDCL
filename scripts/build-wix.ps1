@@ -608,14 +608,30 @@ function Resolve-WixUiBitmaps {
   return @{ BannerBmp = $bannerPath; DialogBmp = $dialogPath }
 }
 
+function Test-PeIsX64([string] $pePath) {
+  # Read COFF Machine from PE (0x8664 = AMD64). No hard-coded install paths.
+  $fs = [IO.File]::OpenRead($pePath)
+  try {
+    $br = New-Object IO.BinaryReader $fs
+    if ($br.ReadUInt16() -ne 0x5A4D) { return $false } # MZ
+    $fs.Seek(0x3C, 'Begin') | Out-Null
+    $peOff = $br.ReadInt32()
+    $fs.Seek($peOff, 'Begin') | Out-Null
+    if ($br.ReadUInt32() -ne 0x00004550) { return $false } # PE\0\0
+    $machine = $br.ReadUInt16()
+    return ($machine -eq 0x8664)
+  }
+  finally { $fs.Dispose() }
+}
+
 function Resolve-StudioExe([string] $configuration = "Release") {
-  # Classic Win32 first, then x64 (CMake x64 presets), then out\ layout via Resolve-ProductFile.
-  foreach ($plat in @("Win32", "x64")) {
+  # Prefer x64 (modern CMake / ship), then classic Win32. Paths via Resolve-ProductFile.
+  foreach ($plat in @("x64", "Win32")) {
     $rel = "Studio\$plat\$configuration\OpenDCL Studio.exe"
     $full = Resolve-ProductFile $rel
     if (Test-Path -LiteralPath $full) { return $full }
   }
-  return (Resolve-ProductFile "Studio\Win32\$configuration\OpenDCL Studio.exe")
+  return (Resolve-ProductFile "Studio\x64\$configuration\OpenDCL Studio.exe")
 }
 
 function New-StudioFilesFragment([string] $lang) {
@@ -625,11 +641,15 @@ function New-StudioFilesFragment([string] $lang) {
   [void]$sb.AppendLine('  <Fragment>')
   [void]$sb.AppendLine('    <ComponentGroup Id="StudioApp">')
 
-  # Match legacy vdproj layout (and app path logic in GetLanguageSubfolderPath):
+  # Layout (paths are MSI [INSTALLDIR], never a hard-coded Program Files string):
   #   {INSTALLDIR}\OpenDCL Studio.exe
   #   {INSTALLDIR}\{Lang}\Studio.Res.dll, License.*, CHM, Samples\...
+  # x64 PE → ProgramFiles64Folder + Win64 components; x86 PE → ProgramFilesFolder.
   # Advertised shortcuts must live on the same Component as their File (ICE69).
   $studioExe = Resolve-StudioExe $Configuration
+  $script:StudioIsX64 = Test-PeIsX64 $studioExe
+  $win64Attr = if ($script:StudioIsX64) { ' Win64="yes"' } else { '' }
+  Write-Host ("  Studio PE: {0} ({1})" -f $studioExe, $(if ($script:StudioIsX64) { 'x64 -> ProgramFiles64' } else { 'x86 -> ProgramFiles' }))
   $appFiles = @(
     @{
       Full = $studioExe
@@ -665,7 +685,7 @@ function New-StudioFilesFragment([string] $lang) {
     $cid = "st_" + $lang + "_" + (Get-SafeId $f.Name)
     $guid = Get-StableGuid "opendcl.studio.app|$lang|$($f.Name)"
     $srcXml = $f.Full.Replace('&', '&amp;')
-    [void]$sb.AppendLine("      <Component Id=`"$cid`" Guid=`"{$guid}`" Directory=`"$($f.Dir)`">")
+    [void]$sb.AppendLine("      <Component Id=`"$cid`" Guid=`"{$guid}`" Directory=`"$($f.Dir)`"$win64Attr>")
     if ($f.Shortcuts) {
       [void]$sb.AppendLine("        <File Id=`"$($f.FileId)`" Source=`"$srcXml`" Name=`"$($f.Name)`" KeyPath=`"yes`">")
       foreach ($sc in $f.Shortcuts) {
@@ -688,7 +708,7 @@ function New-StudioFilesFragment([string] $lang) {
 
   # Start-menu folder cleanup only (HKCU keypath — not mixed with per-machine files)
   $menuGuid = Get-StableGuid "opendcl.studio.programmenu|$lang"
-  [void]$sb.AppendLine("      <Component Id=`"st_${lang}_ProgramMenu`" Guid=`"{$menuGuid}`" Directory=`"ProgramMenuOpenDCL`">")
+  [void]$sb.AppendLine("      <Component Id=`"st_${lang}_ProgramMenu`" Guid=`"{$menuGuid}`" Directory=`"ProgramMenuOpenDCL`"$win64Attr>")
   [void]$sb.AppendLine("        <RegistryValue Root=`"HKCU`" Key=`"Software\OpenDCL Consortium\OpenDCL Studio\$lang`" Name=`"ProgramMenu`" Type=`"integer`" Value=`"1`" KeyPath=`"yes`" />")
   [void]$sb.AppendLine('        <RemoveFolder Id="rm_ProgramMenuOpenDCL" Directory="ProgramMenuOpenDCL" On="uninstall" />')
   [void]$sb.AppendLine("      </Component>")
@@ -696,8 +716,9 @@ function New-StudioFilesFragment([string] $lang) {
   # --- Studio registry parity with vdproj 9.3.3.1 ---
   # HKCR OpenDCL.Project is required: RxInstall IsStudioInstalled() gates OPENDCLDEMO demand-load.
   # Sequence is safe: WriteRegistryValues runs before deferred RxInstallMachine (after StartServices).
+  # All file paths use [INSTALLDIR] (never Program Files (x86)\… hard-coding).
   $assocGuid = Get-StableGuid "opendcl.studio.fileassoc|$lang"
-  [void]$sb.AppendLine("      <Component Id=`"st_${lang}_FileAssoc`" Guid=`"{$assocGuid}`" Directory=`"INSTALLDIR`">")
+  [void]$sb.AppendLine("      <Component Id=`"st_${lang}_FileAssoc`" Guid=`"{$assocGuid}`" Directory=`"INSTALLDIR`"$win64Attr>")
   # .odcl -> OpenDCL.Project (ProgID)
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key=".odcl" Type="string" Value="OpenDCL.Project" KeyPath="yes" />')
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project" Type="string" Value="OpenDCL Project" />')
@@ -715,7 +736,7 @@ function New-StudioFilesFragment([string] $lang) {
 
   # HKCU Software\OpenDCL app settings (language-specific paths; separate component from HKCR)
   $appRegGuid = Get-StableGuid "opendcl.studio.appsettings|$lang"
-  [void]$sb.AppendLine("      <Component Id=`"st_${lang}_AppSettings`" Guid=`"{$appRegGuid}`" Directory=`"INSTALLDIR`">")
+  [void]$sb.AppendLine("      <Component Id=`"st_${lang}_AppSettings`" Guid=`"{$appRegGuid}`" Directory=`"INSTALLDIR`"$win64Attr>")
   [void]$sb.AppendLine("        <RegistryValue Root=`"HKCU`" Key=`"Software\OpenDCL`" Name=`"Language`" Type=`"string`" Value=`"$lang`" KeyPath=`"yes`" />")
   [void]$sb.AppendLine('        <RegistryValue Root="HKCU" Key="Software\OpenDCL" Name="RootFolder" Type="string" Value="[INSTALLDIR]" />')
   [void]$sb.AppendLine("        <RegistryValue Root=`"HKCU`" Key=`"Software\OpenDCL`" Name=`"SamplesFolder`" Type=`"string`" Value=`"[INSTALLDIR]$lang\Samples\`" />")
@@ -739,7 +760,7 @@ function New-StudioFilesFragment([string] $lang) {
     # Ensure unique component ids when names collide after sanitize
     $srcXml = $sf.FullName.Replace('&', '&amp;')
     $nameXml = $sf.Name.Replace('&', '&amp;')
-    [void]$sb.AppendLine("      <Component Id=`"$cid`" Guid=`"{$guid}`" Directory=`"SamplesFolder`">")
+    [void]$sb.AppendLine("      <Component Id=`"$cid`" Guid=`"{$guid}`" Directory=`"SamplesFolder`"$win64Attr>")
     [void]$sb.AppendLine("        <File Id=`"$fileId`" Source=`"$srcXml`" Name=`"$nameXml`" KeyPath=`"yes`" />")
     [void]$sb.AppendLine("      </Component>")
   }
@@ -860,7 +881,13 @@ if (-not $SkipRuntimeMsi) {
 
 # --- 3) Studio language MSIs ---
 if (-not $SkipStudio) {
-  Assert-File (Resolve-StudioExe $Configuration)
+  $studioExeForPkg = Resolve-StudioExe $Configuration
+  Assert-File $studioExeForPkg
+  $studioIsX64 = Test-PeIsX64 $studioExeForPkg
+  $studioPlatform = if ($studioIsX64) { "x64" } else { "x86" }
+  $pfDir = if ($studioIsX64) { "ProgramFiles64Folder" } else { "ProgramFilesFolder" }
+  Write-Host ("Studio package platform: {0} ({1})" -f $studioPlatform, $pfDir)
+
   $studioIco = Join-Path $RepoRoot "Studio\OpenDCL.ico"
   if (-not (Test-Path -LiteralPath $studioIco)) {
     $studioIco = Resolve-ProductFile "Studio\OpenDCL.ico"
@@ -879,7 +906,7 @@ if (-not $SkipStudio) {
     $licenseRtf = Resolve-ProductFile "Studio\Localized\$lang\Content\License.rtf"
     Assert-File $licenseRtf
 
-    # App icon from Studio.Res.dll #10; Help/License ICOs from wix\ui\icons\
+    # App icon from Studio.Res.dll #10; Help/License ICOs from wix\ui\icons\ (RepoRoot)
     $studioResDll = Resolve-ProductFile "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
     Assert-File $studioResDll
     $iconStudio = Join-Path $GenDir "icons\$lang\StudioRes.App.ico"
@@ -917,6 +944,8 @@ if (-not $SkipStudio) {
         IconStudio        = $iconStudio
         IconHelp          = $iconHelp
         IconLicense       = $iconLicense
+        StudioPlatform    = $studioPlatform
+        PfDir             = $pfDir
       }
     Write-Host "OK $studioMsi"
   }

@@ -97,12 +97,18 @@ Outputs: **`wix/out/Release/`** only (gitignored). Details: `wix/README.md`.
 
 ### Studio install layout
 
+x64 Studio PE → **`ProgramFiles64Folder`** (`C:\Program Files\OpenDCL Studio\`).
+x86 Studio PE → `ProgramFilesFolder` (`Program Files (x86)`). Product code and
+WiX fragments use **`[INSTALLDIR]`** only — do not hard-code `Program Files (x86)\OpenDCL`.
+
 ```text
-{ProgramFiles}\OpenDCL Studio\
+{INSTALLDIR}\
   OpenDCL Studio.exe
   <LANG>\
     Studio.Res.dll, License.*, OpenDCL.chm, Samples\...
 ```
+
+Runtime modules (MSM): still **`CommonFilesFolder\OpenDCL`** (historical).
 
 ### Version encoding for WiX
 

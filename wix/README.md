@@ -51,17 +51,23 @@ Custom packages write **`OpenDCL.Runtime.custom.msm` / `.msi`** with seed-based 
 
 Primary outputs: **`wix\out\Release\`** only (no copies into `Runtime\Install\...` or `Studio\Localized\...\Release`).
 
-Studio install layout (matches legacy MSI / app expectations):
+Studio install layout (no hard-coded `Program Files (x86)` paths in product code —
+registry and shortcuts use MSI `[INSTALLDIR]`):
 
 ```text
-{ProgramFiles}\OpenDCL Studio\
-  OpenDCL Studio.exe          # product root
+# x64 Studio.exe  →  [ProgramFiles64Folder]\OpenDCL Studio\   (C:\Program Files\…)
+# x86 Studio.exe  →  [ProgramFilesFolder]\OpenDCL Studio\     (C:\Program Files (x86)\…)
+{INSTALLDIR}\
+  OpenDCL Studio.exe
   ENU\                        # (or DEU, …)
     Studio.Res.dll
     License.htm / .txt / .rtf
     OpenDCL.chm, GNU-GPL.txt
     Samples\...
 ```
+
+Runtime MSM remains under **Common Files\OpenDCL** (historical x86 MSM /
+`CommonFilesFolder`; modules are still found via RxInstall install-dir custom action).
 
 Override versions when cutting a release:
 

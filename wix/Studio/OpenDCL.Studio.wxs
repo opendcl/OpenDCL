@@ -9,6 +9,8 @@
     ProductLanguage LCID (1033, ...)
     ArpComments   e.g. OpenDCL Studio (US English)
     OpenDclRoot, ProductVersion, MsmPath
+    StudioPlatform  x64 | x86  (from PE of packaged Studio.exe)
+    PfDir           ProgramFiles64Folder | ProgramFilesFolder
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <!-- Product Id is auto-generated each build; UpgradeCode stays stable for upgrades -->
@@ -21,6 +23,7 @@
     <Package InstallerVersion="200"
              Compressed="yes"
              InstallScope="perMachine"
+             Platform="$(var.StudioPlatform)"
              Description="OpenDCL Studio"
              Comments="$(var.ArpComments)"
              Manufacturer="OpenDCL Consortium" />
@@ -48,10 +51,10 @@
       <MergeRef Id="OpenDCLRuntimeMerge" />
     </Feature>
 
-    <!-- INSTALLDIR matches historical vdproj: [ProgramFilesFolder][ProductName]
-         (not under a manufacturer subfolder). -->
+    <!-- INSTALLDIR: [ProgramFiles64Folder|ProgramFilesFolder]\OpenDCL Studio
+         (product root, no manufacturer subfolder). x64 PE → ProgramFiles64Folder. -->
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
+      <Directory Id="$(var.PfDir)">
         <Directory Id="INSTALLDIR" Name="OpenDCL Studio">
           <Directory Id="LangFolder" Name="$(var.Lang)">
             <Directory Id="SamplesFolder" Name="Samples" />
@@ -62,7 +65,8 @@
         <Directory Id="ProgramMenuOpenDCL" Name="OpenDCL Studio" />
       </Directory>
       <Directory Id="DesktopFolder" Name="Desktop" />
-      <!-- Merge at TARGETDIR so the MSM's CommonFilesFolder\OpenDCL layout is preserved -->
+      <!-- Merge at TARGETDIR so the MSM's CommonFilesFolder\OpenDCL layout is preserved
+           (Runtime MSM remains x86 / Common Files (x86) historically). -->
       <Merge Id="OpenDCLRuntimeMerge"
              Language="0"
              SourceFile="$(var.MsmPath)"
