@@ -38,8 +38,8 @@
          Help/License: standalone multi-res ICOs (Fluent bases + OpenDCL crosshair badge).
          Icon Id must end in .exe/.ico for Start Menu (ICE50). -->
     <Icon Id="OpenDCLStudio.exe" SourceFile="$(var.IconStudio)" />
-    <Icon Id="OpenDCLHelp.ico" SourceFile="$(var.OpenDclRoot)\wix\ui\icons\OpenDCLHelp.ico" />
-    <Icon Id="OpenDCLLicense.ico" SourceFile="$(var.OpenDclRoot)\wix\ui\icons\OpenDCLLicense.ico" />
+    <Icon Id="OpenDCLHelp.ico" SourceFile="$(var.IconHelp)" />
+    <Icon Id="OpenDCLLicense.ico" SourceFile="$(var.IconLicense)" />
     <Property Id="ARPPRODUCTICON" Value="OpenDCLStudio.exe" />
 
     <Feature Id="Studio" Title="OpenDCL Studio" Level="1" Description="OpenDCL Studio application, help, and samples" Absent="disallow">

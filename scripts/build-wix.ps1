@@ -726,9 +726,9 @@ function New-StudioFilesFragment([string] $lang) {
 
   [void]$sb.AppendLine('    </ComponentGroup>')
 
-  # Samples
+  # Samples (source content; Resolve-ProductFile falls back to RepoRoot for CMake -OpenDclRoot)
   [void]$sb.AppendLine('    <ComponentGroup Id="StudioSamples">')
-  $samplesDir = Join-Path $OpenDclRoot "Studio\Localized\$lang\Content\Samples"
+  $samplesDir = Resolve-ProductFile "Studio\Localized\$lang\Content\Samples"
   Assert-File $samplesDir
   $sampleFiles = Get-ChildItem -LiteralPath $samplesDir -File | Sort-Object Name
   foreach ($sf in $sampleFiles) {
@@ -886,8 +886,12 @@ if (-not $SkipStudio) {
     Export-StudioAppIcon -studioResDll $studioResDll -destIco $iconStudio | Out-Null
     $iconHelp = Join-Path $RepoRoot "wix\ui\icons\OpenDCLHelp.ico"
     $iconLicense = Join-Path $RepoRoot "wix\ui\icons\OpenDCLLicense.ico"
-    if (-not (Test-Path $iconHelp)) { $iconHelp = Join-Path $OpenDclRoot "wix\ui\icons\OpenDCLHelp.ico" }
-    if (-not (Test-Path $iconLicense)) { $iconLicense = Join-Path $OpenDclRoot "wix\ui\icons\OpenDCLLicense.ico" }
+    if (-not (Test-Path -LiteralPath $iconHelp)) {
+      $iconHelp = Resolve-ProductFile "wix\ui\icons\OpenDCLHelp.ico"
+    }
+    if (-not (Test-Path -LiteralPath $iconLicense)) {
+      $iconLicense = Resolve-ProductFile "wix\ui\icons\OpenDCLLicense.ico"
+    }
     Assert-File $iconHelp
     Assert-File $iconLicense
     Write-Host ("  icons: app={0:N0}b help={1:N0}b license={2:N0}b" -f `
@@ -911,6 +915,8 @@ if (-not $SkipStudio) {
         BannerBmp         = $bannerBmp
         DialogBmp         = $dialogBmp
         IconStudio        = $iconStudio
+        IconHelp          = $iconHelp
+        IconLicense       = $iconLicense
       }
     Write-Host "OK $studioMsi"
   }
