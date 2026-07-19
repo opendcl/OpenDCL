@@ -18,7 +18,9 @@ Do **not** enable push until the experiment is deliberately promoted.
 | Path | Role |
 | --- | --- |
 | `CMakeLists.txt` | Root project, options, subdirs |
-| `CMakePresets.json` | Dev / ARX-latest / ARX-modern presets |
+| `CMakePresets.json` | Dev, auto, **full classic-parity** (x64 + Win32) presets |
+| `scripts/build-cmake-full.ps1` | Configure/build full presets + optional WiX package |
+| `scripts/compare-cmake-classic.ps1` | Diff modules/packages vs classic tree or Releases |
 | `cmake/OpenDCLHelpers.cmake` | Options, registry, SDK detect, selection |
 | `cmake/OpenDCLRuntimeMatrix.cmake` | All runtime rows (from `VI/*.props`) |
 | `cmake/OpenDCLRuntimeSources.cmake` | Shared Runtime+Common `.cpp` list |
@@ -50,7 +52,32 @@ cmake --build --preset vs2022-x64-arx-latest-release
 
 # Auto-detect every installed CAD SDK (x64)
 cmake --preset vs2022-x64-auto
+
+# Classic full-ship matrix (all families AUTO, all langs, Studio, RxInstall)
+cmake --preset vs2022-x64-full --fresh
+cmake --build --preset vs2022-x64-full-release
+# x86 host modules + Win32 Studio (separate binary dir):
+cmake --preset vs2022-win32-full --fresh
+cmake --build --preset vs2022-win32-full-release
+
+# Or one-shot configure+build(+package Available set):
+.\scripts\build-cmake-full.ps1 -Fresh -Package
+# Compare CMake out/ + packages to classic tree / Releases\v9.3.3.1:
+.\scripts\compare-cmake-classic.ps1 `
+  -ClassicRoot . `
+  -CMakeRoot build\vs2022-x64-full `
+  -ClassicPackageDir P:\Work\OpenDCL\Releases\v9.3.3.1 `
+  -CMakePackageDir wix\out\cmake-full-Release
 ```
+
+| Preset | Role |
+| --- | --- |
+| `vs2022-x64-full` | All x64 runtimes (skip missing SDKs), all 7 langs, Studio static MFC+/MT, RxInstall |
+| `vs2022-win32-full` | Same for Win32/x86 host modules + Win32 Studio |
+| CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
+| CRT (FullDebug) | Modules **`/MDd`** (all families); non-modules FullDebug→Debug outputs |
+
+**Note:** VS multi-config is **one platform per configure**. Full classic parity needs **both** presets (or `build-cmake-full.ps1`). Packaging with `-OpenDclRoot build\vs2022-x64-full` still picks Win32 modules from RepoRoot classic paths / `build\vs2022-win32-full\out` via `Resolve-ProductFile` when present.
 
 **Sticky cache:** `cmake --preset …` does **not** overwrite existing
 `CMakeCache.txt` entries. A prior configure with empty
