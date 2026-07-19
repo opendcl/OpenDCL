@@ -262,6 +262,8 @@ Only commit if the user asked.
 - WiX: `Runtime\BRX\BRX.<ver>.x64\Release\OpenDCL.x64.<ver>.brx` in `$RuntimeModules`.
 - CMake experiment: matrix row + optional nested Win32 RxInstall; packaging resolves
   classic or `out\` layout via `Resolve-ProductFile` in `build-wix.ps1`.
+- CMake FullDebug for **all** runtime families uses **`/MDd`** + host debug libdirs
+  (see `OpenDCLRuntimeTargets.cmake` / `CMAKE.md`). Do not scan proprietary debug trees.
 
 ### GstarCAD (GRX)
 
@@ -299,7 +301,8 @@ Only commit if the user asked.
 - [ ] `OpenDCL.sln` project + configs + solution folder
 - [ ] `OpenDCL.Compile.slnf` entry (local/generated filter if used)
 - [ ] `RxInstall.cpp` enum + install + uninstall paths
-- [ ] New module path added to `$RuntimeModules` in `scripts/build-wix.ps1`
+- [ ] New module path added to `$RuntimeModuleCatalogRels` in `scripts/build-wix.ps1`
 - [ ] Version resources + WiX version defaults bumped (including `RxInstall.rc`)
 - [ ] Release build produces the expected module name
+- [ ] CMake matrix/VI props updated when using the CMake experiment path
 - [ ] Skill file updated if new lessons or fixes were discovered

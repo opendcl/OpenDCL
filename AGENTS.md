@@ -21,21 +21,37 @@ without checking those resources.
 ## Repository layout
 
 ```text
-OpenDCL.sln              Visual Studio solution
+OpenDCL.sln              Classic Visual Studio solution
+CMakeLists.txt           CMake experiment (multi-runtime + Studio + RxInstall)
+cmake/                   Matrix, targets, helpers (see CMAKE.md)
 Common/                  Shared core + per-language SharedRes (<LANG>/)
-Library/                 Third-party (LibPNG, ZLib)
+Library/                 Third-party (LibPNG, ZLib); CMake builds /MD and /MT variants
 Runtime/
-  ARX|BRX|GRX|ZRX/       Host-specific module projects
+  ARX|BRX|GRX|ZRX/       Host-specific module projects (+ VI props)
   Localized/<LANG>/      Runtime.Res + License.txt
   RxInstall/             Demand-load installer DLL (used as WiX Binary CA)
 Studio/
-  Win32/                 OpenDCL Studio.exe
+  Studio.vcxproj         Classic Studio (static MFC + /MT)
   Localized/<LANG>/      Studio.Res, Content (help + samples), HTMLHelp project
 scripts/build-wix.ps1    Packaging entry point
 wix/                     WiX sources, UI bitmaps/icons, tools
 wix/out/                 Generated packages (gitignored)
 .agents/skills/          Optional agent skills (often untracked until ready)
 ```
+
+### CMake experiment (preferred for multi-host matrix + Studio F5)
+
+Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`).
+
+| Area | Notes |
+|------|--------|
+| Configs | `Debug`, `FullDebug`, `Release` |
+| CAD runtime modules | Real FullDebug product (`AC_FULL_DEBUG`, **`/MDd`**, host debug libs). **Do not scan proprietary debug SDK trees.** |
+| Everything else | **FullDebug → Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, Studio `/MT` zlib/png. Exception: `/MD` zlib/png keep FullDebug for `/MDd` module link. |
+| Studio | Static MFC + `/MT`; `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide — `FolderTreeCtrl.cpp` also includes `MultiMon.h`). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
+| ENU CHM | Target `OpenDCL_StudioHelp_ENU` (depends from Studio); needs HTML Help Workshop `hhc.exe`. Output `Studio/Localized/ENU/Content/OpenDCL.chm` (gitignored). |
+| Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: classic first, then CMake `out\…`. |
+| Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` (©). Do not re-save as UTF-8. |
 
 Sibling repos (typical under the same `Source/` parent):
 
@@ -194,8 +210,11 @@ they are absent if the folder exists on disk. Invoke with `/skill-name` when pre
 ## Coding and change norms
 
 - Prefer small, task-scoped diffs; do not drive-by refactors unrelated to the request.
-- Preserve file encodings (many localized `.rc` / `License.txt` are **UTF-16 LE**).
+- Preserve file encodings (many localized `.rc` / `License.txt` are **UTF-16 LE**;
+  `Studio/Studio.rc` and `Runtime/ARX.rc` are often **Windows-1252** with `©` as `0xA9`).
 - Do not commit generated `wix/out/**`, CHMs, or CAD SDK binaries.
+- Prefer CMake side-by-side copies / classic `Workspace` paths over hard-coding
+  F5 layout parsers in `Common/Workspace.cpp`.
 - Host SDKs (ObjectARX, BRX, …) are external; projects expect local env/props macros.
 - Release-style commits historically look like:
 

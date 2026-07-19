@@ -1,4 +1,6 @@
 # Per-language Runtime.Res resource DLLs.
+#
+# Not a CAD runtime module — FullDebug → Debug (classic has Debug|Release only).
 
 function(opendcl_add_runtime_res lang)
   set(_dir "${CMAKE_CURRENT_SOURCE_DIR}/${lang}/Runtime.Res")
@@ -14,20 +16,17 @@ function(opendcl_add_runtime_res lang)
   add_library(${_target} SHARED)
   target_sources(${_target} PRIVATE "${_rc}")
 
-  # Classic layout: Runtime/Localized/<LANG>/Runtime.Res/<Config>/Runtime.Res.dll
-  # Debugger F5 path (Common/Workspace.cpp) expects ...\Runtime.Res\Debug\ even when
-  # the host module was built as FullDebug.
-  set(_out_res "${OPENDCL_OUTPUT_ROOT}/Runtime/Localized/${lang}/Runtime.Res/$<CONFIG>")
+  # Classic layout: Runtime/Localized/<LANG>/Runtime.Res/<Debug|Release>/Runtime.Res.dll
+  set(_out_res_base "${OPENDCL_OUTPUT_ROOT}/Runtime/Localized/${lang}/Runtime.Res")
   set_target_properties(${_target} PROPERTIES
     OUTPUT_NAME "Runtime.Res"
     PREFIX ""
     SUFFIX ".dll"
-    RUNTIME_OUTPUT_DIRECTORY "${_out_res}"
-    LIBRARY_OUTPUT_DIRECTORY "${_out_res}"
-    ARCHIVE_OUTPUT_DIRECTORY "${_out_res}"
-    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL"
+    # FullDebug uses Debug CRT settings (same folder as Debug; pure resource /NOENTRY).
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>DLL"
     LINKER_LANGUAGE CXX
   )
+  opendcl_map_fulldebug_to_debug(${_target} "${_out_res_base}")
 
   target_include_directories(${_target} PRIVATE
     "${CMAKE_SOURCE_DIR}/Common"

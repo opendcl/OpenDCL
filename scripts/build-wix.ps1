@@ -608,6 +608,16 @@ function Resolve-WixUiBitmaps {
   return @{ BannerBmp = $bannerPath; DialogBmp = $dialogPath }
 }
 
+function Resolve-StudioExe([string] $configuration = "Release") {
+  # Classic Win32 first, then x64 (CMake x64 presets), then out\ layout via Resolve-ProductFile.
+  foreach ($plat in @("Win32", "x64")) {
+    $rel = "Studio\$plat\$configuration\OpenDCL Studio.exe"
+    $full = Resolve-ProductFile $rel
+    if (Test-Path -LiteralPath $full) { return $full }
+  }
+  return (Resolve-ProductFile "Studio\Win32\$configuration\OpenDCL Studio.exe")
+}
+
 function New-StudioFilesFragment([string] $lang) {
   $sb = New-Object System.Text.StringBuilder
   [void]$sb.AppendLine('<?xml version="1.0" encoding="UTF-8"?>')
@@ -619,18 +629,19 @@ function New-StudioFilesFragment([string] $lang) {
   #   {INSTALLDIR}\OpenDCL Studio.exe
   #   {INSTALLDIR}\{Lang}\Studio.Res.dll, License.*, CHM, Samples\...
   # Advertised shortcuts must live on the same Component as their File (ICE69).
+  $studioExe = Resolve-StudioExe $Configuration
   $appFiles = @(
     @{
-      Full = Join-Path $OpenDclRoot "Studio\Win32\Release\OpenDCL Studio.exe"
+      Full = $studioExe
       Dir = "INSTALLDIR"; Name = "OpenDCL Studio.exe"; FileId = "fil_StudioExe"
       Shortcuts = @(
         @{ Id = "sc_studio_menu"; Directory = "ProgramMenuOpenDCL"; Name = "OpenDCL Studio"; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 },
         @{ Id = "sc_studio_desktop"; Directory = "DesktopFolder"; Name = "OpenDCL Studio"; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 }
       )
     },
-    @{ Full = Join-Path $OpenDclRoot "Studio\Localized\$lang\Studio.Res\Release\Studio.Res.dll"; Dir = "LangFolder"; Name = "Studio.Res.dll"; FileId = "fil_StudioRes" },
+    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"); Dir = "LangFolder"; Name = "Studio.Res.dll"; FileId = "fil_StudioRes" },
     @{
-      Full = Join-Path $OpenDclRoot "Studio\Localized\$lang\Content\OpenDCL.chm"
+      Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\OpenDCL.chm")
       Dir = "LangFolder"; Name = "OpenDCL.chm"; FileId = "fil_StudioChm"
       Shortcuts = @(
         # Icon from Studio.Res.dll #16536 IDI_CONTROLBROWSER (extracted multi-res group)
@@ -638,15 +649,15 @@ function New-StudioFilesFragment([string] $lang) {
       )
     },
     @{
-      Full = Join-Path $OpenDclRoot "Studio\Localized\$lang\Content\License.txt"
+      Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\License.txt")
       Dir = "LangFolder"; Name = "License.txt"; FileId = "fil_StudioLicenseTxt"
       Shortcuts = @(
         # Icon from Studio.Res.dll #16535 IDI_FORMEDITOR (extracted multi-res group)
         @{ Id = "sc_lic_menu"; Directory = "ProgramMenuOpenDCL"; Name = "OpenDCL License"; WorkingDirectory = "LangFolder"; Icon = "OpenDCLLicense.ico"; IconIndex = 0 }
       )
     },
-    @{ Full = Join-Path $OpenDclRoot "Studio\Localized\$lang\Content\License.htm"; Dir = "LangFolder"; Name = "License.htm"; FileId = "fil_StudioLicenseHtm" },
-    @{ Full = Join-Path $OpenDclRoot "Studio\Localized\$lang\Content\GNU-GPL.txt"; Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" }
+    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\License.htm"); Dir = "LangFolder"; Name = "License.htm"; FileId = "fil_StudioLicenseHtm" },
+    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\GNU-GPL.txt"); Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" }
   )
 
   foreach ($f in $appFiles) {
@@ -849,7 +860,7 @@ if (-not $SkipRuntimeMsi) {
 
 # --- 3) Studio language MSIs ---
 if (-not $SkipStudio) {
-  Assert-File (Resolve-ProductFile "Studio\Win32\$Configuration\OpenDCL Studio.exe")
+  Assert-File (Resolve-StudioExe $Configuration)
   $studioIco = Join-Path $RepoRoot "Studio\OpenDCL.ico"
   if (-not (Test-Path -LiteralPath $studioIco)) {
     $studioIco = Resolve-ProductFile "Studio\OpenDCL.ico"
@@ -865,15 +876,18 @@ if (-not $SkipStudio) {
     $meta = $StudioLangMeta[$lang]
     $filesWxs = New-StudioFilesFragment $lang
     # Checked-in RTF (not generated at package time) — reviewable installer EULA source
-    $licenseRtf = Join-Path $OpenDclRoot "Studio\Localized\$lang\Content\License.rtf"
+    $licenseRtf = Resolve-ProductFile "Studio\Localized\$lang\Content\License.rtf"
     Assert-File $licenseRtf
 
     # App icon from Studio.Res.dll #10; Help/License ICOs from wix\ui\icons\
-    $studioResDll = Join-Path $OpenDclRoot "Studio\Localized\$lang\Studio.Res\Release\Studio.Res.dll"
+    $studioResDll = Resolve-ProductFile "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
+    Assert-File $studioResDll
     $iconStudio = Join-Path $GenDir "icons\$lang\StudioRes.App.ico"
     Export-StudioAppIcon -studioResDll $studioResDll -destIco $iconStudio | Out-Null
-    $iconHelp = Join-Path $OpenDclRoot "wix\ui\icons\OpenDCLHelp.ico"
-    $iconLicense = Join-Path $OpenDclRoot "wix\ui\icons\OpenDCLLicense.ico"
+    $iconHelp = Join-Path $RepoRoot "wix\ui\icons\OpenDCLHelp.ico"
+    $iconLicense = Join-Path $RepoRoot "wix\ui\icons\OpenDCLLicense.ico"
+    if (-not (Test-Path $iconHelp)) { $iconHelp = Join-Path $OpenDclRoot "wix\ui\icons\OpenDCLHelp.ico" }
+    if (-not (Test-Path $iconLicense)) { $iconLicense = Join-Path $OpenDclRoot "wix\ui\icons\OpenDCLLicense.ico" }
     Assert-File $iconHelp
     Assert-File $iconLicense
     Write-Host ("  icons: app={0:N0}b help={1:N0}b license={2:N0}b" -f `

@@ -25,6 +25,9 @@
 #define S_DefaultFontBold _T("DefaultFontBold")
 #define S_DefaultFontSizeStyle _T("DefaultFontSizeStyle")
 
+// Single source of truth for the Studio HTML Help file name (FindFile + missing dialog).
+static const TCHAR g_szHelpFileName[] = _T("OpenDCL.chm");
+
 
 // COpenDCLApp
 
@@ -142,7 +145,7 @@ BOOL COpenDCLApp::InitInstance()
 	EnableHtmlHelp();
 	delete [] m_pszHelpFilePath;
 	m_pszHelpFilePath = new TCHAR[MAX_PATH];
-	lstrcpyn( (LPTSTR)m_pszHelpFilePath, theWorkspace.FindFile( _T("OpenDCL.chm") ), MAX_PATH );
+	lstrcpyn( (LPTSTR)m_pszHelpFilePath, theWorkspace.FindFile( g_szHelpFileName ), MAX_PATH );
 
 	// Standard initialization
 	// If you are not using these features and wish to reduce the size
@@ -300,6 +303,15 @@ void COpenDCLApp::OnFileClose()
 
 void COpenDCLApp::OnHelp() 
 {
+	// hhctrl.ocx AVs if the help path is empty or missing.
+	if( !m_pszHelpFilePath || !*m_pszHelpFilePath ||
+			GetFileAttributes( m_pszHelpFilePath ) == INVALID_FILE_ATTRIBUTES )
+	{
+		CString sMsg;
+		sMsg.Format( _T("Help file %s was not found."), g_szHelpFileName );
+		AfxMessageBox( sMsg, MB_OK | MB_ICONINFORMATION );
+		return;
+	}
 	HtmlHelp(0, HH_DISPLAY_TOPIC);
 }
 

@@ -123,8 +123,12 @@ function(opendcl_add_runtime id)
   #
   # Debug vs FullDebug (see Runtime/StdAfx.h "DEBUG workaround"):
   #   Debug:     _DEBUG, no AC_FULL_DEBUG → PCH #undef _DEBUG around MFC/ATL/STL; /MD
-  #   FullDebug: _DEBUG + AC_FULL_DEBUG → full host/MFC debug; BRX uses /MDd + debug libs
+  #   FullDebug: _DEBUG + AC_FULL_DEBUG → full host/MFC debug CRT (/MDd) + host debug libs
   #   Release:   NDEBUG; /MD
+  #
+  # FullDebug is for developers with a local debug host build. All families use
+  # /MDd (CMake policy); classic ARX FullDebug was hybrid /MD — we intentionally
+  # use /MDd for every runtime module so zlib/png FullDebug (/MDd) link cleanly.
   #
   # FullDebug host debug libraries are proprietary: paths must be set explicitly
   # (see opendcl_resolve_fulldebug_libdirs). Do not scan debug SDK trees.
@@ -151,14 +155,8 @@ function(opendcl_add_runtime id)
     $<$<STREQUAL:${_arch},x64>:_WIN64>
   )
 
-  # CRT: Debug+Release /MD (host release). FullDebug /MDd for BRX-style full debug.
-  # ARX classic FullDebug stays /MD; BRX classic FullDebug uses /MDd.
-  if(_family STREQUAL "BRX" OR _family STREQUAL "GRX" OR _family STREQUAL "ZRX")
-    set(_rt_lib "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL")
-  else()
-    # ARX: MultiThreadedDLL for all (Autodesk hybrid FullDebug)
-    set(_rt_lib "MultiThreadedDLL")
-  endif()
+  # CRT: Debug+Release /MD (host release). FullDebug /MDd for all families.
+  set(_rt_lib "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL")
 
   # Mirror classic layout so Common/Workspace.cpp F5 debug loading finds Runtime.Res:
   #   Runtime/<FAMILY>/<ID>/<Config>/OpenDCL.*.brx|arx|...
@@ -258,12 +256,8 @@ function(opendcl_add_runtime id)
   set(_all_release_dirs ${_lib_paths} ${_extra_libdirs})
   opendcl_vs_attach_libdir_props(${_target} "${_all_release_dirs}" "${_fd_lib_ms}")
 
-  # FullDebug: prefer debug CRT defaultlibs (classic BRX ignores msvcrt).
-  if(_family STREQUAL "BRX" OR _family STREQUAL "GRX" OR _family STREQUAL "ZRX")
-    target_link_options(${_target} PRIVATE
-      $<$<CONFIG:FullDebug>:/NODEFAULTLIB:msvcrt>
-    )
-  endif()
+  # No /NODEFAULTLIB CRT hacks: module, MFC (/MD vs /MDd), and static deps
+  # (zlib/png *-md) must all use the same runtime library per config.
 
   # Arch-specific third-party static libs
   if(_arch STREQUAL "x64")

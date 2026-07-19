@@ -69,9 +69,11 @@ if(OPENDCL_BUILD_RXINSTALL)
 endif()
 
 if(OPENDCL_BUILD_STUDIO)
-  message(WARNING "OPENDCL_BUILD_STUDIO is not implemented in this scaffold yet.")
+  add_subdirectory(Studio)
 endif()
 
-if(OPENDCL_BUILD_HELP)
-  message(WARNING "OPENDCL_BUILD_HELP is not implemented in this scaffold yet.")
+# ENU CHM is built with Studio (OpenDCL_StudioHelp_ENU). OPENDCL_BUILD_HELP is
+# reserved for multi-language help packs later.
+if(OPENDCL_BUILD_HELP AND NOT OPENDCL_BUILD_STUDIO)
+  message(STATUS "OPENDCL_BUILD_HELP without Studio: ENU CHM is wired under Studio; enable OPENDCL_BUILD_STUDIO.")
 endif()

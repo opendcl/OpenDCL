@@ -5,7 +5,7 @@ include_guard(GLOBAL)
 # Options
 # ---------------------------------------------------------------------------
 option(OPENDCL_BUILD_RUNTIME "Build CAD runtime modules" ON)
-option(OPENDCL_BUILD_STUDIO "Build OpenDCL Studio (not fully ported yet)" OFF)
+option(OPENDCL_BUILD_STUDIO "Build OpenDCL Studio.exe + Studio.Res (static MFC)" OFF)
 option(OPENDCL_BUILD_RXINSTALL "Build RxInstall CA (Win32 nested from x64; sources in main .sln)" ON)
 option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
 
@@ -24,7 +24,7 @@ option(OPENDCL_RUNTIME_REQUIRE_SELECTED
 
 # FullDebug host *debug* import libraries.
 #
-# FullDebug uses AC_FULL_DEBUG + (for BRX) /MDd and must link host debug libs.
+# FullDebug uses AC_FULL_DEBUG + /MDd (all families) and must link host debug libs.
 # Those trees are proprietary — do NOT auto-scan or "discover" them.
 # Configure an explicit path only:
 #   - OPENDCL_<SDK_ENV>_FULLDEBUG_LIBDIR  (cache)
@@ -40,6 +40,27 @@ set(OPENDCL_LANGS "ENU" CACHE STRING
 
 set(OPENDCL_OUTPUT_ROOT "${CMAKE_BINARY_DIR}/out" CACHE PATH
   "Root directory for built binaries (package layout)")
+
+# ---------------------------------------------------------------------------
+# FullDebug → Debug layout (everything except CAD runtime modules)
+# ---------------------------------------------------------------------------
+# Solution FullDebug exists for host plugins (ARX/BRX/GRX/ZRX): AC_FULL_DEBUG,
+# /MDd, host debug libs. All other targets (Studio, Res DLLs, RxInstall,
+# Studio-only /MT libs) only have classic Debug|Release products — map FullDebug
+# outputs into the Debug folder so F5 never looks for a separate FullDebug artifact.
+# Generator expression for post-build / mirror paths:
+set(OPENDCL_CFG_DIR "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
+
+# Map RUNTIME/LIBRARY/ARCHIVE/PDB output dirs: FullDebug writes beside Debug.
+function(opendcl_map_fulldebug_to_debug target out_base)
+  foreach(_kind IN ITEMS RUNTIME LIBRARY ARCHIVE PDB)
+    set_target_properties(${target} PROPERTIES
+      ${_kind}_OUTPUT_DIRECTORY_DEBUG "${out_base}/Debug"
+      ${_kind}_OUTPUT_DIRECTORY_FULLDEBUG "${out_base}/Debug"
+      ${_kind}_OUTPUT_DIRECTORY_RELEASE "${out_base}/Release"
+    )
+  endforeach()
+endfunction()
 
 # Visual Studio F5: host CAD + load built module (classic /ld "$(TargetPath)").
 # ARX and BRX use the same load switch; GRX/ZRX default to the same and can override.

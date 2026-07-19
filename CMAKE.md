@@ -79,15 +79,19 @@ cmake --build build/manual --config Release
 
 Outputs land under `build/<preset>/out/`, mirroring the classic tree so F5 debug
 loading of `Runtime.Res.dll` works (`Common/Workspace.cpp` walks two folders up
-from the host module, then `..\Localized\<LANG>\Runtime.Res\Debug\`):
+from the host module, then `..\Localized\<LANG>\Runtime.Res\Debug\`).
+**FullDebug → Debug** for everything except **CAD runtime modules** (and the
+`/MD` zlib/png they link). Helper: `opendcl_map_fulldebug_to_debug` /
+`OPENDCL_CFG_DIR` in `cmake/OpenDCLHelpers.cmake`.
 
 ```text
-out/Runtime/BRX/BRX.27.x64/FullDebug/OpenDCL.x64.27.brx
+out/Runtime/BRX/BRX.27.x64/FullDebug/OpenDCL.x64.27.brx   # real FullDebug module
 out/Runtime/BRX/BRX.27.x64/Debug/OpenDCL.x64.27.brx
-out/Runtime/Localized/ENU/Runtime.Res/Debug/Runtime.Res.dll
-out/Runtime/Localized/ENU/Runtime.Res/FullDebug/Runtime.Res.dll
-out/Runtime/RxInstall/Release/RxInstall.dll   # when OPENDCL_BUILD_RXINSTALL=ON
-out/Library/x64/Release/...
+out/Runtime/Localized/ENU/Runtime.Res/Debug/Runtime.Res.dll    # Debug + FullDebug
+out/Runtime/Localized/ENU/Runtime.Res/Release/Runtime.Res.dll
+out/Runtime/RxInstall/Debug/RxInstall.dll     # FullDebug → Debug
+out/Library/x64-md/FullDebug/...              # kept for /MDd runtime link
+out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug → Debug
 ```
 
 ## Selection options
@@ -173,9 +177,7 @@ endfunction()
 `Runtime/StdAfx.h` implements Autodesk’s pattern:
 
 1. **Debug** (`_DEBUG`, no `AC_FULL_DEBUG`): temporarily `#undef _DEBUG` while including MFC / ATL / STL so those headers do not force the debug CRT; then restores `_DEBUG` for app code. CRT **`/MD`**. Links **release** host libs (`SDK_LIB`).
-2. **FullDebug** (`_DEBUG` + `AC_FULL_DEBUG`): keeps `_DEBUG` through MFC/host headers.  
-   - **BRX / GRX / ZRX:** CRT **`/MDd`**, link **host debug** libs only (see below).  
-   - **ARX:** CRT **`/MD`** (classic Autodesk hybrid) + full-debug host usage as per ObjectARX.
+2. **FullDebug** (`_DEBUG` + `AC_FULL_DEBUG`): keeps `_DEBUG` through MFC/host headers. CRT **`/MDd`** for **all** families (ARX/BRX/GRX/ZRX). Intended for developers with a **local debug host** build and host debug import libs (see below). Classic ARX FullDebug was hybrid `/MD`; CMake uses `/MDd` uniformly so static deps (`*-md` FullDebug) match.
 3. **Release**: `NDEBUG`, **`/MD`**, release host libs.
 
 #### FullDebug host debug libraries (proprietary — do not scan)
@@ -323,11 +325,27 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 `-Runtimes` accepts IDs (`BRX.27.x64`), families (`BRX`), or wildcards (`BRX.2*`).
 Languages: `-Languages ENU,DEU` or `-AvailableLanguages` (only packs that have `Runtime.Res`).
 
+## Studio (CMake)
+
+Enabled with `OPENDCL_BUILD_STUDIO=ON` (on in base presets).
+
+| Target | Output |
+| --- | --- |
+| `OpenDCL_Studio` | `out/Studio/x64\|Win32/<Debug\|Release>/OpenDCL Studio.exe` (+ classic mirror) |
+| `OpenDCL_StudioRes_<LANG>` | `out/Studio/Localized/<LANG>/Studio.Res/<Debug\|Release>/Studio.Res.dll` |
+| `OpenDCL_StudioHelp_ENU` | `Studio/Localized/ENU/Content/OpenDCL.chm` (Studio dependency; needs `hhc.exe`) |
+
+Notes:
+- **Static MFC + /MT** (classic). zlib/png use matching `*_mt` static CRT variants.
+- **No FullDebug product**: solution `FullDebug` maps Studio + Studio.Res to **Debug** (policy for all non-runtime-module targets).
+- **WINVER** forced to 0x0601+ for modern MFC headers; arch-correct embedded manifest (classic RC is X86-only).
+- **ENU HTML Help**: `OpenDCL_StudioHelp_ENU` builds `Studio/Localized/ENU/Content/OpenDCL.chm` via `hhc.exe`. Studio depends on it and **post-build copies** `Studio.Res.dll` + `OpenDCL.chm` next to `Studio.exe` so classic `Workspace::FindFile` / `GetLocalResourceModule` work without special F5 path logic.
+- **Multimon stubs**: Studio sets `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (static MFC has no `_AFXDLL`; `FolderTreeCtrl.cpp` also includes `MultiMon.h` and must not compile stubs). Runtime modules still rely on `_AFXDLL` in source.
+
 ## Not yet ported
 
-- OpenDCL Studio
-- HTML Help
-- Full multi-toolset ship CI parity validation
+- Multi-language CHM packs in CMake (classic `HTMLHelp.*.vcxproj` per lang)
+- Full multi-toolset ship CI parity (older SDKs fail linking modern UCRT zlib/png from VS2022)
 
 ## Regenerating the matrix
 

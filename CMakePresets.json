@@ -12,7 +12,7 @@
       "generator": "Visual Studio 17 2022",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "OPENDCL_BUILD_STUDIO": "OFF",
+        "OPENDCL_BUILD_STUDIO": "ON",
         "OPENDCL_BUILD_RXINSTALL": "ON",
         "OPENDCL_RUNTIME_AUTO": "ON",
         "OPENDCL_LANGS": "ENU"

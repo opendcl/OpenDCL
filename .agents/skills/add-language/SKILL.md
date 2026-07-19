@@ -136,6 +136,9 @@ Update `OpenDCL.Compile.slnf` when that filter is part of the build workflow.
    - `GNU-GPL.txt`
 5. Build CHM via the HTMLHelp project (`BuildCHM.mak` / HTML Help Workshop toolchain).
    Output: `Studio/Localized/<LANG>/Content/OpenDCL.chm` (gitignored `*.chm`).
+   CMake dev build wires **ENU only** today (`OpenDCL_StudioHelp_ENU` + Studio
+   dependency). Other languages still use classic `HTMLHelp.<LANG>.vcxproj` until
+   multi-lang help is ported; add `OPENDCL_LANGS` / packaging when shipping.
 
 ### 5. WiX packaging
 

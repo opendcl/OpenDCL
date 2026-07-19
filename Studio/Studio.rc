@@ -89,8 +89,13 @@ END
 //
 // RT_MANIFEST
 //
-
+// CMake builds skip this (OPENDCL_SKIP_EMBEDDED_MANIFEST): the classic
+// manifest is processorArchitecture=X86 and breaks x64 Studio (0xC000007B).
+// CMake embeds an arch-correct generated manifest instead.
+//
+#ifndef OPENDCL_SKIP_EMBEDDED_MANIFEST
 1                       RT_MANIFEST             "Res\\OpenDCL Studio.exe.manifest"
+#endif
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

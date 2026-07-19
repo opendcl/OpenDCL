@@ -19,6 +19,21 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   endif()
   set(_opendcl_rx_classic_dir "${CMAKE_SOURCE_DIR}")
   set(_opendcl_rx_is_standalone TRUE)
+  # Nested/standalone does not include OpenDCLHelpers — provide FullDebug map.
+  if(NOT DEFINED OPENDCL_CFG_DIR)
+    set(OPENDCL_CFG_DIR "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
+  endif()
+  if(NOT COMMAND opendcl_map_fulldebug_to_debug)
+    function(opendcl_map_fulldebug_to_debug target out_base)
+      foreach(_kind IN ITEMS RUNTIME LIBRARY ARCHIVE PDB)
+        set_target_properties(${target} PROPERTIES
+          ${_kind}_OUTPUT_DIRECTORY_DEBUG "${out_base}/Debug"
+          ${_kind}_OUTPUT_DIRECTORY_FULLDEBUG "${out_base}/Debug"
+          ${_kind}_OUTPUT_DIRECTORY_RELEASE "${out_base}/Release"
+        )
+      endforeach()
+    endfunction()
+  endif()
 else()
   set(_opendcl_rx_classic_dir "${CMAKE_SOURCE_DIR}/Runtime/RxInstall")
   set(_opendcl_rx_is_standalone FALSE)
@@ -38,26 +53,25 @@ function(opendcl_rxinstall_add_native classic_dir)
     WIN32
     _WINDOWS
     _USRDLL
-    $<$<CONFIG:Debug>:_DEBUG>
+    $<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:_DEBUG>
     $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>:NDEBUG>
   )
   # Match classic RxInstall.vcxproj: static CRT, multi-byte (not Unicode).
+  # FullDebug → Debug (not a CAD runtime module).
+  set(_rx_out "${OPENDCL_OUTPUT_ROOT}/Runtime/RxInstall")
   set_target_properties(OpenDCL_RxInstall PROPERTIES
     OUTPUT_NAME "RxInstall"
     PREFIX ""
     MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>"
-    RUNTIME_OUTPUT_DIRECTORY "${OPENDCL_OUTPUT_ROOT}/Runtime/RxInstall/$<CONFIG>"
-    LIBRARY_OUTPUT_DIRECTORY "${OPENDCL_OUTPUT_ROOT}/Runtime/RxInstall/$<CONFIG>"
-    ARCHIVE_OUTPUT_DIRECTORY "${OPENDCL_OUTPUT_ROOT}/Runtime/RxInstall/$<CONFIG>"
-    PDB_OUTPUT_DIRECTORY "${OPENDCL_OUTPUT_ROOT}/Runtime/RxInstall/$<CONFIG>"
   )
+  opendcl_map_fulldebug_to_debug(OpenDCL_RxInstall "${_rx_out}")
   # Mirror classic path for build-wix.ps1 (Runtime\RxInstall\Release\RxInstall.dll).
   add_custom_command(TARGET OpenDCL_RxInstall POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${classic_dir}/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${classic_dir}/${OPENDCL_CFG_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "$<TARGET_FILE:OpenDCL_RxInstall>"
-      "${classic_dir}/$<CONFIG>/$<TARGET_FILE_NAME:OpenDCL_RxInstall>"
-    COMMENT "Mirror RxInstall.dll to classic ${classic_dir}/$<CONFIG>/"
+      "${classic_dir}/${OPENDCL_CFG_DIR}/$<TARGET_FILE_NAME:OpenDCL_RxInstall>"
+    COMMENT "Mirror RxInstall.dll to classic ${classic_dir}/<Debug|Release>/"
   )
   target_link_libraries(OpenDCL_RxInstall PRIVATE msi advapi32)
 endfunction()
