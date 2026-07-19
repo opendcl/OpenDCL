@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Versioned rename/copy of WiX installer outputs (replaces Build 9.0\!MakeNewDist.bat copy steps).
+  Versioned rename/copy of WiX installer outputs into dist\<version>\.
 
 .DESCRIPTION
   Reads MSIs/MSM from wix\out\<Configuration>\ and writes:

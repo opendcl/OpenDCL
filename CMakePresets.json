@@ -95,7 +95,7 @@
     },
     {
       "name": "vs2022-full",
-      "displayName": "VS2022 full ship — x64 .sln + nested Win32 (all SDKs/langs/Studio)",
+      "displayName": "VS2022 Mixed full ship — x64 .sln + nested Win32 + classic x86 Res",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -113,21 +113,23 @@
         "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
         "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
         "OPENDCL_NEST_WIN32": "ON",
-        "OPENDCL_WIN32_IN_ALL": "ON"
+        "OPENDCL_WIN32_IN_ALL": "ON",
+        "OPENDCL_RES_PE": "classic_x86"
       }
     },
     {
       "name": "vs2022-x64-full",
-      "displayName": "VS2022 x64 only — full matrix (no nested Win32)",
+      "displayName": "VS2022 x64 full — nested Win32 modules + host-arch (x64) Res",
       "inherits": "vs2022-full",
       "cacheVariables": {
-        "OPENDCL_NEST_WIN32": "OFF",
-        "OPENDCL_WIN32_IN_ALL": "OFF"
+        "OPENDCL_NEST_WIN32": "ON",
+        "OPENDCL_WIN32_IN_ALL": "ON",
+        "OPENDCL_RES_PE": "host"
       }
     },
     {
       "name": "vs2022-win32-full",
-      "displayName": "VS2022 Win32 only — x86 matrix (standalone binary dir)",
+      "displayName": "VS2022 Win32 only — x86 matrix + host-arch (x86) Res",
       "inherits": "base",
       "architecture": {
         "value": "Win32",
@@ -144,7 +146,8 @@
         "OPENDCL_RUNTIME_TARGETS": "",
         "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
         "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
-        "OPENDCL_NEST_WIN32": "OFF"
+        "OPENDCL_NEST_WIN32": "OFF",
+        "OPENDCL_RES_PE": "host"
       }
     }
   ],

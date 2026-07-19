@@ -48,12 +48,13 @@ Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64
 | Configs | `Debug`, `FullDebug`, `Release` |
 | CAD runtime modules | Real FullDebug product (`AC_FULL_DEBUG`, **`/MDd`**, host debug libs). **Do not scan proprietary debug SDK trees.** |
 | Everything else | **FullDebug → Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, Studio `/MT` zlib/png. Exception: `/MD` zlib/png keep FullDebug for `/MDd` module link. |
-| Studio | Static MFC + `/MT`; `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide — `FolderTreeCtrl.cpp` also includes `MultiMon.h`). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
+| Studio | Static MFC + `/MT` (classic parity, permanent). `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide — `FolderTreeCtrl.cpp` also includes `MultiMon.h`; LNK2005 if broadened). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
+| Resource DLLs | **Runtime.Res** follows `OPENDCL_RES_PE`: **`classic_x86`** (public Mixed — nest x86 via `OpenDCL_Res_Win32`) or **`host`**. **Studio.Res** always matches **Studio PE** (x64 Studio → x64 Studio.Res); Win32 Studio.Res is under `out/.../Studio.Res/Win32/` so it cannot clobber the package path. |
 | ENU CHM | Target `OpenDCL_StudioHelp_ENU` (depends from Studio); needs HTML Help Workshop `hhc.exe`. Output `Studio/Localized/ENU/Content/OpenDCL.chm` (gitignored). |
-| Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: classic first, then CMake `out\…`. |
+| Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: OpenDclRoot / `out\` / packaging repo only. |
 | Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` (©). Do not re-save as UTF-8. |
-| Full classic parity | Preset **`vs2022-full`**: one x64 `.sln` + nested Win32 (`OpenDCL_Win32` / ALL_BUILD), shared `out/`, all families AUTO, all langs, Studio. Helper: `scripts/build-cmake-full.ps1`. Diff: `scripts/compare-cmake-classic.ps1`. |
-
+| Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** (`Runtime/Rx/{ARX,…}`, `Library/…`, `Studio/…`) holding both x64 and Win32 peers. Nest PE for Res + RxInstall (no private `res-win32` / `rxinstall-win32` when nest is on). Build Win32 via `OpenDCL_Win32`. **`vs2022-x64-full`**: same folders, **host (x64) Res**. Helper: `scripts/build-cmake-full.ps1`. |
+| Nest Win32 full build | **Known limitation:** full nest under `OpenDCL_Win32` can still hit **C1060/C1001** on old toolsets despite `/m` throttle (`OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT` / `OPENDCL_NEST_CL_MP_COUNT`). Documented in **CMAKE.md**; not a gate for x64/dev or Studio packaging smoke. Prefer `vs2022-x64-dev` for daily IDE work. |
 Sibling repos (typical under the same `Source/` parent):
 
 | Path | Role |
@@ -89,12 +90,17 @@ Adding a language: skill **`add-language`** (`.agents/skills/add-language/`).
 | `OpenDCL.Studio.<LANG>.msi` | Studio + merged Runtime MSM |
 
 ```powershell
-# After a successful Release compile of product + localized Res + CHM:
-.\scripts\build-wix.ps1
-.\scripts\build-wix.ps1 -Languages ENU -SkipMsm -SkipRuntimeMsi   # iterate Studio only
+# After a successful Release compile, verify then package (never package mid-build):
+.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full -ModuleSet Full
+.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  -ProductVersion 10.1.1.1 -ModuleSet Full
+# Iterate Studio MSI only (modules already in MSM):
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  -Languages ENU -SkipMsm -SkipRuntimeMsi
 ```
 
-Outputs: **`wix/out/Release/`** only (gitignored). Details: `wix/README.md`.
+Outputs: **`wix/out/Release/`** and **`dist/<ver>/`** (gitignored). Details: `wix/README.md`.
+Smoke requirements: **`docs/SMOKE.md`**.
 
 ### Studio install layout
 
@@ -124,9 +130,11 @@ Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-…`) stable.
 Component GUIDs are stable MD5 seeds of logical paths.
 
 Runtime module **catalog** lives in `scripts/build-wix.ps1` (`$RuntimeModuleCatalogRels`).
-Do not hand-edit `wix/out/gen/*.wxs`. Paths resolve classic first, then CMake
-`out\<classic-rel>` via `Resolve-ProductFile`. RxInstall Binary CA uses
-candle define `RxInstallDll`.
+Do not hand-edit `wix/out/gen/*.wxs`. Paths resolve under `-OpenDclRoot` + CMake
+`out\<rel>` via `Resolve-ProductFile`. Pre-package gate:
+`scripts/verify-build-outputs.ps1`. After a full release, package diffs use
+`scripts/compare-release-packages.ps1` against the **previous** package set.
+RxInstall Binary CA uses candle define `RxInstallDll`.
 
 Packaging modes:
 - **Full product** (default): all catalog modules + all langs → `OpenDCL.Runtime.msm`

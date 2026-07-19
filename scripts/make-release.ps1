@@ -5,10 +5,16 @@
 .DESCRIPTION
   Combines the post-package steps that used to live in separate batch files:
 
-    1. (optional) scripts/build-wix.ps1     — WiX MSM/MSIs
-    2. scripts/make-dist.ps1               — versioned installer names (!MakeNewDist)
-    3. scripts/make-localization-zips.ps1  — translator packs (!MakeLocalizationZips)
-    4. (optional) scripts/sign-files.ps1   — Authenticode (@SignAll)
+    0. (optional) scripts/verify-build-outputs.ps1 — fail if product tree incomplete
+    1. (optional) scripts/build-wix.ps1            — WiX MSM/MSIs
+    2. scripts/make-dist.ps1                      — versioned installer names
+    3. scripts/make-localization-zips.ps1         — translator packs
+    4. (optional) scripts/sign-files.ps1          — Authenticode
+
+  Packaging **product** files resolve under -OpenDclRoot (classic tree or CMake
+  binary dir with out\). Scripts, wix\out, and dist\ always live under this
+  repository (the parent of scripts\), so CMake build dirs can be used as
+  -OpenDclRoot without writing packages into build\.
 
   Output layout:
 
@@ -16,7 +22,11 @@
       OpenDCL.Runtime.<ver>.msi
       OpenDCL.Runtime.<ver>.msm
       OpenDCL.Studio.<LANG>.<ver>.msi
-      OpenDCL.<LANG>.zip                  # localization packs (same folder)
+      OpenDCL.<LANG>.zip
+
+.PARAMETER OpenDclRoot
+  Compiled product root for WiX harvest (e.g. build\vs2022-full). Defaults to
+  this repository root.
 
 .PARAMETER ProductVersion
   Four-part version used in filenames and as ModuleVersion (e.g. 10.1.1.1).
@@ -24,28 +34,28 @@
 .PARAMETER MsiProductVersion
   Three-part MSI ProductVersion. If empty, derived as major.minor.(patch*100+build).
 
+.PARAMETER SkipVerify
+  Skip verify-build-outputs.ps1 before packaging (not recommended).
+
 .PARAMETER SkipPackage
   Skip WiX; use existing wix\out\<Configuration> outputs.
 
 .PARAMETER SkipLocalization
   Skip building OpenDCL.<LANG>.zip packs.
 
-.PARAMETER Runtimes / ModuleSet / AvailableLanguages / SkipStudio
-  Forwarded to build-wix.ps1 for custom subset packages. Full product release
-  is the default (all modules + all languages). Custom sets produce
-  OpenDCL.Runtime.custom.* under wix\out and are not the ship MSM identity.
-
 .PARAMETER Sign
-  Run sign-files.ps1 on the dist folder (uses SIGN_* env vars / parameters).
+  Run sign-files.ps1 on the dist folder (YubiKey PIN when prompted).
 
 .EXAMPLE
-  .\scripts\make-release.ps1 -ProductVersion 10.1.1.1 -Sign
+  # Full ship package from CMake dual-arch tree (after successful build + verify)
+  .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+    -ProductVersion 10.1.1.1 -ModuleSet Full -Sign
 
 .EXAMPLE
   # Dev custom installer (BRX 27 + ENU only, no Studio)
-  .\scripts\make-release.ps1 -ProductVersion 10.1.1.1 `
-    -Runtimes BRX.27.x64 -Languages ENU -ModuleSet Selected `
-    -SkipStudio -SkipLocalization
+  .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `
+    -ProductVersion 10.1.1.1 -Runtimes BRX.27.x64 -Languages ENU `
+    -ModuleSet Selected -SkipStudio -SkipLocalization
 #>
 [CmdletBinding()]
 param(
@@ -54,6 +64,7 @@ param(
   [string] $ProductVersion,
   [string] $MsiProductVersion = "",
   [string] $Configuration = "Release",
+  [string] $PackageOutDir = "",
   [string[]] $Languages = @(),
   [string[]] $Runtimes = @(),
   [ValidateSet("Full", "Selected", "Available")]
@@ -61,6 +72,7 @@ param(
   [switch] $AvailableLanguages,
   [switch] $SkipStudio,
   [switch] $SkipRuntimeMsi,
+  [switch] $SkipVerify,
   [switch] $SkipPackage,
   [switch] $SkipLocalization,
   [switch] $Sign,
@@ -74,11 +86,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Repo that owns scripts/wix/dist (always this tree).
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$scripts = Join-Path $RepoRoot "scripts"
+
 if (-not $OpenDclRoot) {
-  $OpenDclRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+  $OpenDclRoot = $RepoRoot
 }
 $OpenDclRoot = (Resolve-Path $OpenDclRoot).Path
-$scripts = Join-Path $OpenDclRoot "scripts"
 
 $parts = $ProductVersion.Trim().Split('.')
 if ($parts.Count -lt 4) {
@@ -88,16 +103,40 @@ if (-not $MsiProductVersion) {
   $MsiProductVersion = "{0}.{1}.{2}" -f $parts[0], $parts[1], ([int]$parts[2] * 100 + [int]$parts[3])
 }
 
-$dest = Join-Path $OpenDclRoot "dist\$ProductVersion"
+if (-not $PackageOutDir) {
+  $PackageOutDir = Join-Path $RepoRoot "wix\out\$Configuration"
+}
+$dest = Join-Path $RepoRoot "dist\$ProductVersion"
 
 Write-Host "=== make-release ==="
+Write-Host "RepoRoot          = $RepoRoot"
+Write-Host "OpenDclRoot       = $OpenDclRoot  (product harvest)"
 Write-Host "ProductVersion    = $ProductVersion"
 Write-Host "MsiProductVersion = $MsiProductVersion"
 Write-Host "Configuration     = $Configuration"
+Write-Host "PackageOutDir     = $PackageOutDir"
 Write-Host "Dest              = $dest"
+Write-Host "ModuleSet         = $ModuleSet"
+Write-Host "SkipVerify        = $SkipVerify"
 Write-Host "SkipPackage       = $SkipPackage"
 Write-Host "SkipLocalization  = $SkipLocalization"
 Write-Host "Sign              = $Sign"
+
+if (-not $SkipPackage -and -not $SkipVerify) {
+  Write-Host "--- verify-build-outputs.ps1 (must pass before package) ---"
+  $verifyArgs = @{
+    OpenDclRoot   = $OpenDclRoot
+    Configuration = $Configuration
+    ModuleSet     = $ModuleSet
+  }
+  if ($Runtimes -and $Runtimes.Count -gt 0) { $verifyArgs.Runtimes = $Runtimes }
+  if ($Languages -and $Languages.Count -gt 0) { $verifyArgs.Languages = $Languages }
+  if ($SkipStudio) { $verifyArgs.SkipStudio = $true }
+  & (Join-Path $scripts "verify-build-outputs.ps1") @verifyArgs
+  if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+    throw "verify-build-outputs.ps1 failed ($LASTEXITCODE) — fix the build before packaging."
+  }
+}
 
 if (-not $SkipPackage) {
   Write-Host "--- build-wix.ps1 ---"
@@ -107,6 +146,7 @@ if (-not $SkipPackage) {
     ModuleVersion    = $ProductVersion
     ProductVersion   = $MsiProductVersion
     ModuleSet        = $ModuleSet
+    OutDir           = $PackageOutDir
   }
   if ($Languages -and $Languages.Count -gt 0) {
     $wixArgs.Languages = $Languages
@@ -123,15 +163,16 @@ if (-not $SkipPackage) {
 
 Write-Host "--- make-dist.ps1 ---"
 & (Join-Path $scripts "make-dist.ps1") `
-  -OpenDclRoot $OpenDclRoot `
+  -OpenDclRoot $RepoRoot `
   -ProductVersion $ProductVersion `
   -Configuration $Configuration `
+  -SourceDir $PackageOutDir `
   -DestDir $dest
 
 if (-not $SkipLocalization) {
   Write-Host "--- make-localization-zips.ps1 ---"
   $zipArgs = @{
-    OpenDclRoot = $OpenDclRoot
+    OpenDclRoot = $RepoRoot
     OutDir      = $dest
   }
   if ($Languages -and $Languages.Count -gt 0) {

@@ -1,6 +1,9 @@
 # OpenDCL CMake helpers — options, SDK detection, registry, selection.
 include_guard(GLOBAL)
 
+# Enable target FOLDER → Visual Studio solution folders (Library/ZLib, …).
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # ---------------------------------------------------------------------------
 # Options
 # ---------------------------------------------------------------------------
@@ -8,15 +11,150 @@ option(OPENDCL_BUILD_RUNTIME "Build CAD runtime modules" ON)
 option(OPENDCL_BUILD_STUDIO "Build OpenDCL Studio.exe + Studio.Res (static MFC)" OFF)
 option(OPENDCL_BUILD_RXINSTALL "Build RxInstall CA (Win32 nested from x64; sources in main .sln)" ON)
 option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
+# CHM is arch-independent (hhc → Studio/Localized/<lang>/Content/OpenDCL.chm).
+# Full Mixed nest forces this OFF so only the parent .sln owns help targets.
+option(OPENDCL_BUILD_STUDIO_HELP
+  "Build Studio OpenDCL.chm targets via hhc (arch-independent; one tree only)" ON)
+
+# Classic Runtime.Res / Studio.Res ship as Win32 (x86) PE under CommonFilesFolder.
+# Public Mixed release forces classic x86; host-arch Res remains available for
+# single-arch / future packaging (item 5: lock classic_x86 for public, path open).
+option(OPENDCL_BUILD_RES_DLLS
+  "Build Runtime.Res + Studio.Res language DLLs (native and/or nested)" ON)
+
+# Resource DLL PE policy:
+#   classic_x86 — Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
+#                 nest OpenDCL_Res_Win32 for Runtime.Res only. Studio.Res always
+#                 matches Studio PE (not this flag).
+#   host        — Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
+set(OPENDCL_RES_PE "host" CACHE STRING
+  "Resource DLL PE: classic_x86 (always x86 ship) or host (match configure arch)")
+set_property(CACHE OPENDCL_RES_PE PROPERTY STRINGS classic_x86 host)
+if(NOT OPENDCL_RES_PE STREQUAL "classic_x86" AND NOT OPENDCL_RES_PE STREQUAL "host")
+  message(FATAL_ERROR
+    "OPENDCL_RES_PE must be classic_x86 or host (got '${OPENDCL_RES_PE}')")
+endif()
 
 # VS generators are one platform per configure. On an x64 configure, optionally
-# nest a Win32 binary dir and expose OpenDCL_Win32 so one .sln builds both
-# (same idea as nested RxInstall). Shared OPENDCL_OUTPUT_ROOT so packaging sees
-# out/Studio/Win32 and out/Runtime/<x86 ids> next to x64 outputs.
+# nest a Win32 binary dir, import its .vcxproj into the parent .sln (Explorer +
+# normal MSBuild), and share OPENDCL_OUTPUT_ROOT (see cmake/OpenDCLNestWin32.cmake).
 option(OPENDCL_NEST_WIN32
-  "When configuring x64 with the VS generator, also configure/build Win32 under <bin>/win32" OFF)
+  "When configuring x64 with the VS generator, also nest Win32 under <bin>/win32 and import projects into the parent .sln" OFF)
 option(OPENDCL_WIN32_IN_ALL
-  "Make nested Win32 part of the default ALL_BUILD (full ship); otherwise build OpenDCL_Win32 explicitly" OFF)
+  "Include nested Win32 projects in ALL_BUILD / default solution build (full ship); OFF = Explorer only unless you build OpenDCL_Win32 or a Win32 project" OFF)
+# Full dual-arch nest compiles many old toolsets (v100/v110/...) under one MSBuild.
+# Unbounded /m + /MP OOMs 32-bit cl (C1060 heap) and triggers C1001 ICEs.
+set(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT "2" CACHE STRING
+  "MSBuild /m for cmake --build of the Win32 nest (OpenDCL_Win32 / Res / RxInstall); raise carefully")
+set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
+  "CL_MPCount for nest builds (cl /MP within each project); 1 is safest for old toolsets")
+
+# Solution Explorer folder for a product target (classic-style, not arch-first).
+#
+# Dual-arch Mixed / x64-full puts x64 and Win32 (w32_*) peers in the *same*
+# product folders — similar to classic OpenDCL.sln:
+#   Runtime/Rx/{ARX,BRX,GRX,ZRX}
+#   Runtime/Localized Resources
+#   Runtime                          (RxInstall)
+#   Studio[/LANG]                    (exe, Studio.Res, Help by language)
+#   Library/{ZLib,LibPNG}
+#   CMake                            (OpenDCL_Win32 nest bulk, ZERO_CHECK helpers)
+#
+# arch_label is kept for call-site compatibility but does not affect the path
+# (arch is already in target names: …_x64, w32_*, opendcl_zlib_x86_…).
+function(opendcl_solution_folder out_var arch_label base)
+  if(base MATCHES "OpenDCL_Runtime_ARX" OR base MATCHES "_Runtime_ARX_")
+    set(_f "Runtime/Rx/ARX")
+  elseif(base MATCHES "OpenDCL_Runtime_BRX" OR base MATCHES "_Runtime_BRX_")
+    set(_f "Runtime/Rx/BRX")
+  elseif(base MATCHES "OpenDCL_Runtime_GRX" OR base MATCHES "_Runtime_GRX_")
+    set(_f "Runtime/Rx/GRX")
+  elseif(base MATCHES "OpenDCL_Runtime_ZRX" OR base MATCHES "_Runtime_ZRX_")
+    set(_f "Runtime/Rx/ZRX")
+  elseif(base MATCHES "opendcl_zlib" OR base MATCHES "/ZLib" OR base STREQUAL "ZLib")
+    set(_f "Library/ZLib")
+  elseif(base MATCHES "opendcl_png" OR base MATCHES "LibPNG")
+    set(_f "Library/LibPNG")
+  elseif(base MATCHES "RuntimeRes")
+    set(_f "Runtime/Localized Resources")
+  elseif(base MATCHES "Res_Win32" OR base STREQUAL "OpenDCL_Res_Win32")
+    set(_f "Runtime/Localized Resources")
+  elseif(base MATCHES "StudioRes_([A-Za-z][A-Za-z0-9]+)")
+    # Classic: Studio.Res.ENU under Studio/ENU
+    set(_f "Studio/${CMAKE_MATCH_1}")
+  elseif(base MATCHES "StudioRes")
+    set(_f "Studio")
+  elseif(base MATCHES "StudioHelp_([A-Za-z][A-Za-z0-9]+)")
+    # Classic HTMLHelp.<LANG> under Studio/<LANG>
+    set(_f "Studio/${CMAKE_MATCH_1}")
+  elseif(base MATCHES "StudioHelp")
+    set(_f "Studio")
+  elseif(base MATCHES "Studio" OR base STREQUAL "OpenDCL_Studio")
+    set(_f "Studio")
+  elseif(base MATCHES "RxInstall")
+    set(_f "Runtime")
+  elseif(base STREQUAL "OpenDCL_Win32" OR base MATCHES "^OpenDCL_Win32")
+    set(_f "CMake")
+  elseif(base MATCHES "ZERO_CHECK" OR base MATCHES "/CMake" OR base STREQUAL "CMake")
+    set(_f "CMake")
+  else()
+    set(_f "")
+  endif()
+  set(${out_var} "${_f}" PARENT_SCOPE)
+endfunction()
+
+# True when this binary dir should create native Runtime.Res targets.
+# classic_x86 on x64: Runtime.Res is x86 (OpenDCL_Res_Win32 / full nest) for CAD
+# CommonFiles; Studio.Res is separate (always matches Studio PE — see below).
+function(opendcl_runtime_res_build_native out_var)
+  if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_RUNTIME AND NOT OPENDCL_BUILD_STUDIO)
+    set(${out_var} FALSE PARENT_SCOPE)
+    return()
+  endif()
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(${out_var} TRUE PARENT_SCOPE)
+  elseif(OPENDCL_RES_PE STREQUAL "host")
+    set(${out_var} TRUE PARENT_SCOPE)
+  else()
+    # classic_x86 on x64: nest x86 Runtime.Res only.
+    set(${out_var} FALSE PARENT_SCOPE)
+  endif()
+endfunction()
+
+# Studio.Res is loaded into Studio.exe (LoadLibrary) — PE must match Studio.
+# Always build natively for this configure (x64 Studio → x64 Studio.Res).
+# Win32 nest uses a Win32 subfolder under out so it does not overwrite x64 PE.
+function(opendcl_studio_res_build_native out_var)
+  if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_STUDIO)
+    set(${out_var} FALSE PARENT_SCOPE)
+  else()
+    set(${out_var} TRUE PARENT_SCOPE)
+  endif()
+endfunction()
+
+# Back-compat name: Runtime.Res policy (not Studio.Res).
+function(opendcl_res_build_native out_var)
+  opendcl_runtime_res_build_native(_v)
+  set(${out_var} "${_v}" PARENT_SCOPE)
+endfunction()
+
+# True when x64 parent must use a *dedicated* res-win32 nest for classic x86 Res.
+# When OPENDCL_NEST_WIN32 is ON, Res come from the full Win32 nest instead.
+function(opendcl_res_need_win32_nest out_var)
+  if(OPENDCL_NEST_WIN32)
+    set(${out_var} FALSE PARENT_SCOPE)
+    return()
+  endif()
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8
+      AND OPENDCL_BUILD_RES_DLLS
+      AND OPENDCL_RES_PE STREQUAL "classic_x86"
+      AND MSVC
+      AND CMAKE_GENERATOR MATCHES "Visual Studio")
+    set(${out_var} TRUE PARENT_SCOPE)
+  else()
+    set(${out_var} FALSE PARENT_SCOPE)
+  endif()
+endfunction()
 
 option(OPENDCL_ENABLE_ARX "Consider AutoCAD (ARX) runtime targets" ON)
 option(OPENDCL_ENABLE_BRX "Consider BricsCAD (BRX) runtime targets" ON)
@@ -102,7 +240,7 @@ set(OPENDCL_RT_IDS "" CACHE INTERNAL "Registered runtime target IDs")
 function(opendcl_register_runtime)
   set(options)
   set(oneValueArgs
-    ID FAMILY VERSION ARCH EXT OUTPUT_NAME TOOLSET
+    ID FAMILY VERSION ARCH EXT OUTPUT_NAME TOOLSET CHARACTER_SET
     SDK_ENV SDK_INC SDK_LIB SDK_LIB_FULLDEBUG VI_DIR DEFINES LIBS
     WARNING_DISABLES CXX_STANDARD)
   set(multiValueArgs PROFILES EXTRA_INCLUDES EXTRA_LIBDIRS COMPILE_OPTIONS LINK_OPTIONS)
@@ -112,13 +250,19 @@ function(opendcl_register_runtime)
     message(FATAL_ERROR "opendcl_register_runtime: ID is required")
   endif()
 
+  # Default CharacterSet matches classic Unicode modules.
+  # MultiByte only via matrix (ARX.16, ZRX.2014) — item 4 locked.
+  if(NOT RT_CHARACTER_SET)
+    set(RT_CHARACTER_SET "Unicode")
+  endif()
+
   set(_ids ${OPENDCL_RT_IDS})
   list(APPEND _ids "${RT_ID}")
   list(REMOVE_DUPLICATES _ids)
   set(OPENDCL_RT_IDS "${_ids}" CACHE INTERNAL "Registered runtime target IDs" FORCE)
 
   foreach(_f IN ITEMS
-      FAMILY VERSION ARCH EXT OUTPUT_NAME TOOLSET
+      FAMILY VERSION ARCH EXT OUTPUT_NAME TOOLSET CHARACTER_SET
       SDK_ENV SDK_INC SDK_LIB SDK_LIB_FULLDEBUG VI_DIR DEFINES LIBS
       WARNING_DISABLES CXX_STANDARD)
     set(OPENDCL_RT_${RT_ID}_${_f} "${RT_${_f}}" CACHE INTERNAL "" FORCE)
@@ -255,6 +399,143 @@ function(opendcl_vs_attach_libdir_props target release_dirs fulldebug_prefix)
   file(WRITE "${_props}" "${_xml}")
 
   set_target_properties(${target} PROPERTIES VS_USER_PROPS "${_props}")
+endfunction()
+
+# Pin WindowsTargetPlatformVersion for a target so old Platform Toolsets (e.g. v140)
+# do not pick up a host kit (e.g. 10.0.26100) whose UCRT needs newer intrinsics.
+#
+# IMPORTANT: VS_USER_PROPS is imported *after* Microsoft.Cpp.props (too late for
+# kit include resolution). Use ForceImportBeforeCppProps so the pin runs before
+# Cpp.props selects UCRT paths (option C locked / pre-Cpp props sheet).
+#
+# Kit pin uses TWO generated props sheets:
+#   1) ForceImportBeforeCppProps — WindowsTargetPlatformVersion only (UCRT paths).
+#   2) ForceImportAfterCppProps  — WindowsSDK_ExecutablePath + APPEND kit bin to
+#      ExecutablePath so Tracker finds mt.exe (TRK0005) WITHOUT clobbering VC's
+#      CL.exe path (early ExecutablePath freezes an incomplete PATH → mass TRK0005).
+#
+# Requires the chosen kit to be installed under the Windows Kits root.
+# Optional: OPENDCL_LEGACY_WINDOWS_SDK cache/env override (default 10.0.19041.0).
+function(opendcl_vs_pin_windows_sdk target version)
+  if(NOT target OR NOT version)
+    message(FATAL_ERROR "opendcl_vs_pin_windows_sdk(${target} ${version}): need target and version")
+  endif()
+
+  set(_kits_root "")
+  if(DEFINED ENV{WindowsSdkDir} AND EXISTS "$ENV{WindowsSdkDir}")
+    file(TO_CMAKE_PATH "$ENV{WindowsSdkDir}" _kits_root)
+  else()
+    set(_kits_root "C:/Program Files (x86)/Windows Kits/10")
+  endif()
+  string(REGEX REPLACE "/$" "" _kits_root "${_kits_root}")
+
+  set(_kit_ucrt "${_kits_root}/Include/${version}/ucrt")
+  if(NOT EXISTS "${_kit_ucrt}")
+    message(WARNING
+      "opendcl_vs_pin_windows_sdk(${target}): Windows SDK ${version} not found under "
+      "Windows Kits Include\\${version}\\ucrt — pin may be ignored at build time")
+  endif()
+
+  # Versioned kit bin (preferred). Fall back to unversioned bin\x86|x64.
+  set(_bin_x86 "${_kits_root}/bin/${version}/x86")
+  set(_bin_x64 "${_kits_root}/bin/${version}/x64")
+  if(NOT EXISTS "${_bin_x86}/mt.exe" AND NOT EXISTS "${_bin_x64}/mt.exe")
+    set(_bin_x86 "${_kits_root}/bin/x86")
+    set(_bin_x64 "${_kits_root}/bin/x64")
+  endif()
+  if(NOT EXISTS "${_bin_x86}/mt.exe" AND NOT EXISTS "${_bin_x64}/mt.exe")
+    message(WARNING
+      "opendcl_vs_pin_windows_sdk(${target}): mt.exe not found under Windows Kits "
+      "bin\\${version} or bin\\{x86,x64} — TRK0005 may still occur")
+  endif()
+  file(TO_NATIVE_PATH "${_bin_x86}" _bin_x86_n)
+  file(TO_NATIVE_PATH "${_bin_x64}" _bin_x64_n)
+
+  set(_sdk_props_early "${CMAKE_CURRENT_BINARY_DIR}/${target}.winsdk.props")
+  set(_sdk_props_late "${CMAKE_CURRENT_BINARY_DIR}/${target}.winsdk-tools.props")
+  file(TO_NATIVE_PATH "${_sdk_props_early}" _sdk_props_early_n)
+  file(TO_NATIVE_PATH "${_sdk_props_late}" _sdk_props_late_n)
+
+  # --- Early: kit version for include/lib resolution ---
+  set(_xml "")
+  string(APPEND _xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+  string(APPEND _xml "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n")
+  string(APPEND _xml "  <!-- OpenDCL: pin Windows SDK version BEFORE Microsoft.Cpp.props. -->\n")
+  string(APPEND _xml "  <PropertyGroup>\n")
+  string(APPEND _xml "    <WindowsTargetPlatformVersion>${version}</WindowsTargetPlatformVersion>\n")
+  string(APPEND _xml "    <WindowsTargetPlatformMinVersion>${version}</WindowsTargetPlatformMinVersion>\n")
+  string(APPEND _xml "  </PropertyGroup>\n")
+  string(APPEND _xml "</Project>\n")
+  file(WRITE "${_sdk_props_early}" "${_xml}")
+
+  # --- Late: after Cpp.props (append kit tools; classic CAD modules: no manifest) ---
+  set(_xml "")
+  string(APPEND _xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+  string(APPEND _xml "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n")
+  string(APPEND _xml "  <!-- OpenDCL: AFTER Microsoft.Cpp.props. -->\n")
+  string(APPEND _xml "  <PropertyGroup>\n")
+  string(APPEND _xml "    <WindowsSDK_ExecutablePath_x86>${_bin_x86_n}</WindowsSDK_ExecutablePath_x86>\n")
+  string(APPEND _xml "    <WindowsSDK_ExecutablePath_x64>${_bin_x64_n}</WindowsSDK_ExecutablePath_x64>\n")
+  # Classic runtime vcxproj: GenerateManifest=false. CMake emits true per-config;
+  # PropertyGroup after Cpp.props overrides it and avoids TRK0005 mt.exe.
+  string(APPEND _xml "    <GenerateManifest>false</GenerateManifest>\n")
+  string(APPEND _xml "    <EmbedManifest>false</EmbedManifest>\n")
+  string(APPEND _xml "  </PropertyGroup>\n")
+  string(APPEND _xml "  <PropertyGroup Condition=\"'$(Platform)'=='Win32' or '$(Platform)'=='x86'\">\n")
+  string(APPEND _xml "    <WindowsSDK_ExecutablePath>$(WindowsSDK_ExecutablePath_x86)</WindowsSDK_ExecutablePath>\n")
+  string(APPEND _xml "    <ExecutablePath>$(ExecutablePath);$(WindowsSDK_ExecutablePath_x86)</ExecutablePath>\n")
+  string(APPEND _xml "  </PropertyGroup>\n")
+  string(APPEND _xml "  <PropertyGroup Condition=\"'$(Platform)'=='x64'\">\n")
+  string(APPEND _xml "    <WindowsSDK_ExecutablePath>$(WindowsSDK_ExecutablePath_x64)</WindowsSDK_ExecutablePath>\n")
+  string(APPEND _xml "    <ExecutablePath>$(ExecutablePath);$(WindowsSDK_ExecutablePath_x64)</ExecutablePath>\n")
+  string(APPEND _xml "  </PropertyGroup>\n")
+  string(APPEND _xml "  <ItemDefinitionGroup>\n")
+  string(APPEND _xml "    <Link>\n")
+  string(APPEND _xml "      <GenerateManifest>false</GenerateManifest>\n")
+  string(APPEND _xml "    </Link>\n")
+  string(APPEND _xml "  </ItemDefinitionGroup>\n")
+  string(APPEND _xml "</Project>\n")
+  file(WRITE "${_sdk_props_late}" "${_xml}")
+
+  # CMake Globals + early/late MSBuild hooks.
+  set_property(TARGET ${target} PROPERTY VS_WINDOWS_TARGET_PLATFORM_VERSION "${version}")
+  set_property(TARGET ${target} PROPERTY VS_GLOBAL_WindowsTargetPlatformVersion "${version}")
+  set_property(TARGET ${target} PROPERTY
+    VS_GLOBAL_ForceImportBeforeCppProps "${_sdk_props_early_n}")
+  set_property(TARGET ${target} PROPERTY
+    VS_GLOBAL_ForceImportAfterCppProps "${_sdk_props_late_n}")
+endfunction()
+
+# Classic CAD modules: GenerateManifest=false (match classic vcxproj; avoid mt.exe).
+#
+# CMake still writes per-config <GenerateManifest>true</GenerateManifest> in the
+# .vcxproj *after* imported .props, so PropertyGroup-only fixes lose. Inject a
+# .targets via ForceImportAfterCppTargets that clears the flags BeforeTargets=Link.
+function(opendcl_vs_disable_manifest target)
+  if(NOT target)
+    message(FATAL_ERROR "opendcl_vs_disable_manifest: need target")
+  endif()
+  set(_tgts "${CMAKE_CURRENT_BINARY_DIR}/${target}.nomanifest.targets")
+  file(TO_NATIVE_PATH "${_tgts}" _tgts_n)
+  set(_xml "")
+  string(APPEND _xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+  string(APPEND _xml "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n")
+  string(APPEND _xml "  <!-- OpenDCL: classic runtime modules do not embed manifests (no mt.exe). -->\n")
+  string(APPEND _xml "  <Target Name=\"OpenDCL_DisableManifest_${target}\"\n")
+  string(APPEND _xml "          BeforeTargets=\"BeforeLink;Link;Manifest;EmbedManifest;ManifestResourceCompile;_Link\">\n")
+  string(APPEND _xml "    <PropertyGroup>\n")
+  string(APPEND _xml "      <GenerateManifest>false</GenerateManifest>\n")
+  string(APPEND _xml "      <EmbedManifest>false</EmbedManifest>\n")
+  string(APPEND _xml "    </PropertyGroup>\n")
+  string(APPEND _xml "  </Target>\n")
+  string(APPEND _xml "</Project>\n")
+  file(WRITE "${_tgts}" "${_xml}")
+  set_property(TARGET ${target} PROPERTY
+    VS_GLOBAL_ForceImportAfterCppTargets "${_tgts_n}")
+  # Belt-and-suspenders on the link line.
+  if(MSVC)
+    target_link_options(${target} PRIVATE "/MANIFEST:NO")
+  endif()
 endfunction()
 
 function(opendcl_rt_get id field out_var)

@@ -14,35 +14,45 @@ The **`.msm` is intentional and permanent** — other developers embed it in the
 
 ## Prerequisites
 
-1. Prior compile of the modules/languages you intend to ship:
+1. Prior **completed** compile of the modules/languages you intend to ship:
    - **Full product release:** all ARX/BRX/GRX/ZRX, all `Runtime.Res`, RxInstall, Studio, Studio.Res, CHM.
    - **Custom installer:** only the chosen runtimes + language packs (+ RxInstall; Studio optional via `-SkipStudio`).
-2. [WiX Toolset v3.14](https://wixtoolset.org/) (`candle.exe` / `light.exe`).
+2. Run **`scripts/verify-build-outputs.ps1`** (or let `make-release.ps1` run it). **Do not package mid-build.**
+3. [WiX Toolset v3.14](https://wixtoolset.org/) (`candle.exe` / `light.exe`).
+
+Path resolve: OpenDclRoot / `out\` / packaging repo only.  
+Smoke: **[docs/SMOKE.md](../docs/SMOKE.md)**. Package diffs: previous release set via
+`scripts/compare-release-packages.ps1`.
 
 ## Build
 
 From this repository root (after a Release compile):
 
 ```powershell
-# Full product (default): every catalog runtime + all languages
-.\scripts\build-wix.ps1
+# Preferred full local release (verify → WiX → dist → loc zips [→ sign]):
+.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  -ProductVersion 10.1.1.1 -ModuleSet Full
+
+# Full product WiX only:
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full)
 
 # MSM only (fast iterate on full inventory):
-.\scripts\build-wix.ps1 -SkipStudio -SkipRuntimeMsi
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) -SkipStudio -SkipRuntimeMsi
 
 # Custom subset — explicit runtimes + language(s)
-.\scripts\build-wix.ps1 -Runtimes BRX.27.x64 -Languages ENU -SkipStudio
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  -Runtimes BRX.27.x64 -Languages ENU -SkipStudio
 
-# Custom subset — package whatever modules/langs are present under -OpenDclRoot
+# Custom subset — package whatever modules/langs are present under -OpenDclRoot/out
 .\scripts\build-wix.ps1 -ModuleSet Available -AvailableLanguages -SkipStudio `
-  -OpenDclRoot (Resolve-Path ..\opendcl-cmake\build\vs2022-x64-dev)
+  -OpenDclRoot (Resolve-Path build\vs2022-full)
 ```
 
 | Switch | Role |
 | --- | --- |
 | `-ModuleSet Full` | Default. All catalog modules; missing files fail. Ship MSM identity. |
 | `-ModuleSet Selected` | Only `-Runtimes` (required). Missing files fail. |
-| `-ModuleSet Available` | Catalog (optionally filtered by `-Runtimes`) where files exist. |
+| `-ModuleSet Available` | Catalog (optionally filtered by `-Runtimes`) where files exist under OpenDclRoot/`out`. |
 | `-Runtimes` | IDs (`BRX.27.x64`), families (`BRX`), wildcards (`*.27.x64`). Implies Selected if set under Full. |
 | `-Languages` | Subset of ENU DEU ESM RUS CHS FRA CHT. Empty = all (or all present with `-AvailableLanguages`). |
 | `-AvailableLanguages` | Drop languages without `Runtime.Res`. |

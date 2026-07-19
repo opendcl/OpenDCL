@@ -13,8 +13,8 @@
   (typical CMake dev flow: BRX.27 + ENU). Outputs use a ".custom" name suffix
   and distinct MSM/MSI identity GUIDs so they never collide with the ship MSM.
 
-  Product files resolve classic paths first, then CMake out\ layout
-  (see Resolve-ProductFile).
+  Product files resolve under -OpenDclRoot (product layout or CMake out\),
+  then the packaging repo for source assets (see Resolve-ProductFile).
 
   Outputs (default under <repo>\wix\out\Release):
     OpenDCL.Runtime.msm[.custom]
@@ -23,7 +23,8 @@
 
 .PARAMETER OpenDclRoot
   Path to compiled OpenDCL tree. Defaults to this repository root (where
-  OpenDCL.sln lives).
+  OpenDCL.sln lives). For CMake dual-arch, pass the binary dir that contains
+  out\ (e.g. build\vs2022-full).
 
 .PARAMETER Configuration
   Build configuration folder to harvest (default Release).
@@ -50,8 +51,8 @@
 .PARAMETER ModuleSet
   Full      — all catalog modules (default); missing files fail.
   Selected  — only -Runtimes (each must resolve); missing files fail.
-  Available — catalog (optionally filtered by -Runtimes) where files exist;
-              skip missing modules.
+  Available — catalog (optionally filtered by -Runtimes) where files exist
+              under -OpenDclRoot (and out\); skip missing.
 
 .PARAMETER AvailableLanguages
   Include only languages whose Runtime.Res.dll resolves. When set without
@@ -141,12 +142,13 @@ function Assert-File([string] $path) {
 function Resolve-ProductFile([string] $rel) {
   <#
     Resolve a classic relative product path under $OpenDclRoot.
-    Search order:
+    Search order (first existing path wins):
       1) OpenDclRoot\<rel>              classic tree or staged outputs
       2) OpenDclRoot\out\<rel>          CMake binary dir layout (shared x64+Win32 out)
       3) OpenDclRoot\win32\out\<rel>    nested Win32 under vs2022-full (if separate out)
-      4) RepoRoot\<rel>                 source assets / classic mirrors when
-                                        -OpenDclRoot is a CMake build tree
+      4) RepoRoot\<rel>                 source assets when -OpenDclRoot is a CMake build tree
+
+    Package only what lives under the chosen product root / this packaging repo.
   #>
   $candidates = [System.Collections.Generic.List[string]]::new()
   [void]$candidates.Add((Join-Path $OpenDclRoot $rel))
@@ -528,6 +530,8 @@ function New-RuntimeFilesFragment {
   [void]$sb.AppendLine('  <Fragment>')
   [void]$sb.AppendLine('    <ComponentGroup Id="RuntimeModules">')
 
+  $fromOut = 0
+  $fromOther = 0
   foreach ($rel in $RuntimeModules) {
     $full = Resolve-ProductFile $rel
     Assert-File $full
@@ -537,7 +541,10 @@ function New-RuntimeFilesFragment {
     # WiX Source can use single backslashes in XML; escape & only
     $srcXml = $full.Replace('&', '&amp;')
     [void]$sb.AppendLine((Write-ComponentXml -ComponentId $cid -Guid $guid -DirectoryId "OpenDCLFolder" -SourcePath $srcXml -FileName $name))
+    if ($full -match '[\\/]out[\\/]') { $fromOut++ } else { $fromOther++ }
   }
+  Write-Host ("Runtime modules: {0} total ({1} from out\, {2} from OpenDclRoot/repo)" -f `
+    $RuntimeModules.Count, $fromOut, $fromOther)
   [void]$sb.AppendLine('    </ComponentGroup>')
 
   # Always emit ComponentGroups for every catalog language so Module ComponentGroupRefs stay valid.
@@ -652,6 +659,33 @@ function New-StudioFilesFragment([string] $lang) {
   $script:StudioIsX64 = Test-PeIsX64 $studioExe
   $win64Attr = if ($script:StudioIsX64) { ' Win64="yes"' } else { '' }
   Write-Host ("  Studio PE: {0} ({1})" -f $studioExe, $(if ($script:StudioIsX64) { 'x64 -> ProgramFiles64' } else { 'x86 -> ProgramFiles' }))
+
+  # Studio.Res is LoadLibrary'd by Studio.exe — PE must match Studio (not classic_x86 Runtime.Res).
+  # Prefer package path without Win32\ subfolder (x64); Win32 nest PE lives under Studio.Res\Win32\.
+  $studioResCandidates = @(
+    "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
+  )
+  if (-not $script:StudioIsX64) {
+    $studioResCandidates = @(
+      "Studio\Localized\$lang\Studio.Res\Win32\$Configuration\Studio.Res.dll",
+      "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
+    ) + $studioResCandidates
+  }
+  $studioResDll = $null
+  foreach ($rel in $studioResCandidates) {
+    $cand = Resolve-ProductFile $rel
+    if (Test-Path -LiteralPath $cand) { $studioResDll = $cand; break }
+  }
+  if (-not $studioResDll) {
+    throw "Studio.Res.dll not found for $lang (tried: $($studioResCandidates -join '; '))"
+  }
+  $resIsX64 = Test-PeIsX64 $studioResDll
+  if ($resIsX64 -ne $script:StudioIsX64) {
+    throw ("Studio.Res PE mismatch for {0}: Studio is {1} but Studio.Res is {2} (`{3}`). Studio LoadLibrary requires matching arch." -f `
+      $lang, $(if ($script:StudioIsX64) { 'x64' } else { 'x86' }), $(if ($resIsX64) { 'x64' } else { 'x86' }), $studioResDll)
+  }
+  Write-Host ("  Studio.Res: {0} ({1})" -f $studioResDll, $(if ($resIsX64) { 'x64' } else { 'x86' }))
+
   $appFiles = @(
     @{
       Full = $studioExe
@@ -661,7 +695,7 @@ function New-StudioFilesFragment([string] $lang) {
         @{ Id = "sc_studio_desktop"; Directory = "DesktopFolder"; Name = "OpenDCL Studio"; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 }
       )
     },
-    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"); Dir = "LangFolder"; Name = "Studio.Res.dll"; FileId = "fil_StudioRes" },
+    @{ Full = $studioResDll; Dir = "LangFolder"; Name = "Studio.Res.dll"; FileId = "fil_StudioRes" },
     @{
       Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\OpenDCL.chm")
       Dir = "LangFolder"; Name = "OpenDCL.chm"; FileId = "fil_StudioChm"
@@ -805,6 +839,9 @@ function Invoke-CandleLight {
 
   Write-Host "  light -> $OutFile"
   $lightArgs = @("-nologo", "-out", $OutFile) + $extArgs + $wixobjs
+  # Item 7 locked A: high cab compression on every light (MSI + MSM). Modules have
+  # no MediaTemplate; without -dcl:high the Runtime MSM stays much larger than MSI.
+  $lightArgs += @("-dcl:high")
   # Suppress ICE noise common for merge modules / multi-lang packages
   $lightArgs += @("-sice:ICE03", "-sice:ICE82", "-sice:ICE61")
   & $Light @lightArgs
@@ -909,7 +946,20 @@ if (-not $SkipStudio) {
     Assert-File $licenseRtf
 
     # App icon from Studio.Res.dll #10; Help/License ICOs from wix\ui\icons\ (RepoRoot)
-    $studioResDll = Resolve-ProductFile "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
+    # Same PE as Studio app files (validated in New-StudioFilesFragment).
+    $studioResDll = $null
+    foreach ($rel in @(
+        "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll",
+        "Studio\Localized\$lang\Studio.Res\Win32\$Configuration\Studio.Res.dll"
+      )) {
+      $cand = Resolve-ProductFile $rel
+      if (Test-Path -LiteralPath $cand) {
+        if ((Test-PeIsX64 $cand) -eq $script:StudioIsX64) { $studioResDll = $cand; break }
+      }
+    }
+    if (-not $studioResDll) {
+      $studioResDll = Resolve-ProductFile "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
+    }
     Assert-File $studioResDll
     $iconStudio = Join-Path $GenDir "icons\$lang\StudioRes.App.ico"
     Export-StudioAppIcon -studioResDll $studioResDll -destIco $iconStudio | Out-Null

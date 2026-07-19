@@ -1,0 +1,8 @@
+# Shared runtime TUs omitted for BRX.9 only (classic BRX.9.vcxproj ExcludedFromBuild).
+# BRX9 brx.lib has CAdUi combo/dialog bits but not CAdUiPaletteSet / CAdUiDockControlBar.
+# One basename per line; # comments and blank lines ignored. No drop.txt → no drops.
+
+AcadDockBarHost.cpp
+AcadPaletteHost.cpp
+ControlBarDlg.cpp
+PaletteDlg.cpp

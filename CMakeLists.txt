@@ -1,11 +1,45 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(OpenDCL
+# Visual Studio .sln base name should distinguish presets in the IDE.
+# Default: derive from binaryDir — build/<preset> → <preset>.sln;
+# nested build/<preset>/win32 → <preset>-win32.sln.
+# Override: -DOPENDCL_SOLUTION_NAME=MyLabel  → MyLabel.sln
+set(OPENDCL_SOLUTION_NAME "" CACHE STRING
+  "Visual Studio solution base name (empty = derive from binary dir / preset)")
+if(OPENDCL_SOLUTION_NAME)
+  set(_opendcl_project_name "${OPENDCL_SOLUTION_NAME}")
+else()
+  get_filename_component(_opendcl_bin_leaf "${CMAKE_BINARY_DIR}" NAME)
+  get_filename_component(_opendcl_bin_parent "${CMAKE_BINARY_DIR}" DIRECTORY)
+  get_filename_component(_opendcl_parent_leaf "${_opendcl_bin_parent}" NAME)
+  get_filename_component(_opendcl_grandparent "${_opendcl_bin_parent}" DIRECTORY)
+  get_filename_component(_opendcl_grandparent_leaf "${_opendcl_grandparent}" NAME)
+  if(_opendcl_parent_leaf STREQUAL "build")
+    # .../build/vs2022-x64-dev → vs2022-x64-dev.sln
+    set(_opendcl_project_name "${_opendcl_bin_leaf}")
+  elseif(_opendcl_grandparent_leaf STREQUAL "build")
+    # .../build/vs2022-full/win32 → vs2022-full-win32.sln
+    set(_opendcl_project_name "${_opendcl_parent_leaf}-${_opendcl_bin_leaf}")
+  else()
+    set(_opendcl_project_name "OpenDCL")
+  endif()
+endif()
+
+project(${_opendcl_project_name}
   # Must match Runtime/ARX.rc (and Studio/RxInstall) FILEVERSION / PRODUCTVERSION.
   VERSION 10.1.1.1
   DESCRIPTION "OpenDCL Studio and Runtime (CMake experiment)"
   LANGUAGES CXX C RC
 )
+message(STATUS "Solution / project name: ${PROJECT_NAME} -> ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.sln")
+# Drop stale default OpenDCL.sln after a rename so the IDE folder isn't ambiguous.
+if(NOT PROJECT_NAME STREQUAL "OpenDCL")
+  set(_opendcl_stale_sln "${CMAKE_BINARY_DIR}/OpenDCL.sln")
+  if(EXISTS "${_opendcl_stale_sln}")
+    file(REMOVE "${_opendcl_stale_sln}")
+    message(STATUS "Removed stale OpenDCL.sln (renamed to ${PROJECT_NAME}.sln)")
+  endif()
+endif()
 
 if(NOT WIN32)
   message(FATAL_ERROR "OpenDCL builds only on Windows (MFC / CAD host modules).")
@@ -54,13 +88,20 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-message(STATUS "OpenDCL CMake experiment — push disabled on this clone")
+message(STATUS "OpenDCL CMake experiment - push disabled on this clone")
 message(STATUS "Output root: ${OPENDCL_OUTPUT_ROOT}")
 
 add_subdirectory(Library)
 
-if(OPENDCL_BUILD_RUNTIME)
+# Runtime.Res / Studio.Res: OPENDCL_RES_PE=classic_x86 nests Win32 Res on x64;
+# host builds Res natively in this tree. Nest first so F5 paths exist when needed.
+include(OpenDCLResWin32)
+opendcl_add_res_win32_nest()
+
+if(OPENDCL_BUILD_RUNTIME OR OPENDCL_BUILD_RES_DLLS)
   add_subdirectory(Runtime/Localized)
+endif()
+if(OPENDCL_BUILD_RUNTIME)
   opendcl_add_selected_runtimes()
 endif()
 
@@ -68,7 +109,7 @@ if(OPENDCL_BUILD_RXINSTALL)
   add_subdirectory(Runtime/RxInstall)
 endif()
 
-if(OPENDCL_BUILD_STUDIO)
+if(OPENDCL_BUILD_STUDIO OR OPENDCL_BUILD_RES_DLLS)
   add_subdirectory(Studio)
 endif()
 
@@ -79,69 +120,13 @@ if(OPENDCL_BUILD_HELP AND NOT OPENDCL_BUILD_STUDIO)
 endif()
 
 # ---------------------------------------------------------------------------
-# Nested Win32 (x86) tree under x64 VS configure — one solution builds both
+# Nested Win32 (x86) under x64 VS — projects live in the parent .sln
 # ---------------------------------------------------------------------------
-# CMake's Visual Studio generator cannot emit Debug|x64 and Debug|Win32 for the
-# same native targets in one configure. Nest a second binary dir (-A Win32) that
-# shares OPENDCL_OUTPUT_ROOT, and drive it from OpenDCL_Win32 in this .sln.
-if(OPENDCL_NEST_WIN32
-    AND MSVC
-    AND CMAKE_SIZEOF_VOID_P EQUAL 8
-    AND CMAKE_GENERATOR MATCHES "Visual Studio")
-  set(_opendcl_win32_bin "${CMAKE_BINARY_DIR}/win32")
-  set(_opendcl_win32_stamp "${_opendcl_win32_bin}/.opendcl_win32_configured")
-
-  # Forward the same product selection the parent used (langs, families, auto).
-  set(_opendcl_win32_cache
-    "-DOPENDCL_NEST_WIN32=OFF" # prevent recursion
-    "-DOPENDCL_OUTPUT_ROOT=${OPENDCL_OUTPUT_ROOT}"
-    "-DOPENDCL_BUILD_RUNTIME=${OPENDCL_BUILD_RUNTIME}"
-    "-DOPENDCL_BUILD_STUDIO=${OPENDCL_BUILD_STUDIO}"
-    "-DOPENDCL_BUILD_RXINSTALL=${OPENDCL_BUILD_RXINSTALL}"
-    "-DOPENDCL_ENABLE_ARX=${OPENDCL_ENABLE_ARX}"
-    "-DOPENDCL_ENABLE_BRX=${OPENDCL_ENABLE_BRX}"
-    "-DOPENDCL_ENABLE_GRX=${OPENDCL_ENABLE_GRX}"
-    "-DOPENDCL_ENABLE_ZRX=${OPENDCL_ENABLE_ZRX}"
-    "-DOPENDCL_RUNTIME_AUTO=${OPENDCL_RUNTIME_AUTO}"
-    "-DOPENDCL_RUNTIME_REQUIRE_SELECTED=${OPENDCL_RUNTIME_REQUIRE_SELECTED}"
-    "-DOPENDCL_RUNTIME_TARGETS=${OPENDCL_RUNTIME_TARGETS}"
-    "-DOPENDCL_LANGS=${OPENDCL_LANGS}"
-  )
-
-  add_custom_command(
-    OUTPUT "${_opendcl_win32_stamp}"
-    COMMAND ${CMAKE_COMMAND}
-      -S "${CMAKE_SOURCE_DIR}"
-      -B "${_opendcl_win32_bin}"
-      -G "${CMAKE_GENERATOR}"
-      -A Win32
-      ${_opendcl_win32_cache}
-    COMMAND ${CMAKE_COMMAND} -E touch "${_opendcl_win32_stamp}"
-    COMMENT "Configure nested Win32 OpenDCL under ${_opendcl_win32_bin}"
-    VERBATIM
-  )
-
-  if(OPENDCL_WIN32_IN_ALL)
-    add_custom_target(OpenDCL_Win32 ALL
-      DEPENDS "${_opendcl_win32_stamp}"
-      COMMAND ${CMAKE_COMMAND}
-        --build "${_opendcl_win32_bin}"
-        --config "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>"
-      COMMENT "Build nested Win32 OpenDCL ($<CONFIG> → Debug if FullDebug)"
-      VERBATIM
-    )
-  else()
-    add_custom_target(OpenDCL_Win32
-      DEPENDS "${_opendcl_win32_stamp}"
-      COMMAND ${CMAKE_COMMAND}
-        --build "${_opendcl_win32_bin}"
-        --config "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>"
-      COMMENT "Build nested Win32 OpenDCL ($<CONFIG> → Debug if FullDebug)"
-      VERBATIM
-    )
-  endif()
-  set_property(TARGET OpenDCL_Win32 PROPERTY FOLDER "Win32")
-  message(STATUS "Win32 nest: OpenDCL_Win32 target → ${_opendcl_win32_bin} (shared out: ${OPENDCL_OUTPUT_ROOT})")
-elseif(OPENDCL_NEST_WIN32 AND NOT (CMAKE_SIZEOF_VOID_P EQUAL 8 AND CMAKE_GENERATOR MATCHES "Visual Studio"))
-  message(STATUS "OPENDCL_NEST_WIN32 ignored (need x64 Visual Studio generator; this is ${CMAKE_GENERATOR} ptr=${CMAKE_SIZEOF_VOID_P})")
-endif()
+# Second binary dir (-A Win32), shared OPENDCL_OUTPUT_ROOT. Nest is configured
+# at parent generate time; each nest .vcxproj is imported with
+# include_external_msproject(PLATFORM Win32) for Solution Explorer (folders
+# under Win32/…). Imported projects are EXCLUDE_FROM_DEFAULT_BUILD because
+# parent Platform=x64 breaks nest MSBuild (MSB8013). Build via OpenDCL_Win32,
+# OpenDCL_RxInstall, or OpenDCL_Res_Win32 → cmake --build <bin>/win32.
+include(OpenDCLNestWin32)
+opendcl_add_win32_nest()

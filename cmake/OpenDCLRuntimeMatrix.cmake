@@ -11,6 +11,8 @@ opendcl_register_runtime(
   EXT ".arx"
   OUTPUT_NAME "OpenDCL.16"
   TOOLSET "v70"
+  # Classic ARX.16 is MultiByte (ACHAR = char); Unicode breaks arxEntryPoint.h LoadString.
+  CHARACTER_SET "MultiByte"
   SDK_ENV "ARX2004"
   SDK_INC "Inc"
   SDK_LIB "Lib"
@@ -154,6 +156,8 @@ opendcl_register_runtime(
   ARCH x64
   EXT ".arx"
   OUTPUT_NAME "OpenDCL.x64.21"
+  # Classic vcxproj toolset. Host kits pin Windows SDK 10.0.19041.0 via
+  # ForceImportBeforeCppProps (opendcl_vs_pin_windows_sdk) — item 3 option C locked.
   TOOLSET "v140"
   SDK_ENV "ARX2017"
   SDK_INC "Inc-x64|Inc"
@@ -171,6 +175,7 @@ opendcl_register_runtime(
   ARCH x86
   EXT ".arx"
   OUTPUT_NAME "OpenDCL.21"
+  # Classic vcxproj toolset; see ARX.21.x64 (legacy Windows SDK pin).
   TOOLSET "v140"
   SDK_ENV "ARX2017"
   SDK_INC "Inc-Win32|Inc"
@@ -187,6 +192,7 @@ opendcl_register_runtime(
   ARCH x64
   EXT ".arx"
   OUTPUT_NAME "OpenDCL.x64.22"
+  # Classic vcxproj toolset; see ARX.21.x64 (legacy Windows SDK pin).
   TOOLSET "v140"
   SDK_ENV "ARX2018"
   SDK_INC "Inc-x64|Inc"
@@ -204,6 +210,7 @@ opendcl_register_runtime(
   ARCH x86
   EXT ".arx"
   OUTPUT_NAME "OpenDCL.22"
+  # Classic vcxproj toolset; see ARX.21.x64 (legacy Windows SDK pin).
   TOOLSET "v140"
   SDK_ENV "ARX2018"
   SDK_INC "Inc-Win32|Inc"
@@ -717,6 +724,9 @@ opendcl_register_runtime(
   SDK_LIB "Lib"
   VI_DIR "Runtime/BRX/BRX.9/VI"
   DEFINES "_ACADTARGET=17|_BRXTARGET=9"
+  # Classic links BRX9 import libs. Combo stubs + palette/dock drops:
+  # Runtime/TargetSpecific/BRX.9/ (*.cpp, drop.txt).
+  LIBS "brx.lib|DD_Root_dll.lib|drx_entrypoint.lib"
 )
 
 opendcl_register_runtime(
@@ -1063,6 +1073,9 @@ opendcl_register_runtime(
   EXT ".zrx"
   OUTPUT_NAME "OpenDCL.2014"
   TOOLSET "v100"
+  # Classic ZRX.2014.vcxproj is MultiByte; Unicode breaks ZWSoft headers that
+  # call ::strlen on ZTCHAR* under #ifdef UNICODE.
+  CHARACTER_SET "MultiByte"
   SDK_ENV "ZRX2014"
   SDK_INC "arxport|Inc"
   SDK_LIB "Lib"

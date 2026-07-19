@@ -28,6 +28,7 @@ function(opendcl_add_runtime id)
   opendcl_rt_get("${id}" EXT _ext)
   opendcl_rt_get("${id}" OUTPUT_NAME _output)
   opendcl_rt_get("${id}" TOOLSET _toolset)
+  opendcl_rt_get("${id}" CHARACTER_SET _charset)
   opendcl_rt_get("${id}" SDK_ENV _sdk_env)
   opendcl_rt_get("${id}" SDK_INC _sdk_inc)
   opendcl_rt_get("${id}" SDK_LIB _sdk_lib)
@@ -41,6 +42,11 @@ function(opendcl_add_runtime id)
   opendcl_rt_get("${id}" EXTRA_LIBDIRS _extra_libdirs)
   opendcl_rt_get("${id}" COMPILE_OPTIONS _compile_opts)
   opendcl_rt_get("${id}" LINK_OPTIONS _link_opts)
+  if(NOT _charset)
+    set(_charset "Unicode")
+  endif()
+  set(_opendcl_pin_winsdk_after_libdirs FALSE)
+  set(_opendcl_legacy_winsdk "")
 
   opendcl_resolve_sdk_root("${_sdk_env}" _sdk_root)
   if(NOT _sdk_root OR NOT EXISTS "${_sdk_root}")
@@ -69,9 +75,36 @@ function(opendcl_add_runtime id)
     list(FILTER _sources EXCLUDE REGEX "ArxLinetypeComboBoxCtrl\\.cpp$")
   endif()
 
-  # Optional target-specific TUs: Runtime/TargetSpecific/<id>/*.{cpp,cxx,cc}
-  # Example: Runtime/TargetSpecific/ARX.16/MyR16Only.cpp
+  # Optional target-specific TUs + shared-source drops:
+  #   Runtime/TargetSpecific/<id>/*.{cpp,cxx,cc}  — extra sources for this ID only
+  #   Runtime/TargetSpecific/<id>/drop.txt        — basenames of shared TUs to omit
+  #     (classic ExcludedFromBuild). No file / empty → no drops.
   set(_ts_dir "${CMAKE_SOURCE_DIR}/Runtime/TargetSpecific/${id}")
+  set(_ts_drop "${_ts_dir}/drop.txt")
+  if(EXISTS "${_ts_drop}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_ts_drop}")
+    file(STRINGS "${_ts_drop}" _drop_lines)
+    list(LENGTH _sources _sources_before_drop)
+    foreach(_line IN LISTS _drop_lines)
+      string(STRIP "${_line}" _line)
+      if(_line STREQUAL "" OR _line MATCHES "^#")
+        continue()
+      endif()
+      # Basename only (AcadPaletteHost.cpp); reject path separators.
+      if(_line MATCHES "[/\\\\]")
+        message(FATAL_ERROR
+          "${id}: TargetSpecific drop.txt entries must be basenames only (got '${_line}')")
+      endif()
+      # Match forward- or backslash-separated paths ending in this basename.
+      list(FILTER _sources EXCLUDE REGEX "[/\\\\]${_line}$")
+    endforeach()
+    list(LENGTH _sources _sources_after_drop)
+    math(EXPR _drop_count "${_sources_before_drop}-${_sources_after_drop}")
+    if(_drop_count GREATER 0)
+      message(STATUS "  ${id}: -${_drop_count} shared source(s) via TargetSpecific/${id}/drop.txt")
+    endif()
+  endif()
+
   set(_ts_sources)
   if(EXISTS "${_ts_dir}")
     file(GLOB _ts_sources CONFIGURE_DEPENDS
@@ -137,6 +170,16 @@ function(opendcl_add_runtime id)
     # BRX sample FullDebug also defines BRX_BCAD_DEBUG.
     list(APPEND _fulldebug_defs BRX_BCAD_DEBUG)
   endif()
+  # Character set: default Unicode (classic modern modules). MultiByte only where
+  # classic was MBCS — ARX.16 (ACHAR) and ZRX.2014 (ZWSoft strlen on ZTCHAR*).
+  # Item 4 of 8 locked: matrix CHARACTER_SET, not a project-wide undef.
+  set(_charset_defs)
+  if(_charset STREQUAL "MultiByte")
+    set(_vs_charset "MultiByte")
+  else()
+    set(_vs_charset "Unicode")
+    list(APPEND _charset_defs UNICODE _UNICODE)
+  endif()
   target_compile_definitions(${_target} PRIVATE
     ${_def_list}
     _WINDOWS
@@ -147,8 +190,7 @@ function(opendcl_add_runtime id)
     _CRT_SECURE_NO_DEPRECATE
     _CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1
     _PRERELEASE
-    UNICODE
-    _UNICODE
+    ${_charset_defs}
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<CONFIG:FullDebug>:${_fulldebug_defs}>
     $<$<CONFIG:Release>:NDEBUG>
@@ -163,6 +205,14 @@ function(opendcl_add_runtime id)
   #   Runtime/Localized/<LANG>/Runtime.Res/Debug/Runtime.Res.dll
   # (debugger path strips two folders then uses ..\Localized\...\Runtime.Res\Debug\)
   set(_out_mod "${OPENDCL_OUTPUT_ROOT}/Runtime/${_family}/${id}/$<CONFIG>")
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(_sol_arch "x64")
+  else()
+    set(_sol_arch "Win32")
+  endif()
+  # id e.g. ARX.18 / ARX.18.x64 → folder x64|Win32/Runtime/ARX
+  opendcl_solution_folder(_sol_folder "${_sol_arch}" "OpenDCL_Runtime_${id}")
+
   set_target_properties(${_target} PROPERTIES
     OUTPUT_NAME "${_output}"
     PREFIX ""
@@ -173,7 +223,11 @@ function(opendcl_add_runtime id)
     PDB_OUTPUT_DIRECTORY "${_out_mod}"
     MSVC_RUNTIME_LIBRARY "${_rt_lib}"
     VS_GLOBAL_UseOfMfc "Dynamic"
-    VS_GLOBAL_CharacterSet "Unicode"
+    VS_GLOBAL_CharacterSet "${_vs_charset}"
+    # Classic *.vcxproj: GenerateManifest=false (CAD modules are not apps).
+    # CMake default true → link /MANIFEST + mt.exe → TRK0005 on old toolsets.
+    VS_GLOBAL_GenerateManifest "false"
+    FOLDER "${_sol_folder}"
   )
 
   # F5 host CAD (optional): machine-local via .user, cache, or env (BRX_EXE, …).
@@ -198,7 +252,24 @@ function(opendcl_add_runtime id)
 
   if(_toolset)
     set_property(TARGET ${_target} PROPERTY VS_PLATFORM_TOOLSET "${_toolset}")
+    # Item 3 option C (locked): keep classic toolsets (e.g. v140) on a host that
+    # defaults to a newer Windows kit. Pin kit via ForceImportBeforeCppProps
+    # (opendcl_vs_pin_windows_sdk) — NOT late VS_USER_PROPS. Validated ARX.21/22
+    # x64 + Win32 Release with no /I or /FI UCRT shims.
+    # Override kit: -DOPENDCL_LEGACY_WINDOWS_SDK=10.0.19041.0
+    # If still too fragile, fall back to matrix toolset v141+ (option A).
+    if(_toolset MATCHES "^v(70|80|90|100|110|120|140)")
+      set(_opendcl_legacy_winsdk "10.0.19041.0")
+      if(DEFINED OPENDCL_LEGACY_WINDOWS_SDK AND OPENDCL_LEGACY_WINDOWS_SDK)
+        set(_opendcl_legacy_winsdk "${OPENDCL_LEGACY_WINDOWS_SDK}")
+      endif()
+      set(_opendcl_pin_winsdk_after_libdirs TRUE)
+    endif()
   endif()
+
+  # Classic modules never generate/embed manifests (avoids mt.exe TRK0005).
+  # Applied after optional SDK pin so modern rows get nomanifest.props only.
+  # (Pin path already disables manifest in *.winsdk-tools.props.)
 
   if(_cxxstd)
     set_target_properties(${_target} PROPERTIES
@@ -213,6 +284,23 @@ function(opendcl_add_runtime id)
   )
   # StdAfx.cpp creates the PCH in MSVC classic workflow; with cmake PCH,
   # still compile StdAfx.cpp as a normal TU (header already in sources).
+
+  # /FS: MSBuild /m runs multiple cl.exe per project; without /FS they race on
+  # the shared vc*.pdb → C1041 (and can surface as Permission denied on .obj).
+  # /FS exists VS2013+ (v120). Older toolsets (v70–v110) omit it.
+  if(MSVC)
+    set(_opendcl_fs TRUE)
+    if(_toolset MATCHES "^v([0-9]+)")
+      if(CMAKE_MATCH_1 LESS 120)
+        set(_opendcl_fs FALSE)
+      endif()
+    elseif(_toolset MATCHES "^v110")
+      set(_opendcl_fs FALSE)
+    endif()
+    if(_opendcl_fs)
+      target_compile_options(${_target} PRIVATE "/FS")
+    endif()
+  endif()
 
   foreach(_w IN LISTS _wd_list)
     if(_w)
@@ -256,17 +344,29 @@ function(opendcl_add_runtime id)
   set(_all_release_dirs ${_lib_paths} ${_extra_libdirs})
   opendcl_vs_attach_libdir_props(${_target} "${_all_release_dirs}" "${_fd_lib_ms}")
 
+  # After libdirs VS_USER_PROPS exists, optionally wrap with Windows SDK pin.
+  if(_opendcl_pin_winsdk_after_libdirs)
+    opendcl_vs_pin_windows_sdk(${_target} "${_opendcl_legacy_winsdk}")
+  endif()
+  # Classic CAD modules: no embed-manifest / mt.exe (pin path already sets this).
+  opendcl_vs_disable_manifest(${_target})
+
   # No /NODEFAULTLIB CRT hacks: module, MFC (/MD vs /MDd), and static deps
   # (zlib/png *-md) must all use the same runtime library per config.
 
-  # Arch-specific third-party static libs
+  # Arch + toolset-matched third-party static libs (see Library/CMakeLists.txt).
+  # Older toolsets (≤ v140) cannot link default VS2022 UCRT-built zlib/png.
   if(_arch STREQUAL "x64")
-    target_link_libraries(${_target} PRIVATE opendcl_zlib_x64 opendcl_png_x64)
+    set(_png_arch "x64")
   else()
-    target_link_libraries(${_target} PRIVATE opendcl_zlib_x86 opendcl_png_x86)
+    set(_png_arch "x86")
   endif()
+  opendcl_ensure_runtime_png("${_png_arch}" "${_toolset}" _zlib_tgt _png_tgt)
+  target_link_libraries(${_target} PRIVATE ${_zlib_tgt} ${_png_tgt})
 
-  # Default ENU runtime resources when present
+  # Default ENU runtime resources when present natively in this tree.
+  # classic_x86 / full nest gate is attached later in opendcl_add_win32_nest
+  # (OpenDCL_Res_Win32 / OpenDCL_Win32 do not exist yet at add_runtime time).
   if(TARGET OpenDCL_RuntimeRes_ENU)
     add_dependencies(${_target} OpenDCL_RuntimeRes_ENU)
   endif()

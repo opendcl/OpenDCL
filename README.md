@@ -45,6 +45,8 @@ Build the solution in **Release** configuration for the platform(s) you need. Ex
 
 There is no public CI build that produces official installers from this tree alone.
 
+Host prerequisites for older Platform Toolsets (Daffodil, etc.) are documented in the main **opendcl** public tree README. For this checkout’s CMake multi-preset workflow, see [CMAKE.md](CMAKE.md).
+
 ## Contributing
 
 - Discuss product and localization topics on the [OpenDCL forums](https://www.opendcl.com/forum/).

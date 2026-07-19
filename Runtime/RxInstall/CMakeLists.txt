@@ -6,7 +6,9 @@
 #
 # Usage:
 #   - Parent OpenDCL tree: add_subdirectory when OPENDCL_BUILD_RXINSTALL=ON
-#     (x64 parent schedules a nested Win32 configure/build).
+#     * With OPENDCL_NEST_WIN32: PE from full Win32 nest (`build/<preset>/win32`);
+#       OpenDCL_RxInstall is an umbrella that runs cmake --build on the nest.
+#     * Without full nest: private nest under rxinstall-win32 (x64-only presets).
 #   - Standalone: cmake -S Runtime/RxInstall -B build/rx -G "Visual Studio 17 2022" -A Win32
 
 # Detect whether this file is the top-level CMakeLists (nested Win32 build).
@@ -45,6 +47,21 @@ set(_RX_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/RxInstall.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/RxInstall.rc"
 )
+set(_RX_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/RegIO.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/resource.h"
+)
+
+function(opendcl_rxinstall_set_folder target)
+  # Classic: RxInstall under Runtime (arch is in the PE, not the folder).
+  if(COMMAND opendcl_solution_folder)
+    opendcl_solution_folder(_rx_folder "Win32" "OpenDCL_RxInstall")
+    set_target_properties(${target} PROPERTIES FOLDER "${_rx_folder}")
+  else()
+    set_target_properties(${target} PROPERTIES FOLDER "Runtime")
+  endif()
+endfunction()
 
 function(opendcl_rxinstall_add_native classic_dir)
   add_library(OpenDCL_RxInstall SHARED ${_RX_SOURCES})
@@ -65,6 +82,7 @@ function(opendcl_rxinstall_add_native classic_dir)
     MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>"
   )
   opendcl_map_fulldebug_to_debug(OpenDCL_RxInstall "${_rx_out}")
+  opendcl_rxinstall_set_folder(OpenDCL_RxInstall)
   # Mirror classic path for build-wix.ps1 (Runtime\RxInstall\Release\RxInstall.dll).
   add_custom_command(TARGET OpenDCL_RxInstall POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${classic_dir}/${OPENDCL_CFG_DIR}"
@@ -74,6 +92,66 @@ function(opendcl_rxinstall_add_native classic_dir)
     COMMENT "Mirror RxInstall.dll to classic ${classic_dir}/<Debug|Release>/"
   )
   target_link_libraries(OpenDCL_RxInstall PRIVATE msi advapi32)
+  if(MSVC)
+    target_compile_options(OpenDCL_RxInstall PRIVATE "/FS")
+  endif()
+endfunction()
+
+# Umbrella on x64 parent when OPENDCL_NEST_WIN32: one PE from full nest.
+# COMMAND runs at build time; nest is configured later in the same generate
+# (opendcl_add_win32_nest → build/<preset>/win32).
+function(opendcl_rxinstall_add_via_win32_nest classic_dir)
+  if(TARGET OpenDCL_RxInstall)
+    return()
+  endif()
+  set(_rx_nest_bin "${CMAKE_BINARY_DIR}/win32")
+  set(_nest_cfg "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
+  # Never ALL when OPENDCL_WIN32_IN_ALL: OpenDCL_Win32 already builds the full
+  # nest (including RxInstall). A second concurrent cmake --build races (.ilk/PDB).
+  # Targeted `cmake --build --target OpenDCL_RxInstall` still works via COMMAND.
+  # When nest is on but not IN_ALL, keep ALL so packaging/default still gets the CA.
+  # Match nest throttle defaults (old toolset OOM safety); override via cache.
+  set(_rx_m "2")
+  set(_rx_clmp "1")
+  if(DEFINED OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT AND OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT MATCHES "^[1-9][0-9]*$")
+    set(_rx_m "${OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT}")
+  endif()
+  if(DEFINED OPENDCL_NEST_CL_MP_COUNT AND OPENDCL_NEST_CL_MP_COUNT MATCHES "^[1-9][0-9]*$")
+    set(_rx_clmp "${OPENDCL_NEST_CL_MP_COUNT}")
+  endif()
+  if(OPENDCL_WIN32_IN_ALL)
+    add_custom_target(OpenDCL_RxInstall
+      COMMAND ${CMAKE_COMMAND}
+        --build "${_rx_nest_bin}"
+        --config "${_nest_cfg}"
+        --target OpenDCL_RxInstall
+        --parallel "${_rx_m}"
+        -- "/m:${_rx_m}" "/p:CL_MPCount=${_rx_clmp}"
+      COMMENT "Build Win32 RxInstall CA via full nest (${_rx_nest_bin})"
+      SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
+      VERBATIM
+    )
+  else()
+    add_custom_target(OpenDCL_RxInstall ALL
+      COMMAND ${CMAKE_COMMAND}
+        --build "${_rx_nest_bin}"
+        --config "${_nest_cfg}"
+        --target OpenDCL_RxInstall
+        --parallel "${_rx_m}"
+        -- "/m:${_rx_m}" "/p:CL_MPCount=${_rx_clmp}"
+      COMMENT "Build Win32 RxInstall CA via full nest (${_rx_nest_bin})"
+      SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
+      VERBATIM
+    )
+  endif()
+  set_source_files_properties(${_RX_SOURCES} ${_RX_HEADERS}
+    PROPERTIES HEADER_FILE_ONLY TRUE
+  )
+  opendcl_rxinstall_set_folder(OpenDCL_RxInstall)
+  set_property(GLOBAL PROPERTY OPENDCL_RXINSTALL_VIA_WIN32_NEST TRUE)
+  message(STATUS
+    "RxInstall: via full Win32 nest (${_rx_nest_bin}); "
+    "umbrella COMMAND (ALL only when not OPENDCL_WIN32_IN_ALL)")
 endfunction()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -83,13 +161,16 @@ elseif(_opendcl_rx_is_standalone)
   message(FATAL_ERROR
     "RxInstall must be configured as Win32 (x86). Re-run with -A Win32 "
     "(MSI Binary CA exports use stdcall decoration _Name@4).")
+elseif(OPENDCL_NEST_WIN32)
+  # Full dual-arch nest owns the x86 CA; no private rxinstall-win32 tree.
+  opendcl_rxinstall_add_via_win32_nest("${_opendcl_rx_classic_dir}")
 else()
-  # Nested Win32 build from an x64 parent so packaging still gets a correct CA DLL.
+  # Private nest when full OPENDCL_NEST_WIN32 is off (x64-only presets).
   set(_rx_bin "${CMAKE_BINARY_DIR}/rxinstall-win32")
-  set(_rx_stamp "${_rx_bin}/.configured")
+  set(_rx_cache "${_rx_bin}/CMakeCache.txt")
 
   add_custom_command(
-    OUTPUT "${_rx_stamp}"
+    OUTPUT "${_rx_cache}"
     COMMAND ${CMAKE_COMMAND}
       -S "${CMAKE_CURRENT_SOURCE_DIR}"
       -B "${_rx_bin}"
@@ -97,32 +178,25 @@ else()
       -A Win32
       "-DOPENDCL_OUTPUT_ROOT=${OPENDCL_OUTPUT_ROOT}"
       "-DCMAKE_CONFIGURATION_TYPES=Debug;Release"
-    COMMAND ${CMAKE_COMMAND} -E touch "${_rx_stamp}"
+    DEPENDS
+      "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
+      ${_RX_SOURCES}
     COMMENT "Configure nested Win32 RxInstall under ${_rx_bin}"
     VERBATIM
   )
 
-  # Map FullDebug → Debug for the nested Win32 project (no FullDebug there).
-  # SOURCES: list RxInstall.cpp etc. in the main x64 solution for editing only;
-  # they are not compiled here (Win32 nested build does that).
   add_custom_target(OpenDCL_RxInstall ALL
-    DEPENDS "${_rx_stamp}"
+    DEPENDS "${_rx_cache}"
     COMMAND ${CMAKE_COMMAND}
       --build "${_rx_bin}"
       --config "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>"
     COMMENT "Build nested Win32 RxInstall"
-    SOURCES ${_RX_SOURCES}
-      "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/RegIO.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/resource.h"
+    SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
     VERBATIM
   )
-  # VS: show as "does not participate in build" content rather than fake ClCompile.
-  set_source_files_properties(${_RX_SOURCES}
-    "${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/RegIO.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/resource.h"
+  set_source_files_properties(${_RX_SOURCES} ${_RX_HEADERS}
     PROPERTIES HEADER_FILE_ONLY TRUE
   )
-  message(STATUS "RxInstall: nested Win32 build target OpenDCL_RxInstall (MSI CA is x86); sources listed for IDE")
+  opendcl_rxinstall_set_folder(OpenDCL_RxInstall)
+  message(STATUS "RxInstall: private nest under ${_rx_bin} (MSI CA is x86); sources listed for IDE")
 endif()
