@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Studio package UI strings for CHT.
+  Harvested from classic Studio.CHT.vdproj (UTF-8).
+  Used by scripts/build-wix.ps1 for Start Menu shortcuts and shell labels.
+-->
+<WixLocalization Culture="zh-tw" Codepage="950" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="ArpComments">OpenDCL Studio (Chinese)</String>
+  <String Id="ShortcutStudio">OpenDCL Studio</String>
+  <String Id="ShortcutStudioDesc">Launch OpenDCL Studio</String>
+  <String Id="ShortcutHelp">OpenDCL Help</String>
+  <String Id="ShortcutHelpDesc"></String>
+  <String Id="ShortcutLicense">OpenDCL License</String>
+  <String Id="ShortcutLicenseDesc"></String>
+  <String Id="ShellOpenVerb">&amp;Open</String>
+  <String Id="ShellDecodeVerb">Open as Open&amp;DCL Project</String>
+</WixLocalization>

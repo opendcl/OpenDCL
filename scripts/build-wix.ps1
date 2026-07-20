@@ -494,15 +494,51 @@ $selectedIds = @(
     ForEach-Object { $_.Id }
 )
 
+# Product identity only. Start Menu / shell UI strings live in
+# Studio/Localized/<LANG>/Package.wxl (harvested from classic Studio.<LANG>.vdproj).
 $StudioLangMeta = @{
-  ENU = @{ ProductCode = "BA22A3D6-E594-45CD-BB25-12ADD982C87A"; UpgradeCode = "F8AB94DC-2F57-4C29-8842-E2BB5F898E6C"; LangId = 1033; Comments = "OpenDCL Studio (US English)" }
-  DEU = @{ ProductCode = "1D3CD6D2-BE15-489C-90AF-19289D21127B"; UpgradeCode = "9BE5DB7C-1263-4235-90AC-B4E5E907789D"; LangId = 1031; Comments = "OpenDCL Studio (German)" }
-  ESM = @{ ProductCode = "1168CA37-1C22-47C6-A550-89CE14A990A7"; UpgradeCode = "13AE30FE-5152-40D5-B724-3BE317FC4DF2"; LangId = 3082; Comments = "OpenDCL Studio (Spanish)" }
-  RUS = @{ ProductCode = "8E7BDDB2-EC97-4FBD-B6B9-67E353F71245"; UpgradeCode = "30C0C78D-D3B1-4C36-B37E-357F50E691D3"; LangId = 1049; Comments = "OpenDCL Studio (Russian)" }
-  CHS = @{ ProductCode = "C6622C7F-E024-4FBF-B14D-DBAFDAC3C34B"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 2052; Comments = "OpenDCL Studio (Simplified Chinese)" }
-  FRA = @{ ProductCode = "DE91BFF8-E532-4612-8899-F965FC87885C"; UpgradeCode = "140D3C25-5463-4688-8A52-FEA8E9FA4940"; LangId = 1036; Comments = "OpenDCL Studio (French)" }
+  ENU = @{ ProductCode = "BA22A3D6-E594-45CD-BB25-12ADD982C87A"; UpgradeCode = "F8AB94DC-2F57-4C29-8842-E2BB5F898E6C"; LangId = 1033 }
+  DEU = @{ ProductCode = "1D3CD6D2-BE15-489C-90AF-19289D21127B"; UpgradeCode = "9BE5DB7C-1263-4235-90AC-B4E5E907789D"; LangId = 1031 }
+  ESM = @{ ProductCode = "1168CA37-1C22-47C6-A550-89CE14A990A7"; UpgradeCode = "13AE30FE-5152-40D5-B724-3BE317FC4DF2"; LangId = 3082 }
+  RUS = @{ ProductCode = "8E7BDDB2-EC97-4FBD-B6B9-67E353F71245"; UpgradeCode = "30C0C78D-D3B1-4C36-B37E-357F50E691D3"; LangId = 1049 }
+  CHS = @{ ProductCode = "C6622C7F-E024-4FBF-B14D-DBAFDAC3C34B"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 2052 }
+  FRA = @{ ProductCode = "DE91BFF8-E532-4612-8899-F965FC87885C"; UpgradeCode = "140D3C25-5463-4688-8A52-FEA8E9FA4940"; LangId = 1036 }
   # Historical CHS/CHT shared UpgradeCode — preserved for upgrade continuity
-  CHT = @{ ProductCode = "82CB8DF7-A50B-446D-82C6-362F009A6070"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 1028; Comments = "OpenDCL Studio (Traditional Chinese)" }
+  CHT = @{ ProductCode = "82CB8DF7-A50B-446D-82C6-362F009A6070"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 1028 }
+}
+
+function Read-StudioPackageWxl([string] $lang) {
+  <#
+    Load Studio/Localized/<LANG>/Package.wxl into a hashtable of String Id -> text.
+    Required for Studio MSI Start Menu shortcuts and Explorer shell labels.
+  #>
+  $path = Join-Path $RepoRoot "Studio\Localized\$lang\Package.wxl"
+  if (-not (Test-Path -LiteralPath $path)) {
+    throw "Studio package localization missing: $path (clone from ENU when adding a language)"
+  }
+  $xml = New-Object System.Xml.XmlDocument
+  $xml.PreserveWhitespace = $false
+  $xml.Load($path)
+  $ns = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+  $ns.AddNamespace("w", "http://schemas.microsoft.com/wix/2006/localization")
+  $map = @{}
+  foreach ($node in $xml.SelectNodes("//w:String", $ns)) {
+    $id = $node.GetAttribute("Id")
+    if ($id) { $map[$id] = [string]$node.InnerText }
+  }
+  foreach ($req in @(
+      "ArpComments", "ShortcutStudio", "ShortcutHelp", "ShortcutLicense",
+      "ShellOpenVerb", "ShellDecodeVerb"
+    )) {
+    if (-not $map.ContainsKey($req)) {
+      throw "Package.wxl for $lang is missing required String Id='$req' ($path)"
+    }
+  }
+  # Optional description strings default to empty
+  foreach ($opt in @("ShortcutStudioDesc", "ShortcutHelpDesc", "ShortcutLicenseDesc")) {
+    if (-not $map.ContainsKey($opt)) { $map[$opt] = "" }
+  }
+  return $map
 }
 
 function Write-ComponentXml {
@@ -655,6 +691,7 @@ function New-StudioFilesFragment([string] $lang) {
   #   {INSTALLDIR}\{Lang}\Studio.Res.dll, License.*, CHM, Samples\...
   # x64 PE → ProgramFiles64Folder + Win64 components; x86 PE → ProgramFilesFolder.
   # Advertised shortcuts must live on the same Component as their File (ICE69).
+  # Advertise=yes avoids ICE43/ICE57 (non-advertised shortcuts require an HKCU keypath).
   $studioExe = Resolve-StudioExe $Configuration
   $script:StudioIsX64 = Test-PeIsX64 $studioExe
   $win64Attr = if ($script:StudioIsX64) { ' Win64="yes"' } else { '' }
@@ -686,13 +723,24 @@ function New-StudioFilesFragment([string] $lang) {
   }
   Write-Host ("  Studio.Res: {0} ({1})" -f $studioResDll, $(if ($resIsX64) { 'x64' } else { 'x86' }))
 
+  $pkg = Read-StudioPackageWxl $lang
+  $scStudio = $pkg.ShortcutStudio
+  $scStudioDesc = $pkg.ShortcutStudioDesc
+  $scHelp = $pkg.ShortcutHelp
+  $scHelpDesc = $pkg.ShortcutHelpDesc
+  $scLic = $pkg.ShortcutLicense
+  $scLicDesc = $pkg.ShortcutLicenseDesc
+  $shellOpen = $pkg.ShellOpenVerb
+  $shellDecode = $pkg.ShellDecodeVerb
+  Write-Host ("  Package.wxl: Studio=[{0}] Help=[{1}] License=[{2}]" -f $scStudio, $scHelp, $scLic)
+
   $appFiles = @(
     @{
       Full = $studioExe
       Dir = "INSTALLDIR"; Name = "OpenDCL Studio.exe"; FileId = "fil_StudioExe"
       Shortcuts = @(
-        @{ Id = "sc_studio_menu"; Directory = "ProgramMenuOpenDCL"; Name = "OpenDCL Studio"; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 },
-        @{ Id = "sc_studio_desktop"; Directory = "DesktopFolder"; Name = "OpenDCL Studio"; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 }
+        @{ Id = "sc_studio_menu"; Directory = "ProgramMenuOpenDCL"; Name = $scStudio; Description = $scStudioDesc; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 },
+        @{ Id = "sc_studio_desktop"; Directory = "DesktopFolder"; Name = $scStudio; Description = $scStudioDesc; WorkingDirectory = "INSTALLDIR"; Icon = "OpenDCLStudio.exe"; IconIndex = 0 }
       )
     },
     @{ Full = $studioResDll; Dir = "LangFolder"; Name = "Studio.Res.dll"; FileId = "fil_StudioRes" },
@@ -700,16 +748,16 @@ function New-StudioFilesFragment([string] $lang) {
       Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\OpenDCL.chm")
       Dir = "LangFolder"; Name = "OpenDCL.chm"; FileId = "fil_StudioChm"
       Shortcuts = @(
-        # Icon from Studio.Res.dll #16536 IDI_CONTROLBROWSER (extracted multi-res group)
-        @{ Id = "sc_help_menu"; Directory = "ProgramMenuOpenDCL"; Name = "OpenDCL Help"; WorkingDirectory = "LangFolder"; Icon = "OpenDCLHelp.ico"; IconIndex = 0 }
+        # Advertise=yes: nested on File (ICE69); avoids ICE43/ICE57 (non-advertised needs HKCU keypath)
+        @{ Id = "sc_help_menu"; Directory = "ProgramMenuOpenDCL"; Name = $scHelp; Description = $scHelpDesc; WorkingDirectory = "LangFolder"; Icon = "OpenDCLHelp.ico"; IconIndex = 0 }
       )
     },
     @{
       Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\License.txt")
       Dir = "LangFolder"; Name = "License.txt"; FileId = "fil_StudioLicenseTxt"
       Shortcuts = @(
-        # Icon from Studio.Res.dll #16535 IDI_FORMEDITOR (extracted multi-res group)
-        @{ Id = "sc_lic_menu"; Directory = "ProgramMenuOpenDCL"; Name = "OpenDCL License"; WorkingDirectory = "LangFolder"; Icon = "OpenDCLLicense.ico"; IconIndex = 0 }
+        # Advertise=yes: same ICE43/ICE57/ICE69 pattern as help (see wix/README.md)
+        @{ Id = "sc_lic_menu"; Directory = "ProgramMenuOpenDCL"; Name = $scLic; Description = $scLicDesc; WorkingDirectory = "LangFolder"; Icon = "OpenDCLLicense.ico"; IconIndex = 0 }
       )
     },
     @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\License.htm"); Dir = "LangFolder"; Name = "License.htm"; FileId = "fil_StudioLicenseHtm" },
@@ -726,13 +774,21 @@ function New-StudioFilesFragment([string] $lang) {
       [void]$sb.AppendLine("        <File Id=`"$($f.FileId)`" Source=`"$srcXml`" Name=`"$($f.Name)`" KeyPath=`"yes`">")
       foreach ($sc in $f.Shortcuts) {
         $wd = if ($sc.WorkingDirectory) { " WorkingDirectory=`"$($sc.WorkingDirectory)`"" } else { "" }
-        # Advertised shortcuts need Icon= (Icon table PE/ICO stream); IconIndex selects the PE resource order
+        # Icon table PE/ICO stream; IconIndex selects the PE resource order
         $icon = ""
         if ($sc.Icon) {
           $idx = if ($null -ne $sc.IconIndex) { [int]$sc.IconIndex } else { 0 }
           $icon = " Icon=`"$($sc.Icon)`" IconIndex=`"$idx`""
         }
-        [void]$sb.AppendLine("          <Shortcut Id=`"$($sc.Id)`" Directory=`"$($sc.Directory)`" Name=`"$($sc.Name)`"$wd$icon Advertise=`"yes`" />")
+        $nameXml = [string]$sc.Name
+        $nameXml = $nameXml.Replace('&', '&amp;').Replace('"', '&quot;')
+        $descXml = ""
+        if ($sc.Description) {
+          $d = [string]$sc.Description
+          $d = $d.Replace('&', '&amp;').Replace('"', '&quot;')
+          $descXml = " Description=`"$d`""
+        }
+        [void]$sb.AppendLine("          <Shortcut Id=`"$($sc.Id)`" Directory=`"$($sc.Directory)`" Name=`"$nameXml`"$descXml$wd$icon Advertise=`"yes`" />")
       }
       [void]$sb.AppendLine("        </File>")
     }
@@ -760,12 +816,15 @@ function New-StudioFilesFragment([string] $lang) {
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project" Type="string" Value="OpenDCL Project" />')
   # Paths use [INSTALLDIR] (not [#fil_StudioExe]) to avoid ICE69 cross-component refs; matches vdproj.
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\DefaultIcon" Type="string" Value="[INSTALLDIR]OpenDCL Studio.exe,0" />')
-  # Shell open + DDE (literal [open("%1")] — escape MSI format brackets)
+  # Shell open verb label from Package.wxl (e.g. DEU &Öffnen); command + DDE
+  $shellOpenXml = $shellOpen.Replace('&', '&amp;').Replace('"', '&quot;')
+  [void]$sb.AppendLine("        <RegistryValue Root=`"HKCR`" Key=`"OpenDCL.Project\shell\open`" Type=`"string`" Value=`"$shellOpenXml`" />")
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\shell\open\command" Type="string" Value="&quot;[INSTALLDIR]OpenDCL Studio.exe&quot; &quot;%1&quot;" />')
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\shell\open\ddeexec" Type="string" Value="[\[]open(&quot;%1&quot;)[\]]" />')
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\shell\open\ddeexec\application" Type="string" Value="OPENDCL" />')
-  # Context menu on AutoLISP files (vdproj DeleteAtUninstall)
-  [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="AutoLISPFile\shell\decode" Type="string" Value="Open as Open&amp;DCL Project" />')
+  # Context menu on AutoLISP files (classic vdproj DeleteAtUninstall; text from Package.wxl)
+  $shellDecodeXml = $shellDecode.Replace('&', '&amp;').Replace('"', '&quot;')
+  [void]$sb.AppendLine("        <RegistryValue Root=`"HKCR`" Key=`"AutoLISPFile\shell\decode`" Type=`"string`" Value=`"$shellDecodeXml`" />")
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="AutoLISPFile\shell\decode\command" Type="string" Value="&quot;[INSTALLDIR]OpenDCL Studio.exe&quot; &quot;%1&quot;" />')
   [void]$sb.AppendLine('        <RemoveRegistryKey Root="HKCR" Key="AutoLISPFile\shell\decode" Action="removeOnUninstall" />')
   [void]$sb.AppendLine("      </Component>")
@@ -940,6 +999,8 @@ if (-not $SkipStudio) {
   foreach ($lang in $RuntimeLangs) {
     Write-Host "==== Building OpenDCL.Studio.$lang.msi ===="
     $meta = $StudioLangMeta[$lang]
+    if (-not $meta) { throw "StudioLangMeta missing for language $lang" }
+    $pkgStrings = Read-StudioPackageWxl $lang
     $filesWxs = New-StudioFilesFragment $lang
     # Checked-in RTF (not generated at package time) — reviewable installer EULA source
     $licenseRtf = Resolve-ProductFile "Studio\Localized\$lang\Content\License.rtf"
@@ -987,7 +1048,7 @@ if (-not $SkipStudio) {
         ProductVersion    = $ProductVersion
         UpgradeCode       = $meta.UpgradeCode
         ProductLanguage   = $meta.LangId
-        ArpComments       = $meta.Comments
+        ArpComments       = $pkgStrings.ArpComments
         Lang              = $lang
         MsmPath           = $msmPath
         LicenseRtf        = $licenseRtf

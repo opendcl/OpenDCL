@@ -71,7 +71,8 @@ Each language generally needs:
 - `Common/<LANG>/`
 - `Runtime/Localized/<LANG>/`
 - `Studio/Localized/<LANG>/` (including `Content/`, `Studio.Res/`, `HTMLHelp.<LANG>.vcxproj`)
-- WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, UpgradeCode, ARP comments)
+- WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, UpgradeCode)
+- Studio package UI strings: `Studio/Localized/<LANG>/Package.wxl` (shortcuts, ARP comments, shell labels)
 
 Installer EULA for Studio is checked-in **`License.rtf`** (WixUI); also keep
 `License.txt` / `License.htm` in sync for content/copyright. **`OpenDCL.chm`**

@@ -49,6 +49,7 @@ variant). Do **not** copy build outputs (`Debug/`, `Release/`, `.tlog`, `.obj`,
 | Runtime content | `Runtime/Localized/<LANG>/Content/` | `License.txt`, `GNU-GPL.txt` |
 | Studio resources | `Studio/Localized/<LANG>/Studio.Res/` | `Studio.Res.<LANG>.vcxproj`, `.rc`, `Res/` |
 | Studio help | `Studio/Localized/<LANG>/Content/` | HTML topics, `OpenDCL.hhp` / `.hhc`, licenses, Samples |
+| Studio package UI | `Studio/Localized/<LANG>/Package.wxl` | Start Menu shortcuts, ARP comments, shell verb labels (WiX) |
 | HTML Help project | `Studio/Localized/<LANG>/HTMLHelp.<LANG>.vcxproj` (+ `.filters`) | Builds `Content/OpenDCL.chm` via `Studio/Localized/BuildCHM.mak` |
 | Optional | `Studio/Localized/<LANG>/Setup.reg` | Legacy reg sample; WiX owns real file-assoc registry now |
 
@@ -145,20 +146,23 @@ Update `OpenDCL.Compile.slnf` when that filter is part of the build workflow.
 Edit **`scripts/build-wix.ps1`**:
 
 1. Append the code to `$RuntimeLangs` (order with existing languages).
-2. Add `$StudioLangMeta['LANG']` entry:
+2. Add `$StudioLangMeta['LANG']` entry (product identity only):
 
    ```powershell
    ITA = @{
      ProductCode = "<new-guid>"
      UpgradeCode = "<new-stable-guid>"
      LangId = <LCID>
-     Comments = "OpenDCL Studio (Italian)"
    }
    ```
 
-3. Runtime language components are generated from `$RuntimeLangs` + Content paths —
+3. Clone and edit **`Studio/Localized/<LANG>/Package.wxl`** (Start Menu names,
+   ARP comments, shell labels). Start from ENU; translators update `String` values.
+   Required Ids: `ArpComments`, `ShortcutStudio`, `ShortcutHelp`, `ShortcutLicense`,
+   `ShellOpenVerb`, `ShellDecodeVerb` (plus optional `*Desc` keys).
+4. Runtime language components are generated from `$RuntimeLangs` + Content paths —
    no hand-edit of `wix/out/gen/*`.
-4. Studio files fragment picks up `Studio/Localized/<LANG>/…` when that language is
+5. Studio files fragment picks up `Studio/Localized/<LANG>/…` when that language is
    built (`-Languages` / default full list).
 
 Confirm `wix/README.md` language list still accurate if it enumerates languages.
@@ -227,6 +231,7 @@ Only commit if the user asked. Website repo commits are separate.
 - [ ] Help Content builds to `OpenDCL.chm`
 - [ ] `License.rtf` / `License.txt` / `License.htm` present for Studio
 - [ ] `$RuntimeLangs` + `$StudioLangMeta` updated in `scripts/build-wix.ps1`
+- [ ] `Studio/Localized/<LANG>/Package.wxl` present (clone ENU; localize strings)
 - [ ] Studio MSI builds and installs for the new language
 - [ ] Download/help website follow-ups noted or done
 - [ ] Skill updated if new lessons were learned

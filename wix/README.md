@@ -171,7 +171,12 @@ Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no st
 - **ProductVersion** is 3-part MSI encoding (`10.1.101` for file version `10.1.1.1`). **ModuleVersion** is 4-part.
 - **UpgradeCodes** preserved from the old Studio language packages / Runtime MSI.
 - Component GUIDs are **stable** (MD5 of logical path).
-- Studio shortcuts are **advertised** and nested on their target files (ICE69 / ICE43).
+- Studio shortcuts are **advertised** and nested on their target files
+  (`Advertise="yes"` on the same component as the file):
+  - **ICE69** — advertised shortcut must share the component with its target file
+  - **ICE43 / ICE57** — non-advertised shortcuts require an **HKCU** registry keypath;
+    using a per-machine file keypath fails light (do not flip Help/License to
+    `Advertise="no"` without adding HKCU keypaths on those components)
 
 ## Layout
 
