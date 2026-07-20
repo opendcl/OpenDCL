@@ -1,4 +1,4 @@
-# Generated from VI/*.props for opendcl-cmake experiments.
+# Generated from VI/*.props for the OpenDCL CMake runtime matrix.
 # List fields use | instead of ; (CMake list separator).
 # Regenerate: pwsh scripts/generate-runtime-matrix.ps1
 include_guard(GLOBAL)
@@ -705,7 +705,7 @@ opendcl_register_runtime(
   SDK_ENV "BRX27"
   SDK_INC "inc64|inc"
   SDK_LIB "lib64"
-  # FullDebug uses $(BRX_PATH)\lib\vc143x64\Debug (see opendcl_fulldebug_libdir_msbuild).
+  # FullDebug host debug libs: BrxDebugLibs / OPENDCL_BRX27_FULLDEBUG_LIBDIR only.
   VI_DIR "Runtime/BRX/BRX.27.x64/VI"
   DEFINES "_ACADTARGET=24|_BRXTARGET=27|WINVER=0x0501|_WIN32_WINNT=0x0501"
   WARNING_DISABLES "4986|4987|4265"

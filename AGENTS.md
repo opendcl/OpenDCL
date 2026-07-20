@@ -22,7 +22,7 @@ without checking those resources.
 
 ```text
 OpenDCL.sln              Classic Visual Studio solution
-CMakeLists.txt           CMake experiment (multi-runtime + Studio + RxInstall)
+CMakeLists.txt           CMake multi-runtime + Studio + RxInstall (preferred ship path)
 cmake/                   Matrix, targets, helpers (see CMAKE.md)
 Common/                  Shared core + per-language SharedRes (<LANG>/)
 Library/                 Third-party (LibPNG, ZLib); CMake builds /MD and /MT variants
@@ -39,9 +39,10 @@ wix/out/                 Generated packages (gitignored)
 .agents/skills/          Optional agent skills (often untracked until ready)
 ```
 
-### CMake experiment (preferred for multi-host matrix + Studio F5)
+### CMake (preferred multi-host matrix, Studio F5, and Full product)
 
-Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`).
+Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`;
+ship **`vs2022-full`**). Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`.
 
 | Area | Notes |
 |------|--------|
@@ -255,16 +256,17 @@ Historical desktop steps and replacements:
 | Online help SVN refresh | `/sync-help-to-website` → `opendcl.github.io` |
 
 **Code signing (production):** SSL.com cert on **YubiKey** → Windows Personal store →
-`scripts/sign-files.ps1 -CertThumbprint …` (or `SIGN_CERT_THUMBPRINT`). Enter **PIN**
+`scripts/sign-files.ps1` with `SIGN_CERT_THUMBPRINT` / `-CertThumbprint`. Enter **PIN**
 when prompted. Timestamp default `http://ts.ssl.com`. Self-hosted runner only.
-Never commit PINs/PFX. See `/code-sign-release`.
+Never commit PINs, PFX, or thumbprints. Public procedure: `/code-sign-release`.
+Operator machine values: private build-lab skill **`code-sign-operator`**.
 
 **Manual after every release (not automated yet):** Runtime “check for updates”
 POSTs to `http://opendcl.com/version/vercheck.php`, which reads plain-text
 `version/version.txt` (stable product name `OpenDCL Runtime`) or
 `version/version_dev.txt` (dev builds `OpenDCL Runtime Dev`). Update those files
-on the **opendcl.com** host to the new `A.B.C.D` so clients learn about the
-release. Details in `/code-sign-release`.
+on the **opendcl.com** host to the new `A.B.C.D`. Public details:
+`/code-sign-release`. Local deploy paths: private **`code-sign-operator`**.
 
 **Pre-ship dry run (private):** compile/package/test installers without publishing
 lives in private **`opendcl/build-lab`** (`RELEASE.md`, skill `dry-run-release`) —
@@ -304,5 +306,5 @@ Configure paths only via `BrxDebugLibs`, `OPENDCL_*_FULLDEBUG_LIBDIR`, or docume
 
 - `local.props` — optional, next to generated .sln (gitignored if under the repo).
 - `<parent-of-checkout>/dev.props` — optional shared machine file (outside the repo).
-  Imported **after** local.props so it can override include/lib paths and `BRX_PATH`.
+  Imported **after** local.props so it can override include/lib paths.
   Do not open or scan proprietary CAD debug trees when editing these files.

@@ -3,12 +3,12 @@
   Authenticode-sign installer packages (and optionally PE binaries) with signtool.
 
 .DESCRIPTION
-  Primary production path (OpenDCL / ManuSoft, 2026+):
+  Primary production path:
 
     SSL.com code signing certificate on a YubiKey
       → cert in Windows Personal store (Current User)
       → private key non-exportable on the token (Smart Card KSP)
-      → sign with certificate SHA1 thumbprint
+      → sign with certificate SHA1 thumbprint (env / argument only)
       → RFC3161 timestamp via SSL.com
 
   Enter the YubiKey PIN when Windows / signtool prompts (often once per session,
@@ -33,11 +33,11 @@
 
 .EXAMPLE
   # Production: YubiKey plugged in; PIN when prompted
-  $env:SIGN_CERT_THUMBPRINT = "535892C8273A64940E5DDB321965EB255241DA57"
+  $env:SIGN_CERT_THUMBPRINT = "<sha1-from-cert-store>"
   .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
 
 .EXAMPLE
-  .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 -CertThumbprint "535892C8273A64940E5DDB321965EB255241DA57"
+  .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 -CertThumbprint "<sha1-from-cert-store>"
 #>
 [CmdletBinding()]
 param(
@@ -51,7 +51,7 @@ param(
   [string] $CspName = $env:SIGN_CSP_NAME,
   [string] $KeyContainer = $env:SIGN_KEY_CONTAINER,
 
-  # SSL.com RFC3161 timestamp (verified with ManuSoft YubiKey cert, 2026)
+  # SSL.com RFC3161 timestamp (override with SIGN_TIMESTAMP_URL)
   [string] $TimestampUrl = $(if ($env:SIGN_TIMESTAMP_URL) { $env:SIGN_TIMESTAMP_URL } else { "http://ts.ssl.com" }),
   [string] $DescriptionUrl = $(if ($env:SIGN_DESCRIPTION_URL) { $env:SIGN_DESCRIPTION_URL } else { "https://www.opendcl.com" }),
   [string] $FileDigest = "sha256",
@@ -210,10 +210,10 @@ Preferred (SSL.com YubiKey):
   1. YubiKey inserted; cert in Current User Personal with private key
      (certutil -user -repairstore My <thumbprint> if HasPrivateKey is False)
   2. Set SIGN_CERT_THUMBPRINT or pass -CertThumbprint
-     ManuSoft SSL.com example (2026): 535892C8273A64940E5DDB321965EB255241DA57
   3. Run this script; enter YubiKey PIN when prompted
 
-Never commit PINs, PFX passwords, or private keys to git.
+Never commit PINs, PFX passwords, private keys, or cert thumbprints to git.
+Operator thumbprint values: private build-lab skill code-sign-operator.
 "@
 }
 

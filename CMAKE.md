@@ -1,17 +1,14 @@
-# OpenDCL CMake experiment (`opendcl-cmake`)
+# OpenDCL CMake build
 
-This tree is a **local checkout** for evaluating a CMake-generated build that
-replaces the hand-maintained per-CAD-version `.vcxproj` matrix.
+CMake is the **supported multi-host and dual-arch ship path** for OpenDCL
+(Runtime matrix, Studio, RxInstall, WiX harvest from `build/<preset>/out`).
 
-## Push is disabled
+Classic `OpenDCL.sln` / per-host `.vcxproj` trees remain in the repo for
+historical and transitional builds, but **full product dry-runs and ship
+packaging use CMake** (preset **`vs2022-full`**). Private CI:
+`opendcl/build-lab` package workflow with `compile_engine=cmake`.
 
-This clone refuses pushes:
-
-- `git remote` push URL is `DISABLED_DO_NOT_PUSH`
-- `.git/hooks/pre-push` exits with an error
-
-Fetch from the local `opendcl` clone (or re-point `origin` fetch) is fine.
-Do **not** enable push until the experiment is deliberately promoted.
+Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 
 ## Layout
 
@@ -30,8 +27,6 @@ Do **not** enable push until the experiment is deliberately promoted.
 | `Runtime/TargetSpecific/<ID>/` | Optional per-target `.cpp` injection (auto) |
 | `Library/CMakeLists.txt` | ZLib + LibPNG |
 | `Runtime/Localized/CMakeLists.txt` | `Runtime.Res.<lang>` DLLs |
-
-Existing classic `OpenDCL.sln` / `.vcxproj` files are **unchanged** and still buildable.
 
 CMake Visual Studio generators write **`build/<preset>/<preset>.sln`** (e.g.
 `build/vs2022-x64-dev/vs2022-x64-dev.sln`) so multiple presets stay distinguishable
@@ -78,7 +73,7 @@ opendcl_{zlib|png}_{x86|x64}_{md|mt}_{toolset}
 Default cache is `host` (simple single-arch / dev). Preset **`vs2022-full`** forces `classic_x86` for public release.
 
 ```powershell
-cd P:\Work\OpenDCL\Source\opendcl-cmake
+cd <OpenDCL repo root>
 
 # Dev default: BRX.27.x64 only (requires BRX27 env / SDK)
 cmake --preset vs2022-x64-dev
@@ -93,7 +88,7 @@ cmake --build --preset vs2022-x64-arx-latest-release
 # Auto-detect every installed CAD SDK (x64)
 cmake --preset vs2022-x64-auto
 
-# One .sln: x64 targets + nested Win32 projects (imported into Solution Explorer)
+# Full ship: one .sln with x64 + nested Win32 (imported into Solution Explorer)
 cmake --preset vs2022-full --fresh
 cmake --build --preset vs2022-full-release
 # Shared out/: x64 modules + Win32 modules + Studio x64/Win32
@@ -104,7 +99,7 @@ cmake --build --preset vs2022-full-release
 # Full local make-release (dist + optional -Sign) — verifies before WiX:
 .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
   -ProductVersion 10.1.1.1 -ModuleSet Full -Sign
-# After first full signed set exists, compare packages to the previous release:
+# After a full set exists, compare packages to the previous release:
 .\scripts\compare-release-packages.ps1 `
   -BaselinePackageDir dist\10.0.0.0 `
   -NewPackageDir dist\10.1.1.1
@@ -133,7 +128,7 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 | **C1060** compiler out of heap (`afxtempl.h`, old ATL) under `OpenDCL_Win32` | Nest builds many **32-bit-era toolsets** (v100/v110/…) in one MSBuild; 32-bit `cl` heap is small | Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=2`, `OPENDCL_NEST_CL_MP_COUNT=1`. Try `=1` / `=1`. Still may fail on a full nest Debug/Release under heavy machine load. |
 | **C1001** ICE in nest modules (PCH, PaletteDlg, etc.) | Same pressure / parallel compile instability | Same throttle; rebuild single target or stand-alone `build/.../win32` with low `/m`. |
 | Cancel in VS does not stop nest `cmake --build` cleanly | Nested MSBuild is a child process of a CustomBuild step | Kill stray `MSBuild`/`cl` if needed; known CustomBuild limitation. |
-| Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-x64-dev`** for IDE work; use nest for dual-arch ship when ready. |
+| Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-x64-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
 | Studio MSI includes Runtime MSM | Separate Runtime MSI not required for Studio install smoke | Install **Studio.\<LANG\>.msi** only for Studio+Runtime install tests (see **docs/SMOKE.md**). |
 
 **Workaround when nest fails:** build the nest tree alone with low parallelism, or only the modules you need:
@@ -278,23 +273,21 @@ endfunction()
 
 Debug CAD SDK trees are **proprietary**. CMake and agents must **not** open, list, or search those folders.
 
-BRX FullDebug matches classic OpenDCL:
-
-```text
-$(BRX_PATH)\lib\vc143x64\Debug;%(AdditionalLibraryDirectories)
-```
-
-(`vcNNNx64` follows the target toolset, e.g. v143 → `vc143x64`.)
+BRX FullDebug link directories are **explicit only** (no automatic path under the
+release SDK). Configure one of:
 
 | Source | Role |
 | --- | --- |
-| **`BRX_PATH` env** | Classic (preferred). Used as MSBuild `$(BRX_PATH)` — no reconfigure needed when it changes |
-| `BrxDebugLibs` | Absolute override (BRX samples) |
-| `OPENDCL_BRX27_FULLDEBUG_LIBDIR` / `BRX27_FULLDEBUG_LIBDIR` | Absolute override |
+| **`BrxDebugLibs` env** | Absolute debug LIB directory (classic `BRX.26.x64` FullDebug + CMake) |
+| `OPENDCL_BRX27_FULLDEBUG_LIBDIR` / `BRX27_FULLDEBUG_LIBDIR` | Per-SDK absolute override (any BRX major) |
+| `OPENDCL_BRX26_FULLDEBUG_LIBDIR` / `BRX26_FULLDEBUG_LIBDIR` | Same for BRX 26 |
+
+If none is set, FullDebug still builds but only release SDK libdirs are on the
+link line (host debug imports will fail until a path is configured).
 
 ```powershell
-$env:BRX_PATH = "X:\dev\bricscad\brx"   # classic
-$env:BRX27 = "S:\BRX27"                 # release SDK for Debug/Release
+$env:BrxDebugLibs = "X:\path\to\brx\debug\libs"   # proprietary; set by operator
+$env:BRX27 = "S:\BRX27"                           # release SDK for Debug/Release
 cmake --preset vs2022-x64-dev
 cmake --build build/vs2022-x64-dev --config FullDebug
 ```
@@ -325,14 +318,14 @@ paths). Later imports win:
 3. **`local.props`** next to the props/sln — solution-local overlay
 4. **`<repo-parent>/dev.props`** (relative) — machine overlay; **overrides local.props**
 
-Example **parent** `dev.props` (not in the repo): do **not** redefine `BRX_PATH` —
-FullDebug already expands `$(BRX_PATH)` from the **process environment**. Use
-`dev.props` only for optional include/lib overlays:
+Example **parent** `dev.props` (not in the repo): keep release SDK roots and
+`BrxDebugLibs` in the **process environment**; use `dev.props` only for optional
+include/lib overlays:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- BRX_PATH / BRX27 come from the environment, not this file. -->
+  <!-- BrxDebugLibs / BRX27 come from the environment, not this file. -->
   <ItemDefinitionGroup>
     <ClCompile>
       <!-- Optional include overrides -->
@@ -347,9 +340,9 @@ FullDebug already expands `$(BRX_PATH)` from the **process environment**. Use
 ```
 
 ```powershell
-# Required for FullDebug (and CMake release SDK root):
-$env:BRX_PATH = "X:\dev\bricscad\brx"
-$env:BRX27    = "S:\BRX27"
+# Release SDK always; FullDebug host debug libs when building FullDebug:
+$env:BRX27        = "S:\BRX27"
+$env:BrxDebugLibs = "X:\path\to\brx\debug\libs"
 ```
 
 Example **solution** `local.props` (`build/vs2022-x64-dev/local.props`) for checkout-specific tweaks; `dev.props` can still override them.
@@ -440,17 +433,16 @@ Notes:
 - **HTML Help**: `OpenDCL_StudioHelp_<LANG>` builds each language CHM via `hhc.exe`. The default language is a Studio dependency; **post-build copies** `Studio.Res.dll` + `OpenDCL.chm` next to `Studio.exe` so classic `Workspace::FindFile` / `GetLocalResourceModule` work without special F5 path logic.
 - **Multimon stubs**: Studio sets `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (static MFC has no `_AFXDLL`; `FolderTreeCtrl.cpp` also includes `MultiMon.h` and must not compile stubs). Runtime modules still rely on `_AFXDLL` in source.
 
-## Not yet ported
+## Known gaps
 
 - Full multi-toolset ship CI parity for the oldest hosts (e.g. ARX.16 / BRX.9 and some `v140` + latest Windows SDK edge cases still need host-specific care; toolset-matched zlib/png cover the main UCRT link gap)
+- Classic `.vcxproj` rows may lag CMake for brand-new hosts (e.g. BRX.27 is in the CMake matrix + WiX/RxInstall inventory; classic project scaffolding is optional)
 
 ## Regenerating the matrix
-
-From this tree (PowerShell):
 
 ```powershell
 # See scripts/generate-runtime-matrix.ps1 when present
 ```
 
-The matrix was generated from each `Runtime/*/VI/*.props` plus toolset/output
-from the sibling `.vcxproj`.
+The matrix is derived from each `Runtime/*/VI/*.props` plus toolset/output
+names from the corresponding classic `.vcxproj` where one exists.

@@ -334,13 +334,12 @@ function(opendcl_add_runtime id)
   # Library directories via generated .props (not target_link_directories).
   # The VS generator turns target_link_directories into:
   #   path;path\$(Configuration);%(AdditionalLibraryDirectories)
-  # which is not classic. Classic FullDebug is simply:
-  #   $(BRX_PATH)\lib\vc143x64\Debug;%(AdditionalLibraryDirectories)
-  # with release Lib64 coming from props / remaining AdditionalLibraryDirectories.
+  # which is not classic.
   #
-  # We emit: FullDebug → <host-debug>;<release-SDK-lib>;%(AdditionalLibraryDirectories)
+  # We emit: FullDebug → <host-debug if set>;<release-SDK-lib>;%(AdditionalLibraryDirectories)
   #          Debug/Release → <release-SDK-lib>;%(AdditionalLibraryDirectories)
-  # Do not GLOB/list proprietary debug trees.
+  # Host-debug for BRX is only from BrxDebugLibs / OPENDCL_*_FULLDEBUG_LIBDIR
+  # (see opendcl_fulldebug_libdir_msbuild). Do not GLOB/list proprietary debug trees.
   set(_all_release_dirs ${_lib_paths} ${_extra_libdirs})
   opendcl_vs_attach_libdir_props(${_target} "${_all_release_dirs}" "${_fd_lib_ms}")
 

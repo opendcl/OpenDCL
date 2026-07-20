@@ -28,7 +28,7 @@ endif()
 project(${_opendcl_project_name}
   # Must match Runtime/ARX.rc (and Studio/RxInstall) FILEVERSION / PRODUCTVERSION.
   VERSION 10.1.1.1
-  DESCRIPTION "OpenDCL Studio and Runtime (CMake experiment)"
+  DESCRIPTION "OpenDCL Studio and Runtime"
   LANGUAGES CXX C RC
 )
 message(STATUS "Solution / project name: ${PROJECT_NAME} -> ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.sln")
@@ -88,7 +88,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-message(STATUS "OpenDCL CMake experiment - push disabled on this clone")
+message(STATUS "OpenDCL CMake build")
 message(STATUS "Output root: ${OPENDCL_OUTPUT_ROOT}")
 
 add_subdirectory(Library)

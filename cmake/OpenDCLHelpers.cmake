@@ -276,14 +276,17 @@ endfunction()
 # FullDebug host-debug lib dir as an MSBuild AdditionalLibraryDirectories *prefix*
 # (the part before ";%(AdditionalLibraryDirectories)").
 #
-# Classic BRX FullDebug (BRX.26.x64.vcxproj):
-#   $(BRX_PATH)\lib\vc143x64\Debug;%(AdditionalLibraryDirectories)
+# BRX FullDebug (explicit only — proprietary debug trees, never auto-discovered):
+#   OPENDCL_<SDK_ENV>_FULLDEBUG_LIBDIR  (CMake cache)
+#   ENV{<SDK_ENV>_FULLDEBUG_LIBDIR}
+#   ENV{BrxDebugLibs}                   (shared BRX debug lib dir)
 #
-# Do not invent BRX27\lib\vc…\Debug under the release SDK root, and do not scan
-# proprietary debug trees. Prefer MSBuild $(BRX_PATH) so the env can change
-# without reconfigure.
+# Do not invent BRXnn\lib\vc…\Debug under the release SDK root and do not fall
+# back to any other env name. Empty prefix → FullDebug links release SDK libs only
+# until the operator sets one of the paths above.
 function(opendcl_fulldebug_libdir_msbuild family sdk_env toolset out_var)
   set(_prefix "")
+  # ${toolset} kept for API stability (callers pass matrix toolset).
 
   # Explicit absolute override (cache / env) — never auto-discovered.
   set(_cache_var "OPENDCL_${sdk_env}_FULLDEBUG_LIBDIR")
@@ -297,13 +300,6 @@ function(opendcl_fulldebug_libdir_msbuild family sdk_env toolset out_var)
     file(TO_NATIVE_PATH "$ENV{${sdk_env}_FULLDEBUG_LIBDIR}" _prefix)
   elseif(family STREQUAL "BRX" AND DEFINED ENV{BrxDebugLibs} AND NOT "$ENV{BrxDebugLibs}" STREQUAL "")
     file(TO_NATIVE_PATH "$ENV{BrxDebugLibs}" _prefix)
-  elseif(family STREQUAL "BRX")
-    # Match classic OpenDCL BRX FullDebug exactly (toolset → vcNNNx64).
-    set(_vc "vc143x64")
-    if(toolset MATCHES "^v([0-9]+)")
-      set(_vc "vc${CMAKE_MATCH_1}x64")
-    endif()
-    set(_prefix "$(BRX_PATH)\\lib\\${_vc}\\Debug")
   endif()
 
   set(${out_var} "${_prefix}" PARENT_SCOPE)

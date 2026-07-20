@@ -88,7 +88,7 @@ foreach ($family in @("ARX", "BRX", "GRX", "ZRX")) {
 $rows = $rows | Sort-Object Family, Ver, Arch
 
 $sb = [System.Text.StringBuilder]::new()
-[void]$sb.AppendLine("# Generated from VI/*.props for opendcl-cmake experiments.")
+[void]$sb.AppendLine("# Generated from VI/*.props for the OpenDCL CMake runtime matrix.")
 [void]$sb.AppendLine("# List fields use | instead of ; (CMake list separator).")
 [void]$sb.AppendLine("# Regenerate: pwsh scripts/generate-runtime-matrix.ps1")
 [void]$sb.AppendLine("include_guard(GLOBAL)")

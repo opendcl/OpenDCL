@@ -103,9 +103,12 @@ website repo when possible (`git status`).
 Example (one language, PowerShell):
 
 ```powershell
+# Sibling layout under Source/ (adjust if your clones differ)
+$srcRoot = (Resolve-Path "..\opendcl").Path          # product repo
+$webRoot = (Resolve-Path "..\opendcl.github.io").Path  # GitHub Pages repo
 $lang = "ENU"
-$src  = "P:\Work\OpenDCL\Source\opendcl\Studio\Localized\$lang\Content"
-$dst  = "P:\Work\OpenDCL\Source\opendcl.github.io\HelpFiles\$lang"
+$src  = Join-Path $srcRoot "Studio\Localized\$lang\Content"
+$dst  = Join-Path $webRoot "HelpFiles\$lang"
 
 # Backup website chrome
 Copy-Item "$dst\TOC.html","$dst\Top.html" $env:TEMP -Force
