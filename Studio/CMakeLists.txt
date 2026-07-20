@@ -308,7 +308,10 @@ if(OPENDCL_BUILD_STUDIO_HELP)
     opendcl_add_studio_help("${_hl}")
   endforeach()
   # Aggregate target for packaging / CI (all configured language CHMs).
-  add_custom_target(OpenDCL_StudioHelp_All)
+  # ALL: custom targets are excluded from ALL_BUILD unless listed here.
+  # Without this, default cmake --build only builds ENU (Studio dep) and
+  # Full verify/package fails on missing Studio\Localized\<lang>\Content\OpenDCL.chm.
+  add_custom_target(OpenDCL_StudioHelp_All ALL)
   opendcl_solution_folder(_sha_folder "any" "OpenDCL_StudioHelp_All")
   set_target_properties(OpenDCL_StudioHelp_All PROPERTIES FOLDER "${_sha_folder}")
   foreach(_hl IN LISTS OPENDCL_LANGS)
