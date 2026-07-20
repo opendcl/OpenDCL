@@ -60,6 +60,10 @@ function(opendcl_add_win32_nest)
     "set(OPENDCL_BUILD_RES_DLLS [==[${_nest_res}]==] CACHE BOOL \"\" FORCE)\n")
   string(APPEND _body
     "set(OPENDCL_RES_PE [==[host]==] CACHE STRING \"\" FORCE)\n")
+  # Nest is already Win32: Studio PE is always host (x86). Parent may be
+  # classic_x86 (skip x64 Studio); nest must still build Studio.exe + Studio.Res.
+  string(APPEND _body
+    "set(OPENDCL_STUDIO_PE [==[host]==] CACHE STRING \"\" FORCE)\n")
   string(APPEND _body
     "set(OPENDCL_ENABLE_ARX [==[${OPENDCL_ENABLE_ARX}]==] CACHE BOOL \"\" FORCE)\n")
   string(APPEND _body
@@ -133,10 +137,12 @@ function(opendcl_add_win32_nest)
   if(_rx_via OR TARGET OpenDCL_RxInstall)
     list(APPEND _skip_names "OpenDCL_RxInstall")
   endif()
-  # Parent owns Studio + Studio.Res (x64) + Help. Nest still *builds* Win32 Studio
-  # via OpenDCL_Win32; importing w32_OpenDCL_Studio causes VS reload errors
-  # ("solution already contains an item named 'w32_OpenDCL_Studio'") when cmake
-  # regenerates the .sln while the IDE reloads.
+  # Parent owns Help (CHM). Studio + Studio.Res:
+  #   OPENDCL_STUDIO_PE=host       — parent builds x64 Studio; nest still builds
+  #                                  Win32 Studio under OpenDCL_Win32 (not imported).
+  #   OPENDCL_STUDIO_PE=classic_x86 — parent skips Studio; nest ships Win32 PE.
+  # Importing w32_OpenDCL_Studio causes VS reload errors ("solution already
+  # contains an item named 'w32_OpenDCL_Studio'") when cmake regenerates the .sln.
   list(APPEND _skip_names "OpenDCL_Studio" "OpenDCL_StudioHelp_All")
   foreach(_hl IN LISTS OPENDCL_LANGS)
     list(APPEND _skip_names
@@ -180,8 +186,8 @@ function(opendcl_add_win32_nest)
     set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 
     list(APPEND _w32_targets ${_t})
-    # classic_x86 OpenDCL_Res_Win32 only needs Runtime.Res (CAD). Studio.Res is
-    # host-arch on the parent (and Win32 Studio.Res under out/.../Win32/).
+    # classic_x86 OpenDCL_Res_Win32 only needs Runtime.Res (CAD CommonFiles).
+    # Studio.Res follows OPENDCL_STUDIO_PE (nest Win32 when classic_x86).
     if(_base MATCHES "RuntimeRes_")
       list(APPEND _w32_res_cmake_targets "${_base}")
     endif()
@@ -264,8 +270,8 @@ function(opendcl_add_win32_nest)
     endif()
     list(LENGTH _w32_res_cmake_targets _nr)
     message(STATUS
-      "Resource DLLs: classic_x86 -> OpenDCL_Res_Win32 builds ${_nr} nest Runtime.Res target(s) "
-      "(Studio.Res is host-arch on parent; not ALL when OpenDCL_Win32 is ALL)")
+      "Resource DLLs: classic_x86 Runtime.Res -> OpenDCL_Res_Win32 builds ${_nr} nest "
+      "target(s); Studio PE=${OPENDCL_STUDIO_PE} (not ALL when OpenDCL_Win32 is ALL)")
   endif()
 
   # Product → nest gate (late: runtimes/Studio were created before this function).

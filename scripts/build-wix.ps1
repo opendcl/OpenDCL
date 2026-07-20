@@ -670,13 +670,14 @@ function Test-PeIsX64([string] $pePath) {
 }
 
 function Resolve-StudioExe([string] $configuration = "Release") {
-  # Prefer x64 (modern CMake / ship), then classic Win32. Paths via Resolve-ProductFile.
-  foreach ($plat in @("x64", "Win32")) {
+  # Prefer Win32 (classic vdproj / vs2022-full OPENDCL_STUDIO_PE=classic_x86), then x64.
+  # Paths via Resolve-ProductFile (OpenDclRoot, out\, win32\out\, source tree).
+  foreach ($plat in @("Win32", "x64")) {
     $rel = "Studio\$plat\$configuration\OpenDCL Studio.exe"
     $full = Resolve-ProductFile $rel
-    if (Test-Path -LiteralPath $full) { return $full }
+    if ($full -and (Test-Path -LiteralPath $full)) { return $full }
   }
-  return (Resolve-ProductFile "Studio\x64\$configuration\OpenDCL Studio.exe")
+  return (Resolve-ProductFile "Studio\Win32\$configuration\OpenDCL Studio.exe")
 }
 
 function New-StudioFilesFragment([string] $lang) {

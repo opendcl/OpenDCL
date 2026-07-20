@@ -201,9 +201,10 @@ foreach ($lang in $langs) {
 
 $studioIssues = @()
 if (-not $SkipStudio) {
+  # Prefer Win32 first (vs2022-full classic_x86 Studio); x64 still accepted (host Studio PE).
   $studioCandidates = @(
-    "Studio\x64\$Configuration\OpenDCL Studio.exe",
     "Studio\Win32\$Configuration\OpenDCL Studio.exe",
+    "Studio\x64\$Configuration\OpenDCL Studio.exe",
     "Studio\$Configuration\OpenDCL Studio.exe"
   )
   $studioHit = $false
@@ -213,9 +214,10 @@ if (-not $SkipStudio) {
   if (-not $studioHit) { $studioIssues += "Studio.exe" }
 
   foreach ($lang in $langs) {
+    # Win32 nest Studio.Res lives under Studio.Res\Win32\; host x64 under Studio.Res\.
     $resRels = @(
-      "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll",
-      "Studio\Localized\$lang\Studio.Res\Win32\$Configuration\Studio.Res.dll"
+      "Studio\Localized\$lang\Studio.Res\Win32\$Configuration\Studio.Res.dll",
+      "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
     )
     $ok = $false
     foreach ($r in $resRels) { if (Test-Rel $r) { $ok = $true; break } }

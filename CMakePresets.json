@@ -95,7 +95,7 @@
     },
     {
       "name": "vs2022-full",
-      "displayName": "VS2022 Mixed full ship — x64 .sln + nested Win32 + classic x86 Res",
+      "displayName": "VS2022 Mixed full ship — x64 .sln + nested Win32 + classic x86 Studio/Res",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -114,17 +114,19 @@
         "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
         "OPENDCL_NEST_WIN32": "ON",
         "OPENDCL_WIN32_IN_ALL": "ON",
-        "OPENDCL_RES_PE": "classic_x86"
+        "OPENDCL_RES_PE": "classic_x86",
+        "OPENDCL_STUDIO_PE": "classic_x86"
       }
     },
     {
       "name": "vs2022-x64-full",
-      "displayName": "VS2022 x64 full — nested Win32 modules + host-arch (x64) Res",
+      "displayName": "VS2022 x64 full — nested Win32 modules + x64 Studio + host Res",
       "inherits": "vs2022-full",
       "cacheVariables": {
         "OPENDCL_NEST_WIN32": "ON",
         "OPENDCL_WIN32_IN_ALL": "ON",
-        "OPENDCL_RES_PE": "host"
+        "OPENDCL_RES_PE": "host",
+        "OPENDCL_STUDIO_PE": "host"
       }
     },
     {

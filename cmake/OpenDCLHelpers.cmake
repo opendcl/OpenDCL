@@ -16,23 +16,36 @@ option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
 option(OPENDCL_BUILD_STUDIO_HELP
   "Build Studio OpenDCL.chm targets via hhc (arch-independent; one tree only)" ON)
 
-# Classic Runtime.Res / Studio.Res ship as Win32 (x86) PE under CommonFilesFolder.
+# Classic Runtime.Res ships as Win32 (x86) PE under CommonFilesFolder.
 # Public Mixed release forces classic x86; host-arch Res remains available for
 # single-arch / future packaging (item 5: lock classic_x86 for public, path open).
 option(OPENDCL_BUILD_RES_DLLS
   "Build Runtime.Res + Studio.Res language DLLs (native and/or nested)" ON)
 
-# Resource DLL PE policy:
+# Resource DLL PE policy (Runtime.Res / CAD CommonFiles only):
 #   classic_x86 — Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
-#                 nest OpenDCL_Res_Win32 for Runtime.Res only. Studio.Res always
-#                 matches Studio PE (not this flag).
+#                 nest OpenDCL_Res_Win32 for Runtime.Res only.
 #   host        — Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
+# Studio.Res always matches Studio PE (see OPENDCL_STUDIO_PE), not this flag.
 set(OPENDCL_RES_PE "host" CACHE STRING
   "Resource DLL PE: classic_x86 (always x86 ship) or host (match configure arch)")
 set_property(CACHE OPENDCL_RES_PE PROPERTY STRINGS classic_x86 host)
 if(NOT OPENDCL_RES_PE STREQUAL "classic_x86" AND NOT OPENDCL_RES_PE STREQUAL "host")
   message(FATAL_ERROR
     "OPENDCL_RES_PE must be classic_x86 or host (got '${OPENDCL_RES_PE}')")
+endif()
+
+# Studio.exe (+ Studio.Res) PE policy for Mixed x64+nest ships:
+#   classic_x86 — ship Win32 Studio like classic vdproj (public vs2022-full).
+#                 On x64 parent, skip native Studio/Studio.Res; Win32 nest produces
+#                 out/Studio/Win32 + Studio.Res/Win32. Parent still owns CHM help.
+#   host        — Studio PE matches this configure (x64 Studio on x64 parent).
+set(OPENDCL_STUDIO_PE "host" CACHE STRING
+  "Studio PE: classic_x86 (Win32 ship parity) or host (match configure arch)")
+set_property(CACHE OPENDCL_STUDIO_PE PROPERTY STRINGS classic_x86 host)
+if(NOT OPENDCL_STUDIO_PE STREQUAL "classic_x86" AND NOT OPENDCL_STUDIO_PE STREQUAL "host")
+  message(FATAL_ERROR
+    "OPENDCL_STUDIO_PE must be classic_x86 or host (got '${OPENDCL_STUDIO_PE}')")
 endif()
 
 # VS generators are one platform per configure. On an x64 configure, optionally
@@ -122,10 +135,27 @@ function(opendcl_runtime_res_build_native out_var)
 endfunction()
 
 # Studio.Res is loaded into Studio.exe (LoadLibrary) — PE must match Studio.
-# Always build natively for this configure (x64 Studio → x64 Studio.Res).
-# Win32 nest uses a Win32 subfolder under out so it does not overwrite x64 PE.
+# host: build natively for this configure (x64 Studio → x64 Studio.Res).
+# classic_x86 on x64 parent: nest builds Win32 Studio.Res under out/.../Win32/.
 function(opendcl_studio_res_build_native out_var)
   if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_STUDIO)
+    set(${out_var} FALSE PARENT_SCOPE)
+    return()
+  endif()
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND OPENDCL_STUDIO_PE STREQUAL "classic_x86")
+    set(${out_var} FALSE PARENT_SCOPE)
+  else()
+    set(${out_var} TRUE PARENT_SCOPE)
+  endif()
+endfunction()
+
+# True when this tree should create OpenDCL_Studio.exe (not only nest).
+function(opendcl_studio_build_native out_var)
+  if(NOT OPENDCL_BUILD_STUDIO)
+    set(${out_var} FALSE PARENT_SCOPE)
+    return()
+  endif()
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND OPENDCL_STUDIO_PE STREQUAL "classic_x86")
     set(${out_var} FALSE PARENT_SCOPE)
   else()
     set(${out_var} TRUE PARENT_SCOPE)

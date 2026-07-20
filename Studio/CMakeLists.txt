@@ -73,8 +73,9 @@ function(opendcl_add_studio_res lang)
   )
 endfunction()
 
-# Studio.Res PE always matches this configure (Studio LoadLibrary). classic_x86
-# applies only to Runtime.Res (CAD CommonFiles), not Studio.Res.
+# Studio.Res PE always matches Studio (LoadLibrary). On x64 parent with
+# OPENDCL_STUDIO_PE=classic_x86, nest builds Win32 Studio.Res (see
+# opendcl_studio_res_build_native). Runtime.Res uses OPENDCL_RES_PE instead.
 if(OPENDCL_BUILD_STUDIO OR OPENDCL_BUILD_RES_DLLS)
   opendcl_studio_res_build_native(_studio_res_native)
   if(_studio_res_native)
@@ -108,6 +109,16 @@ endforeach()
 if(NOT OPENDCL_BUILD_STUDIO)
   return()
 endif()
+
+# classic_x86 on x64 parent: nest builds ship Studio + Studio.Res; this tree
+# only owns CHM help (below). host: Studio PE matches configure arch.
+opendcl_studio_build_native(_studio_native)
+if(NOT _studio_native)
+  message(STATUS
+    "Studio: skip native OpenDCL_Studio/Studio.Res "
+    "(OPENDCL_STUDIO_PE=${OPENDCL_STUDIO_PE}); Win32 nest ships "
+    "out/Studio/Win32 + Studio.Res/Win32 for classic package parity")
+else()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(_studio_plat "x64")
@@ -236,94 +247,6 @@ if(_studio_res_deps)
   add_dependencies(OpenDCL_Studio ${_studio_res_deps})
 endif()
 
-# ---------------------------------------------------------------------------
-# HTML Help (OpenDCL.chm) per language — classic Content + hhc.exe
-# Arch-independent (same path for x64/Win32 Studio). Full Mixed nest forces
-# OPENDCL_BUILD_STUDIO_HELP=OFF so only the parent .sln owns help targets.
-# Dev F5 Help: Studio depends on default-lang CHM (FindFile → Localized\…\Content\).
-# Packaging needs one CHM per Studio language MSI.
-# hhc returns 1 on success; cmake/RunHhc.cmake inverts that for CMake.
-# ---------------------------------------------------------------------------
-set(_run_hhc "${CMAKE_SOURCE_DIR}/cmake/RunHhc.cmake")
-find_program(OPENDCL_HHC_EXECUTABLE
-  NAMES hhc hhc.exe
-  PATHS
-    "C:/Program Files (x86)/HTML Help Workshop"
-    "C:/Program Files/HTML Help Workshop"
-  DOC "Microsoft HTML Help Workshop compiler (hhc.exe)"
-)
-
-function(opendcl_add_studio_help lang)
-  set(_help_dir "${CMAKE_SOURCE_DIR}/Studio/Localized/${lang}")
-  set(_content "${_help_dir}/Content")
-  set(_chm "${_content}/OpenDCL.chm")
-  set(_hhp "${_content}/OpenDCL.hhp")
-  set(_target "OpenDCL_StudioHelp_${lang}")
-
-  if(NOT EXISTS "${_hhp}")
-    message(STATUS "Studio help: skip ${lang} CHM (missing ${_hhp})")
-    return()
-  endif()
-  if(NOT OPENDCL_HHC_EXECUTABLE)
-    message(WARNING
-      "Studio help: hhc.exe not found - skip ${lang} CHM. "
-      "Install HTML Help Workshop for packaging / F5 Help.")
-    return()
-  endif()
-
-  file(GLOB_RECURSE _help_sources CONFIGURE_DEPENDS "${_content}/*")
-  list(FILTER _help_sources EXCLUDE REGEX "\\.[Cc][Hh][Mm]$")
-
-  add_custom_command(
-    OUTPUT "${_chm}"
-    COMMAND ${CMAKE_COMMAND}
-      "-DHHC=${OPENDCL_HHC_EXECUTABLE}"
-      "-DHHP=Content/OpenDCL.hhp"
-      "-DWORKDIR=${_help_dir}"
-      -P "${_run_hhc}"
-    DEPENDS ${_help_sources} "${_run_hhc}"
-    COMMENT "Build Studio ${lang} OpenDCL.chm (hhc)"
-    VERBATIM
-  )
-
-  add_custom_target(${_target}
-    DEPENDS "${_chm}"
-    SOURCES
-      "${_hhp}"
-      "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.mak"
-      "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.bat"
-  )
-  opendcl_solution_folder(_sh_folder "any" "OpenDCL_StudioHelp_${lang}")
-  set_target_properties(${_target} PROPERTIES FOLDER "${_sh_folder}")
-  # Default language CHM is required before Studio POST_BUILD mirror.
-  if(lang STREQUAL _studio_help_default_lang)
-    add_dependencies(OpenDCL_Studio ${_target})
-  endif()
-  message(STATUS "Studio help: ${_target} -> ${_chm}")
-endfunction()
-
-list(GET OPENDCL_LANGS 0 _studio_help_default_lang)
-if(OPENDCL_BUILD_STUDIO_HELP)
-  foreach(_hl IN LISTS OPENDCL_LANGS)
-    opendcl_add_studio_help("${_hl}")
-  endforeach()
-  # Aggregate target for packaging / CI (all configured language CHMs).
-  # ALL: custom targets are excluded from ALL_BUILD unless listed here.
-  # Without this, default cmake --build only builds ENU (Studio dep) and
-  # Full verify/package fails on missing Studio\Localized\<lang>\Content\OpenDCL.chm.
-  add_custom_target(OpenDCL_StudioHelp_All ALL)
-  opendcl_solution_folder(_sha_folder "any" "OpenDCL_StudioHelp_All")
-  set_target_properties(OpenDCL_StudioHelp_All PROPERTIES FOLDER "${_sha_folder}")
-  foreach(_hl IN LISTS OPENDCL_LANGS)
-    if(TARGET "OpenDCL_StudioHelp_${_hl}")
-      add_dependencies(OpenDCL_StudioHelp_All "OpenDCL_StudioHelp_${_hl}")
-    endif()
-  endforeach()
-else()
-  message(STATUS
-    "Studio help: skipped (OPENDCL_BUILD_STUDIO_HELP=OFF; CHM owned by parent tree)")
-endif()
-
 if(MSVC)
   target_link_options(OpenDCL_Studio PRIVATE
     "/IGNORE:4217"
@@ -383,3 +306,92 @@ add_custom_command(TARGET OpenDCL_Studio POST_BUILD
 )
 
 message(STATUS "Studio: OpenDCL_Studio (${_studio_plat}, static MFC+/MT; FullDebug->Debug) + Studio.Res for: ${OPENDCL_LANGS}")
+
+endif() # _studio_native — OpenDCL_Studio.exe + matching Studio.Res
+
+# ---------------------------------------------------------------------------
+# HTML Help (OpenDCL.chm) per language — classic Content + hhc.exe
+# Arch-independent. Parent always owns help when OPENDCL_BUILD_STUDIO_HELP
+# (nest forces OFF). Runs even when Studio PE is classic_x86 (nest-only Studio).
+# Packaging needs one CHM per Studio language MSI.
+# hhc returns 1 on success; cmake/RunHhc.cmake inverts that for CMake.
+# ---------------------------------------------------------------------------
+set(_run_hhc "${CMAKE_SOURCE_DIR}/cmake/RunHhc.cmake")
+find_program(OPENDCL_HHC_EXECUTABLE
+  NAMES hhc hhc.exe
+  PATHS
+    "C:/Program Files (x86)/HTML Help Workshop"
+    "C:/Program Files/HTML Help Workshop"
+  DOC "Microsoft HTML Help Workshop compiler (hhc.exe)"
+)
+
+function(opendcl_add_studio_help lang)
+  set(_help_dir "${CMAKE_SOURCE_DIR}/Studio/Localized/${lang}")
+  set(_content "${_help_dir}/Content")
+  set(_chm "${_content}/OpenDCL.chm")
+  set(_hhp "${_content}/OpenDCL.hhp")
+  set(_target "OpenDCL_StudioHelp_${lang}")
+
+  if(NOT EXISTS "${_hhp}")
+    message(STATUS "Studio help: skip ${lang} CHM (missing ${_hhp})")
+    return()
+  endif()
+  if(NOT OPENDCL_HHC_EXECUTABLE)
+    message(WARNING
+      "Studio help: hhc.exe not found - skip ${lang} CHM. "
+      "Install HTML Help Workshop for packaging / F5 Help.")
+    return()
+  endif()
+
+  file(GLOB_RECURSE _help_sources CONFIGURE_DEPENDS "${_content}/*")
+  list(FILTER _help_sources EXCLUDE REGEX "\\.[Cc][Hh][Mm]$")
+
+  add_custom_command(
+    OUTPUT "${_chm}"
+    COMMAND ${CMAKE_COMMAND}
+      "-DHHC=${OPENDCL_HHC_EXECUTABLE}"
+      "-DHHP=Content/OpenDCL.hhp"
+      "-DWORKDIR=${_help_dir}"
+      -P "${_run_hhc}"
+    DEPENDS ${_help_sources} "${_run_hhc}"
+    COMMENT "Build Studio ${lang} OpenDCL.chm (hhc)"
+    VERBATIM
+  )
+
+  add_custom_target(${_target}
+    DEPENDS "${_chm}"
+    SOURCES
+      "${_hhp}"
+      "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.mak"
+      "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.bat"
+  )
+  opendcl_solution_folder(_sh_folder "any" "OpenDCL_StudioHelp_${lang}")
+  set_target_properties(${_target} PROPERTIES FOLDER "${_sh_folder}")
+  # Default language CHM before Studio POST_BUILD mirror when Studio is native.
+  if(lang STREQUAL _studio_help_default_lang AND TARGET OpenDCL_Studio)
+    add_dependencies(OpenDCL_Studio ${_target})
+  endif()
+  message(STATUS "Studio help: ${_target} -> ${_chm}")
+endfunction()
+
+list(GET OPENDCL_LANGS 0 _studio_help_default_lang)
+if(OPENDCL_BUILD_STUDIO_HELP)
+  foreach(_hl IN LISTS OPENDCL_LANGS)
+    opendcl_add_studio_help("${_hl}")
+  endforeach()
+  # Aggregate target for packaging / CI (all configured language CHMs).
+  # ALL: custom targets are excluded from ALL_BUILD unless listed here.
+  # Without this, default cmake --build only builds ENU (Studio dep) and
+  # Full verify/package fails on missing Studio\Localized\<lang>\Content\OpenDCL.chm.
+  add_custom_target(OpenDCL_StudioHelp_All ALL)
+  opendcl_solution_folder(_sha_folder "any" "OpenDCL_StudioHelp_All")
+  set_target_properties(OpenDCL_StudioHelp_All PROPERTIES FOLDER "${_sha_folder}")
+  foreach(_hl IN LISTS OPENDCL_LANGS)
+    if(TARGET "OpenDCL_StudioHelp_${_hl}")
+      add_dependencies(OpenDCL_StudioHelp_All "OpenDCL_StudioHelp_${_hl}")
+    endif()
+  endforeach()
+else()
+  message(STATUS
+    "Studio help: skipped (OPENDCL_BUILD_STUDIO_HELP=OFF; CHM owned by parent tree)")
+endif()

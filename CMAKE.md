@@ -63,14 +63,21 @@ opendcl_{zlib|png}_{x86|x64}_{md|mt}_{toolset}
 
 **Host-arch only:** each CMake binary dir creates Library targets for **one** architecture (`CMAKE_SIZEOF_VOID_P`). Nested Win32 must not define `*_x64_*` static libs (and vice versa), or shared `OPENDCL_OUTPUT_ROOT` can be overwritten with the wrong PE machine (LNK4272). Dual-arch ship = parent x64 products + nest x86 products; not dual-arch Library targets in one configure.
 
-**Resource DLLs (`Runtime.Res` / `Studio.Res`)** — `OPENDCL_RES_PE`:
+**Runtime.Res** — `OPENDCL_RES_PE` (CAD CommonFiles only):
 
 | Value | Behavior |
 | --- | --- |
-| **`classic_x86`** | Always **x86** Res PE (public Mixed ship / classic CommonFilesFolder parity). On x64, nest **`OpenDCL_Res_Win32`** (`build/<preset>/res-win32`); skip native x64 Res. |
-| **`host`** | Res PE matches the configure arch (**x64 Res on x64**, x86 on Win32). Path open for a future package that accepts host-arch Res. When nested Win32 modules are on, the nest sets `OPENDCL_BUILD_RES_DLLS=OFF` so it does not overwrite host Res. |
+| **`classic_x86`** | Always **x86** Runtime.Res (public Mixed ship / classic CommonFilesFolder parity). On x64, from full Win32 nest (or dedicated `OpenDCL_Res_Win32`); skip native x64 Runtime.Res. |
+| **`host`** | Runtime.Res PE matches the configure arch. When nested Win32 modules are on with host Res, the nest may skip rebuilding Res so it does not overwrite host PE. |
 
-Default cache is `host` (simple single-arch / dev). Preset **`vs2022-full`** forces `classic_x86` for public release.
+**Studio.exe / Studio.Res** — `OPENDCL_STUDIO_PE` (LoadLibrary pair; not the Runtime.Res flag):
+
+| Value | Behavior |
+| --- | --- |
+| **`classic_x86`** | **Win32** Studio ship parity (classic vdproj). On x64 parent, skip native Studio; nest builds `out/Studio/Win32` + `Studio.Res/Win32`. Parent still owns CHM help. |
+| **`host`** | Studio PE matches configure arch (x64 Studio on x64 parent / dev). |
+
+Default cache for both is `host`. Preset **`vs2022-full`** forces **`classic_x86`** for Runtime.Res **and** Studio. **`vs2022-x64-full`** uses **`host`** for both (optional x64 Studio path). Packaging prefers Win32 Studio then x64.
 
 ```powershell
 cd <OpenDCL repo root>
@@ -91,7 +98,7 @@ cmake --preset vs2022-x64-auto
 # Full ship: one .sln with x64 + nested Win32 (imported into Solution Explorer)
 cmake --preset vs2022-full --fresh
 cmake --build --preset vs2022-full-release
-# Shared out/: x64 modules + Win32 modules + Studio x64/Win32
+# Shared out/: x64+Win32 modules; vs2022-full ships Win32 Studio (classic_x86)
 
 # One-shot configure+build (no package until verify is green):
 .\scripts\build-cmake-full.ps1 -Fresh
@@ -109,8 +116,8 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 
 | Preset | Role |
 | --- | --- |
-| **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** (x86 **Runtime.Res** via nest; **Studio.Res** = Studio PE arch) |
-| **`vs2022-x64-full`** | Same dual-arch module nest, but **`OPENDCL_RES_PE=host`** → **x64 Res** natively (pre–classic-x86-Res behavior; future packaging C path) |
+| **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** + **`OPENDCL_STUDIO_PE=classic_x86`** (x86 Runtime.Res + **Win32 Studio** / Studio.Res via nest) |
+| **`vs2022-x64-full`** | Same dual-arch module nest, but **`host`** Res + **`host`** Studio → **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; host Res is x86 |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules **`/MDd`** (all families); non-modules FullDebug→Debug outputs |
