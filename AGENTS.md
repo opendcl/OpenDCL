@@ -46,7 +46,7 @@ ship **`vs2022-full`**). Private dry-run CI: `opendcl/build-lab` with `compile_e
 
 | Area | Notes |
 |------|--------|
-| Configs | `Debug`, `FullDebug`, `Release` |
+| Configs | `Debug`, `FullDebug`, `Release` when building CAD runtimes; studio-only (`OPENDCL_BUILD_RUNTIME=OFF`) is `Debug` + `Release` only |
 | CAD runtime modules | FullDebug **defaults to Debug** (`_DEBUG`, `/MD`, release SDK). Opt-in host-debug via `<repo-parent>/fulldebug.<family>.props` (e.g. `fulldebug.brx.props` → `AC_FULL_DEBUG`, `BRX_BCAD_DEBUG`, debug LIB dirs). **Do not scan proprietary debug SDK trees.** |
 | Everything else | **FullDebug → Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, zlib/png (`/MD` and `/MT`). |
 | Studio | Static MFC + `/MT` (classic parity, permanent). `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide — `FolderTreeCtrl.cpp` also includes `MultiMon.h`; LNK2005 if broadened). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
@@ -57,12 +57,17 @@ ship **`vs2022-full`**). Private dry-run CI: `opendcl/build-lab` with `compile_e
 | Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` (©). Do not re-save as UTF-8. |
 | Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** (`Runtime/Rx/{ARX,…}`, `Library/…`, `Studio/…`) holding both x64 and Win32 peers. Nest PE for Res + RxInstall (no private `res-win32` / `rxinstall-win32` when nest is on). Build Win32 via `OpenDCL_Win32`. **`vs2022-x64-full`**: same folders, **host (x64) Res**. Helper: `scripts/build-cmake-full.ps1`. |
 | Nest Win32 full build | **Known limitation:** full nest under `OpenDCL_Win32` can still hit **C1060/C1001** on old toolsets despite `/m` throttle (`OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT` / `OPENDCL_NEST_CL_MP_COUNT`). Documented in **CMAKE.md**; not a gate for x64/dev or Studio packaging smoke. Prefer `vs2022-x64-dev` for daily IDE work. |
-Sibling repos (typical under the same `Source/` parent):
+Sibling clones (typical workspace: product + private lab + Pages side by side):
 
-| Path | Role |
+| Clone / path | Role |
 |------|------|
-| `opendcl.github.io` | GitHub Pages site + online `HelpFiles/` |
+| `opendcl` (this repo) | Product source, CMake, WiX |
+| `../build-lab` | Private dry-run / self-hosted CI (`opendcl/build-lab`) |
+| `../opendcl.github.io` | GitHub Pages + online `HelpFiles/` |
+| `../fulldebug.<family>.props` | Optional host-debug FullDebug overlay (parent of this clone) |
 | Historical trees (`OpenDCL 9.0`, etc.) | Archives only — not the packaging path |
+
+Clones may live anywhere; scripts take `-OpenDclRoot` / relative sibling paths.
 
 ## Languages
 

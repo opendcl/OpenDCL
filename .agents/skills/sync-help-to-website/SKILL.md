@@ -17,7 +17,7 @@ Copy **Studio HTML help topics** from the OpenDCL product tree into the sibling
 |------|------|
 | **Source** | `<opendcl>/Studio/Localized/<LANG>/Content/` |
 | **Destination** | `<opendcl.github.io>/HelpFiles/<LANG>/` |
-| **Site repo** | Sibling of the product repo: `../opendcl.github.io` (typical layout under `Source/`) |
+| **Site repo** | Sibling of the product repo: `../opendcl.github.io` (any workspace root) |
 
 Product packaging (CHM / WiX) is unchanged by this skill. Installer help remains
 `OpenDCL.chm` built from the same Content tree.
@@ -83,12 +83,13 @@ Shared frame assets live in `HelpFiles/` root (not per-language):
 ### 1. Locate repos
 
 ```text
-Source/opendcl/                 # product
-Source/opendcl.github.io/       # GitHub Pages
+<workspace>/opendcl/                 # product (this repo)
+<workspace>/opendcl.github.io/       # GitHub Pages (sibling clone)
 ```
 
-If the website path differs, ask the user. Work in a clean git state on the
-website repo when possible (`git status`).
+Resolve with `../opendcl.github.io` from the product root when using the usual
+sibling layout. If the website path differs, ask the user. Work in a clean git
+state on the website repo when possible (`git status`).
 
 ### 2. Choose languages
 
@@ -103,9 +104,9 @@ website repo when possible (`git status`).
 Example (one language, PowerShell):
 
 ```powershell
-# Sibling layout under Source/ (adjust if your clones differ)
-$srcRoot = (Resolve-Path "..\opendcl").Path          # product repo
-$webRoot = (Resolve-Path "..\opendcl.github.io").Path  # GitHub Pages repo
+# Sibling layout (adjust if your clones differ)
+$srcRoot = (Resolve-Path ".").Path                       # product repo root
+$webRoot = (Resolve-Path "..\opendcl.github.io").Path    # GitHub Pages sibling
 $lang = "ENU"
 $src  = Join-Path $srcRoot "Studio\Localized\$lang\Content"
 $dst  = Join-Path $webRoot "HelpFiles\$lang"
