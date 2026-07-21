@@ -11,10 +11,10 @@
 #include "DclControlTemplate.h"
 #include "Resource.h"
 
-#if defined(_BRXTARGET) || defined(_ZRXTARGET) || defined(_GRXTARGET)
-static bool AcadIsQuitting() { return false; }
-#else
+#if defined(_ARXTARGET) || (_BRXTARGET >= 20)
 extern bool AcadIsQuitting(void);
+#else
+static bool AcadIsQuitting() { return false; }
 #endif
 
 
