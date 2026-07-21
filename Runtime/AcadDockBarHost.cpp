@@ -213,6 +213,13 @@ CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 		CSize sizeDefault( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
 											 mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
 		mpDlgObject->FromDIP( sizeDefault );
+		if( !IsFloating() )
+		{
+			if( bHorz )
+				sizeDefault.cx += mpDlgObject->GetNCWidth();
+			else
+				sizeDefault.cy += mpDlgObject->GetNCHeight();
+		}
 		return sizeDefault;
 	}
 #if (defined(_BRXTARGET) && _BRXTARGET <= 10)
