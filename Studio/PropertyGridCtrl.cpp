@@ -286,6 +286,7 @@ public:
 		}
 	void OnApply() override //must override in derived class to apply new property value
 		{
+			__super::OnApply();
 			CString sText;
 			GetWindowText( sText );
 			CInputFilter* pFilter = GetInputFilter();
@@ -298,7 +299,6 @@ public:
 				}
 			}
 			ApplyValue( sText );
-			__super::OnApply();
 		}
 	void OnCancel() override //must override in derived class to revert to original property value
 		{
@@ -459,8 +459,8 @@ public:
 		}
 	void OnApply() override //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCheck() == BST_CHECKED );
 			__super::OnApply();
+			ApplyValue( GetCheck() == BST_CHECKED );
 		}
 	void OnCancel() override //must override in derived class to revert to original property value
 		{
@@ -587,8 +587,8 @@ public:
 		}
 	void OnApply() override //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCurSel() );
 			__super::OnApply();
+			ApplyValue( GetCurSel() );
 		}
 	void OnCancel() override //must override in derived class to revert to original property value
 		{
@@ -685,8 +685,8 @@ public:
 		}
 	void OnApply() override //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCurSel() );
 			__super::OnApply();
+			ApplyValue( GetCurSel() );
 		}
 	void OnCancel() override //must override in derived class to revert to original property value
 		{
