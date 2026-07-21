@@ -119,6 +119,7 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** + **`OPENDCL_STUDIO_PE=classic_x86`** (x86 Runtime.Res + **Win32 Studio** / Studio.Res via nest) |
 | **`vs2022-x64-full`** | Same dual-arch module nest, but **`host`** Res + **`host`** Studio → **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; host Res is x86 |
+| **`vs2022-x86-studio`** | **Win32 Studio only** (no CAD runtimes / Runtime.Res / RxInstall / nest). Studio.Res still builds with Studio. `cmake --preset vs2022-x86-studio` then `cmake --build --preset vs2022-x86-studio-debug` |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules **`/MDd`** (all families); non-modules FullDebug→Debug outputs |
 

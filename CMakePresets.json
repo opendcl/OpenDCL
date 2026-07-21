@@ -151,6 +151,31 @@
         "OPENDCL_NEST_WIN32": "OFF",
         "OPENDCL_RES_PE": "host"
       }
+    },
+    {
+      "name": "vs2022-x86-studio",
+      "displayName": "VS2022 Win32 — Studio only (x86 build/debug)",
+      "inherits": "base",
+      "architecture": {
+        "value": "Win32",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "ON",
+        "OPENDCL_BUILD_RUNTIME": "OFF",
+        "OPENDCL_BUILD_RXINSTALL": "OFF",
+        "OPENDCL_BUILD_RES_DLLS": "OFF",
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_NEST_WIN32": "OFF",
+        "OPENDCL_RES_PE": "host",
+        "OPENDCL_STUDIO_PE": "host",
+        "OPENDCL_LANGS": "ENU"
+      }
     }
   ],
   "buildPresets": [
@@ -192,6 +217,16 @@
     {
       "name": "vs2022-win32-full-release",
       "configurePreset": "vs2022-win32-full",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2022-x86-studio-debug",
+      "configurePreset": "vs2022-x86-studio",
+      "configuration": "Debug"
+    },
+    {
+      "name": "vs2022-x86-studio-release",
+      "configurePreset": "vs2022-x86-studio",
       "configuration": "Release"
     }
   ]
