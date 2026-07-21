@@ -88,6 +88,12 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# C4068: unknown pragma — Runtime/Studio PCH and some CAD SDK headers use
+# pragmas that older PlatformToolsets (or mixed host headers) do not recognize.
+if(MSVC)
+  add_compile_options(/wd4068)
+endif()
+
 message(STATUS "OpenDCL CMake build")
 message(STATUS "Output root: ${OPENDCL_OUTPUT_ROOT}")
 

@@ -20,18 +20,18 @@
     },
     {
       "name": "vs2022-x64-dev",
-      "displayName": "VS2022 x64 — BRX.27.x64 (dev default)",
+      "displayName": "VS2022 x64 — ARX26/BRX27 (dev default)",
       "inherits": "base",
       "architecture": {
         "value": "x64",
         "strategy": "set"
       },
       "cacheVariables": {
-        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_ARX": "ON",
         "OPENDCL_ENABLE_BRX": "ON",
         "OPENDCL_ENABLE_GRX": "OFF",
         "OPENDCL_ENABLE_ZRX": "OFF",
-        "OPENDCL_RUNTIME_TARGETS": "BRX.27.x64",
+        "OPENDCL_RUNTIME_TARGETS": "BRX.27.x64;ARX.26.x64",
         "OPENDCL_RUNTIME_AUTO": "OFF",
         "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
       }

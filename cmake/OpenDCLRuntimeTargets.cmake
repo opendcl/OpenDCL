@@ -53,15 +53,6 @@ function(opendcl_add_runtime id)
     message(FATAL_ERROR "opendcl_add_runtime(${id}): SDK ${_sdk_env} not found")
   endif()
 
-  # FullDebug host debug libdirs are MSBuild-time (*.libdirs.props + optional
-  # parent dev.props / local.props), not configure-time discovery. Per-host
-  # defaults live in opendcl_fulldebug_libdir_msbuild (macros or empty). Log only
-  # absolute cache/env overrides — not empty or $(MACRO) defaults.
-  opendcl_fulldebug_libdir_msbuild("${_family}" "${_sdk_env}" "${_toolset}" _fd_lib_ms)
-  if(_fd_lib_ms AND NOT _fd_lib_ms MATCHES "^\\$\\(")
-    message(STATUS "  ${id}: FullDebug lib override = ${_fd_lib_ms}")
-  endif()
-
   string(REPLACE "." "_" _safe "${id}")
   set(_target "OpenDCL_Runtime_${_safe}")
 
@@ -156,20 +147,12 @@ function(opendcl_add_runtime id)
   #
   # Debug vs FullDebug (see Runtime/StdAfx.h "DEBUG workaround"):
   #   Debug:     _DEBUG, no AC_FULL_DEBUG → PCH #undef _DEBUG around MFC/ATL/STL; /MD
-  #   FullDebug: _DEBUG + AC_FULL_DEBUG → full host/MFC debug CRT (/MDd) + host debug libs
+  #   FullDebug: same as Debug in the generated project so all families can build
+  #              without host debug libs. Opt-in host-debug FullDebug via
+  #              <repo-parent>/fulldebug.<family>.props (defines AC_FULL_DEBUG /
+  #              BRX_BCAD_DEBUG, debug LIB dirs, optional /MDd).
   #   Release:   NDEBUG; /MD
   #
-  # FullDebug is for developers with a local debug host build. All families use
-  # /MDd (CMake policy); classic ARX FullDebug was hybrid /MD — we intentionally
-  # use /MDd for every runtime module so zlib/png FullDebug (/MDd) link cleanly.
-  #
-  # FullDebug host debug libraries are proprietary: paths must be set explicitly
-  # (see opendcl_resolve_fulldebug_libdirs). Do not scan debug SDK trees.
-  set(_fulldebug_defs _DEBUG AC_FULL_DEBUG)
-  if(_family STREQUAL "BRX")
-    # BRX sample FullDebug also defines BRX_BCAD_DEBUG.
-    list(APPEND _fulldebug_defs BRX_BCAD_DEBUG)
-  endif()
   # Character set: default Unicode (classic modern modules). MultiByte only where
   # classic was MBCS — ARX.16 (ACHAR) and ZRX.2014 (ZWSoft strlen on ZTCHAR*).
   # Item 4 of 8 locked: matrix CHARACTER_SET, not a project-wide undef.
@@ -191,14 +174,14 @@ function(opendcl_add_runtime id)
     _CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1
     _PRERELEASE
     ${_charset_defs}
-    $<$<CONFIG:Debug>:_DEBUG>
-    $<$<CONFIG:FullDebug>:${_fulldebug_defs}>
+    $<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:_DEBUG>
     $<$<CONFIG:Release>:NDEBUG>
     $<$<STREQUAL:${_arch},x64>:_WIN64>
   )
 
-  # CRT: Debug+Release /MD (host release). FullDebug /MDd for all families.
-  set(_rt_lib "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL")
+  # CRT: Debug, FullDebug, and Release all /MD by default. fulldebug.*.props may
+  # set RuntimeLibrary to MultiThreadedDebugDLL for families with host debug libs.
+  set(_rt_lib "MultiThreadedDLL")
 
   # Mirror classic layout so Common/Workspace.cpp F5 debug loading finds Runtime.Res:
   #   Runtime/<FAMILY>/<ID>/<Config>/OpenDCL.*.brx|arx|...
@@ -230,10 +213,12 @@ function(opendcl_add_runtime id)
     FOLDER "${_sol_folder}"
   )
 
-  # F5 host CAD (optional): machine-local via .user, cache, or env (BRX_EXE, …).
-  opendcl_resolve_debugger_command("${_family}" _dbg_cmd)
+  # F5 host CAD: cache/env override, else registry discover for this version/arch.
+  # (Arguments /ld still set below; Command may stay unset if host not installed.)
+  opendcl_resolve_debugger_command("${_family}" "${_ver}" "${_arch}" _dbg_cmd)
   if(_dbg_cmd)
     set_property(TARGET ${_target} PROPERTY VS_DEBUGGER_COMMAND "${_dbg_cmd}")
+    message(STATUS "  ${id}: F5 Command = ${_dbg_cmd}")
   endif()
 
   # F5 command *arguments*: bake the real module path with a generator expression.
@@ -336,12 +321,10 @@ function(opendcl_add_runtime id)
   #   path;path\$(Configuration);%(AdditionalLibraryDirectories)
   # which is not classic.
   #
-  # We emit: FullDebug → <host-debug if set>;<release-SDK-lib>;%(AdditionalLibraryDirectories)
-  #          Debug/Release → <release-SDK-lib>;%(AdditionalLibraryDirectories)
-  # Host-debug for BRX is only from BrxDebugLibs / OPENDCL_*_FULLDEBUG_LIBDIR
-  # (see opendcl_fulldebug_libdir_msbuild). Do not GLOB/list proprietary debug trees.
+  # Debug and FullDebug use the same release SDK libdirs. Host-debug FullDebug
+  # libdirs/defines come from <repo-parent>/fulldebug.<family>.props when present.
   set(_all_release_dirs ${_lib_paths} ${_extra_libdirs})
-  opendcl_vs_attach_libdir_props(${_target} "${_all_release_dirs}" "${_fd_lib_ms}")
+  opendcl_vs_attach_libdir_props(${_target} "${_family}" "${_all_release_dirs}")
 
   # After libdirs VS_USER_PROPS exists, optionally wrap with Windows SDK pin.
   if(_opendcl_pin_winsdk_after_libdirs)

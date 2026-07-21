@@ -47,8 +47,8 @@ ship **`vs2022-full`**). Private dry-run CI: `opendcl/build-lab` with `compile_e
 | Area | Notes |
 |------|--------|
 | Configs | `Debug`, `FullDebug`, `Release` |
-| CAD runtime modules | Real FullDebug product (`AC_FULL_DEBUG`, **`/MDd`**, host debug libs). **Do not scan proprietary debug SDK trees.** |
-| Everything else | **FullDebug → Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, Studio `/MT` zlib/png. Exception: `/MD` zlib/png keep FullDebug for `/MDd` module link. |
+| CAD runtime modules | FullDebug **defaults to Debug** (`_DEBUG`, `/MD`, release SDK). Opt-in host-debug via `<repo-parent>/fulldebug.<family>.props` (e.g. `fulldebug.brx.props` → `AC_FULL_DEBUG`, `BRX_BCAD_DEBUG`, debug LIB dirs). **Do not scan proprietary debug SDK trees.** |
+| Everything else | **FullDebug → Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, zlib/png (`/MD` and `/MT`). |
 | Studio | Static MFC + `/MT` (classic parity, permanent). `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide — `FolderTreeCtrl.cpp` also includes `MultiMon.h`; LNK2005 if broadened). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
 | Resource DLLs | **Runtime.Res** follows `OPENDCL_RES_PE`: **`classic_x86`** (public Mixed — nest x86 via nest/`OpenDCL_Res_Win32`) or **`host`**. **Studio.Res** always matches **Studio PE** (`OPENDCL_STUDIO_PE`). |
 | Studio PE | **`OPENDCL_STUDIO_PE`**: **`classic_x86`** (public **`vs2022-full`** — Win32 Studio + Studio.Res via nest; classic package parity) or **`host`** (Studio matches configure arch; **`vs2022-x64-full`** / dev). Packaging prefers `out/Studio/Win32` then `x64`. |
@@ -298,14 +298,13 @@ not in this public tree.
 
 ## CAD SDK debug trees
 
-FullDebug links against **host debug** import libraries. Those directories are proprietary.
+Host-debug FullDebug may link **host debug** import libraries. Those directories are proprietary.
 Do **not** open, list, search, or copy contents of CAD SDK debug folders.
-Configure paths only via `BrxDebugLibs`, `OPENDCL_*_FULLDEBUG_LIBDIR`, or documented
-`SDK_LIB_FULLDEBUG` relative paths — never by discovering files inside debug trees.
+Configure paths only in machine-local `fulldebug.<family>.props` (e.g. `$(BRX_PATH)\…`) — never by discovering files inside debug trees.
 
 ## Machine MSBuild overlays
 
 - `local.props` — optional, next to generated .sln (gitignored if under the repo).
-- `<parent-of-checkout>/dev.props` — optional shared machine file (outside the repo).
-  Imported **after** local.props so it can override include/lib paths.
-  Do not open or scan proprietary CAD debug trees when editing these files.
+- `<parent-of-checkout>/fulldebug.<family>.props` — optional per-family FullDebug upgrade
+  (`fulldebug.brx.props`, `fulldebug.arx.props`, …). Imported only for FullDebug.
+  Without it, that family’s FullDebug matches Debug.

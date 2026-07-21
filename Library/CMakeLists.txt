@@ -96,12 +96,12 @@ function(opendcl_add_static_lib name arch sources runtime_lib)
     set(_rtl "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>")
     opendcl_map_fulldebug_to_debug(${name} "${_out_base}")
   else()
-    set(_rtl "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL")
-    set_target_properties(${name} PROPERTIES
-      ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${_out_base}/Debug"
-      ARCHIVE_OUTPUT_DIRECTORY_FULLDEBUG "${_out_base}/FullDebug"
-      ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${_out_base}/Release"
-    )
+    # /MD modules use FullDebug == Debug CRT by default; map FullDebug zlib/png
+    # beside Debug so ARX can build FullDebug without /MDd host debug libs.
+    # fulldebug.<family>.props may switch a module to /MDd — then rebuild zlib
+    # FullDebug with /MDd or keep hybrid /MD (classic ARX-style).
+    set(_rtl "MultiThreadedDLL")
+    opendcl_map_fulldebug_to_debug(${name} "${_out_base}")
   endif()
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(_lib_arch "x64")

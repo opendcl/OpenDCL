@@ -199,18 +199,14 @@ option(OPENDCL_RUNTIME_AUTO
 option(OPENDCL_RUNTIME_REQUIRE_SELECTED
   "Fail configure if a selected runtime target cannot be built" OFF)
 
-# FullDebug host *debug* import libraries.
+# FullDebug host *debug* upgrades (optional, machine-local).
 #
-# FullDebug uses AC_FULL_DEBUG + /MDd (all families) and must link host debug libs.
-# Those trees are proprietary — do NOT auto-scan or "discover" them.
-# Configure an explicit path only:
-#   - OPENDCL_<SDK_ENV>_FULLDEBUG_LIBDIR  (cache)
-#   - ENV{<SDK_ENV>_FULLDEBUG_LIBDIR}
-#   - ENV{BrxDebugLibs}                   (BRX samples / OpenDCL BRX FullDebug)
-#   - optional matrix SDK_LIB_FULLDEBUG relative to release SDK root
-#     (documented convention only, e.g. lib/vc143x64/Debug from BRX.26.vcxproj)
-#
-# Never GLOB/list proprietary debug folders in CMake or tooling.
+# CMake generates FullDebug for CAD modules with the same CRT/defines/libdirs as
+# Debug. Real host-debug FullDebug (AC_FULL_DEBUG, BRX_BCAD_DEBUG, debug LIB
+# paths) is opt-in via:
+#   <parent-of-checkout>/fulldebug.<family>.props   e.g. fulldebug.brx.props
+# imported only for FullDebug when that file exists (see
+# opendcl_vs_attach_libdir_props). Proprietary debug trees: never auto-scan.
 
 set(OPENDCL_LANGS "ENU" CACHE STRING
   "Semicolon-separated language codes for resource DLLs (ENU;DEU;...)")
@@ -219,12 +215,11 @@ set(OPENDCL_OUTPUT_ROOT "${CMAKE_BINARY_DIR}/out" CACHE PATH
   "Root directory for built binaries (package layout)")
 
 # ---------------------------------------------------------------------------
-# FullDebug → Debug layout (everything except CAD runtime modules)
+# FullDebug → Debug layout (non-module products + default module CRT)
 # ---------------------------------------------------------------------------
-# Solution FullDebug exists for host plugins (ARX/BRX/GRX/ZRX): AC_FULL_DEBUG,
-# /MDd, host debug libs. All other targets (Studio, Res DLLs, RxInstall,
-# Studio-only /MT libs) only have classic Debug|Release products — map FullDebug
-# outputs into the Debug folder so F5 never looks for a separate FullDebug artifact.
+# Solution FullDebug is available for mixed family work. CAD modules default to
+# Debug-equivalent FullDebug (no AC_FULL_DEBUG until fulldebug.<family>.props).
+# Studio, Res, RxInstall, /MT libs map FullDebug outputs into Debug folders.
 # Generator expression for post-build / mirror paths:
 set(OPENDCL_CFG_DIR "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
 
@@ -241,18 +236,23 @@ endfunction()
 
 # Visual Studio F5: host CAD + load built module (classic /ld "$(TargetPath)").
 # ARX and BRX use the same load switch; GRX/ZRX default to the same and can override.
+# Host Command resolution (per runtime version/arch when cache/env empty):
+#   scripts/resolve-debugger-host.ps1 → product registry (no Program Files hard-codes).
 set(OPENDCL_DEBUGGER_COMMAND "" CACHE FILEPATH
-  "Default host CAD executable for F5 (empty = try per-family env, else leave unset)")
+  "Default host CAD executable for F5 (empty = per-family override, env, then registry discover)")
 # Use $(TargetPath) as a *placeholder* only: CMake rewrites it to
 # $<TARGET_FILE:…> so the .vcxproj gets a real per-config path (VS often
 # expands bare $(TargetPath) to empty for inherited debugger args).
 set(OPENDCL_DEBUGGER_COMMAND_ARGUMENTS "/ld \"$(TargetPath)\"" CACHE STRING
   "Default F5 args; $(TargetPath) is replaced with the built module path at generate time")
 
-set(OPENDCL_ARX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for ARX (default: OPENDCL_DEBUGGER_COMMAND or ENV{ARX_EXE}/ENV{ACAD})")
-set(OPENDCL_BRX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for BRX (default: OPENDCL_DEBUGGER_COMMAND or ENV{BRX_EXE}/ENV{BRICSCAD})")
-set(OPENDCL_GRX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for GRX (default: OPENDCL_DEBUGGER_COMMAND or ENV{GRX_EXE})")
-set(OPENDCL_ZRX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for ZRX (default: OPENDCL_DEBUGGER_COMMAND or ENV{ZRX_EXE})")
+set(OPENDCL_ARX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for all ARX (else env / registry per VERSION)")
+set(OPENDCL_BRX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for all BRX (else env / registry per VERSION)")
+set(OPENDCL_GRX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for all GRX (else env / registry per VERSION)")
+set(OPENDCL_ZRX_DEBUGGER_COMMAND "" CACHE FILEPATH "Override F5 host for all ZRX (else env / registry per VERSION)")
+# When ON (default), empty cache/env falls back to HKLM product registry for that version.
+option(OPENDCL_DEBUGGER_DISCOVER_HOST
+  "Discover F5 host .exe from CAD product registry when Command is unset" ON)
 
 set(OPENDCL_ARX_DEBUGGER_COMMAND_ARGUMENTS "" CACHE STRING "Override F5 args for ARX (empty = OPENDCL_DEBUGGER_COMMAND_ARGUMENTS)")
 set(OPENDCL_BRX_DEBUGGER_COMMAND_ARGUMENTS "" CACHE STRING "Override F5 args for BRX (empty = OPENDCL_DEBUGGER_COMMAND_ARGUMENTS)")
@@ -303,38 +303,6 @@ function(opendcl_register_runtime)
   endforeach()
 endfunction()
 
-# FullDebug host-debug lib dir as an MSBuild AdditionalLibraryDirectories *prefix*
-# (the part before ";%(AdditionalLibraryDirectories)").
-#
-# BRX FullDebug (explicit only — proprietary debug trees, never auto-discovered):
-#   OPENDCL_<SDK_ENV>_FULLDEBUG_LIBDIR  (CMake cache)
-#   ENV{<SDK_ENV>_FULLDEBUG_LIBDIR}
-#   ENV{BrxDebugLibs}                   (shared BRX debug lib dir)
-#
-# Do not invent BRXnn\lib\vc…\Debug under the release SDK root and do not fall
-# back to any other env name. Empty prefix → FullDebug links release SDK libs only
-# until the operator sets one of the paths above.
-function(opendcl_fulldebug_libdir_msbuild family sdk_env toolset out_var)
-  set(_prefix "")
-  # ${toolset} kept for API stability (callers pass matrix toolset).
-
-  # Explicit absolute override (cache / env) — never auto-discovered.
-  set(_cache_var "OPENDCL_${sdk_env}_FULLDEBUG_LIBDIR")
-  if(NOT DEFINED ${_cache_var})
-    set(${_cache_var} "" CACHE PATH
-      "FullDebug host debug LIB directory for ${sdk_env} (proprietary; set explicitly)")
-  endif()
-  if(${_cache_var})
-    file(TO_NATIVE_PATH "${${_cache_var}}" _prefix)
-  elseif(DEFINED ENV{${sdk_env}_FULLDEBUG_LIBDIR} AND NOT "$ENV{${sdk_env}_FULLDEBUG_LIBDIR}" STREQUAL "")
-    file(TO_NATIVE_PATH "$ENV{${sdk_env}_FULLDEBUG_LIBDIR}" _prefix)
-  elseif(family STREQUAL "BRX" AND DEFINED ENV{BrxDebugLibs} AND NOT "$ENV{BrxDebugLibs}" STREQUAL "")
-    file(TO_NATIVE_PATH "$ENV{BrxDebugLibs}" _prefix)
-  endif()
-
-  set(${out_var} "${_prefix}" PARENT_SCOPE)
-endfunction()
-
 # Join a CMake path list into a single MSBuild AdditionalLibraryDirectories value
 # (native slashes, no path/$(Configuration) quirk from target_link_directories).
 function(opendcl_msbuild_join_libdirs out_var)
@@ -350,17 +318,14 @@ function(opendcl_msbuild_join_libdirs out_var)
 endfunction()
 
 # Emit a VS .props attached via VS_USER_PROPS (PropertySheets / LocalAppDataPlatform).
-# Clean AdditionalLibraryDirectories only (no path\$(Configuration) quirk).
-# Optional trailing imports: local.props, parent-of-repo dev.props.
+# FullDebug AdditionalLibraryDirectories match Debug (release SDK). Host-debug
+# FullDebug is opt-in: import <repo-parent>/fulldebug.<family>.props when present
+# (family = arx|brx|grx|zrx). Optional local.props still applies to all configs.
 #
 # F5 debugger *arguments* are set on the target with VS_DEBUGGER_COMMAND_ARGUMENTS
 # and $<TARGET_FILE:…> — not here. Early sheets + $(TargetPath) often yield /ld "".
-function(opendcl_vs_attach_libdir_props target release_dirs fulldebug_prefix)
+function(opendcl_vs_attach_libdir_props target family release_dirs)
   if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
-    if(fulldebug_prefix AND NOT fulldebug_prefix MATCHES "^\\$\\(")
-      target_link_directories(${target} BEFORE PRIVATE
-        "$<$<CONFIG:FullDebug>:${fulldebug_prefix}>")
-    endif()
     if(release_dirs)
       target_link_directories(${target} PRIVATE ${release_dirs})
     endif()
@@ -368,25 +333,27 @@ function(opendcl_vs_attach_libdir_props target release_dirs fulldebug_prefix)
   endif()
 
   opendcl_msbuild_join_libdirs(_rel_ms ${release_dirs})
-  set(_fd_ms "${fulldebug_prefix}")
 
+  string(TOLOWER "${family}" _fam_lc)
   get_filename_component(_opendcl_repo_parent "${CMAKE_SOURCE_DIR}" DIRECTORY)
-  set(_dev_props_abs "${_opendcl_repo_parent}/dev.props")
-  file(RELATIVE_PATH _dev_props_rel "${CMAKE_CURRENT_BINARY_DIR}" "${_dev_props_abs}")
-  string(REPLACE "/" "\\" _dev_props_rel_ms "${_dev_props_rel}")
+  set(_fd_props_abs "${_opendcl_repo_parent}/fulldebug.${_fam_lc}.props")
+  file(RELATIVE_PATH _fd_props_rel "${CMAKE_CURRENT_BINARY_DIR}" "${_fd_props_abs}")
+  string(REPLACE "/" "\\" _fd_props_rel_ms "${_fd_props_rel}")
   set(_local_props_rel "local.props")
 
   set(_props "${CMAKE_CURRENT_BINARY_DIR}/${target}.libdirs.props")
   set(_xml "")
   string(APPEND _xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
   string(APPEND _xml "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n")
-  string(APPEND _xml "  <!-- Generated by OpenDCL CMake: AdditionalLibraryDirectories only. -->\n")
-  string(APPEND _xml "  <!-- Import order: Microsoft.Cpp.*.user.props → this file → local.props → dev.props. -->\n")
+  string(APPEND _xml "  <!-- Generated by OpenDCL CMake: release SDK libdirs; FullDebug == Debug. -->\n")
+  string(APPEND _xml "  <!-- Optional FullDebug host-debug: fulldebug.${_fam_lc}.props (parent of repo). -->\n")
+  string(APPEND _xml "  <!-- Import order: user.props → this file → local.props → fulldebug.${_fam_lc}.props (FullDebug only). -->\n")
   string(APPEND _xml "  <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\"\n")
   string(APPEND _xml "         Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" />\n")
 
   if(_rel_ms)
-    foreach(_cfg IN ITEMS Debug Release)
+    # Debug and FullDebug share release SDK libdirs; fulldebug.*.props may prepend debug dirs.
+    foreach(_cfg IN ITEMS Debug FullDebug Release)
       string(APPEND _xml "  <ItemDefinitionGroup Condition=\"'$(Configuration)'=='${_cfg}'\">\n")
       string(APPEND _xml "    <Link>\n")
       string(APPEND _xml "      <AdditionalLibraryDirectories>${_rel_ms};%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>\n")
@@ -395,31 +362,12 @@ function(opendcl_vs_attach_libdir_props target release_dirs fulldebug_prefix)
     endforeach()
   endif()
 
-  if(_fd_ms OR _rel_ms)
-    set(_fd_joined "")
-    if(_fd_ms)
-      set(_fd_joined "${_fd_ms}")
-    endif()
-    if(_rel_ms)
-      if(_fd_joined)
-        set(_fd_joined "${_fd_joined};${_rel_ms}")
-      else()
-        set(_fd_joined "${_rel_ms}")
-      endif()
-    endif()
-    string(APPEND _xml "  <ItemDefinitionGroup Condition=\"'$(Configuration)'=='FullDebug'\">\n")
-    string(APPEND _xml "    <Link>\n")
-    string(APPEND _xml "      <AdditionalLibraryDirectories>${_fd_joined};%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>\n")
-    string(APPEND _xml "    </Link>\n")
-    string(APPEND _xml "  </ItemDefinitionGroup>\n")
-  endif()
-
   string(APPEND _xml "  <Import Project=\"${_local_props_rel}\"\n")
   string(APPEND _xml "         Condition=\"exists('$(MSBuildThisFileDirectory)${_local_props_rel}')\" />\n")
   string(APPEND _xml "  <Import Project=\"$(SolutionDir)local.props\"\n")
   string(APPEND _xml "         Condition=\"'$(SolutionDir)' != '' and exists('$(SolutionDir)local.props') and '$(SolutionDir)' != '$(MSBuildThisFileDirectory)'\" />\n")
-  string(APPEND _xml "  <Import Project=\"${_dev_props_rel_ms}\"\n")
-  string(APPEND _xml "         Condition=\"exists('$(MSBuildThisFileDirectory)${_dev_props_rel_ms}')\" />\n")
+  string(APPEND _xml "  <Import Project=\"${_fd_props_rel_ms}\"\n")
+  string(APPEND _xml "         Condition=\"'$(Configuration)'=='FullDebug' and exists('$(MSBuildThisFileDirectory)${_fd_props_rel_ms}')\" />\n")
 
   string(APPEND _xml "</Project>\n")
   file(WRITE "${_props}" "${_xml}")
@@ -568,9 +516,81 @@ function(opendcl_rt_get id field out_var)
   set(${out_var} "${OPENDCL_RT_${id}_${field}}" PARENT_SCOPE)
 endfunction()
 
-# Resolve VS F5 host executable for a runtime family.
-# Priority: OPENDCL_<FAMILY>_DEBUGGER_COMMAND → OPENDCL_DEBUGGER_COMMAND → env fallbacks.
-function(opendcl_resolve_debugger_command family out_var)
+# Discover CAD host .exe from product registry (scripts/resolve-debugger-host.ps1).
+# Results cached per family+version+arch for the rest of this configure (INTERNAL).
+function(opendcl_discover_debugger_host family version arch out_var)
+  set(${out_var} "" PARENT_SCOPE)
+  if(NOT WIN32 OR NOT OPENDCL_DEBUGGER_DISCOVER_HOST)
+    return()
+  endif()
+  if(NOT family OR NOT version OR NOT arch)
+    return()
+  endif()
+
+  string(TOUPPER "${family}" _fam)
+  string(TOLOWER "${arch}" _arch)
+  if(_arch STREQUAL "win32")
+    set(_arch "x86")
+  endif()
+  set(_ck "OPENDCL_DISC_HOST_${_fam}_${version}_${_arch}")
+  string(REPLACE "." "_" _ck "${_ck}")
+  string(REPLACE "-" "_" _ck "${_ck}")
+  if(DEFINED ${_ck})
+    set(${out_var} "${${_ck}}" PARENT_SCOPE)
+    return()
+  endif()
+
+  set(_script "${CMAKE_SOURCE_DIR}/scripts/resolve-debugger-host.ps1")
+  if(NOT EXISTS "${_script}")
+    set(${_ck} "" CACHE INTERNAL "Discovered F5 host ${_fam} ${version} ${_arch}")
+    return()
+  endif()
+
+  set(_exe "")
+  execute_process(
+    COMMAND powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass
+      -File "${_script}"
+      -Family "${_fam}"
+      -Version "${version}"
+      -Arch "${_arch}"
+    RESULT_VARIABLE _rc
+    OUTPUT_VARIABLE _out
+    ERROR_VARIABLE _err
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_STRIP_TRAILING_WHITESPACE
+  )
+  if(_rc EQUAL 0 AND _out)
+    string(STRIP "${_out}" _out)
+    # PowerShell may emit multiple lines; take the first non-empty.
+    string(REPLACE "\r\n" "\n" _out "${_out}")
+    string(REPLACE "\r" "\n" _out "${_out}")
+    string(REPLACE "\n" ";" _lines "${_out}")
+    foreach(_line IN LISTS _lines)
+      string(STRIP "${_line}" _line)
+      if(_line)
+        set(_exe "${_line}")
+        break()
+      endif()
+    endforeach()
+  endif()
+
+  if(_exe AND EXISTS "${_exe}")
+    file(TO_CMAKE_PATH "${_exe}" _exe)
+  else()
+    set(_exe "")
+  endif()
+
+  set(${_ck} "${_exe}" CACHE INTERNAL "Discovered F5 host ${_fam} ${version} ${_arch}")
+  set(${out_var} "${_exe}" PARENT_SCOPE)
+endfunction()
+
+# Resolve VS F5 host executable for a runtime row.
+# Priority:
+#   OPENDCL_<FAMILY>_DEBUGGER_COMMAND
+#   → OPENDCL_DEBUGGER_COMMAND
+#   → family env (ARX_EXE/ACAD, BRX_EXE/BRICSCAD, GRX_EXE, ZRX_EXE)
+#   → product registry for (family, version, arch) via resolve-debugger-host.ps1
+function(opendcl_resolve_debugger_command family version arch out_var)
   string(TOUPPER "${family}" _fam)
   set(_fam_cache "OPENDCL_${_fam}_DEBUGGER_COMMAND")
   if(DEFINED ${_fam_cache} AND NOT "${${_fam_cache}}" STREQUAL "")
@@ -583,25 +603,37 @@ function(opendcl_resolve_debugger_command family out_var)
   endif()
 
   set(_cmd "")
-  if(family STREQUAL "ARX")
+  if(_fam STREQUAL "ARX")
     if(DEFINED ENV{ARX_EXE} AND NOT "$ENV{ARX_EXE}" STREQUAL "")
       set(_cmd "$ENV{ARX_EXE}")
     elseif(DEFINED ENV{ACAD} AND NOT "$ENV{ACAD}" STREQUAL "")
       set(_cmd "$ENV{ACAD}")
     endif()
-  elseif(family STREQUAL "BRX")
+  elseif(_fam STREQUAL "BRX")
     if(DEFINED ENV{BRX_EXE} AND NOT "$ENV{BRX_EXE}" STREQUAL "")
       set(_cmd "$ENV{BRX_EXE}")
     elseif(DEFINED ENV{BRICSCAD} AND NOT "$ENV{BRICSCAD}" STREQUAL "")
       set(_cmd "$ENV{BRICSCAD}")
     endif()
-  elseif(family STREQUAL "GRX")
+  elseif(_fam STREQUAL "GRX")
     if(DEFINED ENV{GRX_EXE} AND NOT "$ENV{GRX_EXE}" STREQUAL "")
       set(_cmd "$ENV{GRX_EXE}")
     endif()
-  elseif(family STREQUAL "ZRX")
+  elseif(_fam STREQUAL "ZRX")
     if(DEFINED ENV{ZRX_EXE} AND NOT "$ENV{ZRX_EXE}" STREQUAL "")
       set(_cmd "$ENV{ZRX_EXE}")
+    endif()
+  endif()
+
+  if(NOT _cmd)
+    opendcl_discover_debugger_host("${_fam}" "${version}" "${arch}" _cmd)
+  endif()
+
+  # Only return a path that exists (stale env/cache should not break F5 silently).
+  if(_cmd)
+    file(TO_CMAKE_PATH "${_cmd}" _cmd)
+    if(NOT EXISTS "${_cmd}")
+      set(_cmd "")
     endif()
   endif()
   set(${out_var} "${_cmd}" PARENT_SCOPE)
@@ -764,10 +796,10 @@ function(opendcl_print_runtime_summary enabled skipped)
   foreach(_s IN LISTS skipped)
     message(STATUS "  SKIP    ${_s}")
   endforeach()
-  # Host-neutral FullDebug note (once). Host debug libdirs are MSBuild-time
-  # (generated *.libdirs.props + optional parent dev.props / local.props), not
-  # configure-time discovery — avoid per-target "prefix unset" spam.
+  # Host-neutral FullDebug note (once).
   if(_ne GREATER 0)
-    message(STATUS "FullDebug libdirs: release SDK always; host debug dirs via generated *.libdirs.props and optional parent dev.props / local.props (MSBuild-time)")
+    message(STATUS
+      "FullDebug: modules match Debug unless <repo-parent>/fulldebug.<family>.props exists "
+      "(e.g. fulldebug.brx.props for AC_FULL_DEBUG / host debug libs)")
   endif()
 endfunction()

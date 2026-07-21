@@ -1,8 +1,90 @@
+# OpenDCL EditorConfig — matches prevailing in-tree style.
+# https://editorconfig.org
 root = true
 
-[*.*]
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+# Soft guide only; many legacy lines exceed this.
+max_line_length = 120
+
+# ---------------------------------------------------------------------------
+# C / C++ / headers — tabs (indent_size = display width of one tab)
+# ---------------------------------------------------------------------------
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,inl,ipp}]
 indent_style = tab
 indent_size = 2
-trim_trailing_whitespace = true
-insert_final_newline = true
-max_line_length = 120
+
+# Solution files use tabs
+[*.sln]
+indent_style = tab
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# CMake / JSON — 2-space
+# ---------------------------------------------------------------------------
+[{CMakeLists.txt,*.cmake,CMakePresets.json}]
+indent_style = space
+indent_size = 2
+
+[*.json]
+indent_style = space
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# Scripts, docs, packaging
+# ---------------------------------------------------------------------------
+[*.{ps1,psd1,psm1}]
+indent_style = space
+indent_size = 2
+
+[*.{md,markdown}]
+indent_style = space
+indent_size = 2
+# Keep hard wraps optional; do not strip trailing spaces in Markdown hard-breaks
+trim_trailing_whitespace = false
+
+[*.{wxs,wxi,wxl}]
+indent_style = space
+indent_size = 2
+
+# MSBuild project XML
+[*.{vcxproj,vcxproj.filters,props,targets}]
+indent_style = space
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# GitHub Actions / YAML — spaces + LF (as committed under .github/)
+# ---------------------------------------------------------------------------
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+
+# ---------------------------------------------------------------------------
+# Resource scripts — mixed legacy indent; keep CRLF. Many localized .rc are
+# UTF-16 LE (BOM); do not force charset here.
+# ---------------------------------------------------------------------------
+[*.{rc,rc2}]
+end_of_line = crlf
+charset = unset
+
+# ---------------------------------------------------------------------------
+# HTML help content under Studio/Localized — mostly 2-space + CRLF
+# ---------------------------------------------------------------------------
+[*.{htm,html,css,js}]
+indent_style = space
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# Leave binaries alone
+# ---------------------------------------------------------------------------
+[*.{png,jpg,jpeg,gif,ico,bmp,cur,chm,dll,exe,lib,pdb,zip,msi,msm,cab,obj,ilk,exp,res}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset

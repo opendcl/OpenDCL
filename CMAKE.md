@@ -177,17 +177,18 @@ cmake --build build/manual --config Release
 Outputs land under `build/<preset>/out/`, mirroring the classic tree so F5 debug
 loading of `Runtime.Res.dll` works (`Common/Workspace.cpp` walks two folders up
 from the host module, then `..\Localized\<LANG>\Runtime.Res\Debug\`).
-**FullDebug → Debug** for everything except **CAD runtime modules** (and the
-`/MD` zlib/png they link). Helper: `opendcl_map_fulldebug_to_debug` /
-`OPENDCL_CFG_DIR` in `cmake/OpenDCLHelpers.cmake`.
+**FullDebug → Debug** outputs for Studio, Res, RxInstall, zlib/png (helper
+`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`). CAD **modules** still
+write a separate `FullDebug/` folder, but compile/link like **Debug** unless
+`fulldebug.<family>.props` upgrades that family.
 
 ```text
-out/Runtime/BRX/BRX.27.x64/FullDebug/OpenDCL.x64.27.brx   # real FullDebug module
+out/Runtime/BRX/BRX.27.x64/FullDebug/OpenDCL.x64.27.brx   # module FullDebug out
 out/Runtime/BRX/BRX.27.x64/Debug/OpenDCL.x64.27.brx
 out/Runtime/Localized/ENU/Runtime.Res/Debug/Runtime.Res.dll    # Debug + FullDebug
 out/Runtime/Localized/ENU/Runtime.Res/Release/Runtime.Res.dll
 out/Runtime/RxInstall/Debug/RxInstall.dll     # FullDebug → Debug
-out/Library/x64-md/FullDebug/...              # kept for /MDd runtime link
+out/Library/x64-md/Debug/...                  # /MD zlib; FullDebug → Debug
 out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug → Debug
 ```
 
@@ -210,43 +211,62 @@ Default for **all** runtime hosts (ARX/BRX/GRX/ZRX):
 | Setting | Default |
 | --- | --- |
 | Command arguments | `/ld "<absolute path to built module>"` (per config) |
-| Command (exe) | unset unless cache/env / `.vcxproj.user` provides it |
+| Command (exe) | cache / env override, else **registry discover** for that runtime’s version+arch |
 
 CMake writes `VS_DEBUGGER_COMMAND_ARGUMENTS` using `$<TARGET_FILE:…>` so each
 configuration gets a **real path** in the `.vcxproj`. Bare MSBuild
 `$(TargetPath)` often expands to **empty** when Command Arguments are
 inherited (VS history shows `/ld ""`), so the host never loads the module.
 
-Host **Command** (BricsCAD/AutoCAD exe) stays machine-local: set in the
-project’s `.vcxproj.user`, or via `OPENDCL_*_DEBUGGER_COMMAND` / `BRX_EXE` /
-`DDCAD_PATH`-style env at configure time. Keep Command in `.user` if you like;
-leave Arguments on **Inherit** after reconfigure so the project-level path is used.
-Do not leave an empty `LocalDebuggerCommandArguments` element in `.user` (that
-overrides the project with blank).
+### Host Command resolution
+
+Priority (first hit wins; path must exist):
+
+1. `OPENDCL_<FAMILY>_DEBUGGER_COMMAND` (e.g. `OPENDCL_BRX_DEBUGGER_COMMAND`)
+2. `OPENDCL_DEBUGGER_COMMAND` (all families)
+3. Family env: `ARX_EXE`/`ACAD`, `BRX_EXE`/`BRICSCAD`, `GRX_EXE`, `ZRX_EXE`
+4. Product **registry** via `scripts/resolve-debugger-host.ps1` (same roots as RxInstall), when `OPENDCL_DEBUGGER_DISCOVER_HOST=ON` (default)
+
+| Family | Registry (HKLM) | Exe |
+| --- | --- | --- |
+| ARX | `HKCU\…\AutoCAD\CurVer` (last used) if it matches `R{VERSION}.*`, else any installed `R{VERSION}.*`; product `CurVer` → `AcadLocation` | `acad.exe` |
+| BRX | `SOFTWARE\Bricsys\Bricscad\V{VERSION}x64` (or `V{VERSION}`) → `InstallDir` | `bricscad.exe` |
+| ZRX | `SOFTWARE\ZWSOFT\ZWCAD\{VERSION year}` | `ZWCAD.exe` |
+| GRX | `SOFTWARE\GstarSoft\GstarCAD\R{year-2000}…` | `gcad.exe` / … |
+
+`VERSION` / `ARCH` come from the runtime matrix row (so `BRX.26` and `BRX.27`
+get different hosts). Discovery is cached per family+version+arch for the
+configure run; reconfigure after installing a CAD product.
+
+There is **no** hard-coded `Program Files\…` fallback — override with cache,
+env, or the project’s `.vcxproj.user` if registry is missing or wrong.
+Leave Arguments on **Inherit** after reconfigure so the project-level `/ld`
+path is used. Do not leave an empty `LocalDebuggerCommandArguments` element in
+`.user` (that overrides the project with blank).
 
 | Variable | Role |
 | --- | --- |
 | `OPENDCL_DEBUGGER_COMMAND` | Default host exe for every family |
 | `OPENDCL_DEBUGGER_COMMAND_ARGUMENTS` | Default args (default `/ld "$(TargetPath)"`) |
-| `OPENDCL_ARX_DEBUGGER_COMMAND` | ARX host override |
+| `OPENDCL_ARX_DEBUGGER_COMMAND` | ARX host override (all ARX rows) |
 | `OPENDCL_BRX_DEBUGGER_COMMAND` | BRX host override |
 | `OPENDCL_GRX_DEBUGGER_COMMAND` | GRX host override |
 | `OPENDCL_ZRX_DEBUGGER_COMMAND` | ZRX host override |
 | `OPENDCL_*_DEBUGGER_COMMAND_ARGUMENTS` | Per-family args override (empty = global default) |
-
-Env fallbacks when the matching cache is empty:
-
-| Family | Env (first hit) |
-| --- | --- |
-| ARX | `ARX_EXE`, then `ACAD` |
-| BRX | `BRX_EXE`, then `BRICSCAD` |
-| GRX | `GRX_EXE` |
-| ZRX | `ZRX_EXE` |
+| `OPENDCL_DEBUGGER_DISCOVER_HOST` | Registry discover when Command unset (default **ON**) |
 
 ```powershell
-$env:BRX_EXE = "C:\Program Files\Bricsys\BricsCAD V27 en_US\bricscad.exe"
+# Optional override (skips registry for that family):
+$env:BRX_EXE = "D:\BricsCAD\bricscad.exe"
 cmake --preset vs2022-x64-dev
-# F5 on OpenDCL_Runtime_BRX_27_x64 → bricscad /ld "$(TargetPath)"
+# F5 on OpenDCL_Runtime_BRX_27_x64 → discovered or overridden host + /ld "<module>"
+```
+
+Manual check:
+
+```powershell
+pwsh -File scripts/resolve-debugger-host.ps1 -Family BRX -Version 27 -Arch x64
+pwsh -File scripts/resolve-debugger-host.ps1 -Family ARX -Version 25 -Arch x64
 ```
 
 ## Per-target overrides
@@ -274,88 +294,60 @@ endfunction()
 `Runtime/StdAfx.h` implements Autodesk’s pattern:
 
 1. **Debug** (`_DEBUG`, no `AC_FULL_DEBUG`): temporarily `#undef _DEBUG` while including MFC / ATL / STL so those headers do not force the debug CRT; then restores `_DEBUG` for app code. CRT **`/MD`**. Links **release** host libs (`SDK_LIB`).
-2. **FullDebug** (`_DEBUG` + `AC_FULL_DEBUG`): keeps `_DEBUG` through MFC/host headers. CRT **`/MDd`** for **all** families (ARX/BRX/GRX/ZRX). Intended for developers with a **local debug host** build and host debug import libs (see below). Classic ARX FullDebug was hybrid `/MD`; CMake uses `/MDd` uniformly so static deps (`*-md` FullDebug) match.
-3. **Release**: `NDEBUG`, **`/MD`**, release host libs.
+2. **FullDebug (default, CMake-generated)**: **identical to Debug** — `_DEBUG` only, **`/MD`**, release SDK libdirs. No `AC_FULL_DEBUG`. This lets you build **ARX and BRX** under solution FullDebug even when only one family has host debug libraries.
+3. **FullDebug (opt-in host-debug)**: when `<parent-of-checkout>/fulldebug.<family>.props` exists (e.g. `fulldebug.brx.props`), that sheet is imported **only for FullDebug** and can define `AC_FULL_DEBUG` / `BRX_BCAD_DEBUG`, prepend host debug LIB dirs, etc.
+4. **Release**: `NDEBUG`, **`/MD`**, release host libs.
 
-#### FullDebug host debug libraries (proprietary — do not scan)
+With `AC_FULL_DEBUG`, StdAfx **keeps** `_DEBUG` through MFC/host headers (true host-debug compile).
 
-Debug CAD SDK trees are **proprietary**. CMake and agents must **not** open, list, or search those folders.
+#### Machine overlays: `local.props` and `fulldebug.<family>.props`
 
-BRX FullDebug link directories are **explicit only** (no automatic path under the
-release SDK). Configure one of:
-
-| Source | Role |
-| --- | --- |
-| **`BrxDebugLibs` env** | Absolute debug LIB directory (classic `BRX.26.x64` FullDebug + CMake) |
-| `OPENDCL_BRX27_FULLDEBUG_LIBDIR` / `BRX27_FULLDEBUG_LIBDIR` | Per-SDK absolute override (any BRX major) |
-| `OPENDCL_BRX26_FULLDEBUG_LIBDIR` / `BRX26_FULLDEBUG_LIBDIR` | Same for BRX 26 |
-
-If none is set, FullDebug still builds but only release SDK libdirs are on the
-link line (host debug imports will fail until a path is configured).
-
-```powershell
-$env:BrxDebugLibs = "X:\path\to\brx\debug\libs"   # proprietary; set by operator
-$env:BRX27 = "S:\BRX27"                           # release SDK for Debug/Release
-cmake --preset vs2022-x64-dev
-cmake --build build/vs2022-x64-dev --config FullDebug
-```
-
-#### Machine overlays: `local.props` and parent `dev.props`
-
-Each runtime’s generated `*.libdirs.props` (attached as `VS_USER_PROPS`) ends with
-optional imports using **relative paths or MSBuild macros only** (no absolute drive
-paths). Later imports win:
+Each runtime’s generated `*.libdirs.props` (attached as `VS_USER_PROPS`):
 
 ```xml
-<!-- 1) Sibling of this props file / .sln (build/<preset>/local.props) -->
-<Import Project="local.props"
-        Condition="exists('$(MSBuildThisFileDirectory)local.props')" />
+<!-- Release SDK libdirs for Debug, FullDebug, and Release (FullDebug == Debug). -->
 
-<!-- 2) $(SolutionDir)local.props if SolutionDir differs -->
-<Import Project="$(SolutionDir)local.props" Condition="..." />
+<!-- 1) Sibling / SolutionDir local.props (all configs) -->
+<Import Project="local.props" Condition="exists(...)" />
 
-<!-- 3) Parent of the git checkout (e.g. ../../../dev.props from build/<preset>/) -->
-<Import Project="..\..\..\dev.props"
-        Condition="exists('$(MSBuildThisFileDirectory)..\..\..\dev.props')" />
+<!-- 2) Parent of the git checkout — family FullDebug upgrade (FullDebug only) -->
+<Import Project="..\..\..\fulldebug.brx.props"
+        Condition="'$(Configuration)'=='FullDebug' and exists(...)" />
 ```
 
-**Import order:**
+| File | Role |
+| --- | --- |
+| `build/<preset>/local.props` | Optional solution-local overlay (all configs); gitignored |
+| `<repo-parent>/fulldebug.brx.props` | BRX host-debug FullDebug (defines + debug LIB dirs) |
+| `<repo-parent>/fulldebug.arx.props` | Optional ARX host-debug FullDebug (same pattern) |
+| `fulldebug.grx.props` / `fulldebug.zrx.props` | Same for GRX/ZRX if needed |
 
-1. `$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props` (macro)
-2. OpenDCL generated libdirs (per target / config)
-3. **`local.props`** next to the props/sln — solution-local overlay
-4. **`<repo-parent>/dev.props`** (relative) — machine overlay; **overrides local.props**
-
-Example **parent** `dev.props` (not in the repo): keep release SDK roots and
-`BrxDebugLibs` in the **process environment**; use `dev.props` only for optional
-include/lib overlays:
+Example **`fulldebug.brx.props`** (outside the repo; uses env macros only):
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- BrxDebugLibs / BRX27 come from the environment, not this file. -->
-  <ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='FullDebug'">
     <ClCompile>
-      <!-- Optional include overrides -->
-      <!-- <AdditionalIncludeDirectories>…;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories> -->
+      <PreprocessorDefinitions>AC_FULL_DEBUG;BRX_BCAD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <!-- Optional lib dir overrides (after OpenDCL + local.props) -->
-      <!-- <AdditionalLibraryDirectories>…;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories> -->
+      <AdditionalLibraryDirectories>$(BRX_PATH)\lib\vc143x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>
 ```
 
 ```powershell
-# Release SDK always; FullDebug host debug libs when building FullDebug:
-$env:BRX27        = "S:\BRX27"
-$env:BrxDebugLibs = "X:\path\to\brx\debug\libs"
+$env:BRX27    = "S:\BRX27"              # release SDK
+$env:BRX_PATH = "X:\dev\bricscad\brx"   # host debug tree root used by fulldebug.brx.props
+cmake --preset vs2022-x64-dev
+# FullDebug: BRX gets AC_FULL_DEBUG + debug libs; ARX stays Debug-equivalent
+cmake --build build/vs2022-x64-dev --config FullDebug --target OpenDCL_Runtime_BRX_27_x64
 ```
 
-Example **solution** `local.props` (`build/vs2022-x64-dev/local.props`) for checkout-specific tweaks; `dev.props` can still override them.
-
-Do not commit machine paths. `local.props` is gitignored inside the checkout; `dev.props` lives **above** the repo so it is never part of the tree.
+Do **not** scan proprietary CAD debug trees. Do not commit machine paths.
+`local.props` is gitignored; `fulldebug.*.props` live **above** the repo.
 
 ## Product wiring (BRX.27 / RxInstall / WiX)
 

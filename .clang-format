@@ -1,0 +1,139 @@
+# OpenDCL C/C++ style for clang-format (VS ships LLVM clang-format).
+# Matches prevailing in-tree conventions: tabs (width 2), padded call parens
+# like SetColor( x, y ), if( cond ), Allman-ish braces, left-aligned pointers.
+#
+# Visual Studio 2022 / 2026 (VS 18):
+#   Tools > Options > Text Editor > C/C++ > Code Style > Formatting
+#     - Enable ClangFormat support: Yes
+#   Format Document: Ctrl+K, Ctrl+D  |  Format Selection: Ctrl+K, Ctrl+F
+# Prefer formatting only files you touch; avoid whole-tree reformat PRs.
+#
+# CLI (VS 18 LLVM):
+#   "%ProgramFiles%\Microsoft Visual Studio\18\Professional\VC\Tools\Llvm\x64\bin\clang-format.exe" -i path\to\file.cpp
+#
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+Language: Cpp
+BasedOnStyle: Microsoft
+Standard: c++17
+
+# --- Indent / tabs (see also .editorconfig) ---
+UseTab: Always
+IndentWidth: 2
+TabWidth: 2
+ContinuationIndentWidth: 2
+ColumnLimit: 120
+AccessModifierOffset: -2
+NamespaceIndentation: None
+IndentCaseLabels: false
+IndentCaseBlocks: false
+IndentPPDirectives: None
+IndentWrappedFunctionNames: false
+IndentGotoLabels: true
+IndentExternBlock: AfterExternBlock
+
+# --- Line endings ---
+LineEnding: CRLF
+InsertNewlineAtEOF: true
+
+# --- Pointers / refs: CWnd* pName ---
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+SpaceAroundPointerQualifiers: Default
+
+# --- Spaces: padded parens  foo( a, b )  /  if( x )  (clang-format 17+) ---
+SpacesInParens: Custom
+SpacesInParensOptions:
+  ExceptDoubleParentheses: false
+  InCStyleCasts: false
+  InConditionalStatements: true
+  InEmptyParentheses: false
+  Other: true
+SpacesInSquareBrackets: false
+SpacesInAngles: Never
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+# if( x ) / for( ... ) — no space before '('
+SpaceBeforeParens: Never
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpacesBeforeTrailingComments: 1
+
+# --- Braces: function/class/enum/control brace on its own line ---
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# --- Short constructs ---
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+# Inline class methods may stay one-line; empty out-of-line bodies keep braces split
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
+InsertBraces: false
+RemoveBracesLLVM: false
+
+# --- Packing / breaks ---
+BinPackArguments: true
+BinPackParameters: true
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AlignAfterOpenBracket: DontAlign
+AlignOperands: Align
+AlignTrailingComments: true
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakStringLiterals: true
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+# Leading ":" / "," on ctor-init lines (column 0), as in existing .cpp files
+ConstructorInitializerIndentWidth: 0
+PackConstructorInitializers: Never
+Cpp11BracedListStyle: true
+
+# --- Includes / comments: never reorder legacy include order ---
+SortIncludes: Never
+IncludeBlocks: Preserve
+SortUsingDeclarations: false
+ReflowComments: false
+FixNamespaceComments: false
+
+# --- Empty lines ---
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+EmptyLineBeforeAccessModifier: LogicalBlock
+EmptyLineAfterAccessModifier: Never
+
+# --- Misc ---
+CompactNamespaces: false
+...
