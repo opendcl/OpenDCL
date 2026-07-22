@@ -199,6 +199,15 @@ option(OPENDCL_RUNTIME_AUTO
 option(OPENDCL_RUNTIME_REQUIRE_SELECTED
   "Fail configure if a selected runtime target cannot be built" OFF)
 
+# After family/arch/SDK filters: keep at most N candidates per family (highest
+# VERSION wins). 0 = unlimited (full matrix / vs2022-x64-auto). Dev preset uses 1.
+set(OPENDCL_RUNTIME_PER_FAMILY_MAX "0" CACHE STRING
+  "Max enabled runtimes per family after filters (0 = unlimited; 1 = latest only)")
+# Empty = no toolset floor. Example: v141 keeps v141 / v141_xp / v142 / v143 …
+# and drops older toolsets (v140, v120, …) before the per-family limit is applied.
+set(OPENDCL_RUNTIME_MIN_TOOLSET "" CACHE STRING
+  "Minimum Platform Toolset for runtime selection (e.g. v141); empty = no filter")
+
 # FullDebug host *debug* upgrades (optional, machine-local).
 #
 # CMake generates FullDebug for CAD modules with the same CRT/defines/libdirs as
@@ -746,7 +755,7 @@ function(opendcl_sdk_available sdk_env out_var)
 endfunction()
 
 # ---------------------------------------------------------------------------
-# Selection: family flags ∩ optional ID list ∩ SDK availability
+# Selection: family flags ∩ optional ID list ∩ SDK ∩ toolset floor ∩ per-family max
 # ---------------------------------------------------------------------------
 function(opendcl_host_arch out_var)
   # Map generator platform / pointer size to matrix ARCH (x64|x86).
@@ -771,15 +780,87 @@ function(opendcl_host_arch out_var)
   set(${out_var} "${_arch}" PARENT_SCOPE)
 endfunction()
 
-function(opendcl_select_runtimes out_enabled out_skipped)
+# Platform toolset → major number: v141 / v141_xp → 141, v143 → 143, v100 → 100.
+function(opendcl_toolset_number toolset out_var)
+  if(toolset MATCHES "^[vV]([0-9]+)")
+    set(${out_var} "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  else()
+    set(${out_var} "0" PARENT_SCOPE)
+  endif()
+endfunction()
+
+# Keep at most max_per_family candidates per FAMILY (highest VERSION first).
+# max_per_family <= 0 leaves candidates unchanged. Appends overflow to skipped.
+function(opendcl_apply_per_family_max candidates max_per_family out_enabled out_skipped_extra)
   set(_enabled)
+  set(_extra_skipped)
+  if(max_per_family LESS_EQUAL 0)
+    set(${out_enabled} "${candidates}" PARENT_SCOPE)
+    set(${out_skipped_extra} "" PARENT_SCOPE)
+    return()
+  endif()
+
+  foreach(_fam IN ITEMS ARX BRX GRX ZRX)
+    set(_pairs)
+    foreach(_id IN LISTS candidates)
+      opendcl_rt_get("${_id}" FAMILY _f)
+      if(NOT _f STREQUAL _fam)
+        continue()
+      endif()
+      opendcl_rt_get("${_id}" VERSION _ver)
+      # NATURAL sort on "version|id" (year-style 2027 and short 27 both work).
+      list(APPEND _pairs "${_ver}|${_id}")
+    endforeach()
+    if(NOT _pairs)
+      continue()
+    endif()
+    list(SORT _pairs COMPARE NATURAL ORDER DESCENDING)
+    set(_kept 0)
+    foreach(_pair IN LISTS _pairs)
+      string(REGEX REPLACE "^[^|]+\\|" "" _id "${_pair}")
+      if(_kept LESS max_per_family)
+        list(APPEND _enabled "${_id}")
+        math(EXPR _kept "${_kept}+1")
+      else()
+        list(APPEND _extra_skipped
+          "${_id}|per_family_max:${max_per_family}")
+      endif()
+    endforeach()
+  endforeach()
+
+  # Preserve any candidate whose family is outside ARX/BRX/GRX/ZRX (none today).
+  foreach(_id IN LISTS candidates)
+    opendcl_rt_get("${_id}" FAMILY _f)
+    if(_f STREQUAL "ARX" OR _f STREQUAL "BRX" OR _f STREQUAL "GRX" OR _f STREQUAL "ZRX")
+      continue()
+    endif()
+    list(APPEND _enabled "${_id}")
+  endforeach()
+
+  set(${out_enabled} "${_enabled}" PARENT_SCOPE)
+  set(${out_skipped_extra} "${_extra_skipped}" PARENT_SCOPE)
+endfunction()
+
+function(opendcl_select_runtimes out_enabled out_skipped)
+  set(_candidates)
   set(_skipped)
   opendcl_host_arch(_host_arch)
+
+  set(_min_ts_num 0)
+  if(OPENDCL_RUNTIME_MIN_TOOLSET)
+    opendcl_toolset_number("${OPENDCL_RUNTIME_MIN_TOOLSET}" _min_ts_num)
+    if(_min_ts_num EQUAL 0)
+      message(WARNING
+        "OPENDCL_RUNTIME_MIN_TOOLSET='${OPENDCL_RUNTIME_MIN_TOOLSET}' "
+        "was not recognized (expected e.g. v141); toolset floor disabled.")
+    endif()
+  endif()
 
   foreach(_id IN LISTS OPENDCL_RT_IDS)
     opendcl_rt_get("${_id}" FAMILY _family)
     opendcl_rt_get("${_id}" SDK_ENV _sdk_env)
     opendcl_rt_get("${_id}" ARCH _rt_arch)
+    opendcl_rt_get("${_id}" TOOLSET _toolset)
 
     set(_family_on FALSE)
     if(_family STREQUAL "ARX" AND OPENDCL_ENABLE_ARX)
@@ -826,8 +907,30 @@ function(opendcl_select_runtimes out_enabled out_skipped)
       continue()
     endif()
 
-    list(APPEND _enabled "${_id}")
+    if(_min_ts_num GREATER 0)
+      opendcl_toolset_number("${_toolset}" _ts_num)
+      if(_ts_num LESS _min_ts_num)
+        list(APPEND _skipped
+          "${_id}|toolset_below_min:${_toolset}<${OPENDCL_RUNTIME_MIN_TOOLSET}")
+        continue()
+      endif()
+    endif()
+
+    list(APPEND _candidates "${_id}")
   endforeach()
+
+  set(_max_pf 0)
+  if(OPENDCL_RUNTIME_PER_FAMILY_MAX MATCHES "^[0-9]+$")
+    set(_max_pf "${OPENDCL_RUNTIME_PER_FAMILY_MAX}")
+  elseif(NOT OPENDCL_RUNTIME_PER_FAMILY_MAX STREQUAL ""
+      AND NOT OPENDCL_RUNTIME_PER_FAMILY_MAX STREQUAL "0")
+    message(WARNING
+      "OPENDCL_RUNTIME_PER_FAMILY_MAX='${OPENDCL_RUNTIME_PER_FAMILY_MAX}' "
+      "is not a non-negative integer; treating as 0 (unlimited).")
+  endif()
+
+  opendcl_apply_per_family_max("${_candidates}" "${_max_pf}" _enabled _max_skipped)
+  list(APPEND _skipped ${_max_skipped})
 
   if(OPENDCL_RUNTIME_REQUIRE_SELECTED AND OPENDCL_RUNTIME_TARGETS)
     foreach(_want IN LISTS OPENDCL_RUNTIME_TARGETS)

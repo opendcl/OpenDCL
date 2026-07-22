@@ -41,8 +41,10 @@ wix/out/                 Generated packages (gitignored)
 
 ### CMake (preferred multi-host matrix, Studio F5, and Full product)
 
-Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`;
-ship **`vs2022-full`**). Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`.
+Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`:
+auto-detect SDKs, max one modern toolset ≥ v141 runtime per family; ship **`vs2022-full`**).
+Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`. First-time
+human steps: **`docs/BUILD-QUICKSTART.md`**.
 
 | Area | Notes |
 |------|--------|

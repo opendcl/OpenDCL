@@ -20,7 +20,7 @@
     },
     {
       "name": "vs2022-x64-dev",
-      "displayName": "VS2022 x64 — ARX26/BRX27 (dev default)",
+      "displayName": "VS2022 x64 — latest modern SDK per family (dev)",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -29,17 +29,32 @@
       "cacheVariables": {
         "OPENDCL_ENABLE_ARX": "ON",
         "OPENDCL_ENABLE_BRX": "ON",
-        "OPENDCL_ENABLE_GRX": "OFF",
-        "OPENDCL_ENABLE_ZRX": "OFF",
-        "OPENDCL_RUNTIME_TARGETS": "BRX.27.x64;ARX.26.x64",
-        "OPENDCL_RUNTIME_AUTO": "OFF",
-        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
+        "OPENDCL_ENABLE_GRX": "ON",
+        "OPENDCL_ENABLE_ZRX": "ON",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
+        "OPENDCL_RUNTIME_PER_FAMILY_MAX": "1",
+        "OPENDCL_RUNTIME_MIN_TOOLSET": "v141"
       }
     },
     {
       "name": "vs2022-x64-brx-latest",
       "displayName": "VS2022 x64 — BRX.27.x64 only",
-      "inherits": "vs2022-x64-dev"
+      "inherits": "base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "BRX.27.x64",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
+      }
     },
     {
       "name": "vs2022-x64-arx-latest",
@@ -61,7 +76,7 @@
     },
     {
       "name": "vs2022-x64-arx-modern",
-      "displayName": "VS2022 x64 — ARX 24–26",
+      "displayName": "VS2022 x64 — up to 3 latest modern ARX SDKs",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -72,8 +87,11 @@
         "OPENDCL_ENABLE_BRX": "OFF",
         "OPENDCL_ENABLE_GRX": "OFF",
         "OPENDCL_ENABLE_ZRX": "OFF",
-        "OPENDCL_RUNTIME_TARGETS": "ARX.24.x64;ARX.25.x64;ARX.26.x64",
-        "OPENDCL_RUNTIME_AUTO": "ON"
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
+        "OPENDCL_RUNTIME_PER_FAMILY_MAX": "3",
+        "OPENDCL_RUNTIME_MIN_TOOLSET": "v141"
       }
     },
     {

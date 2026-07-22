@@ -3,6 +3,9 @@
 CMake is the **supported multi-host and dual-arch ship path** for OpenDCL
 (Runtime matrix, Studio, RxInstall, WiX harvest from `build/<preset>/out`).
 
+**New here?** First-time generate/build steps:
+**[docs/BUILD-QUICKSTART.md](docs/BUILD-QUICKSTART.md)**.
+
 Classic `OpenDCL.sln` / per-host `.vcxproj` trees remain in the repo for
 historical and transitional builds, but **full product dry-runs and ship
 packaging use CMake** (preset **`vs2022-full`**). Private CI:
@@ -82,17 +85,19 @@ Default cache for both is `host`. Preset **`vs2022-full`** forces **`classic_x86
 ```powershell
 cd <OpenDCL repo root>
 
-# Dev default: BRX.27.x64 only (requires BRX27 env / SDK)
+# Dev default: auto-select up to one modern (toolset ≥ v141) runtime per family
+# from whatever ARX*/BRX*/GRX*/ZRX* SDK roots are available; missing families omitted.
+# Configure prints ENABLE lines for the IDs actually chosen (not fixed to BRX.27/ARX.26).
 cmake --preset vs2022-x64-dev
 cmake --build --preset vs2022-x64-dev-release
 # or Debug:
 cmake --build --preset vs2022-x64-dev-debug
 
-# ARX latest
+# Pin a single named matrix row (requires that SDK; see also vs2022-x64-brx-latest)
 cmake --preset vs2022-x64-arx-latest
 cmake --build --preset vs2022-x64-arx-latest-release
 
-# Auto-detect every installed CAD SDK (x64)
+# Auto-detect every installed CAD SDK (x64; no per-family cap / no toolset floor)
 cmake --preset vs2022-x64-auto
 
 # Full ship: one .sln with x64 + nested Win32 (imported into Solution Explorer)
@@ -116,6 +121,8 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 
 | Preset | Role |
 | --- | --- |
+| **`vs2022-x64-dev`** | Day-to-day: auto-detect SDKs, **one latest modern runtime per family** (`PER_FAMILY_MAX=1`, `MIN_TOOLSET=v141`); Studio-only if no SDKs |
+| **`vs2022-x64-arx-modern`** | ARX only: up to **3** latest modern SDKs (`PER_FAMILY_MAX=3`, `MIN_TOOLSET=v141`) |
 | **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** + **`OPENDCL_STUDIO_PE=classic_x86`** (x86 Runtime.Res + **Win32 Studio** / Studio.Res via nest) |
 | **`vs2022-x64-full`** | Same dual-arch module nest, but **`host`** Res + **`host`** Studio → **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; host Res is x86 |
@@ -151,29 +158,32 @@ cmake --build build/vs2022-full/win32 --config Release --target OpenDCL_Runtime_
 **Parity (not host-kit hacks):** Studio static MFC+`/MT`, modules `/MD` (+ `/MDd` FullDebug for all families), multimon stubs only on `PPTooltip.cpp` — permanent classic/product policy.
 
 **Sticky cache:** `cmake --preset …` does **not** overwrite existing
-`CMakeCache.txt` entries. A prior configure with empty
-`OPENDCL_RUNTIME_TARGETS` (or all families ON) leaves a solution with every
-SDK target. To re-apply the preset selection after that:
+`CMakeCache.txt` entries (`OPENDCL_RUNTIME_TARGETS`, `OPENDCL_RUNTIME_PER_FAMILY_MAX`,
+family flags, min toolset, etc.). An old fixed target list or unlimited auto
+can linger. To re-apply the **dev** preset (and re-pick “latest modern SDK” after
+installing a new CAD SDK):
 
 ```powershell
 cmake --preset vs2022-x64-dev --fresh
-# or force the cache keys:
-cmake -S . -B build/vs2022-x64-dev `
+```
+
+To **pin** a single matrix row (not the auto-dev policy), use a separate binary
+dir and explicit cache keys — pick any ID from the matrix, e.g. `BRX.27.x64` or
+`ARX.26.x64`:
+
+```powershell
+cmake -S . -B build/manual-brx -G "Visual Studio 17 2022" -A x64 `
   -DOPENDCL_RUNTIME_TARGETS=BRX.27.x64 `
   -DOPENDCL_ENABLE_ARX=OFF -DOPENDCL_ENABLE_BRX=ON `
   -DOPENDCL_ENABLE_GRX=OFF -DOPENDCL_ENABLE_ZRX=OFF `
-  -DOPENDCL_RUNTIME_AUTO=OFF -DOPENDCL_RUNTIME_REQUIRE_SELECTED=ON
+  -DOPENDCL_RUNTIME_AUTO=OFF -DOPENDCL_RUNTIME_REQUIRE_SELECTED=ON `
+  -DOPENDCL_RUNTIME_PER_FAMILY_MAX=0 -DOPENDCL_RUNTIME_MIN_TOOLSET=
+
+cmake --build build/manual-brx --config Release
 ```
 
-Or manually:
-
-```powershell
-cmake -S . -B build/manual -G "Visual Studio 17 2022" -A x64 `
-  -DOPENDCL_RUNTIME_TARGETS=ARX.26.x64 `
-  -DOPENDCL_ENABLE_BRX=OFF -DOPENDCL_ENABLE_GRX=OFF -DOPENDCL_ENABLE_ZRX=OFF
-
-cmake --build build/manual --config Release
-```
+Or use a pin preset: `vs2022-x64-arx-latest` / `vs2022-x64-brx-latest` (those
+require the named SDK).
 
 Outputs land under `build/<preset>/out/`, mirroring the classic tree so F5 debug
 loading of `Runtime.Res.dll` works (`Common/Workspace.cpp` walks two folders up
@@ -183,9 +193,13 @@ from the host module, then `..\Localized\<LANG>\Runtime.Res\Debug\`).
 write a separate `FullDebug/` folder, but compile/link like **Debug** unless
 `fulldebug.<family>.props` upgrades that family.
 
+Paths follow the **enabled** matrix IDs (configure `ENABLE` lines). Example shape
+for a selected BRX module (ID and file name vary by host year):
+
 ```text
-out/Runtime/BRX/BRX.27.x64/FullDebug/OpenDCL.x64.27.brx   # module FullDebug out
-out/Runtime/BRX/BRX.27.x64/Debug/OpenDCL.x64.27.brx
+out/Runtime/<FAMILY>/<ID>/FullDebug/<OpenDCL module>   # module FullDebug out
+out/Runtime/<FAMILY>/<ID>/Debug/<OpenDCL module>
+out/Runtime/BRX/BRX.27.x64/Debug/OpenDCL.x64.27.brx    # concrete example
 out/Runtime/Localized/ENU/Runtime.Res/Debug/Runtime.Res.dll    # Debug + FullDebug
 out/Runtime/Localized/ENU/Runtime.Res/Release/Runtime.Res.dll
 out/Runtime/RxInstall/Debug/RxInstall.dll     # FullDebug → Debug
@@ -201,9 +215,17 @@ out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug → Debug
 | `OPENDCL_RUNTIME_TARGETS` | Explicit ID list; empty = all of enabled families |
 | `OPENDCL_RUNTIME_AUTO` | Skip missing SDKs (default ON) |
 | `OPENDCL_RUNTIME_REQUIRE_SELECTED` | Fail if a listed target cannot build |
+| `OPENDCL_RUNTIME_PER_FAMILY_MAX` | After other filters, keep at most **N** runtimes per family (highest matrix `VERSION` wins). **`0`** = unlimited (default; full / auto). **`1`** = latest only (dev). **`3`** = modern multi-year window (`vs2022-x64-arx-modern`) |
+| `OPENDCL_RUNTIME_MIN_TOOLSET` | Floor on matrix `TOOLSET` (e.g. **`v141`** keeps `v141` / `v141_xp` / `v142` / `v143`). Empty = no floor (default). Applied before the per-family limit |
 | `OPENDCL_<SDK>_ROOT` | Override SDK path (else `ENV{SDK}`) |
 | `OPENDCL_LANGS` | Resource languages (default `ENU`) |
 | `OPENDCL_BUILD_RXINSTALL` | Build Win32 RxInstall CA DLL (default **ON** in presets; nested Win32 from x64, sources listed in main .sln for editing) |
+
+**Dev selection policy** (`vs2022-x64-dev`): all families ON, empty target list, `OPENDCL_RUNTIME_AUTO=ON`, **`OPENDCL_RUNTIME_PER_FAMILY_MAX=1`**, **`OPENDCL_RUNTIME_MIN_TOOLSET=v141`**. For each family, enables the highest-`VERSION` host-arch row that has an SDK and toolset ≥ v141; omits the family if none match. Zero CAD SDKs → no runtime modules (Studio still builds).
+
+**Modern ARX** (`vs2022-x64-arx-modern`): ARX only, same auto + min toolset, **`PER_FAMILY_MAX=3`** (up to three newest available modern ARX SDKs — no hard-coded year list). Same pattern works for other families if you add presets later.
+
+Unlimited multi-SDK trees use `vs2022-x64-auto` or full presets (`PER_FAMILY_MAX=0`, no min toolset).
 
 ## Visual Studio F5 debugger
 
@@ -260,14 +282,15 @@ path is used. Do not leave an empty `LocalDebuggerCommandArguments` element in
 # Optional override (skips registry for that family):
 $env:BRX_EXE = "D:\BricsCAD\bricscad.exe"
 cmake --preset vs2022-x64-dev
-# F5 on OpenDCL_Runtime_BRX_27_x64 → discovered or overridden host + /ld "<module>"
+# F5 on whichever OpenDCL_Runtime_* target was enabled (see configure ENABLE lines)
+# → discovered or overridden host + /ld "<module>"
 ```
 
-Manual check:
+Manual check (version must match the matrix row / installed product):
 
 ```powershell
 pwsh -File scripts/resolve-debugger-host.ps1 -Family BRX -Version 27 -Arch x64
-pwsh -File scripts/resolve-debugger-host.ps1 -Family ARX -Version 25 -Arch x64
+pwsh -File scripts/resolve-debugger-host.ps1 -Family ARX -Version 26 -Arch x64
 ```
 
 ## Per-target overrides
@@ -333,17 +356,19 @@ Example **`fulldebug.brx.props`** (outside the repo; uses env macros only):
       <PreprocessorDefinitions>AC_FULL_DEBUG;BRX_BCAD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(BRX_PATH)\lib\vc143x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BRX_FULLDEBUG_PATH)\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>
 ```
 
 ```powershell
-$env:BRX27    = "S:\BRX27"              # release SDK
-$env:BRX_PATH = "X:\dev\bricscad\brx"   # host debug tree root used by fulldebug.brx.props
+$env:BRX27             = "S:\BRX27"   # release SDK (any modern BRX* root works for selection)
+$env:BRX_FULLDEBUG_PATH = "S:\BrxHostDebug"  # host-debug tree root for fulldebug.brx.props
 cmake --preset vs2022-x64-dev
-# FullDebug: BRX gets AC_FULL_DEBUG + debug libs; ARX stays Debug-equivalent
+# FullDebug: BRX family gets AC_FULL_DEBUG + debug libs when selected;
+# other families without fulldebug.<family>.props stay Debug-equivalent.
+# Target name follows the enabled ID (example: OpenDCL_Runtime_BRX_27_x64):
 cmake --build build/vs2022-x64-dev --config FullDebug --target OpenDCL_Runtime_BRX_27_x64
 ```
 
@@ -394,14 +419,15 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 | **Custom subset** | `-Runtimes …`, `-ModuleSet Selected\|Available`, and/or language filters | `OpenDCL.Runtime.custom.msm` / `.msi` with seed GUIDs (no ship identity clash) |
 
 ```powershell
-# Dev custom: only modules/langs actually present under the cmake binary dir out\
+# Package whatever modules a tree actually built (good for vs2022-x64-dev or full):
 .\scripts\build-wix.ps1 `
-  -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `
   -ModuleSet Available `
   -AvailableLanguages `
   -SkipStudio
 
-# Explicit choice (must exist)
+# Explicit choice — IDs must exist under that tree's out\ (use configure ENABLE
+# names; BRX.27.x64 is only an example, not what every dev tree contains):
 .\scripts\build-wix.ps1 `
   -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `
   -Runtimes BRX.27.x64 `
@@ -413,7 +439,7 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 # or: .\scripts\make-release.ps1 -ProductVersion 10.1.1.1
 ```
 
-`-Runtimes` accepts IDs (`BRX.27.x64`), families (`BRX`), or wildcards (`BRX.2*`).
+`-Runtimes` accepts matrix IDs (`BRX.27.x64`), families (`BRX`), or wildcards (`BRX.2*`).
 Languages: `-Languages ENU,DEU` or `-AvailableLanguages` (only packs that have `Runtime.Res`).
 
 ## Studio (CMake)

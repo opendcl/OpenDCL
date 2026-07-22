@@ -35,17 +35,39 @@ Studio/              OpenDCL Studio (dialog editor) + localized help content
 
 ## Building
 
-**Requirements (typical):**
+**Supported path:** CMake presets (Visual Studio 2022 generator). Step-by-step for
+a first build: **[docs/BUILD-QUICKSTART.md](docs/BUILD-QUICKSTART.md)**. Framework
+reference: **[CMAKE.md](CMAKE.md)**.
 
-- Microsoft Visual Studio with the Windows desktop C++ / MFC workload (the solution uses a mix of Platform Toolsets; a current VS host is fine when older toolsets are available—see Daffodil below)
-- ObjectARX / BRX / ZRX / GRX SDKs for the CAD platforms you intend to target (not included in this repository)
-- **[Daffodil](https://github.com/manusoft-gh/manusoft-daffodil)** when building **pre-VS2015** Platform Toolsets (`v70`–`v120`, and related XP variants). Those toolsets are required by older AutoCAD / BricsCAD / GstarCAD / ZWCAD runtime modules and are **not** shipped with modern Visual Studio alone. Install Daffodil so MSBuild can resolve those Platform Toolsets under a current VS host. Targets that use VS2015+ toolsets (`v140` and later) do not need Daffodil.
+**Typical requirements:**
 
-Build the solution in **Release** configuration for the platform(s) you need. Exact project matrix and SDK paths depend on your local CAD SDK install layout.
+- CMake ≥ 3.24
+- Visual Studio 2022 with Windows desktop C++ and **MFC**
+- ObjectARX / BRX / ZRX / GRX SDKs for any CAD Runtime modules you build (not in this repository); Studio-only builds need no CAD SDK
+
+```powershell
+# Studio only (no CAD SDK):
+cmake --preset vs2022-x86-studio
+cmake --build --preset vs2022-x86-studio-debug
+
+# Dev default: latest modern SDK per family (set any ARX*/BRX*/GRX*/ZRX* roots;
+# missing families omitted; Studio still builds with zero SDKs):
+cmake --preset vs2022-x64-dev
+cmake --build --preset vs2022-x64-dev-debug
+```
+
+Open the generated solution under `build/<preset>/<preset>.sln` (for example
+`build/vs2022-x64-dev/vs2022-x64-dev.sln`).
+
+Classic `OpenDCL.sln` remains for historical / transitional builds.
+
+**Older Platform Toolsets:** historic matrix rows use pre-VS2015 toolsets
+(`v70`–`v120`, and related XP variants). Install
+**[Daffodil](https://github.com/manusoft-gh/manusoft-daffodil)** so MSBuild can
+resolve those toolsets under a current VS host. Modern presets (`v141`+) do not
+need Daffodil.
 
 There is no public CI build that produces official installers from this tree alone.
-
-Host prerequisites for older Platform Toolsets (Daffodil, etc.) are documented in the main **opendcl** public tree README. For this checkout’s CMake multi-preset workflow, see [CMAKE.md](CMAKE.md).
 
 ## Contributing
 
