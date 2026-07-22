@@ -6,11 +6,17 @@
 # toolset-matched zlib/png variants via opendcl_ensure_runtime_png().
 #
 # Target naming (arch, CRT, and toolset are ALWAYS present):
-#   opendcl_{zlib|png}_{x86|x64}_{md|mt}_{toolset}
+#   opendcl_{zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
 # Examples:
-#   opendcl_zlib_x64_md_v143     host toolset, /MD (runtime default on VS2022)
-#   opendcl_png_x64_mt_v143      host toolset, /MT (Studio)
+#   opendcl_zlib_x64_md_v143     host toolset, /MD  (Debug + fake FullDebug + Release)
+#   opendcl_zlib_x64_mdd_v143    host toolset, /MDd (real host-debug FullDebug)
+#   opendcl_png_x64_mt_v143      host toolset, /MT  (Studio)
 #   opendcl_png_x86_md_v100      compiled with v100, /MD
+#
+# CRT pairs for CAD modules under solution FullDebug:
+#   *_md_*   — always /MD; FullDebug outputs map beside Debug ("fake" FullDebug)
+#   *_mdd_*  — /MDd for Debug + FullDebug; separate FullDebug outs ("real" FullDebug)
+# Modules with fulldebug.<family>.props link mdd; everyone else links md.
 #
 # Solution Explorer folders (classic-like):
 #   Library/ZLib
@@ -74,8 +80,8 @@ string(REGEX REPLACE "[^A-Za-z0-9]" "_" OPENDCL_HOST_TOOLSET_TAG "${_opendcl_hos
 set(OPENDCL_HOST_TOOLSET_TAG "${OPENDCL_HOST_TOOLSET_TAG}" CACHE INTERNAL
   "Sanitized host VS toolset tag for Library target names (e.g. v143)")
 
-# name: opendcl_{zlib|png}_{x86|x64}_{md|mt}_{toolset}
-# runtime_lib: "md" | "mt"
+# name: opendcl_{zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
+# runtime_lib: "md" | "mdd" | "mt"
 # toolset_tag (optional 5th arg): out leaf under Library/ts/<tag>/…
 function(opendcl_add_static_lib name arch sources runtime_lib)
   set(_toolset_tag "")
@@ -93,13 +99,22 @@ function(opendcl_add_static_lib name arch sources runtime_lib)
     set(_out_base "${OPENDCL_OUTPUT_ROOT}/Library/${arch}-${runtime_lib}")
   endif()
   if(runtime_lib STREQUAL "mt")
+    # Studio /MT: FullDebug maps beside Debug (no separate FullDebug product).
     set(_rtl "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>")
     opendcl_map_fulldebug_to_debug(${name} "${_out_base}")
+  elseif(runtime_lib STREQUAL "mdd")
+    # Real host-debug FullDebug: /MDd for Debug + FullDebug; keep FullDebug outs.
+    set(_rtl "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>DLL")
+    set_target_properties(${name} PROPERTIES
+      ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${_out_base}/Debug"
+      ARCHIVE_OUTPUT_DIRECTORY_FULLDEBUG "${_out_base}/FullDebug"
+      ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${_out_base}/Release"
+    )
   else()
-    # /MD modules use FullDebug == Debug CRT by default; map FullDebug zlib/png
-    # beside Debug so ARX can build FullDebug without /MDd host debug libs.
-    # fulldebug.<family>.props may switch a module to /MDd — then rebuild zlib
-    # FullDebug with /MDd or keep hybrid /MD (classic ARX-style).
+    # /MD for all configs (Debug, fake FullDebug, Release). FullDebug → Debug outs.
+    if(NOT runtime_lib STREQUAL "md")
+      message(FATAL_ERROR "opendcl_add_static_lib: runtime_lib must be md, mdd, or mt (got '${runtime_lib}')")
+    endif()
     set(_rtl "MultiThreadedDLL")
     opendcl_map_fulldebug_to_debug(${name} "${_out_base}")
   endif()
@@ -162,59 +177,61 @@ function(opendcl_png_lib_toolset toolset out_var)
   endif()
 endfunction()
 
-# Ensure /MD zlib+png exist for (arch, module_toolset). Always full names with toolset.
-function(opendcl_ensure_runtime_png arch toolset out_zlib out_png)
+# Apply toolset / SDK pin to a zlib or png static lib created on demand.
+function(opendcl_configure_runtime_static_lib tgt lib_ts crt_label)
+  set_property(TARGET ${tgt} PROPERTY VS_PLATFORM_TOOLSET "${lib_ts}")
+  if(lib_ts MATCHES "^v(70|80|90|100|110)")
+    set_target_properties(${tgt} PROPERTIES
+      CXX_STANDARD 98
+      CXX_STANDARD_REQUIRED OFF
+      CXX_EXTENSIONS OFF
+    )
+  elseif(MSVC)
+    # v120+: parallel cl needs /FS for shared vc*.pdb (C1041).
+    target_compile_options(${tgt} PRIVATE "/FS")
+  endif()
+  # Old toolsets under VS2022: pin kit + mt.exe path (same as runtime modules).
+  if(lib_ts MATCHES "^v(70|80|90|100|110|120|140)")
+    set(_lib_winsdk "10.0.19041.0")
+    if(DEFINED OPENDCL_LEGACY_WINDOWS_SDK AND OPENDCL_LEGACY_WINDOWS_SDK)
+      set(_lib_winsdk "${OPENDCL_LEGACY_WINDOWS_SDK}")
+    endif()
+    opendcl_vs_pin_windows_sdk(${tgt} "${_lib_winsdk}")
+  endif()
+  message(STATUS "Library: ${tgt} (toolset ${lib_ts}, ${crt_label})")
+endfunction()
+
+# Ensure zlib+png exist for (arch, module_toolset, CRT).
+# runtime_crt: "md" (fake FullDebug / always /MD) or "mdd" (real FullDebug /MDd)
+function(opendcl_ensure_runtime_png arch toolset runtime_crt out_zlib out_png)
   if(NOT arch STREQUAL "x64" AND NOT arch STREQUAL "x86")
     message(FATAL_ERROR "opendcl_ensure_runtime_png: arch must be x64 or x86 (got '${arch}')")
+  endif()
+  if(NOT runtime_crt STREQUAL "md" AND NOT runtime_crt STREQUAL "mdd")
+    message(FATAL_ERROR "opendcl_ensure_runtime_png: runtime_crt must be md or mdd (got '${runtime_crt}')")
   endif()
 
   opendcl_png_lib_toolset("${toolset}" _lib_ts)
   string(REGEX REPLACE "[^A-Za-z0-9]" "_" _ts_safe "${_lib_ts}")
-  set(_z "opendcl_zlib_${arch}_md_${_ts_safe}")
-  set(_p "opendcl_png_${arch}_md_${_ts_safe}")
+  set(_z "opendcl_zlib_${arch}_${runtime_crt}_${_ts_safe}")
+  set(_p "opendcl_png_${arch}_${runtime_crt}_${_ts_safe}")
+
+  if(runtime_crt STREQUAL "mdd")
+    set(_crt_label "/MDd")
+  else()
+    set(_crt_label "/MD")
+  endif()
 
   # Default host pair is created at the bottom of this file; only create extras here.
   if(NOT TARGET ${_z})
-    opendcl_add_static_lib(${_z} ${arch} "${OPENDCL_ZLIB_SOURCES}" md "${_ts_safe}")
-    set_property(TARGET ${_z} PROPERTY VS_PLATFORM_TOOLSET "${_lib_ts}")
-    if(_lib_ts MATCHES "^v(70|80|90|100|110)")
-      set_target_properties(${_z} PROPERTIES
-        CXX_STANDARD 98
-        CXX_STANDARD_REQUIRED OFF
-        CXX_EXTENSIONS OFF
-      )
-    elseif(MSVC)
-      # v120+: parallel cl needs /FS for shared vc*.pdb (C1041).
-      target_compile_options(${_z} PRIVATE "/FS")
-    endif()
-    # Old toolsets under VS2022: pin kit + mt.exe path (same as runtime modules).
-    if(_lib_ts MATCHES "^v(70|80|90|100|110|120|140)")
-      set(_lib_winsdk "10.0.19041.0")
-      if(DEFINED OPENDCL_LEGACY_WINDOWS_SDK AND OPENDCL_LEGACY_WINDOWS_SDK)
-        set(_lib_winsdk "${OPENDCL_LEGACY_WINDOWS_SDK}")
-      endif()
-      opendcl_vs_pin_windows_sdk(${_z} "${_lib_winsdk}")
-    endif()
-    message(STATUS "Library: ${_z} (toolset ${_lib_ts}, /MD)")
+    opendcl_add_static_lib(${_z} ${arch} "${OPENDCL_ZLIB_SOURCES}" ${runtime_crt} "${_ts_safe}")
+    opendcl_configure_runtime_static_lib(${_z} "${_lib_ts}" "${_crt_label}")
   endif()
 
   if(NOT TARGET ${_p})
-    opendcl_add_static_lib(${_p} ${arch} "${OPENDCL_PNG_SOURCES}" md "${_ts_safe}")
-    set_property(TARGET ${_p} PROPERTY VS_PLATFORM_TOOLSET "${_lib_ts}")
-    if(_lib_ts MATCHES "^v(70|80|90|100|110)")
-      # no /FS on pre-v120
-    elseif(MSVC)
-      target_compile_options(${_p} PRIVATE "/FS")
-    endif()
-    if(_lib_ts MATCHES "^v(70|80|90|100|110|120|140)")
-      set(_lib_winsdk "10.0.19041.0")
-      if(DEFINED OPENDCL_LEGACY_WINDOWS_SDK AND OPENDCL_LEGACY_WINDOWS_SDK)
-        set(_lib_winsdk "${OPENDCL_LEGACY_WINDOWS_SDK}")
-      endif()
-      opendcl_vs_pin_windows_sdk(${_p} "${_lib_winsdk}")
-    endif()
+    opendcl_add_static_lib(${_p} ${arch} "${OPENDCL_PNG_SOURCES}" ${runtime_crt} "${_ts_safe}")
+    opendcl_configure_runtime_static_lib(${_p} "${_lib_ts}" "${_crt_label}")
     target_link_libraries(${_p} PUBLIC ${_z})
-    message(STATUS "Library: ${_p} (toolset ${_lib_ts}, /MD)")
   endif()
 
   set(${out_zlib} "${_z}" PARENT_SCOPE)
@@ -230,9 +247,30 @@ else()
   set(_ha "x86")
 endif()
 
+# /MD pair — Debug, fake FullDebug (maps to Debug), Release.
 opendcl_add_static_lib(opendcl_zlib_${_ha}_md_${_hts} ${_ha} "${_ZLIB_SOURCES}" md)
 opendcl_add_static_lib(opendcl_png_${_ha}_md_${_hts} ${_ha} "${_PNG_SOURCES}" md)
 target_link_libraries(opendcl_png_${_ha}_md_${_hts} PUBLIC opendcl_zlib_${_ha}_md_${_hts})
+
+# /MDd pair — real host-debug FullDebug (only when FullDebug is a solution config).
+set(_opendcl_have_fulldebug FALSE)
+if(CMAKE_CONFIGURATION_TYPES)
+  if("FullDebug" IN_LIST CMAKE_CONFIGURATION_TYPES)
+    set(_opendcl_have_fulldebug TRUE)
+  endif()
+elseif(CMAKE_BUILD_TYPE STREQUAL "FullDebug")
+  set(_opendcl_have_fulldebug TRUE)
+endif()
+if(_opendcl_have_fulldebug)
+  opendcl_add_static_lib(opendcl_zlib_${_ha}_mdd_${_hts} ${_ha} "${_ZLIB_SOURCES}" mdd)
+  opendcl_add_static_lib(opendcl_png_${_ha}_mdd_${_hts} ${_ha} "${_PNG_SOURCES}" mdd)
+  target_link_libraries(opendcl_png_${_ha}_mdd_${_hts} PUBLIC opendcl_zlib_${_ha}_mdd_${_hts})
+  set(OPENDCL_ZLIB_MDD_TARGET "opendcl_zlib_${_ha}_mdd_${_hts}" CACHE INTERNAL "")
+  set(OPENDCL_PNG_MDD_TARGET  "opendcl_png_${_ha}_mdd_${_hts}"  CACHE INTERNAL "")
+else()
+  unset(OPENDCL_ZLIB_MDD_TARGET CACHE)
+  unset(OPENDCL_PNG_MDD_TARGET CACHE)
+endif()
 
 opendcl_add_static_lib(opendcl_zlib_${_ha}_mt_${_hts} ${_ha} "${_ZLIB_SOURCES}" mt)
 opendcl_add_static_lib(opendcl_png_${_ha}_mt_${_hts} ${_ha} "${_PNG_SOURCES}" mt)
@@ -244,6 +282,12 @@ set(OPENDCL_PNG_MD_TARGET  "opendcl_png_${_ha}_md_${_hts}"  CACHE INTERNAL "")
 set(OPENDCL_ZLIB_MT_TARGET "opendcl_zlib_${_ha}_mt_${_hts}" CACHE INTERNAL "")
 set(OPENDCL_PNG_MT_TARGET  "opendcl_png_${_ha}_mt_${_hts}"  CACHE INTERNAL "")
 
-message(STATUS
-  "Library: host ${_ha} toolset ${_hts}  "
-  "md=${OPENDCL_PNG_MD_TARGET}  mt=${OPENDCL_PNG_MT_TARGET}")
+if(_opendcl_have_fulldebug)
+  message(STATUS
+    "Library: host ${_ha} toolset ${_hts}  "
+    "md=${OPENDCL_PNG_MD_TARGET}  mdd=${OPENDCL_PNG_MDD_TARGET}  mt=${OPENDCL_PNG_MT_TARGET}")
+else()
+  message(STATUS
+    "Library: host ${_ha} toolset ${_hts}  "
+    "md=${OPENDCL_PNG_MD_TARGET}  mt=${OPENDCL_PNG_MT_TARGET}")
+endif()

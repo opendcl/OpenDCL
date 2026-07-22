@@ -147,10 +147,10 @@ function(opendcl_add_runtime id)
   #
   # Debug vs FullDebug (see Runtime/StdAfx.h "DEBUG workaround"):
   #   Debug:     _DEBUG, no AC_FULL_DEBUG → PCH #undef _DEBUG around MFC/ATL/STL; /MD
-  #   FullDebug: same as Debug in the generated project so all families can build
-  #              without host debug libs. Opt-in host-debug FullDebug via
-  #              <repo-parent>/fulldebug.<family>.props (defines AC_FULL_DEBUG /
-  #              BRX_BCAD_DEBUG, debug LIB dirs, optional /MDd).
+  #   FullDebug: same as Debug by default so all families can build without host
+  #              debug libs. Opt-in host-debug FullDebug via
+  #              <repo-parent>/fulldebug.<family>.props (AC_FULL_DEBUG /
+  #              BRX_BCAD_DEBUG, debug LIB dirs, /MDd via MSVC_RUNTIME_LIBRARY).
   #   Release:   NDEBUG; /MD
   #
   # Character set: default Unicode (classic modern modules). MultiByte only where
@@ -179,9 +179,16 @@ function(opendcl_add_runtime id)
     $<$<STREQUAL:${_arch},x64>:_WIN64>
   )
 
-  # CRT: Debug, FullDebug, and Release all /MD by default. fulldebug.*.props may
-  # set RuntimeLibrary to MultiThreadedDebugDLL for families with host debug libs.
-  set(_rt_lib "MultiThreadedDLL")
+  # CRT: Debug + Release always /MD. FullDebug /MDd only when this family has
+  # fulldebug.<family>.props (host-debug). Otherwise FullDebug stays /MD so ARX
+  # (release ObjectARX libs) does not LNK4098 MSVCRTD. Props alone cannot override
+  # the vcxproj ItemDefinitionGroup RuntimeLibrary — set it here.
+  opendcl_family_has_fulldebug_props("${_family}" _fd_host)
+  if(_fd_host)
+    set(_rt_lib "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL")
+  else()
+    set(_rt_lib "MultiThreadedDLL")
+  endif()
 
   # Mirror classic layout so Common/Workspace.cpp F5 debug loading finds Runtime.Res:
   #   Runtime/<FAMILY>/<ID>/<Config>/OpenDCL.*.brx|arx|...
@@ -300,13 +307,23 @@ function(opendcl_add_runtime id)
     target_link_options(${_target} PRIVATE ${_link_opts})
   endif()
 
-  # LNK4099: missing PDB for SDK import libs (e.g. rxapi.lib / BRX imports).
-  # /IGNORE:4099 is reliable on MSVC toolsets v100+ (VS2010). Older linkers
-  # (v70/v80/v90) may reject the switch — skip there.
-  if(_toolset MATCHES "^v([0-9]+)")
-    if(CMAKE_MATCH_1 GREATER_EQUAL 100)
-      target_link_options(${_target} PRIVATE "/IGNORE:4099")
-    endif()
+  # Host-SDK linker noise (not product bugs). Classic modules used /IGNORE:4099.
+  #   LNK4099 — missing PDBs on import libs (rxapi, acedapi, grxport, ZwZrx, …)
+  # Residual on older toolsets (≤v110): some linkers still print LNK4099 even with
+  # /IGNORE; leave it. No fix without proprietary SDK .pdb files.
+  #   LNK4075 — ignoring /INCREMENTAL due to /LTCG (GRX/ZRX SDK objs built /GL).
+  # MS documents LNK4075 as non-ignorable; /IGNORE:4075 is a no-op. Fix by not
+  # requesting incremental link when LTCG will win (classic GRX/ZRX used /LTCG).
+  # ZRX older MFC import mixes (mfcs*u vs mfc*) → LNK4098 defaultlib conflicts.
+  if(MSVC)
+    target_link_options(${_target} PRIVATE "/IGNORE:4099")
+  endif()
+  if(_family STREQUAL "GRX" OR _family STREQUAL "ZRX")
+    # Debug/FullDebug default LinkIncremental=true → LNK4075 once LTCG engages.
+    target_link_options(${_target} PRIVATE "/INCREMENTAL:NO")
+  endif()
+  if(_family STREQUAL "ZRX")
+    target_link_options(${_target} PRIVATE "/IGNORE:4098")
   endif()
 
   # Common Windows / media libs from historical vcxproj
@@ -333,8 +350,9 @@ function(opendcl_add_runtime id)
   # Classic CAD modules: no embed-manifest / mt.exe (pin path already sets this).
   opendcl_vs_disable_manifest(${_target})
 
-  # No /NODEFAULTLIB CRT hacks: module, MFC (/MD vs /MDd), and static deps
-  # (zlib/png *-md) must all use the same runtime library per config.
+  # No /NODEFAULTLIB CRT hacks: module, MFC, and static deps must match CRT.
+  # Fake FullDebug + Debug/Release → *_md_* (/MD).
+  # Real host-debug FullDebug only → *_mdd_* (/MDd); Debug/Release still md.
 
   # Arch + toolset-matched third-party static libs (see Library/CMakeLists.txt).
   # Older toolsets (≤ v140) cannot link default VS2022 UCRT-built zlib/png.
@@ -343,8 +361,18 @@ function(opendcl_add_runtime id)
   else()
     set(_png_arch "x86")
   endif()
-  opendcl_ensure_runtime_png("${_png_arch}" "${_toolset}" _zlib_tgt _png_tgt)
-  target_link_libraries(${_target} PRIVATE ${_zlib_tgt} ${_png_tgt})
+  opendcl_ensure_runtime_png("${_png_arch}" "${_toolset}" md _zlib_md _png_md)
+  if(_fd_host)
+    opendcl_ensure_runtime_png("${_png_arch}" "${_toolset}" mdd _zlib_mdd _png_mdd)
+    target_link_libraries(${_target} PRIVATE
+      "$<$<CONFIG:FullDebug>:${_zlib_mdd}>"
+      "$<$<CONFIG:FullDebug>:${_png_mdd}>"
+      "$<$<NOT:$<CONFIG:FullDebug>>:${_zlib_md}>"
+      "$<$<NOT:$<CONFIG:FullDebug>>:${_png_md}>"
+    )
+  else()
+    target_link_libraries(${_target} PRIVATE ${_zlib_md} ${_png_md})
+  endif()
 
   # Default ENU runtime resources when present natively in this tree.
   # classic_x86 / full nest gate is attached later in opendcl_add_win32_nest

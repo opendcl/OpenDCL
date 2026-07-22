@@ -1695,7 +1695,7 @@ void CPropertyGridCtrl::ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LP
 		0,
 		0,
 		bstr_t( pszCaption ),
-		rpUnknown.GetSize(),
+		static_cast<ULONG>( rpUnknown.GetSize() ),
 		rpUnknown.GetData(),
 		ctPropPages,
 		pPropPages,

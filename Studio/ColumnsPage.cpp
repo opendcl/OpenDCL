@@ -189,7 +189,7 @@ BOOL CColumnsPage::OnInitDialog()
 			m_ColData[i].m_Width,
 			NULL,
 			0,
-			i,
+			static_cast<int>( i ),
 			m_ColData[i].m_Image,
 		};
 		if( m_ColData[i].m_Image >= 0 )

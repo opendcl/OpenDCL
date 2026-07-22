@@ -202,11 +202,43 @@ option(OPENDCL_RUNTIME_REQUIRE_SELECTED
 # FullDebug host *debug* upgrades (optional, machine-local).
 #
 # CMake generates FullDebug for CAD modules with the same CRT/defines/libdirs as
-# Debug. Real host-debug FullDebug (AC_FULL_DEBUG, BRX_BCAD_DEBUG, debug LIB
-# paths) is opt-in via:
+# Debug (/MD, release SDK). Real host-debug FullDebug (AC_FULL_DEBUG,
+# BRX_BCAD_DEBUG, /MDd, debug LIB paths) is opt-in via:
 #   <parent-of-checkout>/fulldebug.<family>.props   e.g. fulldebug.brx.props
 # imported only for FullDebug when that file exists (see
 # opendcl_vs_attach_libdir_props). Proprietary debug trees: never auto-scan.
+#
+# CRT policy (per family, configure-time):
+#   fulldebug.<family>.props present → FullDebug module /MDd + zlib/png *_mdd_*
+#   otherwise                          → FullDebug module /MD  + zlib/png *_md_*
+# Separate static lib trees avoid LNK4098 when ARX (fake FullDebug /MD) and BRX
+# (real FullDebug /MDd) share one solution configuration.
+
+function(opendcl_fulldebug_props_path family out_path)
+  string(TOLOWER "${family}" _fam_lc)
+  get_filename_component(_opendcl_repo_parent "${CMAKE_SOURCE_DIR}" DIRECTORY)
+  set(${out_path} "${_opendcl_repo_parent}/fulldebug.${_fam_lc}.props" PARENT_SCOPE)
+endfunction()
+
+function(opendcl_family_has_fulldebug_props family out_var)
+  opendcl_fulldebug_props_path("${family}" _p)
+  if(EXISTS "${_p}")
+    set(${out_var} TRUE PARENT_SCOPE)
+  else()
+    set(${out_var} FALSE PARENT_SCOPE)
+  endif()
+endfunction()
+
+function(opendcl_any_fulldebug_host_props out_var)
+  get_filename_component(_opendcl_repo_parent "${CMAKE_SOURCE_DIR}" DIRECTORY)
+  set(_found FALSE)
+  foreach(_fam IN ITEMS arx brx grx zrx)
+    if(EXISTS "${_opendcl_repo_parent}/fulldebug.${_fam}.props")
+      set(_found TRUE)
+    endif()
+  endforeach()
+  set(${out_var} ${_found} PARENT_SCOPE)
+endfunction()
 
 set(OPENDCL_LANGS "ENU" CACHE STRING
   "Semicolon-separated language codes for resource DLLs (ENU;DEU;...)")
@@ -351,12 +383,34 @@ function(opendcl_vs_attach_libdir_props target family release_dirs)
   string(APPEND _xml "  <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\"\n")
   string(APPEND _xml "         Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" />\n")
 
-  if(_rel_ms)
-    # Debug and FullDebug share release SDK libdirs; fulldebug.*.props may prepend debug dirs.
+  # Optional host-debug LIB dir macros (expanded by MSBuild at build time).
+  # Prefer these *before* release SDK libs so FullDebug + /MDd links host debug
+  # imports (empty/missing dirs are ignored by the linker).
+  set(_fd_host_prefix "")
+  if(EXISTS "${_fd_props_abs}")
+    if(_fam_lc STREQUAL "brx")
+      set(_fd_host_prefix "$(BRX_PATH)\\lib\\vc143x64\\Debug;$(BrxDebugLibs)")
+    elseif(_fam_lc STREQUAL "arx")
+      set(_fd_host_prefix "$(ARX_DEBUG_LIBDIR)")
+    endif()
+  endif()
+
+  if(_rel_ms OR _fd_host_prefix)
     foreach(_cfg IN ITEMS Debug FullDebug Release)
+      set(_dirs "${_rel_ms}")
+      if(_cfg STREQUAL "FullDebug" AND _fd_host_prefix)
+        if(_dirs)
+          set(_dirs "${_fd_host_prefix};${_dirs}")
+        else()
+          set(_dirs "${_fd_host_prefix}")
+        endif()
+      endif()
+      if(NOT _dirs)
+        continue()
+      endif()
       string(APPEND _xml "  <ItemDefinitionGroup Condition=\"'$(Configuration)'=='${_cfg}'\">\n")
       string(APPEND _xml "    <Link>\n")
-      string(APPEND _xml "      <AdditionalLibraryDirectories>${_rel_ms};%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>\n")
+      string(APPEND _xml "      <AdditionalLibraryDirectories>${_dirs};%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>\n")
       string(APPEND _xml "    </Link>\n")
       string(APPEND _xml "  </ItemDefinitionGroup>\n")
     endforeach()
@@ -372,6 +426,11 @@ function(opendcl_vs_attach_libdir_props target family release_dirs)
   string(APPEND _xml "</Project>\n")
   file(WRITE "${_props}" "${_xml}")
 
+  # Single import path for fulldebug.*.props (via this user props sheet only).
+  # Do NOT also ForceImportAfterCppProps — MSBuild errors if the same .props is
+  # imported twice. FullDebug /MDd is set on the target via MSVC_RUNTIME_LIBRARY
+  # when fulldebug.<family>.props exists (props RuntimeLibrary cannot override a
+  # later vcxproj ItemDefinitionGroup).
   set_target_properties(${target} PROPERTIES VS_USER_PROPS "${_props}")
 endfunction()
 
