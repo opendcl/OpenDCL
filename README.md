@@ -10,7 +10,8 @@ version **10.1.1.1** — see `Runtime/ARX.rc` FILEVERSION / PRODUCTVERSION).
 | Resource | URL |
 | --- | --- |
 | Project site / downloads | [https://opendcl.github.io/](https://opendcl.github.io/) (GitHub Pages) · [https://www.opendcl.com/](https://www.opendcl.com/) |
-| Forum | [https://www.opendcl.com/forum/](https://www.opendcl.com/forum/) |
+| Community (new Q&A) | [GitHub Discussions](https://github.com/opendcl/community/discussions) |
+| Forum archive (history) | [https://opendcl.github.io/forum-archive/](https://opendcl.github.io/forum-archive/) |
 | Online help | [https://opendcl.github.io/HelpFiles/](https://opendcl.github.io/HelpFiles/) or [https://www.opendcl.com/HelpFiles/](https://www.opendcl.com/HelpFiles/) |
 | Releases (installers) | [GitHub Releases](https://github.com/opendcl/OpenDCL/releases) (when published) |
 | Historical project | [SourceForge OpenDCL](https://sourceforge.net/projects/opendcl/) |
@@ -71,8 +72,8 @@ There is no public CI build that produces official installers from this tree alo
 
 ## Contributing
 
-- Discuss product and localization topics on the [OpenDCL forums](https://www.opendcl.com/forum/).
-- Source discussion board: [Source Code](https://www.opendcl.com/forum/index.php?board=4.0).
+- Discuss product topics in [OpenDCL community Discussions](https://github.com/opendcl/community/discussions).
+- Historic forum threads: [forum archive](https://opendcl.github.io/forum-archive/).
 - Prefer pull requests against `main` once the GitHub project is active.
 
 ## History
