@@ -194,28 +194,74 @@ CString CWorkspace::GetLanguage(void) const
 	//return _T("ENU");
 }
 
+// Peel one trailing directory (path ends with separator).
+static CString PeelTrailingDirectory( CString sPath )
+{
+	if( sPath.IsEmpty() )
+		return sPath;
+	int cch = sPath.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+	if( cch <= 0 )
+		return CString();
+	return sPath.Mid( cch + 1 ).MakeReverse();
+}
+
+static bool IsExistingDirectory( LPCTSTR pszPath )
+{
+	DWORD dwAttr = ::GetFileAttributes( pszPath );
+	return dwAttr != INVALID_FILE_ATTRIBUTES && ( dwAttr & FILE_ATTRIBUTE_DIRECTORY ) != 0;
+}
+
+// sBase + Localized/<lang>/Content or Studio/Localized/<lang>/Content
+static CString TryLanguageContentFolder( const CString& sBase, const CString& sLanguage )
+{
+	CString sTry = sBase + _T("Localized\\") + sLanguage + _T("\\Content\\");
+	if( IsExistingDirectory( sTry ) )
+		return sTry;
+	sTry = sBase + _T("Studio\\Localized\\") + sLanguage + _T("\\Content\\");
+	if( IsExistingDirectory( sTry ) )
+		return sTry;
+	return CString();
+}
+
 CString CWorkspace::GetLanguageSubfolderPath(void) const
 {
-	CString sLangSubfolder;
-	int cchPath = ::GetModuleFileName( GetResourceModule(), sLangSubfolder.GetBuffer( MAX_PATH ), MAX_PATH );
-	sLangSubfolder.ReleaseBuffer( cchPath );
-	if( sLangSubfolder.IsEmpty() )
+	CString sModuleDir;
+	int cchPath = ::GetModuleFileName( GetResourceModule(), sModuleDir.GetBuffer( MAX_PATH ), MAX_PATH );
+	sModuleDir.ReleaseBuffer( cchPath );
+	if( sModuleDir.IsEmpty() )
 		return CString();
-	sLangSubfolder.MakeReverse();
-	sLangSubfolder = sLangSubfolder.Mid( sLangSubfolder.SpanExcluding( _T("\\/:") ).GetLength() );
-	sLangSubfolder.MakeReverse();
+	sModuleDir.MakeReverse();
+	sModuleDir = sModuleDir.Mid( sModuleDir.SpanExcluding( _T("\\/:") ).GetLength() );
+	sModuleDir.MakeReverse();
+
 	CString sLanguage = GetLanguage();
-#ifdef _DEBUG
-	//when running under the debugger, use the build project's language subfolder
-	int cchBuildFolder = sLangSubfolder.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
-	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
-	cchBuildFolder = sLangSubfolder.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
-	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
-	sLangSubfolder += _T("Localized\\");
-	sLanguage += _T("\\Content");
+	if( sLanguage.IsEmpty() )
+		sLanguage = _T("ENU");
+
+#ifndef _DEBUG
+	return sModuleDir + sLanguage + _T("\\");
+#else
+	// Debug Content is in the source tree (Studio/Localized/<lang>/Content).
+	// Classic OutDir peels to Studio; CMake out tree may need a parent walk.
+	CString sPeeled = PeelTrailingDirectory( PeelTrailingDirectory( sModuleDir ) );
+	CString sFound = TryLanguageContentFolder( sPeeled, sLanguage );
+	if( !sFound.IsEmpty() )
+		return sFound;
+
+	CString sWalk = sModuleDir;
+	for( int depth = 0; depth < 12 && !sWalk.IsEmpty(); ++depth )
+	{
+		sFound = TryLanguageContentFolder( sWalk, sLanguage );
+		if( !sFound.IsEmpty() )
+			return sFound;
+		CString sNext = PeelTrailingDirectory( sWalk );
+		if( sNext.IsEmpty() || sNext.GetLength() >= sWalk.GetLength() )
+			break;
+		sWalk = sNext;
+	}
+
+	return sPeeled + _T("Localized\\") + sLanguage + _T("\\Content\\");
 #endif
-	sLangSubfolder = sLangSubfolder + sLanguage + _T("\\");
-	return sLangSubfolder;
 }
 
 //display alert dialog; returns true if displayed, false if suppressed
