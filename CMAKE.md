@@ -36,6 +36,13 @@ CMake Visual Studio generators write **`build/<preset>/<preset>.sln`** (e.g.
 in the IDE. Override with `-DOPENDCL_SOLUTION_NAME=…`. Nested Win32 under a full
 preset is `build/vs2022-full/win32/vs2022-full-win32.sln`.
 
+**On-disk project layout** (VS generator): product `.vcxproj` files sit under
+product subdirs of the binary dir — `Library/`, `Runtime/` (modules +
+`Localized/` + `RxInstall/`), `Studio/`. Only CMake scaffolding (`ZERO_CHECK`,
+`ALL_BUILD`, cache/stamps) stays next to the `.sln`. After moving targets between
+dirs, reconfigure with `--fresh` (or delete stale root-level
+`OpenDCL_Runtime_*.vcxproj`) so old paths do not linger.
+
 ## Configure
 
 ### Requirements

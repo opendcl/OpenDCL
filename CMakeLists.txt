@@ -123,8 +123,10 @@ opendcl_add_res_win32_nest()
 if(OPENDCL_BUILD_RUNTIME OR OPENDCL_BUILD_RES_DLLS)
   add_subdirectory(Runtime/Localized)
 endif()
+# Runtime modules under Runtime/ so .vcxproj land in build/<preset>/Runtime/
+# (not the binary root next to the .sln). See Runtime/CMakeLists.txt.
 if(OPENDCL_BUILD_RUNTIME)
-  opendcl_add_selected_runtimes()
+  add_subdirectory(Runtime)
 endif()
 
 if(OPENDCL_BUILD_RXINSTALL)
