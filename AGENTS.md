@@ -269,12 +269,30 @@ when prompted. Timestamp default `http://ts.ssl.com`. Self-hosted runner only.
 Never commit PINs, PFX, or thumbprints. Public procedure: `/code-sign-release`.
 Operator machine values: private build-lab skill **`code-sign-operator`**.
 
-**Manual after every release (not automated yet):** Runtime “check for updates”
-POSTs to `http://opendcl.com/version/vercheck.php`, which reads plain-text
-`version/version.txt` (stable product name `OpenDCL Runtime`) or
-`version/version_dev.txt` (dev builds `OpenDCL Runtime Dev`). Update those files
-on the **opendcl.com** host to the new `A.B.C.D`. Public details:
-`/code-sign-release`. Local deploy paths: private **`code-sign-operator`**.
+**Manual after every release (not automated yet):** keep update-check version
+strings in sync on **`opendcl/opendcl.github.io`** (custom domain opendcl.com):
+
+| File | Role |
+|------|------|
+| `version/version.txt` | Stable `A.B.C.D` — GET by Runtime + AllSamples |
+| `version/version_dev.txt` | Dev/current `A.B.C.D` — GET by Runtime (Dev product) + AllSamples |
+| `assets/versions.js` | Download page / `/go` (`stable` / `current`) |
+
+**Runtime** (`UpdateCheck.cpp`) HTTPS-GETs those plain-text files, requires HTTP
+2xx, accepts only a trimmed `A.B.C.D` body (no digit-stripping of HTML), and
+compares locally. Product name `OpenDCL Runtime` → `version.txt`;  
+`OpenDCL Runtime Dev` → `version_dev.txt`. Tray action: `/download/`.
+
+**Studio sample** (`*ODCL:UpdateCheck` / `open_downloads_page`) GETs the same
+txt files; **Update** opens `/go?studio…` in the browser (JS redirect to the
+GitHub Release MSI; meta refresh stays on `/download/` only).
+
+**Legacy note:** older shipped Runtimes still POST `/version/vercheck.php` (PHP,
+not available on GitHub Pages). Those builds cannot self-update-check until
+upgraded once by other means (download page, Studio sample, etc.).
+
+Public procedure: `/code-sign-release`. Operator notes: private build-lab
+**`code-sign-operator`**.
 
 **Pre-ship dry run (private):** compile/package/test installers without publishing
 lives in private **`opendcl/build-lab`** (`RELEASE.md`, skill `dry-run-release`) —
@@ -312,6 +330,7 @@ Configure paths only in machine-local `fulldebug.<family>.props` (e.g. `$(BRX_PA
 ## Machine MSBuild overlays
 
 - `local.props` — optional, next to generated .sln (gitignored if under the repo).
-- `<parent-of-checkout>/fulldebug.<family>.props` — optional per-family FullDebug upgrade
-  (`fulldebug.brx.props`, `fulldebug.arx.props`, …). Imported only for FullDebug.
-  Without it, that family’s FullDebug matches Debug.
+- `<parent-of-checkout>/fulldebug.<family>.props` — optional per-family FullDebug
+  upgrade (`fulldebug.brx.props`, …). Host paths / F5 Command stay in that file
+  only. CMake late-imports it for FullDebug via `ForceImportAfterCppTargets`
+  (`$(SolutionDir)…`). Without it, that family’s FullDebug matches Debug (`/MD`).

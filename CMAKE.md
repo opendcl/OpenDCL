@@ -319,60 +319,58 @@ endfunction()
 
 1. **Debug** (`_DEBUG`, no `AC_FULL_DEBUG`): temporarily `#undef _DEBUG` while including MFC / ATL / STL so those headers do not force the debug CRT; then restores `_DEBUG` for app code. CRT **`/MD`**. Links **release** host libs (`SDK_LIB`).
 2. **FullDebug (default, CMake-generated)**: **identical to Debug** — `_DEBUG` only, **`/MD`**, release SDK libdirs. No `AC_FULL_DEBUG`. This lets you build **ARX and BRX** under solution FullDebug even when only one family has host debug libraries.
-3. **FullDebug (opt-in host-debug)**: when `<parent-of-checkout>/fulldebug.<family>.props` exists (e.g. `fulldebug.brx.props`), that sheet is imported **only for FullDebug** and can define `AC_FULL_DEBUG` / `BRX_BCAD_DEBUG`, prepend host debug LIB dirs, etc.
+3. **FullDebug (opt-in host-debug)**: when `<parent-of-checkout>/fulldebug.<family>.props` exists (e.g. `fulldebug.brx.props`), CMake selects **`/MDd`** for that family and **late-imports** the machine sheet for FullDebug only (defines, host include/lib dirs, optional F5 Command). Host paths stay **only** in that sheet — never hard-coded in the public tree.
 4. **Release**: `NDEBUG`, **`/MD`**, release host libs.
 
 With `AC_FULL_DEBUG`, StdAfx **keeps** `_DEBUG` through MFC/host headers (true host-debug compile).
 
 #### Machine overlays: `local.props` and `fulldebug.<family>.props`
 
-Each runtime’s generated `*.libdirs.props` (attached as `VS_USER_PROPS`):
-
-```xml
-<!-- Release SDK libdirs for Debug, FullDebug, and Release (FullDebug == Debug). -->
-
-<!-- 1) Sibling / SolutionDir local.props (all configs) -->
-<Import Project="local.props" Condition="exists(...)" />
-
-<!-- 2) Parent of the git checkout — family FullDebug upgrade (FullDebug only) -->
-<Import Project="..\..\..\fulldebug.brx.props"
-        Condition="'$(Configuration)'=='FullDebug' and exists(...)" />
-```
-
 | File | Role |
 | --- | --- |
 | `build/<preset>/local.props` | Optional solution-local overlay (all configs); gitignored |
-| `<repo-parent>/fulldebug.brx.props` | BRX host-debug FullDebug (defines + debug LIB dirs) |
+| `<repo-parent>/fulldebug.brx.props` | BRX host-debug FullDebug (machine-only; env macros) |
 | `<repo-parent>/fulldebug.arx.props` | Optional ARX host-debug FullDebug (same pattern) |
 | `fulldebug.grx.props` / `fulldebug.zrx.props` | Same for GRX/ZRX if needed |
 
-Example **`fulldebug.brx.props`** (outside the repo; uses env macros only):
+**How CMake wires them (no host paths in git):**
+
+1. **`*.libdirs.props`** (`VS_USER_PROPS`) — release SDK `AdditionalLibraryDirectories` for Debug / FullDebug / Release; optional `$(SolutionDir)local.props`.
+2. **`*.nomanifest.targets`** (`ForceImportAfterCppTargets`) — for FullDebug, if the machine sheet exists,  
+   `Import Project="$(SolutionDir)…\fulldebug.<family>.props"`.  
+   Late import so the sheet can override `LocalDebuggerCommand` and prepend host includes/libs after the `.vcxproj` body.
+
+VS **Property Manager** may not list the late-imported sheet; **build-time** evaluation still applies (verify with `CL.command` / `link.command` tlogs).
+
+Example machine **`fulldebug.brx.props`** (outside the repo; adjust macros to your machine):
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)'=='FullDebug'">
+    <LocalDebuggerCommand>$(DDCAD_PATH)\bin\vc143x64\Debug\bricscad.exe</LocalDebuggerCommand>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='FullDebug'">
     <ClCompile>
       <PreprocessorDefinitions>AC_FULL_DEBUG;BRX_BCAD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BRX_PATH)\brxsdk\inc_sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(BRX_FULLDEBUG_PATH)\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BRX_PATH)\lib\vc143x64\Debug;$(BrxDebugLibs);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>
 ```
 
 ```powershell
-$env:BRX27             = "S:\BRX27"   # release SDK (any modern BRX* root works for selection)
-$env:BRX_FULLDEBUG_PATH = "S:\BrxHostDebug"  # host-debug tree root for fulldebug.brx.props
+$env:BRX27 = "S:\BRX27"   # release SDK
+# Host-debug roots used only by fulldebug.brx.props (set in the user/machine env):
+#   BRX_PATH, DDCAD_PATH, optional BrxDebugLibs
 cmake --preset vs2022-x64-dev
-# FullDebug: BRX family gets AC_FULL_DEBUG + debug libs when selected;
-# other families without fulldebug.<family>.props stay Debug-equivalent.
-# Target name follows the enabled ID (example: OpenDCL_Runtime_BRX_27_x64):
 cmake --build build/vs2022-x64-dev --config FullDebug --target OpenDCL_Runtime_BRX_27_x64
 ```
 
-Do **not** scan proprietary CAD debug trees. Do not commit machine paths.
+Do **not** scan proprietary CAD debug trees. Do not commit machine paths or host-debug Command strings in public CMake.
 `local.props` is gitignored; `fulldebug.*.props` live **above** the repo.
 
 ## Product wiring (BRX.27 / RxInstall / WiX)

@@ -19,6 +19,14 @@
 static const UINT WM_MMTRAY_NOTIFY = WM_USER + 50;
 static const UINT ID_TOGGLEUPDATECHECK = WM_USER + 51;
 
+// Plain-text version endpoints on the static site (opendcl.github.io / opendcl.com).
+static const TCHAR gszVersionHostUrlStable[] =
+	_T("https://www.opendcl.com/version/version.txt");
+static const TCHAR gszVersionHostUrlDev[] =
+	_T("https://www.opendcl.com/version/version_dev.txt");
+static const CHAR gszDownloadActionUrl[] =
+	"https://www.opendcl.com/download/";
+
 
 struct UpdateCheckParams_t
 {
@@ -44,14 +52,17 @@ struct UpdateNotificationParams_t
 };
 
 
-static LPCSTR constructPostData( const UpdateCheckParams_t& Params );
 static bool CheckForUpdates( const UpdateCheckParams_t& Params, UpdateNotificationParams_t* pResponse = NULL );
 static DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam );
 static DWORD WINAPI BackgroundUpdateNotification( LPVOID pvParam );
 static LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 static ATOM trayIconWndClass();
-static CStringA UrlEncode( CStringA sUnsafe );
 static bool isUsingShellV1();
+static bool isDevProductName( const CStringA& sProductName );
+static bool httpGetText( LPCTSTR pszUrl, CStringA& sBody );
+static CStringA sanitizeVersionString( CStringA sVersion );
+static bool isFourPartVersion( const CStringA& sVersion );
+static int compareFourPartVersions( const CStringA& sLeft, const CStringA& sRight );
 
 
 ATOM trayIconWndClass()
@@ -93,52 +104,6 @@ bool UpdateCheck( LPCTSTR pszProductName, LPCTSTR pszInstalledVersion /*N.N.N.N 
 	return true;
 }
 
-LPCSTR constructPostData( const UpdateCheckParams_t& Params )
-{
-	static CStringA sEncodedData;
-	sEncodedData.Empty();
-	if( !Params.sProductName.IsEmpty() )
-	{
-		if( !sEncodedData.IsEmpty() )
-			sEncodedData += '&';
-		sEncodedData += "productName=";
-		sEncodedData += UrlEncode( Params.sProductName );
-	}
-	if( !Params.sInstalledVersion.IsEmpty() )
-	{
-		if( !sEncodedData.IsEmpty() )
-			sEncodedData += '&';
-		sEncodedData += "userVersion=";
-		sEncodedData += Params.sInstalledVersion;
-	}
-	if( !Params.sLanguage.IsEmpty() )
-	{
-		if( !sEncodedData.IsEmpty() )
-			sEncodedData += '&';
-		sEncodedData += "language=";
-		sEncodedData += Params.sLanguage;
-	}
-	return sEncodedData;
-}
-
-CStringA UrlEncode( CStringA sUnsafe )
-{
-	CStringA sSafe;
-	for( int idx = 0; idx < sUnsafe.GetLength(); ++idx )
-	{
-		CHAR chThis = sUnsafe[idx];
-		if( _istalnum( chThis ) )
-			sSafe += chThis;
-		else
-		{
-			CStringA sEnc;
-			sEnc.Format( "%%%02X", chThis );
-			sSafe += sEnc;
-		}
-	}
-	return sSafe;
-}
-
 bool isUsingShellV1()
 {
 	static bool bUsingShellV1 = false;
@@ -161,137 +126,222 @@ bool isUsingShellV1()
 	return bUsingShellV1;
 }
 
+bool isDevProductName( const CStringA& sProductName )
+{
+	// acrxEntryPoint: "OpenDCL Runtime" (stable) vs "OpenDCL Runtime Dev"
+	return sProductName.CompareNoCase( "OpenDCL Runtime Dev" ) == 0;
+}
+
+CStringA sanitizeVersionString( CStringA sVersion )
+{
+	sVersion.Trim( " \t\r\n" );
+	// Keep only digits and dots (mirrors historical vercheck.php safe_version).
+	CStringA sClean;
+	for( int idx = 0; idx < sVersion.GetLength(); ++idx )
+	{
+		CHAR ch = sVersion[idx];
+		if( ( ch >= '0' && ch <= '9' ) || ch == '.' )
+			sClean += ch;
+	}
+	return sClean;
+}
+
+bool isFourPartVersion( const CStringA& sVersion )
+{
+	// Product versions are always A.B.C.D (exactly four numeric parts).
+	// Reject "81" / "1.2" and digit soup extracted from HTML error pages.
+	if( sVersion.IsEmpty() )
+		return false;
+	int nParts = 0;
+	int nDigitsInPart = 0;
+	for( int idx = 0; idx < sVersion.GetLength(); ++idx )
+	{
+		CHAR ch = sVersion[idx];
+		if( ch >= '0' && ch <= '9' )
+		{
+			++nDigitsInPart;
+		}
+		else if( ch == '.' )
+		{
+			if( nDigitsInPart == 0 )
+				return false;
+			++nParts;
+			nDigitsInPart = 0;
+		}
+		else
+			return false;
+	}
+	if( nDigitsInPart == 0 )
+		return false;
+	++nParts;
+	return nParts == 4;
+}
+
+int compareFourPartVersions( const CStringA& sLeft, const CStringA& sRight )
+{
+	// Component-wise numeric compare; missing parts treat as 0.
+	int leftParts[4] = { 0, 0, 0, 0 };
+	int rightParts[4] = { 0, 0, 0, 0 };
+	int nLeft = 0;
+	int nRight = 0;
+	int nCur = 0;
+	for( int idx = 0; idx <= sLeft.GetLength() && nLeft < 4; ++idx )
+	{
+		if( idx == sLeft.GetLength() || sLeft[idx] == '.' )
+		{
+			leftParts[nLeft++] = nCur;
+			nCur = 0;
+		}
+		else if( sLeft[idx] >= '0' && sLeft[idx] <= '9' )
+			nCur = nCur * 10 + ( sLeft[idx] - '0' );
+	}
+	nCur = 0;
+	for( int idx = 0; idx <= sRight.GetLength() && nRight < 4; ++idx )
+	{
+		if( idx == sRight.GetLength() || sRight[idx] == '.' )
+		{
+			rightParts[nRight++] = nCur;
+			nCur = 0;
+		}
+		else if( sRight[idx] >= '0' && sRight[idx] <= '9' )
+			nCur = nCur * 10 + ( sRight[idx] - '0' );
+	}
+	for( int i = 0; i < 4; ++i )
+	{
+		if( leftParts[i] < rightParts[i] )
+			return -1;
+		if( leftParts[i] > rightParts[i] )
+			return 1;
+	}
+	return 0;
+}
+
+bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
+{
+	sBody.Empty();
+	HINTERNET hConnection = InternetOpen( _T("OpenDCL/1.0"),
+																				INTERNET_OPEN_TYPE_PRECONFIG,
+																				NULL,
+																				NULL,
+																				0 );
+	if( !hConnection )
+		return false;
+
+	// InternetOpenUrl follows redirects (http→https, apex→www) and uses HTTPS when the URL says so.
+	HINTERNET hRequest = InternetOpenUrl(
+		hConnection,
+		pszUrl,
+		NULL,
+		0,
+		INTERNET_FLAG_RELOAD |
+		INTERNET_FLAG_NO_CACHE_WRITE |
+		INTERNET_FLAG_SECURE,
+		0 );
+	if( !hRequest )
+	{
+		InternetCloseHandle( hConnection );
+		return false;
+	}
+
+	DWORD dwStatus = 0;
+	DWORD cbStatus = sizeof( dwStatus );
+	if( !HttpQueryInfo( hRequest,
+											HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER,
+											&dwStatus,
+											&cbStatus,
+											NULL ) ||
+			dwStatus < 200 || dwStatus > 299 )
+	{
+		InternetCloseHandle( hRequest );
+		InternetCloseHandle( hConnection );
+		return false;
+	}
+
+	// Version files are a few bytes; cap reads so a large error body cannot fill memory.
+	const DWORD kMaxBody = 64;
+	CHAR szChunk[64];
+	DWORD cbRead = 0;
+	while( InternetReadFile( hRequest, szChunk, sizeof(szChunk) - 1, &cbRead ) && cbRead > 0 )
+	{
+		szChunk[cbRead] = 0;
+		sBody += szChunk;
+		if( (DWORD)sBody.GetLength() >= kMaxBody )
+		{
+			sBody = sBody.Left( kMaxBody );
+			break;
+		}
+	}
+
+	InternetCloseHandle( hRequest );
+	InternetCloseHandle( hConnection );
+	return !sBody.IsEmpty();
+}
+
 bool CheckForUpdates( const UpdateCheckParams_t& Params, UpdateNotificationParams_t* pResponse /*= NULL*/ )
 {
 	bool bFailed = true;
 	try
 	{
-		HINTERNET hConnection = InternetOpen( _T("OpenDCL/1.0"),
-																					INTERNET_OPEN_TYPE_PRECONFIG,
-																					NULL,
-																					NULL,
-																					0 );
-		if( hConnection )
+		const TCHAR* pszUrl = isDevProductName( Params.sProductName )
+			? gszVersionHostUrlDev
+			: gszVersionHostUrlStable;
+
+		CStringA sInstalled = sanitizeVersionString( Params.sInstalledVersion );
+		CStringA sLatestRaw;
+		if( !httpGetText( pszUrl, sLatestRaw ) )
+			return false;
+
+		// Do not digit-strip the response: that turns HTML (e.g. viewport "1") into
+		// fake versions like "81". Accept only a trimmed plain A.B.C.D body.
+		CStringA sLatest = sLatestRaw;
+		sLatest.Trim( " \t\r\n" );
+		if( !isFourPartVersion( sLatest ) )
+			return false;
+
+		if( !isFourPartVersion( sInstalled ) )
+			sInstalled = "0.0.0.0";
+
+		if( compareFourPartVersions( sInstalled, sLatest ) >= 0 )
 		{
-			HINTERNET hSession = InternetConnect( hConnection,
-																						_T("opendcl.com"),
-																						INTERNET_DEFAULT_HTTP_PORT,
-																						_T(""),
-																						_T(""),
-																						INTERNET_SERVICE_HTTP,
-																						0,
-																						1 );
-			if( hSession )
+			// Installed version is current (or newer) — same as empty PHP response.
+			if( pResponse )
 			{
-				LPCTSTR rszAcceptType[] = { _T("text/*"), NULL };
-				HINTERNET hRequest = HttpOpenRequest( hSession,
-																							_T("POST"),
-																							_T("/version/vercheck.php"),
-																							NULL,
-																							NULL,
-																							rszAcceptType,
-																							(INTERNET_FLAG_NO_CACHE_WRITE |
-																							 INTERNET_FLAG_RELOAD /*|
-																							 INTERNET_FLAG_SECURE |
-																							 INTERNET_FLAG_IGNORE_CERT_DATE_INVALID*/), //ignore date, else Win95 fails
-																							1 );
-				if( hRequest )
-				{
-					CStringA sData = constructPostData( Params );
-					TCHAR szHeaders[] = _T("Content-Type: application/x-www-form-urlencoded");
-					if( HttpSendRequest( hRequest,
-															 szHeaders, lstrlen( szHeaders ),
-															 sData.LockBuffer(), sData.GetLength() ) )
-					{
-						DWORD cbRead;
-						CStringA sResponse;
-						if( InternetReadFile( hRequest, sResponse.GetBuffer( 512 ), 511, &cbRead ) )
-						{
-							sResponse.ReleaseBufferSetLength( cbRead );
-							if( sResponse.IsEmpty() )
-							{ //there is no update available
-								if( pResponse )
-								{
-									pResponse->sTitle.Empty();
-									pResponse->sMessage.Empty();
-									pResponse->sAction.Empty();
-								}
-								bFailed = false;
-							}
-							else
-							{
-								//If the response is not empty, it is assumed to be in a pseudo-XML format
-								static const CHAR szAttrNotification[] = "<Notification>";
-								static const CHAR szAttrNotificationEnd[] = "</Notification>";
-								int idxNotification = sResponse.Find( szAttrNotification );
-								if( idxNotification >= 0 )
-								{
-									CStringA sNotification = sResponse.Mid( idxNotification + _elements( szAttrNotification ) - 1 );
-									int idxNotificationEnd = sNotification.Find( szAttrNotificationEnd );
-									if( idxNotificationEnd >= 0 )
-										sNotification = sNotification.Left( idxNotificationEnd );
-									static const CHAR szAttrTitle[] = "<Title>";
-									static const CHAR szAttrTitleEnd[] = "</Title>";
-									static const CHAR szAttrMessage[] = "<Message>";
-									static const CHAR szAttrMessageEnd[] = "</Message>";
-									static const CHAR szAttrAction[] = "<Action>";
-									static const CHAR szAttrActionEnd[] = "</Action>";
-									CStringA sTitle;
-									CStringA sMessage;
-									CStringA sAction;
-									int idxTitle = sNotification.Find( szAttrTitle );
-									if( idxTitle >= 0 )
-									{
-										sTitle = sNotification.Mid( idxTitle + _elements( szAttrTitle ) - 1 );
-										int idxTitleEnd = sTitle.Find( szAttrTitleEnd );
-										if( idxTitleEnd >= 0 )
-											sTitle = sTitle.Left( idxTitleEnd );
-									}
-									int idxMessage = sNotification.Find( szAttrMessage );
-									if( idxMessage >= 0 )
-									{
-										sMessage = sNotification.Mid( idxMessage + _elements( szAttrMessage ) - 1 );
-										int idxMessageEnd = sMessage.Find( szAttrMessageEnd );
-										if( idxMessageEnd >= 0 )
-											sMessage = sMessage.Left( idxMessageEnd );
-									}
-									int idxAction = sNotification.Find( szAttrAction );
-									if( idxAction >= 0 )
-									{
-										sAction = sNotification.Mid( idxAction + _elements( szAttrAction ) - 1 );
-										int idxActionEnd = sAction.Find( szAttrActionEnd );
-										if( idxActionEnd >= 0 )
-											sAction = sAction.Left( idxActionEnd );
-									}
-									if( pResponse )
-									{
-										pResponse->sTitle = sTitle;
-										pResponse->sMessage = sMessage;
-										pResponse->sAction = sAction;
-										bFailed = false;
-									}
-									else
-									{
-										UpdateNotificationParams_t* pParams = new UpdateNotificationParams_t( sTitle, sMessage, sAction );
-										DWORD dwThreadId;
-										HANDLE hThread = CreateThread( NULL, 4096, BackgroundUpdateNotification, pParams, 0, &dwThreadId );
-										if( !hThread )
-											delete pParams;
-										else
-										{
-											CloseHandle( hThread );
-											bFailed = false;
-										}
-									}
-								}
-							}
-						}
-					}
-					InternetCloseHandle( hRequest );
-				}
-				InternetCloseHandle( hSession );
+				pResponse->sTitle.Empty();
+				pResponse->sMessage.Empty();
+				pResponse->sAction.Empty();
 			}
-			InternetCloseHandle( hConnection );
+			bFailed = false;
+		}
+		else
+		{
+			CStringA sTitle = "OpenDCL Update Available";
+			CStringA sMessage;
+			sMessage.Format(
+				"A newer version (%s) of OpenDCL is available. Click here to download the current version.",
+				(LPCSTR)sLatest );
+			CStringA sAction = gszDownloadActionUrl;
+
+			if( pResponse )
+			{
+				pResponse->sTitle = sTitle;
+				pResponse->sMessage = sMessage;
+				pResponse->sAction = sAction;
+				bFailed = false;
+			}
+			else
+			{
+				UpdateNotificationParams_t* pParams =
+					new UpdateNotificationParams_t( sTitle, sMessage, sAction );
+				DWORD dwThreadId;
+				HANDLE hThread = CreateThread( NULL, 4096, BackgroundUpdateNotification, pParams, 0, &dwThreadId );
+				if( !hThread )
+					delete pParams;
+				else
+				{
+					CloseHandle( hThread );
+					bFailed = false;
+				}
+			}
 		}
 	}
 	catch( ... )

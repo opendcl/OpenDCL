@@ -146,9 +146,14 @@ Tag: `v<ver>` (e.g. `v10.1.1.1`).
 **Online help** refresh: skill `/sync-help-to-website` (Studio Content →
 `opendcl.github.io/HelpFiles/`).
 
-**Runtime update-check (manual):** after publishing a release, update
-`opendcl.com/version/version.txt` (stable) and/or `version_dev.txt` (dev) to the
-new `A.B.C.D` string. The Runtime POSTs to `/version/vercheck.php` — see skill
+**Update-check versions (manual):** after publishing a release, update on
+`opendcl/opendcl.github.io` (and keep `assets/versions.js` in sync):
+
+- `version/version.txt` — stable `A.B.C.D`
+- `version/version_dev.txt` — dev/current `A.B.C.D`
+
+Runtime and AllSamples **GET** those plain-text files (HTTP 2xx + `A.B.C.D` only)
+and compare client-side. Keep in sync with `assets/versions.js`. See skill
 `code-sign-release`.
 ## UI branding (Studio MSI)
 

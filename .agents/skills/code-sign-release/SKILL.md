@@ -121,51 +121,51 @@ SSL.com eSigner / Cloud Key Adapter can automate signing without a PIN prompt.
 
 ## Manual post-release: website update-check versions (**do not skip**)
 
-The Runtime **check for updates** feature is **not** covered by WiX,
-`make-release`, or GitHub Releases. After every new **stable** or
-**development** ship, update the plain-text version files on **www.opendcl.com**.
+Update-check is **not** covered by WiX, `make-release`, or GitHub Releases.
+After every new **stable** or **development** ship, update plain-text version
+files (and the download JS) in **`opendcl/opendcl.github.io`** — custom domain
+`opendcl.com` / `www.opendcl.com` points at that Pages site.
 
-### How the Runtime calls home
+### Clients (current)
 
-From `Runtime/UpdateCheck.cpp`:
+| Client | Method | URL / path | Status on GitHub Pages |
+|--------|--------|------------|-------------------------|
+| Runtime `UpdateCheck.cpp` (new builds) | HTTPS **GET** + local compare | `/version/version.txt` or `version_dev.txt` | **Works** (static plain `A.B.C.D`; HTTP 2xx required) |
+| Studio sample `*ODCL:UpdateCheck` | HTTPS **GET** | same | **Works** |
+| Studio sample **Update** (`open_downloads_page`) | Browser | `/go?studio…` → GitHub Release MSI | **Works** (JS redirect; meta refresh → `/download/` only) |
+| **Legacy** Runtime (pre-client-GET builds) | HTTP **POST** | `/version/vercheck.php` | **Broken** on Pages (no PHP) |
 
-- HTTP **POST** to host `opendcl.com`, path `/version/vercheck.php`
-- Form fields: `productName`, `userVersion` (`A.B.C.D`), `language` (e.g. `ENU`)
-
-Product names from `Runtime/acrxEntryPoint.cpp`:
-
-| Build flavor | `productName` posted | Server file read by `vercheck.php` |
-|--------------|----------------------|-------------------------------------|
+| Build flavor | `productName` | Version file |
+|--------------|---------------|--------------|
 | **Release** (shipping) | `OpenDCL Runtime` | `version/version.txt` |
 | **Dev / non-release** | `OpenDCL Runtime Dev` | `version/version_dev.txt` |
+
+Tray notification **Action** opens `https://www.opendcl.com/download/`.
 
 ### Manual update (until automated)
 
 1. After the product release is published (installers signed + GitHub Release live).
-2. On the **opendcl.com** web host (or the deploy mirror), edit:
+2. In the **`opendcl.github.io`** repo, set the same four-part version in:
 
-   | File (under site `version/`) | When to update | Contents |
-   |------------------------------|----------------|----------|
-   | **`version.txt`** | Every **stable** release | Four-part version only, e.g. `10.1.1.1` |
-   | **`version_dev.txt`** | Every **development** build clients should see as newest dev | Same format |
+   | Path | When to update | Contents |
+   |------|----------------|----------|
+   | **`version/version.txt`** | Every **stable** release | Four-part only, e.g. `10.1.1.1` (no HTML) |
+   | **`version/version_dev.txt`** | Every **development** build clients should see as newest dev | Same format |
+   | **`assets/versions.js`** | Same ship | `stable` / `current` match the two files above |
 
-3. Deploy so these are reachable as:
-   - `http://opendcl.com/version/version.txt`
-   - `http://opendcl.com/version/version_dev.txt`
+3. Commit and push so Pages serves (verify after deploy):
+   - `https://www.opendcl.com/version/version.txt`
+   - `https://www.opendcl.com/version/version_dev.txt`
+   - Bodies must be bare `A.B.C.D` (not HTML). Clients require HTTP 2xx.
 
-**Note:** `vercheck.php` may still reference legacy download URLs in the
-notification Action. Updating **version numbers** is the required per-release
-step; fixing Action URLs can be a separate website change.
-
-Operator-local deploy paths for the site tree are documented only in private
-**build-lab** `code-sign-operator` (not here).
+Operator notes / local mirrors: private **build-lab** `code-sign-operator`.
 
 ### Release checklist (append)
 
 - [ ] Installers built, signed, GitHub Release `vA.B.C.D` published  
 - [ ] Localization packs refreshed if needed  
-- [ ] **`version.txt` and/or `version_dev.txt` updated on opendcl.com**  
-- [ ] Optional: `opendcl.github.io` `assets/versions.js` for the download page  
+- [ ] **`version/version.txt` and/or `version_dev.txt` updated in opendcl.github.io**  
+- [ ] **`assets/versions.js` `stable` / `current` match those files**  
 
 ## Security checklist
 
@@ -174,7 +174,7 @@ Operator-local deploy paths for the site tree are documented only in private
 - [ ] Broken old store entries not used for release  
 - [ ] `signtool verify /pa` succeeds on every shipped MSI/MSM  
 - [ ] Timestamp present  
-- [ ] **opendcl.com `version.txt` / `version_dev.txt` updated for this release**  
+- [ ] **opendcl.github.io `version/*.txt` + `assets/versions.js` updated for this release**  
 
 ## Capture lessons
 

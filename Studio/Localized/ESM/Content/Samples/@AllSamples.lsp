@@ -88,17 +88,17 @@
 )
 
 ;; Check for newer version; if found, prompt to download and install
-(DEFUN *ODCL:UpdateCheck (/ create_http request_http download_msi write_msi
+(DEFUN *ODCL:UpdateCheck (/ create_http request_http open_downloads_page
                             parse_version <version get_curver get_curlang
                             append_status)
   (vl-load-com)
-  (defun create_http () ; create and return WinHttpRequest object
+  (defun create_http () ; create WinHttpRequest object
     (cond
       ((vlax-create-object "WinHttp.WinHttpRequest.5.1"))
       ((vlax-create-object "WinHttp.WinHttpRequest.5"))
     )
   )
-  (defun request_http (url return / http disp pos location filename result) ; perform HTTP request
+  (defun request_http (url prop / http result) ; perform HTTP request
     (setq http (create_http))
     (setq result
       (vl-catch-all-apply
@@ -107,7 +107,7 @@
             (vlax-invoke-method http "Open" "GET" url :vlax-false)
             (vlax-invoke-method http "SetRequestHeader" "User-Agent" "OpenDCL AllSamples")
             (vlax-invoke-method http "Send")
-            (vlax-get-property http return)
+            (vlax-get-property http prop)
           )
         )
       )
@@ -118,95 +118,30 @@
     )
     result
   )
-  (defun download_msi (lang dev / result) ; download MSI via HTTP, return responsebody
-    (append_status "Downloading OpenDCL Studio installation file...")
-    ;; Construct file download URL and download file
-    ;; Note: to download runtime MSI, use http://opendcl.com/go?runtime and ignore language
-    (setq url "http://opendcl.com/go?studio")
+  (defun open_downloads_page (lang dev / url result)
+    (append_status "Opening OpenDCL Studio download in your browser...")
+    (setq url "https://www.opendcl.com/go?studio")
     (if lang (setq url (strcat url "&" (strcase lang T))))
     (if dev (setq url (strcat url "&dev")))
-    (setq result (request_http url "ResponseBody"))
-    (if result (append_status "  Downloaded successfully!"))
-
-    (if (and (setq result (request_http url "ResponseBody"))
-             (= (type result) 'VARIANT)
-             (not (zerop (vlax-variant-type result))))
-      (append_status "  Downloaded successfully!")
-      (progn
-        (append_status "  ERROR: The server's response did not contain any data!")
-        (setq result nil)
-      );
-    );
-
-    result
-  )
-  (defun write_msi (lang dev filename / result fso) ; write downloaded MSI to temp folder, return file path
-    (if (setq result (download_msi lang dev))
-      (progn
-        (setq fso (vlax-create-object "Scripting.FileSystemObject"))
-        (setq result
-          (vl-catch-all-apply
-            (function
-              (lambda (/ tempfolder filepath adostream filestream)
-                (append_status "Writing installation file to disk...")
-                (setq tempfolder (vlax-invoke-method fso "GetSpecialFolder" 2))
-                (setq filepath (strcat (vlax-get-property tempfolder "Path") "\\" filename))
-                (vlax-release-object tempfolder)
-                (cond
-                  ( (setq adostream (vlax-create-object "ADODB.Stream"))
-                    (setq result
-                      (vl-catch-all-apply
-                        (function
-                          (lambda ()
-                            (if (= :vlax-true (vlax-invoke-method fso "FileExists" filepath))
-                              (vlax-invoke-method fso "DeleteFile" filepath :vlax-true)
-                            )
-                            (vlax-put adostream "Type" 1) ;1 = binary
-                            (vlax-invoke adostream "Open")
-                            (vlax-invoke-method adostream "Write" result)
-                            (vlax-put adostream "Position" 0)
-                            (vlax-invoke adostream "SaveToFile" filepath)
-                            (vlax-invoke-method adostream "Close")
-                            filepath
-                          )
-                        )
-                      )
-                    )
-                    (vlax-release-object adostream)
-                  )
-                  ( (setq filestream
-                      (vlax-invoke-method fso "CreateTextFile" filepath :vlax-true :vlax-false)
-                    )
-                    (setq result
-                      (vl-catch-all-apply
-                        (function
-                          (lambda ()
-                            (foreach element (vlax-safearray->list (vlax-variant-value result))
-                              (vlax-invoke filestream "Write" (chr (+ 256 (logand 255 element))))
-                            )
-                            (vlax-invoke-method filestream "Close")
-                            filepath
-                          )
-                        )
-                      )
-                    )
-                    (vlax-release-object filestream)
-                  )
-                )
-                (if (vl-catch-all-error-p result)
-                  (progn (append_status (strcat "  ERROR: " (vl-catch-all-error-message result))) (setq filepath nil))
-                  (append_status "  File written successfully!")
-                )
-                filepath
-              )
-            )
+    (setq result
+      (vl-catch-all-apply
+        (function
+          (lambda ()
+            (dcl-NavigateToURL url)
+            T
           )
         )
-        (if fso (vlax-release-object fso))
-        (if (vl-catch-all-error-p result)
-          (progn (append_status (strcat "  ERROR: " (vl-catch-all-error-message result))) (setq result nil))
-        )
-        result
+      )
+    )
+    (if (vl-catch-all-error-p result)
+      (progn
+        (append_status (strcat "  ERROR: " (vl-catch-all-error-message result)))
+        (append_status "  Open https://www.opendcl.com/download/ manually.")
+        nil
+      )
+      (progn
+        (append_status "  Browser opened. Install OpenDCL, then restart.")
+        T
       )
     )
   )
@@ -230,8 +165,8 @@
   (defun get_curver (dev / url) ; get current build version from opendcl.com
     (setq url
       (if dev
-        "http://opendcl.com/version/version_dev.txt"
-        "http://opendcl.com/version/version.txt"
+        "https://www.opendcl.com/version/version_dev.txt"
+        "https://www.opendcl.com/version/version.txt"
       )
     )
     (request_http url "ResponseText")
@@ -314,30 +249,14 @@
   (dcl-Form-Close AllSamples/Update 2)
 )
 
-(DEFUN c:AllSamples/Update/btnUpdate#OnClicked (/ msipath curlang)
+(DEFUN c:AllSamples/Update/btnUpdate#OnClicked (/ curlang)
   (dcl-Control-SetEnabled AllSamples/Update/btnUpdate nil)
-  (dcl-Control-SetVisible AllSamples/Update/btnClose nil)
-  (setq msipath
-    (write_msi
-      (setq curlang (dcl-Control-GetCaption AllSamples/Update/lblLanguageAvail))
-      (dcl-Control-GetVisible AllSamples/Update/lblDevBuildAvail)
-      (strcat
-        "OpenDCL.Studio."
-        (strcase curlang)
-        "."
-        (dcl-Control-GetCaption AllSamples/Update/lblVersionAvail)
-        ".msi"
-      )
-    )
+  (open_downloads_page
+    (setq curlang (dcl-Control-GetCaption AllSamples/Update/lblLanguageAvail))
+    (dcl-Control-GetVisible AllSamples/Update/lblDevBuildAvail)
   )
-  (if msipath
-    (progn
-      (dcl-SendString "(*ODCL:Vanish)\n")
-      (startapp (strcat "msiexec.exe /i " msipath))
-      (dcl-Form-Close AllSamples/Update 1)
-    )
-    (dcl-Control-SetVisible AllSamples/Update/btnClose T)
-  )
+  (dcl-Control-SetVisible AllSamples/Update/btnClose T)
+  (dcl-Control-SetEnabled AllSamples/Update/btnUpdate T)
 )
 (defun c:AllSamples/Main#OnInitialize (/)
   (dcl-Grid-Clear AllSamples/Main/Basic)
