@@ -222,10 +222,15 @@ function(opendcl_add_runtime id)
 
   # F5 host CAD: cache/env override, else registry discover for this version/arch.
   # (Arguments /ld still set below; Command may stay unset if host not installed.)
+  # FullDebug host Command, when using host-debug, comes only from machine
+  # fulldebug.<family>.props (imported late so it overrides this for FullDebug).
   opendcl_resolve_debugger_command("${_family}" "${_ver}" "${_arch}" _dbg_cmd)
   if(_dbg_cmd)
     set_property(TARGET ${_target} PROPERTY VS_DEBUGGER_COMMAND "${_dbg_cmd}")
     message(STATUS "  ${id}: F5 Command = ${_dbg_cmd}")
+  endif()
+  if(_fd_host)
+    message(STATUS "  ${id}: FullDebug F5/host settings from fulldebug.*.props (late import)")
   endif()
 
   # F5 command *arguments*: bake the real module path with a generator expression.
@@ -339,7 +344,7 @@ function(opendcl_add_runtime id)
   # which is not classic.
   #
   # Debug and FullDebug use the same release SDK libdirs. Host-debug FullDebug
-  # libdirs/defines come from <repo-parent>/fulldebug.<family>.props when present.
+  # libdirs/defines/includes come from <repo-parent>/fulldebug.<family>.props.
   set(_all_release_dirs ${_lib_paths} ${_extra_libdirs})
   opendcl_vs_attach_libdir_props(${_target} "${_family}" "${_all_release_dirs}")
 
