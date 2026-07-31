@@ -140,24 +140,33 @@ function Get-FilesToSign([string[]] $paths) {
   return @($list | Select-Object -Unique)
 }
 
-function Get-SignBatches([string[]] $files, [int] $maxFiles = 30, [int] $maxChars = 6000) {
+function Get-SignBatches {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]] $Files,
+    [int] $MaxFiles = 30,
+    [int] $MaxChars = 6000
+  )
   # Windows CreateProcess command-line limit is ~8191; keep jsign arg lists smaller.
-  $batches = New-Object System.Collections.Generic.List[object]
-  $cur = New-Object System.Collections.Generic.List[string]
+  # Return List[string[]] (not nested @() unwrap tricks) for reliable PS 7 binding.
+  $batches = [System.Collections.Generic.List[string[]]]::new()
+  $cur = [System.Collections.Generic.List[string]]::new()
   $curLen = 0
-  foreach ($f in $files) {
+  foreach ($f in $Files) {
     $add = $f.Length + 3
-    $wouldExceed = ($cur.Count -ge $maxFiles) -or (($cur.Count -gt 0) -and (($curLen + $add) -gt $maxChars))
+    $wouldExceed = ($cur.Count -ge $MaxFiles) -or (($cur.Count -gt 0) -and (($curLen + $add) -gt $MaxChars))
     if ($wouldExceed) {
-      [void]$batches.Add(@($cur.ToArray()))
-      $cur = New-Object System.Collections.Generic.List[string]
+      $batches.Add($cur.ToArray())
+      $cur = [System.Collections.Generic.List[string]]::new()
       $curLen = 0
     }
-    [void]$cur.Add($f)
+    $cur.Add($f)
     $curLen += $add
   }
-  if ($cur.Count -gt 0) { [void]$batches.Add(@($cur.ToArray())) }
-  return @($batches)
+  if ($cur.Count -gt 0) {
+    $batches.Add($cur.ToArray())
+  }
+  return $batches
 }
 
 function Normalize-Digest([string] $d) {
@@ -251,14 +260,17 @@ if ($Alias) { Write-Host "alias:        $Alias" }
 
 # Batch invocations so long PE path lists stay under Windows cmdline limits.
 # PIN comes from env each time; YubiKey still avoids interactive prompts.
-$batches = @(Get-SignBatches $files)
+# Named -Files is required: a bare $files array expands into positional args
+# (second path -> [int] parameter => "Argument types do not match").
+$batches = Get-SignBatches -Files $files
 Write-Host "batches:      $($batches.Count)"
 $bi = 0
 foreach ($batch in $batches) {
   $bi++
-  Write-Host "--- jsign batch $bi / $($batches.Count) ($($batch.Count) file(s)) ---"
-  foreach ($f in $batch) { Write-Host "Sign $f" }
-  $allArgs = $argList.ToArray() + $batch
+  $batchFiles = [string[]]$batch
+  Write-Host "--- jsign batch $bi / $($batches.Count) ($($batchFiles.Count) file(s)) ---"
+  foreach ($f in $batchFiles) { Write-Host "Sign $f" }
+  $allArgs = $argList.ToArray() + $batchFiles
   & $jsignPath @allArgs
   if ($LASTEXITCODE -ne 0) {
     throw "jsign failed (exit $LASTEXITCODE) on batch $bi. Check YubiKey insertion, PIN env var (YubiKey PIN, not SafeNet), and alias (slot 9a)."
