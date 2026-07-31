@@ -1,26 +1,28 @@
 <#
 .SYNOPSIS
-  Authenticode-sign installer packages (and optionally PE binaries) with signtool.
+  Authenticode-sign installer packages (and optionally PE binaries) with jsign.
 
 .DESCRIPTION
   Primary production path:
 
     SSL.com code signing certificate on a YubiKey
-      → cert in Windows Personal store (Current User)
-      → private key non-exportable on the token (Smart Card KSP)
-      → sign with certificate SHA1 thumbprint (env / argument only)
-      → RFC3161 timestamp via SSL.com
-
-  Enter the YubiKey PIN when Windows / signtool prompts (often once per session,
-  sometimes per file). Never put the PIN in this script or in git.
+      -> jsign --storetype YUBIKEY
+      -> PIN from environment (never on the command line; jsign "env:VAR" syntax)
+      -> RFC3161 timestamp via SSL.com
 
   Credential modes (first match wins):
-    1. -CertThumbprint / $env:SIGN_CERT_THUMBPRINT
-    2. Auto-detect a single SSL.com Code Signing cert with a private key in the store
-    3. -PfxPath + -PfxPassword  (legacy / rare; not used for YubiKey)
-    4. -CertFile + -CspName + -KeyContainer  (legacy eToken-style; prefer thumbprint)
+    1. -PfxPath / $env:SIGN_PFX_PATH  (+ password)  -> PKCS#12
+    2. Default YubiKey / hardware token via -StoreType (default YUBIKEY)
 
-  Replaces historical @SignAll.bat / #Sign.bat (SafeNet eToken + Sectigo).
+  PIN / store password is read from the first non-empty env var among:
+    SIGN_STORE_PASSWORD, SIGN_PIN, YUBIKEY_PIN
+  (or -StorePasswordEnv to name a different variable). The value is passed to
+  jsign as --storepass env:VARNAME so it never appears in process arguments.
+
+  Requires: jsign on PATH (e.g. choco install jsign), Java, and for YUBIKEY
+  the Yubico PIV Tool (libykcs11) + SSL.com cert on slot 9a library at the default install location.
+
+  Replaces historical @SignAll.bat / #Sign.bat and the prior signtool path.
 
 .PARAMETER Path
   File or directory. Directories default to *.msi and *.msm only (like @SignAll *.ms?).
@@ -32,132 +34,98 @@
   Search directories recursively.
 
 .EXAMPLE
-  # Production: YubiKey plugged in; PIN when prompted
-  $env:SIGN_CERT_THUMBPRINT = "<sha1-from-cert-store>"
+  $env:SIGN_STORE_PASSWORD = "<token-pin>"
   .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
 
 .EXAMPLE
-  .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 -CertThumbprint "<sha1-from-cert-store>"
+  $env:SIGN_STORE_PASSWORD = "<token-pin>"
+  .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 -Alias "X.509 Certificate for Digital Signature"
 #>
 [CmdletBinding()]
 param(
   [Parameter(Mandatory = $true)]
   [string[]] $Path,
 
-  [string] $CertThumbprint = $env:SIGN_CERT_THUMBPRINT,
+  # Hardware / cloud storetype for jsign (default production: YUBIKEY (slot 9a / PIV Authentication))
+  [string] $StoreType = $(if ($env:SIGN_STORE_TYPE) { $env:SIGN_STORE_TYPE } else { "YUBIKEY" }),
+
+  # Name of the env var that holds the PIN/password (value is never logged)
+  [string] $StorePasswordEnv = "",
+
+  # Optional cert alias when the token has more than one (slot name or CN)
+  [string] $Alias = $(if ($env:SIGN_CERT_ALIAS) { $env:SIGN_CERT_ALIAS } else { "X.509 Certificate for PIV Authentication" }),
+
+  # Optional external PKCS#7 chain (.p7b / .spc / PEM)
+  [string] $CertFile = $env:SIGN_CERT_FILE,
+
+  # Legacy / rare: PKCS#12 file instead of YubiKey
   [string] $PfxPath = $env:SIGN_PFX_PATH,
   [string] $PfxPassword = $env:SIGN_PFX_PASSWORD,
-  [string] $CertFile = $env:SIGN_CERT_FILE,
-  [string] $CspName = $env:SIGN_CSP_NAME,
-  [string] $KeyContainer = $env:SIGN_KEY_CONTAINER,
+  [string] $PfxPasswordEnv = $(if ($env:SIGN_PFX_PASSWORD) { "" } else { "SIGN_PFX_PASSWORD" }),
 
   # SSL.com RFC3161 timestamp (override with SIGN_TIMESTAMP_URL)
   [string] $TimestampUrl = $(if ($env:SIGN_TIMESTAMP_URL) { $env:SIGN_TIMESTAMP_URL } else { "http://ts.ssl.com" }),
   [string] $DescriptionUrl = $(if ($env:SIGN_DESCRIPTION_URL) { $env:SIGN_DESCRIPTION_URL } else { "https://www.opendcl.com" }),
-  [string] $FileDigest = "sha256",
+  [string] $ProgramName = $(if ($env:SIGN_PROGRAM_NAME) { $env:SIGN_PROGRAM_NAME } else { "OpenDCL" }),
+  [string] $FileDigest = "SHA-256",
   [switch] $IncludeBinaries,
   [switch] $Recurse,
   [switch] $SkipVerify,
-  [string] $SignTool = ""
+  [switch] $Replace,
+  [string] $Jsign = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-function Find-SignTool {
-  if ($SignTool -and (Test-Path $SignTool)) { return (Resolve-Path $SignTool).Path }
-  $cmd = Get-Command signtool.exe -ErrorAction SilentlyContinue
+function Find-Jsign {
+  if ($Jsign -and (Test-Path -LiteralPath $Jsign)) { return (Resolve-Path -LiteralPath $Jsign).Path }
+  $cmd = Get-Command jsign.exe -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
-  $kits = "${env:ProgramFiles(x86)}\Windows Kits\10\bin"
-  if (Test-Path $kits) {
-    $found = Get-ChildItem $kits -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue |
-      Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
-      Sort-Object FullName -Descending |
-      Select-Object -First 1
-    if ($found) { return $found.FullName }
-  }
-  # Older layout
-  $alt = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\x64\signtool.exe"
-  if (Test-Path $alt) { return $alt }
-  throw "signtool.exe not found. Install Windows SDK or pass -SignTool."
+  $cmd = Get-Command jsign -ErrorAction SilentlyContinue
+  if ($cmd) { return $cmd.Source }
+  $choco = "C:\ProgramData\chocolatey\bin\jsign.exe"
+  if (Test-Path -LiteralPath $choco) { return $choco }
+  throw "jsign not found on PATH. Install with: choco install jsign  (requires Java). Or pass -Jsign."
 }
 
-function Get-SslComCodeSigningCerts {
-  $stores = @(
-    "Cert:\CurrentUser\My",
-    "Cert:\LocalMachine\My"
-  )
-  $list = @()
-  foreach ($s in $stores) {
-    if (-not (Test-Path $s)) { continue }
-    $list += Get-ChildItem $s -ErrorAction SilentlyContinue | Where-Object {
-      $_.HasPrivateKey -and
-      ($_.Issuer -match 'SSL\.com|SSL Corp') -and
-      (
-        ($_.EnhancedKeyUsageList | ForEach-Object { $_.FriendlyName }) -contains 'Code Signing' -or
-        ($_.EnhancedKeyUsageList | ForEach-Object { $_.ObjectId }) -contains '1.3.6.1.5.5.7.3.3' -or
-        -not $_.EnhancedKeyUsageList
-      )
+function Resolve-StorePasswordEnvName {
+  if ($StorePasswordEnv) {
+    if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($StorePasswordEnv))) {
+      return $StorePasswordEnv
     }
+    throw "Store password env var '$StorePasswordEnv' is not set or empty."
   }
-  return @($list | Sort-Object Thumbprint -Unique)
-}
-
-function Resolve-Thumbprint([string] $explicit) {
-  if ($explicit) {
-    $thumb = ($explicit -replace '\s', '').ToUpperInvariant()
-    $cert = @(
-      Get-ChildItem Cert:\CurrentUser\My, Cert:\LocalMachine\My -ErrorAction SilentlyContinue |
-        Where-Object { $_.Thumbprint -eq $thumb }
-    ) | Select-Object -First 1
-    if (-not $cert) {
-      Write-Warning "Thumbprint $thumb not found in CurrentUser/LocalMachine Personal stores. signtool may still find it."
+  foreach ($name in @("SIGN_STORE_PASSWORD", "SIGN_PIN", "YUBIKEY_PIN")) {
+    foreach ($scope in @("Process", "User", "Machine")) {
+      $val = [Environment]::GetEnvironmentVariable($name, $scope)
+      if (-not [string]::IsNullOrEmpty($val)) {
+        # Ensure jsign env:VAR reads a process-visible value
+        if ($scope -ne "Process") {
+          [Environment]::SetEnvironmentVariable($name, $val, "Process")
+        }
+        return $name
+      }
     }
-    elseif (-not $cert.HasPrivateKey) {
-      throw @"
-Certificate $thumb is in the store but HasPrivateKey=False.
-Import the public cert, then with the YubiKey inserted run:
-  certutil -user -repairstore My $thumb
-Enter the YubiKey PIN if prompted.
-"@
-    }
-    else {
-      Write-Host ("Certificate: {0}" -f $cert.Subject)
-      Write-Host ("Issuer:      {0}" -f $cert.Issuer)
-      Write-Host ("NotAfter:    {0}" -f $cert.NotAfter)
-    }
-    return $thumb
-  }
-
-  $auto = Get-SslComCodeSigningCerts
-  if ($auto.Count -eq 1) {
-    Write-Host "Auto-detected SSL.com code signing cert:"
-    Write-Host ("  Subject:    {0}" -f $auto[0].Subject)
-    Write-Host ("  Thumbprint: {0}" -f $auto[0].Thumbprint)
-    return $auto[0].Thumbprint.ToUpperInvariant()
-  }
-  if ($auto.Count -gt 1) {
-    Write-Host "Multiple SSL.com code signing certs with private keys:"
-    $auto | ForEach-Object { Write-Host ("  {0}  {1}" -f $_.Thumbprint, $_.Subject) }
-    throw "Pass -CertThumbprint or set SIGN_CERT_THUMBPRINT to select one."
   }
   return $null
 }
 
 function Get-FilesToSign([string[]] $paths) {
   # Default: installers only (historical @SignAll *.ms?)
-  $exts = @("*.msi", "*.msm")
+  $exts = @(".msi", ".msm")
   if ($IncludeBinaries) {
-    $exts += @("*.cab", "*.exe", "*.dll", "*.sys", "*.ocx")
+    $exts += @(".cab", ".exe", ".dll", ".sys", ".ocx", ".efi")
   }
   $list = New-Object System.Collections.Generic.List[string]
   foreach ($p in $paths) {
     if (-not (Test-Path -LiteralPath $p)) { throw "Path not found: $p" }
     $item = Get-Item -LiteralPath $p
     if ($item.PSIsContainer) {
-      foreach ($pat in $exts) {
-        Get-ChildItem -LiteralPath $item.FullName -Filter $pat -File -Recurse:$Recurse |
-          ForEach-Object { [void]$list.Add($_.FullName) }
-      }
+      $gci = @{ Path = $item.FullName; File = $true; ErrorAction = "SilentlyContinue" }
+      if ($Recurse) { $gci.Recurse = $true }
+      Get-ChildItem @gci |
+        Where-Object { $exts -contains $_.Extension.ToLowerInvariant() } |
+        ForEach-Object { [void]$list.Add($_.FullName) }
     }
     else {
       [void]$list.Add($item.FullName)
@@ -166,83 +134,116 @@ function Get-FilesToSign([string[]] $paths) {
   return @($list | Select-Object -Unique)
 }
 
-$signtoolPath = Find-SignTool
+function Normalize-Digest([string] $d) {
+  switch -Regex ($d.Trim().ToUpperInvariant()) {
+    '^(SHA-?256|SHA256)$' { return "SHA-256" }
+    '^(SHA-?1|SHA1)$'     { return "SHA-1" }
+    '^(SHA-?384|SHA384)$' { return "SHA-384" }
+    '^(SHA-?512|SHA512)$' { return "SHA-512" }
+    default { return $d }
+  }
+}
+
+$jsignPath = Find-Jsign
 $files = @(Get-FilesToSign $Path)
 if ($files.Count -eq 0) {
   throw "No signable files matched under: $($Path -join ', ') (directories default to *.msi/*.msm; use -IncludeBinaries for PE)"
 }
 
-$common = @(
-  "sign",
-  "/fd", $FileDigest,
-  "/td", $FileDigest,
-  "/tr", $TimestampUrl,
-  "/du", $DescriptionUrl
-)
+$digest = Normalize-Digest $FileDigest
+$argList = [System.Collections.Generic.List[string]]::new()
+[void]$argList.Add("sign")
+[void]$argList.AddRange([string[]]@("--alg", $digest))
+[void]$argList.AddRange([string[]]@("--tsaurl", $TimestampUrl))
+[void]$argList.AddRange([string[]]@("--tsmode", "RFC3161"))
+if ($ProgramName) { [void]$argList.AddRange([string[]]@("--name", $ProgramName)) }
+if ($DescriptionUrl) { [void]$argList.AddRange([string[]]@("--url", $DescriptionUrl)) }
+if ($Replace) { [void]$argList.Add("--replace") }
+if ($CertFile) {
+  if (-not (Test-Path -LiteralPath $CertFile)) { throw "Cert file not found: $CertFile" }
+  [void]$argList.AddRange([string[]]@("--certfile", $CertFile))
+}
 
 $mode = $null
-$thumb = Resolve-Thumbprint $CertThumbprint
-if ($thumb) {
-  $common += @("/sha1", $thumb)
-  $mode = "YubiKey/store thumbprint"
-  Write-Host "Signing mode: $mode"
-  Write-Host "Thumbprint:   $thumb"
-  Write-Host "YubiKey:      insert key; enter PIN when Windows prompts"
-}
-elseif ($PfxPath) {
+if ($PfxPath) {
   if (-not (Test-Path -LiteralPath $PfxPath)) { throw "PFX not found: $PfxPath" }
-  if (-not $PfxPassword) { throw "PfxPassword / SIGN_PFX_PASSWORD required with -PfxPath" }
-  $common += @("/f", $PfxPath, "/p", $PfxPassword)
-  $mode = "PFX"
-  Write-Host "Signing mode: $mode ($PfxPath)"
-}
-elseif ($CertFile -and $CspName -and $KeyContainer) {
-  if (-not (Test-Path -LiteralPath $CertFile)) { throw "Cert file not found: $CertFile" }
-  $common += @("/f", $CertFile, "/csp", $CspName, "/kc", $KeyContainer)
-  $mode = "legacy CSP container"
-  Write-Host "Signing mode: $mode (prefer YubiKey thumbprint instead)"
+  [void]$argList.AddRange([string[]]@("--keystore", $PfxPath))
+  [void]$argList.AddRange([string[]]@("--storetype", "PKCS12"))
+  if ($PfxPassword) {
+    # Inline only when caller passed -PfxPassword explicitly; prefer env: otherwise.
+    [void]$argList.AddRange([string[]]@("--storepass", $PfxPassword))
+  }
+  elseif ($PfxPasswordEnv -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($PfxPasswordEnv))) {
+    [void]$argList.AddRange([string[]]@("--storepass", "env:$PfxPasswordEnv"))
+  }
+  else {
+    throw "PFX requires -PfxPassword or env SIGN_PFX_PASSWORD."
+  }
+  if ($Alias) { [void]$argList.AddRange([string[]]@("--alias", $Alias)) }
+  $mode = "PKCS12 ($PfxPath)"
 }
 else {
-  throw @"
+  $pinEnv = Resolve-StorePasswordEnvName
+  if (-not $pinEnv) {
+    throw @"
 No signing credentials configured.
 
-Preferred (SSL.com YubiKey):
-  1. YubiKey inserted; cert in Current User Personal with private key
-     (certutil -user -repairstore My <thumbprint> if HasPrivateKey is False)
-  2. Set SIGN_CERT_THUMBPRINT or pass -CertThumbprint
-  3. Run this script; enter YubiKey PIN when prompted
+Preferred (SSL.com YubiKey + jsign):
+  1. YubiKey inserted; Yubico PIV Tool installed (ykcs11); SSL.com cert in PIV slot 9a
+  2. Set PIN in the process/user environment (not git):
+       `$env:SIGN_STORE_PASSWORD = '<token-pin>'
+     (also accepted: SIGN_PIN, YUBIKEY_PIN)
+  3. Run this script. Optional: -Alias if the token has multiple certs.
 
-Never commit PINs, PFX passwords, private keys, or cert thumbprints to git.
-Operator thumbprint values: private build-lab skill code-sign-operator.
+PKCS#12 alternative:
+  -PfxPath file.pfx with SIGN_PFX_PASSWORD / -PfxPassword
+
+Never commit PINs, PFX passwords, or private keys to git.
 "@
-}
-
-Write-Host "signtool:    $signtoolPath"
-Write-Host "files:       $($files.Count)"
-Write-Host "timestamp:   $TimestampUrl"
-Write-Host "description: $DescriptionUrl"
-
-$failed = @()
-foreach ($f in $files) {
-  Write-Host "Sign $f"
-  $argList = $common + @($f)
-  & $signtoolPath @argList
-  if ($LASTEXITCODE -ne 0) {
-    Write-Warning "signtool failed ($LASTEXITCODE): $f"
-    $failed += $f
   }
+  [void]$argList.AddRange([string[]]@("--storetype", $StoreType))
+  [void]$argList.AddRange([string[]]@("--storepass", "env:$pinEnv"))
+  # YubiKey PIV PIN is 6-8 characters; longer values are usually a different token password
+  # and ykcs11 returns CKR_ARGUMENTS_BAD (does not always decrement try counter).
+  if ($StoreType -match '^(?i)YUBIKEY|PIV$') {
+    $pinLen = ([Environment]::GetEnvironmentVariable($pinEnv, 'Process')).Length
+    if ($pinLen -lt 6 -or $pinLen -gt 8) {
+      throw "YubiKey PIV PIN in env:$pinEnv has length $pinLen (expected 6-8). Refusing to login so we do not burn PIN tries. Set the YubiKey user PIN in SIGN_STORE_PASSWORD (not the SafeNet eToken password)."
+    }
+  }
+  if ($Alias) { [void]$argList.AddRange([string[]]@("--alias", $Alias)) }
+  $mode = "$StoreType (PIN from env:$pinEnv)"
 }
 
-if ($failed.Count -gt 0) {
-  throw "Signing failed for $($failed.Count) file(s). Check YubiKey insertion and PIN."
+Write-Host "Signing mode: $mode"
+Write-Host "jsign:        $jsignPath"
+Write-Host "files:        $($files.Count)"
+Write-Host "timestamp:    $TimestampUrl"
+Write-Host "digest:       $digest"
+Write-Host "name/url:     $ProgramName / $DescriptionUrl"
+if ($Alias) { Write-Host "alias:        $Alias" }
+
+# One jsign invocation for all files (token PIN session reused).
+foreach ($f in $files) { Write-Host "Sign $f" }
+$allArgs = $argList.ToArray() + $files
+& $jsignPath @allArgs
+if ($LASTEXITCODE -ne 0) {
+  throw "jsign failed (exit $LASTEXITCODE). Check YubiKey insertion, PIN env var (YubiKey PIN, not SafeNet), and alias (slot 9a)."
 }
 
 Write-Host "OK signed $($files.Count) file(s)"
 
 if (-not $SkipVerify) {
+  $bad = @()
   foreach ($f in $files) {
-    & $signtoolPath verify /pa $f | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw "Verify failed: $f" }
+    $sig = Get-AuthenticodeSignature -FilePath $f
+    if ($sig.Status -ne "Valid") {
+      Write-Warning "Verify $($sig.Status): $f - $($sig.StatusMessage)"
+      $bad += $f
+    }
+  }
+  if ($bad.Count -gt 0) {
+    throw "Authenticode verify failed for $($bad.Count) file(s)."
   }
   Write-Host "OK verified $($files.Count) file(s)"
 }

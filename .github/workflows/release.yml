@@ -74,14 +74,10 @@ jobs:
           "msi_ver=$msiVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "tag=v$fileVer" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
+      # Signing (jsign + YubiKey): PIN from runner host env SIGN_STORE_PASSWORD
+      # (or SIGN_PIN / YUBIKEY_PIN). Do not map empty secrets over those vars.
+      # Optional: SIGN_CERT_ALIAS / SIGN_STORE_TYPE on the host if needed.
       - name: make-release.ps1 (package + dist + localization [+ sign])
-        env:
-          SIGN_CERT_THUMBPRINT: ${{ secrets.SIGN_CERT_THUMBPRINT }}
-          SIGN_PFX_PATH: ${{ secrets.SIGN_PFX_PATH }}
-          SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
-          SIGN_CERT_FILE: ${{ secrets.SIGN_CERT_FILE }}
-          SIGN_CSP_NAME: ${{ secrets.SIGN_CSP_NAME }}
-          SIGN_KEY_CONTAINER: ${{ secrets.SIGN_KEY_CONTAINER }}
         run: |
           $args = @{
             ProductVersion    = "${{ steps.ver.outputs.file_ver }}"

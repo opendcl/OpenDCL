@@ -1,66 +1,67 @@
 ---
 name: code-sign-release
 description: >
-  Authenticode-sign OpenDCL installer packages (YubiKey / SSL.com + signtool),
+  Authenticode-sign OpenDCL installer packages (YubiKey / SSL.com + jsign),
   assemble versioned dist folders, and publish GitHub Releases. Use for
-  signtool, code signing, sign msi/msm, or when the user runs
-  /code-sign-release. Triggers: "code sign", "signtool", "YubiKey", "sign
-  installers", "Authenticode", "SSL.com", "release assets".
+  jsign, code signing, sign msi/msm, or when the user runs
+  /code-sign-release. Triggers: "code sign", "jsign", "signtool", "YubiKey",
+  "sign installers", "Authenticode", "SSL.com", "release assets".
 ---
 
 # Code Sign and Release
 
-Public product skill. **Operator machine details** (cert thumbprint, YubiKey
-setup notes, local site paths) live in private **`opendcl/build-lab`** skill
-`code-sign-operator` — do not put personal paths or certificate fingerprints
-in this public tree.
+Public product skill. **Operator machine details** (YubiKey setup notes, local
+site paths) live in private **`opendcl/build-lab`** skill `code-sign-operator`
+— do not put personal paths, PINs, or certificate fingerprints in this public
+tree.
 
 ## Production signing (summary)
 
-**SSL.com code signing certificate on a YubiKey** + Windows cert store + `signtool`.
+**SSL.com code signing certificate on a YubiKey** + **jsign** (`--storetype YUBIKEY`).
 
 | Item | Value |
 |------|--------|
-| Store | Current User (or Local Machine) → Personal |
-| Private key | On YubiKey via Smart Card KSP (not exportable) |
+| Tool | `jsign` (Chocolatey / PATH; requires Java + Yubico PIV Tool ykcs11) |
+| Store type | `YUBIKEY` (override with `SIGN_STORE_TYPE`) |
+| Private key | On YubiKey (not exportable) |
 | Timestamp | RFC3161 `http://ts.ssl.com` (override with `SIGN_TIMESTAMP_URL`) |
 | Description URL | `https://www.opendcl.com` (override with `SIGN_DESCRIPTION_URL`) |
-| Thumbprint | **Env / secret only** — `SIGN_CERT_THUMBPRINT` or `-CertThumbprint` |
+| PIN | **Env only** — `SIGN_STORE_PASSWORD` (also `SIGN_PIN`, `YUBIKEY_PIN`) |
 
-**PIN:** Enter the YubiKey PIN when Windows prompts. Never put the PIN in
-scripts, env files committed to git, or CI logs.
+**PIN:** Set in the process environment; `sign-files.ps1` passes
+`--storepass env:VARNAME` so the PIN never appears on the command line.
+Never put the PIN in scripts, files committed to git, or CI logs.
 
-If multiple code-signing certs are present, always pass an explicit thumbprint
-so the wrong cert is not selected. Prefer auto-detect only when a single
-SSL.com code-signing cert with a private key is in the store
-(`sign-files.ps1` does this when thumbprint is omitted).
+If the token has multiple certificates, set `SIGN_CERT_ALIAS` / `-Alias`
+(jsign lists aliases when required).
 
 ### Sign packages
 
 ```powershell
-# Preferred: thumbprint from environment (user/machine scope — not committed)
-$env:SIGN_CERT_THUMBPRINT = "<sha1-thumbprint-from-cert-store>"
+# Preferred: PIN in process env (user scope — not committed)
+$env:SIGN_STORE_PASSWORD = "<yubikey-pin>"
 
 .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
 
-# Or explicit:
+# Optional alias when multiple certs on the token:
 .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 `
-  -CertThumbprint "<sha1-thumbprint>" `
+  -Alias "X.509 Certificate for Digital Signature" `
   -TimestampUrl "http://ts.ssl.com"
 ```
 
 `sign-files.ps1` defaults:
 
-- Timestamp: `http://ts.ssl.com`
+- Tool: jsign (not signtool)
+- Timestamp: `http://ts.ssl.com` (RFC3161)
 - Description: `https://www.opendcl.com`
 - Directory scan: `*.msi`, `*.msm` only (`-IncludeBinaries` for exe/dll)
-- Verifies each file with `signtool verify /pa` unless `-SkipVerify`
+- Verifies each file with `Get-AuthenticodeSignature` unless `-SkipVerify`
 
 ### Full release folder (installers + localization zips + optional sign)
 
 ```powershell
+$env:SIGN_STORE_PASSWORD = "<yubikey-pin>"
 .\scripts\make-release.ps1 -ProductVersion 10.1.1.1 -Sign
-# Optional: -CertThumbprint "<sha1>" if not using SIGN_CERT_THUMBPRINT
 ```
 
 Localization `.zip` files are **not** Authenticode-signed (only MSI/MSM).
@@ -71,8 +72,8 @@ Then publish (public ship only — not dry-run):
 gh release create "v10.1.1.1" .\dist\10.1.1.1\* --title "OpenDCL 10.1.1.1"
 ```
 
-Or run the **Make release** workflow (self-hosted), with secret
-`SIGN_CERT_THUMBPRINT` set on the runner/repo (not in this skill file).
+Or run the **Make release** workflow (self-hosted) with `sign=true`. PIN must be
+available as host env `SIGN_STORE_PASSWORD` on the runner (not in this skill file).
 
 ## What to sign
 
@@ -84,7 +85,7 @@ Optional: sign PE modules before WiX if the user asks (`-IncludeBinaries`).
 
 | Script | Role |
 |--------|------|
-| `scripts/sign-files.ps1` | Thumbprint / store signing via signtool |
+| `scripts/sign-files.ps1` | YubiKey / PKCS#12 signing via jsign |
 | `scripts/make-dist.ps1` | Versioned MSI/MSM names |
 | `scripts/make-localization-zips.ps1` | Translator zips |
 | `scripts/make-release.ps1` | package + dist + loc zips [+ sign] |
@@ -101,9 +102,9 @@ Optional: sign PE modules before WiX if the user asks (`-IncludeBinaries`).
 **Runner:** self-hosted Windows with the signing token available when signing.
 GitHub-hosted runners are not suitable for interactive YubiKey PIN signing.
 
-**Secret:** `SIGN_CERT_THUMBPRINT` (SHA1 of the code-signing cert).  
-Do **not** store the YubiKey PIN in GitHub secrets unless using a future
-eSigner automated flow.
+**Secret / env:** `SIGN_STORE_PASSWORD` (YubiKey PIN) on the self-hosted
+runner process — not in the public repo. Prefer interactive or machine-local
+env over GitHub secrets for the PIN.
 
 ## eSigner (not default)
 
@@ -114,8 +115,8 @@ SSL.com eSigner / Cloud Key Adapter can automate signing without a PIN prompt.
 
 | Legacy | Replacement |
 |--------|-------------|
-| `#Sign.bat` (SafeNet eToken + Sectigo) | `sign-files.ps1` + YubiKey + interactive PIN |
-| `@SignAll.bat` | `sign-files.ps1 -Path <dist-folder>` |
+| `#Sign.bat` (SafeNet eToken + Sectigo) | `sign-files.ps1` + jsign + YubiKey PIN env |
+| `@SignAll.bat` / signtool + thumbprint | `sign-files.ps1` (jsign `--storetype YUBIKEY`) |
 | `!MakeNewDist.bat` | `make-dist.ps1` / `make-release.ps1` |
 | `!MakeLocalizationZips.bat` | `make-localization-zips.ps1` |
 
@@ -169,15 +170,14 @@ Operator notes / local mirrors: private **build-lab** `code-sign-operator`.
 
 ## Security checklist
 
-- [ ] PIN never in git or scripts  
-- [ ] Thumbprint only via env/secret (not hard-coded in public docs)  
-- [ ] Broken old store entries not used for release  
-- [ ] `signtool verify /pa` succeeds on every shipped MSI/MSM  
+- [ ] PIN only in process env (`SIGN_STORE_PASSWORD`), never in git or scripts  
+- [ ] jsign + Yubico PIV Tool available on the signing machine  
+- [ ] `Get-AuthenticodeSignature` Status=Valid on every shipped MSI/MSM  
 - [ ] Timestamp present  
 - [ ] **opendcl.github.io `version/*.txt` + `assets/versions.js` updated for this release**  
 
 ## Capture lessons
 
-If the signing cert is rekeyed/renewed, update **machine env / GitHub secrets**
+If the signing cert is rekeyed/renewed, update **machine env / alias notes**
 and the private build-lab operator skill — not the PIN, and not hard-coded
 values in this public skill.

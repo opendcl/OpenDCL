@@ -44,7 +44,7 @@
   Skip building OpenDCL.<LANG>.zip packs.
 
 .PARAMETER Sign
-  Run sign-files.ps1 on the dist folder (YubiKey PIN when prompted).
+  Run sign-files.ps1 on the dist folder (jsign; PIN from SIGN_STORE_PASSWORD env).
 
 .EXAMPLE
   # Full ship package from CMake dual-arch tree (after successful build + verify)
@@ -76,12 +76,12 @@ param(
   [switch] $SkipPackage,
   [switch] $SkipLocalization,
   [switch] $Sign,
-  [string] $CertThumbprint = $env:SIGN_CERT_THUMBPRINT,
+  # jsign / YubiKey: set SIGN_STORE_PASSWORD (or SIGN_PIN / YUBIKEY_PIN) in the environment
+  [string] $StoreType = $(if ($env:SIGN_STORE_TYPE) { $env:SIGN_STORE_TYPE } else { "YUBIKEY" }),
+  [string] $Alias = $(if ($env:SIGN_CERT_ALIAS) { $env:SIGN_CERT_ALIAS } else { "" }),
   [string] $PfxPath = $env:SIGN_PFX_PATH,
   [string] $PfxPassword = $env:SIGN_PFX_PASSWORD,
-  [string] $CertFile = $env:SIGN_CERT_FILE,
-  [string] $CspName = $env:SIGN_CSP_NAME,
-  [string] $KeyContainer = $env:SIGN_KEY_CONTAINER
+  [string] $CertFile = $env:SIGN_CERT_FILE
 )
 
 $ErrorActionPreference = "Stop"
@@ -182,17 +182,16 @@ if (-not $SkipLocalization) {
 }
 
 if ($Sign) {
-  Write-Host "--- sign-files.ps1 ---"
+  Write-Host "--- sign-files.ps1 (jsign) ---"
   $signArgs = @{
     Path            = $dest
     DescriptionUrl  = "https://www.opendcl.com"
+    StoreType       = $StoreType
   }
-  if ($CertThumbprint) { $signArgs.CertThumbprint = $CertThumbprint }
+  if ($Alias) { $signArgs.Alias = $Alias }
   if ($PfxPath) { $signArgs.PfxPath = $PfxPath }
   if ($PfxPassword) { $signArgs.PfxPassword = $PfxPassword }
   if ($CertFile) { $signArgs.CertFile = $CertFile }
-  if ($CspName) { $signArgs.CspName = $CspName }
-  if ($KeyContainer) { $signArgs.KeyContainer = $KeyContainer }
   & (Join-Path $scripts "sign-files.ps1") @signArgs
 }
 

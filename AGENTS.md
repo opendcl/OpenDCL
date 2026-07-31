@@ -263,11 +263,13 @@ Historical desktop steps and replacements:
 | Manual download upload | **Make release** / `gh release create` |
 | Online help SVN refresh | `/sync-help-to-website` → `opendcl.github.io` |
 
-**Code signing (production):** SSL.com cert on **YubiKey** → Windows Personal store →
-`scripts/sign-files.ps1` with `SIGN_CERT_THUMBPRINT` / `-CertThumbprint`. Enter **PIN**
-when prompted. Timestamp default `http://ts.ssl.com`. Self-hosted runner only.
-Never commit PINs, PFX, or thumbprints. Public procedure: `/code-sign-release`.
-Operator machine values: private build-lab skill **`code-sign-operator`**.
+**Code signing (production):** SSL.com cert on **YubiKey** → `scripts/sign-files.ps1`
+via **jsign** (`--storetype YUBIKEY`). Set **PIN** in the process/user/machine env as
+`SIGN_STORE_PASSWORD` (also `SIGN_PIN` / `YUBIKEY_PIN`); the script passes
+`--storepass env:VARNAME` (never on the command line). Timestamp default
+`http://ts.ssl.com`. Self-hosted runner only. Never commit PINs or PFX.
+Public procedure: `/code-sign-release`. Operator notes: private build-lab skill
+**`code-sign-operator`**.
 
 **Manual after every release (not automated yet):** keep update-check version
 strings in sync on **`opendcl/opendcl.github.io`** (custom domain opendcl.com):

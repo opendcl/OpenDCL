@@ -119,13 +119,16 @@ Example step-by-step (same result as `make-release.ps1` without `-Sign`):
 .\scripts\build-wix.ps1 -ModuleVersion 10.1.1.1 -ProductVersion 10.1.101
 .\scripts\make-dist.ps1 -ProductVersion 10.1.1.1
 .\scripts\make-localization-zips.ps1 -OutDir .\dist\10.1.1.1
-.\scripts\sign-files.ps1 -Path .\dist\10.1.1.1 -CertThumbprint "<store-thumbprint>"
+$env:SIGN_STORE_PASSWORD = "<yubikey-pin>"   # process env only; never commit
+.\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
 gh release create "v10.1.1.1" .\dist\10.1.1.1\* --title "OpenDCL 10.1.1.1"
 ```
 
-**Signing (YubiKey + SSL.com):** insert YubiKey, set `SIGN_CERT_THUMBPRINT` (or pass
-`-CertThumbprint`), run `sign-files.ps1` / `make-release.ps1 -Sign`, enter PIN when
-prompted. Default timestamp is `http://ts.ssl.com`. Never commit the PIN. See skill
+**Signing (YubiKey + SSL.com + jsign):** insert YubiKey, set `SIGN_STORE_PASSWORD`
+(or `SIGN_PIN` / `YUBIKEY_PIN`) in the environment, run `sign-files.ps1` /
+`make-release.ps1 -Sign`. jsign uses `--storepass env:VARNAME` so the PIN is not
+on the command line and Windows smart-card prompts are not required. Default
+timestamp is `http://ts.ssl.com`. Never commit the PIN. See skill
 **`code-sign-release`**.
 
 Asset naming expected by [opendcl.github.io](https://opendcl.github.io/) /
