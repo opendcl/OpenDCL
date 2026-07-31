@@ -6,10 +6,11 @@
   Combines the post-package steps that used to live in separate batch files:
 
     0. (optional) scripts/verify-build-outputs.ps1 — fail if product tree incomplete
-    1. (optional) scripts/build-wix.ps1            — WiX MSM/MSIs
-    2. scripts/make-dist.ps1                      — versioned installer names
-    3. scripts/make-localization-zips.ps1         — translator packs
-    4. (optional) scripts/sign-files.ps1          — Authenticode
+    1. (optional) scripts/sign-files.ps1          — ship PE under product out\ (when -Sign)
+    2. (optional) scripts/build-wix.ps1            — WiX MSM/MSIs
+    3. scripts/make-dist.ps1                      — versioned installer names
+    4. scripts/make-localization-zips.ps1         — translator packs
+    5. (optional) scripts/sign-files.ps1          — Authenticode on MSI/MSM (when -Sign)
 
   Packaging **product** files resolve under -OpenDclRoot (classic tree or CMake
   binary dir with out\). Scripts, wix\out, and dist\ always live under this
@@ -44,7 +45,13 @@
   Skip building OpenDCL.<LANG>.zip packs.
 
 .PARAMETER Sign
-  Run sign-files.ps1 on the dist folder (jsign; PIN from SIGN_STORE_PASSWORD env).
+  Full Authenticode pass (jsign; PIN from SIGN_STORE_PASSWORD env):
+  (1) ship PE under product out\ / Runtime+Studio before WiX,
+  (2) MSI/MSM under dist\ after packaging.
+  Use -SkipBinarySign for installer containers only.
+
+.PARAMETER SkipBinarySign
+  With -Sign, skip pre-WiX PE signing (MSI/MSM only).
 
 .EXAMPLE
   # Full ship package from CMake dual-arch tree (after successful build + verify)
@@ -76,6 +83,7 @@ param(
   [switch] $SkipPackage,
   [switch] $SkipLocalization,
   [switch] $Sign,
+  [switch] $SkipBinarySign,
   # jsign / YubiKey: set SIGN_STORE_PASSWORD (or SIGN_PIN / YUBIKEY_PIN) in the environment
   [string] $StoreType = $(if ($env:SIGN_STORE_TYPE) { $env:SIGN_STORE_TYPE } else { "YUBIKEY" }),
   [string] $Alias = $(if ($env:SIGN_CERT_ALIAS) { $env:SIGN_CERT_ALIAS } else { "" }),
@@ -83,6 +91,45 @@ param(
   [string] $PfxPassword = $env:SIGN_PFX_PASSWORD,
   [string] $CertFile = $env:SIGN_CERT_FILE
 )
+
+function Get-ProductBinarySignRoots([string] $productRoot) {
+  # Prefer CMake out\ trees; fall back to classic Runtime/Studio source layout.
+  $roots = New-Object System.Collections.Generic.List[string]
+  foreach ($rel in @("out", "win32\out")) {
+    $p = Join-Path $productRoot $rel
+    if (Test-Path -LiteralPath $p) { [void]$roots.Add((Resolve-Path -LiteralPath $p).Path) }
+  }
+  if ($roots.Count -eq 0) {
+    foreach ($rel in @("Runtime", "Studio")) {
+      $p = Join-Path $productRoot $rel
+      if (Test-Path -LiteralPath $p) { [void]$roots.Add((Resolve-Path -LiteralPath $p).Path) }
+    }
+  }
+  return @($roots)
+}
+
+function Invoke-SignFiles {
+  param(
+    [string[]] $Path,
+    [switch] $IncludeBinaries,
+    [switch] $Recurse
+  )
+  $signArgs = @{
+    Path           = $Path
+    DescriptionUrl = "https://www.opendcl.com"
+    StoreType      = $StoreType
+  }
+  if ($IncludeBinaries) { $signArgs.IncludeBinaries = $true }
+  if ($Recurse) { $signArgs.Recurse = $true }
+  if ($Alias) { $signArgs.Alias = $Alias }
+  if ($PfxPath) { $signArgs.PfxPath = $PfxPath }
+  if ($PfxPassword) { $signArgs.PfxPassword = $PfxPassword }
+  if ($CertFile) { $signArgs.CertFile = $CertFile }
+  & (Join-Path $scripts "sign-files.ps1") @signArgs
+  if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+    throw "sign-files.ps1 failed ($LASTEXITCODE)"
+  }
+}
 
 $ErrorActionPreference = "Stop"
 
@@ -121,6 +168,7 @@ Write-Host "SkipVerify        = $SkipVerify"
 Write-Host "SkipPackage       = $SkipPackage"
 Write-Host "SkipLocalization  = $SkipLocalization"
 Write-Host "Sign              = $Sign"
+Write-Host "SkipBinarySign    = $SkipBinarySign"
 
 if (-not $SkipPackage -and -not $SkipVerify) {
   Write-Host "--- verify-build-outputs.ps1 (must pass before package) ---"
@@ -136,6 +184,17 @@ if (-not $SkipPackage -and -not $SkipVerify) {
   if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
     throw "verify-build-outputs.ps1 failed ($LASTEXITCODE) — fix the build before packaging."
   }
+}
+
+# Sign ship PE before WiX so MSM/MSI embed Authenticode-signed modules.
+if ($Sign -and -not $SkipBinarySign -and -not $SkipPackage) {
+  $binRoots = @(Get-ProductBinarySignRoots $OpenDclRoot)
+  if ($binRoots.Count -eq 0) {
+    throw "Sign requested but no product binary roots found under $OpenDclRoot (expected out\, win32\out\, or Runtime/Studio)."
+  }
+  Write-Host "--- sign-files.ps1 (product PE before WiX) ---"
+  foreach ($r in $binRoots) { Write-Host "  root: $r" }
+  Invoke-SignFiles -Path $binRoots -IncludeBinaries -Recurse
 }
 
 if (-not $SkipPackage) {
@@ -182,17 +241,8 @@ if (-not $SkipLocalization) {
 }
 
 if ($Sign) {
-  Write-Host "--- sign-files.ps1 (jsign) ---"
-  $signArgs = @{
-    Path            = $dest
-    DescriptionUrl  = "https://www.opendcl.com"
-    StoreType       = $StoreType
-  }
-  if ($Alias) { $signArgs.Alias = $Alias }
-  if ($PfxPath) { $signArgs.PfxPath = $PfxPath }
-  if ($PfxPassword) { $signArgs.PfxPassword = $PfxPassword }
-  if ($CertFile) { $signArgs.CertFile = $CertFile }
-  & (Join-Path $scripts "sign-files.ps1") @signArgs
+  Write-Host "--- sign-files.ps1 (MSI/MSM in dist) ---"
+  Invoke-SignFiles -Path @($dest)
 }
 
 Write-Host "=== make-release complete ==="

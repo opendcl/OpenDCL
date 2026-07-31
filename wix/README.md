@@ -125,11 +125,11 @@ gh release create "v10.1.1.1" .\dist\10.1.1.1\* --title "OpenDCL 10.1.1.1"
 ```
 
 **Signing (YubiKey + SSL.com + jsign):** insert YubiKey, set `SIGN_STORE_PASSWORD`
-(or `SIGN_PIN` / `YUBIKEY_PIN`) in the environment, run `sign-files.ps1` /
-`make-release.ps1 -Sign`. jsign uses `--storepass env:VARNAME` so the PIN is not
-on the command line and Windows smart-card prompts are not required. Default
-timestamp is `http://ts.ssl.com`. Never commit the PIN. See skill
-**`code-sign-release`**.
+(or `SIGN_PIN` / `YUBIKEY_PIN`) in the environment, run `make-release.ps1 -Sign`
+(full: **ship PE before WiX**, then **MSI/MSM**). Or call `sign-files.ps1` directly.
+jsign uses `--storepass env:VARNAME` so the PIN is not on the command line and
+Windows smart-card prompts are not required. Default timestamp is
+`http://ts.ssl.com`. Never commit the PIN. See skill **`code-sign-release`**.
 
 Asset naming expected by [opendcl.github.io](https://opendcl.github.io/) /
 `assets/versions.js`:

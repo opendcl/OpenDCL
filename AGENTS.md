@@ -267,9 +267,10 @@ Historical desktop steps and replacements:
 via **jsign** (`--storetype YUBIKEY`). Set **PIN** in the process/user/machine env as
 `SIGN_STORE_PASSWORD` (also `SIGN_PIN` / `YUBIKEY_PIN`); the script passes
 `--storepass env:VARNAME` (never on the command line). Timestamp default
-`http://ts.ssl.com`. Self-hosted runner only. Never commit PINs or PFX.
-Public procedure: `/code-sign-release`. Operator notes: private build-lab skill
-**`code-sign-operator`**.
+`http://ts.ssl.com`. Full **`-Sign`** / package `sign=true` signs **ship PE before
+WiX** then **MSI/MSM** after package. Self-hosted runner only. Never commit PINs
+or PFX. Public procedure: `/code-sign-release`. Operator notes: private build-lab
+skill **`code-sign-operator`**.
 
 **Manual after every release (not automated yet):** keep update-check version
 strings in sync on **`opendcl/opendcl.github.io`** (custom domain opendcl.com):

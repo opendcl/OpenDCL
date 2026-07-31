@@ -77,18 +77,25 @@ available as host env `SIGN_STORE_PASSWORD` on the runner (not in this skill fil
 
 ## What to sign
 
-Historical practice: **installer packages only** (`*.msi`, `*.msm`).
+**Full sign** (`make-release.ps1 -Sign` or build-lab package `sign=true`):
 
-Optional: sign PE modules before WiX if the user asks (`-IncludeBinaries`).
+1. **Ship PE before WiX** — under product `out\` (CMake) or `Runtime`/`Studio` (classic):  
+   `*.exe`, `*.dll`, host modules `*.arx` / `*.brx` / `*.grx` / `*.zrx` / `*.dbx`  
+   (`sign-files.ps1 -IncludeBinaries -Recurse`).
+2. **Installer containers after package** — `*.msi`, `*.msm` in `dist\` (and WiX out).
+
+Localization `.zip` files are not Authenticode-signed.
+
+Installer-only escape hatch: `make-release.ps1 -Sign -SkipBinarySign`.
 
 ## Scripts map
 
 | Script | Role |
 |--------|------|
-| `scripts/sign-files.ps1` | YubiKey / PKCS#12 signing via jsign |
+| `scripts/sign-files.ps1` | YubiKey / PKCS#12 signing via jsign (MSI/MSM and/or PE) |
 | `scripts/make-dist.ps1` | Versioned MSI/MSM names |
 | `scripts/make-localization-zips.ps1` | Translator zips |
-| `scripts/make-release.ps1` | package + dist + loc zips [+ sign] |
+| `scripts/make-release.ps1` | verify → [sign PE] → WiX → dist → loc → [sign MSI] |
 | `scripts/build-wix.ps1` | WiX MSM/MSI build |
 
 ## GitHub Actions
@@ -173,6 +180,7 @@ Operator notes / local mirrors: private **build-lab** `code-sign-operator`.
 - [ ] PIN only in process env (`SIGN_STORE_PASSWORD`), never in git or scripts  
 - [ ] jsign + Yubico PIV Tool available on the signing machine  
 - [ ] `Get-AuthenticodeSignature` Status=Valid on every shipped MSI/MSM  
+- [ ] Ship PE under `out\` also Valid when full `-Sign` was used  
 - [ ] Timestamp present  
 - [ ] **opendcl.github.io `version/*.txt` + `assets/versions.js` updated for this release**  
 

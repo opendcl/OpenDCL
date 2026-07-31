@@ -28,7 +28,9 @@
   File or directory. Directories default to *.msi and *.msm only (like @SignAll *.ms?).
 
 .PARAMETER IncludeBinaries
-  When Path is a directory, also sign *.exe, *.dll, *.cab, etc.
+  When Path is a directory, also sign ship PE: *.exe, *.dll, CAD host modules
+  (*.arx, *.brx, *.grx, *.zrx, *.dbx), plus *.cab / *.sys / *.ocx / *.efi.
+  Use with -Recurse on product out\ (or Runtime/Studio) trees before WiX.
 
 .PARAMETER Recurse
   Search directories recursively.
@@ -114,7 +116,11 @@ function Get-FilesToSign([string[]] $paths) {
   # Default: installers only (historical @SignAll *.ms?)
   $exts = @(".msi", ".msm")
   if ($IncludeBinaries) {
-    $exts += @(".cab", ".exe", ".dll", ".sys", ".ocx", ".efi")
+    # OpenDCL ship PE + common Authenticode targets (not .lib / .obj / intermediates)
+    $exts += @(
+      ".cab", ".exe", ".dll", ".sys", ".ocx", ".efi",
+      ".arx", ".brx", ".grx", ".zrx", ".dbx"
+    )
   }
   $list = New-Object System.Collections.Generic.List[string]
   foreach ($p in $paths) {
@@ -132,6 +138,26 @@ function Get-FilesToSign([string[]] $paths) {
     }
   }
   return @($list | Select-Object -Unique)
+}
+
+function Get-SignBatches([string[]] $files, [int] $maxFiles = 30, [int] $maxChars = 6000) {
+  # Windows CreateProcess command-line limit is ~8191; keep jsign arg lists smaller.
+  $batches = New-Object System.Collections.Generic.List[object]
+  $cur = New-Object System.Collections.Generic.List[string]
+  $curLen = 0
+  foreach ($f in $files) {
+    $add = $f.Length + 3
+    $wouldExceed = ($cur.Count -ge $maxFiles) -or (($cur.Count -gt 0) -and (($curLen + $add) -gt $maxChars))
+    if ($wouldExceed) {
+      [void]$batches.Add(@($cur.ToArray()))
+      $cur = New-Object System.Collections.Generic.List[string]
+      $curLen = 0
+    }
+    [void]$cur.Add($f)
+    $curLen += $add
+  }
+  if ($cur.Count -gt 0) { [void]$batches.Add(@($cur.ToArray())) }
+  return @($batches)
 }
 
 function Normalize-Digest([string] $d) {
@@ -223,12 +249,20 @@ Write-Host "digest:       $digest"
 Write-Host "name/url:     $ProgramName / $DescriptionUrl"
 if ($Alias) { Write-Host "alias:        $Alias" }
 
-# One jsign invocation for all files (token PIN session reused).
-foreach ($f in $files) { Write-Host "Sign $f" }
-$allArgs = $argList.ToArray() + $files
-& $jsignPath @allArgs
-if ($LASTEXITCODE -ne 0) {
-  throw "jsign failed (exit $LASTEXITCODE). Check YubiKey insertion, PIN env var (YubiKey PIN, not SafeNet), and alias (slot 9a)."
+# Batch invocations so long PE path lists stay under Windows cmdline limits.
+# PIN comes from env each time; YubiKey still avoids interactive prompts.
+$batches = @(Get-SignBatches $files)
+Write-Host "batches:      $($batches.Count)"
+$bi = 0
+foreach ($batch in $batches) {
+  $bi++
+  Write-Host "--- jsign batch $bi / $($batches.Count) ($($batch.Count) file(s)) ---"
+  foreach ($f in $batch) { Write-Host "Sign $f" }
+  $allArgs = $argList.ToArray() + $batch
+  & $jsignPath @allArgs
+  if ($LASTEXITCODE -ne 0) {
+    throw "jsign failed (exit $LASTEXITCODE) on batch $bi. Check YubiKey insertion, PIN env var (YubiKey PIN, not SafeNet), and alias (slot 9a)."
+  }
 }
 
 Write-Host "OK signed $($files.Count) file(s)"
