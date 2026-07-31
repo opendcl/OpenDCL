@@ -149,15 +149,16 @@ Tag: `v<ver>` (e.g. `v10.1.1.1`).
 **Online help** refresh: skill `/sync-help-to-website` (Studio Content →
 `opendcl.github.io/HelpFiles/`).
 
-**Update-check versions (manual):** after publishing a release, update on
-`opendcl/opendcl.github.io` (and keep `assets/versions.js` in sync):
+**Update-check versions:** after a **public** GitHub Release (not dry-run), run
+`scripts/update-site-versions.ps1` against `opendcl.github.io`:
 
-- `version/version.txt` — stable `A.B.C.D`
-- `version/version_dev.txt` — dev/current `A.B.C.D`
+- Normal ship: `-DevVersion A.B.C.D` (current/dev only)
+- Promote to stable: `-PromoteToStable`
+- Files: `version/version.txt`, `version/version_dev.txt`, `assets/versions.js`
 
-Runtime and AllSamples **GET** those plain-text files (HTTP 2xx + `A.B.C.D` only)
-and compare client-side. Keep in sync with `assets/versions.js`. See skill
-`code-sign-release`.
+Runtime and AllSamples **GET** the plain-text files (HTTP 2xx + `A.B.C.D` only).
+See skill `code-sign-release`.
+
 ## UI branding (Studio MSI)
 
 Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no stretch at build time):

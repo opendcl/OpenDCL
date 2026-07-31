@@ -272,8 +272,10 @@ WiX** then **MSI/MSM** after package. Self-hosted runner only. Never commit PINs
 or PFX. Public procedure: `/code-sign-release`. Operator notes: private build-lab
 skill **`code-sign-operator`**.
 
-**Manual after every release (not automated yet):** keep update-check version
-strings in sync on **`opendcl/opendcl.github.io`** (custom domain opendcl.com):
+**After every public release (not dry-run):** update site version files on
+**`opendcl/opendcl.github.io`** via `scripts/update-site-versions.ps1`
+(custom domain opendcl.com). Normal ships set **dev/current** only
+(`-DevVersion`); promoting a shipped dev to stable uses `-PromoteToStable`.
 
 | File | Role |
 |------|------|
@@ -314,6 +316,7 @@ not in this public tree.
 | Versioned dist only | `.\scripts\make-dist.ps1 -ProductVersion A.B.C.D` |
 | Localization zips only | `.\scripts\make-localization-zips.ps1` |
 | Code sign / GitHub Release | `/code-sign-release`, **Make release** workflow |
+| Site version.txt / versions.js | `.\scripts\update-site-versions.ps1` (after public Release) |
 | Start Menu icons | `/make-package-icons`, assets under `wix/ui/` |
 | Online help | Edit Studio Content, then `/sync-help-to-website` |
 

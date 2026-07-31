@@ -97,6 +97,7 @@ Installer-only escape hatch: `make-release.ps1 -Sign -SkipBinarySign`.
 | `scripts/make-localization-zips.ps1` | Translator zips |
 | `scripts/make-release.ps1` | verify → [sign PE] → WiX → dist → loc → [sign MSI] |
 | `scripts/build-wix.ps1` | WiX MSM/MSI build |
+| `scripts/update-site-versions.ps1` | After public Release: Pages `version/*.txt` + `versions.js` |
 
 ## GitHub Actions
 
@@ -150,30 +151,42 @@ files (and the download JS) in **`opendcl/opendcl.github.io`** — custom domain
 
 Tray notification **Action** opens `https://www.opendcl.com/download/`.
 
-### Manual update (until automated)
+### Site versions (after public Release — not dry-run)
 
-1. After the product release is published (installers signed + GitHub Release live).
-2. In the **`opendcl.github.io`** repo, set the same four-part version in:
+Use product script **`scripts/update-site-versions.ps1`** against sibling
+`../opendcl.github.io` (or `-SiteRoot`). It keeps the three files in sync:
 
-   | Path | When to update | Contents |
-   |------|----------------|----------|
-   | **`version/version.txt`** | Every **stable** release | Four-part only, e.g. `10.1.1.1` (no HTML) |
-   | **`version/version_dev.txt`** | Every **development** build clients should see as newest dev | Same format |
-   | **`assets/versions.js`** | Same ship | `stable` / `current` match the two files above |
+| Path | Field |
+|------|--------|
+| `version/version.txt` | stable |
+| `version/version_dev.txt` | current / dev |
+| `assets/versions.js` | `stable` / `current` |
 
-3. Commit and push so Pages serves (verify after deploy):
-   - `https://www.opendcl.com/version/version.txt`
-   - `https://www.opendcl.com/version/version_dev.txt`
-   - Bodies must be bare `A.B.C.D` (not HTML). Clients require HTTP 2xx.
+**Normal public ship** (new build is almost always **dev/current** only):
 
-Operator notes / local mirrors: private **build-lab** `code-sign-operator`.
+```powershell
+# After gh release create v10.1.1.1 (or Make release)
+.\scripts\update-site-versions.ps1 -DevVersion 10.1.1.1 -RequireRelease -GitCommit
+# then: git -C ..\opendcl.github.io push
+```
+
+**Promote that shipped dev to stable** (usual stable release — same version, no new MSI):
+
+```powershell
+.\scripts\update-site-versions.ps1 -PromoteToStable -RequireRelease -GitCommit
+```
+
+**Exceptions** (rare): `-StableVersion` and/or both channels explicitly.
+
+Never run this during private dry-run. Operator notes: private build-lab
+`code-sign-operator`.
 
 ### Release checklist (append)
 
 - [ ] Installers built, signed, GitHub Release `vA.B.C.D` published  
 - [ ] Localization packs refreshed if needed  
-- [ ] **`version/version.txt` and/or `version_dev.txt` updated in opendcl.github.io**  
-- [ ] **`assets/versions.js` `stable` / `current` match those files**  
+- [ ] **Site versions:** `-DevVersion` for normal ship, or `-PromoteToStable` when promoting  
+- [ ] **`opendcl.github.io` committed and pushed;** GET `version/*.txt` is bare `A.B.C.D`  
 
 ## Security checklist
 
