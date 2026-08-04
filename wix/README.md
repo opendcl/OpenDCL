@@ -121,7 +121,8 @@ Example step-by-step (same result as `make-release.ps1` without `-Sign`):
 .\scripts\make-localization-zips.ps1 -OutDir .\dist\10.1.1.1
 $env:SIGN_STORE_PASSWORD = "<yubikey-pin>"   # process env only; never commit
 .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
-gh release create "v10.1.1.1" .\dist\10.1.1.1\* --title "OpenDCL 10.1.1.1"
+# Product v* release: MSI/MSM only. Language zips → rolling tag localization-packs.
+gh release create "v10.1.1.1" .\dist\10.1.1.1\*.msi .\dist\10.1.1.1\*.msm --title "OpenDCL 10.1.1.1"
 ```
 
 **Signing (YubiKey + SSL.com + jsign):** insert YubiKey, set `SIGN_STORE_PASSWORD`

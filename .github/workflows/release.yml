@@ -19,7 +19,7 @@ on:
         required: true
         default: true
       localization:
-        description: "Include OpenDCL.<LANG>.zip localization packs in the release"
+        description: "Build OpenDCL.<LANG>.zip packs (published only on rolling localization-packs tag, not on v* product release)"
         type: boolean
         required: true
         default: true
@@ -29,7 +29,7 @@ on:
         required: true
         default: true
       update_localization_latest:
-        description: "Also refresh rolling release tag localization-packs"
+        description: "Refresh rolling release tag localization-packs with the language zips"
         type: boolean
         required: true
         default: true
@@ -103,31 +103,34 @@ jobs:
           $ver = "${{ steps.ver.outputs.file_ver }}"
           $tag = "${{ steps.ver.outputs.tag }}"
           $dir = Join-Path $env:GITHUB_WORKSPACE "dist\$ver"
-          $assets = @(Get-ChildItem $dir -File | ForEach-Object { $_.FullName })
-          if ($assets.Count -eq 0) { throw "No assets in $dir" }
+          # Product release assets: installers only. Language zips go to localization-packs.
+          $assets = @(
+            Get-ChildItem $dir -File |
+              Where-Object { $_.Extension -match '^\.(msi|msm)$' } |
+              ForEach-Object { $_.FullName }
+          )
+          if ($assets.Count -eq 0) { throw "No MSI/MSM assets in $dir" }
 
           $extra = @()
           if ("${{ inputs.prerelease }}" -eq "true") { $extra += "--prerelease" }
           if ("${{ inputs.draft }}" -eq "true") { $extra += "--draft" }
 
-          $hasLoc = [bool](Get-ChildItem $dir -Filter "OpenDCL.*.zip" -File -ErrorAction SilentlyContinue)
           $notes = @"
           OpenDCL $ver (WiX installers).
 
           - Runtime MSI/MSM and Studio language MSIs
-          $(if ($hasLoc) { "- Localization packs: ``OpenDCL.<LANG>.zip`` (for translators)" } else { "" })
-
-          Online localization downloads: https://opendcl.github.io/localization/
+          - Localization packs (translators): rolling release [localization-packs](https://github.com/opendcl/OpenDCL/releases/tag/localization-packs) — not attached here
+          - Site: https://opendcl.github.io/localization/
           "@
 
           if (gh release view $tag 2>$null) {
-            Write-Host "Release $tag exists — uploading/clobbering assets"
+            Write-Host "Release $tag exists — uploading/clobbering installer assets"
             gh release upload $tag @assets --clobber
           } else {
             gh release create $tag @assets --title "OpenDCL $ver" --notes $notes @extra
           }
           if ($LASTEXITCODE -ne 0) { throw "gh release failed ($LASTEXITCODE)" }
-          Write-Host "Published $tag with $($assets.Count) assets"
+          Write-Host "Published $tag with $($assets.Count) installer assets"
 
       - name: Refresh rolling localization-packs release
         if: ${{ inputs.localization && inputs.update_localization_latest }}

@@ -69,11 +69,17 @@ Localization `.zip` files are **not** Authenticode-signed (only MSI/MSM).
 Then publish (public ship only — not dry-run):
 
 ```powershell
-gh release create "v10.1.1.1" .\dist\10.1.1.1\* --title "OpenDCL 10.1.1.1"
+# Product tag: installers only. Do not attach OpenDCL.<LANG>.zip here.
+gh release create "v10.1.1.1" .\dist\10.1.1.1\*.msi .\dist\10.1.1.1\*.msm `
+  --title "OpenDCL 10.1.1.1"
+# Translator packs: rolling tag only (see localization-packs.yml / Make release)
+# gh release create localization-packs .\dist\10.1.1.1\OpenDCL.*.zip `
+#   --title "Localization packs (latest)" --latest=false
 ```
 
 Or run the **Make release** workflow (self-hosted) with `sign=true`. PIN must be
 available as host env `SIGN_STORE_PASSWORD` on the runner (not in this skill file).
+Product `v*` assets are MSI/MSM only; language zips refresh **localization-packs**.
 
 ## What to sign
 
