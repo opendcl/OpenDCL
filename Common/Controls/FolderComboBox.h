@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include "ThemeAPI.h"
 
 #include "FolderTreeCtrl.h"
 

@@ -47,7 +47,11 @@ void CStudioUndoManager::setEnabled( bool bEnabled /*= true*/ )
 
 bool CStudioUndoManager::AddAction( CUndoAction* pAction )
 {
+#ifdef _DIAGNOSTIC
 	TraceFmt( _T("> CStudioUndoManager::AddAction(%s)\r\n"), (LPCTSTR)pAction->toString() );
+#else
+	TraceFmt( _T("> CStudioUndoManager::AddAction(%s)\r\n"), (LPCTSTR)pAction->GetDisplayName() );
+#endif
 	assert( enabled() );
 	if( !enabled() && pAction->GetType() != Undo::EndGroup ) //EndGroup still allowed even when disabled
 		return false;
@@ -96,7 +100,11 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 		if( mUndoStack.empty() )
 			break;
 		CUndoAction* pAction = mUndoStack.back();
+#ifdef _DIAGNOSTIC
 		TraceFmt( _T("  CUndoAction::Undo(%s)\r\n"), (LPCTSTR)pAction->toString() );
+#else
+		TraceFmt( _T("  CUndoAction::Undo(%s)\r\n"), (LPCTSTR)pAction->GetDisplayName() );
+#endif
 		bool bSuccess = pAction->Undo();
 		assert( pAction == mUndoStack.back() ); //Undo() should never add or remove actions!
 		assert( bSuccess == true );

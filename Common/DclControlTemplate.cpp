@@ -1359,9 +1359,7 @@ void CDclControlTemplate::dump( bool bDeep /*= true*/ ) const
 	}
 }
 #endif
-
-
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(_DIAGNOSTIC)
 void CDclControlTemplate::dumpDebugger( bool bDeep /*= true*/ ) const
 {
 	TraceFmt( _T("%s\r\n"), toString() );
@@ -1370,5 +1368,9 @@ void CDclControlTemplate::dumpDebugger( bool bDeep /*= true*/ ) const
 	size_t idx = 0;
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 		TraceFmt( _T("  #%4s: %s\r\n"), asString( idx++ ), (*iter)->toString() );
+}
+#elif defined(_DEBUG)
+void CDclControlTemplate::dumpDebugger( bool /*bDeep*/ ) const
+{
 }
 #endif

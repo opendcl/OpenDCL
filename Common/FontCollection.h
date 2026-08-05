@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PtrTypes.h"
-
+class CControlPane;
 
 class CFontCollection : public CObject
 {

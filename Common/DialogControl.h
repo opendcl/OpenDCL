@@ -10,9 +10,9 @@
 #include "PPToolTip.h"
 #include "DclControlTemplate.h"
 #include "ThemeAPI.h"
+#include "ControlTypes.h"
 #include <list>
 #include <vector>
-
 class CControlPane;
 class CAcadColorService;
 class CThemeHelperST;
@@ -20,7 +20,6 @@ class CDragDropService;
 class CArxControlServices;
 class CControlManager;
 namespace Prop { enum Id; }
-enum ControlType;
 
 struct ControlParams
 {
