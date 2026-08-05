@@ -1007,9 +1007,7 @@ void CProject::dump( bool bDeep /*= true*/ ) const
 	theWorkspace.DisplayStatus( sOut );
 }
 #endif
-
-
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(_DIAGNOSTIC)
 void CProject::dumpDebugger( bool bDeep /*= true*/ ) const
 {
 	TraceFmt( _T("############################################################\r\n%s\r\n"), toString() );
@@ -1018,5 +1016,9 @@ void CProject::dumpDebugger( bool bDeep /*= true*/ ) const
 	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 		(*iter)->dumpDebugger( true );
 	TraceFmt( _T("#####    End of project [%s]    #####\r\n"), (LPCTSTR)GetKeyName() );
+}
+#elif defined(_DEBUG)
+void CProject::dumpDebugger( bool /*bDeep*/ ) const
+{
 }
 #endif

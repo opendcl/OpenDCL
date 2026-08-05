@@ -28,7 +28,7 @@ CString GetFormDisplayName( FormType type )
 CString GetFormDisplayName( TDclFormPtr pForm )
 {
 	if( !pForm )
-		return NULL;
+		return CString();
 	return GetFormDisplayName( pForm->GetType() );
 }
 
@@ -52,6 +52,6 @@ CString GetFormApiName( FormType type )
 CString GetFormApiName( TDclFormPtr pForm )
 {
 	if( !pForm )
-		return NULL;
+		return CString();
 	return GetFormApiName( pForm->GetType() );
 }

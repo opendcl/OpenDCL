@@ -96,7 +96,7 @@ public:
 		: CUndoAction( Undo::EndGroup ) {}
 	virtual ~CEndGroupUA() {}
 
-	CString GetDisplayName() const override { return NULL; }
+	CString GetDisplayName() const override { return CString(); }
 	bool Undo() override { return true; }
 
 #ifdef _DIAGNOSTIC

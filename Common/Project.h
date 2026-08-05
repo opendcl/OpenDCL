@@ -61,6 +61,7 @@ class that all named objects derive from or export. This I leave as an exercise 
 #include <map>
 #include "PtrTypes.h"
 #include "FontSettings.h"
+#include "FormTypes.h"
 
 class CStgFile;
 class CUndoManager;

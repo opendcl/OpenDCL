@@ -2,10 +2,10 @@
 
 #include "DialogControl.h"
 #include "ControlPane.h"
+#include "FormTypes.h"
 
 class CDclFormObject;
 class CProject;
-enum FormType;
 
 
 //This struct is used to pass standard and custom initialization data to the dialog creation function
