@@ -1,15 +1,20 @@
 # Thin public gate: dispatch private opendcl/opendcl-tests harness for same-repo PRs only.
 # External forks never run tests (no secrets, no private checkout).
 #
+# Skip (status success, no harness dispatch):
+#   - PR label `skip-tests`, or
+#   - head commit message contains `@skip-tests` (anywhere in subject/body)
+#
+# Re-evaluate on unlabel only (not on labeled): removing `skip-tests` re-runs this
+# workflow so the head commit is tested unless the message still has `@skip-tests`.
+#
 # Secret (repo): OPENDCL_TESTS_DISPATCH_TOKEN
 #   PAT or fine-grained token able to POST repository_dispatch on opendcl/opendcl-tests
-#   (classic: repo scope on the private tests repo; fine-grained: Contents read +
-#   metadata, and permission to create repository_dispatch / Actions on tests).
 name: Dispatch private tests
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, unlabeled]
 
 concurrency:
   group: dispatch-tests-${{ github.event.pull_request.number || github.ref }}
@@ -19,13 +24,63 @@ jobs:
   dispatch:
     name: Dispatch pr_harness
     # Trusted PRs only — head must be this repository (not a fork).
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # On unlabeled: only re-evaluate when the removed label was skip-tests.
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository
+      && (github.event.action != 'unlabeled'
+          || github.event.label.name == 'skip-tests')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       statuses: write
     steps:
+      - name: Decide skip vs dispatch
+        id: gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const sha = pr.head.sha;
+            const labels = (pr.labels || []).map(l => l.name);
+            const labelSkip = labels.includes('skip-tests');
+
+            const { data: commit } = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: sha,
+            });
+            const message = commit.commit.message || '';
+            const messageSkip = message.includes('@skip-tests');
+
+            let reason = '';
+            if (labelSkip) reason = 'PR label skip-tests';
+            else if (messageSkip) reason = 'commit message @skip-tests';
+
+            const skip = Boolean(reason);
+            core.setOutput('skip', skip ? 'true' : 'false');
+            core.setOutput('reason', reason);
+            core.setOutput('sha', sha);
+            core.info(skip
+              ? `Skip harness: ${reason} (sha ${sha})`
+              : `Dispatch harness for sha ${sha}`);
+
+      - name: Skip — success status (no harness)
+        if: steps.gate.outputs.skip == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.gate.outputs.sha }}',
+              state: 'success',
+              context: 'opendcl-tests / pr_harness',
+              description: 'Skipped (${{ steps.gate.outputs.reason }})',
+              // No target_url — no check run / harness details to list.
+            });
+
       - name: Pending commit status
+        if: steps.gate.outputs.skip != 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -40,6 +95,7 @@ jobs:
             });
 
       - name: repository_dispatch → opendcl/opendcl-tests
+        if: steps.gate.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.OPENDCL_TESTS_DISPATCH_TOKEN }}
         run: |
@@ -73,7 +129,7 @@ jobs:
           echo "Dispatched pr_harness for $SHA (PR #$PR)"
 
       - name: Mark error if dispatch failed
-        if: failure()
+        if: failure() && steps.gate.outputs.skip != 'true'
         uses: actions/github-script@v7
         with:
           script: |
