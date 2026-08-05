@@ -8,6 +8,7 @@
 #include "FontSettings.h"
 #include "DclImageList.h"
 #include "DclAxCtrlInitInfo.h"
+#include "ControlTypes.h"
 #include <list>
 
 class CAxContainerCtrl;

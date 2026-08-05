@@ -58,7 +58,7 @@ CString GetControlDisplayName( ControlType type )
 CString GetControlDisplayName( TDclControlPtr pDclControl )
 {
 	if( !pDclControl )
-		return NULL;
+		return CString();
 	switch( pDclControl->GetType() )
 	{
 	case CtlActiveX:
@@ -167,6 +167,6 @@ CString GetControlApiName( ControlType type )
 CString GetControlApiName( TDclControlPtr pDclControl )
 {
 	if( !pDclControl )
-		return NULL;
+		return CString();
 	return GetControlApiName( pDclControl->GetType() );
 }

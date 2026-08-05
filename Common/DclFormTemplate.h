@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FormTypes.h"
+#include "ControlTypes.h"
 #include "DclImageList.h"
 #include "Project.h"
 #include "DclControlTemplate.h"
@@ -8,7 +9,6 @@
 
 class CFontCollection;
 class CDialogObject;
-enum ControlType;
 
 typedef std::list< TDclControlPtr > TDclControlList;
 

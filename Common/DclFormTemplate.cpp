@@ -912,9 +912,7 @@ void CDclFormObject::dump( bool bDeep /*= true*/ ) const
 	theWorkspace.DisplayStatus( _T("========================================\r\n") );
 }
 #endif
-
-
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(_DIAGNOSTIC)
 void CDclFormObject::dumpDebugger( bool bDeep /*= true*/ ) const
 {
 	TraceFmt( _T("%s\r\n"), toString() );
@@ -923,5 +921,9 @@ void CDclFormObject::dumpDebugger( bool bDeep /*= true*/ ) const
 	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 		(*iter)->dumpDebugger( true );
 	Trace( _T("========================================\r\n") );
+}
+#elif defined(_DEBUG)
+void CDclFormObject::dumpDebugger( bool /*bDeep*/ ) const
+{
 }
 #endif
