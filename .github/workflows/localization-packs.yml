@@ -1,6 +1,9 @@
 # Build translator localization zips and publish as a rolling GitHub Release.
 # Also produced by "Make release" (scripts/make-release.ps1) alongside installers.
 # Site: https://opendcl.github.io/localization/
+#
+# Path filters: only localization trees (not all of Common/). When adding a new
+# language code, append Common/<CODE>/** here (see .agents/skills/add-language).
 name: Localization packs
 
 on:
@@ -13,7 +16,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "Common/**"
+      # Common shared resources — one line per language (keep in sync with OPENDCL_LANGS)
+      - "Common/ENU/**"
+      - "Common/CHS/**"
+      - "Common/CHT/**"
+      - "Common/DEU/**"
+      - "Common/ESM/**"
+      - "Common/FRA/**"
+      - "Common/RUS/**"
       - "Runtime/Localized/**"
       - "Studio/Localized/**"
       - "scripts/make-localization-zips.ps1"

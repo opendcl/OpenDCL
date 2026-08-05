@@ -198,8 +198,13 @@ Demand-load **OPENDCLDEMO** depends on `HKCR\OpenDCL.Project` from Studio instal
 2. **Online help**: only some languages are published under `HelpFiles/` today
    (ENU, DEU, RUS). When help HTML is ready, run **`/sync-help-to-website`**.
 3. **Localization packs**: after the language lands on `main`, the
-   `localization-packs` workflow rebuilds translator zips; localizers can also
-   use https://opendcl.github.io/localization/ (“Build from main”).
+   `localization-packs` workflow rebuilds translator zips when localization
+   trees change; localizers can also use https://opendcl.github.io/localization/
+   (“Build from main”). **Required:** add one path filter line to
+   `.github/workflows/localization-packs.yml` under `on.push.paths`:
+   `Common/<LANG>/**` (one line per language — same list as existing ENU/CHS/…).
+   `Runtime/Localized/**` and `Studio/Localized/**` already cover new folders
+   under those trees without a new line.
 4. Do not assume every Studio language automatically gets a HelpFiles folder.
 
 ### 9. Capture lessons into this skill
@@ -234,4 +239,5 @@ Only commit if the user asked. Website repo commits are separate.
 - [ ] `Studio/Localized/<LANG>/Package.wxl` present (clone ENU; localize strings)
 - [ ] Studio MSI builds and installs for the new language
 - [ ] Download/help website follow-ups noted or done
+- [ ] `localization-packs.yml` `on.push.paths` includes `Common/<LANG>/**`
 - [ ] Skill updated if new lessons were learned
