@@ -3,7 +3,7 @@
 # Not a CAD runtime module — FullDebug → Debug (classic has Debug|Release only).
 #
 # PE policy OPENDCL_RES_PE (see OpenDCLHelpers.cmake):
-#   classic_x86 — public Mixed: native only on Win32; x64 uses OpenDCL_Res_Win32.
+#   classic_x86 — public Mixed: native only on Win32; x64 uses Res_Win32.
 #   host        — Res PE matches this configure (x64 Res on x64).
 
 function(opendcl_add_runtime_res lang)
@@ -16,7 +16,7 @@ function(opendcl_add_runtime_res lang)
     return()
   endif()
 
-  set(_target "OpenDCL_RuntimeRes_${lang}")
+  set(_target "RuntimeRes_${lang}")
   add_library(${_target} SHARED)
   target_sources(${_target} PRIVATE "${_rc}")
 
@@ -36,7 +36,7 @@ function(opendcl_add_runtime_res lang)
   else()
     set(_rr_arch "Win32")
   endif()
-  opendcl_solution_folder(_rr_folder "${_rr_arch}" "OpenDCL_RuntimeRes_${lang}")
+  opendcl_solution_folder(_rr_folder "${_rr_arch}" "RuntimeRes_${lang}")
   set_target_properties(${_target} PROPERTIES FOLDER "${_rr_folder}")
 
   target_include_directories(${_target} PRIVATE
@@ -71,9 +71,9 @@ if(_res_native)
 else()
   if(OPENDCL_NEST_WIN32)
     message(STATUS
-      "Runtime.Res: skip native targets (classic_x86 via full Win32 nest / OpenDCL_Res_Win32)")
+      "Runtime.Res: skip native targets (classic_x86 via full Win32 nest / Res_Win32)")
   else()
     message(STATUS
-      "Runtime.Res: skip native targets (OPENDCL_RES_PE=classic_x86; use OpenDCL_Res_Win32)")
+      "Runtime.Res: skip native targets (OPENDCL_RES_PE=classic_x86; use Res_Win32)")
   endif()
 endif()

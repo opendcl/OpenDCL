@@ -6,12 +6,12 @@
 # toolset-matched zlib/png variants via opendcl_ensure_runtime_png().
 #
 # Target naming (arch, CRT, and toolset are ALWAYS present):
-#   opendcl_{zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
+#   {zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
 # Examples:
-#   opendcl_zlib_x64_md_v143     host toolset, /MD  (Debug + fake FullDebug + Release)
-#   opendcl_zlib_x64_mdd_v143    host toolset, /MDd (real host-debug FullDebug)
-#   opendcl_png_x64_mt_v143      host toolset, /MT  (Studio)
-#   opendcl_png_x86_md_v100      compiled with v100, /MD
+#   zlib_x64_md_v143     host toolset, /MD  (Debug + fake FullDebug + Release)
+#   zlib_x64_mdd_v143    host toolset, /MDd (real host-debug FullDebug)
+#   png_x64_mt_v143      host toolset, /MT  (Studio)
+#   png_x86_md_v100      compiled with v100, /MD
 #
 # CRT pairs for CAD modules under solution FullDebug:
 #   *_md_*   — always /MD; FullDebug outputs map beside Debug ("fake" FullDebug)
@@ -80,7 +80,7 @@ string(REGEX REPLACE "[^A-Za-z0-9]" "_" OPENDCL_HOST_TOOLSET_TAG "${_opendcl_hos
 set(OPENDCL_HOST_TOOLSET_TAG "${OPENDCL_HOST_TOOLSET_TAG}" CACHE INTERNAL
   "Sanitized host VS toolset tag for Library target names (e.g. v143)")
 
-# name: opendcl_{zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
+# name: {zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
 # runtime_lib: "md" | "mdd" | "mt"
 # toolset_tag (optional 5th arg): out leaf under Library/ts/<tag>/…
 function(opendcl_add_static_lib name arch sources runtime_lib)
@@ -124,9 +124,9 @@ function(opendcl_add_static_lib name arch sources runtime_lib)
     set(_lib_arch "Win32")
   endif()
   if(name MATCHES "zlib")
-    opendcl_solution_folder(_folder "${_lib_arch}" "opendcl_zlib")
+    opendcl_solution_folder(_folder "${_lib_arch}" "zlib")
   else()
-    opendcl_solution_folder(_folder "${_lib_arch}" "opendcl_png")
+    opendcl_solution_folder(_folder "${_lib_arch}" "png")
   endif()
   set_target_properties(${name} PROPERTIES
     MSVC_RUNTIME_LIBRARY "${_rtl}"
@@ -213,8 +213,8 @@ function(opendcl_ensure_runtime_png arch toolset runtime_crt out_zlib out_png)
 
   opendcl_png_lib_toolset("${toolset}" _lib_ts)
   string(REGEX REPLACE "[^A-Za-z0-9]" "_" _ts_safe "${_lib_ts}")
-  set(_z "opendcl_zlib_${arch}_${runtime_crt}_${_ts_safe}")
-  set(_p "opendcl_png_${arch}_${runtime_crt}_${_ts_safe}")
+  set(_z "zlib_${arch}_${runtime_crt}_${_ts_safe}")
+  set(_p "png_${arch}_${runtime_crt}_${_ts_safe}")
 
   if(runtime_crt STREQUAL "mdd")
     set(_crt_label "/MDd")
@@ -248,9 +248,9 @@ else()
 endif()
 
 # /MD pair — Debug, fake FullDebug (maps to Debug), Release.
-opendcl_add_static_lib(opendcl_zlib_${_ha}_md_${_hts} ${_ha} "${_ZLIB_SOURCES}" md)
-opendcl_add_static_lib(opendcl_png_${_ha}_md_${_hts} ${_ha} "${_PNG_SOURCES}" md)
-target_link_libraries(opendcl_png_${_ha}_md_${_hts} PUBLIC opendcl_zlib_${_ha}_md_${_hts})
+opendcl_add_static_lib(zlib_${_ha}_md_${_hts} ${_ha} "${_ZLIB_SOURCES}" md)
+opendcl_add_static_lib(png_${_ha}_md_${_hts} ${_ha} "${_PNG_SOURCES}" md)
+target_link_libraries(png_${_ha}_md_${_hts} PUBLIC zlib_${_ha}_md_${_hts})
 
 # /MDd pair — real host-debug FullDebug (only when FullDebug is a solution config).
 set(_opendcl_have_fulldebug FALSE)
@@ -262,25 +262,25 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "FullDebug")
   set(_opendcl_have_fulldebug TRUE)
 endif()
 if(_opendcl_have_fulldebug)
-  opendcl_add_static_lib(opendcl_zlib_${_ha}_mdd_${_hts} ${_ha} "${_ZLIB_SOURCES}" mdd)
-  opendcl_add_static_lib(opendcl_png_${_ha}_mdd_${_hts} ${_ha} "${_PNG_SOURCES}" mdd)
-  target_link_libraries(opendcl_png_${_ha}_mdd_${_hts} PUBLIC opendcl_zlib_${_ha}_mdd_${_hts})
-  set(OPENDCL_ZLIB_MDD_TARGET "opendcl_zlib_${_ha}_mdd_${_hts}" CACHE INTERNAL "")
-  set(OPENDCL_PNG_MDD_TARGET  "opendcl_png_${_ha}_mdd_${_hts}"  CACHE INTERNAL "")
+  opendcl_add_static_lib(zlib_${_ha}_mdd_${_hts} ${_ha} "${_ZLIB_SOURCES}" mdd)
+  opendcl_add_static_lib(png_${_ha}_mdd_${_hts} ${_ha} "${_PNG_SOURCES}" mdd)
+  target_link_libraries(png_${_ha}_mdd_${_hts} PUBLIC zlib_${_ha}_mdd_${_hts})
+  set(OPENDCL_ZLIB_MDD_TARGET "zlib_${_ha}_mdd_${_hts}" CACHE INTERNAL "")
+  set(OPENDCL_PNG_MDD_TARGET  "png_${_ha}_mdd_${_hts}"  CACHE INTERNAL "")
 else()
   unset(OPENDCL_ZLIB_MDD_TARGET CACHE)
   unset(OPENDCL_PNG_MDD_TARGET CACHE)
 endif()
 
-opendcl_add_static_lib(opendcl_zlib_${_ha}_mt_${_hts} ${_ha} "${_ZLIB_SOURCES}" mt)
-opendcl_add_static_lib(opendcl_png_${_ha}_mt_${_hts} ${_ha} "${_PNG_SOURCES}" mt)
-target_link_libraries(opendcl_png_${_ha}_mt_${_hts} PUBLIC opendcl_zlib_${_ha}_mt_${_hts})
+opendcl_add_static_lib(zlib_${_ha}_mt_${_hts} ${_ha} "${_ZLIB_SOURCES}" mt)
+opendcl_add_static_lib(png_${_ha}_mt_${_hts} ${_ha} "${_PNG_SOURCES}" mt)
+target_link_libraries(png_${_ha}_mt_${_hts} PUBLIC zlib_${_ha}_mt_${_hts})
 
 # Convenience names for Studio / docs (always fully qualified).
-set(OPENDCL_ZLIB_MD_TARGET "opendcl_zlib_${_ha}_md_${_hts}" CACHE INTERNAL "")
-set(OPENDCL_PNG_MD_TARGET  "opendcl_png_${_ha}_md_${_hts}"  CACHE INTERNAL "")
-set(OPENDCL_ZLIB_MT_TARGET "opendcl_zlib_${_ha}_mt_${_hts}" CACHE INTERNAL "")
-set(OPENDCL_PNG_MT_TARGET  "opendcl_png_${_ha}_mt_${_hts}"  CACHE INTERNAL "")
+set(OPENDCL_ZLIB_MD_TARGET "zlib_${_ha}_md_${_hts}" CACHE INTERNAL "")
+set(OPENDCL_PNG_MD_TARGET  "png_${_ha}_md_${_hts}"  CACHE INTERNAL "")
+set(OPENDCL_ZLIB_MT_TARGET "zlib_${_ha}_mt_${_hts}" CACHE INTERNAL "")
+set(OPENDCL_PNG_MT_TARGET  "png_${_ha}_mt_${_hts}"  CACHE INTERNAL "")
 
 if(_opendcl_have_fulldebug)
   message(STATUS

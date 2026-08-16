@@ -24,7 +24,7 @@ option(OPENDCL_BUILD_RES_DLLS
 
 # Resource DLL PE policy (Runtime.Res / CAD CommonFiles only):
 #   classic_x86 — Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
-#                 nest OpenDCL_Res_Win32 for Runtime.Res only.
+#                 nest Res_Win32 for Runtime.Res only.
 #   host        — Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
 # Studio.Res always matches Studio PE (see OPENDCL_STUDIO_PE), not this flag.
 set(OPENDCL_RES_PE "host" CACHE STRING
@@ -54,11 +54,11 @@ endif()
 option(OPENDCL_NEST_WIN32
   "When configuring x64 with the VS generator, also nest Win32 under <bin>/win32 and import projects into the parent .sln" OFF)
 option(OPENDCL_WIN32_IN_ALL
-  "Include nested Win32 projects in ALL_BUILD / default solution build (full ship); OFF = Explorer only unless you build OpenDCL_Win32 or a Win32 project" OFF)
+  "Include nested Win32 projects in ALL_BUILD / default solution build (full ship); OFF = Explorer only unless you build Nest_Win32 or a Win32 project" OFF)
 # Full dual-arch nest compiles many old toolsets (v100/v110/...) under one MSBuild.
 # Unbounded /m + /MP OOMs 32-bit cl (C1060 heap) and triggers C1001 ICEs.
 set(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT "2" CACHE STRING
-  "MSBuild /m for cmake --build of the Win32 nest (OpenDCL_Win32 / Res / RxInstall); raise carefully")
+  "MSBuild /m for cmake --build of the Win32 nest (Nest_Win32 / Res / RxInstall); raise carefully")
 set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
   "CL_MPCount for nest builds (cl /MP within each project); 1 is safest for old toolsets")
 
@@ -71,26 +71,26 @@ set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
 #   Runtime                          (RxInstall)
 #   Studio[/LANG]                    (exe, Studio.Res, Help by language)
 #   Library/{ZLib,LibPNG}
-#   CMake                            (OpenDCL_Win32 nest bulk, ZERO_CHECK helpers)
+#   CMake                            (Nest_Win32 nest bulk, ZERO_CHECK helpers)
 #
 # arch_label is kept for call-site compatibility but does not affect the path
-# (arch is already in target names: …_x64, w32_*, opendcl_zlib_x86_…).
+# (arch is already in target names: …_x64, w32_*, zlib_x86_…).
 function(opendcl_solution_folder out_var arch_label base)
-  if(base MATCHES "OpenDCL_Runtime_ARX" OR base MATCHES "_Runtime_ARX_")
+  if(base MATCHES "Runtime_ARX" OR base MATCHES "_Runtime_ARX_")
     set(_f "Runtime/Rx/ARX")
-  elseif(base MATCHES "OpenDCL_Runtime_BRX" OR base MATCHES "_Runtime_BRX_")
+  elseif(base MATCHES "Runtime_BRX" OR base MATCHES "_Runtime_BRX_")
     set(_f "Runtime/Rx/BRX")
-  elseif(base MATCHES "OpenDCL_Runtime_GRX" OR base MATCHES "_Runtime_GRX_")
+  elseif(base MATCHES "Runtime_GRX" OR base MATCHES "_Runtime_GRX_")
     set(_f "Runtime/Rx/GRX")
-  elseif(base MATCHES "OpenDCL_Runtime_ZRX" OR base MATCHES "_Runtime_ZRX_")
+  elseif(base MATCHES "Runtime_ZRX" OR base MATCHES "_Runtime_ZRX_")
     set(_f "Runtime/Rx/ZRX")
-  elseif(base MATCHES "opendcl_zlib" OR base MATCHES "/ZLib" OR base STREQUAL "ZLib")
+  elseif(base MATCHES "zlib" OR base MATCHES "/ZLib" OR base STREQUAL "ZLib")
     set(_f "Library/ZLib")
-  elseif(base MATCHES "opendcl_png" OR base MATCHES "LibPNG")
+  elseif(base MATCHES "png" OR base MATCHES "LibPNG")
     set(_f "Library/LibPNG")
   elseif(base MATCHES "RuntimeRes")
     set(_f "Runtime/Localized Resources")
-  elseif(base MATCHES "Res_Win32" OR base STREQUAL "OpenDCL_Res_Win32")
+  elseif(base MATCHES "Res_Win32" OR base STREQUAL "Res_Win32")
     set(_f "Runtime/Localized Resources")
   elseif(base MATCHES "StudioRes_([A-Za-z][A-Za-z0-9]+)")
     # Classic: Studio.Res.ENU under Studio/ENU
@@ -102,11 +102,11 @@ function(opendcl_solution_folder out_var arch_label base)
     set(_f "Studio/${CMAKE_MATCH_1}")
   elseif(base MATCHES "StudioHelp")
     set(_f "Studio")
-  elseif(base MATCHES "Studio" OR base STREQUAL "OpenDCL_Studio")
+  elseif(base MATCHES "Studio" OR base STREQUAL "Studio")
     set(_f "Studio")
   elseif(base MATCHES "RxInstall")
     set(_f "Runtime")
-  elseif(base STREQUAL "OpenDCL_Win32" OR base MATCHES "^OpenDCL_Win32")
+  elseif(base STREQUAL "Nest_Win32" OR base MATCHES "^Nest_Win32")
     set(_f "CMake")
   elseif(base MATCHES "ZERO_CHECK" OR base MATCHES "/CMake" OR base STREQUAL "CMake")
     set(_f "CMake")
@@ -117,7 +117,7 @@ function(opendcl_solution_folder out_var arch_label base)
 endfunction()
 
 # True when this binary dir should create native Runtime.Res targets.
-# classic_x86 on x64: Runtime.Res is x86 (OpenDCL_Res_Win32 / full nest) for CAD
+# classic_x86 on x64: Runtime.Res is x86 (Res_Win32 / full nest) for CAD
 # CommonFiles; Studio.Res is separate (always matches Studio PE — see below).
 function(opendcl_runtime_res_build_native out_var)
   if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_RUNTIME AND NOT OPENDCL_BUILD_STUDIO)
@@ -149,7 +149,7 @@ function(opendcl_studio_res_build_native out_var)
   endif()
 endfunction()
 
-# True when this tree should create OpenDCL_Studio.exe (not only nest).
+# True when this tree should create Studio.exe (not only nest).
 function(opendcl_studio_build_native out_var)
   if(NOT OPENDCL_BUILD_STUDIO)
     set(${out_var} FALSE PARENT_SCOPE)

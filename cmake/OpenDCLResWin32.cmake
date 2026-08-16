@@ -15,11 +15,11 @@ function(opendcl_add_res_win32_nest)
     if(OPENDCL_NEST_WIN32 AND OPENDCL_RES_PE STREQUAL "classic_x86")
       message(STATUS
         "Resource DLLs: classic_x86 via full Win32 nest (no private res-win32; "
-        "OpenDCL_Res_Win32 umbrella created after nest import)")
+        "Res_Win32 umbrella created after nest import)")
     endif()
     return()
   endif()
-  if(TARGET OpenDCL_Res_Win32)
+  if(TARGET Res_Win32)
     return()
   endif()
 
@@ -60,7 +60,7 @@ function(opendcl_add_res_win32_nest)
     VERBATIM
   )
 
-  add_custom_target(OpenDCL_Res_Win32 ALL
+  add_custom_target(Res_Win32 ALL
     DEPENDS "${_res_stamp}"
     COMMAND ${CMAKE_COMMAND}
       --build "${_res_bin}"
@@ -68,8 +68,8 @@ function(opendcl_add_res_win32_nest)
     COMMENT "Build nested Win32 Runtime.Res + Studio.Res (classic x86 ship PE)"
     VERBATIM
   )
-  set_property(TARGET OpenDCL_Res_Win32 PROPERTY FOLDER "Runtime/Localized Resources")
+  set_property(TARGET Res_Win32 PROPERTY FOLDER "Runtime/Localized Resources")
   message(STATUS
-    "Resource DLLs: OPENDCL_RES_PE=classic_x86 -> OpenDCL_Res_Win32 under ${_res_bin} "
+    "Resource DLLs: OPENDCL_RES_PE=classic_x86 -> Res_Win32 under ${_res_bin} "
     "(x86 PE into ${OPENDCL_OUTPUT_ROOT}; langs=${OPENDCL_LANGS})")
 endfunction()

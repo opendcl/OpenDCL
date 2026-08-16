@@ -41,7 +41,7 @@ product subdirs of the binary dir — `Library/`, `Runtime/` (modules +
 `Localized/` + `RxInstall/`), `Studio/`. Only CMake scaffolding (`ZERO_CHECK`,
 `ALL_BUILD`, cache/stamps) stays next to the `.sln`. After moving targets between
 dirs, reconfigure with `--fresh` (or delete stale root-level
-`OpenDCL_Runtime_*.vcxproj`) so old paths do not linger.
+`Runtime_*.vcxproj`) so old paths do not linger.
 
 ## Configure
 
@@ -60,14 +60,14 @@ Each runtime row’s toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET 
 **ZLib / LibPNG target names** (Solution Explorer under classic-like folders `Library/ZLib`, `Library/LibPNG`):
 
 ```text
-opendcl_{zlib|png}_{x86|x64}_{md|mt}_{toolset}
+{zlib|png}_{x86|x64}_{md|mt}_{toolset}
 ```
 
 | Example | Meaning |
 | --- | --- |
-| `opendcl_zlib_x64_md_v143` | ZLib, x64, `/MD`, compiled with **v143** (typical VS2022 host default) |
-| `opendcl_png_x64_mt_v143` | LibPNG, x64, `/MT` (Studio), same host toolset |
-| `opendcl_png_x86_md_v100` | LibPNG, x86, `/MD`, compiled with **v100** |
+| `zlib_x64_md_v143` | ZLib, x64, `/MD`, compiled with **v143** (typical VS2022 host default) |
+| `png_x64_mt_v143` | LibPNG, x64, `/MT` (Studio), same host toolset |
+| `png_x86_md_v100` | LibPNG, x86, `/MD`, compiled with **v100** |
 
 **Arch, `md`/`mt`, and toolset are always present** (no omitted defaults). The toolset tag is the toolset used to **compile that static lib** (host tag for the default pair; mapped tag for older multi-toolset modules). Convenience cache vars: `OPENDCL_PNG_MD_TARGET`, `OPENDCL_PNG_MT_TARGET`, etc.
 
@@ -77,7 +77,7 @@ opendcl_{zlib|png}_{x86|x64}_{md|mt}_{toolset}
 
 | Value | Behavior |
 | --- | --- |
-| **`classic_x86`** | Always **x86** Runtime.Res (public Mixed ship / classic CommonFilesFolder parity). On x64, from full Win32 nest (or dedicated `OpenDCL_Res_Win32`); skip native x64 Runtime.Res. |
+| **`classic_x86`** | Always **x86** Runtime.Res (public Mixed ship / classic CommonFilesFolder parity). On x64, from full Win32 nest (or dedicated `Res_Win32`); skip native x64 Runtime.Res. |
 | **`host`** | Runtime.Res PE matches the configure arch. When nested Win32 modules are on with host Res, the nest may skip rebuilding Res so it does not overwrite host PE. |
 
 **Studio.exe / Studio.Res** — `OPENDCL_STUDIO_PE` (LoadLibrary pair; not the Runtime.Res flag):
@@ -138,9 +138,9 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug→Debug outputs |
 
-**How dual-arch (Mixed / x64-full) works:** CMake’s VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure `build/<preset>/win32` (`-A Win32`) with the **same** `OPENDCL_OUTPUT_ROOT=…/out`, and **import** nest `.vcxproj` files into the parent solution (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders** (both arches together): `Runtime/Rx/{ARX,BRX,GRX,ZRX}`, `Runtime/Localized Resources`, `Library/{ZLib,LibPNG}`, `Studio[/<LANG>]`, `CMake` (`OpenDCL_Win32`). Nest imports are named `w32_*`. **`OpenDCL_Win32`** is the single-flight nest build when `OPENDCL_WIN32_IN_ALL`. **RxInstall** and **classic_x86 Res** come from the full nest only (no private `rxinstall-win32` / `res-win32` when nest is on). **Studio help (CHM)** is arch-independent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
+**How dual-arch (Mixed / x64-full) works:** CMake’s VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure `build/<preset>/win32` (`-A Win32`) with the **same** `OPENDCL_OUTPUT_ROOT=…/out`, and **import** nest `.vcxproj` files into the parent solution (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders** (both arches together): `Runtime/Rx/{ARX,BRX,GRX,ZRX}`, `Runtime/Localized Resources`, `Library/{ZLib,LibPNG}`, `Studio[/<LANG>]`, `CMake` (`Nest_Win32`). Nest imports are named `w32_*`. **`Nest_Win32`** is the single-flight nest build when `OPENDCL_WIN32_IN_ALL`. **RxInstall** and **classic_x86 Res** come from the full nest only (no private `rxinstall-win32` / `res-win32` when nest is on). **Studio help (CHM)** is arch-independent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
 
-**Nest hard-fail / single-flight:** With `OPENDCL_WIN32_IN_ALL`, only **`OpenDCL_Win32`** is on the default build graph and runs `cmake --build` on the nest (hard-fail). **`OpenDCL_Res_Win32`** / **`OpenDCL_RxInstall`** keep targeted nest commands for manual builds but are **not** ALL (parallel nest builds race on `.ilk`/PDB). Studio and x64 runtimes depend on `OpenDCL_Win32` so Res exists before F5/post-build. Imported `w32_*` projects are Explorer-only (parent Platform=x64 → MSB8013). Nest reconfigure is skipped when init-cache is unchanged (avoids regen loops / VS “already contains `w32_…`” on reload).
+**Nest hard-fail / single-flight:** With `OPENDCL_WIN32_IN_ALL`, only **`Nest_Win32`** is on the default build graph and runs `cmake --build` on the nest (hard-fail). **`Res_Win32`** / **`RxInstall`** keep targeted nest commands for manual builds but are **not** ALL (parallel nest builds race on `.ilk`/PDB). Studio and x64 runtimes depend on `Nest_Win32` so Res exists before F5/post-build. Imported `w32_*` projects are Explorer-only (parent Platform=x64 → MSB8013). Nest reconfigure is skipped when init-cache is unchanged (avoids regen loops / VS “already contains `w32_…`” on reload).
 
 ### Known limitations — nested Win32 full build (`vs2022-full`)
 
@@ -148,7 +148,7 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 
 | Symptom | Why | Mitigation / status |
 | --- | --- | --- |
-| **C1060** compiler out of heap (`afxtempl.h`, old ATL) under `OpenDCL_Win32` | Nest builds many **32-bit-era toolsets** (v100/v110/…) in one MSBuild; 32-bit `cl` heap is small | Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=2`, `OPENDCL_NEST_CL_MP_COUNT=1`. Try `=1` / `=1`. Still may fail on a full nest Debug/Release under heavy machine load. |
+| **C1060** compiler out of heap (`afxtempl.h`, old ATL) under `Nest_Win32` | Nest builds many **32-bit-era toolsets** (v100/v110/…) in one MSBuild; 32-bit `cl` heap is small | Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=2`, `OPENDCL_NEST_CL_MP_COUNT=1`. Try `=1` / `=1`. Still may fail on a full nest Debug/Release under heavy machine load. |
 | **C1001** ICE in nest modules (PCH, PaletteDlg, etc.) | Same pressure / parallel compile instability | Same throttle; rebuild single target or stand-alone `build/.../win32` with low `/m`. |
 | Cancel in VS does not stop nest `cmake --build` cleanly | Nested MSBuild is a child process of a CustomBuild step | Kill stray `MSBuild`/`cl` if needed; known CustomBuild limitation. |
 | Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-x64-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
@@ -159,7 +159,7 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 ```powershell
 cmake --build build/vs2022-full/win32 --config Release --parallel 1 -- /m:1 /p:CL_MPCount=1
 # or a single nest target:
-cmake --build build/vs2022-full/win32 --config Release --target OpenDCL_Runtime_ZRX_2019
+cmake --build build/vs2022-full/win32 --config Release --target Runtime_ZRX_2019
 ```
 
 **Parity (not host-kit hacks):** Studio static MFC+`/MT`, modules `/MD` (+ `/MDd` FullDebug for all families), multimon stubs only on `PPTooltip.cpp` — permanent classic/product policy.
@@ -289,7 +289,7 @@ path is used. Do not leave an empty `LocalDebuggerCommandArguments` element in
 # Optional override (skips registry for that family):
 $env:BRX_EXE = "D:\BricsCAD\bricscad.exe"
 cmake --preset vs2022-x64-dev
-# F5 on whichever OpenDCL_Runtime_* target was enabled (see configure ENABLE lines)
+# F5 on whichever Runtime_* target was enabled (see configure ENABLE lines)
 # → discovered or overridden host + /ld "<module>"
 ```
 
@@ -374,7 +374,7 @@ $env:BRX27 = "S:\BRX27"   # release SDK
 # Host-debug roots used only by fulldebug.brx.props (set in the user/machine env):
 #   BRX_PATH, DDCAD_PATH, optional BrxDebugLibs
 cmake --preset vs2022-x64-dev
-cmake --build build/vs2022-x64-dev --config FullDebug --target OpenDCL_Runtime_BRX_27_x64
+cmake --build build/vs2022-x64-dev --config FullDebug --target Runtime_BRX_27_x64
 ```
 
 Do **not** scan proprietary CAD debug trees. Do not commit machine paths or host-debug Command strings in public CMake.
@@ -402,8 +402,8 @@ When adding a host runtime (see skill `add-runtime-target`):
 - MSI Binary CA **must be Win32 (x86)** (`DllEntry=_RxInstallMachine@4`).
 - `OPENDCL_BUILD_RXINSTALL=ON` on an **x64** parent:
   - **`OPENDCL_NEST_WIN32=ON`** (full Mixed): PE from full nest `build/<preset>/win32`.
-    Target `OpenDCL_RxInstall` is an umbrella under **`Win32/Packaging`** that runs
-    `cmake --build …/win32 --target OpenDCL_RxInstall` (no private `rxinstall-win32`).
+    Target `RxInstall` is an umbrella under **`Win32/Packaging`** that runs
+    `cmake --build …/win32 --target RxInstall` (no private `rxinstall-win32`).
   - **Nest off** (x64-only presets): private nest under `build/<preset>/rxinstall-win32`.
 - Outputs:
   - `out/Runtime/RxInstall/<Config>/RxInstall.dll`
@@ -453,16 +453,16 @@ Enabled with `OPENDCL_BUILD_STUDIO=ON` (on in base presets).
 
 | Target | Output |
 | --- | --- |
-| `OpenDCL_Studio` | `out/Studio/x64\|Win32/<Debug\|Release>/OpenDCL Studio.exe` (+ classic mirror) |
-| `OpenDCL_StudioRes_<LANG>` | `out/Studio/Localized/<LANG>/Studio.Res/<Debug\|Release>/Studio.Res.dll` |
-| `OpenDCL_StudioHelp_<LANG>` | `Studio/Localized/<LANG>/Content/OpenDCL.chm` (per `OPENDCL_LANGS`; needs `hhc.exe`) |
-| `OpenDCL_StudioHelp_All` | Aggregate of all configured language CHMs |
+| `Studio` | `out/Studio/x64\|Win32/<Debug\|Release>/OpenDCL Studio.exe` (+ classic mirror) |
+| `StudioRes_<LANG>` | `out/Studio/Localized/<LANG>/Studio.Res/<Debug\|Release>/Studio.Res.dll` |
+| `StudioHelp_<LANG>` | `Studio/Localized/<LANG>/Content/OpenDCL.chm` (per `OPENDCL_LANGS`; needs `hhc.exe`) |
+| `StudioHelp_All` | Aggregate of all configured language CHMs |
 
 Notes:
 - **Static MFC + /MT** (classic). zlib/png use matching `*_mt` static CRT variants.
 - **No FullDebug product**: solution `FullDebug` maps Studio + Studio.Res to **Debug** (policy for all non-runtime-module targets).
 - **WINVER** forced to 0x0601+ for modern MFC headers; arch-correct embedded manifest (classic RC is X86-only).
-- **HTML Help**: `OpenDCL_StudioHelp_<LANG>` builds each language CHM via `hhc.exe`. The default language is a Studio dependency; **post-build copies** `Studio.Res.dll` + `OpenDCL.chm` next to `Studio.exe` so classic `Workspace::FindFile` / `GetLocalResourceModule` work without special F5 path logic.
+- **HTML Help**: `StudioHelp_<LANG>` builds each language CHM via `hhc.exe`. The default language is a Studio dependency; **post-build copies** `Studio.Res.dll` + `OpenDCL.chm` next to `Studio.exe` so classic `Workspace::FindFile` / `GetLocalResourceModule` work without special F5 path logic.
 - **Multimon stubs**: Studio sets `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (static MFC has no `_AFXDLL`; `FolderTreeCtrl.cpp` also includes `MultiMon.h` and must not compile stubs). Runtime modules still rely on `_AFXDLL` in source.
 
 ## Known gaps

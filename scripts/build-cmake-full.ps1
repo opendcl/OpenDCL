@@ -4,7 +4,7 @@
 
 .DESCRIPTION
   Mirrors a full pre-CMake OpenDCL.sln ship using preset **vs2022-full**:
-    - One VS .sln (x64) with nested Win32 projects imported into the solution (OpenDCL_Win32 umbrella)
+    - One VS .sln (x64) with nested Win32 projects imported into the solution (Nest_Win32 umbrella)
     - Shared out/ for x64 + x86 modules, Studio, Res, RxInstall
     - All CAD families (AUTO = skip missing SDKs), all UI languages
     - Studio static MFC+/MT; modules /MD (FullDebug /MDd)

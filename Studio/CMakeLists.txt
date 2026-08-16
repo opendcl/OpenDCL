@@ -17,7 +17,7 @@ function(opendcl_add_studio_res lang)
     return()
   endif()
 
-  set(_target "OpenDCL_StudioRes_${lang}")
+  set(_target "StudioRes_${lang}")
   add_library(${_target} SHARED)
   target_sources(${_target} PRIVATE "${_rc}")
 
@@ -44,7 +44,7 @@ function(opendcl_add_studio_res lang)
   else()
     set(_sr_arch "Win32")
   endif()
-  opendcl_solution_folder(_sr_folder "${_sr_arch}" "OpenDCL_StudioRes_${lang}")
+  opendcl_solution_folder(_sr_folder "${_sr_arch}" "StudioRes_${lang}")
   set_target_properties(${_target} PROPERTIES FOLDER "${_sr_folder}")
 
   target_include_directories(${_target} PRIVATE
@@ -95,13 +95,13 @@ endif()
 # Ensure F5 builds language resource DLLs before Studio.exe
 set(_studio_res_deps "")
 foreach(_lang IN LISTS OPENDCL_LANGS)
-  if(TARGET "OpenDCL_StudioRes_${_lang}")
-    list(APPEND _studio_res_deps "OpenDCL_StudioRes_${_lang}")
+  if(TARGET "StudioRes_${_lang}")
+    list(APPEND _studio_res_deps "StudioRes_${_lang}")
   endif()
 endforeach()
 # classic_x86 Res / full nest gate is wired in opendcl_add_win32_nest (after
 # Studio is created) so Studio waits for the single nest flight, not a parallel
-# OpenDCL_Res_Win32 + OpenDCL_Win32 pair.
+# Res_Win32 + Nest_Win32 pair.
 
 # ---------------------------------------------------------------------------
 # OpenDCL Studio.exe — static MFC + static CRT (classic)
@@ -115,7 +115,7 @@ endif()
 opendcl_studio_build_native(_studio_native)
 if(NOT _studio_native)
   message(STATUS
-    "Studio: skip native OpenDCL_Studio/Studio.Res "
+    "Studio: skip native Studio/Studio.Res "
     "(OPENDCL_STUDIO_PE=${OPENDCL_STUDIO_PE}); Win32 nest ships "
     "out/Studio/Win32 + Studio.Res/Win32 for classic package parity")
 else()
@@ -136,7 +136,7 @@ endif()
 
 # Arch-correct application manifest (classic Res\…manifest is X86-only and
 # causes 0xC000007B "application failed to start" on x64).
-set(_studio_manifest "${CMAKE_CURRENT_BINARY_DIR}/OpenDCL_Studio.manifest")
+set(_studio_manifest "${CMAKE_CURRENT_BINARY_DIR}/Studio.manifest")
 file(WRITE "${_studio_manifest}" "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
 <assembly xmlns=\"urn:schemas-microsoft-com:asm.v1\" manifestVersion=\"1.0\">
   <assemblyIdentity version=\"1.0.0.0\" processorArchitecture=\"${_studio_manifest_arch}\"
@@ -159,7 +159,7 @@ file(WRITE "${_studio_manifest}" "<?xml version=\"1.0\" encoding=\"UTF-8\" stand
 </assembly>
 ")
 
-set(_studio_manifest_rc "${CMAKE_CURRENT_BINARY_DIR}/OpenDCL_Studio_manifest.rc")
+set(_studio_manifest_rc "${CMAKE_CURRENT_BINARY_DIR}/Studio_manifest.rc")
 file(WRITE "${_studio_manifest_rc}"
   "1 RT_MANIFEST \"${_studio_manifest}\"\n")
 # Escape backslashes for RC
@@ -170,17 +170,24 @@ file(WRITE "${_studio_manifest_rc}"
 # Static MFC requires CMAKE_MFC_FLAG=1 and no _AFXDLL.
 set(CMAKE_MFC_FLAG 1)
 
-add_executable(OpenDCL_Studio WIN32
+add_executable(Studio WIN32
   ${OPENDCL_STUDIO_SOURCES}
   ${OPENDCL_STUDIO_RC}
   "${_studio_manifest_rc}"
+)
+
+# CMake's default "Source Files" regex matches .cpp, not .CPP.
+source_group("Source Files" FILES
+  "${CMAKE_SOURCE_DIR}/Studio/SCBARCF.CPP"
+  "${CMAKE_SOURCE_DIR}/Studio/SCBARG.CPP"
+  "${CMAKE_SOURCE_DIR}/Studio/SIZECBAR.CPP"
 )
 
 # Skip classic X86 RT_MANIFEST inside Studio.rc when building under CMake.
 set_property(SOURCE ${OPENDCL_STUDIO_RC} APPEND PROPERTY COMPILE_DEFINITIONS
   OPENDCL_SKIP_EMBEDDED_MANIFEST)
 
-target_include_directories(OpenDCL_Studio PRIVATE
+target_include_directories(Studio PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_SOURCE_DIR}/Common"
   "${CMAKE_SOURCE_DIR}/Common/Controls"
@@ -188,7 +195,7 @@ target_include_directories(OpenDCL_Studio PRIVATE
   "${CMAKE_SOURCE_DIR}/Library/LibPNG"
 )
 
-target_compile_definitions(OpenDCL_Studio PRIVATE
+target_compile_definitions(Studio PRIVATE
   _WINDOWS
   _CRT_SECURE_NO_DEPRECATE
   EDITOR
@@ -215,7 +222,7 @@ set_property(SOURCE "${CMAKE_SOURCE_DIR}/Common/PPTooltip.cpp" APPEND PROPERTY
 
 
 set(_out_studio_base "${OPENDCL_OUTPUT_ROOT}/Studio/${_studio_plat}")
-set_target_properties(OpenDCL_Studio PROPERTIES
+set_target_properties(Studio PROPERTIES
   OUTPUT_NAME "OpenDCL Studio"
   # Classic: static CRT (/MT, /MTd)
   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<OR:$<CONFIG:Debug>,$<CONFIG:FullDebug>>:Debug>"
@@ -225,41 +232,41 @@ set_target_properties(OpenDCL_Studio PROPERTIES
   VS_GLOBAL_EmbedManifest "false"
   VS_GLOBAL_GenerateManifest "false"
 )
-opendcl_map_fulldebug_to_debug(OpenDCL_Studio "${_out_studio_base}")
+opendcl_map_fulldebug_to_debug(Studio "${_out_studio_base}")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(_st_arch "x64")
 else()
   set(_st_arch "Win32")
 endif()
-opendcl_solution_folder(_st_folder "${_st_arch}" "OpenDCL_Studio")
-set_target_properties(OpenDCL_Studio PROPERTIES FOLDER "${_st_folder}")
+opendcl_solution_folder(_st_folder "${_st_arch}" "Studio")
+set_target_properties(Studio PROPERTIES FOLDER "${_st_folder}")
 
-target_link_libraries(OpenDCL_Studio PRIVATE
+target_link_libraries(Studio PRIVATE
   rpcrt4
   vfw32
 )
 
 if(TARGET ${_studio_png})
-  target_link_libraries(OpenDCL_Studio PRIVATE ${_studio_png})
+  target_link_libraries(Studio PRIVATE ${_studio_png})
 endif()
 
 if(_studio_res_deps)
-  add_dependencies(OpenDCL_Studio ${_studio_res_deps})
+  add_dependencies(Studio ${_studio_res_deps})
 endif()
 
 if(MSVC)
-  target_link_options(OpenDCL_Studio PRIVATE
+  target_link_options(Studio PRIVATE
     "/IGNORE:4217"
     "/IGNORE:4099"
     "/MANIFEST:NO"
   )
-  target_compile_options(OpenDCL_Studio PRIVATE
+  target_compile_options(Studio PRIVATE
     /FS
     /wd4100 /wd4244 /wd4267 /wd4018 /wd4389 /wd4996 /wd4312
   )
 endif()
 
-target_precompile_headers(OpenDCL_Studio PRIVATE
+target_precompile_headers(Studio PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.h"
 )
 
@@ -270,44 +277,44 @@ set(_studio_classic_out "${CMAKE_SOURCE_DIR}/Studio/${_studio_plat}/${OPENDCL_CF
 set(_studio_post_cmds
   COMMAND ${CMAKE_COMMAND} -E make_directory "${_studio_classic_out}"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "$<TARGET_FILE:OpenDCL_Studio>"
-    "${_studio_classic_out}/$<TARGET_FILE_NAME:OpenDCL_Studio>"
+    "$<TARGET_FILE:Studio>"
+    "${_studio_classic_out}/$<TARGET_FILE_NAME:Studio>"
 )
 # Prefer first configured language (dev presets use ENU) for side-by-side res/help.
 list(GET OPENDCL_LANGS 0 _studio_default_lang)
-if(TARGET "OpenDCL_StudioRes_${_studio_default_lang}")
+if(TARGET "StudioRes_${_studio_default_lang}")
   list(APPEND _studio_post_cmds
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "$<TARGET_FILE:OpenDCL_StudioRes_${_studio_default_lang}>"
-      "$<TARGET_FILE_DIR:OpenDCL_Studio>/$<TARGET_FILE_NAME:OpenDCL_StudioRes_${_studio_default_lang}>"
+      "$<TARGET_FILE:StudioRes_${_studio_default_lang}>"
+      "$<TARGET_FILE_DIR:Studio>/$<TARGET_FILE_NAME:StudioRes_${_studio_default_lang}>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "$<TARGET_FILE:OpenDCL_StudioRes_${_studio_default_lang}>"
-      "${_studio_classic_out}/$<TARGET_FILE_NAME:OpenDCL_StudioRes_${_studio_default_lang}>"
+      "$<TARGET_FILE:StudioRes_${_studio_default_lang}>"
+      "${_studio_classic_out}/$<TARGET_FILE_NAME:StudioRes_${_studio_default_lang}>"
   )
 endif()
-# CHM is arch-independent (same Content path). Parent builds OpenDCL_StudioHelp_*;
+# CHM is arch-independent (same Content path). Parent builds StudioHelp_*;
 # nest (OPENDCL_BUILD_STUDIO_HELP=OFF) still mirrors CHM next to Studio when present.
 set(_studio_chm
   "${CMAKE_SOURCE_DIR}/Studio/Localized/${_studio_default_lang}/Content/OpenDCL.chm")
-if(TARGET "OpenDCL_StudioHelp_${_studio_default_lang}" OR EXISTS "${_studio_chm}")
+if(TARGET "StudioHelp_${_studio_default_lang}" OR EXISTS "${_studio_chm}")
   list(APPEND _studio_post_cmds
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${_studio_chm}"
-      "$<TARGET_FILE_DIR:OpenDCL_Studio>/OpenDCL.chm"
+      "$<TARGET_FILE_DIR:Studio>/OpenDCL.chm"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${_studio_chm}"
       "${_studio_classic_out}/OpenDCL.chm"
   )
 endif()
 
-add_custom_command(TARGET OpenDCL_Studio POST_BUILD
+add_custom_command(TARGET Studio POST_BUILD
   ${_studio_post_cmds}
   COMMENT "Mirror Studio.exe + side-by-side Studio.Res/CHM for classic F5 paths"
 )
 
-message(STATUS "Studio: OpenDCL_Studio (${_studio_plat}, static MFC+/MT; FullDebug->Debug) + Studio.Res for: ${OPENDCL_LANGS}")
+message(STATUS "Studio: Studio (${_studio_plat}, static MFC+/MT; FullDebug->Debug) + Studio.Res for: ${OPENDCL_LANGS}")
 
-endif() # _studio_native — OpenDCL_Studio.exe + matching Studio.Res
+endif() # _studio_native — Studio.exe + matching Studio.Res
 
 # ---------------------------------------------------------------------------
 # HTML Help (OpenDCL.chm) per language — classic Content + hhc.exe
@@ -330,7 +337,7 @@ function(opendcl_add_studio_help lang)
   set(_content "${_help_dir}/Content")
   set(_chm "${_content}/OpenDCL.chm")
   set(_hhp "${_content}/OpenDCL.hhp")
-  set(_target "OpenDCL_StudioHelp_${lang}")
+  set(_target "StudioHelp_${lang}")
 
   if(NOT EXISTS "${_hhp}")
     message(STATUS "Studio help: skip ${lang} CHM (missing ${_hhp})")
@@ -365,11 +372,11 @@ function(opendcl_add_studio_help lang)
       "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.mak"
       "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.bat"
   )
-  opendcl_solution_folder(_sh_folder "any" "OpenDCL_StudioHelp_${lang}")
+  opendcl_solution_folder(_sh_folder "any" "StudioHelp_${lang}")
   set_target_properties(${_target} PROPERTIES FOLDER "${_sh_folder}")
   # Default language CHM before Studio POST_BUILD mirror when Studio is native.
-  if(lang STREQUAL _studio_help_default_lang AND TARGET OpenDCL_Studio)
-    add_dependencies(OpenDCL_Studio ${_target})
+  if(lang STREQUAL _studio_help_default_lang AND TARGET Studio)
+    add_dependencies(Studio ${_target})
   endif()
   message(STATUS "Studio help: ${_target} -> ${_chm}")
 endfunction()
@@ -383,12 +390,12 @@ if(OPENDCL_BUILD_STUDIO_HELP)
   # ALL: custom targets are excluded from ALL_BUILD unless listed here.
   # Without this, default cmake --build only builds ENU (Studio dep) and
   # Full verify/package fails on missing Studio\Localized\<lang>\Content\OpenDCL.chm.
-  add_custom_target(OpenDCL_StudioHelp_All ALL)
-  opendcl_solution_folder(_sha_folder "any" "OpenDCL_StudioHelp_All")
-  set_target_properties(OpenDCL_StudioHelp_All PROPERTIES FOLDER "${_sha_folder}")
+  add_custom_target(StudioHelp_All ALL)
+  opendcl_solution_folder(_sha_folder "any" "StudioHelp_All")
+  set_target_properties(StudioHelp_All PROPERTIES FOLDER "${_sha_folder}")
   foreach(_hl IN LISTS OPENDCL_LANGS)
-    if(TARGET "OpenDCL_StudioHelp_${_hl}")
-      add_dependencies(OpenDCL_StudioHelp_All "OpenDCL_StudioHelp_${_hl}")
+    if(TARGET "StudioHelp_${_hl}")
+      add_dependencies(StudioHelp_All "StudioHelp_${_hl}")
     endif()
   endforeach()
 else()

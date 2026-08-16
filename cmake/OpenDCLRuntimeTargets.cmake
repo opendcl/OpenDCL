@@ -54,7 +54,7 @@ function(opendcl_add_runtime id)
   endif()
 
   string(REPLACE "." "_" _safe "${id}")
-  set(_target "OpenDCL_Runtime_${_safe}")
+  set(_target "Runtime_${_safe}")
 
   # Shared sources + filters + optional TargetSpecific/<id>/ injection.
   set(_sources ${OPENDCL_RUNTIME_SOURCES})
@@ -201,7 +201,7 @@ function(opendcl_add_runtime id)
     set(_sol_arch "Win32")
   endif()
   # id e.g. ARX.18 / ARX.18.x64 → folder x64|Win32/Runtime/ARX
-  opendcl_solution_folder(_sol_folder "${_sol_arch}" "OpenDCL_Runtime_${id}")
+  opendcl_solution_folder(_sol_folder "${_sol_arch}" "Runtime_${id}")
 
   set_target_properties(${_target} PROPERTIES
     OUTPUT_NAME "${_output}"
@@ -381,9 +381,9 @@ function(opendcl_add_runtime id)
 
   # Default ENU runtime resources when present natively in this tree.
   # classic_x86 / full nest gate is attached later in opendcl_add_win32_nest
-  # (OpenDCL_Res_Win32 / OpenDCL_Win32 do not exist yet at add_runtime time).
-  if(TARGET OpenDCL_RuntimeRes_ENU)
-    add_dependencies(${_target} OpenDCL_RuntimeRes_ENU)
+  # (Res_Win32 / Nest_Win32 do not exist yet at add_runtime time).
+  if(TARGET RuntimeRes_ENU)
+    add_dependencies(${_target} RuntimeRes_ENU)
   endif()
 
   # Optional override file: cmake/overrides/<id>.cmake defining opendcl_apply_override(target)

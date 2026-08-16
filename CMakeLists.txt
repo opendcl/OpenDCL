@@ -137,7 +137,7 @@ if(OPENDCL_BUILD_STUDIO OR OPENDCL_BUILD_RES_DLLS)
   add_subdirectory(Studio)
 endif()
 
-# ENU CHM is built with Studio (OpenDCL_StudioHelp_ENU). OPENDCL_BUILD_HELP is
+# ENU CHM is built with Studio (StudioHelp_ENU). OPENDCL_BUILD_HELP is
 # reserved for multi-language help packs later.
 if(OPENDCL_BUILD_HELP AND NOT OPENDCL_BUILD_STUDIO)
   message(STATUS "OPENDCL_BUILD_HELP without Studio: ENU CHM is wired under Studio; enable OPENDCL_BUILD_STUDIO.")
@@ -150,7 +150,13 @@ endif()
 # at parent generate time; each nest .vcxproj is imported with
 # include_external_msproject(PLATFORM Win32) for Solution Explorer (folders
 # under Win32/…). Imported projects are EXCLUDE_FROM_DEFAULT_BUILD because
-# parent Platform=x64 breaks nest MSBuild (MSB8013). Build via OpenDCL_Win32,
-# OpenDCL_RxInstall, or OpenDCL_Res_Win32 → cmake --build <bin>/win32.
+# parent Platform=x64 breaks nest MSBuild (MSB8013). Build via Nest_Win32,
+# RxInstall, or Res_Win32 → cmake --build <bin>/win32.
 include(OpenDCLNestWin32)
 opendcl_add_win32_nest()
+
+# Fresh VS .sln starts on Studio when this tree builds it (skipped if
+# OPENDCL_STUDIO_PE=classic_x86 on an x64 parent — nest owns Studio).
+if(TARGET Studio)
+  set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Studio)
+endif()
