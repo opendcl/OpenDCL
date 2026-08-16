@@ -1,0 +1,16 @@
+Runtime/Methods/** text eol=crlf
+*.vcxproj          text eol=crlf
+*.vcxproj.filters  text eol=crlf
+*.vcxproj.user     text eol=crlf
+*.sln              text eol=crlf
+*.props            text eol=crlf
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.bmp  binary
+*.cur  binary
+*.pdf  binary
+*.zip  binary

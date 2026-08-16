@@ -592,6 +592,9 @@
     <ClCompile Include="..\..\Methods\Methods_Ads.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Methods\Methods_Ads_Dcl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Methods\Methods_Project.cpp">
       <Filter>Methods\Source Files</Filter>
     </ClCompile>
@@ -1354,6 +1357,9 @@
       <Filter>Include Files</Filter>
     </ClInclude>
         <ClInclude Include="..\..\Methods\Methods_Ads.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Methods\Methods_Ads_Dcl.h">
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Methods\Methods_ImageList.h">
