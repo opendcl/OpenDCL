@@ -1,0 +1,28 @@
+# Reject mixed CR/LF in text files changed by the PR.
+# Full-tree scan: python scripts/check-eol.py
+name: Line endings
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: eol-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eol:
+    name: No mixed EOLs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check line endings
+        run: |
+          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+          python3 scripts/check-eol.py --since-ref "origin/${{ github.base_ref }}"

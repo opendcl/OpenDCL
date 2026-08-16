@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -186,6 +186,8 @@
     <ClCompile Include="..\..\LineWeightDlg.cpp" />
     <ClCompile Include="..\..\MainFileDlg.cpp" />
     <ClCompile Include="..\..\Methods\Methods_ImageList.cpp" />
+    <ClCompile Include="..\..\Methods\Methods_Ads.cpp" />
+    <ClCompile Include="..\..\Methods\Methods_Ads_Dcl.cpp" />
     <ClCompile Include="..\..\Methods\Methods_Project.cpp" />
     <ClCompile Include="..\..\ModalDlg.cpp" />
     <ClCompile Include="..\..\ModelessDlg.cpp" />
@@ -389,6 +391,8 @@
     <ClInclude Include="..\..\LinetypeDlg.h" />
     <ClInclude Include="..\..\LineWeightDlg.h" />
     <ClInclude Include="..\..\MainFileDlg.h" />
+    <ClInclude Include="..\..\Methods\Methods_Ads.h" />
+    <ClInclude Include="..\..\Methods\Methods_Ads_Dcl.h" />
     <ClInclude Include="..\..\Methods\Methods_ImageList.h" />
     <ClInclude Include="..\..\Methods\Methods_Project.h" />
     <ClInclude Include="..\..\ModalDlg.h" />

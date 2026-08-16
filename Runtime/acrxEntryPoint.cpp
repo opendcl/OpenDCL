@@ -56,6 +56,8 @@
 #include "Methods_TabStrip.h"
 #include "Methods_TextBox.h"
 #include "Methods_Tree.h"
+#include "Methods_Ads.h"
+#include "Methods_Ads_Dcl.h"
 #include "DialogObject.h"
 #include "LayeredWindowHelperST.h"
 #include "ControlTypes.h"
@@ -126,8 +128,6 @@
 #define theRxApp entryPointObject
 #endif
 
-static LPCTSTR gpszDclEventsLspFileName = _T("DclEvents.lsp");
-static LPCTSTR gpszOnActionEventLispFunction = _T("(defun c:OnActionEvent_%s()%s)(princ)\n");
 
 #ifdef _PRERELEASE
 static LPCTSTR gpszUCProductName = _T("OpenDCL Runtime Dev");
@@ -899,15 +899,6 @@ protected:
 	COdclDropTarget mOdclDropTarget; //for supporting drag/drop of .odcl file
 #endif
 
-	//dcl dialog state, probably should be stored in document state
-	static CString msDialogToBeShown;
-	static CPoint mptToBeShown;
-	static TArxProjectPtr mpProjectToBeShown;
-	static CString msActionToBeShown;
-	static TDclFormPtr mpDclToBeShown;
-	static int mnDoneDialogValue;
-	static int mnListOperation; //1 = change selection, 2 = append item, 3 = replace all (default)
-
 public:
 	size_t GetPropertyIdCount() const { return mPropIds.size(); }
 	CString GetCurrentFunctionName() const
@@ -1461,44 +1452,13 @@ public:
 	// ----- ads_dcl_getversion symbol (do not rename)
 	static int ads_dcl_getversion(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		DWORD dwMajor;
-		DWORD dwMinor;
-		DWORD dwThird;
-		DWORD dwFourth;
-		if( !theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
-			return RSERR;
-		assert( dwMinor < 10 ); //otherwise the algorithm fails
-		if( dwMinor >= 10 )
-			return RSERR;
-		acedRetReal( ads_real( dwMajor ) + dwMinor / 10.0 );
-
-		return (RSRSLT) ;
+		return Ads::GetVersion();
 	}
 
-	// ----- ads_dcl_getversion symbol (do not rename)
+	// ----- ads_dcl_getversionex symbol (do not rename)
 	static int ads_dcl_getversionex(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		DWORD dwMajor;
-		DWORD dwMinor;
-		DWORD dwThird;
-		DWORD dwFourth;
-		if( !theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
-			return RSERR;
-		CString sVersion;
-		sVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
-		acedRetStr( sVersion );
-
-		return (RSRSLT) ;
+		return Ads::GetVersionEx();
 	}
 
 	// ----- ads_loadproject symbol (do not rename)
@@ -1571,72 +1531,7 @@ public:
 	// ----- ads_dcl_new_dialog symbol (do not rename)
 	static int ads_dcl_new_dialog(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		msDialogToBeShown = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		switch (pArgs->restype)
-		{
-		case RTLONG:
-			mpProjectToBeShown = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlong );
-			break;
-		case RTENAME:
-			mpProjectToBeShown = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlname[0] );
-			break;
-		default:
-			return RSERR; //wrong argument type
-		};
-		assert (mpProjectToBeShown != NULL);
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		//optional arguments
-		msActionToBeShown.Empty();
-		mptToBeShown.SetPoint(INT_MIN, INT_MIN); //should be encapsulated in an instance class [ORW]
-		if (pArgs)
-		{
-			if (pArgs->restype != RTSTR)
-				return RSERR; //wrong argument type
-			msActionToBeShown = pArgs->resval.rstring;
-			pArgs = pArgs->rbnext; //move to the next argument
-
-			if (pArgs)
-			{
-				if (pArgs->restype != RTPOINT)
-					return RSERR; //wrong argument type
-
-				mptToBeShown.x = pArgs->resval.rpoint[X];
-				mptToBeShown.y = pArgs->resval.rpoint[Y];
-
-				if (pArgs->rbnext)
-					return RSERR; //too many arguments
-			}
-		}
-
-		// get the dcl form object that will be displayed
-		mpDclToBeShown = mpProjectToBeShown->FindDclForm(msDialogToBeShown);
-		TDclControlPtr pProps = mpDclToBeShown->GetControlProperties();
-		pProps->SetStringProperty(Prop::FormEventInitialize, msActionToBeShown);
-
-		TCHAR lpPathBuffer[MAX_PATH];
-		::GetTempPath(MAX_PATH, lpPathBuffer);
-		CString sTempFile = lpPathBuffer;
-		sTempFile += gpszDclEventsLspFileName; /*"DclEvents.lsp"*/
-		::DeleteFile(sTempFile);
-
-		// create and open the action events lsp file to be loaded.
-		CStdioFile tempFile(sTempFile, CFile::modeCreate|CFile::modeNoTruncate|CFile::modeWrite);
-		tempFile.WriteString(_T("; This temp file is used for managing the events of dialog boxes using\n"));
-		tempFile.WriteString(_T("; DCL equivalent functions in ObjectDCL.\n"));
-		tempFile.Close();
-
-		acedRetT();
-
-		return (RSRSLT) ;
+		return AdsDcl::NewDialog();
 	}
 
 	// ----- ads_dcl_unload_dialog symbol (do not rename)
@@ -1648,870 +1543,104 @@ public:
 	// ----- ads_dcl_done_dialog symbol (do not rename)
 	static int ads_dcl_done_dialog(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		//optional arguments
-		mnDoneDialogValue = 0;
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		mnDoneDialogValue = pArgs->resval.rint;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		CDialogObject *pDialog = mpDclToBeShown->GetFormInstance();
-		if( !pDialog )
-			return RSERR; //called on invalid dialog
-
-		if( !pDialog->IsModeless() )
-			pDialog->CloseDialog(mnDoneDialogValue); //end the modal dialog
-
-		return (RSRSLT) ;
+		return AdsDcl::DoneDialog();
 	}
 
 	// ----- ads_dcl_start_dialog symbol (do not rename)
 	static int ads_dcl_start_dialog(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		TCHAR lpPathBuffer[MAX_PATH];
-		::GetTempPath(MAX_PATH, lpPathBuffer);
-		CString sTempFile = lpPathBuffer;
-		sTempFile += gpszDclEventsLspFileName; /*"DclEvents.lsp"*/
-		resbuf rbArg = {NULL, RTSTR};
-		rbArg.resval.rstring = sTempFile.LockBuffer();
-		resbuf rbCallee = {&rbArg, RTSTR};
-		rbCallee.resval.rstring = (ACHAR*)_T("c:loadlisp");
-		resbuf* prbResult = NULL;
-		if (acedInvoke(&rbCallee, &prbResult) != RTNORM)
-			return RSERR;
-		acutRelRb(prbResult);
-
-		// call method to display the requested form
-		DialogParams params( mptToBeShown, CSize(0, 0) );
-		int nDialogId = theArxWorkspace.ActivateDclForm(mpDclToBeShown, &params);
-
-		acedRetInt(mnDoneDialogValue);
-
-		return (RSRSLT) ;
+		return AdsDcl::StartDialog();
 	}
 
 	// ----- ads_dcl_start_list symbol (do not rename)
 	static int ads_dcl_start_list(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszListKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		//optional arguments
-		mnListOperation = 3;
-		int nIndex = 0;
-		if (pArgs)
-		{
-			if (pArgs->restype != RTSHORT)
-				return RSERR; //wrong argument type
-			mnListOperation = pArgs->resval.rint;
-			pArgs = pArgs->rbnext; //move to the next argument
-
-			if (pArgs)
-			{
-				if (pArgs->restype != RTSHORT)
-					return RSERR; //wrong argument type
-
-				nIndex = pArgs->resval.rint;
-
-				if (pArgs->rbnext)
-					return RSERR; //too many arguments
-			}
-		}
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszListKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		if (pCtrl->GetWindow() == NULL)
-		{ //the control has not been created yet
-			TPropertyPtr pProp = pCtrl->GetPropertyObject(Prop::List);
-			assert(pProp != NULL);
-			if (!pProp)
-				return RSERR;
-			pProp->GetStringArrayPtr()->clear();
-		}
-		else
-		{ //we are changing an already created control
-			switch (pCtrl->GetType())
-			{
-			case CtlListBox:
-				{
-					if (mnListOperation == 3)
-						((CListBox*)pCtrl->GetWindow())->ResetContent();
-					break;
-				}
-			case CtlComboBox:
-				{
-					if (mnListOperation == 3)
-						((CComboBox*)pCtrl->GetWindow())->ResetContent();
-					break;
-				}
-			case CtlListView:
-				{
-					if (mnListOperation == 3)
-						((CListCtrl*)pCtrl->GetWindow())->DeleteAllItems();
-					break;
-				}
-			}
-		}
-
-		return (RSRSLT) ;
+		return AdsDcl::StartList();
 	}
 
 	// ----- ads_dcl_add_list symbol (do not rename)
 	static int ads_dcl_add_list(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszListKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSRSLT; //no error, just do nothing
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszValue = pArgs->resval.rstring;
-		if (!pszValue)
-			pszValue = _T("");
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszListKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		if (pCtrl->GetWindow() == NULL)
-		{ //the control has not been created yet
-			TPropertyPtr pProp = pCtrl->GetPropertyObject(Prop::List);
-			assert(pProp != NULL);
-			if (!pProp)
-				return RSERR;
-			pProp->GetStringArrayPtr()->push_back(pszValue);
-		}
-		else
-		{ //we are changing an already created control
-			switch (pCtrl->GetType())
-			{
-			case CtlListBox:
-				{
-					CListBox *pListBox = (CListBox*)pCtrl->GetWindow();
-					if (mnListOperation == 1)
-					{
-						int nIndex = pListBox->GetCurSel();
-						pListBox->DeleteString(nIndex);
-						pListBox->InsertString(nIndex, pszValue);
-					}
-					else
-						pListBox->AddString(pszValue);
-					break;
-				}
-			case CtlComboBox:
-				{
-					CComboBox *pComboBox = (CComboBox*)pCtrl->GetWindow();
-					if (mnListOperation == 1)
-					{
-						int nIndex = pComboBox->GetCurSel();
-						pComboBox->DeleteString(nIndex);
-						pComboBox->InsertString(nIndex, pszValue);
-					}
-					else
-						pComboBox->AddString(pszValue);
-					break;
-				}
-			case CtlListView:
-				{
-					CListCtrl *pListCtrl = (CListCtrl*)pCtrl->GetWindow();
-					if (mnListOperation == 1)
-					{
-						int nIndex = -1;
-						POSITION pos = pListCtrl->GetFirstSelectedItemPosition();
-						nIndex = pListCtrl->GetNextSelectedItem(pos);
-						if (nIndex > -1)
-							pListCtrl->SetItemText(nIndex, 0, pszValue);
-						else
-						{
-							LV_ITEM lvItem;
-							lvItem.mask = LVIF_TEXT|LVIF_INDENT|LVIF_IMAGE;
-							lvItem.iItem = pListCtrl->GetItemCount() + 1;
-							lvItem.iSubItem = 0;
-							lvItem.pszText = (LPTSTR)pszValue;
-							lvItem.iImage = -1;
-							lvItem.iIndent = 0;
-							pListCtrl->InsertItem(&lvItem);
-						}
-					}
-					else
-					{
-						LV_ITEM lvItem;
-						lvItem.mask = LVIF_TEXT|LVIF_INDENT|LVIF_IMAGE;
-						lvItem.iItem = pListCtrl->GetItemCount() + 1;
-						lvItem.iSubItem = 0;
-						lvItem.pszText = (LPTSTR)pszValue;
-						lvItem.iImage = -1;
-						lvItem.iIndent = 0;
-						pListCtrl->InsertItem(&lvItem);
-					}
-					break;
-				}
-			}
-		}
-
-		return (RSRSLT) ;
+		return AdsDcl::AddList();
 	}
 
 	// ----- ads_dcl_end_list symbol (do not rename)
 	static int ads_dcl_end_list(void)
 	{
-		//----- Remove the following line if you do not expect any argument for this ADS function
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		return (RSRSLT) ;
+		return AdsDcl::EndList();
 	}
 
 	// ----- ads_dcl_action_tile symbol (do not rename)
 	static int ads_dcl_action_tile(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSRSLT; //no error, just do nothing
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszAction = pArgs->resval.rstring;
-		if (!pszAction)
-			pszAction = _T("");
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		CString sAction;
-		sAction.Format(gpszOnActionEventLispFunction, pszKey, pszAction);
-
-		switch(pCtrl->GetType())
-		{
-		case CtlTextButton:
-		case CtlCheckBox:
-		case CtlGraphicButton:
-		case CtlOptionButton:
-		case CtlSlideView:
-			{
-				pCtrl->SetStringProperty(Prop::EventClicked, sAction);
-				break;
-			}
-		case CtlTextBox:
-			{
-				pCtrl->SetStringProperty(Prop::EventEditChanged, sAction);
-				break;
-			}
-		case CtlGrid:
-		case CtlListView:
-			{
-				pCtrl->SetStringProperty(Prop::EventClicked, sAction);
-				break;
-			}
-		case CtlComboBox:
-		case CtlListBox:
-			{
-				pCtrl->SetStringProperty(Prop::EventSelChanged, sAction);
-				break;
-			}
-		case CtlScrollBar:
-			{
-				pCtrl->SetStringProperty(Prop::EventScroll, sAction);
-				break;
-			}
-		}
-
-		TCHAR lpPathBuffer[4096];
-		::GetTempPath(4096, lpPathBuffer);
-		CString sTempFile = lpPathBuffer;
-		sTempFile += gpszDclEventsLspFileName; /*"DclEvents.lsp"*/
-
-		// create and open the action events lsp file to be loaded.
-		CStdioFile tempFile(sTempFile, CFile::modeWrite);
-		tempFile.SeekToEnd();
-		tempFile.WriteString(sAction);
-		tempFile.Close();
-
-		acedRetT();
-
-		return (RSRSLT) ;
+		return AdsDcl::ActionTile();
 	}
 
 	// ----- ads_dcl_set_tile symbol (do not rename)
 	static int ads_dcl_set_tile(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSRSLT; //no error, just do nothing
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszValue = pArgs->resval.rstring;
-		if (!pszValue)
-			pszValue = _T("");
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		pCtrl->SetStringProperty(Prop::Text, pszValue);
-		if (pCtrl->GetWindow())
-			pCtrl->GetWindow()->SetWindowText(pszValue);
-
-		return (RSRSLT) ;
+		return AdsDcl::SetTile();
 	}
 
 	// ----- ads_dcl_mode_tile symbol (do not rename)
 	static int ads_dcl_mode_tile(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nValue = pArgs->resval.rint;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		if (pCtrl->GetWindow() == NULL)
-		{ //the control has not been created yet
-			switch (nValue)
-			{
-			case 0:
-				{
-					pCtrl->SetBooleanProperty(Prop::Enabled, true);
-					break;
-				}
-			case 1:
-				{
-					pCtrl->SetBooleanProperty(Prop::Enabled, false);
-					break;
-				}
-			}
-		}
-		else
-		{ //we are changing an already created control
-			switch (nValue)
-			{
-			case 0:
-				{
-					pCtrl->SetBooleanProperty(Prop::Enabled, true);
-					pCtrl->GetWindow()->EnableWindow(TRUE);
-					break;
-				}
-			case 1:
-				{
-					pCtrl->SetBooleanProperty(Prop::Enabled, false);
-					pCtrl->GetWindow()->EnableWindow(FALSE);
-					break;
-				}
-			case 2:
-				{
-					pCtrl->GetWindow()->SetFocus();
-					break;
-				}
-			case 3:
-				{
-					if (pCtrl->GetType() == CtlTextBox)
-					{
-						CEdit *pEdit = (CEdit*)pCtrl->GetWindow();
-						pEdit->SetSel(0, -1);
-					}
-					break;
-				}
-			case 4:
-				{
-					if (pCtrl->GetType() == CtlSlideView)
-					{
-						CArxAcadSlideCtrl *pSlide = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-						if( CAcadColorService::IsTransparentColor( pSlide->GetHighlight() ) )
-							pSlide->SetHighlight( RGB(255,0,0) );
-						else
-							pSlide->RemoveHighlight();
-					}
-					break;
-				}
-			}
-		}
-
-		return (RSRSLT) ;
+		return AdsDcl::ModeTile();
 	}
 
 	// ----- ads_dcl_get_tile symbol (do not rename)
 	static int ads_dcl_get_tile(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		if (pCtrl->GetWindow() == NULL)
-		{ //the control has not been created yet
-			acedRetStr(pCtrl->GetStringProperty(Prop::Text));
-		}
-		else
-		{ //we are changing an already created control
-			CString sValue;
-			pCtrl->GetWindow()->GetWindowText(sValue);
-			acedRetStr(sValue);
-		}
-
-		return (RSRSLT) ;
+		return AdsDcl::GetTile();
 	}
 
 	// ----- ads_dcl_get_attr symbol (do not rename)
 	static int ads_dcl_get_attr(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		theWorkspace.DisplayAlert(_T("(dcl_Get_Attr) is not implemented yet!"));
-
-		return (RSRSLT) ;
+		return AdsDcl::GetAttr();
 	}
 
 	// ----- ads_dcl_start_image symbol (do not rename)
 	static int ads_dcl_start_image(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->Clear();
-
-		return (RSRSLT) ;
+		return AdsDcl::StartImage();
 	}
 
 	// ----- ads_dcl_vector_image symbol (do not rename)
 	static int ads_dcl_vector_image(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nStartX = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nStartY = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nEndX = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nEndY = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nLineColor = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		switch (nLineColor)
-		{
-		case -2:
-			nLineColor = -22;
-			break;
-		case -15:
-			nLineColor = -16;
-			break;
-		case -16:
-			nLineColor = -9;
-			break;
-		case -18:
-			nLineColor = -17;
-			break;
-		}
-
-		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-		pDlgControl->DrawLine( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
-			pDlgControl->FromDIP( nEndX ), pDlgControl->FromDIP( nEndY ), nLineColor );
-
-		return (RSRSLT) ;
+		return AdsDcl::VectorImage();
 	}
 
 	// ----- ads_dcl_fill_image symbol (do not rename)
 	static int ads_dcl_fill_image(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nStartX = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nStartY = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nEndX = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nEndY = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nLineColor = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		switch (nLineColor)
-		{
-		case -2:
-			nLineColor = -22;
-			break;
-		case -15:
-			nLineColor = -16;
-			break;
-		case -16:
-			nLineColor = -9;
-			break;
-		case -18:
-			nLineColor = -17;
-			break;
-		}
-
-		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-		pDlgControl->DrawFillRect( pDlgControl->FromDIP( nStartX ), pDlgControl->FromDIP( nStartY ),
-			pDlgControl->FromDIP( nStartX + nEndX ), pDlgControl->FromDIP( nStartY + nEndY ), nLineColor );
-
-		return (RSRSLT) ;
+		return AdsDcl::FillImage();
 	}
 
 	// ----- ads_dcl_dimx_tile symbol (do not rename)
 	static int ads_dcl_dimx_tile(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-		CRect rc;
-		pDlgControl->GetClientRect(&rc);
-		acedRetInt(pDlgControl->ToDIP(rc.Width()));
-
-		return (RSRSLT) ;
+		return AdsDcl::DimXTile();
 	}
 
 	// ----- ads_dcl_dimy_tile symbol (do not rename)
 	static int ads_dcl_dimy_tile(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-		CRect rc;
-		pDlgControl->GetClientRect(&rc);
-		acedRetInt(pDlgControl->ToDIP(rc.Height()));
-
-		return (RSRSLT) ;
+		return AdsDcl::DimYTile();
 	}
 
 	// ----- ads_dcl_end_image symbol (do not rename)
 	static int ads_dcl_end_image(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->Snapshot();
-
-		return (RSRSLT) ;
+		return AdsDcl::EndImage();
 	}
 
 	// ----- ads_dcl_slide_image symbol (do not rename)
 	static int ads_dcl_slide_image(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszKey = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nX = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nY = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nWidth = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nHeight = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		CString sFilename = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
-		assert (pCtrl != NULL);
-		if( !pCtrl)
-			return RSERR;
-
-		CArxAcadSlideCtrl* pDlgControl = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
-		int nBracket = sFilename.Find(_T('('));
-		if (nBracket == -1)
-		{ //no slide library specified
-			static const LPCTSTR pszSlideFileExt = _T(".sld");
-			if (sFilename.Right(4).CompareNoCase(pszSlideFileExt) != 0)
-				sFilename += pszSlideFileExt;
-			CString sPath = theWorkspace.FindFile(sFilename);
-			if (sPath.IsEmpty())
-			{
-				acedRetInt(-1);
-				return RSRSLT;
-			}
-			pDlgControl->DrawASlide( pDlgControl->FromDIP( nX ), pDlgControl->FromDIP( nY ),
-				pDlgControl->FromDIP( nWidth ), pDlgControl->FromDIP( nHeight ), sPath, NULL );
-		}
-		else
-		{ //displaying a slide library
-			CString sLibName = sFilename.Mid(nBracket + 1, sFilename.GetLength() - nBracket - 2);
-			sFilename = sFilename.Left(nBracket - 1);
-			static const LPCTSTR pszSlideLibFileExt = _T(".slb");
-			if (sFilename.Right(4).CompareNoCase(pszSlideLibFileExt) != 0)
-				sFilename += pszSlideLibFileExt;
-			CString sPath = theWorkspace.FindFile(sFilename);
-			if (sPath.IsEmpty())
-			{
-				acedRetInt(-1);
-				return RSRSLT;
-			}
-			pDlgControl->DrawASlide( pDlgControl->FromDIP( nX ), pDlgControl->FromDIP( nY ),
-				pDlgControl->FromDIP( nWidth ), pDlgControl->FromDIP( nHeight ), sPath, sLibName );
-		}
-		acedRetT();
-
-		return (RSRSLT) ;
+		return AdsDcl::SlideImage();
 	}
-
 	// ----- ads_dcl_getlinetype symbol (do not rename)
 	static int ads_dcl_getlinetype(void)
 	{
@@ -2566,33 +1695,7 @@ public:
 	// ----- ads_dcl_getscreensize symbol (do not rename)
 	static int ads_dcl_getscreensize(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		CRect rcWorkArea;
-		if( SystemParametersInfo( SPI_GETWORKAREA, 0, &rcWorkArea, 0 ) > 0 )
-		{
-			int width = rcWorkArea.Width();
-			int height = rcWorkArea.Height();
-			static const POINT ptZero = { 0, 0 };
-			HMONITOR primaryMonitor = DpiAwarenessHelper::MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-			if( primaryMonitor )
-			{
-				UINT dpiX = 96, dpiY = 96;
-				DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
-				width = MulDiv( width, 96, dpiX );
-				height = MulDiv( height, 96, dpiY );
-			}
-			resbuf rbHeight = {NULL, RTSHORT};
-			rbHeight.resval.rint = height;
-			resbuf rbWidth = {&rbHeight, RTSHORT};
-			rbWidth.resval.rint = width;
-			acedRetList(&rbWidth);
-		}
-
-		return (RSRSLT) ;
+		return Ads::GetScreenSize();
 	}
 
 	// ----- ads_dcl_messagebox symbol (do not rename)
@@ -2715,46 +1818,19 @@ public:
 	// ----- ads_dcl_hideerrormsgbox symbol (do not rename)
 	static int ads_dcl_hideerrormsgbox(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		theWorkspace.SetMessagesSuppressed();
-		acedRetT();
-
-		return (RSRSLT) ;
+		return Ads::HideErrorMsgBox();
 	}
 
 	// ----- ads_dcl_showerrormsgbox symbol (do not rename)
 	static int ads_dcl_showerrormsgbox(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		theWorkspace.SetMessagesSuppressed(false);
-		acedRetT();
-
-		return (RSRSLT) ;
+		return Ads::ShowErrorMsgBox();
 	}
 
 	// ----- ads_dcl_suppressmessages symbol (do not rename)
 	static int ads_dcl_suppressmessages(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		bool bSuppress = true;
-		GetBoolArgument( pArgs, bSuppress, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		theWorkspace.SetMessagesSuppressed( bSuppress );
-		acedRetT();
-
-		return (RSRSLT) ;
+		return Ads::SuppressMessages();
 	}
 
 	// ----- ads_dcl_getblocksize symbol (do not rename)
@@ -3455,81 +2531,25 @@ public:
 	// ----- ads_dcl_xtwipstopixels symbol (do not rename)
 	static int ads_dcl_xtwipstopixels(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long twips = 0;
-		if( !GetLongArgument( pArgs, twips ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nX = GetDeviceCaps( hdc, LOGPIXELSX );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( nX, twips, 1440 ) );
-
-		return (RSRSLT) ;
+		return Ads::XTwipsToPixels();
 	}
 
 	// ----- ads_dcl_ytwipstopixels symbol (do not rename)
 	static int ads_dcl_ytwipstopixels(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long twips = 0;
-		if( !GetLongArgument( pArgs, twips ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nY = GetDeviceCaps( hdc, LOGPIXELSY );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( nY, twips, 1440 ) );
-
-		return (RSRSLT) ;
+		return Ads::YTwipsToPixels();
 	}
 
 	// ----- ads_dcl_xpixelstotwips symbol (do not rename)
 	static int ads_dcl_xpixelstotwips(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long pixels = 0;
-		if( !GetLongArgument( pArgs, pixels ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nX = GetDeviceCaps( hdc, LOGPIXELSX );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( pixels, 1440, nX ) );
-
-		return (RSRSLT) ;
+		return Ads::XPixelsToTwips();
 	}
 
 	// ----- ads_dcl_ypixelstotwips symbol (do not rename)
 	static int ads_dcl_ypixelstotwips(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long pixels = 0;
-		if( !GetLongArgument( pArgs, pixels ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nY = GetDeviceCaps( hdc, LOGPIXELSY );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( pixels, 1440, nY ) );
-
-		return (RSRSLT) ;
+		return Ads::YPixelsToTwips();
 	}
 
 	// ----- ads_dcl_getolecolorvalue symbol (do not rename)
@@ -3691,14 +2711,6 @@ public:
 		return (RSRSLT) ;
 	}
 } ;
-
-CString CARXApp::msDialogToBeShown;
-CPoint CARXApp::mptToBeShown;
-TArxProjectPtr CARXApp::mpProjectToBeShown = NULL;
-CString CARXApp::msActionToBeShown;
-TDclFormPtr CARXApp::mpDclToBeShown = NULL;
-int CARXApp::mnDoneDialogValue = -1;
-int CARXApp::mnListOperation = 3; //1 = change selection, 2 = append item, 3 = replace all (default)
 
 //-----------------------------------------------------------------------------
 IMPLEMENT_ARX_ENTRYPOINT(CARXApp)

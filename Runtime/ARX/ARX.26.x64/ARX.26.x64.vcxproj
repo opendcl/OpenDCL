@@ -208,6 +208,8 @@
     <ClCompile Include="..\..\LineWeightDlg.cpp" />
     <ClCompile Include="..\..\MainFileDlg.cpp" />
     <ClCompile Include="..\..\Methods\Methods_ImageList.cpp" />
+    <ClCompile Include="..\..\Methods\Methods_Ads.cpp" />
+    <ClCompile Include="..\..\Methods\Methods_Ads_Dcl.cpp" />
     <ClCompile Include="..\..\Methods\Methods_Project.cpp" />
     <ClCompile Include="..\..\ModalDlg.cpp" />
     <ClCompile Include="..\..\ModelessDlg.cpp" />
@@ -412,6 +414,8 @@
     <ClInclude Include="..\..\LineWeightDlg.h" />
     <ClInclude Include="..\..\LocalRes.h" />
     <ClInclude Include="..\..\MainFileDlg.h" />
+    <ClInclude Include="..\..\Methods\Methods_Ads.h" />
+    <ClInclude Include="..\..\Methods\Methods_Ads_Dcl.h" />
     <ClInclude Include="..\..\Methods\Methods_ImageList.h" />
     <ClInclude Include="..\..\Methods\Methods_Project.h" />
     <ClInclude Include="..\..\ModalDlg.h" />
