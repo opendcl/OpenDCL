@@ -493,20 +493,89 @@ BEGIN_MESSAGE_MAP(CBooleanCheckBoxCtrl, CButton)
 END_MESSAGE_MAP()
 
 
-class CEnumComboBoxCtrl : public CComboBox, public CPropertyEditCtrl
+class CPropertyEditComboCtrl : public CComboBox, public CPropertyEditCtrl
 {
+protected:
 	static CRect CalcRect( const CRect& rcCell )
 		{
-			return CRect( rcCell.left + 1, rcCell.top, rcCell.right - 1, rcCell.bottom - 1 );
+			CRect rc( rcCell.left + 1, rcCell.top, rcCell.right - 1, rcCell.bottom - 1 );
+			int nField = rc.Height();
+			if( nField < 16 )
+				nField = 16;
+			rc.bottom += 8 * nField;
+			return rc;
 		}
-public:
-	CEnumComboBoxCtrl( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+	void SizeDropDown()
+		{
+			int nItems = GetCount();
+			if( nItems < 1 )
+				nItems = 1;
+			if( nItems > 12 )
+				nItems = 12;
+			CRect rc;
+			GetWindowRect( &rc );
+			GetParent()->ScreenToClient( &rc );
+			int nItemH = GetItemHeight( 0 );
+			if( nItemH <= 0 )
+				nItemH = GetItemHeight( -1 );
+			if( nItemH <= 0 )
+				nItemH = rc.Height();
+			const int nListFrame = 2 * (::GetSystemMetrics( SM_CYEDGE ) + ::GetSystemMetrics( SM_CYBORDER ));
+			rc.bottom = rc.top + rc.Height() + nItems * nItemH + nListFrame;
+			MoveWindow( &rc );
+			CRect rcDrop;
+			GetDroppedControlRect( &rcDrop );
+			int nShort = nItems * nItemH - rcDrop.Height();
+			if( nShort > 0 )
+			{
+				rc.bottom += nShort;
+				MoveWindow( &rc );
+			}
+		}
+	CPropertyEditComboCtrl( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
 		: CComboBox()
 		, CPropertyEditCtrl( pGridCtrl, idxCell )
 		{
-			CString sValue = mpGridCtrl->GetItemText( idxCell, 1 );
 			__super::Create( WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
 			SetFont( pGridCtrl->GetFont() );
+		}
+	virtual ~CPropertyEditComboCtrl()
+		{
+			DestroyWindow();
+		}
+	CWnd* GetControlWnd() override { return this; }
+	BOOL PreTranslateMessage( MSG* pMsg ) override
+		{
+			if( __super::PreTranslateMessage( pMsg ) )
+				return TRUE;
+			if( TranslateMessage( pMsg ) )
+			{ // don't send user input events up the chain
+				DispatchMessage( pMsg );
+				return TRUE;
+			}
+			return FALSE;
+		}
+
+	DECLARE_MESSAGE_MAP();
+	afx_msg void OnSelEndOk()
+		{
+			OnChanged();
+			OnApply();
+		}
+};
+
+BEGIN_MESSAGE_MAP(CPropertyEditComboCtrl, CComboBox)
+	ON_CONTROL_REFLECT(CBN_SELENDOK, &CPropertyEditComboCtrl::OnSelEndOk)
+END_MESSAGE_MAP()
+
+
+class CEnumComboBoxCtrl : public CPropertyEditComboCtrl
+{
+public:
+	CEnumComboBoxCtrl( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+		: CPropertyEditComboCtrl( pGridCtrl, idxCell )
+		{
+			CString sValue = mpGridCtrl->GetItemText( idxCell, 1 );
 			ControlType nCtrlType = _CtlInvalid;
 			TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
 			if( pActiveControl )
@@ -552,15 +621,14 @@ public:
 				SetCurSel( -1 );
 			else
 				SelectString( 0, sValue );
+			SizeDropDown();
 			SetFocus();
 		}
 	virtual ~CEnumComboBoxCtrl()
 		{
 			if( !IsCancelled() && IsChanged() )
 				OnApply();
-			DestroyWindow();
 		}
-	CWnd* GetControlWnd() override { return this; }
 	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CEnumComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
@@ -590,50 +658,16 @@ public:
 			__super::OnApply();
 			ApplyValue( GetCurSel() );
 		}
-	void OnCancel() override //must override in derived class to revert to original property value
-		{
-			__super::OnCancel();
-		}
-	BOOL PreTranslateMessage( MSG* pMsg ) override
-		{
-			if( __super::PreTranslateMessage( pMsg ) )
-				return TRUE;
-			if( TranslateMessage( pMsg ) )
-			{ // don't send user input events up the chain
-				DispatchMessage( pMsg );
-				return TRUE;
-			}
-			return FALSE;
-		}
-
-protected:
-	DECLARE_MESSAGE_MAP();
-	afx_msg void OnSelEndOk()
-		{
-			OnChanged();
-			OnApply();
-		}
 };
 
-BEGIN_MESSAGE_MAP(CEnumComboBoxCtrl, CComboBox)
-	ON_CONTROL_REFLECT(CBN_SELENDOK, &CEnumComboBoxCtrl::OnSelEndOk)
-END_MESSAGE_MAP()
 
-
-class CPicFolderComboBoxCtrl : public CComboBox, public CPropertyEditCtrl
+class CPicFolderComboBoxCtrl : public CPropertyEditComboCtrl
 {
-	static CRect CalcRect( const CRect& rcCell )
-		{
-			return CRect( rcCell.left + 1, rcCell.top, rcCell.right - 1, rcCell.bottom - 1 );
-		}
 public:
 	CPicFolderComboBoxCtrl( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
-		: CComboBox()
-		, CPropertyEditCtrl( pGridCtrl, idxCell )
+		: CPropertyEditComboCtrl( pGridCtrl, idxCell )
 		{
 			CString sValue = pGridCtrl->GetItemText( idxCell, 1 );
-			__super::Create( WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
-			SetFont( pGridCtrl->GetFont() );
 			AddString( theStudioWorkspace.LoadResourceString( IDS_NONE ) );
 			TStudioProjectPtr pProject = theStudioWorkspace.GetActiveProject();
 			const TPictureMap& Pictures = pProject->GetPictureMap();
@@ -649,15 +683,14 @@ public:
 				SetCurSel( -1 );
 			else
 				SelectString( 0, sValue );
+			SizeDropDown();
 			SetFocus();
 		}
 	virtual ~CPicFolderComboBoxCtrl()
 		{
 			if( !IsCancelled() && IsChanged() )
 				OnApply();
-			DestroyWindow();
 		}
-	CWnd* GetControlWnd() override { return this; }
 	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CPicFolderComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
@@ -688,34 +721,7 @@ public:
 			__super::OnApply();
 			ApplyValue( GetCurSel() );
 		}
-	void OnCancel() override //must override in derived class to revert to original property value
-		{
-			__super::OnCancel();
-		}
-	BOOL PreTranslateMessage( MSG* pMsg ) override
-		{
-			if( __super::PreTranslateMessage( pMsg ) )
-				return TRUE;
-			if( TranslateMessage( pMsg ) )
-			{ // don't send user input events up the chain
-				DispatchMessage( pMsg );
-				return TRUE;
-			}
-			return FALSE;
-		}
-
-protected:
-	DECLARE_MESSAGE_MAP();
-	afx_msg void OnSelEndOk()
-		{
-			OnChanged();
-			OnApply();
-		}
 };
-
-BEGIN_MESSAGE_MAP(CPicFolderComboBoxCtrl, CComboBox)
-	ON_CONTROL_REFLECT(CBN_SELENDOK, &CPicFolderComboBoxCtrl::OnSelEndOk)
-END_MESSAGE_MAP()
 
 
 static const F_EditControlCreator PF_UnfilteredTextEditCreator =
