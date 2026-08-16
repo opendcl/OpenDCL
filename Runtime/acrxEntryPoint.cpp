@@ -56,6 +56,7 @@
 #include "Methods_TabStrip.h"
 #include "Methods_TextBox.h"
 #include "Methods_Tree.h"
+#include "Methods_Ads.h"
 #include "DialogObject.h"
 #include "LayeredWindowHelperST.h"
 #include "ControlTypes.h"
@@ -1461,44 +1462,13 @@ public:
 	// ----- ads_dcl_getversion symbol (do not rename)
 	static int ads_dcl_getversion(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		DWORD dwMajor;
-		DWORD dwMinor;
-		DWORD dwThird;
-		DWORD dwFourth;
-		if( !theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
-			return RSERR;
-		assert( dwMinor < 10 ); //otherwise the algorithm fails
-		if( dwMinor >= 10 )
-			return RSERR;
-		acedRetReal( ads_real( dwMajor ) + dwMinor / 10.0 );
-
-		return (RSRSLT) ;
+		return Ads::GetVersion();
 	}
 
-	// ----- ads_dcl_getversion symbol (do not rename)
+	// ----- ads_dcl_getversionex symbol (do not rename)
 	static int ads_dcl_getversionex(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		DWORD dwMajor;
-		DWORD dwMinor;
-		DWORD dwThird;
-		DWORD dwFourth;
-		if( !theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
-			return RSERR;
-		CString sVersion;
-		sVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
-		acedRetStr( sVersion );
-
-		return (RSRSLT) ;
+		return Ads::GetVersionEx();
 	}
 
 	// ----- ads_loadproject symbol (do not rename)
@@ -2566,33 +2536,7 @@ public:
 	// ----- ads_dcl_getscreensize symbol (do not rename)
 	static int ads_dcl_getscreensize(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		CRect rcWorkArea;
-		if( SystemParametersInfo( SPI_GETWORKAREA, 0, &rcWorkArea, 0 ) > 0 )
-		{
-			int width = rcWorkArea.Width();
-			int height = rcWorkArea.Height();
-			static const POINT ptZero = { 0, 0 };
-			HMONITOR primaryMonitor = DpiAwarenessHelper::MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-			if( primaryMonitor )
-			{
-				UINT dpiX = 96, dpiY = 96;
-				DpiAwarenessHelper::GetDpiForMonitor( primaryMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY );
-				width = MulDiv( width, 96, dpiX );
-				height = MulDiv( height, 96, dpiY );
-			}
-			resbuf rbHeight = {NULL, RTSHORT};
-			rbHeight.resval.rint = height;
-			resbuf rbWidth = {&rbHeight, RTSHORT};
-			rbWidth.resval.rint = width;
-			acedRetList(&rbWidth);
-		}
-
-		return (RSRSLT) ;
+		return Ads::GetScreenSize();
 	}
 
 	// ----- ads_dcl_messagebox symbol (do not rename)
@@ -2715,46 +2659,19 @@ public:
 	// ----- ads_dcl_hideerrormsgbox symbol (do not rename)
 	static int ads_dcl_hideerrormsgbox(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		theWorkspace.SetMessagesSuppressed();
-		acedRetT();
-
-		return (RSRSLT) ;
+		return Ads::HideErrorMsgBox();
 	}
 
 	// ----- ads_dcl_showerrormsgbox symbol (do not rename)
 	static int ads_dcl_showerrormsgbox(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		theWorkspace.SetMessagesSuppressed(false);
-		acedRetT();
-
-		return (RSRSLT) ;
+		return Ads::ShowErrorMsgBox();
 	}
 
 	// ----- ads_dcl_suppressmessages symbol (do not rename)
 	static int ads_dcl_suppressmessages(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		bool bSuppress = true;
-		GetBoolArgument( pArgs, bSuppress, true );
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		theWorkspace.SetMessagesSuppressed( bSuppress );
-		acedRetT();
-
-		return (RSRSLT) ;
+		return Ads::SuppressMessages();
 	}
 
 	// ----- ads_dcl_getblocksize symbol (do not rename)
@@ -3455,81 +3372,25 @@ public:
 	// ----- ads_dcl_xtwipstopixels symbol (do not rename)
 	static int ads_dcl_xtwipstopixels(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long twips = 0;
-		if( !GetLongArgument( pArgs, twips ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nX = GetDeviceCaps( hdc, LOGPIXELSX );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( nX, twips, 1440 ) );
-
-		return (RSRSLT) ;
+		return Ads::XTwipsToPixels();
 	}
 
 	// ----- ads_dcl_ytwipstopixels symbol (do not rename)
 	static int ads_dcl_ytwipstopixels(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long twips = 0;
-		if( !GetLongArgument( pArgs, twips ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nY = GetDeviceCaps( hdc, LOGPIXELSY );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( nY, twips, 1440 ) );
-
-		return (RSRSLT) ;
+		return Ads::YTwipsToPixels();
 	}
 
 	// ----- ads_dcl_xpixelstotwips symbol (do not rename)
 	static int ads_dcl_xpixelstotwips(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long pixels = 0;
-		if( !GetLongArgument( pArgs, pixels ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nX = GetDeviceCaps( hdc, LOGPIXELSX );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( pixels, 1440, nX ) );
-
-		return (RSRSLT) ;
+		return Ads::XPixelsToTwips();
 	}
 
 	// ----- ads_dcl_ypixelstotwips symbol (do not rename)
 	static int ads_dcl_ypixelstotwips(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		long pixels = 0;
-		if( !GetLongArgument( pArgs, pixels ) )
-			return RSERR; //invalid argument
-
-		if( !AssertOutOfArgs( pArgs ) )
-			return RSERR;
-
-		HDC hdc = ::GetDC( NULL );
-		int nY = GetDeviceCaps( hdc, LOGPIXELSY );
-		::ReleaseDC( NULL, hdc );
-		theArxWorkspace.RetLong( MulDiv( pixels, 1440, nY ) );
-
-		return (RSRSLT) ;
+		return Ads::YPixelsToTwips();
 	}
 
 	// ----- ads_dcl_getolecolorvalue symbol (do not rename)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -585,6 +585,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Methods\Methods_Tree.cpp">
       <Filter>Methods\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Methods\Methods_Ads.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Methods\Methods_Project.cpp">
       <Filter>Methods\Source Files</Filter>
@@ -1352,6 +1355,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Source\OpenDCL 8.0\Runtime\Methods\Methods_Project.h">
       <Filter>Methods\Include Files</Filter>
+    </ClInclude>
+        <ClInclude Include="..\..\Methods\Methods_Ads.h">
+      <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Methods\Methods_ImageList.h">
       <Filter>Methods\Include Files</Filter>

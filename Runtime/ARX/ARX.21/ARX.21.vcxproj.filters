@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -588,6 +588,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Controls\XPStyleButtonST.cpp">
       <Filter>Common\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Methods\Methods_Ads.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Methods\Methods_Project.cpp">
       <Filter>Methods\Source Files</Filter>
@@ -1348,6 +1351,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DwgThumbnail.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+        <ClInclude Include="..\..\Methods\Methods_Ads.h">
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Methods\Methods_ImageList.h">

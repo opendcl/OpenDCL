@@ -31,6 +31,7 @@ set(OPENDCL_RUNTIME_SOURCES
   "${CMAKE_SOURCE_DIR}/Runtime/LinetypeDlg.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/LineWeightDlg.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/MainFileDlg.cpp"
+  "${CMAKE_SOURCE_DIR}/Runtime/Methods/Methods_Ads.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/Methods/Methods_ImageList.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/Methods/Methods_Project.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/ModalDlg.cpp"
