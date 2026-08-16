@@ -204,7 +204,10 @@ Demand-load **OPENDCLDEMO** depends on `HKCR\OpenDCL.Project` from Studio instal
    `.github/workflows/localization-packs.yml` under `on.push.paths`:
    `Common/<LANG>/**` (one line per language — same list as existing ENU/CHS/…).
    `Runtime/Localized/**` and `Studio/Localized/**` already cover new folders
-   under those trees without a new line.
+   under those trees without a new line. Do not remove the `!` exclusions
+   (CMakeLists, `.vcxproj`, BuildCHM, build output dirs) — those files are
+   build plumbing, not translator-facing content. `Content/Samples` is
+   localizable and must stay included.
 4. Do not assume every Studio language automatically gets a HelpFiles folder.
 
 ### 9. Capture lessons into this skill

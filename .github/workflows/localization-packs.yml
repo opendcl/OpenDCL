@@ -2,8 +2,10 @@
 # Also produced by "Make release" (scripts/make-release.ps1) alongside installers.
 # Site: https://opendcl.github.io/localization/
 #
-# Path filters: only localization trees (not all of Common/). When adding a new
-# language code, append Common/<CODE>/** here (see .agents/skills/add-language).
+# Path filters: language trees + pack tooling. When adding a language, append
+# Common/<CODE>/** (see .agents/skills/add-language). Runtime/Localized/** and
+# Studio/Localized/** already cover new <CODE> folders under those trees.
+# Negations skip build plumbing only (CMake, VS projects, CHM makefile, outputs).
 name: Localization packs
 
 on:
@@ -28,6 +30,18 @@ on:
       - "Studio/Localized/**"
       - "scripts/make-localization-zips.ps1"
       - ".github/workflows/localization-packs.yml"
+      # Build plumbing (does not change translator-facing content)
+      - "!**/CMakeLists.txt"
+      - "!**/*.cmake"
+      - "!**/*.vcxproj"
+      - "!**/*.vcxproj.filters"
+      - "!**/*.vcxproj.user"
+      - "!**/*.mak"
+      - "!**/BuildCHM.bat"
+      - "!**/*.chm"
+      - "!**/Debug/**"
+      - "!**/Release/**"
+      - "!**/Win32/**"
 
 permissions:
   contents: write
