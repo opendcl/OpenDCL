@@ -10,7 +10,7 @@ WiX Toolset **v3.14** sources that build installers without Visual Studio `.vdpr
 | `OpenDCL.Runtime.msi` | Thin Runtime installer (merges the MSM) |
 | `OpenDCL.Studio.<LANG>.msi` | Studio + Runtime MSM (ENU, DEU, ESM, RUS, CHS, FRA, CHT) |
 
-The **`.msm` is intentional and permanent** — other developers embed it in their own installers.
+The **`.msm` is intentional and permanent** - other developers embed it in their own installers.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ Smoke: **[docs/SMOKE.md](../docs/SMOKE.md)**. Package diffs: previous release se
 From this repository root (after a Release compile):
 
 ```powershell
-# Preferred full local release (verify → WiX → dist → loc zips [→ sign]):
+# Preferred full local release (verify -> WiX -> dist -> loc zips [-> sign]):
 .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
   -ProductVersion 10.1.1.1 -ModuleSet Full
 
@@ -39,11 +39,11 @@ From this repository root (after a Release compile):
 # MSM only (fast iterate on full inventory):
 .\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) -SkipStudio -SkipRuntimeMsi
 
-# Custom subset — explicit runtimes + language(s)
+# Custom subset - explicit runtimes + language(s)
 .\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
   -Runtimes BRX.27.x64 -Languages ENU -SkipStudio
 
-# Custom subset — package whatever modules/langs are present under -OpenDclRoot/out
+# Custom subset - package whatever modules/langs are present under -OpenDclRoot/out
 .\scripts\build-wix.ps1 -ModuleSet Available -AvailableLanguages -SkipStudio `
   -OpenDclRoot (Resolve-Path build\vs2022-full)
 ```
@@ -61,15 +61,15 @@ Custom packages write **`OpenDCL.Runtime.custom.msm` / `.msi`** with seed-based 
 
 Primary outputs: **`wix\out\Release\`** only (no copies into `Runtime\Install\...` or `Studio\Localized\...\Release`).
 
-Studio install layout (no hard-coded `Program Files (x86)` paths in product code —
+Studio install layout (no hard-coded `Program Files (x86)` paths in product code -
 registry and shortcuts use MSI `[INSTALLDIR]`):
 
 ```text
-# x64 Studio.exe  →  [ProgramFiles64Folder]\OpenDCL Studio\   (C:\Program Files\…)
-# x86 Studio.exe  →  [ProgramFilesFolder]\OpenDCL Studio\     (C:\Program Files (x86)\…)
+# x64 Studio.exe  ->  [ProgramFiles64Folder]\OpenDCL Studio\   (C:\Program Files\...)
+# x86 Studio.exe  ->  [ProgramFilesFolder]\OpenDCL Studio\     (C:\Program Files (x86)\...)
 {INSTALLDIR}\
   OpenDCL Studio.exe
-  ENU\                        # (or DEU, …)
+  ENU\                        # (or DEU, ...)
     Studio.Res.dll
     License.htm / .txt / .rtf
     OpenDCL.chm, GNU-GPL.txt
@@ -85,7 +85,7 @@ Override versions when cutting a release:
 .\scripts\build-wix.ps1 -ModuleVersion 10.1.1.1 -ProductVersion 10.1.101
 ```
 
-## Post-package steps (WiX → dist → localization → sign → release)
+## Post-package steps (WiX -> dist -> localization -> sign -> release)
 
 After a successful `.\scripts\build-wix.ps1` (outputs in `wix\out\Release\`), prefer
 the **combined** helper:
@@ -121,7 +121,7 @@ Example step-by-step (same result as `make-release.ps1` without `-Sign`):
 .\scripts\make-localization-zips.ps1 -OutDir .\dist\10.1.1.1
 $env:SIGN_STORE_PASSWORD = "<yubikey-pin>"   # process env only; never commit
 .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
-# Product v* release: MSI/MSM only. Language zips → rolling tag localization-packs.
+# Product v* release: MSI/MSM only. Language zips -> rolling tag localization-packs.
 gh release create "v10.1.1.1" .\dist\10.1.1.1\*.msi .\dist\10.1.1.1\*.msm --title "OpenDCL 10.1.1.1"
 ```
 
@@ -147,7 +147,7 @@ Tag: `v<ver>` (e.g. `v10.1.1.1`).
 `.github/workflows/localization-packs.yml` (rolling GitHub Release
 `localization-packs`). Public UI: https://opendcl.github.io/localization/
 
-**Online help** refresh: skill `/sync-help-to-website` (Studio Content →
+**Online help** refresh: skill `/sync-help-to-website` (Studio Content ->
 `opendcl.github.io/HelpFiles/`).
 
 **Update-check versions:** after a **public** GitHub Release (not dry-run), run
@@ -166,16 +166,16 @@ Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no st
 
 | File | Size | Content |
 | --- | --- | --- |
-| `WixUIBanner.bmp` | **493×58** | Color OpenDCL logo at **native** pixel size on the right; left clear for WixUI captions |
-| `WixUIDialog.bmp` | **493×312** | CAD-themed left strip (164×312 art, brand blues); white right for UI text |
+| `WixUIBanner.bmp` | **493x58** | Color OpenDCL logo at **native** pixel size on the right; left clear for WixUI captions |
+| `WixUIDialog.bmp` | **493x312** | CAD-themed left strip (164x312 art, brand blues); white right for UI text |
 
-- **License** dialog embeds each language’s checked-in `Studio\Localized\<LANG>\Content\License.rtf` (WixUI ScrollableText supports RTF only, not HTML).  
+- **License** dialog embeds each language's checked-in `Studio\Localized\<LANG>\Content\License.rtf` (WixUI ScrollableText supports RTF only, not HTML).  
   - `License.htm` remains for help/site-style viewing.  
-  - `License.rtf` is the installer EULA source of truth — edit and review it like any other source; **do not** regenerate it silently during package builds.
+  - `License.rtf` is the installer EULA source of truth - edit and review it like any other source; **do not** regenerate it silently during package builds.
 
 ## Design notes
 
-- **No Detected Dependencies** — only intentional product files (modules, `Runtime.Res`, licenses, Studio app/help/samples). VC++ CRT/MFC redistributables are not bundled.
+- **No Detected Dependencies** - only intentional product files (modules, `Runtime.Res`, licenses, Studio app/help/samples). VC++ CRT/MFC redistributables are not bundled.
 - **Module Guid** `0C4E4759-A6C2-4D0E-BAE5-7719C3BCF049` matches the historical VS MSM modularization id.
 - **RxInstall** custom actions preserved (machine/user install + uninstall); user CAs impersonate.
 - **ProductVersion** is 3-part MSI encoding (`10.1.101` for file version `10.1.1.1`). **ModuleVersion** is 4-part.
@@ -183,8 +183,8 @@ Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no st
 - Component GUIDs are **stable** (MD5 of logical path).
 - Studio shortcuts are **advertised** and nested on their target files
   (`Advertise="yes"` on the same component as the file):
-  - **ICE69** — advertised shortcut must share the component with its target file
-  - **ICE43 / ICE57** — non-advertised shortcuts require an **HKCU** registry keypath;
+  - **ICE69** - advertised shortcut must share the component with its target file
+  - **ICE43 / ICE57** - non-advertised shortcuts require an **HKCU** registry keypath;
     using a per-machine file keypath fails light (do not flip Help/License to
     `Advertise="no"` without adding HKCU keypaths on those components)
 

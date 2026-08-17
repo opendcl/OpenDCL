@@ -3,7 +3,7 @@
 # other Runtime products under build/<preset>/Runtime/ instead of the binary root.
 #
 # Localized/ and RxInstall/ remain separate add_subdirectory calls from the root
-# (order: Res nest → Localized → modules → RxInstall).
+# (order: Res nest -> Localized -> modules -> RxInstall).
 
 if(NOT OPENDCL_BUILD_RUNTIME)
   return()
@@ -12,7 +12,7 @@ endif()
 opendcl_add_selected_runtimes()
 
 # Pre-move layouts put Runtime_* next to the .sln. CMake does not delete
-# orphaned VS files on reconfigure — drop stale root copies so only Runtime/ remains.
+# orphaned VS files on reconfigure - drop stale root copies so only Runtime/ remains.
 file(GLOB _opendcl_stale_rt_root
   "${CMAKE_BINARY_DIR}/Runtime_*.vcxproj"
   "${CMAKE_BINARY_DIR}/Runtime_*.vcxproj.*"

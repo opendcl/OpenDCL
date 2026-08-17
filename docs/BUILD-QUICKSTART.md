@@ -11,7 +11,7 @@ Framework details (matrix, options, dual-arch ship, debugger overrides):
 | Requirement | Notes |
 | --- | --- |
 | Windows | Native MSVC build only |
-| [CMake](https://cmake.org/) ≥ 3.24 | On `PATH` (`cmake --version`) |
+| [CMake](https://cmake.org/) >= 3.24 | On `PATH` (`cmake --version`) |
 | Visual Studio 2022 | **Desktop development with C++** and **MFC** |
 | CAD SDK(s) | Only if you build Runtime modules (not needed for Studio-only) |
 | HTML Help Workshop (`hhc.exe`) | Optional; builds `OpenDCL.chm` for Studio Help / F5 |
@@ -24,15 +24,15 @@ SDK root (same names as classic `VI/*.props`). Common modern examples:
 | `ARX.26.x64` | `ARX2027` | ObjectARX 2027 / AutoCAD 2027 SDK root |
 | `BRX.27.x64` | `BRX27` | BricsCAD V27 BRX SDK root |
 
-Override with a CMake cache path if you prefer: `-DOPENDCL_<ENV>_ROOT=…`
-(for example `OPENDCL_BRX27_ROOT`). Full ID ↔ env map:
+Override with a CMake cache path if you prefer: `-DOPENDCL_<ENV>_ROOT=...`
+(for example `OPENDCL_BRX27_ROOT`). Full ID <-> env map:
 `cmake/OpenDCLRuntimeMatrix.cmake`.
 
-The **dev** preset only considers Platform Toolsets **≥ v141** (VS2017+). Older
+The **dev** preset only considers Platform Toolsets **>= v141** (VS2017+). Older
 toolsets and Daffodil are **not** needed for the paths below. See the main
 [README](../README.md) only if you later build historic matrix rows.
 
-## Path A — Studio only (no CAD SDK)
+## Path A - Studio only (no CAD SDK)
 
 ### A1. Dedicated Win32 Studio tree
 
@@ -57,7 +57,7 @@ If you use **`vs2022-x64-dev`** and no modern CAD SDK env vars are set, configur
 still succeeds: **no runtime modules** are selected, and Studio still builds
 (x64). Prefer A1 when you only care about Studio.
 
-## Path B — Runtime + Studio (typical)
+## Path B - Runtime + Studio (typical)
 
 ### B1. Dev default (recommended)
 
@@ -65,7 +65,7 @@ Preset **`vs2022-x64-dev`**:
 
 - Enables ARX / BRX / GRX / ZRX families
 - Skips missing SDKs (`OPENDCL_RUNTIME_AUTO`)
-- Keeps only Platform Toolset **≥ v141**
+- Keeps only Platform Toolset **>= v141**
 - Enables at most **one** runtime per family (highest matrix version with an SDK)
 
 Set env vars for the SDKs you have. Families without a matching SDK are omitted.
@@ -74,7 +74,7 @@ After installing a new SDK, reconfigure with `--fresh` so selection updates.
 ```powershell
 cd <OpenDCL repo root>
 
-# Examples only — use the roots on your machine (any subset is fine):
+# Examples only - use the roots on your machine (any subset is fine):
 $env:ARX2027 = "C:\ObjectARX 2027"
 $env:BRX27   = "C:\Bricsys\BricsCAD V27\API\brx"
 
@@ -87,13 +87,13 @@ cmake --build --preset vs2022-x64-dev-debug
 cmake --build --preset vs2022-x64-dev-release
 ```
 
-Configure log lines `ENABLE  <id>  SDK=…` show which modules were selected.
+Configure log lines `ENABLE  <id>  SDK=...` show which modules were selected.
 
 Open: `build/vs2022-x64-dev/vs2022-x64-dev.sln`.
 
 Set a runtime module (or Studio) as the startup project, then **F5**. CMake fills
 `/ld "<path-to-module>"` and tries to discover the CAD host from the registry
-(override details in [CMAKE.md](../CMAKE.md) — Visual Studio F5 debugger).
+(override details in [CMAKE.md](../CMAKE.md) - Visual Studio F5 debugger).
 
 ### B2. Pin a single host version
 
@@ -110,7 +110,7 @@ These **require** the pinned SDK (`ARX.26.x64` / `BRX.27.x64`).
 
 ### B3. Every SDK you have installed (x64)
 
-No per-family cap and no toolset floor — can be a large solution.
+No per-family cap and no toolset floor - can be a large solution.
 
 ```powershell
 cmake --preset vs2022-x64-auto
@@ -134,10 +134,10 @@ Exact layout and FullDebug mapping: [CMAKE.md](../CMAKE.md).
 
 | Symptom | What to try |
 | --- | --- |
-| No runtime modules with `vs2022-x64-dev` | Set SDK env vars for modern hosts (toolset ≥ v141); check configure `ENABLE` / `SKIP` lines; use `--fresh` after changing env |
+| No runtime modules with `vs2022-x64-dev` | Set SDK env vars for modern hosts (toolset >= v141); check configure `ENABLE` / `SKIP` lines; use `--fresh` after changing env |
 | Configure errors about missing SDK / selected target | Pinned presets (`*-arx-latest`, `*-brx-latest`) require that SDK; or use `vs2022-x64-dev` / auto / Studio-only |
 | Wrong / stale runtimes after changing SDK env or presets | Sticky cache: `cmake --preset vs2022-x64-dev --fresh` |
-| MFC / `afx….h` not found | Install the VS **MFC and ATL** workload components and reconfigure |
+| MFC / `afx....h` not found | Install the VS **MFC and ATL** workload components and reconfigure |
 | F5 starts CAD but does not load OpenDCL | Leave debugger **Command Arguments** on Inherit; see CMAKE.md debugger section (empty `.user` args override `/ld`) |
 | No CHM / Help target fails | Install HTML Help Workshop, or ignore Help if you are only iterating code |
 
@@ -145,8 +145,8 @@ Exact layout and FullDebug mapping: [CMAKE.md](../CMAKE.md).
 
 | Preset | When to use |
 | --- | --- |
-| `vs2022-x64-arx-modern` | Up to **3** latest modern ARX SDKs (`PER_FAMILY_MAX=3`, toolset ≥ v141) |
-| `vs2022-full` | Full dual-arch product / ship layout — not needed for normal contribution. Details: [CMAKE.md](../CMAKE.md), packaging smoke: [SMOKE.md](SMOKE.md) |
+| `vs2022-x64-arx-modern` | Up to **3** latest modern ARX SDKs (`PER_FAMILY_MAX=3`, toolset >= v141) |
+| `vs2022-full` | Full dual-arch product / ship layout - not needed for normal contribution. Details: [CMAKE.md](../CMAKE.md), packaging smoke: [SMOKE.md](SMOKE.md) |
 
 All configure/build preset names: `CMakePresets.json`.
 

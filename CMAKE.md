@@ -33,11 +33,11 @@ Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 
 CMake Visual Studio generators write **`build/<preset>/<preset>.sln`** (e.g.
 `build/vs2022-x64-dev/vs2022-x64-dev.sln`) so multiple presets stay distinguishable
-in the IDE. Override with `-DOPENDCL_SOLUTION_NAME=…`. Nested Win32 under a full
+in the IDE. Override with `-DOPENDCL_SOLUTION_NAME=...`. Nested Win32 under a full
 preset is `build/vs2022-full/win32/vs2022-full-win32.sln`.
 
 **On-disk project layout** (VS generator): product `.vcxproj` files sit under
-product subdirs of the binary dir — `Library/`, `Runtime/` (modules +
+product subdirs of the binary dir - `Library/`, `Runtime/` (modules +
 `Localized/` + `RxInstall/`), `Studio/`. Only CMake scaffolding (`ZERO_CHECK`,
 `ALL_BUILD`, cache/stamps) stays next to the `.sln`. After moving targets between
 dirs, reconfigure with `--fresh` (or delete stale root-level
@@ -49,13 +49,13 @@ dirs, reconfigure with `--fresh` (or delete stale root-level
 
 | Requirement | Notes |
 | --- | --- |
-| CMake ≥ 3.24 | Multi-config VS generator + presets |
+| CMake >= 3.24 | Multi-config VS generator + presets |
 | Visual Studio 2022 (or later) | C++ desktop + **MFC** workload |
-| CAD SDKs | Env vars (`ARX2027`, `BRX26`, `GRX2027`, `ZRX2025`, …) same as classic `VI/*.props` |
+| CAD SDKs | Env vars (`ARX2027`, `BRX26`, `GRX2027`, `ZRX2025`, ...) same as classic `VI/*.props` |
 | HTML Help Workshop (`hhc.exe`) | Optional; builds per-language `OpenDCL.chm` for Studio packaging / F5 Help |
 | Pre-VS2015 Platform Toolsets | Needed only for the full historic matrix (`TOOLSET` in `cmake/OpenDCLRuntimeMatrix.cmake`). Documented in the main **opendcl** public README (Daffodil). Modern-only presets (`v141`+) do not need them. |
 
-Each runtime row’s toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET "vNNN"`). CMake sets `VS_PLATFORM_TOOLSET` on the module target. Older toolsets link **toolset-matched** zlib/png static libs (see `Library/CMakeLists.txt` / `opendcl_ensure_runtime_png`) so UCRT objects from the VS2022 default toolset are not mixed into `v100` (and similar) modules.
+Each runtime row's toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET "vNNN"`). CMake sets `VS_PLATFORM_TOOLSET` on the module target. Older toolsets link **toolset-matched** zlib/png static libs (see `Library/CMakeLists.txt` / `opendcl_ensure_runtime_png`) so UCRT objects from the VS2022 default toolset are not mixed into `v100` (and similar) modules.
 
 **ZLib / LibPNG target names** (Solution Explorer under classic-like folders `Library/ZLib`, `Library/LibPNG`):
 
@@ -73,14 +73,14 @@ Each runtime row’s toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET 
 
 **Host-arch only:** each CMake binary dir creates Library targets for **one** architecture (`CMAKE_SIZEOF_VOID_P`). Nested Win32 must not define `*_x64_*` static libs (and vice versa), or shared `OPENDCL_OUTPUT_ROOT` can be overwritten with the wrong PE machine (LNK4272). Dual-arch ship = parent x64 products + nest x86 products; not dual-arch Library targets in one configure.
 
-**Runtime.Res** — `OPENDCL_RES_PE` (CAD CommonFiles only):
+**Runtime.Res** - `OPENDCL_RES_PE` (CAD CommonFiles only):
 
 | Value | Behavior |
 | --- | --- |
 | **`classic_x86`** | Always **x86** Runtime.Res (public Mixed ship / classic CommonFilesFolder parity). On x64, from full Win32 nest (or dedicated `Res_Win32`); skip native x64 Runtime.Res. |
 | **`host`** | Runtime.Res PE matches the configure arch. When nested Win32 modules are on with host Res, the nest may skip rebuilding Res so it does not overwrite host PE. |
 
-**Studio.exe / Studio.Res** — `OPENDCL_STUDIO_PE` (LoadLibrary pair; not the Runtime.Res flag):
+**Studio.exe / Studio.Res** - `OPENDCL_STUDIO_PE` (LoadLibrary pair; not the Runtime.Res flag):
 
 | Value | Behavior |
 | --- | --- |
@@ -92,7 +92,7 @@ Default cache for both is `host`. Preset **`vs2022-full`** forces **`classic_x86
 ```powershell
 cd <OpenDCL repo root>
 
-# Dev default: auto-select up to one modern (toolset ≥ v141) runtime per family
+# Dev default: auto-select up to one modern (toolset >= v141) runtime per family
 # from whatever ARX*/BRX*/GRX*/ZRX* SDK roots are available; missing families omitted.
 # Configure prints ENABLE lines for the IDs actually chosen (not fixed to BRX.27/ARX.26).
 cmake --preset vs2022-x64-dev
@@ -115,7 +115,7 @@ cmake --build --preset vs2022-full-release
 # One-shot configure+build (no package until verify is green):
 .\scripts\build-cmake-full.ps1 -Fresh
 .\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full -ModuleSet Full
-# Full local make-release (dist + optional -Sign) — verifies before WiX:
+# Full local make-release (dist + optional -Sign) - verifies before WiX:
 .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
   -ProductVersion 10.1.1.1 -ModuleSet Full -Sign
 # After a full set exists, compare packages to the previous release:
@@ -131,24 +131,24 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | **`vs2022-x64-dev`** | Day-to-day: auto-detect SDKs, **one latest modern runtime per family** (`PER_FAMILY_MAX=1`, `MIN_TOOLSET=v141`); Studio-only if no SDKs |
 | **`vs2022-x64-arx-modern`** | ARX only: up to **3** latest modern SDKs (`PER_FAMILY_MAX=3`, `MIN_TOOLSET=v141`) |
 | **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** + **`OPENDCL_STUDIO_PE=classic_x86`** (x86 Runtime.Res + **Win32 Studio** / Studio.Res via nest) |
-| **`vs2022-x64-full`** | Same dual-arch module nest, but **`host`** Res + **`host`** Studio → **x64 Studio** packaging path |
+| **`vs2022-x64-full`** | Same dual-arch module nest, but **`host`** Res + **`host`** Studio -> **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; host Res is x86 |
 | **`vs2022-x86-studio`** | **Win32 Studio only** (no CAD runtimes / Runtime.Res / RxInstall / nest). Studio.Res still builds with Studio. Configs: **Debug\|Release only** (`OPENDCL_BUILD_RUNTIME=OFF` omits FullDebug). `cmake --preset vs2022-x86-studio` then `cmake --build --preset vs2022-x86-studio-debug` |
 | Configurations | **FullDebug** is in the `.sln` only when `OPENDCL_BUILD_RUNTIME` is ON. Studio-only / no-runtime presets use `Debug;Release`. |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
-| CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug→Debug outputs |
+| CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug->Debug outputs |
 
-**How dual-arch (Mixed / x64-full) works:** CMake’s VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure `build/<preset>/win32` (`-A Win32`) with the **same** `OPENDCL_OUTPUT_ROOT=…/out`, and **import** nest `.vcxproj` files into the parent solution (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders** (both arches together): `Runtime/Rx/{ARX,BRX,GRX,ZRX}`, `Runtime/Localized Resources`, `Library/{ZLib,LibPNG}`, `Studio[/<LANG>]`, `CMake` (`Nest_Win32`). Nest imports are named `w32_*`. **`Nest_Win32`** is the single-flight nest build when `OPENDCL_WIN32_IN_ALL`. **RxInstall** and **classic_x86 Res** come from the full nest only (no private `rxinstall-win32` / `res-win32` when nest is on). **Studio help (CHM)** is arch-independent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
+**How dual-arch (Mixed / x64-full) works:** CMake's VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure `build/<preset>/win32` (`-A Win32`) with the **same** `OPENDCL_OUTPUT_ROOT=.../out`, and **import** nest `.vcxproj` files into the parent solution (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders** (both arches together): `Runtime/Rx/{ARX,BRX,GRX,ZRX}`, `Runtime/Localized Resources`, `Library/{ZLib,LibPNG}`, `Studio[/<LANG>]`, `CMake` (`Nest_Win32`). Nest imports are named `w32_*`. **`Nest_Win32`** is the single-flight nest build when `OPENDCL_WIN32_IN_ALL`. **RxInstall** and **classic_x86 Res** come from the full nest only (no private `rxinstall-win32` / `res-win32` when nest is on). **Studio help (CHM)** is arch-independent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
 
-**Nest hard-fail / single-flight:** With `OPENDCL_WIN32_IN_ALL`, only **`Nest_Win32`** is on the default build graph and runs `cmake --build` on the nest (hard-fail). **`Res_Win32`** / **`RxInstall`** keep targeted nest commands for manual builds but are **not** ALL (parallel nest builds race on `.ilk`/PDB). Studio and x64 runtimes depend on `Nest_Win32` so Res exists before F5/post-build. Imported `w32_*` projects are Explorer-only (parent Platform=x64 → MSB8013). Nest reconfigure is skipped when init-cache is unchanged (avoids regen loops / VS “already contains `w32_…`” on reload).
+**Nest hard-fail / single-flight:** With `OPENDCL_WIN32_IN_ALL`, only **`Nest_Win32`** is on the default build graph and runs `cmake --build` on the nest (hard-fail). **`Res_Win32`** / **`RxInstall`** keep targeted nest commands for manual builds but are **not** ALL (parallel nest builds race on `.ilk`/PDB). Studio and x64 runtimes depend on `Nest_Win32` so Res exists before F5/post-build. Imported `w32_*` projects are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged (avoids regen loops / VS "already contains `w32_...`" on reload).
 
-### Known limitations — nested Win32 full build (`vs2022-full`)
+### Known limitations - nested Win32 full build (`vs2022-full`)
 
 These are **accepted for now** (document and move on; not blocking x64/dev or packaging smoke):
 
 | Symptom | Why | Mitigation / status |
 | --- | --- | --- |
-| **C1060** compiler out of heap (`afxtempl.h`, old ATL) under `Nest_Win32` | Nest builds many **32-bit-era toolsets** (v100/v110/…) in one MSBuild; 32-bit `cl` heap is small | Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=2`, `OPENDCL_NEST_CL_MP_COUNT=1`. Try `=1` / `=1`. Still may fail on a full nest Debug/Release under heavy machine load. |
+| **C1060** compiler out of heap (`afxtempl.h`, old ATL) under `Nest_Win32` | Nest builds many **32-bit-era toolsets** (v100/v110/...) in one MSBuild; 32-bit `cl` heap is small | Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=2`, `OPENDCL_NEST_CL_MP_COUNT=1`. Try `=1` / `=1`. Still may fail on a full nest Debug/Release under heavy machine load. |
 | **C1001** ICE in nest modules (PCH, PaletteDlg, etc.) | Same pressure / parallel compile instability | Same throttle; rebuild single target or stand-alone `build/.../win32` with low `/m`. |
 | Cancel in VS does not stop nest `cmake --build` cleanly | Nested MSBuild is a child process of a CustomBuild step | Kill stray `MSBuild`/`cl` if needed; known CustomBuild limitation. |
 | Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-x64-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
@@ -162,12 +162,12 @@ cmake --build build/vs2022-full/win32 --config Release --parallel 1 -- /m:1 /p:C
 cmake --build build/vs2022-full/win32 --config Release --target Runtime_ZRX_2019
 ```
 
-**Parity (not host-kit hacks):** Studio static MFC+`/MT`, modules `/MD` (+ `/MDd` FullDebug for all families), multimon stubs only on `PPTooltip.cpp` — permanent classic/product policy.
+**Parity (not host-kit hacks):** Studio static MFC+`/MT`, modules `/MD` (+ `/MDd` FullDebug for all families), multimon stubs only on `PPTooltip.cpp` - permanent classic/product policy.
 
-**Sticky cache:** `cmake --preset …` does **not** overwrite existing
+**Sticky cache:** `cmake --preset ...` does **not** overwrite existing
 `CMakeCache.txt` entries (`OPENDCL_RUNTIME_TARGETS`, `OPENDCL_RUNTIME_PER_FAMILY_MAX`,
 family flags, min toolset, etc.). An old fixed target list or unlimited auto
-can linger. To re-apply the **dev** preset (and re-pick “latest modern SDK” after
+can linger. To re-apply the **dev** preset (and re-pick "latest modern SDK" after
 installing a new CAD SDK):
 
 ```powershell
@@ -175,7 +175,7 @@ cmake --preset vs2022-x64-dev --fresh
 ```
 
 To **pin** a single matrix row (not the auto-dev policy), use a separate binary
-dir and explicit cache keys — pick any ID from the matrix, e.g. `BRX.27.x64` or
+dir and explicit cache keys - pick any ID from the matrix, e.g. `BRX.27.x64` or
 `ARX.26.x64`:
 
 ```powershell
@@ -195,7 +195,7 @@ require the named SDK).
 Outputs land under `build/<preset>/out/`, mirroring the classic tree so F5 debug
 loading of `Runtime.Res.dll` works (`Common/Workspace.cpp` walks two folders up
 from the host module, then `..\Localized\<LANG>\Runtime.Res\Debug\`).
-**FullDebug → Debug** outputs for Studio, Res, RxInstall, zlib/png (helper
+**FullDebug -> Debug** outputs for Studio, Res, RxInstall, zlib/png (helper
 `opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`). CAD **modules** still
 write a separate `FullDebug/` folder, but compile/link like **Debug** unless
 `fulldebug.<family>.props` upgrades that family.
@@ -209,9 +209,9 @@ out/Runtime/<FAMILY>/<ID>/Debug/<OpenDCL module>
 out/Runtime/BRX/BRX.27.x64/Debug/OpenDCL.x64.27.brx    # concrete example
 out/Runtime/Localized/ENU/Runtime.Res/Debug/Runtime.Res.dll    # Debug + FullDebug
 out/Runtime/Localized/ENU/Runtime.Res/Release/Runtime.Res.dll
-out/Runtime/RxInstall/Debug/RxInstall.dll     # FullDebug → Debug
-out/Library/x64-md/Debug/...                  # /MD zlib; FullDebug → Debug
-out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug → Debug
+out/Runtime/RxInstall/Debug/RxInstall.dll     # FullDebug -> Debug
+out/Library/x64-md/Debug/...                  # /MD zlib; FullDebug -> Debug
+out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug -> Debug
 ```
 
 ## Selection options
@@ -228,9 +228,9 @@ out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug → Debug
 | `OPENDCL_LANGS` | Resource languages (default `ENU`) |
 | `OPENDCL_BUILD_RXINSTALL` | Build Win32 RxInstall CA DLL (default **ON** in presets; nested Win32 from x64, sources listed in main .sln for editing) |
 
-**Dev selection policy** (`vs2022-x64-dev`): all families ON, empty target list, `OPENDCL_RUNTIME_AUTO=ON`, **`OPENDCL_RUNTIME_PER_FAMILY_MAX=1`**, **`OPENDCL_RUNTIME_MIN_TOOLSET=v141`**. For each family, enables the highest-`VERSION` host-arch row that has an SDK and toolset ≥ v141; omits the family if none match. Zero CAD SDKs → no runtime modules (Studio still builds).
+**Dev selection policy** (`vs2022-x64-dev`): all families ON, empty target list, `OPENDCL_RUNTIME_AUTO=ON`, **`OPENDCL_RUNTIME_PER_FAMILY_MAX=1`**, **`OPENDCL_RUNTIME_MIN_TOOLSET=v141`**. For each family, enables the highest-`VERSION` host-arch row that has an SDK and toolset >= v141; omits the family if none match. Zero CAD SDKs -> no runtime modules (Studio still builds).
 
-**Modern ARX** (`vs2022-x64-arx-modern`): ARX only, same auto + min toolset, **`PER_FAMILY_MAX=3`** (up to three newest available modern ARX SDKs — no hard-coded year list). Same pattern works for other families if you add presets later.
+**Modern ARX** (`vs2022-x64-arx-modern`): ARX only, same auto + min toolset, **`PER_FAMILY_MAX=3`** (up to three newest available modern ARX SDKs - no hard-coded year list). Same pattern works for other families if you add presets later.
 
 Unlimited multi-SDK trees use `vs2022-x64-auto` or full presets (`PER_FAMILY_MAX=0`, no min toolset).
 
@@ -241,9 +241,9 @@ Default for **all** runtime hosts (ARX/BRX/GRX/ZRX):
 | Setting | Default |
 | --- | --- |
 | Command arguments | `/ld "<absolute path to built module>"` (per config) |
-| Command (exe) | cache / env override, else **registry discover** for that runtime’s version+arch |
+| Command (exe) | cache / env override, else **registry discover** for that runtime's version+arch |
 
-CMake writes `VS_DEBUGGER_COMMAND_ARGUMENTS` using `$<TARGET_FILE:…>` so each
+CMake writes `VS_DEBUGGER_COMMAND_ARGUMENTS` using `$<TARGET_FILE:...>` so each
 configuration gets a **real path** in the `.vcxproj`. Bare MSBuild
 `$(TargetPath)` often expands to **empty** when Command Arguments are
 inherited (VS history shows `/ld ""`), so the host never loads the module.
@@ -259,17 +259,17 @@ Priority (first hit wins; path must exist):
 
 | Family | Registry (HKLM) | Exe |
 | --- | --- | --- |
-| ARX | `HKCU\…\AutoCAD\CurVer` (last used) if it matches `R{VERSION}.*`, else any installed `R{VERSION}.*`; product `CurVer` → `AcadLocation` | `acad.exe` |
-| BRX | `SOFTWARE\Bricsys\Bricscad\V{VERSION}x64` (or `V{VERSION}`) → `InstallDir` | `bricscad.exe` |
+| ARX | `HKCU\...\AutoCAD\CurVer` (last used) if it matches `R{VERSION}.*`, else any installed `R{VERSION}.*`; product `CurVer` -> `AcadLocation` | `acad.exe` |
+| BRX | `SOFTWARE\Bricsys\Bricscad\V{VERSION}x64` (or `V{VERSION}`) -> `InstallDir` | `bricscad.exe` |
 | ZRX | `SOFTWARE\ZWSOFT\ZWCAD\{VERSION year}` | `ZWCAD.exe` |
-| GRX | `SOFTWARE\GstarSoft\GstarCAD\R{year-2000}…` | `gcad.exe` / … |
+| GRX | `SOFTWARE\GstarSoft\GstarCAD\R{year-2000}...` | `gcad.exe` / ... |
 
 `VERSION` / `ARCH` come from the runtime matrix row (so `BRX.26` and `BRX.27`
 get different hosts). Discovery is cached per family+version+arch for the
 configure run; reconfigure after installing a CAD product.
 
-There is **no** hard-coded `Program Files\…` fallback — override with cache,
-env, or the project’s `.vcxproj.user` if registry is missing or wrong.
+There is **no** hard-coded `Program Files\...` fallback - override with cache,
+env, or the project's `.vcxproj.user` if registry is missing or wrong.
 Leave Arguments on **Inherit** after reconfigure so the project-level `/ld`
 path is used. Do not leave an empty `LocalDebuggerCommandArguments` element in
 `.user` (that overrides the project with blank).
@@ -290,7 +290,7 @@ path is used. Do not leave an empty `LocalDebuggerCommandArguments` element in
 $env:BRX_EXE = "D:\BricsCAD\bricscad.exe"
 cmake --preset vs2022-x64-dev
 # F5 on whichever Runtime_* target was enabled (see configure ENABLE lines)
-# → discovered or overridden host + /ld "<module>"
+# -> discovered or overridden host + /ld "<module>"
 ```
 
 Manual check (version must match the matrix row / installed product):
@@ -302,8 +302,8 @@ pwsh -File scripts/resolve-debugger-host.ps1 -Family ARX -Version 26 -Arch x64
 
 ## Per-target overrides
 
-1. **Matrix row** in `OpenDCLRuntimeMatrix.cmake` (`DEFINES`, `LIBS`, `SDK_INC`, `WARNING_DISABLES`, `CXX_STANDARD`, …).
-2. **Target-specific sources** — drop `.cpp` files in `Runtime/TargetSpecific/<ID>/`
+1. **Matrix row** in `OpenDCLRuntimeMatrix.cmake` (`DEFINES`, `LIBS`, `SDK_INC`, `WARNING_DISABLES`, `CXX_STANDARD`, ...).
+2. **Target-specific sources** - drop `.cpp` files in `Runtime/TargetSpecific/<ID>/`
    (see `Runtime/TargetSpecific/README.md`). Auto-picked for that runtime only.
 3. **Optional file** `cmake/overrides/<ID>.cmake`:
 
@@ -316,17 +316,17 @@ endfunction()
 
 ### ARX R16 linetype
 
-- Header path: `#if (_ARXTARGET < 17)` → `ArxR16LinetypeComboBoxCtrl.h` (inline control).
+- Header path: `#if (_ARXTARGET < 17)` -> `ArxR16LinetypeComboBoxCtrl.h` (inline control).
 - CMake excludes `ArxLinetypeComboBoxCtrl.cpp` when building `ARX` with version &lt; 17.
 - Obsolete unused `ArxR16LinetypeComboBoxCtrl.cpp` was **deleted** (was never built in practice).
 
-### Debug / FullDebug and the StdAfx “DEBUG workaround”
+### Debug / FullDebug and the StdAfx "DEBUG workaround"
 
-`Runtime/StdAfx.h` implements Autodesk’s pattern:
+`Runtime/StdAfx.h` implements Autodesk's pattern:
 
 1. **Debug** (`_DEBUG`, no `AC_FULL_DEBUG`): temporarily `#undef _DEBUG` while including MFC / ATL / STL so those headers do not force the debug CRT; then restores `_DEBUG` for app code. CRT **`/MD`**. Links **release** host libs (`SDK_LIB`).
-2. **FullDebug (default, CMake-generated)**: **identical to Debug** — `_DEBUG` only, **`/MD`**, release SDK libdirs. No `AC_FULL_DEBUG`. This lets you build **ARX and BRX** under solution FullDebug even when only one family has host debug libraries.
-3. **FullDebug (opt-in host-debug)**: when `<parent-of-checkout>/fulldebug.<family>.props` exists (e.g. `fulldebug.brx.props`), CMake selects **`/MDd`** for that family and **late-imports** the machine sheet for FullDebug only (defines, host include/lib dirs, optional F5 Command). Host paths stay **only** in that sheet — never hard-coded in the public tree.
+2. **FullDebug (default, CMake-generated)**: **identical to Debug** - `_DEBUG` only, **`/MD`**, release SDK libdirs. No `AC_FULL_DEBUG`. This lets you build **ARX and BRX** under solution FullDebug even when only one family has host debug libraries.
+3. **FullDebug (opt-in host-debug)**: when `<parent-of-checkout>/fulldebug.<family>.props` exists (e.g. `fulldebug.brx.props`), CMake selects **`/MDd`** for that family and **late-imports** the machine sheet for FullDebug only (defines, host include/lib dirs, optional F5 Command). Host paths stay **only** in that sheet - never hard-coded in the public tree.
 4. **Release**: `NDEBUG`, **`/MD`**, release host libs.
 
 With `AC_FULL_DEBUG`, StdAfx **keeps** `_DEBUG` through MFC/host headers (true host-debug compile).
@@ -342,9 +342,9 @@ With `AC_FULL_DEBUG`, StdAfx **keeps** `_DEBUG` through MFC/host headers (true h
 
 **How CMake wires them (no host paths in git):**
 
-1. **`*.libdirs.props`** (`VS_USER_PROPS`) — release SDK `AdditionalLibraryDirectories` for Debug / FullDebug / Release; optional `$(SolutionDir)local.props`.
-2. **`*.nomanifest.targets`** (`ForceImportAfterCppTargets`) — for FullDebug, if the machine sheet exists,  
-   `Import Project="$(SolutionDir)…\fulldebug.<family>.props"`.  
+1. **`*.libdirs.props`** (`VS_USER_PROPS`) - release SDK `AdditionalLibraryDirectories` for Debug / FullDebug / Release; optional `$(SolutionDir)local.props`.
+2. **`*.nomanifest.targets`** (`ForceImportAfterCppTargets`) - for FullDebug, if the machine sheet exists,  
+   `Import Project="$(SolutionDir)...\fulldebug.<family>.props"`.  
    Late import so the sheet can override `LocalDebuggerCommand` and prepend host includes/libs after the `.vcxproj` body.
 
 VS **Property Manager** may not list the late-imported sheet; **build-time** evaluation still applies (verify with `CL.command` / `link.command` tlogs).
@@ -384,16 +384,16 @@ Do **not** scan proprietary CAD debug trees. Do not commit machine paths or host
 
 When adding a host runtime (see skill `add-runtime-target`):
 
-1. **CMake matrix** — `cmake/OpenDCLRuntimeMatrix.cmake` row + `VI/` props (already done for BRX.27).
-2. **RxInstall** — `Runtime/RxInstall/RxInstall.cpp`:
+1. **CMake matrix** - `cmake/OpenDCLRuntimeMatrix.cmake` row + `VI/` props (already done for BRX.27).
+2. **RxInstall** - `Runtime/RxInstall/RxInstall.cpp`:
    - `kBRX27` / `kBricscad27x64`
-   - `InstallAllTargets` → `EnumerateRegTargets(…kBricscad27x64…)`
-   - `UninstallAllTargets` → `RemoveAllRegTargets(…V27x64…)`
+   - `InstallAllTargets` -> `EnumerateRegTargets(...kBricscad27x64...)`
+   - `UninstallAllTargets` -> `RemoveAllRegTargets(...V27x64...)`
    - Module name is automatic: `OpenDCL.x64.27.brx` via major + `x64` modifier
    - Registry app root: `SOFTWARE\Bricsys\Bricscad\V27x64`
-3. **WiX inventory** — `$RuntimeModules` in `scripts/build-wix.ps1` classic path:
+3. **WiX inventory** - `$RuntimeModules` in `scripts/build-wix.ps1` classic path:
    `Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx`
-4. **Path resolve** — `Resolve-ProductFile` searches `-OpenDclRoot` (product layout),
+4. **Path resolve** - `Resolve-ProductFile` searches `-OpenDclRoot` (product layout),
    then `out\<rel>`, then `win32\out\`, then the packaging repo for source assets only.
    RxInstall CA path is candle define `RxInstallDll`.
 
@@ -403,7 +403,7 @@ When adding a host runtime (see skill `add-runtime-target`):
 - `OPENDCL_BUILD_RXINSTALL=ON` on an **x64** parent:
   - **`OPENDCL_NEST_WIN32=ON`** (full Mixed): PE from full nest `build/<preset>/win32`.
     Target `RxInstall` is an umbrella under **`Win32/Packaging`** that runs
-    `cmake --build …/win32 --target RxInstall` (no private `rxinstall-win32`).
+    `cmake --build .../win32 --target RxInstall` (no private `rxinstall-win32`).
   - **Nest off** (x64-only presets): private nest under `build/<preset>/rxinstall-win32`.
 - Outputs:
   - `out/Runtime/RxInstall/<Config>/RxInstall.dll`
@@ -421,7 +421,7 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 | Mode | When | Output identity |
 | --- | --- | --- |
 | **Full product** | Default (`-ModuleSet Full`) | `OpenDCL.Runtime.msm` / `.msi` with historical modularization GUID (third-party merge) |
-| **Custom subset** | `-Runtimes …`, `-ModuleSet Selected\|Available`, and/or language filters | `OpenDCL.Runtime.custom.msm` / `.msi` with seed GUIDs (no ship identity clash) |
+| **Custom subset** | `-Runtimes ...`, `-ModuleSet Selected\|Available`, and/or language filters | `OpenDCL.Runtime.custom.msm` / `.msi` with seed GUIDs (no ship identity clash) |
 
 ```powershell
 # Package whatever modules a tree actually built (good for vs2022-x64-dev or full):
@@ -431,7 +431,7 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
   -AvailableLanguages `
   -SkipStudio
 
-# Explicit choice — IDs must exist under that tree's out\ (use configure ENABLE
+# Explicit choice - IDs must exist under that tree's out\ (use configure ENABLE
 # names; BRX.27.x64 is only an example, not what every dev tree contains):
 .\scripts\build-wix.ps1 `
   -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `

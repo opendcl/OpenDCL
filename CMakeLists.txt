@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
 
 # Visual Studio .sln base name should distinguish presets in the IDE.
-# Default: derive from binaryDir — build/<preset> → <preset>.sln;
-# nested build/<preset>/win32 → <preset>-win32.sln.
-# Override: -DOPENDCL_SOLUTION_NAME=MyLabel  → MyLabel.sln
+# Default: derive from binaryDir - build/<preset> -> <preset>.sln;
+# nested build/<preset>/win32 -> <preset>-win32.sln.
+# Override: -DOPENDCL_SOLUTION_NAME=MyLabel  -> MyLabel.sln
 set(OPENDCL_SOLUTION_NAME "" CACHE STRING
   "Visual Studio solution base name (empty = derive from binary dir / preset)")
 if(OPENDCL_SOLUTION_NAME)
@@ -15,10 +15,10 @@ else()
   get_filename_component(_opendcl_grandparent "${_opendcl_bin_parent}" DIRECTORY)
   get_filename_component(_opendcl_grandparent_leaf "${_opendcl_grandparent}" NAME)
   if(_opendcl_parent_leaf STREQUAL "build")
-    # .../build/vs2022-x64-dev → vs2022-x64-dev.sln
+    # .../build/vs2022-x64-dev -> vs2022-x64-dev.sln
     set(_opendcl_project_name "${_opendcl_bin_leaf}")
   elseif(_opendcl_grandparent_leaf STREQUAL "build")
-    # .../build/vs2022-full/win32 → vs2022-full-win32.sln
+    # .../build/vs2022-full/win32 -> vs2022-full-win32.sln
     set(_opendcl_project_name "${_opendcl_parent_leaf}-${_opendcl_bin_leaf}")
   else()
     set(_opendcl_project_name "OpenDCL")
@@ -47,7 +47,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Options (OPENDCL_BUILD_RUNTIME, …) before configuration types so studio-only
+# Options (OPENDCL_BUILD_RUNTIME, ...) before configuration types so studio-only
 # presets can drop FullDebug from the .sln.
 include(OpenDCLHelpers)
 include(OpenDCLRuntimeMatrix)
@@ -104,7 +104,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# C4068: unknown pragma — Runtime/Studio PCH and some CAD SDK headers use
+# C4068: unknown pragma - Runtime/Studio PCH and some CAD SDK headers use
 # pragmas that older PlatformToolsets (or mixed host headers) do not recognize.
 if(MSVC)
   add_compile_options(/wd4068)
@@ -144,19 +144,19 @@ if(OPENDCL_BUILD_HELP AND NOT OPENDCL_BUILD_STUDIO)
 endif()
 
 # ---------------------------------------------------------------------------
-# Nested Win32 (x86) under x64 VS — projects live in the parent .sln
+# Nested Win32 (x86) under x64 VS - projects live in the parent .sln
 # ---------------------------------------------------------------------------
 # Second binary dir (-A Win32), shared OPENDCL_OUTPUT_ROOT. Nest is configured
 # at parent generate time; each nest .vcxproj is imported with
 # include_external_msproject(PLATFORM Win32) for Solution Explorer (folders
-# under Win32/…). Imported projects are EXCLUDE_FROM_DEFAULT_BUILD because
+# under Win32/...). Imported projects are EXCLUDE_FROM_DEFAULT_BUILD because
 # parent Platform=x64 breaks nest MSBuild (MSB8013). Build via Nest_Win32,
-# RxInstall, or Res_Win32 → cmake --build <bin>/win32.
+# RxInstall, or Res_Win32 -> cmake --build <bin>/win32.
 include(OpenDCLNestWin32)
 opendcl_add_win32_nest()
 
 # Fresh VS .sln starts on Studio when this tree builds it (skipped if
-# OPENDCL_STUDIO_PE=classic_x86 on an x64 parent — nest owns Studio).
+# OPENDCL_STUDIO_PE=classic_x86 on an x64 parent - nest owns Studio).
 if(TARGET Studio)
   set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Studio)
 endif()

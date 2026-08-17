@@ -1,6 +1,6 @@
 # Bundled third-party static libraries (ZLib, LibPNG).
 #
-# CAD modules use older PlatformToolsets (v70–v140) that cannot link objects
+# CAD modules use older PlatformToolsets (v70-v140) that cannot link objects
 # compiled with the VS2022 default toolset (UCRT helpers such as
 # __libm_sse2_pow_precise / __acrt_iob_func). Runtime modules therefore link
 # toolset-matched zlib/png variants via opendcl_ensure_runtime_png().
@@ -14,8 +14,8 @@
 #   png_x86_md_v100      compiled with v100, /MD
 #
 # CRT pairs for CAD modules under solution FullDebug:
-#   *_md_*   — always /MD; FullDebug outputs map beside Debug ("fake" FullDebug)
-#   *_mdd_*  — /MDd for Debug + FullDebug; separate FullDebug outs ("real" FullDebug)
+#   *_md_*   - always /MD; FullDebug outputs map beside Debug ("fake" FullDebug)
+#   *_mdd_*  - /MDd for Debug + FullDebug; separate FullDebug outs ("real" FullDebug)
 # Modules with fulldebug.<family>.props link mdd; everyone else links md.
 #
 # Solution Explorer folders (classic-like):
@@ -82,7 +82,7 @@ set(OPENDCL_HOST_TOOLSET_TAG "${OPENDCL_HOST_TOOLSET_TAG}" CACHE INTERNAL
 
 # name: {zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
 # runtime_lib: "md" | "mdd" | "mt"
-# toolset_tag (optional 5th arg): out leaf under Library/ts/<tag>/…
+# toolset_tag (optional 5th arg): out leaf under Library/ts/<tag>/...
 function(opendcl_add_static_lib name arch sources runtime_lib)
   set(_toolset_tag "")
   if(ARGC GREATER_EQUAL 5)
@@ -111,7 +111,7 @@ function(opendcl_add_static_lib name arch sources runtime_lib)
       ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${_out_base}/Release"
     )
   else()
-    # /MD for all configs (Debug, fake FullDebug, Release). FullDebug → Debug outs.
+    # /MD for all configs (Debug, fake FullDebug, Release). FullDebug -> Debug outs.
     if(NOT runtime_lib STREQUAL "md")
       message(FATAL_ERROR "opendcl_add_static_lib: runtime_lib must be md, mdd, or mt (got '${runtime_lib}')")
     endif()
@@ -132,7 +132,7 @@ function(opendcl_add_static_lib name arch sources runtime_lib)
     MSVC_RUNTIME_LIBRARY "${_rtl}"
     FOLDER "${_folder}"
     # Global CMAKE_MFC_FLAG=2 would otherwise make static libs "MFC projects".
-    # MultiByte + MFC ⇒ MSB8031 on older toolsets (v120+). Keep Unicode / no MFC.
+    # MultiByte + MFC => MSB8031 on older toolsets (v120+). Keep Unicode / no MFC.
     VS_GLOBAL_UseOfMfc "false"
     VS_GLOBAL_CharacterSet "Unicode"
   )
@@ -161,7 +161,7 @@ function(opendcl_png_toolset_is_modern toolset out_var)
   endif()
 endfunction()
 
-# Map a CAD module toolset → toolset used to *compile* zlib/png.
+# Map a CAD module toolset -> toolset used to *compile* zlib/png.
 # Prefer exact match for legacy rows so CRT helpers (__iob_func vs UCRT) align.
 # Modern rows (v141+) share the host-built default pair.
 function(opendcl_png_lib_toolset toolset out_var)
@@ -238,7 +238,7 @@ function(opendcl_ensure_runtime_png arch toolset runtime_crt out_zlib out_png)
   set(${out_png} "${_p}" PARENT_SCOPE)
 endfunction()
 
-# Host-arch only (locked): one configure → one arch of Library targets.
+# Host-arch only (locked): one configure -> one arch of Library targets.
 # Nested Win32 must not emit *_x64_* libs into shared OPENDCL_OUTPUT_ROOT.
 set(_hts "${OPENDCL_HOST_TOOLSET_TAG}")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -247,12 +247,12 @@ else()
   set(_ha "x86")
 endif()
 
-# /MD pair — Debug, fake FullDebug (maps to Debug), Release.
+# /MD pair - Debug, fake FullDebug (maps to Debug), Release.
 opendcl_add_static_lib(zlib_${_ha}_md_${_hts} ${_ha} "${_ZLIB_SOURCES}" md)
 opendcl_add_static_lib(png_${_ha}_md_${_hts} ${_ha} "${_PNG_SOURCES}" md)
 target_link_libraries(png_${_ha}_md_${_hts} PUBLIC zlib_${_ha}_md_${_hts})
 
-# /MDd pair — real host-debug FullDebug (only when FullDebug is a solution config).
+# /MDd pair - real host-debug FullDebug (only when FullDebug is a solution config).
 set(_opendcl_have_fulldebug FALSE)
 if(CMAKE_CONFIGURATION_TYPES)
   if("FullDebug" IN_LIST CMAKE_CONFIGURATION_TYPES)

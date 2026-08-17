@@ -18,7 +18,7 @@ in-repo WiX packaging layout.
 This skill does **not** perform translation for you. It creates a buildable pack
 (usually cloned from ENU or a related language) ready for localization.
 
-Website online-help publishing is separate — after help HTML is ready, use
+Website online-help publishing is separate - after help HTML is ready, use
 `/sync-help-to-website`.
 
 ## Existing language codes
@@ -55,25 +55,25 @@ variant). Do **not** copy build outputs (`Debug/`, `Release/`, `.tlog`, `.obj`,
 
 Also wire:
 
-- `OpenDCL.sln` — project entries, configs, solution folder for the new language
+- `OpenDCL.sln` - project entries, configs, solution folder for the new language
 - `OpenDCL.Compile.slnf` if the local compile filter is used
-- `scripts/build-wix.ps1` — `$RuntimeLangs` + `$StudioLangMeta`
+- `scripts/build-wix.ps1` - `$RuntimeLangs` + `$StudioLangMeta`
 - Product version often bumps when shipping the language (`/bump-version`)
 
 ## Inputs to collect
 
-1. **New language code** (3 letters, e.g. `ITA`, `JPN`) — must match folder names.
+1. **New language code** (3 letters, e.g. `ITA`, `JPN`) - must match folder names.
 2. **Clone source** (default `ENU`).
 3. **English display name** for ARP comments (e.g. `OpenDCL Studio (Italian)`).
 4. **LCID** for WiX `ProductLanguage` / MSI language.
 5. **UpgradeCode policy**:
    - Prefer a **new** stable UpgradeCode GUID for the language MSI.
-   - Exception: historical CHT shares UpgradeCode with CHS — only reuse when the
+   - Exception: historical CHT shares UpgradeCode with CHS - only reuse when the
      user explicitly wants upgrade continuity with an existing package.
 6. **ProductCode**: generate a new GUID (historical Studio packages used fixed
    ProductCodes in `$StudioLangMeta`; WiX Studio `Product Id="*"` still auto-
    generates build ProductCodes, but meta table keeps the historical codes for
-   documentation/continuity — follow existing pattern when adding a row).
+   documentation/continuity - follow existing pattern when adding a row).
 7. Whether to **bump product version** for the release that introduces the language.
 
 ## Workflow
@@ -91,12 +91,12 @@ Copy-Item -Recurse "Studio\Localized\$src" "Studio\Localized\$dst"
 
 Then **rename** project files inside the clone:
 
-- `SharedRes.ENU.rc` → `SharedRes.<LANG>.rc`
-- `Runtime.Res.ENU.vcxproj` → `Runtime.Res.<LANG>.vcxproj` (+ filters)
-- `Runtime.ENU.rc` → `Runtime.<LANG>.rc` (if so named)
-- `Studio.Res.ENU.vcxproj` → `Studio.Res.<LANG>.vcxproj` (+ filters)
-- `Studio.ENU.rc` → `Studio.<LANG>.rc`
-- `HTMLHelp.ENU.vcxproj` → `HTMLHelp.<LANG>.vcxproj` (+ filters)
+- `SharedRes.ENU.rc` -> `SharedRes.<LANG>.rc`
+- `Runtime.Res.ENU.vcxproj` -> `Runtime.Res.<LANG>.vcxproj` (+ filters)
+- `Runtime.ENU.rc` -> `Runtime.<LANG>.rc` (if so named)
+- `Studio.Res.ENU.vcxproj` -> `Studio.Res.<LANG>.vcxproj` (+ filters)
+- `Studio.ENU.rc` -> `Studio.<LANG>.rc`
+- `HTMLHelp.ENU.vcxproj` -> `HTMLHelp.<LANG>.vcxproj` (+ filters)
 
 Strip accidental build artifacts under the new trees.
 
@@ -106,7 +106,7 @@ In every new `.vcxproj` / `.rc` / `.filters`:
 
 1. Replace source language code with the new code in names, paths, and preprocessor
    includes (careful with whole-word replaces so you do not damage unrelated strings).
-2. Assign **new `ProjectGuid`** values (never reuse the clone’s GUIDs).
+2. Assign **new `ProjectGuid`** values (never reuse the clone's GUIDs).
 3. Update `RootNamespace` / output names to the new language suffix.
 4. Ensure `.rc` version resources match current product version and copyright year
    (or run `/bump-version` + `/update-copyright-year` as part of the release).
@@ -121,8 +121,8 @@ In every new `.vcxproj` / `.rc` / `.filters`:
    - `Runtime.Res.<LANG>`
    - `Studio.Res.<LANG>`
    - `HTMLHelp.<LANG>`
-3. Copy configuration lines from the source language’s projects for all solution
-   configs (`Debug|…`, `Release|…`, `FullDebug|…`, platforms).
+3. Copy configuration lines from the source language's projects for all solution
+   configs (`Debug|...`, `Release|...`, `FullDebug|...`, platforms).
 4. Nest projects under the correct solution folders.
 
 Update `OpenDCL.Compile.slnf` when that filter is part of the build workflow.
@@ -160,9 +160,9 @@ Edit **`scripts/build-wix.ps1`**:
    ARP comments, shell labels). Start from ENU; translators update `String` values.
    Required Ids: `ArpComments`, `ShortcutStudio`, `ShortcutHelp`, `ShortcutLicense`,
    `ShellOpenVerb`, `ShellDecodeVerb` (plus optional `*Desc` keys).
-4. Runtime language components are generated from `$RuntimeLangs` + Content paths —
+4. Runtime language components are generated from `$RuntimeLangs` + Content paths -
    no hand-edit of `wix/out/gen/*`.
-5. Studio files fragment picks up `Studio/Localized/<LANG>/…` when that language is
+5. Studio files fragment picks up `Studio/Localized/<LANG>/...` when that language is
    built (`-Languages` / default full list).
 
 Confirm `wix/README.md` language list still accurate if it enumerates languages.
@@ -179,7 +179,7 @@ Demand-load **OPENDCLDEMO** depends on `HKCR\OpenDCL.Project` from Studio instal
 ### 7. Build and smoke-check
 
 1. Build `Runtime.Res.<LANG>` and `Studio.Res.<LANG>` (Release).
-2. Build `HTMLHelp.<LANG>` → `OpenDCL.chm` present.
+2. Build `HTMLHelp.<LANG>` -> `OpenDCL.chm` present.
 3. Package:
 
    ```powershell
@@ -194,18 +194,18 @@ Demand-load **OPENDCLDEMO** depends on `HKCR\OpenDCL.Project` from Studio instal
 ### 8. Website / downloads (follow-ups)
 
 1. **Download page** (`opendcl.github.io`): add Studio MSI language entry if missing
-   (`download/` + `assets/versions.js` patterns — see existing CHT `currentOnly` flag).
+   (`download/` + `assets/versions.js` patterns - see existing CHT `currentOnly` flag).
 2. **Online help**: only some languages are published under `HelpFiles/` today
    (ENU, DEU, RUS). When help HTML is ready, run **`/sync-help-to-website`**.
 3. **Localization packs**: after the language lands on `main`, the
    `localization-packs` workflow rebuilds translator zips when localization
    trees change; localizers can also use https://opendcl.github.io/localization/
-   (“Build from main”). **Required:** add one path filter line to
+   ("Build from main"). **Required:** add one path filter line to
    `.github/workflows/localization-packs.yml` under `on.push.paths`:
-   `Common/<LANG>/**` (one line per language — same list as existing ENU/CHS/…).
+   `Common/<LANG>/**` (one line per language - same list as existing ENU/CHS/...).
    `Runtime/Localized/**` and `Studio/Localized/**` already cover new folders
    under those trees without a new line. Do not remove the `!` exclusions
-   (CMakeLists, `.vcxproj`, BuildCHM, build output dirs) — those files are
+   (CMakeLists, `.vcxproj`, BuildCHM, build output dirs) - those files are
    build plumbing, not translator-facing content. `Content/Samples` is
    localizable and must stay included.
 4. Do not assume every Studio language automatically gets a HelpFiles folder.

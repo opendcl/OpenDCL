@@ -40,7 +40,7 @@ function(opendcl_add_win32_nest)
     set(_nest_res "${OPENDCL_BUILD_RES_DLLS}")
   endif()
 
-  # Init-cache avoids list-separator mangling (ENU;DEU;…).
+  # Init-cache avoids list-separator mangling (ENU;DEU;...).
   set(_body "")
   string(APPEND _body "set(OPENDCL_NEST_WIN32 OFF CACHE BOOL \"\" FORCE)\n")
   string(APPEND _body "set(OPENDCL_WIN32_IN_ALL OFF CACHE BOOL \"\" FORCE)\n")
@@ -52,7 +52,7 @@ function(opendcl_add_win32_nest)
     "set(OPENDCL_BUILD_STUDIO [==[${OPENDCL_BUILD_STUDIO}]==] CACHE BOOL \"\" FORCE)\n")
   string(APPEND _body
     "set(OPENDCL_BUILD_RXINSTALL [==[${OPENDCL_BUILD_RXINSTALL}]==] CACHE BOOL \"\" FORCE)\n")
-  # CHM is arch-independent — parent owns StudioHelp_*; nest must not
+  # CHM is arch-independent - parent owns StudioHelp_*; nest must not
   # rebuild the same OpenDCL.chm or import duplicate help projects into the .sln.
   string(APPEND _body
     "set(OPENDCL_BUILD_STUDIO_HELP OFF CACHE BOOL \"\" FORCE)\n")
@@ -138,9 +138,9 @@ function(opendcl_add_win32_nest)
     list(APPEND _skip_names "RxInstall")
   endif()
   # Parent owns Help (CHM). Studio + Studio.Res:
-  #   OPENDCL_STUDIO_PE=host       — parent builds x64 Studio; nest still builds
+  #   OPENDCL_STUDIO_PE=host       - parent builds x64 Studio; nest still builds
   #                                  Win32 Studio under Nest_Win32 (not imported).
-  #   OPENDCL_STUDIO_PE=classic_x86 — parent skips Studio; nest ships Win32 PE.
+  #   OPENDCL_STUDIO_PE=classic_x86 - parent skips Studio; nest ships Win32 PE.
   # Importing w32_Studio causes VS reload errors ("solution already
   # contains an item named 'w32_Studio'") when cmake regenerates the .sln.
   list(APPEND _skip_names "Studio" "StudioHelp_All")
@@ -178,7 +178,7 @@ function(opendcl_add_win32_nest)
       continue()
     endif()
 
-    # Same product folders as parent x64 peers (classic layout; not Win32/…).
+    # Same product folders as parent x64 peers (classic layout; not Win32/...).
     opendcl_solution_folder(_folder "Win32" "${_base}")
     set_target_properties(${_t} PROPERTIES FOLDER "${_folder}")
     # Do not hang these off ALL_BUILD ProjectReferences (wrong Platform=x64).
@@ -240,7 +240,7 @@ function(opendcl_add_win32_nest)
     "(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT / OPENDCL_NEST_CL_MP_COUNT)")
 
   # RxInstall: single parent umbrella (not imported). When WIN32_IN_ALL the full
-  # nest build already produces RxInstall.dll — do not also ALL+COMMAND RxInstall
+  # nest build already produces RxInstall.dll - do not also ALL+COMMAND RxInstall
   # (parallel nest cmake --build races). Targeted build still has COMMAND.
   if(TARGET RxInstall)
     message(STATUS
@@ -248,7 +248,7 @@ function(opendcl_add_win32_nest)
       "cmake --build ${_bin} --target RxInstall (no w32_ import)")
   endif()
 
-  # classic_x86 Res umbrella → nest Res targets (targeted nest build).
+  # classic_x86 Res umbrella -> nest Res targets (targeted nest build).
   # Never ALL when Nest_Win32 is ALL (avoids parallel nest invocations).
   if(OPENDCL_RES_PE STREQUAL "classic_x86" AND _w32_res_cmake_targets)
     set(_res_cmd ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}")
@@ -274,7 +274,7 @@ function(opendcl_add_win32_nest)
       "target(s); Studio PE=${OPENDCL_STUDIO_PE} (not ALL when Nest_Win32 is ALL)")
   endif()
 
-  # Product → nest gate (late: runtimes/Studio were created before this function).
+  # Product -> nest gate (late: runtimes/Studio were created before this function).
   # WIN32_IN_ALL: one nest flight via Nest_Win32.
   # Else: Res-only gate (or nothing if host Res).
   if(OPENDCL_WIN32_IN_ALL)

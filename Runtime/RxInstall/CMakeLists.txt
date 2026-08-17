@@ -1,7 +1,7 @@
-# RxInstall — WiX / MSI demand-load custom-action DLL.
+# RxInstall - WiX / MSI demand-load custom-action DLL.
 #
 # Must be **Win32 (x86)**: OpenDCL.Runtime.wxs DllEntry uses stdcall decoration
-# (_RxInstallMachine@4, …). An x64 build exports undecorated names and will not
+# (_RxInstallMachine@4, ...). An x64 build exports undecorated names and will not
 # load as a Binary CA for the x86 merge module.
 #
 # Usage:
@@ -21,7 +21,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   endif()
   set(_opendcl_rx_classic_dir "${CMAKE_SOURCE_DIR}")
   set(_opendcl_rx_is_standalone TRUE)
-  # Nested/standalone does not include OpenDCLHelpers — provide FullDebug map.
+  # Nested/standalone does not include OpenDCLHelpers - provide FullDebug map.
   if(NOT DEFINED OPENDCL_CFG_DIR)
     set(OPENDCL_CFG_DIR "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
   endif()
@@ -74,7 +74,7 @@ function(opendcl_rxinstall_add_native classic_dir)
     $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>:NDEBUG>
   )
   # Match classic RxInstall.vcxproj: static CRT, multi-byte (not Unicode).
-  # FullDebug → Debug (not a CAD runtime module).
+  # FullDebug -> Debug (not a CAD runtime module).
   set(_rx_out "${OPENDCL_OUTPUT_ROOT}/Runtime/RxInstall")
   set_target_properties(RxInstall PROPERTIES
     OUTPUT_NAME "RxInstall"
@@ -99,7 +99,7 @@ endfunction()
 
 # Umbrella on x64 parent when OPENDCL_NEST_WIN32: one PE from full nest.
 # COMMAND runs at build time; nest is configured later in the same generate
-# (opendcl_add_win32_nest → build/<preset>/win32).
+# (opendcl_add_win32_nest -> build/<preset>/win32).
 function(opendcl_rxinstall_add_via_win32_nest classic_dir)
   if(TARGET RxInstall)
     return()

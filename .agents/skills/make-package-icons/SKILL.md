@@ -24,8 +24,8 @@ Repo root = this OpenDCL tree (`OpenDCL.sln` / `scripts/build-wix.ps1`).
 
 | Asset | Path | Role |
 |-------|------|------|
-| **Badge master (pure)** | `wix/ui/icons/badge/OpenDCLBadge.png` | **512×512** transparent crosshair — **canonical** for composites |
-| Badge size set | `wix/ui/icons/badge/OpenDCLBadge-*.png` | 32…1024 pre-renders |
+| **Badge master (pure)** | `wix/ui/icons/badge/OpenDCLBadge.png` | **512x512** transparent crosshair - **canonical** for composites |
+| Badge size set | `wix/ui/icons/badge/OpenDCLBadge-*.png` | 32...1024 pre-renders |
 | Badge ICO | `wix/ui/icons/badge/OpenDCLBadge.ico` | Multi-res badge alone (rarely used alone) |
 | Badge README | `wix/ui/icons/badge/README.md` | Geometry + palette |
 | Help ICO | `wix/ui/icons/OpenDCLHelp.ico` | Start Menu **OpenDCL Help** |
@@ -34,7 +34,7 @@ Repo root = this OpenDCL tree (`OpenDCL.sln` / `scripts/build-wix.ps1`).
 | Studio app icon | Extracted at package time from `Studio.Res.dll` **GROUP_ICON #10** | Start Menu **OpenDCL Studio** + ARP |
 | WiX Icon Ids | `wix/Studio/OpenDCL.Studio.wxs` | `OpenDCLStudio.exe`, `OpenDCLHelp.ico`, `OpenDCLLicense.ico` |
 | Badge generator | `wix/tools/make_badge.py` | Regenerates pure badge masters |
-| Help restyle generator | `wix/tools/make_help_restyle.py` | Book+? multi-tone + badge → Help ICO |
+| Help restyle generator | `wix/tools/make_help_restyle.py` | Book+? multi-tone + badge -> Help ICO |
 | Local package output | `wix/out/` (gitignored) | Generated MSI/MSM, extracted app icons, scratch |
 
 **Checked-in product icon sources** for Help/License are under `wix/ui/icons/`
@@ -57,18 +57,18 @@ scratch as source of truth.
 - **Source:** `wix/ui/icons/badge/OpenDCLBadge.png` (or sized variant).
 - **Never** crop the badge from Help/License composites for new icons (shadow +
   host glyph bleed).
-- On a 256 canvas: badge ≈ **31%** of width (~80px), bottom-right, ~3–4% padding
+- On a 256 canvas: badge ~= **31%** of width (~80px), bottom-right, ~3-4% padding
   (match License).
-- Optional soft elliptical shadow under the badge at ≥32 px.
+- Optional soft elliptical shadow under the badge at >=32 px.
 - Badge palette: blue **`(0, 100, 210)`**, white ring/cross; ring ~5.5% diameter,
   bar ~8.3% diameter; **white bars extend full radius** (no thin blue border at
-  the tips — see badge README).
+  the tips - see badge README).
 
 ### Glyph bases (current)
 
 | Shortcut | Base concept | Notes |
 |----------|--------------|--------|
-| Studio | Product app icon from resources | Full multi-res group **#10** from `Studio.Res.dll` — do not invent a new Studio mark unless asked |
+| Studio | Product app icon from resources | Full multi-res group **#10** from `Studio.Res.dll` - do not invent a new Studio mark unless asked |
 | Help | Book + white `?` | Fluent-like book-question; **multi-tone** blue to match License |
 | License | Document header (white header bar + lines + dog-ear) | Multi-tone blue; reference look for Help |
 
@@ -79,13 +79,13 @@ enough. Only switch base glyph if the user asks for a different metaphor.
 
 1. **Icon table Id** must end in `.exe` or `.ico` or ICE50 / Start Menu advertising
    misbehaves (`OpenDCLStudio.exe`, `OpenDCLHelp.ico`, `OpenDCLLicense.ico`).
-2. **Advertised shortcuts** use the Icon table stream (not only the target file’s
+2. **Advertised shortcuts** use the Icon table stream (not only the target file's
    embedded icon). Updating on-disk CHM/TXT icons alone does **not** refresh the
    Start Menu; the MSI Icon streams must be rebuilt.
 3. **Multi-resolution ICO** required (at least 16, 32, 48, 256). Prefer PNG-compressed
    frames inside the ICO (Vista+). Typical set: **16, 24, 32, 48, 64, 128, 256**.
 4. **Never** feed WiX a whole `Studio.Res.dll` (or other PE) as `Icon/@SourceFile`
-   hoping multi-res survives — Windows often shows a single drab size. Extract a
+   hoping multi-res survives - Windows often shows a single drab size. Extract a
    real `.ico` (app) or ship a standalone multi-res `.ico` (Help/License).
 5. Studio app icon: `Export-StudioAppIcon` in `scripts/build-wix.ps1` extracts
    **GROUP_ICON #10** into `wix/out/gen/icons/<LANG>/StudioRes.App.ico` at package
@@ -99,13 +99,13 @@ enough. Only switch base glyph if the user asks for a different metaphor.
 python wix\tools\make_badge.py
 ```
 
-Confirm `wix/ui/icons/badge/OpenDCLBadge.png` exists (512×512, transparent).
+Confirm `wix/ui/icons/badge/OpenDCLBadge.png` exists (512x512, transparent).
 
 ### B. Recreate / restyle Help (or similar badged icon)
 
 1. Ensure badge master exists (workflow A).
 2. Draw or load the base glyph at each needed size (or draw at 256 and carefully
-   downscale; for ≤32 prefer redrawing for crispness).
+   downscale; for <=32 prefer redrawing for crispness).
 3. Composite badge from `badge/OpenDCLBadge.png` (resize with LANCZOS).
 4. Write multi-res ICO into `wix/ui/icons/`.
 5. For Help specifically:
@@ -144,7 +144,7 @@ License art is the multi-tone document-header reference. If regenerating:
 .\scripts\build-wix.ps1 -Languages ENU -SkipMsm -SkipRuntimeMsi
 ```
 
-Install **elevated** (per-machine MSI; silent non-admin → Error 1925 / 1603):
+Install **elevated** (per-machine MSI; silent non-admin -> Error 1925 / 1603):
 
 ```powershell
 Start-Process msiexec.exe -Verb RunAs -Wait -ArgumentList @(
@@ -155,11 +155,11 @@ Start-Process msiexec.exe -Verb RunAs -Wait -ArgumentList @(
 
 Verify:
 
-1. Build log line `icons: app=… help=… license=…` — Help/License sizes match the
+1. Build log line `icons: app=... help=... license=...` - Help/License sizes match the
    new files on disk.
 2. Start Menu shortcuts under
    `%ProgramData%\Microsoft\Windows\Start Menu\Programs\OpenDCL Studio\`
-   → `IconLocation` under `C:\Windows\Installer\{ProductCode}\…`.
+   -> `IconLocation` under `C:\Windows\Installer\{ProductCode}\...`.
 3. New ProductCode each build (`Product Id="*"`); latest Installer cache folder
    holds the new streams.
 4. Optional: `dark.exe -x <dir> OpenDCL.Studio.ENU.msi` and open `Icon\OpenDCLHelp.ico`.
@@ -167,9 +167,9 @@ Verify:
 ## Multi-res ICO packing (Python)
 
 Use PNG frames inside ICO (reliable on modern Windows). Helpers: `write_multi_ico`
-in `wix/tools/make_badge.py` / `make_help_restyle.py`. Do **not** rely on Pillow’s
+in `wix/tools/make_badge.py` / `make_help_restyle.py`. Do **not** rely on Pillow's
 default ICO save alone without checking frame count / file size (easy to write a
-single 16×16 by mistake).
+single 16x16 by mistake).
 
 ## Palette quick reference
 
@@ -183,9 +183,9 @@ single 16×16 by mistake).
 | White | `(255, 255, 255, 255)` | Glyphs, cross, ring |
 | Page | `(248, 248, 248, 255)` | Book page edge |
 
-## Do / don’t
+## Do / don't
 
-| Do | Don’t |
+| Do | Don't |
 |----|--------|
 | Keep pure badge under `wix/ui/icons/badge/` | Crop badge from composite Help/License icons |
 | Ship multi-res standalone ICOs for Help/License | Point Icon table at whole PE/DLL files |

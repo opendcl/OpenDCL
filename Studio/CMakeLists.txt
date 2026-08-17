@@ -2,7 +2,7 @@
 # per-language Studio.Res DLLs.
 # HTML Help / CHM remains classic for now (optional later OPENDCL_BUILD_HELP).
 #
-# Not CAD runtime modules — FullDebug → Debug (opendcl_map_fulldebug_to_debug).
+# Not CAD runtime modules - FullDebug -> Debug (opendcl_map_fulldebug_to_debug).
 
 include("${CMAKE_SOURCE_DIR}/cmake/OpenDCLStudioSources.cmake")
 
@@ -104,7 +104,7 @@ endforeach()
 # Res_Win32 + Nest_Win32 pair.
 
 # ---------------------------------------------------------------------------
-# OpenDCL Studio.exe — static MFC + static CRT (classic)
+# OpenDCL Studio.exe - static MFC + static CRT (classic)
 # ---------------------------------------------------------------------------
 if(NOT OPENDCL_BUILD_STUDIO)
   return()
@@ -134,7 +134,7 @@ else()
   message(FATAL_ERROR "Studio: OPENDCL_PNG_MT_TARGET unset (Library/ must configure first)")
 endif()
 
-# Arch-correct application manifest (classic Res\…manifest is X86-only and
+# Arch-correct application manifest (classic Res\...manifest is X86-only and
 # causes 0xC000007B "application failed to start" on x64).
 set(_studio_manifest "${CMAKE_CURRENT_BINARY_DIR}/Studio.manifest")
 file(WRITE "${_studio_manifest}" "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
@@ -215,7 +215,7 @@ target_compile_definitions(Studio PRIVATE
 )
 
 # Static MFC has no _AFXDLL; classic PPTooltip only #defines COMPILE_MULTIMON_STUBS
-# under _AFXDLL. FolderTreeCtrl also #includes MultiMon.h without stubs — so this
+# under _AFXDLL. FolderTreeCtrl also #includes MultiMon.h without stubs - so this
 # must be per-source (not target-wide) or both TUs define the same symbols (LNK2005).
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/Common/PPTooltip.cpp" APPEND PROPERTY
   COMPILE_DEFINITIONS COMPILE_MULTIMON_STUBS)
@@ -314,10 +314,10 @@ add_custom_command(TARGET Studio POST_BUILD
 
 message(STATUS "Studio: Studio (${_studio_plat}, static MFC+/MT; FullDebug->Debug) + Studio.Res for: ${OPENDCL_LANGS}")
 
-endif() # _studio_native — Studio.exe + matching Studio.Res
+endif() # _studio_native - Studio.exe + matching Studio.Res
 
 # ---------------------------------------------------------------------------
-# HTML Help (OpenDCL.chm) per language — classic Content + hhc.exe
+# HTML Help (OpenDCL.chm) per language - classic Content + hhc.exe
 # Arch-independent. Parent always owns help when OPENDCL_BUILD_STUDIO_HELP
 # (nest forces OFF). Runs even when Studio PE is classic_x86 (nest-only Studio).
 # Packaging needs one CHM per Studio language MSI.
