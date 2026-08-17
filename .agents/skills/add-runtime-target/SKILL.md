@@ -22,7 +22,7 @@ historical patterns:
 | GstarCAD | `Runtime/GRX/` | `GRX.2027.x64` | `OpenDCL.x64.2027` | `.grx` |
 | ZWCAD | `Runtime/ZRX/` | `ZRX.2025.x64` | `OpenDCL.x64.2025` | `.zrx` |
 
-Reference commits for “clean” adds (feature-focused, limited noise):
+Reference commits for "clean" adds (feature-focused, limited noise):
 
 - AutoCAD: `b4593bdd` (2025), `e1bbd787` (2026), `08e3efa8` (2027)
 - BricsCAD + GstarCAD: `2b8f67f6` (BRX 26 / GRX 2026)
@@ -50,7 +50,7 @@ Also determine host-specific version numbering used **inside OpenDCL**:
 | GRX | Calendar year (`2027`) | `_GRXTARGET` (and often a fixed compatibility `_ACADTARGET`) |
 | ZRX | Calendar year (`2025`) | `_ZRXTARGET` / related |
 
-**Do not guess** ARX registry major (`R25.0`, `R26.0`, …) or whether a new AutoCAD year shares the previous ObjectARX major. Prefer copying the previous year’s mapping and adjusting from SDK docs / user guidance. History shows multiple AutoCAD years can share one ARX major with a minor discriminator in `RxInstall.cpp`.
+**Do not guess** ARX registry major (`R25.0`, `R26.0`, ...) or whether a new AutoCAD year shares the previous ObjectARX major. Prefer copying the previous year's mapping and adjusting from SDK docs / user guidance. History shows multiple AutoCAD years can share one ARX major with a minor discriminator in `RxInstall.cpp`.
 
 ## Workflow
 
@@ -59,10 +59,10 @@ Also determine host-specific version numbering used **inside OpenDCL**:
 Copy the latest same-platform project directory, e.g.:
 
 ```text
-Runtime/ARX/ARX.25.x64/  →  Runtime/ARX/ARX.26.x64/
-Runtime/BRX/BRX.25.x64/  →  Runtime/BRX/BRX.26.x64/
-Runtime/GRX/GRX.2026.x64/ → Runtime/GRX/GRX.2027.x64/
-Runtime/ZRX/ZRX.2023.x64/ → Runtime/ZRX/ZRX.2025.x64/   # when years skip, clone nearest
+Runtime/ARX/ARX.25.x64/  ->  Runtime/ARX/ARX.26.x64/
+Runtime/BRX/BRX.25.x64/  ->  Runtime/BRX/BRX.26.x64/
+Runtime/GRX/GRX.2026.x64/ -> Runtime/GRX/GRX.2027.x64/
+Runtime/ZRX/ZRX.2023.x64/ -> Runtime/ZRX/ZRX.2025.x64/   # when years skip, clone nearest
 ```
 
 Include at least:
@@ -79,8 +79,8 @@ Include at least:
 
 Inside the new folder, update:
 
-1. **Filenames** to the new project name (`ARX.26.x64.vcxproj`, …).
-2. **`ProjectGuid`** — generate a new GUID (never reuse the clone’s GUID).
+1. **Filenames** to the new project name (`ARX.26.x64.vcxproj`, ...).
+2. **`ProjectGuid`** - generate a new GUID (never reuse the clone's GUID).
 3. **`RootNamespace` / output name**:
    - ARX/BRX: `OpenDCL.x64.<Major>` (e.g. `OpenDCL.x64.26`)
    - GRX/ZRX: `OpenDCL.x64.<Year>` (e.g. `OpenDCL.x64.2027`)
@@ -89,7 +89,7 @@ Inside the new folder, update:
 6. Any residual strings of the **old** project name inside the vcxproj/filters.
 
 `TargetName` should remain `$(RootNameSpace)` so the built module matches
-`RxInstall`’s `GetTargetModulePath()` naming (`OpenDCL.x64.<ver>.<ext>`).
+`RxInstall`'s `GetTargetModulePath()` naming (`OpenDCL.x64.<ver>.<ext>`).
 
 ### 3. Update `VI` property sheet and `ARXVI.h`
 
@@ -99,7 +99,7 @@ Clone-adjust fields (names vary by platform):
 
 - `_PropertySheetDisplayName`
 - `TargetExt` (`.arx` / `.brx` / `.grx` / `.zrx`)
-- SDK include/lib macros (`$(ARX2027)`, `$(BRX26)`, `$(GRX2027)`, …)
+- SDK include/lib macros (`$(ARX2027)`, `$(BRX26)`, `$(GRX2027)`, ...)
 - Preprocessor defines:
   - ARX: `_ACADTARGET`, `_ARXTARGET`
   - BRX: `_ACADTARGET` (compatibility), `_BRXTARGET`
@@ -111,9 +111,9 @@ Clone-adjust fields (names vary by platform):
 
 #### `VI/ARXVI.h`
 
-- Set `#define _ACADTARGET …` (and platform-specific command-entry macros if the
-  clone already has host-specific macros — GRX/BRX differ from ARX).
-- Prefer cloning the **same platform’s** previous `ARXVI.h`, not an ARX header into GRX/BRX.
+- Set `#define _ACADTARGET ...` (and platform-specific command-entry macros if the
+  clone already has host-specific macros - GRX/BRX differ from ARX).
+- Prefer cloning the **same platform's** previous `ARXVI.h`, not an ARX header into GRX/BRX.
 
 ### 4. Add project to the solution
 
@@ -121,7 +121,7 @@ Clone-adjust fields (names vary by platform):
 
 1. Add a `Project(...)` entry with the new GUID and relative path.
 2. Add full configuration lines for existing solution configs
-   (`Debug|Mixed Platforms`, `Debug|Win32`, `Debug|x64`, `FullDebug|…`, `Release|…`)
+   (`Debug|Mixed Platforms`, `Debug|Win32`, `Debug|x64`, `FullDebug|...`, `Release|...`)
    mirroring the previous same-platform x64 project.
 3. Nest under the correct solution folder GUID (ARX / BRX / GRX / ZRX folder).
 
@@ -133,15 +133,15 @@ Add the new `vcxproj` path to the compile filter list so batch builds include it
 
 This is required for install/uninstall demand-loading. Typical touch points:
 
-1. **`MajorVersion` enum** — add `kARX…` / `kBRX…` / `kGRX…` / `kZRX…` as needed.
-2. **Combined target enum** — e.g. `kAutoCAD2027x64`, `kBricscad26x64`,
+1. **`MajorVersion` enum** - add `kARX...` / `kBRX...` / `kGRX...` / `kZRX...` as needed.
+2. **Combined target enum** - e.g. `kAutoCAD2027x64`, `kBricscad26x64`,
    `kGstarCAD2027x64`, `kZWCAD2026x64` using architecture | platform | major | minor.
-3. **`InstallAllTargets`** — `EnumerateRegTargets(TargetModule(...))` for the new id.
-4. **`UninstallAllTargets`** — `RemoveAllRegTargets` with the host registry path:
+3. **`InstallAllTargets`** - `EnumerateRegTargets(TargetModule(...))` for the new id.
+4. **`UninstallAllTargets`** - `RemoveAllRegTargets` with the host registry path:
    - AutoCAD: `Autodesk\\AutoCAD\\R<major>.<minor>` (verify against real install keys)
    - BricsCAD: `Bricsys\\Bricscad\\V<ver>x64` (follow existing pattern)
    - ZWCAD: `ZWSOFT\\ZWCAD\\<year>`
-   - GstarCAD: `Gstarsoft\\GstarCAD\\R…` (note historical casing/path quirks)
+   - GstarCAD: `Gstarsoft\\GstarCAD\\R...` (note historical casing/path quirks)
 5. Any platform-specific path logic in `GetRootKey` / `GetTargetModulePath` if the
    new host breaks previous assumptions.
 
@@ -158,7 +158,7 @@ Installer packaging is **WiX Toolset v3** in this repo (`scripts/build-wix.ps1`,
 `wix/`). The Runtime MSM file list comes from an explicit inventory in
 `scripts/build-wix.ps1`:
 
-1. Add the new module’s **catalog path** to `$RuntimeModuleCatalogRels` in
+1. Add the new module's **catalog path** to `$RuntimeModuleCatalogRels` in
    `scripts/build-wix.ps1` (use `{Config}` for the harvest folder), e.g.:
 
    ```text
@@ -169,7 +169,7 @@ Installer packaging is **WiX Toolset v3** in this repo (`scripts/build-wix.ps1`,
    ```
 
 2. Place it with the correct platform group (ARX / BRX / GRX / ZRX) for readability.
-3. **Do not** hand-edit `wix/out/gen/OpenDCL.Runtime.Files.wxs` — that fragment is
+3. **Do not** hand-edit `wix/out/gen/OpenDCL.Runtime.Files.wxs` - that fragment is
    regenerated at package build time from the selected catalog (and is gitignored).
 4. Component GUIDs are **stable MD5 seeds** of the module file name; no manual GUID
    assignment is required when adding a new module.
@@ -177,10 +177,10 @@ Installer packaging is **WiX Toolset v3** in this repo (`scripts/build-wix.ps1`,
    (`OpenDCL.x64.<ver>.arx|brx|grx|zrx`).
 6. Packaging modes (same script):
    - **Full product** (default): all catalog modules + all languages; historical MSM GUID.
-   - **Custom**: `-Runtimes` / `-ModuleSet Selected|Available` / `-Languages` →
+   - **Custom**: `-Runtimes` / `-ModuleSet Selected|Available` / `-Languages` ->
      `OpenDCL.Runtime.custom.msm` with seed GUIDs (dev/subset installers).
 
-**Do not** add system DLL “detected dependencies.” WiX packages only intentional
+**Do not** add system DLL "detected dependencies." WiX packages only intentional
 product files (modules, `Runtime.Res`, licenses, Studio app/help/samples).
 
 After a successful OpenDCL Release compile, package with:
@@ -200,7 +200,7 @@ New runtime support almost always ships as a versioned release. Run the
 `/bump-version` checklist so all of these match:
 
 - `Runtime/ARX.rc`, `Studio/Studio.rc`
-- `Runtime/RxInstall/RxInstall.rc` (product version — must stay in sync)
+- `Runtime/RxInstall/RxInstall.rc` (product version - must stay in sync)
 - Localized Runtime/Studio `.rc` version resources
 - WiX defaults in `scripts/build-wix.ps1`
   (`ProductVersion` MSI 3-part, `ModuleVersion` 4-part)
@@ -252,7 +252,7 @@ Only commit if the user asked.
 
 - Newer hosts are x64-only folders (`ARX.<n>.x64`).
 - ObjectARX major does not always equal marketing year (e.g. ARX `26` used for Acad 2027 in tree).
-- Several AutoCAD years may share one `kARX20xx` major with different minor nibble values in the target enum — copy the latest mapping carefully.
+- Several AutoCAD years may share one `kARX20xx` major with different minor nibble values in the target enum - copy the latest mapping carefully.
 
 ### BricsCAD (BRX)
 
@@ -269,8 +269,8 @@ Only commit if the user asked.
 
 - Folder uses **calendar year** (`GRX.2027.x64`).
 - Output `OpenDCL.x64.2027.grx`.
-- `ARXVI.h` includes GRX-specific command macros and entry-point fixes — clone GRX, not ARX.
-- Installer registration keys under `Gstarsoft\\GstarCAD\\…` have irregular historical forms; copy nearest year and verify.
+- `ARXVI.h` includes GRX-specific command macros and entry-point fixes - clone GRX, not ARX.
+- Installer registration keys under `Gstarsoft\\GstarCAD\\...` have irregular historical forms; copy nearest year and verify.
 
 ### ZWCAD (ZRX)
 
@@ -280,8 +280,8 @@ Only commit if the user asked.
 
 ## Out of scope
 
-- Adding a new **UI language** (see CHT addition in `e1bbd787`) — different skill later.
-- Copyright year rollover — `/update-copyright-year`.
+- Adding a new **UI language** (see CHT addition in `e1bbd787`) - different skill later.
+- Copyright year rollover - `/update-copyright-year`.
 - Porting application code to fix host API breaks beyond project scaffolding
   (do fix compile blockers for the new target, but treat large refactors as explicit work).
 

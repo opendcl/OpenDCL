@@ -15,7 +15,7 @@ a compile is still running.
 | Signing (optional) | YubiKey + PIN; never store PIN in scripts |
 | No races | Close VS builds / stray MSBuild on the same tree before packaging |
 
-## Build → verify → package order
+## Build -> verify -> package order
 
 ```text
 1. Clean (optional): remove build/, wix/out/, dist/<ver>/ as needed
@@ -23,7 +23,7 @@ a compile is still running.
 3. Build:      cmake --build --preset vs2022-full-release
                (or: scripts/build-cmake-full.ps1 -Fresh)
 4. Verify:     scripts/verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full
-               → fail if Full catalog / Studio / Res / RxInstall incomplete
+               -> fail if Full catalog / Studio / Res / RxInstall incomplete
 5. Package:    scripts/make-release.ps1 -OpenDclRoot build\vs2022-full -ProductVersion A.B.C.D [-Sign]
 6. Smoke:      Runtime MSI alone, then Studio ENU alone (or vice versa on clean machine)
 7. Compare:    new dist packages vs the previous release package set (see below)
@@ -44,13 +44,13 @@ before WiX by default (`-SkipVerify` only when deliberately reusing a known-good
 Missing modules fail **Full** or are skipped under **Available**. Packaging never
 fills gaps from outside the product/repo tree.
 
-## Smoke A — Runtime MSI only
+## Smoke A - Runtime MSI only
 
 Goal: install Runtime without Studio; confirm modules and RxInstall registration.
 
 1. List products: `build-lab\scripts\uninstall-opendcl.ps1` (list only).
 2. Uninstall existing OpenDCL if needed (user consent / elevation).
-3. Install `dist\<ver>\OpenDCL.Runtime.<ver>.msi` (or unversioned `wix\out\Release\…`).
+3. Install `dist\<ver>\OpenDCL.Runtime.<ver>.msi` (or unversioned `wix\out\Release\...`).
 4. Checks:
    - [ ] ARP: **OpenDCL Runtime** (or Runtime custom for Available packages)
    - [ ] `Common Files\OpenDCL\` module count matches package inventory
@@ -60,7 +60,7 @@ Goal: install Runtime without Studio; confirm modules and RxInstall registration
    - [ ] Optional: demand-load in one CAD host (`OPENDCL`)
 5. Optional uninstall clean.
 
-## Smoke B — Studio language MSI only
+## Smoke B - Studio language MSI only
 
 Goal: Studio ENU (or one lang) embeds Runtime MSM; Studio.Res PE matches Studio.
 
@@ -75,7 +75,7 @@ Goal: Studio ENU (or one lang) embeds Runtime MSM; Studio.Res PE matches Studio.
    - [ ] Launch Studio: no MFC assert / wrong-arch Res load failure
 4. Optional: second language MSI upgrade/side-by-side policy as needed.
 
-## Smoke C — Full local make-release
+## Smoke C - Full local make-release
 
 ```powershell
 # From the packaging repo root
@@ -99,7 +99,7 @@ Then run **Smoke A** and **Smoke B** on `dist\$ver\`.
 ## Comparison (after successful make-release)
 
 Once a full verified (and preferably signed) package set exists, **compare to the
-previous release packages** — not to legacy source trees. Typical baselines:
+previous release packages** - not to legacy source trees. Typical baselines:
 
 - Prior `dist\<previous-version>\` from this repo, or  
 - Unpacked / archived assets from the previous GitHub Release  
@@ -130,7 +130,7 @@ in release notes; unexpected drops or arch flips are blockers.
 
 ## Related
 
-- [CMAKE.md](../CMAKE.md) — presets, nest, packaging modes  
-- [AGENTS.md](../AGENTS.md) — agent conventions  
-- [wix/README.md](../wix/README.md) — WiX deliverables  
-- build-lab dry-run skill — private CI packaging without public ship  
+- [CMAKE.md](../CMAKE.md) - presets, nest, packaging modes  
+- [AGENTS.md](../AGENTS.md) - agent conventions  
+- [wix/README.md](../wix/README.md) - WiX deliverables  
+- build-lab dry-run skill - private CI packaging without public ship  

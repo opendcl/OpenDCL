@@ -1,4 +1,4 @@
-# AGENTS.md — OpenDCL
+# AGENTS.md - OpenDCL
 
 Durable guidance for coding agents working in this repository. Prefer this file
 plus the skills under `.agents/skills/` over reverse-engineering session history.
@@ -8,9 +8,9 @@ plus the skills under `.agents/skills/` over reverse-engineering session history
 OpenDCL is a dialog/UI toolkit for AutoLISP on AutoCAD-compatible hosts
 (AutoCAD/ObjectARX, BricsCAD/BRX, GstarCAD/GRX, ZWCAD/ZRX). It includes:
 
-- **Runtime** — host modules (`.arx` / `.brx` / `.grx` / `.zrx`) + `RxInstall` demand-load registration
-- **Studio** — dialog editor, localized help (HTML → CHM), samples
-- **Packaging** — WiX Toolset v3 (`scripts/build-wix.ps1`, `wix/`)
+- **Runtime** - host modules (`.arx` / `.brx` / `.grx` / `.zrx`) + `RxInstall` demand-load registration
+- **Studio** - dialog editor, localized help (HTML -> CHM), samples
+- **Packaging** - WiX Toolset v3 (`scripts/build-wix.ps1`, `wix/`)
 
 License: **GPLv2+** (`LICENSE`). Copyright OpenDCL Consortium.
 
@@ -42,22 +42,22 @@ wix/out/                 Generated packages (gitignored)
 ### CMake (preferred multi-host matrix, Studio F5, and Full product)
 
 Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`:
-auto-detect SDKs, max one modern toolset ≥ v141 runtime per family; ship **`vs2022-full`**).
+auto-detect SDKs, max one modern toolset >= v141 runtime per family; ship **`vs2022-full`**).
 Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`. First-time
 human steps: **`docs/BUILD-QUICKSTART.md`**.
 
 | Area | Notes |
 |------|--------|
 | Configs | `Debug`, `FullDebug`, `Release` when building CAD runtimes; studio-only (`OPENDCL_BUILD_RUNTIME=OFF`) is `Debug` + `Release` only |
-| CAD runtime modules | FullDebug **defaults to Debug** (`_DEBUG`, `/MD`, release SDK). Opt-in host-debug via `<repo-parent>/fulldebug.<family>.props` (e.g. `fulldebug.brx.props` → `AC_FULL_DEBUG`, `BRX_BCAD_DEBUG`, debug LIB dirs). **Do not scan proprietary debug SDK trees.** |
-| Everything else | **FullDebug → Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, zlib/png (`/MD` and `/MT`). |
-| Studio | Static MFC + `/MT` (classic parity, permanent). `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide — `FolderTreeCtrl.cpp` also includes `MultiMon.h`; LNK2005 if broadened). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
-| Resource DLLs | **Runtime.Res** follows `OPENDCL_RES_PE`: **`classic_x86`** (public Mixed — nest x86 via nest/`Res_Win32`) or **`host`**. **Studio.Res** always matches **Studio PE** (`OPENDCL_STUDIO_PE`). |
-| Studio PE | **`OPENDCL_STUDIO_PE`**: **`classic_x86`** (public **`vs2022-full`** — Win32 Studio + Studio.Res via nest; classic package parity) or **`host`** (Studio matches configure arch; **`vs2022-x64-full`** / dev). Packaging prefers `out/Studio/Win32` then `x64`. |
+| CAD runtime modules | FullDebug **defaults to Debug** (`_DEBUG`, `/MD`, release SDK). Opt-in host-debug via `<repo-parent>/fulldebug.<family>.props` (e.g. `fulldebug.brx.props` -> `AC_FULL_DEBUG`, `BRX_BCAD_DEBUG`, debug LIB dirs). **Do not scan proprietary debug SDK trees.** |
+| Everything else | **FullDebug -> Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, zlib/png (`/MD` and `/MT`). |
+| Studio | Static MFC + `/MT` (classic parity, permanent). `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide - `FolderTreeCtrl.cpp` also includes `MultiMon.h`; LNK2005 if broadened). Post-build copies `Studio.Res.dll` + ENU `OpenDCL.chm` **next to** Studio.exe so classic `Workspace` path logic works. |
+| Resource DLLs | **Runtime.Res** follows `OPENDCL_RES_PE`: **`classic_x86`** (public Mixed - nest x86 via nest/`Res_Win32`) or **`host`**. **Studio.Res** always matches **Studio PE** (`OPENDCL_STUDIO_PE`). |
+| Studio PE | **`OPENDCL_STUDIO_PE`**: **`classic_x86`** (public **`vs2022-full`** - Win32 Studio + Studio.Res via nest; classic package parity) or **`host`** (Studio matches configure arch; **`vs2022-x64-full`** / dev). Packaging prefers `out/Studio/Win32` then `x64`. |
 | ENU CHM | Target `StudioHelp_ENU` (depends from Studio); needs HTML Help Workshop `hhc.exe`. Output `Studio/Localized/ENU/Content/OpenDCL.chm` (gitignored). |
 | Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: OpenDclRoot / `out\` / packaging repo only. |
-| Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` (©). Do not re-save as UTF-8. |
-| Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** (`Runtime/Rx/{ARX,…}`, `Library/…`, `Studio/…`) holding both x64 and Win32 peers. Nest PE for Res + RxInstall (no private `res-win32` / `rxinstall-win32` when nest is on). Build Win32 via `Nest_Win32`. **`vs2022-x64-full`**: same folders, **host (x64) Res**. Helper: `scripts/build-cmake-full.ps1`. |
+| Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` ((c)). Do not re-save as UTF-8. |
+| Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** (`Runtime/Rx/{ARX,...}`, `Library/...`, `Studio/...`) holding both x64 and Win32 peers. Nest PE for Res + RxInstall (no private `res-win32` / `rxinstall-win32` when nest is on). Build Win32 via `Nest_Win32`. **`vs2022-x64-full`**: same folders, **host (x64) Res**. Helper: `scripts/build-cmake-full.ps1`. |
 | Nest Win32 full build | **Known limitation:** full nest under `Nest_Win32` can still hit **C1060/C1001** on old toolsets despite `/m` throttle (`OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT` / `OPENDCL_NEST_CL_MP_COUNT`). Documented in **CMAKE.md**; not a gate for x64/dev or Studio packaging smoke. Prefer `vs2022-x64-dev` for daily IDE work. |
 Sibling clones (typical workspace: product + private lab + Pages side by side):
 
@@ -67,7 +67,7 @@ Sibling clones (typical workspace: product + private lab + Pages side by side):
 | `../build-lab` | Private dry-run / self-hosted CI (`opendcl/build-lab`) |
 | `../opendcl.github.io` | GitHub Pages + online `HelpFiles/` |
 | `../fulldebug.<family>.props` | Optional host-debug FullDebug overlay (parent of this clone) |
-| Historical trees (`OpenDCL 9.0`, etc.) | Archives only — not the packaging path |
+| Historical trees (`OpenDCL 9.0`, etc.) | Archives only - not the packaging path |
 
 Clones may live anywhere; scripts take `-OpenDclRoot` / relative sibling paths.
 
@@ -89,7 +89,7 @@ is built from Content and is **gitignored** (`*.chm`).
 
 Adding a language: skill **`add-language`** (`.agents/skills/add-language/`).
 
-## Packaging (WiX — not Visual Studio Installer)
+## Packaging (WiX - not Visual Studio Installer)
 
 `.vdproj` projects were **removed**. Do not reintroduce them.
 
@@ -114,9 +114,9 @@ Smoke requirements: **`docs/SMOKE.md`**.
 
 ### Studio install layout
 
-x64 Studio PE → **`ProgramFiles64Folder`** (`C:\Program Files\OpenDCL Studio\`).
-x86 Studio PE → `ProgramFilesFolder` (`Program Files (x86)`). Product code and
-WiX fragments use **`[INSTALLDIR]`** only — do not hard-code `Program Files (x86)\OpenDCL`.
+x64 Studio PE -> **`ProgramFiles64Folder`** (`C:\Program Files\OpenDCL Studio\`).
+x86 Studio PE -> `ProgramFilesFolder` (`Program Files (x86)`). Product code and
+WiX fragments use **`[INSTALLDIR]`** only - do not hard-code `Program Files (x86)\OpenDCL`.
 
 ```text
 {INSTALLDIR}\
@@ -136,7 +136,7 @@ Runtime modules (MSM): still **`CommonFilesFolder\OpenDCL`** (historical).
 | ProductVersion | `10.1.101` | MSI (`Patch*100+Build`) |
 
 Defaults live in `scripts/build-wix.ps1` (`-ProductVersion`, `-ModuleVersion`).
-Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-…`) stable.
+Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-...`) stable.
 Component GUIDs are stable MD5 seeds of logical paths.
 
 Runtime module **catalog** lives in `scripts/build-wix.ps1` (`$RuntimeModuleCatalogRels`).
@@ -147,9 +147,9 @@ Do not hand-edit `wix/out/gen/*.wxs`. Paths resolve under `-OpenDclRoot` + CMake
 RxInstall Binary CA uses candle define `RxInstallDll`.
 
 Packaging modes:
-- **Full product** (default): all catalog modules + all langs → `OpenDCL.Runtime.msm`
+- **Full product** (default): all catalog modules + all langs -> `OpenDCL.Runtime.msm`
   with historical modularization GUID.
-- **Custom**: `-Runtimes` / `-ModuleSet Selected|Available` / language filters →
+- **Custom**: `-Runtimes` / `-ModuleSet Selected|Available` / language filters ->
   `OpenDCL.Runtime.custom.msm` with seed GUIDs (safe for local/dev installers).
 
 Newest BRX ship row: `Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx`
@@ -173,7 +173,7 @@ missing, installs look like Runtime-only and **OPENDCLDEMO is not registered**.
 Deferred CA `RxInstallMachine` runs after `StartServices` (after
 `WriteRegistryValues`), so association keys must be authored in the MSI.
 
-Per-machine Studio install requires elevation (silent non-admin → 1925/1603).
+Per-machine Studio install requires elevation (silent non-admin -> 1925/1603).
 
 ## Icons and WixUI art
 
@@ -181,14 +181,14 @@ Checked-in production assets only under `wix/ui/`:
 
 | Asset | Path |
 |-------|------|
-| Banner / dialog | `wix/ui/WixUIBanner.bmp` (493×58), `WixUIDialog.bmp` (493×312) |
+| Banner / dialog | `wix/ui/WixUIBanner.bmp` (493x58), `WixUIDialog.bmp` (493x312) |
 | Help / License shortcuts | `wix/ui/icons/OpenDCLHelp.ico`, `OpenDCLLicense.ico` |
 | Crosshair badge master | `wix/ui/icons/badge/OpenDCLBadge.png` (+ size set / ICO) |
 | Generators | `wix/tools/make_badge.py`, `make_help_restyle.py` |
 
 Studio app icon: extracted at package time from **`Studio.Res.dll` GROUP_ICON #10**
 (multi-res). Icon table Ids must end in **`.exe` / `.ico`** (ICE50 / Start Menu).
-Advertised shortcuts use Icon table streams — rebuild MSI to refresh Start Menu icons.
+Advertised shortcuts use Icon table streams - rebuild MSI to refresh Start Menu icons.
 
 Style: multi-tone Windows blue `(0,120,208)`, white glyphs; badge ~31% of 256px
 canvas, full-span white cross (no blue tip border). Skill: **`make-package-icons`**.
@@ -220,14 +220,14 @@ Optional project skills under **`.agents/skills/<name>/SKILL.md`**:
 | `sync-help-to-website` | Push help HTML to opendcl.github.io |
 | `code-sign-release` | Authenticode sign + GitHub Release assets |
 
-These may remain **untracked** until polished — that is intentional. Do not assume
+These may remain **untracked** until polished - that is intentional. Do not assume
 they are absent if the folder exists on disk. Invoke with `/skill-name` when present.
 
 ## Gitignore (relevant)
 
-- `wix/out/` — packages and gen fragments
-- `*.chm` — compiled help
-- `OpenDCL.Compile.slnf` — local compile filter
+- `wix/out/` - packages and gen fragments
+- `*.chm` - compiled help
+- `OpenDCL.Compile.slnf` - local compile filter
 - Build outputs: `Release/`, `Debug/`, `*.dll`, `*.exe`, etc. (see `.gitignore`)
 - **Do not ignore `.agents/`** merely because skills are uncommitted; leave them
   visible as untracked until the team chooses to commit them
@@ -236,11 +236,11 @@ they are absent if the folder exists on disk. Invoke with `/skill-name` when pre
 
 - Prefer small, task-scoped diffs; do not drive-by refactors unrelated to the request.
 - Preserve file encodings (many localized `.rc` / `License.txt` are **UTF-16 LE**;
-  `Studio/Studio.rc` and `Runtime/ARX.rc` are often **Windows-1252** with `©` as `0xA9`).
+  `Studio/Studio.rc` and `Runtime/ARX.rc` are often **Windows-1252** with `(c)` as `0xA9`).
 - Do not commit generated `wix/out/**`, CHMs, or CAD SDK binaries.
 - Prefer CMake side-by-side copies / classic `Workspace` paths over hard-coding
   F5 layout parsers in `Common/Workspace.cpp`.
-- Host SDKs (ObjectARX, BRX, …) are external; projects expect local env/props macros.
+- Host SDKs (ObjectARX, BRX, ...) are external; projects expect local env/props macros.
 - Release-style commits historically look like:
 
   ```text
@@ -261,9 +261,9 @@ Historical desktop steps and replacements:
 | `@SignAll.bat` / `#Sign.bat` | `scripts/sign-files.ps1` (`make-release -Sign`) |
 | `!MakeLocalizationZips.bat` | `scripts/make-localization-zips.ps1` (also in make-release) |
 | Manual download upload | **Make release** / `gh release create` |
-| Online help SVN refresh | `/sync-help-to-website` → `opendcl.github.io` |
+| Online help SVN refresh | `/sync-help-to-website` -> `opendcl.github.io` |
 
-**Code signing (production):** SSL.com cert on **YubiKey** → `scripts/sign-files.ps1`
+**Code signing (production):** SSL.com cert on **YubiKey** -> `scripts/sign-files.ps1`
 via **jsign** (`--storetype YUBIKEY`). Set **PIN** in the process/user/machine env as
 `SIGN_STORE_PASSWORD` (also `SIGN_PIN` / `YUBIKEY_PIN`); the script passes
 `--storepass env:VARNAME` (never on the command line). Timestamp default
@@ -279,17 +279,17 @@ skill **`code-sign-operator`**.
 
 | File | Role |
 |------|------|
-| `version/version.txt` | Stable `A.B.C.D` — GET by Runtime + AllSamples |
-| `version/version_dev.txt` | Dev/current `A.B.C.D` — GET by Runtime (Dev product) + AllSamples |
+| `version/version.txt` | Stable `A.B.C.D` - GET by Runtime + AllSamples |
+| `version/version_dev.txt` | Dev/current `A.B.C.D` - GET by Runtime (Dev product) + AllSamples |
 | `assets/versions.js` | Download page / `/go` (`stable` / `current`) |
 
 **Runtime** (`UpdateCheck.cpp`) HTTPS-GETs those plain-text files, requires HTTP
 2xx, accepts only a trimmed `A.B.C.D` body (no digit-stripping of HTML), and
-compares locally. Product name `OpenDCL Runtime` → `version.txt`;  
-`OpenDCL Runtime Dev` → `version_dev.txt`. Tray action: `/download/`.
+compares locally. Product name `OpenDCL Runtime` -> `version.txt`;  
+`OpenDCL Runtime Dev` -> `version_dev.txt`. Tray action: `/download/`.
 
 **Studio sample** (`*ODCL:UpdateCheck` / `open_downloads_page`) GETs the same
-txt files; **Update** opens `/go?studio…` in the browser (JS redirect to the
+txt files; **Update** opens `/go?studio...` in the browser (JS redirect to the
 GitHub Release MSI; meta refresh stays on `/download/` only).
 
 **Legacy note:** older shipped Runtimes still POST `/version/vercheck.php` (PHP,
@@ -300,15 +300,15 @@ Public procedure: `/code-sign-release`. Operator notes: private build-lab
 **`code-sign-operator`**.
 
 **Pre-ship dry run (private):** compile/package/test installers without publishing
-lives in private **`opendcl/build-lab`** (`RELEASE.md`, skill `dry-run-release`) —
+lives in private **`opendcl/build-lab`** (`RELEASE.md`, skill `dry-run-release`) -
 not in this public tree.
 
 ## Quick command map
 
 | Goal | Start here |
 |------|------------|
-| New CAD year/host | `/add-runtime-target` → `/bump-version` |
-| New language | `/add-language` → package → optional `/sync-help-to-website` |
+| New CAD year/host | `/add-runtime-target` -> `/bump-version` |
+| New language | `/add-language` -> package -> optional `/sync-help-to-website` |
 | Version only | `/bump-version` |
 | Copyright year | `/update-copyright-year` |
 | Installers | Release build, then `.\scripts\build-wix.ps1` |
@@ -331,12 +331,12 @@ not in this public tree.
 
 Host-debug FullDebug may link **host debug** import libraries. Those directories are proprietary.
 Do **not** open, list, search, or copy contents of CAD SDK debug folders.
-Configure paths only in machine-local `fulldebug.<family>.props` (e.g. `$(BRX_PATH)\…`) — never by discovering files inside debug trees.
+Configure paths only in machine-local `fulldebug.<family>.props` (e.g. `$(BRX_PATH)\...`) - never by discovering files inside debug trees.
 
 ## Machine MSBuild overlays
 
-- `local.props` — optional, next to generated .sln (gitignored if under the repo).
-- `<parent-of-checkout>/fulldebug.<family>.props` — optional per-family FullDebug
-  upgrade (`fulldebug.brx.props`, …). Host paths / F5 Command stay in that file
+- `local.props` - optional, next to generated .sln (gitignored if under the repo).
+- `<parent-of-checkout>/fulldebug.<family>.props` - optional per-family FullDebug
+  upgrade (`fulldebug.brx.props`, ...). Host paths / F5 Command stay in that file
   only. CMake late-imports it for FullDebug via `ForceImportAfterCppTargets`
-  (`$(SolutionDir)…`). Without it, that family’s FullDebug matches Debug (`/MD`).
+  (`$(SolutionDir)...`). Without it, that family's FullDebug matches Debug (`/MD`).

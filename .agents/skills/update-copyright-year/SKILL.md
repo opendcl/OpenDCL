@@ -11,12 +11,12 @@ description: >
 # Update Copyright Year
 
 Annual (or ad-hoc) rollover of OpenDCL Consortium copyright years. Derived from
-historical commits such as `46d6b4cf` (2022→2023), `c516466a` (→2024),
-`e1bbd787` (→2025), and `711ac77b` (→2026).
+historical commits such as `46d6b4cf` (2022->2023), `c516466a` (->2024),
+`e1bbd787` (->2025), and `711ac77b` (->2026).
 
 This skill updates **year notices only**. Product `FILEVERSION` changes belong
 to `/bump-version`. In practice, copyright commits in this repo almost always
-also bump the product patch/build — ask whether to combine both.
+also bump the product patch/build - ask whether to combine both.
 
 **WiX packaging note:** Studio/Runtime MSIs ship license and help content from
 this tree. Keep source years current in:
@@ -32,9 +32,9 @@ Do not hunt for copyright strings inside WiX `.wxs` templates or generated
 
 ## Inputs
 
-1. **Old year** — detect from current sources (e.g. `2025`).
-2. **New year** — default to the calendar year the user intends (often “this year”).
-3. **Also bump version?** — historical default is yes (small build/patch bump). If
+1. **Old year** - detect from current sources (e.g. `2025`).
+2. **New year** - default to the calendar year the user intends (often "this year").
+3. **Also bump version?** - historical default is yes (small build/patch bump). If
    yes, run `/bump-version` checklist in the same change set.
 
 ## Where years appear
@@ -44,10 +44,10 @@ Do not hunt for copyright strings inside WiX `.wxs` templates or generated
 Pattern (encoding of the copyright symbol varies by file):
 
 ```text
-VALUE "LegalCopyright", "Copyright © YYYY OpenDCL Consortium.  All rights reserved."
+VALUE "LegalCopyright", "Copyright (c) YYYY OpenDCL Consortium.  All rights reserved."
 ```
 
-Some localized resources use a plain `c` or other stand-in for ©. **Preserve the
+Some localized resources use a plain `c` or other stand-in for (c). **Preserve the
 exact character sequence** around the year; only change `YYYY`.
 
 **Files:**
@@ -71,7 +71,7 @@ Studio/Localized/<LANG>/Content/**/*.htm
 Footer pattern (see `@Template.htm`):
 
 ```html
-<p>Copyright © YYYY <a href="http://www.opendcl.com" ...>OpenDCL Consortium</a>.
+<p>Copyright (c) YYYY <a href="http://www.opendcl.com" ...>OpenDCL Consortium</a>.
 ```
 
 Update **all** languages: CHS, CHT, DEU, ENU, ESM, FRA, RUS.
@@ -99,16 +99,16 @@ Keep the start year `2007` unless the user says otherwise. Only advance the end 
 Runtime and Studio license end-years must both match the new copyright year.
 
 **Encoding:** Runtime `License.txt` files are **UTF-16 LE (BOM `FF FE`)**. Preserve
-that encoding when editing; a naïve rewrite can corrupt size/encoding. Studio
-`License.txt` / `License.htm` / `License.rtf` may use different encodings — detect
+that encoding when editing; a naive rewrite can corrupt size/encoding. Studio
+`License.txt` / `License.htm` / `License.rtf` may use different encodings - detect
 before writing.
 
 ### D. Do **not** change
 
-- Third-party copyrights (LibPNG, zlib, ColourPicker “Copyright (c) 1998”, etc.)
+- Third-party copyrights (LibPNG, zlib, ColourPicker "Copyright (c) 1998", etc.)
 - Repo root `LICENSE` GPLv2 boilerplate years that are part of FSF text
 - CAD host product years mentioned in release notes or help prose
-  (“AutoCAD 2027”, “BricsCAD V26”) unless they are clearly OpenDCL copyright lines
+  ("AutoCAD 2027", "BricsCAD V26") unless they are clearly OpenDCL copyright lines
 - Binary/obj outputs under `Release/`, `Debug/`, `.vs/`
 
 ## Workflow
@@ -119,7 +119,7 @@ Search for the current copyright year in:
 
 ```text
 LegalCopyright
-Copyright ©
+Copyright (c)
 Copyright (C) 2007 -
 ```
 
@@ -129,11 +129,11 @@ Summarize hits by area (Runtime RC, Studio RC, RxInstall, help HTML, License.*).
 
 For each class of file, replace only the OpenDCL copyright year:
 
-| Location | Old → New example |
+| Location | Old -> New example |
 |----------|-------------------|
-| `LegalCopyright` | `2025` → `2026` inside the OpenDCL Consortium string |
-| Help footers | `Copyright © 2025` → `Copyright © 2026` |
-| License range | `2007 - 2025` → `2007 - 2026` |
+| `LegalCopyright` | `2025` -> `2026` inside the OpenDCL Consortium string |
+| Help footers | `Copyright (c) 2025` -> `Copyright (c) 2026` |
+| License range | `2007 - 2025` -> `2007 - 2026` |
 
 Prefer encoding-safe edits (read file with the correct encoding, replace year tokens
 in known phrases only, write back with the same encoding). Avoid blind global
@@ -162,7 +162,7 @@ Before finishing, update **this** `SKILL.md` with anything newly learned while
 performing the copyright rollover, for example:
 
 - File classes or languages that still had the old year
-- Encoding / © symbol pitfalls in `.rc` or `.htm` files
+- Encoding / (c) symbol pitfalls in `.rc` or `.htm` files
 - Safer bulk-replace patterns that avoided false positives (host product years, etc.)
 - Problems encountered and the solution that resolved them
 
@@ -197,8 +197,8 @@ Only commit if the user asked.
 
 | Commit | Year change | Notes |
 |--------|-------------|-------|
-| `46d6b4cf` | 2022→2023 | Focused copyright + small version bump; large help tree |
-| `c516466a` | →2024 | Combined with GstarCAD 2024 experimental support |
-| `e1bbd787` | 2024→2025 | Combined with Acad 2026 + CHT language |
-| `711ac77b` | →2026 | Combined with GstarCAD 2027 + version 9.3.3.1 |
-| `ea6296b0` | →2022 | Earlier annual update pattern |
+| `46d6b4cf` | 2022->2023 | Focused copyright + small version bump; large help tree |
+| `c516466a` | ->2024 | Combined with GstarCAD 2024 experimental support |
+| `e1bbd787` | 2024->2025 | Combined with Acad 2026 + CHT language |
+| `711ac77b` | ->2026 | Combined with GstarCAD 2027 + version 9.3.3.1 |
+| `ea6296b0` | ->2022 | Earlier annual update pattern |

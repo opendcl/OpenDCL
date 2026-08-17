@@ -1,7 +1,7 @@
-# OpenDCL CMake helpers — options, SDK detection, registry, selection.
+# OpenDCL CMake helpers - options, SDK detection, registry, selection.
 include_guard(GLOBAL)
 
-# Enable target FOLDER → Visual Studio solution folders (Library/ZLib, …).
+# Enable target FOLDER -> Visual Studio solution folders (Library/ZLib, ...).
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # ---------------------------------------------------------------------------
@@ -11,7 +11,7 @@ option(OPENDCL_BUILD_RUNTIME "Build CAD runtime modules" ON)
 option(OPENDCL_BUILD_STUDIO "Build OpenDCL Studio.exe + Studio.Res (static MFC)" OFF)
 option(OPENDCL_BUILD_RXINSTALL "Build RxInstall CA (Win32 nested from x64; sources in main .sln)" ON)
 option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
-# CHM is arch-independent (hhc → Studio/Localized/<lang>/Content/OpenDCL.chm).
+# CHM is arch-independent (hhc -> Studio/Localized/<lang>/Content/OpenDCL.chm).
 # Full Mixed nest forces this OFF so only the parent .sln owns help targets.
 option(OPENDCL_BUILD_STUDIO_HELP
   "Build Studio OpenDCL.chm targets via hhc (arch-independent; one tree only)" ON)
@@ -23,9 +23,9 @@ option(OPENDCL_BUILD_RES_DLLS
   "Build Runtime.Res + Studio.Res language DLLs (native and/or nested)" ON)
 
 # Resource DLL PE policy (Runtime.Res / CAD CommonFiles only):
-#   classic_x86 — Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
+#   classic_x86 - Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
 #                 nest Res_Win32 for Runtime.Res only.
-#   host        — Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
+#   host        - Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
 # Studio.Res always matches Studio PE (see OPENDCL_STUDIO_PE), not this flag.
 set(OPENDCL_RES_PE "host" CACHE STRING
   "Resource DLL PE: classic_x86 (always x86 ship) or host (match configure arch)")
@@ -36,10 +36,10 @@ if(NOT OPENDCL_RES_PE STREQUAL "classic_x86" AND NOT OPENDCL_RES_PE STREQUAL "ho
 endif()
 
 # Studio.exe (+ Studio.Res) PE policy for Mixed x64+nest ships:
-#   classic_x86 — ship Win32 Studio like classic vdproj (public vs2022-full).
+#   classic_x86 - ship Win32 Studio like classic vdproj (public vs2022-full).
 #                 On x64 parent, skip native Studio/Studio.Res; Win32 nest produces
 #                 out/Studio/Win32 + Studio.Res/Win32. Parent still owns CHM help.
-#   host        — Studio PE matches this configure (x64 Studio on x64 parent).
+#   host        - Studio PE matches this configure (x64 Studio on x64 parent).
 set(OPENDCL_STUDIO_PE "host" CACHE STRING
   "Studio PE: classic_x86 (Win32 ship parity) or host (match configure arch)")
 set_property(CACHE OPENDCL_STUDIO_PE PROPERTY STRINGS classic_x86 host)
@@ -65,7 +65,7 @@ set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
 # Solution Explorer folder for a product target (classic-style, not arch-first).
 #
 # Dual-arch Mixed / x64-full puts x64 and Win32 (w32_*) peers in the *same*
-# product folders — similar to classic OpenDCL.sln:
+# product folders - similar to classic OpenDCL.sln:
 #   Runtime/Rx/{ARX,BRX,GRX,ZRX}
 #   Runtime/Localized Resources
 #   Runtime                          (RxInstall)
@@ -74,7 +74,7 @@ set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
 #   CMake                            (Nest_Win32 nest bulk, ZERO_CHECK helpers)
 #
 # arch_label is kept for call-site compatibility but does not affect the path
-# (arch is already in target names: …_x64, w32_*, zlib_x86_…).
+# (arch is already in target names: ..._x64, w32_*, zlib_x86_...).
 function(opendcl_solution_folder out_var arch_label base)
   if(base MATCHES "Runtime_ARX" OR base MATCHES "_Runtime_ARX_")
     set(_f "Runtime/Rx/ARX")
@@ -118,7 +118,7 @@ endfunction()
 
 # True when this binary dir should create native Runtime.Res targets.
 # classic_x86 on x64: Runtime.Res is x86 (Res_Win32 / full nest) for CAD
-# CommonFiles; Studio.Res is separate (always matches Studio PE — see below).
+# CommonFiles; Studio.Res is separate (always matches Studio PE - see below).
 function(opendcl_runtime_res_build_native out_var)
   if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_RUNTIME AND NOT OPENDCL_BUILD_STUDIO)
     set(${out_var} FALSE PARENT_SCOPE)
@@ -134,8 +134,8 @@ function(opendcl_runtime_res_build_native out_var)
   endif()
 endfunction()
 
-# Studio.Res is loaded into Studio.exe (LoadLibrary) — PE must match Studio.
-# host: build natively for this configure (x64 Studio → x64 Studio.Res).
+# Studio.Res is loaded into Studio.exe (LoadLibrary) - PE must match Studio.
+# host: build natively for this configure (x64 Studio -> x64 Studio.Res).
 # classic_x86 on x64 parent: nest builds Win32 Studio.Res under out/.../Win32/.
 function(opendcl_studio_res_build_native out_var)
   if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_STUDIO)
@@ -203,8 +203,8 @@ option(OPENDCL_RUNTIME_REQUIRE_SELECTED
 # VERSION wins). 0 = unlimited (full matrix / vs2022-x64-auto). Dev preset uses 1.
 set(OPENDCL_RUNTIME_PER_FAMILY_MAX "0" CACHE STRING
   "Max enabled runtimes per family after filters (0 = unlimited; 1 = latest only)")
-# Empty = no toolset floor. Example: v141 keeps v141 / v141_xp / v142 / v143 …
-# and drops older toolsets (v140, v120, …) before the per-family limit is applied.
+# Empty = no toolset floor. Example: v141 keeps v141 / v141_xp / v142 / v143 ...
+# and drops older toolsets (v140, v120, ...) before the per-family limit is applied.
 set(OPENDCL_RUNTIME_MIN_TOOLSET "" CACHE STRING
   "Minimum Platform Toolset for runtime selection (e.g. v141); empty = no filter")
 
@@ -218,8 +218,8 @@ set(OPENDCL_RUNTIME_MIN_TOOLSET "" CACHE STRING
 # opendcl_vs_attach_libdir_props). Proprietary debug trees: never auto-scan.
 #
 # CRT policy (per family, configure-time):
-#   fulldebug.<family>.props present → FullDebug module /MDd + zlib/png *_mdd_*
-#   otherwise                          → FullDebug module /MD  + zlib/png *_md_*
+#   fulldebug.<family>.props present -> FullDebug module /MDd + zlib/png *_mdd_*
+#   otherwise                          -> FullDebug module /MD  + zlib/png *_md_*
 # Separate static lib trees avoid LNK4098 when ARX (fake FullDebug /MD) and BRX
 # (real FullDebug /MDd) share one solution configuration.
 
@@ -256,7 +256,7 @@ set(OPENDCL_OUTPUT_ROOT "${CMAKE_BINARY_DIR}/out" CACHE PATH
   "Root directory for built binaries (package layout)")
 
 # ---------------------------------------------------------------------------
-# FullDebug → Debug layout (non-module products + default module CRT)
+# FullDebug -> Debug layout (non-module products + default module CRT)
 # ---------------------------------------------------------------------------
 # Solution FullDebug is available for mixed family work. CAD modules default to
 # Debug-equivalent FullDebug (no AC_FULL_DEBUG until fulldebug.<family>.props).
@@ -278,11 +278,11 @@ endfunction()
 # Visual Studio F5: host CAD + load built module (classic /ld "$(TargetPath)").
 # ARX and BRX use the same load switch; GRX/ZRX default to the same and can override.
 # Host Command resolution (per runtime version/arch when cache/env empty):
-#   scripts/resolve-debugger-host.ps1 → product registry (no Program Files hard-codes).
+#   scripts/resolve-debugger-host.ps1 -> product registry (no Program Files hard-codes).
 set(OPENDCL_DEBUGGER_COMMAND "" CACHE FILEPATH
   "Default host CAD executable for F5 (empty = per-family override, env, then registry discover)")
 # Use $(TargetPath) as a *placeholder* only: CMake rewrites it to
-# $<TARGET_FILE:…> so the .vcxproj gets a real per-config path (VS often
+# $<TARGET_FILE:...> so the .vcxproj gets a real per-config path (VS often
 # expands bare $(TargetPath) to empty for inherited debugger args).
 set(OPENDCL_DEBUGGER_COMMAND_ARGUMENTS "/ld \"$(TargetPath)\"" CACHE STRING
   "Default F5 args; $(TargetPath) is replaced with the built module path at generate time")
@@ -322,7 +322,7 @@ function(opendcl_register_runtime)
   endif()
 
   # Default CharacterSet matches classic Unicode modules.
-  # MultiByte only via matrix (ARX.16, ZRX.2014) — item 4 locked.
+  # MultiByte only via matrix (ARX.16, ZRX.2014) - item 4 locked.
   if(NOT RT_CHARACTER_SET)
     set(RT_CHARACTER_SET "Unicode")
   endif()
@@ -360,12 +360,12 @@ endfunction()
 
 # Emit a VS .props attached via VS_USER_PROPS (PropertySheets / LocalAppDataPlatform).
 # Release SDK libdirs for all configs. Optional $(SolutionDir)local.props.
-# Host-debug (fulldebug.<family>.props) is NOT imported here — late import via
+# Host-debug (fulldebug.<family>.props) is NOT imported here - late import via
 # opendcl_vs_disable_manifest so machine sheet can override LocalDebuggerCommand
 # and prepend host includes/libs after the .vcxproj body (no host paths in-repo).
 #
 # F5 debugger *arguments* are set on the target with VS_DEBUGGER_COMMAND_ARGUMENTS
-# and $<TARGET_FILE:…> — not here. Early sheets + $(TargetPath) often yield /ld "".
+# and $<TARGET_FILE:...> - not here. Early sheets + $(TargetPath) often yield /ld "".
 function(opendcl_vs_attach_libdir_props target family release_dirs)
   if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
     if(release_dirs)
@@ -433,10 +433,10 @@ endfunction()
 # Cpp.props selects UCRT paths (option C locked / pre-Cpp props sheet).
 #
 # Kit pin uses TWO generated props sheets:
-#   1) ForceImportBeforeCppProps — WindowsTargetPlatformVersion only (UCRT paths).
-#   2) ForceImportAfterCppProps  — WindowsSDK_ExecutablePath + APPEND kit bin to
+#   1) ForceImportBeforeCppProps - WindowsTargetPlatformVersion only (UCRT paths).
+#   2) ForceImportAfterCppProps  - WindowsSDK_ExecutablePath + APPEND kit bin to
 #      ExecutablePath so Tracker finds mt.exe (TRK0005) WITHOUT clobbering VC's
-#      CL.exe path (early ExecutablePath freezes an incomplete PATH → mass TRK0005).
+#      CL.exe path (early ExecutablePath freezes an incomplete PATH -> mass TRK0005).
 #
 # Requires the chosen kit to be installed under the Windows Kits root.
 # Optional: OPENDCL_LEGACY_WINDOWS_SDK cache/env override (default 10.0.19041.0).
@@ -457,7 +457,7 @@ function(opendcl_vs_pin_windows_sdk target version)
   if(NOT EXISTS "${_kit_ucrt}")
     message(WARNING
       "opendcl_vs_pin_windows_sdk(${target}): Windows SDK ${version} not found under "
-      "Windows Kits Include\\${version}\\ucrt — pin may be ignored at build time")
+      "Windows Kits Include\\${version}\\ucrt - pin may be ignored at build time")
   endif()
 
   # Versioned kit bin (preferred). Fall back to unversioned bin\x86|x64.
@@ -470,7 +470,7 @@ function(opendcl_vs_pin_windows_sdk target version)
   if(NOT EXISTS "${_bin_x86}/mt.exe" AND NOT EXISTS "${_bin_x64}/mt.exe")
     message(WARNING
       "opendcl_vs_pin_windows_sdk(${target}): mt.exe not found under Windows Kits "
-      "bin\\${version} or bin\\{x86,x64} — TRK0005 may still occur")
+      "bin\\${version} or bin\\{x86,x64} - TRK0005 may still occur")
   endif()
   file(TO_NATIVE_PATH "${_bin_x86}" _bin_x86_n)
   file(TO_NATIVE_PATH "${_bin_x64}" _bin_x64_n)
@@ -644,9 +644,9 @@ endfunction()
 # Resolve VS F5 host executable for a runtime row.
 # Priority:
 #   OPENDCL_<FAMILY>_DEBUGGER_COMMAND
-#   → OPENDCL_DEBUGGER_COMMAND
-#   → family env (ARX_EXE/ACAD, BRX_EXE/BRICSCAD, GRX_EXE, ZRX_EXE)
-#   → product registry for (family, version, arch) via resolve-debugger-host.ps1
+#   -> OPENDCL_DEBUGGER_COMMAND
+#   -> family env (ARX_EXE/ACAD, BRX_EXE/BRICSCAD, GRX_EXE, ZRX_EXE)
+#   -> product registry for (family, version, arch) via resolve-debugger-host.ps1
 function(opendcl_resolve_debugger_command family version arch out_var)
   string(TOUPPER "${family}" _fam)
   set(_fam_cache "OPENDCL_${_fam}_DEBUGGER_COMMAND")
@@ -697,7 +697,7 @@ function(opendcl_resolve_debugger_command family version arch out_var)
 endfunction()
 
 # Resolve VS F5 command arguments for a runtime family.
-# Priority: OPENDCL_<FAMILY>_DEBUGGER_COMMAND_ARGUMENTS → OPENDCL_DEBUGGER_COMMAND_ARGUMENTS.
+# Priority: OPENDCL_<FAMILY>_DEBUGGER_COMMAND_ARGUMENTS -> OPENDCL_DEBUGGER_COMMAND_ARGUMENTS.
 # Default is /ld "$(TargetPath)" (AutoCAD and BricsCAD module load).
 function(opendcl_resolve_debugger_arguments family out_var)
   string(TOUPPER "${family}" _fam)
@@ -744,7 +744,7 @@ function(opendcl_sdk_available sdk_env out_var)
 endfunction()
 
 # ---------------------------------------------------------------------------
-# Selection: family flags ∩ optional ID list ∩ SDK ∩ toolset floor ∩ per-family max
+# Selection: family flags AND optional ID list AND SDK AND toolset floor AND per-family max
 # ---------------------------------------------------------------------------
 function(opendcl_host_arch out_var)
   # Map generator platform / pointer size to matrix ARCH (x64|x86).
@@ -769,7 +769,7 @@ function(opendcl_host_arch out_var)
   set(${out_var} "${_arch}" PARENT_SCOPE)
 endfunction()
 
-# Platform toolset → major number: v141 / v141_xp → 141, v143 → 143, v100 → 100.
+# Platform toolset -> major number: v141 / v141_xp -> 141, v143 -> 143, v100 -> 100.
 function(opendcl_toolset_number toolset out_var)
   if(toolset MATCHES "^[vV]([0-9]+)")
     set(${out_var} "${CMAKE_MATCH_1}" PARENT_SCOPE)

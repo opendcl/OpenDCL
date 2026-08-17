@@ -30,9 +30,9 @@ Per `opendcl.github.io/README.md`, online help folders currently include at leas
 - `HelpFiles/DEU`
 - `HelpFiles/RUS`
 
-Studio may have additional languages (CHS, CHT, ESM, FRA, …) that are **not**
+Studio may have additional languages (CHS, CHT, ESM, FRA, ...) that are **not**
 automatically on the website. Adding a new HelpFiles language is allowed when
-the user wants it online — update the frame language allowlist (below).
+the user wants it online - update the frame language allowlist (below).
 
 Download MSI language links are separate (`download/`, `assets/versions.js`).
 
@@ -115,7 +115,7 @@ $dst  = Join-Path $webRoot "HelpFiles\$lang"
 Copy-Item "$dst\TOC.html","$dst\Top.html" $env:TEMP -Force
 
 # Mirror HTML/css/js/images; exclude installer/CHM/samples
-# (robocopy exit codes 0–7 are success)
+# (robocopy exit codes 0-7 are success)
 robocopy $src $dst /MIR /XD Samples /XF `
   OpenDCL.chm OpenDCL.hhp OpenDCL.hhc `
   License.txt License.rtf GNU-GPL.txt `
@@ -126,7 +126,7 @@ robocopy $src $dst /MIR /XD Samples /XF `
 Copy-Item "$env:TEMP\TOC.html","$env:TEMP\Top.html" $dst -Force
 ```
 
-`/MIR` deletes dest files removed from source — that is usually desired for
+`/MIR` deletes dest files removed from source - that is usually desired for
 topics, which is why chrome must be excluded or restored.
 
 Prefer encoding-preserving tools; do not re-save all HTML through an editor that
@@ -136,24 +136,24 @@ changes UTF-8/BOM or line endings site-wide without need.
 
 `HelpFiles/index.html`:
 
-- `getClientLanguage()` maps browser language → folder code.
+- `getClientLanguage()` maps browser language -> folder code.
 - Hard-coded allowlist (today): only `ENU`, `DEU`, `RUS` are accepted; anything
   else falls back to ENU.
 
 When publishing a new HelpFiles language, extend:
 
 1. `getClientLanguage()` if automatic detection should apply.
-2. The allowlist check (`language !== "ENU" && …`).
+2. The allowlist check (`language !== "ENU" && ...`).
 3. Optional: `Top.html` flag strip / `changeLang(...)` targets for that language
    (folder codes like `ENU`/`DEU`/`RUS` vs Google-style codes in older flag links).
 
 ### 5. Sanity checks
 
-1. Spot-check a few topics in a browser via `HelpFiles/index.html?lang=ENU&page=…`
+1. Spot-check a few topics in a browser via `HelpFiles/index.html?lang=ENU&page=...`
    or open `HelpFiles/<LANG>/Index.htm`.
 2. Confirm `TOC.html` / `Top.html` still present.
 3. Confirm `Samples` was not published.
-4. `git status` in `opendcl.github.io` — review diff size (often many HTML files).
+4. `git status` in `opendcl.github.io` - review diff size (often many HTML files).
 5. No product-tree secrets or installer binaries staged.
 
 ### 6. Commit (website repo only)
@@ -170,12 +170,12 @@ or
 Sync ENU help topics to HelpFiles.
 ```
 
-Product repo and website repo are **separate** git histories — do not mix commits.
+Product repo and website repo are **separate** git histories - do not mix commits.
 
 ### 7. Capture lessons into this skill
 
 Record new languages on the site, robocopy edge cases, or TOC generation notes.
-Remove outdated allowlists if the site’s published set changes.
+Remove outdated allowlists if the site's published set changes.
 
 ## Out of scope
 

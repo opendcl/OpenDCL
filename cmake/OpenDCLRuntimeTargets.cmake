@@ -67,9 +67,9 @@ function(opendcl_add_runtime id)
   endif()
 
   # Optional target-specific TUs + shared-source drops:
-  #   Runtime/TargetSpecific/<id>/*.{cpp,cxx,cc}  — extra sources for this ID only
-  #   Runtime/TargetSpecific/<id>/drop.txt        — basenames of shared TUs to omit
-  #     (classic ExcludedFromBuild). No file / empty → no drops.
+  #   Runtime/TargetSpecific/<id>/*.{cpp,cxx,cc}  - extra sources for this ID only
+  #   Runtime/TargetSpecific/<id>/drop.txt        - basenames of shared TUs to omit
+  #     (classic ExcludedFromBuild). No file / empty -> no drops.
   set(_ts_dir "${CMAKE_SOURCE_DIR}/Runtime/TargetSpecific/${id}")
   set(_ts_drop "${_ts_dir}/drop.txt")
   if(EXISTS "${_ts_drop}")
@@ -143,10 +143,10 @@ function(opendcl_add_runtime id)
   endif()
 
   # Shared project-level defines from historical Runtime vcxproj ItemDefinitionGroup.
-  # MFC extension DLL: _AFXDLL + _AFXEXT (do NOT define _USRDLL — that pulls dllmodul DllMain).
+  # MFC extension DLL: _AFXDLL + _AFXEXT (do NOT define _USRDLL - that pulls dllmodul DllMain).
   #
   # Debug vs FullDebug (see Runtime/StdAfx.h "DEBUG workaround"):
-  #   Debug:     _DEBUG, no AC_FULL_DEBUG → PCH #undef _DEBUG around MFC/ATL/STL; /MD
+  #   Debug:     _DEBUG, no AC_FULL_DEBUG -> PCH #undef _DEBUG around MFC/ATL/STL; /MD
   #   FullDebug: same as Debug by default so all families can build without host
   #              debug libs. Opt-in host-debug FullDebug via
   #              <repo-parent>/fulldebug.<family>.props (AC_FULL_DEBUG /
@@ -154,7 +154,7 @@ function(opendcl_add_runtime id)
   #   Release:   NDEBUG; /MD
   #
   # Character set: default Unicode (classic modern modules). MultiByte only where
-  # classic was MBCS — ARX.16 (ACHAR) and ZRX.2014 (ZWSoft strlen on ZTCHAR*).
+  # classic was MBCS - ARX.16 (ACHAR) and ZRX.2014 (ZWSoft strlen on ZTCHAR*).
   # Item 4 of 8 locked: matrix CHARACTER_SET, not a project-wide undef.
   set(_charset_defs)
   if(_charset STREQUAL "MultiByte")
@@ -182,7 +182,7 @@ function(opendcl_add_runtime id)
   # CRT: Debug + Release always /MD. FullDebug /MDd only when this family has
   # fulldebug.<family>.props (host-debug). Otherwise FullDebug stays /MD so ARX
   # (release ObjectARX libs) does not LNK4098 MSVCRTD. Props alone cannot override
-  # the vcxproj ItemDefinitionGroup RuntimeLibrary — set it here.
+  # the vcxproj ItemDefinitionGroup RuntimeLibrary - set it here.
   opendcl_family_has_fulldebug_props("${_family}" _fd_host)
   if(_fd_host)
     set(_rt_lib "MultiThreaded$<$<CONFIG:FullDebug>:Debug>DLL")
@@ -200,7 +200,7 @@ function(opendcl_add_runtime id)
   else()
     set(_sol_arch "Win32")
   endif()
-  # id e.g. ARX.18 / ARX.18.x64 → folder x64|Win32/Runtime/ARX
+  # id e.g. ARX.18 / ARX.18.x64 -> folder x64|Win32/Runtime/ARX
   opendcl_solution_folder(_sol_folder "${_sol_arch}" "Runtime_${id}")
 
   set_target_properties(${_target} PROPERTIES
@@ -215,7 +215,7 @@ function(opendcl_add_runtime id)
     VS_GLOBAL_UseOfMfc "Dynamic"
     VS_GLOBAL_CharacterSet "${_vs_charset}"
     # Classic *.vcxproj: GenerateManifest=false (CAD modules are not apps).
-    # CMake default true → link /MANIFEST + mt.exe → TRK0005 on old toolsets.
+    # CMake default true -> link /MANIFEST + mt.exe -> TRK0005 on old toolsets.
     VS_GLOBAL_GenerateManifest "false"
     FOLDER "${_sol_folder}"
   )
@@ -234,9 +234,9 @@ function(opendcl_add_runtime id)
   endif()
 
   # F5 command *arguments*: bake the real module path with a generator expression.
-  # Do NOT use MSBuild $(TargetPath) here — with Inherit / property sheets / .user
+  # Do NOT use MSBuild $(TargetPath) here - with Inherit / property sheets / .user
   # it often expands empty (VS history shows /ld ""), so the host never loads the
-  # module. $<TARGET_FILE:…> is written per-config into the .vcxproj as a full path.
+  # module. $<TARGET_FILE:...> is written per-config into the .vcxproj as a full path.
   opendcl_resolve_debugger_arguments("${_family}" _dbg_args_template)
   if(_dbg_args_template)
     # Replace $(TargetPath) / ${TargetPath} placeholders with genex; otherwise
@@ -251,7 +251,7 @@ function(opendcl_add_runtime id)
     set_property(TARGET ${_target} PROPERTY VS_PLATFORM_TOOLSET "${_toolset}")
     # Item 3 option C (locked): keep classic toolsets (e.g. v140) on a host that
     # defaults to a newer Windows kit. Pin kit via ForceImportBeforeCppProps
-    # (opendcl_vs_pin_windows_sdk) — NOT late VS_USER_PROPS. Validated ARX.21/22
+    # (opendcl_vs_pin_windows_sdk) - NOT late VS_USER_PROPS. Validated ARX.21/22
     # x64 + Win32 Release with no /I or /FI UCRT shims.
     # Override kit: -DOPENDCL_LEGACY_WINDOWS_SDK=10.0.19041.0
     # If still too fragile, fall back to matrix toolset v141+ (option A).
@@ -283,8 +283,8 @@ function(opendcl_add_runtime id)
   # still compile StdAfx.cpp as a normal TU (header already in sources).
 
   # /FS: MSBuild /m runs multiple cl.exe per project; without /FS they race on
-  # the shared vc*.pdb → C1041 (and can surface as Permission denied on .obj).
-  # /FS exists VS2013+ (v120). Older toolsets (v70–v110) omit it.
+  # the shared vc*.pdb -> C1041 (and can surface as Permission denied on .obj).
+  # /FS exists VS2013+ (v120). Older toolsets (v70-v110) omit it.
   if(MSVC)
     set(_opendcl_fs TRUE)
     if(_toolset MATCHES "^v([0-9]+)")
@@ -313,18 +313,18 @@ function(opendcl_add_runtime id)
   endif()
 
   # Host-SDK linker noise (not product bugs). Classic modules used /IGNORE:4099.
-  #   LNK4099 — missing PDBs on import libs (rxapi, acedapi, grxport, ZwZrx, …)
-  # Residual on older toolsets (≤v110): some linkers still print LNK4099 even with
+  #   LNK4099 - missing PDBs on import libs (rxapi, acedapi, grxport, ZwZrx, ...)
+  # Residual on older toolsets (<=v110): some linkers still print LNK4099 even with
   # /IGNORE; leave it. No fix without proprietary SDK .pdb files.
-  #   LNK4075 — ignoring /INCREMENTAL due to /LTCG (GRX/ZRX SDK objs built /GL).
+  #   LNK4075 - ignoring /INCREMENTAL due to /LTCG (GRX/ZRX SDK objs built /GL).
   # MS documents LNK4075 as non-ignorable; /IGNORE:4075 is a no-op. Fix by not
   # requesting incremental link when LTCG will win (classic GRX/ZRX used /LTCG).
-  # ZRX older MFC import mixes (mfcs*u vs mfc*) → LNK4098 defaultlib conflicts.
+  # ZRX older MFC import mixes (mfcs*u vs mfc*) -> LNK4098 defaultlib conflicts.
   if(MSVC)
     target_link_options(${_target} PRIVATE "/IGNORE:4099")
   endif()
   if(_family STREQUAL "GRX" OR _family STREQUAL "ZRX")
-    # Debug/FullDebug default LinkIncremental=true → LNK4075 once LTCG engages.
+    # Debug/FullDebug default LinkIncremental=true -> LNK4075 once LTCG engages.
     target_link_options(${_target} PRIVATE "/INCREMENTAL:NO")
   endif()
   if(_family STREQUAL "ZRX")
@@ -356,11 +356,11 @@ function(opendcl_add_runtime id)
   opendcl_vs_disable_manifest(${_target})
 
   # No /NODEFAULTLIB CRT hacks: module, MFC, and static deps must match CRT.
-  # Fake FullDebug + Debug/Release → *_md_* (/MD).
-  # Real host-debug FullDebug only → *_mdd_* (/MDd); Debug/Release still md.
+  # Fake FullDebug + Debug/Release -> *_md_* (/MD).
+  # Real host-debug FullDebug only -> *_mdd_* (/MDd); Debug/Release still md.
 
   # Arch + toolset-matched third-party static libs (see Library/CMakeLists.txt).
-  # Older toolsets (≤ v140) cannot link default VS2022 UCRT-built zlib/png.
+  # Older toolsets (<= v140) cannot link default VS2022 UCRT-built zlib/png.
   if(_arch STREQUAL "x64")
     set(_png_arch "x64")
   else()

@@ -16,7 +16,7 @@ across every place OpenDCL embeds it. Packaging uses WiX in this repository
 
 This skill only updates **version identity**. Do **not** use it for copyright
 years (`/update-copyright-year`) or for scaffolding a new CAD host
-(`/add-runtime-target`) — those often *include* a version bump as a final step.
+(`/add-runtime-target`) - those often *include* a version bump as a final step.
 
 ## Version scheme
 
@@ -24,9 +24,9 @@ OpenDCL uses a four-part version: `Major.Minor.Patch.Build` (example: `10.1.1.1`
 
 | Component | Typical meaning in this repo |
 |-----------|------------------------------|
-| Major / Minor | Larger product lines (`9.2` → `9.3`, `9.x` → `10.1`) when shipping a significant milestone |
+| Major / Minor | Larger product lines (`9.2` -> `9.3`, `9.x` -> `10.1`) when shipping a significant milestone |
 | Patch (3rd) | Feature releases such as a new host runtime or notable feature set; often incremented and Build reset to `1` |
-| Build (4th) | Hotfix / follow-up within the same patch line (`9.2.3.1` → `9.2.3.2` → `9.2.3.3`) |
+| Build (4th) | Hotfix / follow-up within the same patch line (`9.2.3.1` -> `9.2.3.2` -> `9.2.3.3`) |
 
 **Ask the user** for the target version if not specified. Confirm whether this is:
 
@@ -41,16 +41,16 @@ Keep all forms in sync for the same logical version `A.B.C.D`:
 | Form | Example for `10.1.1.1` | Where used |
 |------|------------------------|------------|
 | Comma RC form | `10, 1, 1, 1` | `FILEVERSION` / `PRODUCTVERSION` and string `FileVersion` / `ProductVersion` in `.rc` files |
-| Dot form (4-part) | `10.1.1.1` | Commit messages; WiX **ModuleVersion**; **CMake** `project(VERSION …)`; README product line |
+| Dot form (4-part) | `10.1.1.1` | Commit messages; WiX **ModuleVersion**; **CMake** `project(VERSION ...)`; README product line |
 | WiX MSI ProductVersion (3-part) | `10.1.101` | MSI `Product/@Version` / `build-wix.ps1 -ProductVersion` |
 
 **WiX MSI ProductVersion formula** (MSI allows at most three numeric parts for upgrade comparison):
 
 ```text
 "{Major}.{Minor}.{Patch * 100 + Build}"
-# 10.1.1.1  →  10.1.101
-# 9.3.3.1   →  9.3.301
-# 9.2.1.5   →  9.2.105
+# 10.1.1.1  ->  10.1.101
+# 9.3.3.1   ->  9.3.301
+# 9.2.1.5   ->  9.2.105
 ```
 
 **ModuleVersion** stays the full four-part file version (`10.1.1.1`) for the Runtime **MSM**.
@@ -59,13 +59,13 @@ Keep all forms in sync for the same logical version `A.B.C.D`:
 
 | Role | Location | Notes |
 |------|----------|--------|
-| **Authoritative product version** | `Runtime/ARX.rc` (`FILEVERSION` / `PRODUCTVERSION`) | Always resolve “current” from here first |
+| **Authoritative product version** | `Runtime/ARX.rc` (`FILEVERSION` / `PRODUCTVERSION`) | Always resolve "current" from here first |
 | Ship stamps | Studio / RxInstall / localized `.rc` | Must match ARX.rc |
 | Packaging defaults | `scripts/build-wix.ps1` | MSI 3-part + ModuleVersion 4-part |
-| CMake project version | `CMakeLists.txt` → `project(OpenDCL VERSION A.B.C.D …)` | **Must match** product `A.B.C.D`. Does **not** currently stamp PE resources (those still come from `.rc`); it is project metadata and must not lag (e.g. do not leave `9.3.3` after a `10.1.1.1` bump). |
-| Human docs | `README.md` (and version examples in `CMAKE.md` / `wix/README.md` / `AGENTS.md` if they hardcode the current release) | Update when they state “currently **A.B.C.D**” |
+| CMake project version | `CMakeLists.txt` -> `project(OpenDCL VERSION A.B.C.D ...)` | **Must match** product `A.B.C.D`. Does **not** currently stamp PE resources (those still come from `.rc`); it is project metadata and must not lag (e.g. do not leave `9.3.3` after a `10.1.1.1` bump). |
+| Human docs | `README.md` (and version examples in `CMAKE.md` / `wix/README.md` / `AGENTS.md` if they hardcode the current release) | Update when they state "currently **A.B.C.D**" |
 
-CMake four-component `VERSION A.B.C.D` maps to `PROJECT_VERSION` / `PROJECT_VERSION_MAJOR`…`_TWEAK`. Prefer the full four-part form so it equals ModuleVersion and file version, not a truncated `A.B.C`.
+CMake four-component `VERSION A.B.C.D` maps to `PROJECT_VERSION` / `PROJECT_VERSION_MAJOR`...`_TWEAK`. Prefer the full four-part form so it equals ModuleVersion and file version, not a truncated `A.B.C`.
 
 ## Packaging layout (WiX)
 
@@ -84,18 +84,18 @@ wix/out/Release/                      # msm + msi outputs (gitignored)
 | Concern | What to do |
 |---------|------------|
 | MSI / MSM version numbers | Update defaults in `scripts/build-wix.ps1` (`ProductVersion`, `ModuleVersion`) |
-| Product codes | Leave alone — Runtime/Studio `Product Id="*"` regenerates each build |
+| Product codes | Leave alone - Runtime/Studio `Product Id="*"` regenerates each build |
 | Upgrade codes | **Leave stable** (Runtime MSI + per-language Studio codes in `$StudioLangMeta`) |
-| MSM modularization GUID | Leave `Package/@Id` (`0C4E4759-…`) unchanged |
-| Component GUIDs | Stable MD5 seeds of logical path — do not churn |
+| MSM modularization GUID | Leave `Package/@Id` (`0C4E4759-...`) unchanged |
+| Component GUIDs | Stable MD5 seeds of logical path - do not churn |
 | Module file inventory | Only when adding/removing host modules (`$RuntimeModules`) |
 
 ## Workflow
 
 ### 1. Resolve current and target versions
 
-1. Read current version from `Runtime/ARX.rc` (`FILEVERSION` / `PRODUCTVERSION`) — **source of truth**.
-2. Cross-check `Studio/Studio.rc`, `Runtime/RxInstall/RxInstall.rc`, one localized pair, and `CMakeLists.txt` `project(VERSION …)`.
+1. Read current version from `Runtime/ARX.rc` (`FILEVERSION` / `PRODUCTVERSION`) - **source of truth**.
+2. Cross-check `Studio/Studio.rc`, `Runtime/RxInstall/RxInstall.rc`, one localized pair, and `CMakeLists.txt` `project(VERSION ...)`.
 3. Confirm target `A.B.C.D` with the user if ambiguous.
 4. Compute:
    - Comma RC form
@@ -115,7 +115,7 @@ Update **all four** of:
 
 - `Runtime/ARX.rc`
 - `Studio/Studio.rc`
-- `Runtime/RxInstall/RxInstall.rc` — **must stay in sync with the product version**
+- `Runtime/RxInstall/RxInstall.rc` - **must stay in sync with the product version**
 - Every `Runtime/Localized/*/Runtime.Res/Runtime.*.rc` (CHS, CHT, DEU, ENU, ESM, FRA, RUS)
 - Every `Studio/Localized/*/Studio.Res/Studio.*.rc` (same language set)
 
@@ -133,16 +133,16 @@ Detect encoding **per file** before read/write; never assume one encoding for al
 | ANSI / Windows-1252 (no BOM) | `Runtime/ARX.rc`, `Studio/Studio.rc`, `Runtime/RxInstall/RxInstall.rc`, some CHT `.rc` |
 | UTF-16 LE (`FF FE`) | Most `Runtime/Localized/*/Runtime.Res/*.rc` and `Studio/Localized/*/Studio.Res/*.rc` |
 
-After writing, re-read and confirm the new version is present and the old version is gone. Size should change when digit count changes (e.g. `9, 3, 3, 1` → `10, 1, 1, 1` adds one character per occurrence).
+After writing, re-read and confirm the new version is present and the old version is gone. Size should change when digit count changes (e.g. `9, 3, 3, 1` -> `10, 1, 1, 1` adds one character per occurrence).
 
-Preserve encoding and copyright symbol (©) exactly as found in each file; only change the year when running the copyright skill.
+Preserve encoding and copyright symbol ((c)) exactly as found in each file; only change the year when running the copyright skill.
 
 ### 3. Update WiX packaging defaults
 
 Edit **`scripts/build-wix.ps1`**:
 
-1. Default parameter **`ProductVersion`** → MSI 3-part form (e.g. `"10.1.101"`).
-2. Default parameter **`ModuleVersion`** → 4-part form (e.g. `"10.1.1.1"`).
+1. Default parameter **`ProductVersion`** -> MSI 3-part form (e.g. `"10.1.101"`).
+2. Default parameter **`ModuleVersion`** -> 4-part form (e.g. `"10.1.1.1"`).
 3. Keep any comment that documents the encoding rule in sync if present.
 4. Default **`ProductVersion` / `ModuleVersion` in `scripts/make-dist.ps1`** (and any other script defaults that hardcode the release) if present.
 
@@ -182,12 +182,12 @@ Rules:
 
 | File | What to update |
 |------|----------------|
-| `README.md` | Product version line (“currently **A.B.C.D**” / FILEVERSION pointer) |
+| `README.md` | Product version line ("currently **A.B.C.D**" / FILEVERSION pointer) |
 | `wix/README.md` | Example `-ProductVersion` / `-ModuleVersion` / `make-release` / `gh release` samples when they pin the current release |
 | `CMAKE.md` | Packaging examples that pin `A.B.C.D` (if any) |
 | `AGENTS.md` | Only if it hardcodes the *current* release as a fact, not merely as a table example |
 
-Do not churn historical commit tables or “example for `10.1.1.1`” columns that illustrate encoding — those are scheme docs, not “current version” claims.
+Do not churn historical commit tables or "example for `10.1.1.1`" columns that illustrate encoding - those are scheme docs, not "current version" claims.
 
 ### 6. Consistency verification
 
@@ -196,13 +196,13 @@ In the product tree (excluding build outputs `**/Release/**`, `**/Debug/**`, `**
 - No leftover old comma form in `.rc`
 - `RxInstall.rc` matches product version
 - `scripts/build-wix.ps1` defaults match ProductVersion / ModuleVersion
-- **`CMakeLists.txt` `project(VERSION …)` equals `A.B.C.D`**
+- **`CMakeLists.txt` `project(VERSION ...)` equals `A.B.C.D`**
 - **`README.md` product line matches `A.B.C.D`**
 - Packaging doc examples not stale (if they claim the current release)
 
 Also spot-check UTF-16 localized `.rc` files still start with BOM `FF FE`.
 
-Quick grep (after bump from old → new):
+Quick grep (after bump from old -> new):
 
 ```powershell
 # Should find new version; should not find old project VERSION or README product line
@@ -253,11 +253,11 @@ Only create a git commit if the user asked for one.
 - **Not a substitute for adding a host runtime.** New ARX/BRX/GRX/ZRX projects use `/add-runtime-target` first; that skill ends by calling this checklist.
 - **Do not edit binary build artifacts** under `Release/`, `Debug/`, `FullDebug/`, `.vs/`, or `build/`.
 - **Do not invent version policy.** If major vs patch is unclear, ask.
-- **Help HTML footers** carry copyright years, not the four-part product version — leave them alone here.
+- **Help HTML footers** carry copyright years, not the four-part product version - leave them alone here.
 - **LICENSE** at repo root is GPLv2 text, not the product version resource.
 - **Do not churn UpgradeCodes or MSM Package Id** when only bumping version.
-- **Do not leave CMake `project(VERSION …)` on an old line** (e.g. scaffold `9.3.3` while resources are `10.1.1.1`). PE stamps still come from `.rc`, but agents and docs use CMake version as project identity.
-- **CMake VERSION is not a substitute for `.rc` updates** — bump both.
+- **Do not leave CMake `project(VERSION ...)` on an old line** (e.g. scaffold `9.3.3` while resources are `10.1.1.1`). PE stamps still come from `.rc`, but agents and docs use CMake version as project identity.
+- **CMake VERSION is not a substitute for `.rc` updates** - bump both.
 
 ## Skeleton / follow-ups
 

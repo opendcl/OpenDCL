@@ -157,7 +157,7 @@ opendcl_register_runtime(
   EXT ".arx"
   OUTPUT_NAME "OpenDCL.x64.21"
   # Classic vcxproj toolset. Host kits pin Windows SDK 10.0.19041.0 via
-  # ForceImportBeforeCppProps (opendcl_vs_pin_windows_sdk) — item 3 option C locked.
+  # ForceImportBeforeCppProps (opendcl_vs_pin_windows_sdk) - item 3 option C locked.
   TOOLSET "v140"
   SDK_ENV "ARX2017"
   SDK_INC "Inc-x64|Inc"

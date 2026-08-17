@@ -2,7 +2,7 @@
 #
 # Used only when OPENDCL_RES_PE=classic_x86 on an x64 configure (public Mixed ship).
 # OPENDCL_RES_PE=host builds Res natively in the parent (x64 Res on x64) and does
-# not create this nest — path open for future packaging that accepts host-arch Res.
+# not create this nest - path open for future packaging that accepts host-arch Res.
 #
 # Nested tree flags: OPENDCL_BUILD_RES_DLLS=ON only (no modules / Studio.exe / RxInstall).
 # Lang list is written via -C init-cache.cmake so MSBuild does not mangle ';'.
