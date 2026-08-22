@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "DclPicture.h"
+#include "DpiAwarenessAPI.h"
 #include "StgFile.h"
 #include "ArchiveEx.h"
 #include "Filing.h"
@@ -890,7 +891,12 @@ void CDclPicture::Render( CDC* pDC, const CRect& rcDest ) const
 	m_hPicture.m_pPict->Render( pDC->m_hDC, rcDest.left, rcDest.top, rcDest.Width(), rcDest.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcDest );
 }
 
-void CDclPicture::CalcLogicalSize()
+void CDclPicture::RecalcForDpi( const DpiAwareness* pDpiAware /*= nullptr*/ )
+{
+	CalcLogicalSize( pDpiAware );
+}
+
+void CDclPicture::CalcLogicalSize( const DpiAwareness* pDpiAware /*= nullptr*/ )
 {
 	if( !m_hPicture.m_pPict )
 	{
@@ -898,14 +904,11 @@ void CDclPicture::CalcLogicalSize()
 		return;
 	}
 
-	OLE_XSIZE_HIMETRIC lPicWidth;
-	OLE_YSIZE_HIMETRIC lPicHeight;
+	OLE_XSIZE_HIMETRIC lPicWidth = 0;
+	OLE_YSIZE_HIMETRIC lPicHeight = 0;
 	m_hPicture.m_pPict->get_Width( &lPicWidth );
 	m_hPicture.m_pPict->get_Height( &lPicHeight );
-	msizePic.SetSize( lPicWidth, lPicHeight );
 
-	// convert coordinates from units to logical units
-	CDC DC;
-	DC.Attach( ::GetDC(NULL) );
-	DC.HIMETRICtoLP( &msizePic );
+	SIZE size = DpiAwareness::HimetricToPixelSize( lPicWidth, lPicHeight, pDpiAware );
+	msizePic.SetSize( size.cx, size.cy );
 }

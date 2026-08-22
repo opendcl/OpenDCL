@@ -37,11 +37,7 @@ CFont* CFontCollection::GetFont(TDclControlPtr pControl, CControlPane *pWnd)
 	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::FontStrikeout);
 	if( nFontSize > 0 )
 	{
-		// Point size -> lfHeight via pane DPI (same source as FromDIP), not LOGPIXELSY.
-		if( pWnd )
-			stTargetFont.lfHeight = (int)pWnd->PointSizeToFontHeight( nFontSize );
-		else
-			stTargetFont.lfHeight = (int)DpiAwareness::PointSizeToFontHeight( nFontSize, DpiAwarenessHelper::GetDpiForSystem() );
+		stTargetFont.lfHeight = (int)DpiAwareness::PointSizeToFontHeight( nFontSize, pWnd );
 	}
 	else if( pWnd )
 	{

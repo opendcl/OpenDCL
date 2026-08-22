@@ -178,7 +178,24 @@ bool CPictureBoxCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 
 void CPictureBoxCtrl::SetPictureID(int nPictureID)
 {
-	SetPicture( mpTemplate->GetOwnerProject()->FindPicture( nPictureID ) );
+	TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( nPictureID );
+	if( pPicture )
+		pPicture->RecalcForDpi( mpControlPane );
+	SetPicture( pPicture );
+}
+
+void CPictureBoxCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	if( !mpTemplate )
+		return;
+	const long nPictureID = mpTemplate->GetLongProperty( Prop::Picture );
+	TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( nPictureID );
+	if( !pPicture )
+		return;
+	pPicture->RecalcForDpi( mpControlPane );
+	AutoSize();
+	OnNeedRepaint( true, true );
 }
 
 bool CPictureBoxCtrl::IsAutoSized()

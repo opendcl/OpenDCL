@@ -1,6 +1,7 @@
 #pragma once
 
 class CStgFile;
+class DpiAwareness;
 enum IOStatus;
 
 
@@ -57,8 +58,12 @@ public:
 	IOStatus ReadFromTextFile3(std::ifstream& sFile, const CString &fileName);
 	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
+public:
+	void RecalcForDpi( const DpiAwareness* pDpiAware = nullptr );
+
 protected:
-	void CalcLogicalSize();
+	void CalcLogicalSize( const DpiAwareness* pDpiAware = nullptr );
+
 	BOOL PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk, REFIID iid, LPUNKNOWN pUnkDefault = NULL);
 	BOOL PX_Picture(CArchive& ar, CPictureHolder& pict);
 	BOOL ExchangePersistentProp(CArchive& ar, LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault);
