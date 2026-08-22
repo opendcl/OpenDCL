@@ -152,6 +152,12 @@ protected:
 public:
 	bool FromDIP( LONG* values, USHORT count ) const;
 	bool ToDIP( LONG* values, USHORT count ) const;
+	
+	// Point size (1/72") -> LOGFONT lfHeight (negative pixel height) at the given DPI.
+	static LONG PointSizeToFontHeight( int nPointSize, UINT nDpi );
+
+	// Same as PointSizeToFontHeight(nPointSize, GetDpi()) — keeps fonts on the layout DPI path.
+	LONG PointSizeToFontHeight( int nPointSize ) const;
 
 protected:
 	virtual UINT GetDpi() const { return 96; }
