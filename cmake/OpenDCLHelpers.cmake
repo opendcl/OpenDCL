@@ -4,6 +4,99 @@ include_guard(GLOBAL)
 # Enable target FOLDER -> Visual Studio solution folders (Library/ZLib, ...).
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Attach product .h files and apply IDE filters to .h + .cpp.
+# Headers are HEADER_FILE_ONLY. Each ARGN entry is a directory under
+# CMAKE_SOURCE_DIR (or absolute). Runtime ARX/BRX/GRX/ZRX trees are not GLOB'd.
+#
+# Parallel Include Files / Source Files under each area (Studio and Runtime):
+#   Common\Include Files, Common\Source Files
+#   Common\Controls\Include Files, Common\Controls\Source Files
+#   Include Files, Source Files          (Studio/* or Runtime/*)
+#   Controls\Include Files, Controls\Source Files
+#   Methods\Include Files, Methods\Source Files
+function(opendcl_target_ide_headers target)
+  if(NOT TARGET ${target})
+    message(FATAL_ERROR "opendcl_target_ide_headers: unknown target '${target}'")
+  endif()
+  set(_headers)
+  foreach(_dir IN LISTS ARGN)
+    if(IS_ABSOLUTE "${_dir}")
+      set(_root "${_dir}")
+    else()
+      set(_root "${CMAKE_SOURCE_DIR}/${_dir}")
+    endif()
+    if(NOT EXISTS "${_root}")
+      continue()
+    endif()
+    get_filename_component(_leaf "${_root}" NAME)
+    set(_found)
+    if(_leaf STREQUAL "Common")
+      file(GLOB_RECURSE _found CONFIGURE_DEPENDS "${_root}/*.h")
+    elseif(_leaf STREQUAL "Studio")
+      # Top-level Studio headers only (skip Localized/).
+      file(GLOB _found CONFIGURE_DEPENDS "${_root}/*.h")
+    elseif(_leaf STREQUAL "Runtime")
+      file(GLOB _found CONFIGURE_DEPENDS
+        "${_root}/*.h"
+        "${_root}/Controls/*.h"
+        "${_root}/Methods/*.h"
+      )
+    else()
+      file(GLOB_RECURSE _found CONFIGURE_DEPENDS "${_root}/*.h")
+    endif()
+    list(APPEND _headers ${_found})
+  endforeach()
+  if(_headers)
+    list(REMOVE_DUPLICATES _headers)
+    list(SORT _headers)
+    target_sources(${target} PRIVATE ${_headers})
+    set_source_files_properties(${_headers} PROPERTIES HEADER_FILE_ONLY TRUE)
+  endif()
+
+  # More-specific areas use REGULAR_EXPRESSION. Top-level Studio/Runtime .cpp must
+  # use FILES form: a REGULAR_EXPRESSION named "Source Files" is treated as the
+  # default group and VS omits <Filter>, leaving those .cpp outside any folder.
+  source_group("Common\\Controls\\Include Files" REGULAR_EXPRESSION
+    "[/\\\\]Common[/\\\\]Controls[/\\\\][^/\\\\]+\\.(h|H|hpp)$")
+  source_group("Common\\Controls\\Source Files" REGULAR_EXPRESSION
+    "[/\\\\]Common[/\\\\]Controls[/\\\\][^/\\\\]+\\.(cpp|cxx|cc|CPP)$")
+  source_group("Common\\Include Files" REGULAR_EXPRESSION
+    "[/\\\\]Common[/\\\\][^/\\\\]+\\.(h|H|hpp)$")
+  source_group("Common\\Source Files" REGULAR_EXPRESSION
+    "[/\\\\]Common[/\\\\][^/\\\\]+\\.(cpp|cxx|cc|CPP)$")
+  source_group("Controls\\Include Files" REGULAR_EXPRESSION
+    "[/\\\\]Runtime[/\\\\]Controls[/\\\\][^/\\\\]+\\.(h|H|hpp)$")
+  source_group("Controls\\Source Files" REGULAR_EXPRESSION
+    "[/\\\\]Runtime[/\\\\]Controls[/\\\\][^/\\\\]+\\.(cpp|cxx|cc|CPP)$")
+  source_group("Methods\\Include Files" REGULAR_EXPRESSION
+    "[/\\\\]Runtime[/\\\\]Methods[/\\\\][^/\\\\]+\\.(h|H|hpp)$")
+  source_group("Methods\\Source Files" REGULAR_EXPRESSION
+    "[/\\\\]Runtime[/\\\\]Methods[/\\\\][^/\\\\]+\\.(cpp|cxx|cc|CPP)$")
+  source_group("Include Files" REGULAR_EXPRESSION
+    "[/\\\\](Studio|Runtime)[/\\\\][^/\\\\]+\\.(h|H|hpp)$")
+
+  set(_top_cpp)
+  get_target_property(_all_srcs ${target} SOURCES)
+  if(_all_srcs)
+    foreach(_s IN LISTS _all_srcs)
+      if(IS_ABSOLUTE "${_s}")
+        set(_abs "${_s}")
+      else()
+        get_filename_component(_abs "${_s}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+      endif()
+      string(REPLACE "\\" "/" _norm "${_abs}")
+      if(_norm MATCHES "/Studio/[^/]+\\.(cpp|cxx|cc|CPP)$")
+        list(APPEND _top_cpp "${_abs}")
+      elseif(_norm MATCHES "/Runtime/[^/]+\\.(cpp|cxx|cc|CPP)$")
+        list(APPEND _top_cpp "${_abs}")
+      endif()
+    endforeach()
+  endif()
+  if(_top_cpp)
+    source_group("Source Files" FILES ${_top_cpp})
+  endif()
+endfunction()
+
 # ---------------------------------------------------------------------------
 # Options
 # ---------------------------------------------------------------------------

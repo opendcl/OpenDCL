@@ -176,6 +176,9 @@ add_executable(Studio WIN32
   "${_studio_manifest_rc}"
 )
 
+# IDE browse: product headers (not compiled).
+opendcl_target_ide_headers(Studio Common Studio)
+
 # CMake's default "Source Files" regex matches .cpp, not .CPP.
 source_group("Source Files" FILES
   "${CMAKE_SOURCE_DIR}/Studio/SCBARCF.CPP"
