@@ -116,6 +116,9 @@ function(opendcl_add_runtime id)
     ${OPENDCL_RUNTIME_RC}
   )
 
+  # IDE browse: Common + Runtime headers (not compiled).
+  opendcl_target_ide_headers(${_target} Common Runtime)
+
   opendcl_split_bar("${_defines}" _def_list)
   opendcl_split_bar("${_sdk_inc}" _sdk_inc_list)
   opendcl_split_bar("${_sdk_lib}" _sdk_lib_list)
