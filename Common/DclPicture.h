@@ -1,6 +1,7 @@
 #pragma once
 
 class CStgFile;
+class DpiAwareness;
 enum IOStatus;
 
 
@@ -57,8 +58,13 @@ public:
 	IOStatus ReadFromTextFile3(std::ifstream& sFile, const CString &fileName);
 	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
+public:
+	// Convert embedded HIMETRIC size to pixels. nDpi==0 uses GetDpiForSystem().
+	void CalcLogicalSize( UINT nDpi = 0 );
+	// Same using pane/layout DPI (keeps GetDpi protected on DpiAwareness).
+	void CalcLogicalSize( const DpiAwareness& dpiAware );
+
 protected:
-	void CalcLogicalSize();
 	BOOL PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk, REFIID iid, LPUNKNOWN pUnkDefault = NULL);
 	BOOL PX_Picture(CArchive& ar, CPictureHolder& pict);
 	BOOL ExchangePersistentProp(CArchive& ar, LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault);

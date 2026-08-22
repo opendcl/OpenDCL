@@ -159,6 +159,12 @@ public:
 	// Same as PointSizeToFontHeight(nPointSize, GetDpi()) — keeps fonts on the layout DPI path.
 	LONG PointSizeToFontHeight( int nPointSize ) const;
 
+	// HIMETRIC (0.01 mm) -> pixels at nDpi. 2540 HIMETRIC == 1 inch (same as CDC::HIMETRICtoLP).
+	static SIZE HimetricToPixelSize( long hmWidth, long hmHeight, UINT nDpi );
+
+	// Same as HimetricToPixelSize(hmWidth, hmHeight, GetDpi()).
+	SIZE HimetricToPixelSize( long hmWidth, long hmHeight ) const;
+
 protected:
 	virtual UINT GetDpi() const { return 96; }
 

@@ -300,6 +300,21 @@ LONG DpiAwareness::PointSizeToFontHeight( int nPointSize ) const
 	return PointSizeToFontHeight( nPointSize, GetDpi() );
 }
 
+SIZE DpiAwareness::HimetricToPixelSize( long hmWidth, long hmHeight, UINT nDpi )
+{
+	if( nDpi == 0 )
+		nDpi = 96;
+	SIZE size = {};
+	size.cx = MulDiv( hmWidth, (int)nDpi, 2540 );
+	size.cy = MulDiv( hmHeight, (int)nDpi, 2540 );
+	return size;
+}
+
+SIZE DpiAwareness::HimetricToPixelSize( long hmWidth, long hmHeight ) const
+{
+	return HimetricToPixelSize( hmWidth, hmHeight, GetDpi() );
+}
+
 bool DpiAwareness::IsProcessDpiAware( HANDLE hprocess )
 {
 	PROCESS_DPI_AWARENESS value;
