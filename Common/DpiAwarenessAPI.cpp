@@ -288,31 +288,24 @@ bool DpiAwareness::ToDIP( LONG* values, USHORT count ) const
 	return true;
 }
 
-LONG DpiAwareness::PointSizeToFontHeight( int nPointSize, UINT nDpi )
+LONG DpiAwareness::PointSizeToFontHeight( int nPointSize, const DpiAwareness* pDpiAware /*= nullptr*/ )
 {
+	UINT nDpi = pDpiAware ? pDpiAware->GetDpi() : GetDpiForSystem();
 	if( nDpi == 0 )
 		nDpi = 96;
 	return -MulDiv( nPointSize, (int)nDpi, 72 );
 }
 
-LONG DpiAwareness::PointSizeToFontHeight( int nPointSize ) const
+SIZE DpiAwareness::HimetricToPixelSize( long hmWidth, long hmHeight,
+																				const DpiAwareness* pDpiAware /*= nullptr*/ )
 {
-	return PointSizeToFontHeight( nPointSize, GetDpi() );
-}
-
-SIZE DpiAwareness::HimetricToPixelSize( long hmWidth, long hmHeight, UINT nDpi )
-{
+	UINT nDpi = pDpiAware ? pDpiAware->GetDpi() : GetDpiForSystem();
 	if( nDpi == 0 )
 		nDpi = 96;
 	SIZE size = {};
 	size.cx = MulDiv( hmWidth, (int)nDpi, 2540 );
 	size.cy = MulDiv( hmHeight, (int)nDpi, 2540 );
 	return size;
-}
-
-SIZE DpiAwareness::HimetricToPixelSize( long hmWidth, long hmHeight ) const
-{
-	return HimetricToPixelSize( hmWidth, hmHeight, GetDpi() );
 }
 
 bool DpiAwareness::IsProcessDpiAware( HANDLE hprocess )

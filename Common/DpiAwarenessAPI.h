@@ -153,17 +153,12 @@ public:
 	bool FromDIP( LONG* values, USHORT count ) const;
 	bool ToDIP( LONG* values, USHORT count ) const;
 	
-	// Point size (1/72") -> LOGFONT lfHeight (negative pixel height) at the given DPI.
-	static LONG PointSizeToFontHeight( int nPointSize, UINT nDpi );
+	// Point size (1/72") to LOGFONT lfHeight. Null pDpiAware uses GetDpiForSystem().
+	static LONG PointSizeToFontHeight( int nPointSize, const DpiAwareness* pDpiAware = nullptr );
 
-	// Same as PointSizeToFontHeight(nPointSize, GetDpi()) — keeps fonts on the layout DPI path.
-	LONG PointSizeToFontHeight( int nPointSize ) const;
-
-	// HIMETRIC (0.01 mm) -> pixels at nDpi. 2540 HIMETRIC == 1 inch (same as CDC::HIMETRICtoLP).
-	static SIZE HimetricToPixelSize( long hmWidth, long hmHeight, UINT nDpi );
-
-	// Same as HimetricToPixelSize(hmWidth, hmHeight, GetDpi()).
-	SIZE HimetricToPixelSize( long hmWidth, long hmHeight ) const;
+	// HIMETRIC to pixels (2540/inch). Null pDpiAware uses GetDpiForSystem().
+	static SIZE HimetricToPixelSize( long hmWidth, long hmHeight,
+																	 const DpiAwareness* pDpiAware = nullptr );
 
 protected:
 	virtual UINT GetDpi() const { return 96; }

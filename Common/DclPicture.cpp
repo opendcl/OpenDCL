@@ -891,28 +891,12 @@ void CDclPicture::Render( CDC* pDC, const CRect& rcDest ) const
 	m_hPicture.m_pPict->Render( pDC->m_hDC, rcDest.left, rcDest.top, rcDest.Width(), rcDest.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcDest );
 }
 
-void CDclPicture::CalcLogicalSize( UINT nDpi /*= 0*/ )
+void CDclPicture::RecalcForDpi( const DpiAwareness* pDpiAware /*= nullptr*/ )
 {
-	if( !m_hPicture.m_pPict )
-	{
-		msizePic.SetSize( -1, -1 );
-		return;
-	}
-
-	OLE_XSIZE_HIMETRIC lPicWidth = 0;
-	OLE_YSIZE_HIMETRIC lPicHeight = 0;
-	m_hPicture.m_pPict->get_Width( &lPicWidth );
-	m_hPicture.m_pPict->get_Height( &lPicHeight );
-
-	// Same math as CDC::HIMETRICtoLP, but with an explicit DPI source instead of
-	// GetDC(NULL) LOGPIXELS (so pane/synthetic DPI can match layout FromDIP).
-	if( nDpi == 0 )
-		nDpi = DpiAwarenessHelper::GetDpiForSystem();
-	SIZE size = DpiAwareness::HimetricToPixelSize( lPicWidth, lPicHeight, nDpi );
-	msizePic.SetSize( size.cx, size.cy );
+	CalcLogicalSize( pDpiAware );
 }
 
-void CDclPicture::CalcLogicalSize( const DpiAwareness& dpiAware )
+void CDclPicture::CalcLogicalSize( const DpiAwareness* pDpiAware /*= nullptr*/ )
 {
 	if( !m_hPicture.m_pPict )
 	{
@@ -924,6 +908,7 @@ void CDclPicture::CalcLogicalSize( const DpiAwareness& dpiAware )
 	OLE_YSIZE_HIMETRIC lPicHeight = 0;
 	m_hPicture.m_pPict->get_Width( &lPicWidth );
 	m_hPicture.m_pPict->get_Height( &lPicHeight );
-	SIZE size = dpiAware.HimetricToPixelSize( lPicWidth, lPicHeight );
+
+	SIZE size = DpiAwareness::HimetricToPixelSize( lPicWidth, lPicHeight, pDpiAware );
 	msizePic.SetSize( size.cx, size.cy );
 }

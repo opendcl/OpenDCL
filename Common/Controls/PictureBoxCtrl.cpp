@@ -179,21 +179,21 @@ bool CPictureBoxCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 void CPictureBoxCtrl::SetPictureID(int nPictureID)
 {
 	TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( nPictureID );
-	if( pPicture && mpControlPane )
-		pPicture->CalcLogicalSize( *mpControlPane );
+	if( pPicture )
+		pPicture->RecalcForDpi( mpControlPane );
 	SetPicture( pPicture );
 }
 
 void CPictureBoxCtrl::HandleDpiChanged()
 {
 	__super::HandleDpiChanged();
-	if( !mpControlPane || !mpTemplate )
+	if( !mpTemplate )
 		return;
 	const long nPictureID = mpTemplate->GetLongProperty( Prop::Picture );
 	TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( nPictureID );
 	if( !pPicture )
 		return;
-	pPicture->CalcLogicalSize( *mpControlPane );
+	pPicture->RecalcForDpi( mpControlPane );
 	AutoSize();
 	OnNeedRepaint( true, true );
 }
