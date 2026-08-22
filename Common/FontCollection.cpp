@@ -5,7 +5,8 @@
 #include "FontCollection.h"
 #include "DclControlTemplate.h"
 #include "PropertyIds.h"
-#include "DialogObject.h"
+#include "ControlPane.h"
+#include "DpiAwarenessAPI.h"
 
 
 CFontCollection::CFontCollection()
@@ -33,17 +34,23 @@ CFont* CFontCollection::GetFont(TDclControlPtr pControl, CControlPane *pWnd)
 	stTargetFont.lfWeight = (pControl->GetBooleanProperty(Prop::FontBold)? FW_BOLD : FW_NORMAL);
 	stTargetFont.lfItalic = pControl->GetBooleanProperty(Prop::FontItalic);
 	stTargetFont.lfUnderline = pControl->GetBooleanProperty(Prop::FontUnderline);
-	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::FontStrikeout);if (pWnd)
+	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::FontStrikeout);
 	if( nFontSize > 0 )
-	{ //calculate point size
-		HWND hwndControl = (pWnd? pWnd->GetHostDialog()->m_hWnd : ::GetDesktopWindow());
-		HDC hDC = ::GetDC( hwndControl );
-		int nPixelsY = GetDeviceCaps( hDC, LOGPIXELSY );
-		::ReleaseDC( hwndControl, hDC );
-		stTargetFont.lfHeight = -::MulDiv( nFontSize, nPixelsY, 72 );
+	{
+		// Point size -> lfHeight via pane DPI (same source as FromDIP), not LOGPIXELSY.
+		if( pWnd )
+			stTargetFont.lfHeight = (int)pWnd->PointSizeToFontHeight( nFontSize );
+		else
+			stTargetFont.lfHeight = (int)DpiAwareness::PointSizeToFontHeight( nFontSize, DpiAwarenessHelper::GetDpiForSystem() );
+	}
+	else if( pWnd )
+	{
+		LONG nHeight = nFontSize;
+		pWnd->FromDIP( &nHeight, 1 );
+		stTargetFont.lfHeight = (int)nHeight;
 	}
 	else
-		stTargetFont.lfHeight = (pWnd? pWnd->GetDialogObject()->FromDIP( nFontSize ) : nFontSize);
+		stTargetFont.lfHeight = nFontSize;
 	TraceFmt( _T("CFontCollection::GetFont(%s) => (%s/%d)\r\n"), asString( pControl ), stTargetFont.lfFaceName, stTargetFont.lfHeight );
 
 	POSITION pos = mFonts.GetHeadPosition();

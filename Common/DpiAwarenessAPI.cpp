@@ -288,6 +288,18 @@ bool DpiAwareness::ToDIP( LONG* values, USHORT count ) const
 	return true;
 }
 
+LONG DpiAwareness::PointSizeToFontHeight( int nPointSize, UINT nDpi )
+{
+	if( nDpi == 0 )
+		nDpi = 96;
+	return -MulDiv( nPointSize, (int)nDpi, 72 );
+}
+
+LONG DpiAwareness::PointSizeToFontHeight( int nPointSize ) const
+{
+	return PointSizeToFontHeight( nPointSize, GetDpi() );
+}
+
 bool DpiAwareness::IsProcessDpiAware( HANDLE hprocess )
 {
 	PROCESS_DPI_AWARENESS value;

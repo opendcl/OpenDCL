@@ -69,7 +69,10 @@ protected:
 	void InvalidateControls();
 	virtual void TabOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
 	virtual void TabOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
-	virtual UINT GetDpi() const;
+
+// DpiAwareness overrides
+protected:
+	UINT GetDpi() const override;
 
 // Implementation
 public:
