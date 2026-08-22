@@ -24,6 +24,7 @@ public:
 public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleDpiChanged() override;
 
 public:
 	void SetPicture( TPicturePtr pPict );

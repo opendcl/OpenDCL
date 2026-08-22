@@ -54,14 +54,20 @@ bool CGraphicButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::Picture:
 		{
-			SetPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
+			TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() );
+			if( pPicture && mpControlPane )
+				pPicture->CalcLogicalSize( *mpControlPane );
+			SetPicture( pPicture );
 			if( !IsEnumeratingProperties() )
 				ApplyProperty( mpTemplate->GetPropertyObject( Prop::AutoSize ) );
 			break;
 		}
 	case Prop::MouseOverPicture:
 		{
-			SetMouseOverPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
+			TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() );
+			if( pPicture && mpControlPane )
+				pPicture->CalcLogicalSize( *mpControlPane );
+			SetMouseOverPicture( pPicture );
 			break;
 		}
 	case Prop::BackgroundColor:
@@ -86,6 +92,20 @@ void CGraphicButtonCtrl::SetMouseOverPicture( TPicturePtr pPict )
 {
 	mpMouseOverPicture = pPict;
 	UpdateButtonGraphic();
+}
+
+void CGraphicButtonCtrl::HandleDpiChanged()
+{
+	__super::HandleDpiChanged();
+	if( !mpControlPane )
+		return;
+	if( mpPicture )
+		mpPicture->CalcLogicalSize( *mpControlPane );
+	if( mpMouseOverPicture )
+		mpMouseOverPicture->CalcLogicalSize( *mpControlPane );
+	UpdateButtonGraphic();
+	if( !IsEnumeratingProperties() )
+		ApplyProperty( mpTemplate->GetPropertyObject( Prop::AutoSize ) );
 }
 
 void CGraphicButtonCtrl::UpdateButtonGraphic()
