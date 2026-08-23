@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DpiAwarenessAPI.h"
 
-// Copyright 2017 - 2020 ManuSoft. All Rights Reserved.
+// Copyright 2017 - 2027 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -288,7 +288,7 @@ bool DpiAwareness::ToDIP( LONG* values, USHORT count ) const
 	return true;
 }
 
-LONG DpiAwareness::PointSizeToFontHeight( int nPointSize, const DpiAwareness* pDpiAware /*= nullptr*/ )
+LONG DpiAwareness::PointSizeToFontHeight( int nPointSize, const DpiAwareness* pDpiAware /*= NULL*/ )
 {
 	UINT nDpi = pDpiAware ? pDpiAware->GetDpi() : GetDpiForSystem();
 	if( nDpi == 0 )
@@ -297,14 +297,16 @@ LONG DpiAwareness::PointSizeToFontHeight( int nPointSize, const DpiAwareness* pD
 }
 
 SIZE DpiAwareness::HimetricToPixelSize( long hmWidth, long hmHeight,
-																				const DpiAwareness* pDpiAware /*= nullptr*/ )
+																				const DpiAwareness* pDpiAware /*= NULL*/ )
 {
 	UINT nDpi = pDpiAware ? pDpiAware->GetDpi() : GetDpiForSystem();
 	if( nDpi == 0 )
 		nDpi = 96;
-	SIZE size = {};
-	size.cx = MulDiv( hmWidth, (int)nDpi, 2540 );
-	size.cy = MulDiv( hmHeight, (int)nDpi, 2540 );
+	SIZE size =
+	{
+		MulDiv( hmWidth, (int)nDpi, 2540 ),
+		MulDiv( hmHeight, (int)nDpi, 2540 ),
+	};
 	return size;
 }
 

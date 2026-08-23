@@ -5,7 +5,7 @@
 // if they are available; else they return E_NOTIMPL or default value (e.g. when running on an 
 // earlier version of Windows).
 //
-// Copyright 2017 - 2020 ManuSoft. All Rights Reserved.
+// Copyright 2017 - 2027 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -154,11 +154,11 @@ public:
 	bool ToDIP( LONG* values, USHORT count ) const;
 	
 	// Point size (1/72") to LOGFONT lfHeight. Null pDpiAware uses GetDpiForSystem().
-	static LONG PointSizeToFontHeight( int nPointSize, const DpiAwareness* pDpiAware = nullptr );
+	static LONG PointSizeToFontHeight( int nPointSize, const DpiAwareness* pDpiAware = NULL );
 
 	// HIMETRIC to pixels (2540/inch). Null pDpiAware uses GetDpiForSystem().
 	static SIZE HimetricToPixelSize( long hmWidth, long hmHeight,
-																	 const DpiAwareness* pDpiAware = nullptr );
+																	 const DpiAwareness* pDpiAware = NULL );
 
 protected:
 	virtual UINT GetDpi() const { return 96; }

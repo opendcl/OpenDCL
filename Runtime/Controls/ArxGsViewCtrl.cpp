@@ -118,7 +118,7 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 		if( pEntity->isA() == AcDbMText::desc() )
 		{
 			ACHAR* pszMText = ((AcDbMText*)pEntity)->contents();
-			// if the Mext is empty, don't include it's extents.
+			// if the MText is empty, don't include it's extents.
 			const bool bEmptyMText = ( !pszMText || !*pszMText );
 			acutDelString( pszMText );
 			if( bEmptyMText )
