@@ -74,6 +74,7 @@ extern bool IsOnlyModalForm();
 //		{
 //			sVerSuffix = L'.';
 //			sVerSuffix += CStringW( rbAcadVer.resval.rstring ).SpanExcluding( L". " );
+// 			acutDelString( rbAcadVer.resval.rstring );
 //		}
 //		bstr_t sVLApp = L"VL.Application";
 //		sVLApp += (LPCWSTR)sVerSuffix;
@@ -347,11 +348,11 @@ bool InvokeEventHandler( LPCTSTR pszHandlerLispFunction,
 		int stat = acedInvokeNoDocStateSafe( &rbLispFunction, &prbResult );
 		if( prbArgs )
 			acutRelRb( prbArgs );
+		if( prbResult )
+			acutRelRb( prbResult );
 		assert (stat == RTNORM );
 		if( stat != RTNORM )
 			return false;
-		if( prbResult )
-			acutRelRb( prbResult );
 	}
 	return true;
 }

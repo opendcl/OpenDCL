@@ -12,10 +12,10 @@
 #include "DclPicture.h"
 #include "Resource.h"
 
-#if defined(_BRXTARGET) || defined(_ZRXTARGET) || defined(_GRXTARGET)
-static bool AcadIsQuitting() { return false; }
-#else
+#if defined(_ARXTARGET) || (_BRXTARGET >= 20)
 extern bool AcadIsQuitting(void);
+#else
+static bool AcadIsQuitting() { return false; }
 #endif
 
 
@@ -407,6 +407,10 @@ void CPaletteDlg::PostNcDestroy()
 	CAcadPaletteHost* pHostToDelete = NULL;
 	if( !IsFloating() && !AcadIsQuitting() )
 		pHostToDelete = &mHostPaletteSet;
+#if (_BRXTARGET >= 20)
+	else if( !mHostPaletteSet.m_bAutoDelete )
+		pHostToDelete = &mHostPaletteSet;
+#endif
 	delete this;
 	delete pHostToDelete;
 }

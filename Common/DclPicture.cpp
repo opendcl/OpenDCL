@@ -891,12 +891,12 @@ void CDclPicture::Render( CDC* pDC, const CRect& rcDest ) const
 	m_hPicture.m_pPict->Render( pDC->m_hDC, rcDest.left, rcDest.top, rcDest.Width(), rcDest.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcDest );
 }
 
-void CDclPicture::RecalcForDpi( const DpiAwareness* pDpiAware /*= nullptr*/ )
+void CDclPicture::RecalcForDpi( const DpiAwareness* pDpiAware /*= NULL*/ )
 {
 	CalcLogicalSize( pDpiAware );
 }
 
-void CDclPicture::CalcLogicalSize( const DpiAwareness* pDpiAware /*= nullptr*/ )
+void CDclPicture::CalcLogicalSize( const DpiAwareness* pDpiAware /*= NULL*/ )
 {
 	if( !m_hPicture.m_pPict )
 	{

@@ -51,7 +51,7 @@ class CArxWorkspace : public CWorkspace
 			: mpWorkspace( pWorkspace )
 			{ acDocManager->addReactor( this ); }
 		~CDocReactor()
-			{ acDocManager->removeReactor( this ); }
+			{ if ( acDocManager ) acDocManager->removeReactor( this ); }
 		virtual void documentBecameCurrent(AcApDocument* pDoc)
 			{ if( mpWorkspace ) mpWorkspace->UpdateGlobalLispSymbols(); }
 	} mDocReactor;

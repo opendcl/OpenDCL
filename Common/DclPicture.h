@@ -59,10 +59,10 @@ public:
 	//IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
 public:
-	void RecalcForDpi( const DpiAwareness* pDpiAware = nullptr );
+	void RecalcForDpi( const DpiAwareness* pDpiAware = NULL );
 
 protected:
-	void CalcLogicalSize( const DpiAwareness* pDpiAware = nullptr );
+	void CalcLogicalSize( const DpiAwareness* pDpiAware = NULL );
 
 	BOOL PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk, REFIID iid, LPUNKNOWN pUnkDefault = NULL);
 	BOOL PX_Picture(CArchive& ar, CPictureHolder& pict);

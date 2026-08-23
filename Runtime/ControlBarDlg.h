@@ -56,7 +56,7 @@ protected:
 	void ApplyPosition() override; //move control window to new position
 
 protected:
-friend class CAcadDockBarHost;
+	friend CAcadDockBarHost;
 	virtual void GetClientArea(CRect &rect);
 	virtual bool OnClosing();
 	virtual void OnMouseEnter();

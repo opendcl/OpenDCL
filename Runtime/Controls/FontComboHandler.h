@@ -277,6 +277,7 @@ protected:
 			struct resbuf rb;
 			acedGetVar(_T("ACADPREFIX"), &rb);
 			sAcadPrefix = rb.resval.rstring;
+			acutDelString( rb.resval.rstring );
 			for (int i=0; i<sAcadPrefix.GetLength(); i++)
 			{
 				sChar = sAcadPrefix.Mid(i,1);
