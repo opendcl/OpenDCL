@@ -1165,6 +1165,7 @@ public:
 			acutPrintf( theWorkspace.LoadResourceString( IDS_BANNER ), (LPCTSTR)sVersion );
 		}
 
+		LoadLibrary( sModulePath );
 		return (retCode) ;
 	}
 

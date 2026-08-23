@@ -100,11 +100,11 @@ protected:
 				#if (_ACADTARGET >= 20)
 					AcGsKernelDescriptor KernelDesc;
 					KernelDesc.addRequirement(AcGsKernelDescriptor::k3DDrawing);
-					mpKernel = pManager->acquireGraphicsKernel( KernelDesc );
+					mpKernel = AcGsManager::acquireGraphicsKernel( KernelDesc );
 					assert( mpKernel != NULL );
 					if( !mpKernel )
 						return;
-				#ifndef _BRXTARGET
+				#if !defined(_BRXTARGET) || (_BRXTARGET >= 17)
 					mpKernel->addReactor( this );
 				#endif
 					//a device with standard autocad color palette
@@ -187,7 +187,27 @@ protected:
 			#if (_ACADTARGET >= 20)
 				if( mpKernel )
 				{
-				#ifndef _BRXTARGET
+					if( mpModel )
+					{
+						mpKernel->deleteModel( mpModel );
+						mpModel = NULL;
+					}
+					if( mpDevice )
+					{
+						if( mpView )
+						{
+						#if !defined(_ZRXTARGET) && !(defined(_ARXTARGET) && (_ARXTARGET <= 17)) && !defined(_GRXTARGET)
+							//causes crash in AutoCAD 2007 and earlier [ORW 2012-07-20]
+							//and ZWCAD+ [ORW 2014-06-20]
+							//and GStarCAD 2023 [ORW 2023-03-31]
+							mpView->eraseAll();
+						#endif
+							mpDevice->erase( mpView );
+						}
+						mpKernel->deleteDevice( mpDevice );
+						mpDevice = NULL;
+					}
+				#if !defined(_BRXTARGET) || (_BRXTARGET >= 17)
 					mpKernel->removeReactor( this );
 				#endif
 					if( mpView )
@@ -205,7 +225,7 @@ protected:
 						mpGhostModel = NULL;
 					}
 				#endif //USE_ORBIT_GADGET
-					mpKernel->delRef();
+					AcGsManager::releaseGraphicsKernel( mpKernel );
 					mpKernel = NULL;
 				}
 			#else

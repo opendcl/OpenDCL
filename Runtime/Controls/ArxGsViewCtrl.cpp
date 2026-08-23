@@ -119,7 +119,9 @@ void CArxGsViewCtrl::DisplayBTR( AcDbBlockTableRecord* pBTR, double dZoomFactor,
 		{
 			ACHAR* pszMText = ((AcDbMText*)pEntity)->contents();
 			// if the Mext is empty, don't include it's extents.
-			if( !pszMText || !*pszMText )
+			const bool bEmptyMText = ( !pszMText || !*pszMText );
+			acutDelString( pszMText );
+			if( bEmptyMText )
 				continue;
 		}
 		extBTR.addExt( extEnt ); //add this entity to the total extents

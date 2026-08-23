@@ -122,6 +122,7 @@ CArxBlockListCtrl::CArxBlockListCtrl( TDclControlPtr pTemplate, CControlPane* pP
 
 CArxBlockListCtrl::~CArxBlockListCtrl()
 {
+	delete mpLoadedDwg;
 }
 
 bool CArxBlockListCtrl::Create( CWnd* pParentWnd, UINT nID )

@@ -40,18 +40,19 @@ bool CArxHatchCtrl::ApplyProperty( TPropertyPtr pProp )
 
 void CArxHatchCtrl::Clear()
 {
+	clearAll();
 	msHatchPattern.Empty();
+	midHatch.setNull();
 	if( mpHatchDb )
 	{
 		delete mpHatchDb;
 		mpHatchDb = NULL;
 	}
-	midHatch.setNull();
-	clearAll();
 }
 
 bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 {
+	Clear();
 	msHatchPattern = pszPattern;
 
 	AcDbDatabase* pWorkingDb = new AcDbDatabase( true, true );
@@ -74,6 +75,7 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 		delete pWorkingDb;
 		return false;
 	}
+	mpHatchDb = pWorkingDb;
 
 	if( pszPattern && *pszPattern )
 	{

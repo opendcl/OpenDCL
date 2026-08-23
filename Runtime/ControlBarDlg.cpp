@@ -426,6 +426,10 @@ void CControlBarDlg::PostNcDestroy()
 	CAcadDockBarHost* pHostToDelete = NULL;
 	if( !IsFloating() && !AcadIsQuitting() )
 		pHostToDelete = &mHostControlBar;
+#if (_BRXTARGET >= 20)
+	else if( !mHostControlBar.m_bAutoDelete )
+		pHostToDelete = &mHostControlBar;
+#endif
 	delete this;
 	delete pHostToDelete;
 }

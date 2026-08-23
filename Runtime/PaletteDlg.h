@@ -57,7 +57,7 @@ protected:
 	BOOL HandleEraseBkgnd( CDC* pDC ) override;
 
 protected:
-friend class CAcadPaletteHost;
+	friend CAcadPaletteHost;
 	virtual bool OnClosing();
 	virtual void OnMouseEnter();
 	virtual void OnMouseLeave();

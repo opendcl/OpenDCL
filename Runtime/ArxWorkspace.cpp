@@ -77,7 +77,9 @@ CString CArxWorkspace::GetUserProfilePrefix() const
 {
 	resbuf rbProfile = { NULL };
 	acedGetVar( _T("CPROFILE"), &rbProfile );
-	return CString( _T("Profiles\\") ) +  rbProfile.resval.rstring + _T("\\OpenDCL\\");
+	CString sProfile = CString( _T("Profiles\\") ) + rbProfile.resval.rstring + _T("\\OpenDCL\\");
+	acutDelString( rbProfile.resval.rstring );
+	return sProfile;
 }
 
 HMODULE CArxWorkspace::GetThisModule() const
@@ -99,7 +101,8 @@ CString CArxWorkspace::GetLanguage(void) const
 	if( RTNORM != acedGetVar( _T("LOCALE"), &rbLocale ) )
 		return sLanguage;
 	CString sLocale = rbLocale.resval.rstring;
-	
+	acutDelString( rbLocale.resval.rstring );
+
 	CString sRootFolder;
 	int cchPath = ::GetModuleFileName( GetResourceModule(), sRootFolder.GetBuffer( MAX_PATH ), MAX_PATH );
 	sRootFolder.ReleaseBuffer( cchPath );
