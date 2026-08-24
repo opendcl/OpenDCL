@@ -60,7 +60,7 @@
 
 .EXAMPLE
   # Dev custom installer (BRX 27 + ENU only, no Studio)
-  .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `
+  .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-dev) `
     -ProductVersion 10.1.1.1 -Runtimes BRX.27.x64 -Languages ENU `
     -ModuleSet Selected -SkipStudio -SkipLocalization
 #>

@@ -308,7 +308,7 @@ option(OPENDCL_RUNTIME_REQUIRE_SELECTED
   "Fail configure if a selected runtime target cannot be built" OFF)
 
 # After family/arch/SDK filters: keep at most N candidates per family (highest
-# VERSION wins). 0 = unlimited (full matrix / vs2022-x64-auto). Dev preset uses 1.
+# VERSION wins). 0 = unlimited (full matrix / vs2022-auto). Dev preset uses 1.
 set(OPENDCL_RUNTIME_PER_FAMILY_MAX "0" CACHE STRING
   "Max enabled runtimes per family after filters (0 = unlimited; 1 = latest only)")
 # Empty = no toolset floor. Example: v141 keeps v141 / v141_xp / v142 / v143 ...

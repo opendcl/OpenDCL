@@ -53,12 +53,12 @@ cmake --build --preset vs2022-x86-studio-debug
 
 # Dev default: latest modern SDK per family (set any ARX*/BRX*/GRX*/ZRX* roots;
 # missing families omitted; Studio still builds with zero SDKs):
-cmake --preset vs2022-x64-dev
-cmake --build --preset vs2022-x64-dev-debug
+cmake --preset vs2022-dev
+cmake --build --preset vs2022-dev-debug
 ```
 
 Open the generated solution under `build/<preset>/<preset>.sln` (for example
-`build/vs2022-x64-dev/vs2022-x64-dev.sln`).
+`build/vs2022-dev/vs2022-dev.sln`).
 
 Classic `OpenDCL.sln` remains for historical / transitional builds.
 

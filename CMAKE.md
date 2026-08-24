@@ -32,7 +32,7 @@ Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 | `Runtime/Localized/CMakeLists.txt` | `Runtime.Res.<lang>` DLLs |
 
 CMake Visual Studio generators write **`build/<preset>/<preset>.sln`** (e.g.
-`build/vs2022-x64-dev/vs2022-x64-dev.sln`) so multiple presets stay distinguishable
+`build/vs2022-dev/vs2022-dev.sln`) so multiple presets stay distinguishable
 in the IDE. Override with `-DOPENDCL_SOLUTION_NAME=...`. Nested Win32 under a full
 preset is `build/vs2022-full/win32/vs2022-full-win32.sln`.
 
@@ -95,17 +95,17 @@ cd <OpenDCL repo root>
 # Dev default: auto-select up to one modern (toolset >= v141) runtime per family
 # from whatever ARX*/BRX*/GRX*/ZRX* SDK roots are available; missing families omitted.
 # Configure prints ENABLE lines for the IDs actually chosen (not fixed to BRX.27/ARX.26).
-cmake --preset vs2022-x64-dev
-cmake --build --preset vs2022-x64-dev-release
+cmake --preset vs2022-dev
+cmake --build --preset vs2022-dev-release
 # or Debug:
-cmake --build --preset vs2022-x64-dev-debug
+cmake --build --preset vs2022-dev-debug
 
-# Pin a single named matrix row (requires that SDK; see also vs2022-x64-brx-latest)
-cmake --preset vs2022-x64-arx-latest
-cmake --build --preset vs2022-x64-arx-latest-release
+# Pin a single named matrix row (requires that SDK; see also vs2022-brx-latest)
+cmake --preset vs2022-arx-latest
+cmake --build --preset vs2022-arx-latest-release
 
 # Auto-detect every installed CAD SDK (x64; no per-family cap / no toolset floor)
-cmake --preset vs2022-x64-auto
+cmake --preset vs2022-auto
 
 # Full ship: one .sln with x64 + nested Win32 (imported into Solution Explorer)
 cmake --preset vs2022-full --fresh
@@ -128,12 +128,13 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 
 | Preset | Role |
 | --- | --- |
-| **`vs2022-x64-dev`** | Day-to-day: auto-detect SDKs, **one latest modern runtime per family** (`PER_FAMILY_MAX=1`, `MIN_TOOLSET=v141`); Studio-only if no SDKs |
-| **`vs2022-x64-arx-modern`** | ARX only: up to **3** latest modern SDKs (`PER_FAMILY_MAX=3`, `MIN_TOOLSET=v141`) |
+| **`vs2022-dev`** | Day-to-day: auto-detect SDKs, **one latest modern runtime per family** (`PER_FAMILY_MAX=1`, `MIN_TOOLSET=v141`); Studio-only if no SDKs |
+| **`vs2022-arx-modern`** | ARX only: up to **3** latest modern SDKs (`PER_FAMILY_MAX=3`, `MIN_TOOLSET=v141`) |
 | **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** + **`OPENDCL_STUDIO_PE=classic_x86`** (x86 Runtime.Res + **Win32 Studio** / Studio.Res via nest) |
 | **`vs2022-x64-full`** | Same dual-arch module nest + classic x86 Runtime.Res, but **`host`** Studio -> **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; classic x86 Runtime.Res (native on Win32) |
 | **`vs2022-x86-studio`** | **Win32 Studio only** (no CAD runtimes / Runtime.Res / RxInstall / nest). Studio.Res still builds with Studio. Configs: **Debug\|Release only** (`OPENDCL_BUILD_RUNTIME=OFF` omits FullDebug). `cmake --preset vs2022-x86-studio` then `cmake --build --preset vs2022-x86-studio-debug` |
+| **`vs2026-*`** | Same roles as the `vs2022-*` set (`dev`, specialty, `full`, `x64-full`, `win32-full`, `x86-studio`). Still uses the **Visual Studio 17 2022** generator (CMake has no VS 18 generator yet) and pins **v143 14.44.35207** so `cmake --build` matches a VS 2026 IDE session. Binary dirs: `build/vs2026-…`. |
 | Configurations | **FullDebug** is in the `.sln` only when `OPENDCL_BUILD_RUNTIME` is ON. Studio-only / no-runtime presets use `Debug;Release`. |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug->Debug outputs |
@@ -150,7 +151,7 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 
 Parent targets: `Nest_Lib_*`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32` (Res-only from common), umbrella **`Nest_Win32`** (libs → runtimes → common). Nest CustomBuilds use `MSBUILDDISABLENODEREUSE` + `/nodeReuse:false`. Imported `w32_*` are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged.
 
-**Day-to-day x64 without full nest** (`vs2022-x64-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella. Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
+**Day-to-day x64 without full nest** (`vs2022-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella. Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
 
 ### Known limitations - nested Win32 full build (`vs2022-full`)
 
@@ -162,7 +163,7 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 | **C1001** ICE in nest modules (PCH, PaletteDlg, etc.) | Same pressure / parallel compile instability | Same throttle; rebuild single target or stand-alone `build/.../win32` with low `/m`. |
 | Cancel in VS does not stop nest `cmake --build` cleanly | Nested MSBuild is a child process of a CustomBuild step | Kill stray `MSBuild`/`cl` if needed; known CustomBuild limitation. |
 | **MSB0001** / `EndBuild has already been called` on `Res_Win32` / png | Nested nest MSBuild during a parallel parent VS build (and/or ZERO_CHECK regenerating the `.sln` mid-build) | Nest commands use `MSBUILDDISABLENODEREUSE=1` + `/nodeReuse:false`. After editing CMake files, let configure finish / reload the `.sln`, then rebuild (do not Build Solution in the same pass that rewrites projects). |
-| Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-x64-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
+| Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
 | Studio MSI includes Runtime MSM | Separate Runtime MSI not required for Studio install smoke | Install **Studio.\<LANG\>.msi** only for Studio+Runtime install tests (see **docs/SMOKE.md**). |
 
 **Workaround when nest fails:** build a single split nest with low parallelism:
@@ -184,7 +185,7 @@ can linger. To re-apply the **dev** preset (and re-pick "latest modern SDK" afte
 installing a new CAD SDK):
 
 ```powershell
-cmake --preset vs2022-x64-dev --fresh
+cmake --preset vs2022-dev --fresh
 ```
 
 To **pin** a single matrix row (not the auto-dev policy), use a separate binary
@@ -202,7 +203,7 @@ cmake -S . -B build/manual-brx -G "Visual Studio 17 2022" -A x64 `
 cmake --build build/manual-brx --config Release
 ```
 
-Or use a pin preset: `vs2022-x64-arx-latest` / `vs2022-x64-brx-latest` (those
+Or use a pin preset: `vs2022-arx-latest` / `vs2022-brx-latest` (those
 require the named SDK).
 
 Outputs land under `build/<preset>/out/`, mirroring the classic tree so F5 debug
@@ -235,17 +236,17 @@ out/Library/x64-mt/Debug/...                  # Studio /MT; FullDebug -> Debug
 | `OPENDCL_RUNTIME_TARGETS` | Explicit ID list; empty = all of enabled families |
 | `OPENDCL_RUNTIME_AUTO` | Skip missing SDKs (default ON) |
 | `OPENDCL_RUNTIME_REQUIRE_SELECTED` | Fail if a listed target cannot build |
-| `OPENDCL_RUNTIME_PER_FAMILY_MAX` | After other filters, keep at most **N** runtimes per family (highest matrix `VERSION` wins). **`0`** = unlimited (default; full / auto). **`1`** = latest only (dev). **`3`** = modern multi-year window (`vs2022-x64-arx-modern`) |
+| `OPENDCL_RUNTIME_PER_FAMILY_MAX` | After other filters, keep at most **N** runtimes per family (highest matrix `VERSION` wins). **`0`** = unlimited (default; full / auto). **`1`** = latest only (dev). **`3`** = modern multi-year window (`vs2022-arx-modern`) |
 | `OPENDCL_RUNTIME_MIN_TOOLSET` | Floor on matrix `TOOLSET` (e.g. **`v141`** keeps `v141` / `v141_xp` / `v142` / `v143`). Empty = no floor (default). Applied before the per-family limit |
 | `OPENDCL_<SDK>_ROOT` | Override SDK path (else `ENV{SDK}`) |
 | `OPENDCL_LANGS` | Resource languages (default `ENU`) |
 | `OPENDCL_BUILD_RXINSTALL` | Build Win32 RxInstall CA DLL (default **ON** in presets; nested Win32 from x64, sources listed in main .sln for editing) |
 
-**Dev selection policy** (`vs2022-x64-dev`): all families ON, empty target list, `OPENDCL_RUNTIME_AUTO=ON`, **`OPENDCL_RUNTIME_PER_FAMILY_MAX=1`**, **`OPENDCL_RUNTIME_MIN_TOOLSET=v141`**. For each family, enables the highest-`VERSION` host-arch row that has an SDK and toolset >= v141; omits the family if none match. Zero CAD SDKs -> no runtime modules (Studio still builds).
+**Dev selection policy** (`vs2022-dev`): all families ON, empty target list, `OPENDCL_RUNTIME_AUTO=ON`, **`OPENDCL_RUNTIME_PER_FAMILY_MAX=1`**, **`OPENDCL_RUNTIME_MIN_TOOLSET=v141`**. For each family, enables the highest-`VERSION` host-arch row that has an SDK and toolset >= v141; omits the family if none match. Zero CAD SDKs -> no runtime modules (Studio still builds).
 
-**Modern ARX** (`vs2022-x64-arx-modern`): ARX only, same auto + min toolset, **`PER_FAMILY_MAX=3`** (up to three newest available modern ARX SDKs - no hard-coded year list). Same pattern works for other families if you add presets later.
+**Modern ARX** (`vs2022-arx-modern`): ARX only, same auto + min toolset, **`PER_FAMILY_MAX=3`** (up to three newest available modern ARX SDKs - no hard-coded year list). Same pattern works for other families if you add presets later.
 
-Unlimited multi-SDK trees use `vs2022-x64-auto` or full presets (`PER_FAMILY_MAX=0`, no min toolset).
+Unlimited multi-SDK trees use `vs2022-auto` or full presets (`PER_FAMILY_MAX=0`, no min toolset).
 
 ## Visual Studio F5 debugger
 
@@ -301,7 +302,7 @@ path is used. Do not leave an empty `LocalDebuggerCommandArguments` element in
 ```powershell
 # Optional override (skips registry for that family):
 $env:BRX_EXE = "D:\BricsCAD\bricscad.exe"
-cmake --preset vs2022-x64-dev
+cmake --preset vs2022-dev
 # F5 on whichever Runtime_* target was enabled (see configure ENABLE lines)
 # -> discovered or overridden host + /ld "<module>"
 ```
@@ -386,8 +387,8 @@ Example machine **`fulldebug.brx.props`** (outside the repo; adjust macros to yo
 $env:BRX27 = "S:\BRX27"   # release SDK
 # Host-debug roots used only by fulldebug.brx.props (set in the user/machine env):
 #   BRX_PATH, DDCAD_PATH, optional BrxDebugLibs
-cmake --preset vs2022-x64-dev
-cmake --build build/vs2022-x64-dev --config FullDebug --target Runtime_BRX_27_x64
+cmake --preset vs2022-dev
+cmake --build build/vs2022-dev --config FullDebug --target Runtime_BRX_27_x64
 ```
 
 Do **not** scan proprietary CAD debug trees. Do not commit machine paths or host-debug Command strings in public CMake.
@@ -437,9 +438,9 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 | **Custom subset** | `-Runtimes ...`, `-ModuleSet Selected\|Available`, and/or language filters | `OpenDCL.Runtime.custom.msm` / `.msi` with seed GUIDs (no ship identity clash) |
 
 ```powershell
-# Package whatever modules a tree actually built (good for vs2022-x64-dev or full):
+# Package whatever modules a tree actually built (good for vs2022-dev or full):
 .\scripts\build-wix.ps1 `
-  -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `
+  -OpenDclRoot (Resolve-Path build\vs2022-dev) `
   -ModuleSet Available `
   -AvailableLanguages `
   -SkipStudio
@@ -447,7 +448,7 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 # Explicit choice - IDs must exist under that tree's out\ (use configure ENABLE
 # names; BRX.27.x64 is only an example, not what every dev tree contains):
 .\scripts\build-wix.ps1 `
-  -OpenDclRoot (Resolve-Path build\vs2022-x64-dev) `
+  -OpenDclRoot (Resolve-Path build\vs2022-dev) `
   -Runtimes BRX.27.x64 `
   -Languages ENU `
   -SkipStudio
