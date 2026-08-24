@@ -2,7 +2,7 @@
 # classic_x86 /NOENTRY PE when the full OPENDCL_NEST_WIN32 tree is off.
 #
 # Used when OPENDCL_RES_PE=classic_x86 on an x64 configure without full nest
-# (e.g. vs2022-x64-dev). Full Mixed creates Res_Win32 after nest import instead.
+# (e.g. vs2022-dev). Full Mixed creates Res_Win32 after nest import instead.
 # OPENDCL_RES_PE=host builds Res natively in the parent (escape hatch).
 #
 # Nested tree flags: OPENDCL_BUILD_RES_DLLS=ON only (no modules / Studio.exe / RxInstall).

@@ -20,8 +20,19 @@
       }
     },
     {
-      "name": "vs2022-x64-dev",
-      "displayName": "VS2022 x64 — latest modern SDK per family (dev); classic x86 Runtime.Res",
+      "name": "base-vs2026",
+      "hidden": true,
+      "inherits": "base",
+      "displayName": "VS2026 base (VS 17 generator + v143 14.44 pin)",
+      "description": "CMake has no Visual Studio 18 generator yet; pin v143 to 14.44.35207 so cmake --build matches a VS 2026 IDE session on this tree.",
+      "toolset": {
+        "value": "version=14.44.35207,host=x64",
+        "strategy": "set"
+      }
+    },
+    {
+      "name": "vs2022-dev",
+      "displayName": "VS2022 — latest modern SDK per family (dev); classic x86 Runtime.Res",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -40,8 +51,8 @@
       }
     },
     {
-      "name": "vs2022-x64-brx-latest",
-      "displayName": "VS2022 x64 — BRX.27.x64 only",
+      "name": "vs2022-brx-latest",
+      "displayName": "VS2022 — BRX.27.x64 only",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -58,8 +69,8 @@
       }
     },
     {
-      "name": "vs2022-x64-arx-latest",
-      "displayName": "VS2022 x64 — ARX.26.x64 only",
+      "name": "vs2022-arx-latest",
+      "displayName": "VS2022 — ARX.26.x64 only",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -76,8 +87,8 @@
       }
     },
     {
-      "name": "vs2022-x64-arx-modern",
-      "displayName": "VS2022 x64 — up to 3 latest modern ARX SDKs",
+      "name": "vs2022-arx-modern",
+      "displayName": "VS2022 — up to 3 latest modern ARX SDKs",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -96,8 +107,8 @@
       }
     },
     {
-      "name": "vs2022-x64-auto",
-      "displayName": "VS2022 x64 — auto-detect all SDKs",
+      "name": "vs2022-auto",
+      "displayName": "VS2022 — auto-detect all SDKs",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -193,22 +204,197 @@
         "OPENDCL_STUDIO_PE": "host",
         "OPENDCL_LANGS": "ENU"
       }
+    },
+    {
+      "name": "vs2026-dev",
+      "displayName": "VS2026 — latest modern SDK per family (dev); classic x86 Runtime.Res",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "ON",
+        "OPENDCL_ENABLE_ZRX": "ON",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
+        "OPENDCL_RUNTIME_PER_FAMILY_MAX": "1",
+        "OPENDCL_RUNTIME_MIN_TOOLSET": "v141"
+      }
+    },
+    {
+      "name": "vs2026-brx-latest",
+      "displayName": "VS2026 — BRX.27.x64 only",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "BRX.27.x64",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
+      }
+    },
+    {
+      "name": "vs2026-arx-latest",
+      "displayName": "VS2026 — ARX.26.x64 only",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "ARX.26.x64",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "ON"
+      }
+    },
+    {
+      "name": "vs2026-arx-modern",
+      "displayName": "VS2026 — up to 3 latest modern ARX SDKs",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
+        "OPENDCL_RUNTIME_PER_FAMILY_MAX": "3",
+        "OPENDCL_RUNTIME_MIN_TOOLSET": "v141"
+      }
+    },
+    {
+      "name": "vs2026-auto",
+      "displayName": "VS2026 — auto-detect all SDKs",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "ON",
+        "OPENDCL_ENABLE_ZRX": "ON",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_TARGETS": ""
+      }
+    },
+    {
+      "name": "vs2026-full",
+      "displayName": "VS2026 Mixed full ship — x64 .sln + nested Win32 + classic x86 Studio/Res",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "ON",
+        "OPENDCL_BUILD_RXINSTALL": "ON",
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "ON",
+        "OPENDCL_ENABLE_ZRX": "ON",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
+        "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
+        "OPENDCL_NEST_WIN32": "ON",
+        "OPENDCL_WIN32_IN_ALL": "ON",
+        "OPENDCL_RES_PE": "classic_x86",
+        "OPENDCL_STUDIO_PE": "classic_x86"
+      }
+    },
+    {
+      "name": "vs2026-x64-full",
+      "displayName": "VS2026 x64 full — nested Win32 modules + x64 Studio + classic x86 Runtime.Res",
+      "inherits": "vs2026-full",
+      "cacheVariables": {
+        "OPENDCL_NEST_WIN32": "ON",
+        "OPENDCL_WIN32_IN_ALL": "ON",
+        "OPENDCL_RES_PE": "classic_x86",
+        "OPENDCL_STUDIO_PE": "host"
+      }
+    },
+    {
+      "name": "vs2026-win32-full",
+      "displayName": "VS2026 Win32 only — x86 matrix + classic x86 Runtime.Res",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "Win32",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "ON",
+        "OPENDCL_BUILD_RXINSTALL": "ON",
+        "OPENDCL_ENABLE_ARX": "ON",
+        "OPENDCL_ENABLE_BRX": "ON",
+        "OPENDCL_ENABLE_GRX": "ON",
+        "OPENDCL_ENABLE_ZRX": "ON",
+        "OPENDCL_RUNTIME_AUTO": "ON",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
+        "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
+        "OPENDCL_NEST_WIN32": "OFF"
+      }
+    },
+    {
+      "name": "vs2026-x86-studio",
+      "displayName": "VS2026 Win32 — Studio only (x86 build/debug)",
+      "inherits": "base-vs2026",
+      "architecture": {
+        "value": "Win32",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "ON",
+        "OPENDCL_BUILD_RUNTIME": "OFF",
+        "OPENDCL_BUILD_RXINSTALL": "OFF",
+        "OPENDCL_BUILD_RES_DLLS": "OFF",
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_NEST_WIN32": "OFF",
+        "OPENDCL_STUDIO_PE": "host",
+        "OPENDCL_LANGS": "ENU"
+      }
     }
   ],
   "buildPresets": [
     {
-      "name": "vs2022-x64-dev-release",
-      "configurePreset": "vs2022-x64-dev",
+      "name": "vs2022-dev-release",
+      "configurePreset": "vs2022-dev",
       "configuration": "Release"
     },
     {
-      "name": "vs2022-x64-dev-debug",
-      "configurePreset": "vs2022-x64-dev",
+      "name": "vs2022-dev-debug",
+      "configurePreset": "vs2022-dev",
       "configuration": "Debug"
     },
     {
-      "name": "vs2022-x64-arx-latest-release",
-      "configurePreset": "vs2022-x64-arx-latest",
+      "name": "vs2022-arx-latest-release",
+      "configurePreset": "vs2022-arx-latest",
       "configuration": "Release"
     },
     {
@@ -244,6 +430,56 @@
     {
       "name": "vs2022-x86-studio-release",
       "configurePreset": "vs2022-x86-studio",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2026-dev-release",
+      "configurePreset": "vs2026-dev",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2026-dev-debug",
+      "configurePreset": "vs2026-dev",
+      "configuration": "Debug"
+    },
+    {
+      "name": "vs2026-arx-latest-release",
+      "configurePreset": "vs2026-arx-latest",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2026-full-release",
+      "configurePreset": "vs2026-full",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2026-full-debug",
+      "configurePreset": "vs2026-full",
+      "configuration": "Debug"
+    },
+    {
+      "name": "vs2026-full-fulldebug",
+      "configurePreset": "vs2026-full",
+      "configuration": "FullDebug"
+    },
+    {
+      "name": "vs2026-x64-full-release",
+      "configurePreset": "vs2026-x64-full",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2026-win32-full-release",
+      "configurePreset": "vs2026-win32-full",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2026-x86-studio-debug",
+      "configurePreset": "vs2026-x86-studio",
+      "configuration": "Debug"
+    },
+    {
+      "name": "vs2026-x86-studio-release",
+      "configurePreset": "vs2026-x86-studio",
       "configuration": "Release"
     }
   ]

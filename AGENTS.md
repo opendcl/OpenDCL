@@ -41,8 +41,9 @@ wix/out/                 Generated packages (gitignored)
 
 ### CMake (preferred multi-host matrix, Studio F5, and Full product)
 
-Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-x64-dev`:
-auto-detect SDKs, max one modern toolset >= v141 runtime per family; ship **`vs2022-full`**).
+Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-dev` /
+`vs2026-dev`: auto-detect SDKs, max one modern toolset >= v141 runtime per family;
+ship **`vs2022-full`** / **`vs2026-full`**).
 Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`. First-time
 human steps: **`docs/BUILD-QUICKSTART.md`**.
 
@@ -58,7 +59,7 @@ human steps: **`docs/BUILD-QUICKSTART.md`**.
 | Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: OpenDclRoot / `out\` / packaging repo only. |
 | Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` ((c)). Do not re-save as UTF-8. |
 | Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** holding x64 + imported Win32 peers. Split nests: `win32-lib/<ts>-<crt>`, `win32-rt/<id>`, `win32-common` (Res/Studio/RxInstall). Build via `Nest_Lib_*` / `Nest_Win32_*` / `Nest_Win32`. **`vs2022-x64-full`**: x64 Studio + classic x86 Res. Helper: `scripts/build-cmake-full.ps1`. |
-| Nest Win32 full build | Split nests reduce blast radius; old toolsets can still hit **C1060/C1001**. Throttle: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT` / `OPENDCL_NEST_CL_MP_COUNT` + `/nodeReuse:false`. Prefer `vs2022-x64-dev` for daily IDE work. |
+| Nest Win32 full build | Split nests reduce blast radius; old toolsets can still hit **C1060/C1001**. Throttle: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT` / `OPENDCL_NEST_CL_MP_COUNT` + `/nodeReuse:false`. Prefer `vs2022-dev` for daily IDE work. |
 Sibling clones (typical workspace: product + private lab + Pages side by side):
 
 | Clone / path | Role |
