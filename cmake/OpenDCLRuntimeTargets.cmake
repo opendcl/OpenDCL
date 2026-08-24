@@ -119,6 +119,23 @@ function(opendcl_add_runtime id)
   # IDE browse: Common + Runtime headers (not compiled).
   opendcl_target_ide_headers(${_target} Common Runtime)
 
+  # IDE browse: this target's VI/ARXVI.h + *.props under project filter VI.
+  set(_vi_root "${CMAKE_SOURCE_DIR}/${_vi_dir}")
+  if(EXISTS "${_vi_root}")
+    file(GLOB _vi_files CONFIGURE_DEPENDS
+      "${_vi_root}/ARXVI.h"
+      "${_vi_root}/*.props"
+    )
+    if(_vi_files)
+      target_sources(${_target} PRIVATE ${_vi_files})
+      set_source_files_properties(${_vi_files} PROPERTIES
+        HEADER_FILE_ONLY TRUE
+        VS_TOOL_OVERRIDE "None"
+      )
+      source_group("VI" FILES ${_vi_files})
+    endif()
+  endif()
+
   opendcl_split_bar("${_defines}" _def_list)
   opendcl_split_bar("${_sdk_inc}" _sdk_inc_list)
   opendcl_split_bar("${_sdk_lib}" _sdk_lib_list)
