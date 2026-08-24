@@ -119,26 +119,26 @@ function(opendcl_rxinstall_add_via_win32_nest classic_dir)
   if(DEFINED OPENDCL_NEST_CL_MP_COUNT AND OPENDCL_NEST_CL_MP_COUNT MATCHES "^[1-9][0-9]*$")
     set(_rx_clmp "${OPENDCL_NEST_CL_MP_COUNT}")
   endif()
+  # Isolate nested MSBuild from parent VS solution builds (MSB0001 / EndBuild).
+  set(_rx_cmd
+    ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
+    ${CMAKE_COMMAND}
+      --build "${_rx_nest_bin}"
+      --config "${_nest_cfg}"
+      --target RxInstall
+      --parallel "${_rx_m}"
+      -- "/m:${_rx_m}" "/nodeReuse:false" "/p:CL_MPCount=${_rx_clmp}"
+  )
   if(OPENDCL_WIN32_IN_ALL)
     add_custom_target(RxInstall
-      COMMAND ${CMAKE_COMMAND}
-        --build "${_rx_nest_bin}"
-        --config "${_nest_cfg}"
-        --target RxInstall
-        --parallel "${_rx_m}"
-        -- "/m:${_rx_m}" "/p:CL_MPCount=${_rx_clmp}"
+      COMMAND ${_rx_cmd}
       COMMENT "Build Win32 RxInstall CA via full nest (${_rx_nest_bin})"
       SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
       VERBATIM
     )
   else()
     add_custom_target(RxInstall ALL
-      COMMAND ${CMAKE_COMMAND}
-        --build "${_rx_nest_bin}"
-        --config "${_nest_cfg}"
-        --target RxInstall
-        --parallel "${_rx_m}"
-        -- "/m:${_rx_m}" "/p:CL_MPCount=${_rx_clmp}"
+      COMMAND ${_rx_cmd}
       COMMENT "Build Win32 RxInstall CA via full nest (${_rx_nest_bin})"
       SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
       VERBATIM

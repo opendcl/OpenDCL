@@ -399,11 +399,14 @@ function(opendcl_add_runtime id)
     target_link_libraries(${_target} PRIVATE ${_zlib_md} ${_png_md})
   endif()
 
-  # Default ENU runtime resources when present natively in this tree.
-  # classic_x86 / full nest gate is attached later in opendcl_add_win32_nest
-  # (Res_Win32 / Nest_Win32 do not exist yet at add_runtime time).
+  # Runtime.Res for F5: native ENU in this tree, or classic_x86 Res_Win32
+  # (private res-win32 is created before runtimes; full-nest Res_Win32 is
+  # attached later in opendcl_add_win32_nest).
   if(TARGET RuntimeRes_ENU)
     add_dependencies(${_target} RuntimeRes_ENU)
+  endif()
+  if(TARGET Res_Win32)
+    add_dependencies(${_target} Res_Win32)
   endif()
 
   # Optional override file: cmake/overrides/<id>.cmake defining opendcl_apply_override(target)

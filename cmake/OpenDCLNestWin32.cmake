@@ -10,9 +10,15 @@
 # Nest cmake --build must be single-flight. Parallel parent targets each running
 # `cmake --build <nest>` (Nest_Win32 + Res_Win32 + RxInstall)
 # race on the same intermediate files (LNK1104 .ilk, C1001, C1041).
-# When OPENDCL_WIN32_IN_ALL: only Nest_Win32 is ALL and owns the full nest
-# build; Res/RxInstall keep targeted COMMAND for manual builds; product deps
-# hang off Nest_Win32. When not IN_ALL: Res/RxInstall own targeted builds.
+# Nested MSBuild also needs MSBUILDDISABLENODEREUSE + /nodeReuse:false so a VS
+# parent parallel build does not hit MSB0001 (Building vs WaitingForBuildToComplete).
+#
+# Dual-nest ordering (classic_x86 Res):
+#   Res_Win32  - demand-build; cmake --build nest --target RuntimeRes_* only
+#   Nest_Win32 - depends on Res_Win32; full nest ALL (RuntimeRes EXCLUDE_FROM_ALL)
+#   Runtime/Studio (native) -> Res_Win32; RxInstall -> Nest_Win32 when IN_ALL
+# When OPENDCL_WIN32_IN_ALL: only Nest_Win32 is ALL. Res is built once via
+# Res_Win32, then Nest continues without rebuilding Res.
 #
 # Call only from the x64 parent when OPENDCL_NEST_WIN32 is ON.
 
@@ -60,6 +66,14 @@ function(opendcl_add_win32_nest)
     "set(OPENDCL_BUILD_RES_DLLS [==[${_nest_res}]==] CACHE BOOL \"\" FORCE)\n")
   string(APPEND _body
     "set(OPENDCL_RES_PE [==[host]==] CACHE STRING \"\" FORCE)\n")
+  # classic_x86 parent: Res_Win32 owns RuntimeRes (build-once); nest ALL skips them.
+  if(OPENDCL_RES_PE STREQUAL "classic_x86" AND _nest_res)
+    set(_nest_res_exclude ON)
+  else()
+    set(_nest_res_exclude OFF)
+  endif()
+  string(APPEND _body
+    "set(OPENDCL_RUNTIME_RES_EXCLUDE_FROM_ALL [==[${_nest_res_exclude}]==] CACHE BOOL \"\" FORCE)\n")
   # Nest is already Win32: Studio PE is always host (x86). Parent may be
   # classic_x86 (skip x64 Studio); nest must still build Studio.exe + Studio.Res.
   string(APPEND _body
@@ -212,23 +226,30 @@ function(opendcl_add_win32_nest)
     set(_nest_clmp "1")
   endif()
   # cmake --build ... -- <msbuild args>
+  # /nodeReuse:false + MSBUILDDISABLENODEREUSE: nested MSBuild from a VS CustomBuild
+  # must not share nodes with the parent solution build (MSB0001 Expected state
+  # Building / WaitingForBuildToComplete; EndBuild already called).
   set(_nest_build_args
     --parallel "${_nest_m}"
     --
     "/m:${_nest_m}"
+    "/nodeReuse:false"
     "/p:CL_MPCount=${_nest_clmp}"
+  )
+  set(_nest_cmd
+    ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
+    ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}"
+    ${_nest_build_args}
   )
   if(OPENDCL_WIN32_IN_ALL)
     add_custom_target(Nest_Win32 ALL
-      COMMAND ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}"
-        ${_nest_build_args}
+      COMMAND ${_nest_cmd}
       COMMENT "Build nested Win32 OpenDCL (${_nest_cfg}) under ${_bin} (/m:${_nest_m} CL_MPCount=${_nest_clmp})"
       VERBATIM
     )
   else()
     add_custom_target(Nest_Win32
-      COMMAND ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}"
-        ${_nest_build_args}
+      COMMAND ${_nest_cmd}
       COMMENT "Build nested Win32 OpenDCL (${_nest_cfg}) under ${_bin} (/m:${_nest_m} CL_MPCount=${_nest_clmp})"
       VERBATIM
     )
@@ -237,7 +258,7 @@ function(opendcl_add_win32_nest)
   set_property(TARGET Nest_Win32 PROPERTY FOLDER "CMake")
   message(STATUS
     "Win32 nest build throttle: MSBuild /m:${_nest_m} CL_MPCount=${_nest_clmp} "
-    "(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT / OPENDCL_NEST_CL_MP_COUNT)")
+    "nodeReuse=false (OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT / OPENDCL_NEST_CL_MP_COUNT)")
 
   # RxInstall: single parent umbrella (not imported). When WIN32_IN_ALL the full
   # nest build already produces RxInstall.dll - do not also ALL+COMMAND RxInstall
@@ -249,9 +270,12 @@ function(opendcl_add_win32_nest)
   endif()
 
   # classic_x86 Res umbrella -> nest Res targets (targeted nest build).
-  # Never ALL when Nest_Win32 is ALL (avoids parallel nest invocations).
+  # Never ALL when Nest_Win32 is ALL (avoids a second default nest flight).
   if(OPENDCL_RES_PE STREQUAL "classic_x86" AND _w32_res_cmake_targets)
-    set(_res_cmd ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}")
+    set(_res_cmd
+      ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
+      ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}"
+    )
     foreach(_rt ${_w32_res_cmake_targets})
       list(APPEND _res_cmd --target "${_rt}")
     endforeach()
@@ -260,10 +284,10 @@ function(opendcl_add_win32_nest)
       message(WARNING
         "Res_Win32 already exists; expected full nest to own classic_x86 Res")
     else()
-      # Demand-build only (Studio/runtimes depend on the nest gate below when needed).
+      # Demand-build only; Nest_Win32 and product targets depend on this.
       add_custom_target(Res_Win32
         COMMAND ${_res_cmd}
-        COMMENT "Build classic x86 Runtime.Res via full Win32 nest (/m:${_nest_m})"
+        COMMENT "Build classic x86 Runtime.Res via Win32 nest (/m:${_nest_m})"
         VERBATIM
       )
       set_target_properties(Res_Win32 PROPERTIES FOLDER "Runtime/Localized Resources")
@@ -271,39 +295,40 @@ function(opendcl_add_win32_nest)
     list(LENGTH _w32_res_cmake_targets _nr)
     message(STATUS
       "Resource DLLs: classic_x86 Runtime.Res -> Res_Win32 builds ${_nr} nest "
-      "target(s); Studio PE=${OPENDCL_STUDIO_PE} (not ALL when Nest_Win32 is ALL)")
+      "target(s) once; nest ALL excludes RuntimeRes "
+      "(Studio PE=${OPENDCL_STUDIO_PE})")
   endif()
 
-  # Product -> nest gate (late: runtimes/Studio were created before this function).
-  # WIN32_IN_ALL: one nest flight via Nest_Win32.
-  # Else: Res-only gate (or nothing if host Res).
-  if(OPENDCL_WIN32_IN_ALL)
-    set(_nest_gate Nest_Win32)
-  elseif(TARGET Res_Win32)
-    set(_nest_gate Res_Win32)
-  else()
-    set(_nest_gate "")
+  # Order dual nest flights: Res once, then full nest (without Res).
+  if(TARGET Nest_Win32 AND TARGET Res_Win32)
+    add_dependencies(Nest_Win32 Res_Win32)
   endif()
 
-  if(_nest_gate)
+  # Product gates (late: runtimes/Studio/RxInstall exist before this function).
+  # classic_x86: F5 needs Runtime.Res only -> Res_Win32 (not full Nest_Win32).
+  # host Res: native RuntimeRes_* already; no nest Res gate.
+  if(TARGET Res_Win32 AND OPENDCL_RES_PE STREQUAL "classic_x86")
     if(TARGET Studio)
-      add_dependencies(Studio ${_nest_gate})
+      add_dependencies(Studio Res_Win32)
     endif()
-    # x64 runtimes need Runtime.Res for F5; classic_x86 Res is nest-only.
-    if(OPENDCL_RES_PE STREQUAL "classic_x86" OR OPENDCL_WIN32_IN_ALL)
-      foreach(_id IN LISTS OPENDCL_RT_IDS)
-        string(REPLACE "." "_" _safe "${_id}")
-        set(_rt "Runtime_${_safe}")
-        if(TARGET "${_rt}")
-          add_dependencies(${_rt} ${_nest_gate})
-        endif()
-      endforeach()
-    endif()
-    message(STATUS "Win32 nest gate for Studio/runtimes: ${_nest_gate}")
+    foreach(_id IN LISTS OPENDCL_RT_IDS)
+      string(REPLACE "." "_" _safe "${_id}")
+      set(_rt "Runtime_${_safe}")
+      if(TARGET "${_rt}")
+        add_dependencies(${_rt} Res_Win32)
+      endif()
+    endforeach()
+    message(STATUS "Win32 Res gate for Studio/runtimes: Res_Win32")
+  endif()
+
+  # Third nest COMMAND: serialize targeted RxInstall behind Nest_Win32 when IN_ALL.
+  if(OPENDCL_WIN32_IN_ALL AND TARGET RxInstall AND TARGET Nest_Win32)
+    add_dependencies(RxInstall Nest_Win32)
+    message(STATUS "Win32 nest gate for RxInstall: Nest_Win32")
   endif()
 
   message(STATUS
     "Win32 nest: ${_n} project(s) under Win32/... (Explorer, excluded from default build); "
-    "default nest build via Nest_Win32 only when IN_ALL=${OPENDCL_WIN32_IN_ALL} "
-    "(no parallel Res_Win32 / RxInstall nest builds)")
+    "default nest build via Nest_Win32 only when IN_ALL=${OPENDCL_WIN32_IN_ALL}; "
+    "Res_Win32 ordered before Nest_Win32 when classic_x86")
 endfunction()

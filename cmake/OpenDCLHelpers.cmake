@@ -109,18 +109,18 @@ option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
 option(OPENDCL_BUILD_STUDIO_HELP
   "Build Studio OpenDCL.chm targets via hhc (arch-independent; one tree only)" ON)
 
-# Classic Runtime.Res ships as Win32 (x86) PE under CommonFilesFolder.
-# Public Mixed release forces classic x86; host-arch Res remains available for
-# single-arch / future packaging (item 5: lock classic_x86 for public, path open).
+# Classic Runtime.Res ships as Win32 (x86) /NOENTRY PE (CommonFilesFolder parity).
+# Legacy always built x86-only Res; presets default to classic_x86. host remains
+# available for unusual single-arch experiments.
 option(OPENDCL_BUILD_RES_DLLS
   "Build Runtime.Res + Studio.Res language DLLs (native and/or nested)" ON)
 
 # Resource DLL PE policy (Runtime.Res / CAD CommonFiles only):
-#   classic_x86 - Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
-#                 nest Res_Win32 for Runtime.Res only.
+#   classic_x86 - Always x86 Runtime.Res (legacy / preset default). On x64, via
+#                 Res_Win32 (full nest or private res-win32); skip native x64 Res.
 #   host        - Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
 # Studio.Res always matches Studio PE (see OPENDCL_STUDIO_PE), not this flag.
-set(OPENDCL_RES_PE "host" CACHE STRING
+set(OPENDCL_RES_PE "classic_x86" CACHE STRING
   "Resource DLL PE: classic_x86 (always x86 ship) or host (match configure arch)")
 set_property(CACHE OPENDCL_RES_PE PROPERTY STRINGS classic_x86 host)
 if(NOT OPENDCL_RES_PE STREQUAL "classic_x86" AND NOT OPENDCL_RES_PE STREQUAL "host")
@@ -148,6 +148,10 @@ option(OPENDCL_NEST_WIN32
   "When configuring x64 with the VS generator, also nest Win32 under <bin>/win32 and import projects into the parent .sln" OFF)
 option(OPENDCL_WIN32_IN_ALL
   "Include nested Win32 projects in ALL_BUILD / default solution build (full ship); OFF = Explorer only unless you build Nest_Win32 or a Win32 project" OFF)
+# Set ON in the Win32 nest init-cache when the x64 parent owns classic_x86 Res via
+# Res_Win32 (build-once): nest RuntimeRes_* stay out of nest ALL_BUILD.
+option(OPENDCL_RUNTIME_RES_EXCLUDE_FROM_ALL
+  "EXCLUDE_FROM_ALL on RuntimeRes_* (nest: Res built only via parent Res_Win32)" OFF)
 # Full dual-arch nest compiles many old toolsets (v100/v110/...) under one MSBuild.
 # Unbounded /m + /MP OOMs 32-bit cl (C1060 heap) and triggers C1001 ICEs.
 set(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT "2" CACHE STRING
