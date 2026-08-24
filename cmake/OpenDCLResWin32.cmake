@@ -15,7 +15,7 @@ function(opendcl_add_res_win32_nest)
   if(NOT _need)
     if(OPENDCL_NEST_WIN32 AND OPENDCL_RES_PE STREQUAL "classic_x86")
       message(STATUS
-        "Resource DLLs: classic_x86 via full Win32 nest (no private res-win32; "
+        "Resource DLLs: classic_x86 via win32-common nest (no private res-win32; "
         "Res_Win32 umbrella created after nest import)")
     endif()
     return()

@@ -138,11 +138,19 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug->Debug outputs |
 
-**How dual-arch (Mixed / x64-full) works:** CMake's VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure `build/<preset>/win32` (`-A Win32`) with the **same** `OPENDCL_OUTPUT_ROOT=.../out`, and **import** nest `.vcxproj` files into the parent solution (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders** (both arches together): `Runtime/Rx/{ARX,BRX,GRX,ZRX}`, `Runtime/Localized Resources`, `Library/{ZLib,LibPNG}`, `Studio[/<LANG>]`, `CMake` (`Nest_Win32`). Nest imports are named `w32_*`. **`Nest_Win32`** is the ALL full-nest flight when `OPENDCL_WIN32_IN_ALL`. **RxInstall** and **classic_x86 Res** come from the nest (no private `rxinstall-win32` / `res-win32` when nest is on). **Studio help (CHM)** is arch-independent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
+**How dual-arch (Mixed / x64-full) works:** CMake's VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure **split Win32 nests** under `build/<preset>/` with the **same** `OPENDCL_OUTPUT_ROOT=.../out`, and **import** selected nest `.vcxproj` files (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders**. Nest imports are named `w32_*`. **Studio help (CHM)** stays on the parent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
 
-**Dual-nest Res + full (classic_x86):** **`Res_Win32`** runs `cmake --build <nest> --target RuntimeRes_*` (demand-build, not ALL). Nest `RuntimeRes_*` are **`EXCLUDE_FROM_ALL`** so a later full nest build does not rebuild Res. **`Nest_Win32`** `add_dependencies` **`Res_Win32`**, then builds the rest of the nest. Native Studio and x64 runtimes depend on **`Res_Win32`** only (F5 does not pull every Win32 module). When `WIN32_IN_ALL`, **`RxInstall`** depends on **`Nest_Win32`** so its targeted nest COMMAND cannot race the full flight. Ordering is in-graph only; two separate processes on the same nest dir can still race. Imported `w32_*` projects are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged (avoids regen loops / VS "already contains `w32_...`" on reload).
+**Split Win32 nests** (sharing, less duplication):
 
-**Day-to-day x64 without full nest** (`vs2022-x64-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella (not native x64 Res). Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
+| Nest | Path | Contents |
+| --- | --- | --- |
+| Lib | `win32-lib/<toolset>-<crt>/` | One zlib+png pair (`md` / `mdd` / `mt` separate). Shared by every runtime that maps to that lib toolset+CRT. |
+| Runtime | `win32-rt/<id>/` | One `Runtime_<id>` only; **IMPORTED** zlib/png from `out/Library/ts/...` (no lib recompile). |
+| Common | `win32-common/` | Classic x86 **Runtime.Res**, **Studio** + Studio.Res, **RxInstall**; IMPORTED host `mt` libs. |
+
+Parent targets: `Nest_Lib_*`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32` (Res-only from common), umbrella **`Nest_Win32`** (libs → runtimes → common). Nest CustomBuilds use `MSBUILDDISABLENODEREUSE` + `/nodeReuse:false`. Imported `w32_*` are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged.
+
+**Day-to-day x64 without full nest** (`vs2022-x64-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella. Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
 
 ### Known limitations - nested Win32 full build (`vs2022-full`)
 
@@ -157,13 +165,14 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 | Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-x64-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
 | Studio MSI includes Runtime MSM | Separate Runtime MSI not required for Studio install smoke | Install **Studio.\<LANG\>.msi** only for Studio+Runtime install tests (see **docs/SMOKE.md**). |
 
-**Workaround when nest fails:** build the nest tree alone with low parallelism, or only the modules you need. With classic_x86 dual-nest, nest `ALL_BUILD` omits `RuntimeRes_*` — build Res from the parent (`Res_Win32`) or name those targets explicitly:
+**Workaround when nest fails:** build a single split nest with low parallelism:
 
 ```powershell
 cmake --build build/vs2022-full --config Release --target Res_Win32
-cmake --build build/vs2022-full/win32 --config Release --parallel 1 -- /m:1 /p:CL_MPCount=1
-# or a single nest module:
-cmake --build build/vs2022-full/win32 --config Release --target Runtime_ZRX_2019
+cmake --build build/vs2022-full --config Release --target Nest_Lib_v100_md
+cmake --build build/vs2022-full --config Release --target Nest_Win32_ZRX_2019
+# or inside a nest tree:
+cmake --build build/vs2022-full/win32-rt/ZRX.2019 --config Release --parallel 1 -- /m:1 /p:CL_MPCount=1
 ```
 
 **Parity (not host-kit hacks):** Studio static MFC+`/MT`, modules `/MD` (+ `/MDd` FullDebug for all families), multimon stubs only on `PPTooltip.cpp` - permanent classic/product policy.

@@ -97,20 +97,17 @@ function(opendcl_rxinstall_add_native classic_dir)
   endif()
 endfunction()
 
-# Umbrella on x64 parent when OPENDCL_NEST_WIN32: one PE from full nest.
+# Umbrella on x64 parent when OPENDCL_NEST_WIN32: PE from win32-common nest.
 # COMMAND runs at build time; nest is configured later in the same generate
-# (opendcl_add_win32_nest -> build/<preset>/win32).
+# (opendcl_add_win32_nest -> build/<preset>/win32-common).
 function(opendcl_rxinstall_add_via_win32_nest classic_dir)
   if(TARGET RxInstall)
     return()
   endif()
-  set(_rx_nest_bin "${CMAKE_BINARY_DIR}/win32")
+  set(_rx_nest_bin "${CMAKE_BINARY_DIR}/win32-common")
   set(_nest_cfg "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
-  # Never ALL when OPENDCL_WIN32_IN_ALL: Nest_Win32 already builds the full
-  # nest (including RxInstall). A second concurrent cmake --build races (.ilk/PDB).
-  # Targeted `cmake --build --target RxInstall` still works via COMMAND.
-  # When nest is on but not IN_ALL, keep ALL so packaging/default still gets the CA.
-  # Match nest throttle defaults (old toolset OOM safety); override via cache.
+  # Never ALL when OPENDCL_WIN32_IN_ALL: Nest_Win32_Common already builds
+  # RxInstall. Targeted `cmake --build --target RxInstall` still works via COMMAND.
   set(_rx_m "2")
   set(_rx_clmp "1")
   if(DEFINED OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT AND OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT MATCHES "^[1-9][0-9]*$")
@@ -119,7 +116,6 @@ function(opendcl_rxinstall_add_via_win32_nest classic_dir)
   if(DEFINED OPENDCL_NEST_CL_MP_COUNT AND OPENDCL_NEST_CL_MP_COUNT MATCHES "^[1-9][0-9]*$")
     set(_rx_clmp "${OPENDCL_NEST_CL_MP_COUNT}")
   endif()
-  # Isolate nested MSBuild from parent VS solution builds (MSB0001 / EndBuild).
   set(_rx_cmd
     ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
     ${CMAKE_COMMAND}
@@ -132,14 +128,14 @@ function(opendcl_rxinstall_add_via_win32_nest classic_dir)
   if(OPENDCL_WIN32_IN_ALL)
     add_custom_target(RxInstall
       COMMAND ${_rx_cmd}
-      COMMENT "Build Win32 RxInstall CA via full nest (${_rx_nest_bin})"
+      COMMENT "Build Win32 RxInstall CA via win32-common (${_rx_nest_bin})"
       SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
       VERBATIM
     )
   else()
     add_custom_target(RxInstall ALL
       COMMAND ${_rx_cmd}
-      COMMENT "Build Win32 RxInstall CA via full nest (${_rx_nest_bin})"
+      COMMENT "Build Win32 RxInstall CA via win32-common (${_rx_nest_bin})"
       SOURCES ${_RX_SOURCES} ${_RX_HEADERS}
       VERBATIM
     )
@@ -150,7 +146,7 @@ function(opendcl_rxinstall_add_via_win32_nest classic_dir)
   opendcl_rxinstall_set_folder(RxInstall)
   set_property(GLOBAL PROPERTY OPENDCL_RXINSTALL_VIA_WIN32_NEST TRUE)
   message(STATUS
-    "RxInstall: via full Win32 nest (${_rx_nest_bin}); "
+    "RxInstall: via win32-common (${_rx_nest_bin}); "
     "umbrella COMMAND (ALL only when not OPENDCL_WIN32_IN_ALL)")
 endfunction()
 
