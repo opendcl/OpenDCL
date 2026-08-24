@@ -38,6 +38,11 @@ function(opendcl_add_runtime_res lang)
   endif()
   opendcl_solution_folder(_rr_folder "${_rr_arch}" "RuntimeRes_${lang}")
   set_target_properties(${_target} PROPERTIES FOLDER "${_rr_folder}")
+  # Parent classic_x86 + Res_Win32: nest ALL_BUILD must not rebuild Res.
+  if(OPENDCL_RUNTIME_RES_EXCLUDE_FROM_ALL)
+    set_property(TARGET ${_target} PROPERTY EXCLUDE_FROM_ALL TRUE)
+    set_property(TARGET ${_target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+  endif()
 
   target_include_directories(${_target} PRIVATE
     "${CMAKE_SOURCE_DIR}/Common"

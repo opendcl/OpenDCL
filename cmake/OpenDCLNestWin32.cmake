@@ -1,22 +1,156 @@
-# Nested Win32 (-A Win32) under an x64 Visual Studio parent.
+# Nested Win32 under an x64 Visual Studio parent — split nests:
 #
-# 1) Configure nest at parent generate time.
-# 2) Import nest .vcxproj into the parent .sln (Solution Explorer + folders).
-# 3) Build via `cmake --build <nest>` (correct -A Win32). CMake's
-#    include_external_msproject targets are still driven with the *parent*
-#    Platform=x64 when built through ALL_BUILD / ProjectReference, which breaks
-#    nest projects (MSB8013). So imported projects are EXCLUDE_FROM_DEFAULT_BUILD.
+#   win32-lib/<toolset>-<crt>/  zlib+png only (one config); shared by runtimes
+#   win32-rt/<id>/              one CAD Runtime_<id> (IMPORTED libs)
+#   win32-common/               Res + Studio + RxInstall (IMPORTED host mt libs)
 #
-# Nest cmake --build must be single-flight. Parallel parent targets each running
-# `cmake --build <nest>` (Nest_Win32 + Res_Win32 + RxInstall)
-# race on the same intermediate files (LNK1104 .ilk, C1001, C1041).
-# When OPENDCL_WIN32_IN_ALL: only Nest_Win32 is ALL and owns the full nest
-# build; Res/RxInstall keep targeted COMMAND for manual builds; product deps
-# hang off Nest_Win32. When not IN_ALL: Res/RxInstall own targeted builds.
+# Parent CustomBuilds invoke cmake --build on each nest (-A Win32). Imported
+# w32_* projects are Explorer-only (EXCLUDE_FROM_DEFAULT_BUILD; parent Platform
+# x64 would MSB8013). Nest MSBuild uses MSBUILDDISABLENODEREUSE + /nodeReuse:false
+# (MSB0001 under parallel VS solution builds).
 #
-# Call only from the x64 parent when OPENDCL_NEST_WIN32 is ON.
+# Product gates: native Studio / x64 runtimes -> Res_Win32 (common Res once).
+# Nest_Win32 ALL umbrella depends on lib nests, then runtime nests, then common.
 
 include_guard(GLOBAL)
+
+function(opendcl_nest_msbuild_args out_var)
+  set(_m "${OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT}")
+  set(_clmp "${OPENDCL_NEST_CL_MP_COUNT}")
+  if(NOT _m MATCHES "^[0-9]+$" OR _m STREQUAL "0")
+    set(_m "2")
+  endif()
+  if(NOT _clmp MATCHES "^[0-9]+$" OR _clmp STREQUAL "0")
+    set(_clmp "1")
+  endif()
+  set(${out_var}
+    --parallel "${_m}"
+    --
+    "/m:${_m}"
+    "/nodeReuse:false"
+    "/p:CL_MPCount=${_clmp}"
+    PARENT_SCOPE)
+  set(OPENDCL_NEST_EFFECTIVE_M "${_m}" PARENT_SCOPE)
+  set(OPENDCL_NEST_EFFECTIVE_CLMP "${_clmp}" PARENT_SCOPE)
+endfunction()
+
+function(opendcl_nest_build_cmd out_var nest_bin)
+  set(_cfg "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
+  opendcl_nest_msbuild_args(_args)
+  set(_cmd
+    ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
+    ${CMAKE_COMMAND} --build "${nest_bin}" --config "${_cfg}"
+  )
+  # Remaining ARGN: extra --target / args before _args
+  foreach(_a IN LISTS ARGN)
+    list(APPEND _cmd "${_a}")
+  endforeach()
+  list(APPEND _cmd ${_args})
+  set(${out_var} "${_cmd}" PARENT_SCOPE)
+endfunction()
+
+# Write init-cache + configure nest if stamp changed. Extra cache lines via ARGN.
+function(opendcl_nest_configure nest_bin)
+  file(MAKE_DIRECTORY "${nest_bin}")
+  set(_cache_init "${nest_bin}/opendcl-nest-cache.cmake")
+  set(_body "")
+  string(APPEND _body "set(OPENDCL_NEST_WIN32 OFF CACHE BOOL \"\" FORCE)\n")
+  string(APPEND _body "set(OPENDCL_WIN32_IN_ALL OFF CACHE BOOL \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_OUTPUT_ROOT [==[${OPENDCL_OUTPUT_ROOT}]==] CACHE PATH \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_ENABLE_ARX [==[${OPENDCL_ENABLE_ARX}]==] CACHE BOOL \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_ENABLE_BRX [==[${OPENDCL_ENABLE_BRX}]==] CACHE BOOL \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_ENABLE_GRX [==[${OPENDCL_ENABLE_GRX}]==] CACHE BOOL \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_ENABLE_ZRX [==[${OPENDCL_ENABLE_ZRX}]==] CACHE BOOL \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_LANGS [==[${OPENDCL_LANGS}]==] CACHE STRING \"\" FORCE)\n")
+  string(APPEND _body
+    "set(CMAKE_CONFIGURATION_TYPES [==[Debug;FullDebug;Release]==] CACHE STRING \"\" FORCE)\n")
+  string(APPEND _body
+    "set(CMAKE_SYSTEM_VERSION [==[10.0.19041.0]==] CACHE STRING \"\" FORCE)\n")
+  string(APPEND _body
+    "set(OPENDCL_BUILD_STUDIO_HELP OFF CACHE BOOL \"\" FORCE)\n")
+  foreach(_line IN LISTS ARGN)
+    string(APPEND _body "${_line}\n")
+  endforeach()
+  file(WRITE "${_cache_init}" "${_body}")
+
+  set(_nest_stamp "${nest_bin}/opendcl-nest-init.stamp")
+  set(_need TRUE)
+  if(EXISTS "${nest_bin}/CMakeCache.txt" AND EXISTS "${_nest_stamp}")
+    file(READ "${_nest_stamp}" _prev)
+    if(_prev STREQUAL _body)
+      set(_need FALSE)
+    endif()
+  endif()
+  if(_need)
+    message(STATUS "Win32 nest: configuring ${nest_bin} (-A Win32) ...")
+    execute_process(
+      COMMAND ${CMAKE_COMMAND}
+        -C "${_cache_init}"
+        -S "${CMAKE_SOURCE_DIR}"
+        -B "${nest_bin}"
+        -G "${CMAKE_GENERATOR}"
+        -A Win32
+      RESULT_VARIABLE _cfg_rc
+      OUTPUT_VARIABLE _cfg_out
+      ERROR_VARIABLE _cfg_err
+      ECHO_OUTPUT_VARIABLE
+      ECHO_ERROR_VARIABLE
+    )
+    if(NOT _cfg_rc EQUAL 0)
+      message(FATAL_ERROR
+        "Failed to configure nest under ${nest_bin} (exit ${_cfg_rc}).\n${_cfg_err}")
+    endif()
+    file(WRITE "${_nest_stamp}" "${_body}")
+  else()
+    message(STATUS "Win32 nest: reusing ${nest_bin} (init-cache unchanged)")
+  endif()
+endfunction()
+
+function(opendcl_nest_import_vcxprojs nest_bin name_prefix skip_names out_bases out_res_targets)
+  file(GLOB_RECURSE _vcxprojs "${nest_bin}/*.vcxproj")
+  set(_bases "")
+  set(_res "")
+  set(_seen "")
+  set(_skip ${skip_names})
+  list(APPEND _skip
+    ALL_BUILD INSTALL PACKAGE RUN_TESTS
+    Continuous Experimental Nightly NightlyMemoryCheck ZERO_CHECK
+  )
+  foreach(_proj IN LISTS _vcxprojs)
+    if(_proj MATCHES "[/\\\\]CMakeFiles[/\\\\]")
+      continue()
+    endif()
+    get_filename_component(_base "${_proj}" NAME_WE)
+    if(_base IN_LIST _skip)
+      continue()
+    endif()
+    if(_base IN_LIST _seen)
+      continue()
+    endif()
+    list(APPEND _seen "${_base}")
+    set(_t "${name_prefix}${_base}")
+    if(TARGET "${_t}")
+      continue()
+    endif()
+    include_external_msproject(${_t} "${_proj}" PLATFORM "Win32")
+    opendcl_solution_folder(_folder "Win32" "${_base}")
+    set_target_properties(${_t} PROPERTIES FOLDER "${_folder}")
+    set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_ALL TRUE)
+    set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    list(APPEND _bases "${_base}")
+    if(_base MATCHES "RuntimeRes_")
+      list(APPEND _res "${_base}")
+    endif()
+  endforeach()
+  set(${out_bases} "${_bases}" PARENT_SCOPE)
+  set(${out_res_targets} "${_res}" PARENT_SCOPE)
+endfunction()
 
 function(opendcl_add_win32_nest)
   if(NOT (OPENDCL_NEST_WIN32 AND MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8
@@ -29,281 +163,288 @@ function(opendcl_add_win32_nest)
     return()
   endif()
 
-  set(_bin "${CMAKE_BINARY_DIR}/win32")
-  set(_cache_init "${_bin}/opendcl-win32-cache.cmake")
-  file(MAKE_DIRECTORY "${_bin}")
-
-  # When parent ships host-arch (x64) Res, nest must not overwrite with x86 Res.
-  if(OPENDCL_RES_PE STREQUAL "host")
-    set(_nest_res OFF)
-  else()
-    set(_nest_res "${OPENDCL_BUILD_RES_DLLS}")
-  endif()
-
-  # Init-cache avoids list-separator mangling (ENU;DEU;...).
-  set(_body "")
-  string(APPEND _body "set(OPENDCL_NEST_WIN32 OFF CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body "set(OPENDCL_WIN32_IN_ALL OFF CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_OUTPUT_ROOT [==[${OPENDCL_OUTPUT_ROOT}]==] CACHE PATH \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_BUILD_RUNTIME [==[${OPENDCL_BUILD_RUNTIME}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_BUILD_STUDIO [==[${OPENDCL_BUILD_STUDIO}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_BUILD_RXINSTALL [==[${OPENDCL_BUILD_RXINSTALL}]==] CACHE BOOL \"\" FORCE)\n")
-  # CHM is arch-independent - parent owns StudioHelp_*; nest must not
-  # rebuild the same OpenDCL.chm or import duplicate help projects into the .sln.
-  string(APPEND _body
-    "set(OPENDCL_BUILD_STUDIO_HELP OFF CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_BUILD_RES_DLLS [==[${_nest_res}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_RES_PE [==[host]==] CACHE STRING \"\" FORCE)\n")
-  # Nest is already Win32: Studio PE is always host (x86). Parent may be
-  # classic_x86 (skip x64 Studio); nest must still build Studio.exe + Studio.Res.
-  string(APPEND _body
-    "set(OPENDCL_STUDIO_PE [==[host]==] CACHE STRING \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_ENABLE_ARX [==[${OPENDCL_ENABLE_ARX}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_ENABLE_BRX [==[${OPENDCL_ENABLE_BRX}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_ENABLE_GRX [==[${OPENDCL_ENABLE_GRX}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_ENABLE_ZRX [==[${OPENDCL_ENABLE_ZRX}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_RUNTIME_AUTO [==[${OPENDCL_RUNTIME_AUTO}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_RUNTIME_REQUIRE_SELECTED [==[${OPENDCL_RUNTIME_REQUIRE_SELECTED}]==] CACHE BOOL \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_RUNTIME_TARGETS [==[${OPENDCL_RUNTIME_TARGETS}]==] CACHE STRING \"\" FORCE)\n")
-  string(APPEND _body
-    "set(OPENDCL_LANGS [==[${OPENDCL_LANGS}]==] CACHE STRING \"\" FORCE)\n")
-  string(APPEND _body
-    "set(CMAKE_CONFIGURATION_TYPES [==[Debug;FullDebug;Release]==] CACHE STRING \"\" FORCE)\n")
-  string(APPEND _body
-    "set(CMAKE_SYSTEM_VERSION [==[10.0.19041.0]==] CACHE STRING \"\" FORCE)\n")
-  file(WRITE "${_cache_init}" "${_body}")
-
-  # Skip nest reconfigure when init-cache is unchanged (parent ZERO_CHECK / IDE
-  # reloads). Unconditional nest generate rewrites every nest .vcxproj and, with
-  # GLOB CONFIGURE_DEPENDS, dirties the parent again -> regen loops and VS
-  # "solution already contains an item named 'w32_...'" on reload.
-  set(_nest_stamp "${_bin}/opendcl-nest-init.stamp")
-  set(_need_nest_cfg TRUE)
-  if(EXISTS "${_bin}/CMakeCache.txt" AND EXISTS "${_nest_stamp}")
-    file(READ "${_nest_stamp}" _prev_body)
-    if(_prev_body STREQUAL _body)
-      set(_need_nest_cfg FALSE)
-    endif()
-  endif()
-  if(_need_nest_cfg)
-    message(STATUS "Win32 nest: configuring ${_bin} (-A Win32, shared out ${OPENDCL_OUTPUT_ROOT}) ...")
-    execute_process(
-      COMMAND ${CMAKE_COMMAND}
-        -C "${_cache_init}"
-        -S "${CMAKE_SOURCE_DIR}"
-        -B "${_bin}"
-        -G "${CMAKE_GENERATOR}"
-        -A Win32
-      RESULT_VARIABLE _cfg_rc
-      OUTPUT_VARIABLE _cfg_out
-      ERROR_VARIABLE _cfg_err
-      ECHO_OUTPUT_VARIABLE
-      ECHO_ERROR_VARIABLE
-    )
-    if(NOT _cfg_rc EQUAL 0)
-      message(FATAL_ERROR
-        "Failed to configure nested Win32 under ${_bin} (exit ${_cfg_rc}).\n${_cfg_err}")
-    endif()
-    file(WRITE "${_nest_stamp}" "${_body}")
-  else()
-    message(STATUS "Win32 nest: reusing existing configure under ${_bin} (init-cache unchanged)")
-  endif()
-
-  # Do NOT use CONFIGURE_DEPENDS on nest outputs: nest generate rewrites those
-  # files and would force another parent reconfigure on the next build.
-  file(GLOB_RECURSE _vcxprojs "${_bin}/*.vcxproj")
-  set(_w32_targets "")
-  set(_w32_res_cmake_targets "") # nest CMake target names (no w32_ prefix)
-  set(_w32_seen_bases "")
-  set(_skip_names
-    ALL_BUILD INSTALL PACKAGE RUN_TESTS
-    Continuous Experimental Nightly NightlyMemoryCheck
-  )
-  # Parent already has RxInstall umbrella (COMMAND -> nest build + IDE sources).
-  get_property(_rx_via GLOBAL PROPERTY OPENDCL_RXINSTALL_VIA_WIN32_NEST)
-  if(_rx_via OR TARGET RxInstall)
-    list(APPEND _skip_names "RxInstall")
-  endif()
-  # Parent owns Help (CHM). Studio + Studio.Res:
-  #   OPENDCL_STUDIO_PE=host       - parent builds x64 Studio; nest still builds
-  #                                  Win32 Studio under Nest_Win32 (not imported).
-  #   OPENDCL_STUDIO_PE=classic_x86 - parent skips Studio; nest ships Win32 PE.
-  # Importing w32_Studio causes VS reload errors ("solution already
-  # contains an item named 'w32_Studio'") when cmake regenerates the .sln.
-  list(APPEND _skip_names "Studio" "StudioHelp_All")
-  foreach(_hl IN LISTS OPENDCL_LANGS)
-    list(APPEND _skip_names
-      "StudioHelp_${_hl}"
-      "StudioRes_${_hl}"
-    )
-  endforeach()
-  foreach(_proj IN LISTS _vcxprojs)
-    if(_proj MATCHES "[/\\\\]CMakeFiles[/\\\\]")
-      continue()
-    endif()
-    get_filename_component(_base "${_proj}" NAME_WE)
-    if(_base IN_LIST _skip_names)
-      continue()
-    endif()
-    if(_base IN_LIST _w32_seen_bases)
-      continue()
-    endif()
-    list(APPEND _w32_seen_bases "${_base}")
-
-    set(_t "w32_${_base}")
-    if(TARGET "${_t}")
-      continue()
-    endif()
-
-    # Visible in Solution Explorer (PLATFORM Win32 mapping for IDE / .sln builds).
-    include_external_msproject(${_t} "${_proj}" PLATFORM "Win32")
-
-    if(_base STREQUAL "ZERO_CHECK")
-      set_target_properties(${_t} PROPERTIES FOLDER "CMake")
-      set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_ALL TRUE)
-      set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-      continue()
-    endif()
-
-    # Same product folders as parent x64 peers (classic layout; not Win32/...).
-    opendcl_solution_folder(_folder "Win32" "${_base}")
-    set_target_properties(${_t} PROPERTIES FOLDER "${_folder}")
-    # Do not hang these off ALL_BUILD ProjectReferences (wrong Platform=x64).
-    set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_ALL TRUE)
-    set_property(TARGET ${_t} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-
-    list(APPEND _w32_targets ${_t})
-    # classic_x86 Res_Win32 only needs Runtime.Res (CAD CommonFiles).
-    # Studio.Res follows OPENDCL_STUDIO_PE (nest Win32 when classic_x86).
-    if(_base MATCHES "RuntimeRes_")
-      list(APPEND _w32_res_cmake_targets "${_base}")
-    endif()
-  endforeach()
-
-  list(LENGTH _w32_targets _n)
-  if(_n EQUAL 0)
-    message(WARNING
-      "Win32 nest configured under ${_bin} but no external .vcxproj were imported")
-  endif()
-
-  # Full nest build with correct -A Win32 (single MSBuild of the nest tree).
-  # Throttle parallelism: old Win32 toolsets (VS2010-era cl) OOM under /m+/MP
-  # (C1060 afxtempl.h, C1001 ICE). Defaults in OpenDCLHelpers.cmake.
-  set(_nest_cfg "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
-  set(_nest_m "${OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT}")
-  set(_nest_clmp "${OPENDCL_NEST_CL_MP_COUNT}")
-  if(NOT _nest_m MATCHES "^[0-9]+$" OR _nest_m STREQUAL "0")
-    set(_nest_m "2")
-  endif()
-  if(NOT _nest_clmp MATCHES "^[0-9]+$" OR _nest_clmp STREQUAL "0")
-    set(_nest_clmp "1")
-  endif()
-  # cmake --build ... -- <msbuild args>
-  set(_nest_build_args
-    --parallel "${_nest_m}"
-    --
-    "/m:${_nest_m}"
-    "/p:CL_MPCount=${_nest_clmp}"
-  )
-  if(OPENDCL_WIN32_IN_ALL)
-    add_custom_target(Nest_Win32 ALL
-      COMMAND ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}"
-        ${_nest_build_args}
-      COMMENT "Build nested Win32 OpenDCL (${_nest_cfg}) under ${_bin} (/m:${_nest_m} CL_MPCount=${_nest_clmp})"
-      VERBATIM
-    )
-  else()
-    add_custom_target(Nest_Win32
-      COMMAND ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}"
-        ${_nest_build_args}
-      COMMENT "Build nested Win32 OpenDCL (${_nest_cfg}) under ${_bin} (/m:${_nest_m} CL_MPCount=${_nest_clmp})"
-      VERBATIM
-    )
-  endif()
-  # Bulk nest entry (not a product PE) - sit with other CMake helpers.
-  set_property(TARGET Nest_Win32 PROPERTY FOLDER "CMake")
+  opendcl_nest_msbuild_args(_unused_args)
+  set(_nest_m "${OPENDCL_NEST_EFFECTIVE_M}")
+  set(_nest_clmp "${OPENDCL_NEST_EFFECTIVE_CLMP}")
   message(STATUS
     "Win32 nest build throttle: MSBuild /m:${_nest_m} CL_MPCount=${_nest_clmp} "
-    "(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT / OPENDCL_NEST_CL_MP_COUNT)")
+    "nodeReuse=false")
 
-  # RxInstall: single parent umbrella (not imported). When WIN32_IN_ALL the full
-  # nest build already produces RxInstall.dll - do not also ALL+COMMAND RxInstall
-  # (parallel nest cmake --build races). Targeted build still has COMMAND.
-  if(TARGET RxInstall)
-    message(STATUS
-      "RxInstall: single solution entry RxInstall -> "
-      "cmake --build ${_bin} --target RxInstall (no w32_ import)")
+  # --- Discover Win32 runtime IDs (same filters as a Win32 configure) ---
+  opendcl_select_runtimes(_w32_ids _w32_skipped x86)
+  list(LENGTH _w32_ids _nw32)
+  message(STATUS "Win32 nest runtimes: ${_nw32} (split lib/rt/common nests)")
+
+  set(_have_fulldebug FALSE)
+  if(CMAKE_CONFIGURATION_TYPES AND "FullDebug" IN_LIST CMAKE_CONFIGURATION_TYPES)
+    set(_have_fulldebug TRUE)
   endif()
 
-  # classic_x86 Res umbrella -> nest Res targets (targeted nest build).
-  # Never ALL when Nest_Win32 is ALL (avoids parallel nest invocations).
-  if(OPENDCL_RES_PE STREQUAL "classic_x86" AND _w32_res_cmake_targets)
-    set(_res_cmd ${CMAKE_COMMAND} --build "${_bin}" --config "${_nest_cfg}")
-    foreach(_rt ${_w32_res_cmake_targets})
-      list(APPEND _res_cmd --target "${_rt}")
-    endforeach()
-    list(APPEND _res_cmd ${_nest_build_args})
-    if(TARGET Res_Win32)
-      message(WARNING
-        "Res_Win32 already exists; expected full nest to own classic_x86 Res")
+  # --- Unique lib nests: (mapped_toolset, crt) ---
+  set(_lib_keys "")
+  foreach(_id IN LISTS _w32_ids)
+    opendcl_rt_get("${_id}" TOOLSET _ts)
+    opendcl_png_lib_toolset("${_ts}" _lib_ts)
+    string(REGEX REPLACE "[^A-Za-z0-9]" "_" _lib_safe "${_lib_ts}")
+    list(APPEND _lib_keys "${_lib_safe}|md")
+    if(_have_fulldebug)
+      list(APPEND _lib_keys "${_lib_safe}|mdd")
+    endif()
+  endforeach()
+  # Host mt for Studio in common nest.
+  string(REGEX REPLACE "[^A-Za-z0-9]" "_" _host_safe "${OPENDCL_HOST_TOOLSET_TAG}")
+  list(APPEND _lib_keys "${_host_safe}|mt")
+  if(_have_fulldebug)
+    list(APPEND _lib_keys "${_host_safe}|md")
+    list(APPEND _lib_keys "${_host_safe}|mdd")
+  else()
+    list(APPEND _lib_keys "${_host_safe}|md")
+  endif()
+  list(REMOVE_DUPLICATES _lib_keys)
+  list(SORT _lib_keys)
+
+  set(_all_lib_targets "")
+  foreach(_key IN LISTS _lib_keys)
+    string(REPLACE "|" ";" _kv "${_key}")
+    list(GET _kv 0 _ts_safe)
+    list(GET _kv 1 _crt)
+    # Recover toolset string: matrix tags are already safe; host tag from cache.
+    set(_ts_raw "${_ts_safe}")
+    if(_ts_safe STREQUAL _host_safe)
+      set(_ts_raw "${OPENDCL_HOST_TOOLSET_TAG}")
+    endif()
+    set(_lib_bin "${CMAKE_BINARY_DIR}/win32-lib/${_ts_safe}-${_crt}")
+    set(_lib_tgt "Nest_Lib_${_ts_safe}_${_crt}")
+    opendcl_nest_configure("${_lib_bin}"
+      "set(OPENDCL_BUILD_RUNTIME OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_BUILD_STUDIO OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_BUILD_RXINSTALL OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_BUILD_RES_DLLS OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_LIBRARY_IMPORTED OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_LIBRARY_ONLY_TOOLSET [==[${_ts_raw}]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_LIBRARY_ONLY_CRT [==[${_crt}]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_AUTO OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_TARGETS [==[]==] CACHE STRING \"\" FORCE)"
+    )
+    opendcl_nest_build_cmd(_lib_cmd "${_lib_bin}")
+    if(NOT TARGET ${_lib_tgt})
+      add_custom_target(${_lib_tgt}
+        COMMAND ${_lib_cmd}
+        COMMENT "Win32 lib nest ${_ts_safe}-${_crt} (/m:${_nest_m})"
+        VERBATIM
+      )
+      set_property(TARGET ${_lib_tgt} PROPERTY FOLDER "CMake/Win32 Lib")
+    endif()
+    list(APPEND _all_lib_targets ${_lib_tgt})
+  endforeach()
+
+  # --- Per-runtime nests ---
+  set(_all_rt_targets "")
+  set(_skip_rt
+    Studio StudioHelp_All RxInstall
+    zlib_x86_md_${_host_safe} png_x86_md_${_host_safe}
+    zlib_x86_mdd_${_host_safe} png_x86_mdd_${_host_safe}
+    zlib_x86_mt_${_host_safe} png_x86_mt_${_host_safe}
+  )
+  foreach(_hl IN LISTS OPENDCL_LANGS)
+    list(APPEND _skip_rt "StudioHelp_${_hl}" "StudioRes_${_hl}" "RuntimeRes_${_hl}")
+  endforeach()
+
+  foreach(_id IN LISTS _w32_ids)
+    opendcl_rt_get("${_id}" TOOLSET _ts)
+    opendcl_png_lib_toolset("${_ts}" _lib_ts)
+    string(REGEX REPLACE "[^A-Za-z0-9]" "_" _lib_safe "${_lib_ts}")
+    string(REPLACE "." "_" _id_safe "${_id}")
+    set(_rt_bin "${CMAKE_BINARY_DIR}/win32-rt/${_id}")
+    set(_rt_tgt "Nest_Win32_${_id_safe}")
+    set(_rt_cmake "Runtime_${_id_safe}")
+    opendcl_nest_configure("${_rt_bin}"
+      "set(OPENDCL_BUILD_RUNTIME ON CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_BUILD_STUDIO OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_BUILD_RXINSTALL OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_BUILD_RES_DLLS OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_LIBRARY_IMPORTED ON CACHE BOOL \"\" FORCE)"
+      "set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_LIBRARY_ONLY_TOOLSET [==[]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_LIBRARY_ONLY_CRT [==[]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_AUTO OFF CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_REQUIRE_SELECTED ON CACHE BOOL \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_TARGETS [==[${_id}]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_PER_FAMILY_MAX [==[0]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_RUNTIME_MIN_TOOLSET [==[]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_RES_PE [==[host]==] CACHE STRING \"\" FORCE)"
+      "set(OPENDCL_STUDIO_PE [==[host]==] CACHE STRING \"\" FORCE)"
+    )
+    opendcl_nest_import_vcxprojs("${_rt_bin}" "w32_" "${_skip_rt}" _bases _res_unused)
+    opendcl_nest_build_cmd(_rt_cmd "${_rt_bin}" --target "${_rt_cmake}")
+    if(NOT TARGET ${_rt_tgt})
+      add_custom_target(${_rt_tgt}
+        COMMAND ${_rt_cmd}
+        COMMENT "Win32 runtime nest ${_id} (/m:${_nest_m})"
+        VERBATIM
+      )
+      set_property(TARGET ${_rt_tgt} PROPERTY FOLDER "CMake/Win32 Runtime")
+    endif()
+    if(TARGET "Nest_Lib_${_lib_safe}_md")
+      add_dependencies(${_rt_tgt} "Nest_Lib_${_lib_safe}_md")
+    endif()
+    if(_have_fulldebug AND TARGET "Nest_Lib_${_lib_safe}_mdd")
+      add_dependencies(${_rt_tgt} "Nest_Lib_${_lib_safe}_mdd")
+    endif()
+    list(APPEND _all_rt_targets ${_rt_tgt})
+  endforeach()
+
+  # --- Common nest: Res + Studio + RxInstall; IMPORTED host mt (+ md for safety) ---
+  set(_common_bin "${CMAKE_BINARY_DIR}/win32-common")
+  set(_common_res OFF)
+  if(OPENDCL_RES_PE STREQUAL "classic_x86" AND OPENDCL_BUILD_RES_DLLS)
+    set(_common_res ON)
+  elseif(OPENDCL_BUILD_RES_DLLS AND OPENDCL_RES_PE STREQUAL "host")
+    # Parent host Res: do not build x86 Res into shared out from common.
+    set(_common_res OFF)
+  endif()
+  # When classic_x86, common always builds nest Res (x86 PE).
+  if(OPENDCL_RES_PE STREQUAL "classic_x86")
+    set(_common_res "${OPENDCL_BUILD_RES_DLLS}")
+  endif()
+
+  set(_common_studio OFF)
+  if(OPENDCL_BUILD_STUDIO)
+    set(_common_studio ON)
+  endif()
+  set(_common_rx OFF)
+  if(OPENDCL_BUILD_RXINSTALL)
+    set(_common_rx ON)
+  endif()
+
+  set(_res_exclude OFF)
+  if(_common_res)
+    set(_res_exclude ON)
+  endif()
+
+  opendcl_nest_configure("${_common_bin}"
+    "set(OPENDCL_BUILD_RUNTIME OFF CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_BUILD_STUDIO [==[${_common_studio}]==] CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_BUILD_RXINSTALL [==[${_common_rx}]==] CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_BUILD_RES_DLLS [==[${_common_res}]==] CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_LIBRARY_IMPORTED ON CACHE BOOL \"\" FORCE)"
+    "set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_LIBRARY_ONLY_TOOLSET [==[]==] CACHE STRING \"\" FORCE)"
+    "set(OPENDCL_LIBRARY_ONLY_CRT [==[]==] CACHE STRING \"\" FORCE)"
+    "set(OPENDCL_RES_PE [==[host]==] CACHE STRING \"\" FORCE)"
+    "set(OPENDCL_STUDIO_PE [==[host]==] CACHE STRING \"\" FORCE)"
+    "set(OPENDCL_RUNTIME_RES_EXCLUDE_FROM_ALL [==[${_res_exclude}]==] CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_RUNTIME_AUTO OFF CACHE BOOL \"\" FORCE)"
+    "set(OPENDCL_RUNTIME_TARGETS [==[]==] CACHE STRING \"\" FORCE)"
+  )
+
+  # Import RuntimeRes for Explorer; Studio/RxInstall stay parent umbrellas.
+  set(_skip_common_import
+    ALL_BUILD INSTALL PACKAGE RUN_TESTS
+    Continuous Experimental Nightly NightlyMemoryCheck ZERO_CHECK
+    Studio StudioHelp_All RxInstall
+  )
+  foreach(_hl IN LISTS OPENDCL_LANGS)
+    list(APPEND _skip_common_import "StudioHelp_${_hl}" "StudioRes_${_hl}")
+  endforeach()
+  opendcl_nest_import_vcxprojs("${_common_bin}" "w32_" "${_skip_common_import}"
+    _common_bases _w32_res_targets)
+
+  opendcl_nest_build_cmd(_common_cmd "${_common_bin}")
+  if(NOT TARGET Nest_Win32_Common)
+    if(OPENDCL_WIN32_IN_ALL)
+      add_custom_target(Nest_Win32_Common ALL
+        COMMAND ${_common_cmd}
+        COMMENT "Win32 common nest (Res/Studio/RxInstall) (/m:${_nest_m})"
+        VERBATIM
+      )
     else()
-      # Demand-build only (Studio/runtimes depend on the nest gate below when needed).
+      add_custom_target(Nest_Win32_Common
+        COMMAND ${_common_cmd}
+        COMMENT "Win32 common nest (Res/Studio/RxInstall) (/m:${_nest_m})"
+        VERBATIM
+      )
+    endif()
+    set_property(TARGET Nest_Win32_Common PROPERTY FOLDER "CMake")
+  endif()
+  if(TARGET "Nest_Lib_${_host_safe}_mt")
+    add_dependencies(Nest_Win32_Common "Nest_Lib_${_host_safe}_mt")
+  endif()
+
+  # Res_Win32: Res targets only (build-once).
+  if(_common_res AND _w32_res_targets)
+    set(_res_extra)
+    foreach(_rt ${_w32_res_targets})
+      list(APPEND _res_extra --target "${_rt}")
+    endforeach()
+    opendcl_nest_build_cmd(_res_cmd "${_common_bin}" ${_res_extra})
+    if(NOT TARGET Res_Win32)
       add_custom_target(Res_Win32
         COMMAND ${_res_cmd}
-        COMMENT "Build classic x86 Runtime.Res via full Win32 nest (/m:${_nest_m})"
+        COMMENT "Build classic x86 Runtime.Res via win32-common (/m:${_nest_m})"
         VERBATIM
       )
       set_target_properties(Res_Win32 PROPERTIES FOLDER "Runtime/Localized Resources")
     endif()
-    list(LENGTH _w32_res_cmake_targets _nr)
+    add_dependencies(Nest_Win32_Common Res_Win32)
+    list(LENGTH _w32_res_targets _nr)
     message(STATUS
-      "Resource DLLs: classic_x86 Runtime.Res -> Res_Win32 builds ${_nr} nest "
-      "target(s); Studio PE=${OPENDCL_STUDIO_PE} (not ALL when Nest_Win32 is ALL)")
+      "Resource DLLs: classic_x86 -> Res_Win32 (${_nr} langs) via win32-common")
   endif()
 
-  # Product -> nest gate (late: runtimes/Studio were created before this function).
-  # WIN32_IN_ALL: one nest flight via Nest_Win32.
-  # Else: Res-only gate (or nothing if host Res).
-  if(OPENDCL_WIN32_IN_ALL)
-    set(_nest_gate Nest_Win32)
-  elseif(TARGET Res_Win32)
-    set(_nest_gate Res_Win32)
-  else()
-    set(_nest_gate "")
+  # Store common bin for RxInstall umbrella (may already exist).
+  set(OPENDCL_WIN32_COMMON_BIN "${_common_bin}" CACHE INTERNAL "" FORCE)
+
+  if(TARGET RxInstall AND TARGET Nest_Win32_Common)
+    # Retarget RxInstall COMMAND to common nest if still pointing at old path —
+    # RxInstall is created earlier; update via dependency only. COMMAND was set
+    # with win32 path at creation — fix in RxInstall.cmake to use common.
+    if(OPENDCL_WIN32_IN_ALL)
+      add_dependencies(RxInstall Nest_Win32_Common)
+    endif()
   endif()
 
-  if(_nest_gate)
+  # Product gates: classic_x86 Res for F5.
+  if(TARGET Res_Win32 AND OPENDCL_RES_PE STREQUAL "classic_x86")
     if(TARGET Studio)
-      add_dependencies(Studio ${_nest_gate})
+      add_dependencies(Studio Res_Win32)
     endif()
-    # x64 runtimes need Runtime.Res for F5; classic_x86 Res is nest-only.
-    if(OPENDCL_RES_PE STREQUAL "classic_x86" OR OPENDCL_WIN32_IN_ALL)
-      foreach(_id IN LISTS OPENDCL_RT_IDS)
-        string(REPLACE "." "_" _safe "${_id}")
-        set(_rt "Runtime_${_safe}")
-        if(TARGET "${_rt}")
-          add_dependencies(${_rt} ${_nest_gate})
-        endif()
-      endforeach()
-    endif()
-    message(STATUS "Win32 nest gate for Studio/runtimes: ${_nest_gate}")
+    foreach(_id IN LISTS OPENDCL_RT_IDS)
+      string(REPLACE "." "_" _safe "${_id}")
+      set(_rt "Runtime_${_safe}")
+      if(TARGET "${_rt}")
+        add_dependencies(${_rt} Res_Win32)
+      endif()
+    endforeach()
+    message(STATUS "Win32 Res gate for Studio/runtimes: Res_Win32")
   endif()
 
+  # Nest_Win32 umbrella: libs -> runtimes -> common.
+  if(NOT TARGET Nest_Win32)
+    if(OPENDCL_WIN32_IN_ALL)
+      add_custom_target(Nest_Win32 ALL
+        COMMENT "Win32 nest umbrella (libs + runtimes + common)"
+        VERBATIM
+      )
+    else()
+      add_custom_target(Nest_Win32
+        COMMENT "Win32 nest umbrella (libs + runtimes + common)"
+        VERBATIM
+      )
+    endif()
+    set_property(TARGET Nest_Win32 PROPERTY FOLDER "CMake")
+  endif()
+  foreach(_t IN LISTS _all_lib_targets)
+    add_dependencies(Nest_Win32 ${_t})
+  endforeach()
+  foreach(_t IN LISTS _all_rt_targets)
+    add_dependencies(Nest_Win32 ${_t})
+  endforeach()
+  add_dependencies(Nest_Win32 Nest_Win32_Common)
+
+  list(LENGTH _all_lib_targets _nlib)
+  list(LENGTH _all_rt_targets _nrt)
   message(STATUS
-    "Win32 nest: ${_n} project(s) under Win32/... (Explorer, excluded from default build); "
-    "default nest build via Nest_Win32 only when IN_ALL=${OPENDCL_WIN32_IN_ALL} "
-    "(no parallel Res_Win32 / RxInstall nest builds)")
+    "Win32 nests: ${_nlib} lib, ${_nrt} runtime, 1 common; "
+    "IN_ALL=${OPENDCL_WIN32_IN_ALL}")
 endfunction()

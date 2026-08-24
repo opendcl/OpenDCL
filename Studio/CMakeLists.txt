@@ -99,9 +99,8 @@ foreach(_lang IN LISTS OPENDCL_LANGS)
     list(APPEND _studio_res_deps "StudioRes_${_lang}")
   endif()
 endforeach()
-# classic_x86 Res / full nest gate is wired in opendcl_add_win32_nest (after
-# Studio is created) so Studio waits for the single nest flight, not a parallel
-# Res_Win32 + Nest_Win32 pair.
+# classic_x86 Res: private res-win32 creates Res_Win32 before Studio; full nest
+# attaches the same dep later in opendcl_add_win32_nest when Res_Win32 is new.
 
 # ---------------------------------------------------------------------------
 # OpenDCL Studio.exe - static MFC + static CRT (classic)
@@ -255,6 +254,9 @@ endif()
 
 if(_studio_res_deps)
   add_dependencies(Studio ${_studio_res_deps})
+endif()
+if(TARGET Res_Win32)
+  add_dependencies(Studio Res_Win32)
 endif()
 
 if(MSVC)

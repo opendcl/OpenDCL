@@ -1,8 +1,9 @@
-# Nested Win32 build of Runtime.Res + Studio.Res for classic x86 packaging parity.
+# Nested Win32 build of Runtime.Res (+ Studio.Res in this small nest) for
+# classic_x86 /NOENTRY PE when the full OPENDCL_NEST_WIN32 tree is off.
 #
-# Used only when OPENDCL_RES_PE=classic_x86 on an x64 configure (public Mixed ship).
-# OPENDCL_RES_PE=host builds Res natively in the parent (x64 Res on x64) and does
-# not create this nest - path open for future packaging that accepts host-arch Res.
+# Used when OPENDCL_RES_PE=classic_x86 on an x64 configure without full nest
+# (e.g. vs2022-x64-dev). Full Mixed creates Res_Win32 after nest import instead.
+# OPENDCL_RES_PE=host builds Res natively in the parent (escape hatch).
 #
 # Nested tree flags: OPENDCL_BUILD_RES_DLLS=ON only (no modules / Studio.exe / RxInstall).
 # Lang list is written via -C init-cache.cmake so MSBuild does not mangle ';'.
@@ -14,7 +15,7 @@ function(opendcl_add_res_win32_nest)
   if(NOT _need)
     if(OPENDCL_NEST_WIN32 AND OPENDCL_RES_PE STREQUAL "classic_x86")
       message(STATUS
-        "Resource DLLs: classic_x86 via full Win32 nest (no private res-win32; "
+        "Resource DLLs: classic_x86 via win32-common nest (no private res-win32; "
         "Res_Win32 umbrella created after nest import)")
     endif()
     return()
@@ -60,11 +61,14 @@ function(opendcl_add_res_win32_nest)
     VERBATIM
   )
 
+  # Isolate nested MSBuild from parent VS solution builds (MSB0001 / EndBuild).
   add_custom_target(Res_Win32 ALL
     DEPENDS "${_res_stamp}"
-    COMMAND ${CMAKE_COMMAND}
-      --build "${_res_bin}"
-      --config "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>"
+    COMMAND ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
+      ${CMAKE_COMMAND}
+        --build "${_res_bin}"
+        --config "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>"
+        -- "/nodeReuse:false"
     COMMENT "Build nested Win32 Runtime.Res + Studio.Res (classic x86 ship PE)"
     VERBATIM
   )

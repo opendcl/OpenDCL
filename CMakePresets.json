@@ -15,12 +15,13 @@
         "OPENDCL_BUILD_STUDIO": "ON",
         "OPENDCL_BUILD_RXINSTALL": "ON",
         "OPENDCL_RUNTIME_AUTO": "ON",
-        "OPENDCL_LANGS": "ENU"
+        "OPENDCL_LANGS": "ENU",
+        "OPENDCL_RES_PE": "classic_x86"
       }
     },
     {
       "name": "vs2022-x64-dev",
-      "displayName": "VS2022 x64 — latest modern SDK per family (dev)",
+      "displayName": "VS2022 x64 — latest modern SDK per family (dev); classic x86 Runtime.Res",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -138,18 +139,18 @@
     },
     {
       "name": "vs2022-x64-full",
-      "displayName": "VS2022 x64 full — nested Win32 modules + x64 Studio + host Res",
+      "displayName": "VS2022 x64 full — nested Win32 modules + x64 Studio + classic x86 Runtime.Res",
       "inherits": "vs2022-full",
       "cacheVariables": {
         "OPENDCL_NEST_WIN32": "ON",
         "OPENDCL_WIN32_IN_ALL": "ON",
-        "OPENDCL_RES_PE": "host",
+        "OPENDCL_RES_PE": "classic_x86",
         "OPENDCL_STUDIO_PE": "host"
       }
     },
     {
       "name": "vs2022-win32-full",
-      "displayName": "VS2022 Win32 only — x86 matrix + host-arch (x86) Res",
+      "displayName": "VS2022 Win32 only — x86 matrix + classic x86 Runtime.Res",
       "inherits": "base",
       "architecture": {
         "value": "Win32",
@@ -166,8 +167,7 @@
         "OPENDCL_RUNTIME_TARGETS": "",
         "OPENDCL_RUNTIME_REQUIRE_SELECTED": "OFF",
         "OPENDCL_LANGS": "ENU;DEU;ESM;RUS;CHS;FRA;CHT",
-        "OPENDCL_NEST_WIN32": "OFF",
-        "OPENDCL_RES_PE": "host"
+        "OPENDCL_NEST_WIN32": "OFF"
       }
     },
     {
@@ -190,7 +190,6 @@
         "OPENDCL_RUNTIME_TARGETS": "",
         "OPENDCL_RUNTIME_AUTO": "OFF",
         "OPENDCL_NEST_WIN32": "OFF",
-        "OPENDCL_RES_PE": "host",
         "OPENDCL_STUDIO_PE": "host",
         "OPENDCL_LANGS": "ENU"
       }

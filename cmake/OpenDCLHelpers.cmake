@@ -109,18 +109,18 @@ option(OPENDCL_BUILD_HELP "Build HTML Help projects" OFF)
 option(OPENDCL_BUILD_STUDIO_HELP
   "Build Studio OpenDCL.chm targets via hhc (arch-independent; one tree only)" ON)
 
-# Classic Runtime.Res ships as Win32 (x86) PE under CommonFilesFolder.
-# Public Mixed release forces classic x86; host-arch Res remains available for
-# single-arch / future packaging (item 5: lock classic_x86 for public, path open).
+# Classic Runtime.Res ships as Win32 (x86) /NOENTRY PE (CommonFilesFolder parity).
+# Legacy always built x86-only Res; presets default to classic_x86. host remains
+# available for unusual single-arch experiments.
 option(OPENDCL_BUILD_RES_DLLS
   "Build Runtime.Res + Studio.Res language DLLs (native and/or nested)" ON)
 
 # Resource DLL PE policy (Runtime.Res / CAD CommonFiles only):
-#   classic_x86 - Runtime.Res is always x86 (public Mixed / vs2022-full). On x64,
-#                 nest Res_Win32 for Runtime.Res only.
+#   classic_x86 - Always x86 Runtime.Res (legacy / preset default). On x64, via
+#                 Res_Win32 (full nest or private res-win32); skip native x64 Res.
 #   host        - Runtime.Res PE matches this configure (x64 on x64, x86 on Win32).
 # Studio.Res always matches Studio PE (see OPENDCL_STUDIO_PE), not this flag.
-set(OPENDCL_RES_PE "host" CACHE STRING
+set(OPENDCL_RES_PE "classic_x86" CACHE STRING
   "Resource DLL PE: classic_x86 (always x86 ship) or host (match configure arch)")
 set_property(CACHE OPENDCL_RES_PE PROPERTY STRINGS classic_x86 host)
 if(NOT OPENDCL_RES_PE STREQUAL "classic_x86" AND NOT OPENDCL_RES_PE STREQUAL "host")
@@ -148,6 +148,19 @@ option(OPENDCL_NEST_WIN32
   "When configuring x64 with the VS generator, also nest Win32 under <bin>/win32 and import projects into the parent .sln" OFF)
 option(OPENDCL_WIN32_IN_ALL
   "Include nested Win32 projects in ALL_BUILD / default solution build (full ship); OFF = Explorer only unless you build Nest_Win32 or a Win32 project" OFF)
+# Set ON in the Win32 nest init-cache when the x64 parent owns classic_x86 Res via
+# Res_Win32 (build-once): nest RuntimeRes_* stay out of nest ALL_BUILD.
+option(OPENDCL_RUNTIME_RES_EXCLUDE_FROM_ALL
+  "EXCLUDE_FROM_ALL on RuntimeRes_* (nest: Res built only via parent Res_Win32)" OFF)
+# Lib-only Win32 nest (build/<preset>/win32-lib/<toolset>-<crt>): compile one
+# zlib+png pair; empty TOOLSET means normal Library defaults.
+set(OPENDCL_LIBRARY_ONLY_TOOLSET "" CACHE STRING
+  "Lib-only nest: VS toolset tag for zlib/png (e.g. v100); empty = normal Library")
+set(OPENDCL_LIBRARY_ONLY_CRT "" CACHE STRING
+  "Lib-only nest: md, mdd, or mt (with OPENDCL_LIBRARY_ONLY_TOOLSET)")
+# Runtime / common nests: link prebuilt zlib/png from OPENDCL_OUTPUT_ROOT (no compile).
+option(OPENDCL_LIBRARY_IMPORTED
+  "Create zlib/png as IMPORTED from OPENDCL_OUTPUT_ROOT (nest sharing)" OFF)
 # Full dual-arch nest compiles many old toolsets (v100/v110/...) under one MSBuild.
 # Unbounded /m + /MP OOMs 32-bit cl (C1060 heap) and triggers C1001 ICEs.
 set(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT "2" CACHE STRING
@@ -213,7 +226,9 @@ endfunction()
 # classic_x86 on x64: Runtime.Res is x86 (Res_Win32 / full nest) for CAD
 # CommonFiles; Studio.Res is separate (always matches Studio PE - see below).
 function(opendcl_runtime_res_build_native out_var)
-  if(NOT OPENDCL_BUILD_RES_DLLS AND NOT OPENDCL_BUILD_RUNTIME AND NOT OPENDCL_BUILD_STUDIO)
+  # Honor OPENDCL_BUILD_RES_DLLS alone (split Win32 runtime nests set this OFF so
+  # Res lives only in win32-common; do not imply Res from BUILD_RUNTIME).
+  if(NOT OPENDCL_BUILD_RES_DLLS)
     set(${out_var} FALSE PARENT_SCOPE)
     return()
   endif()
@@ -923,10 +938,16 @@ function(opendcl_apply_per_family_max candidates max_per_family out_enabled out_
   set(${out_skipped_extra} "${_extra_skipped}" PARENT_SCOPE)
 endfunction()
 
+# Optional arch_override (x86|x64): select as if configuring that arch (parent
+# listing Win32 nest IDs while itself is x64).
 function(opendcl_select_runtimes out_enabled out_skipped)
   set(_candidates)
   set(_skipped)
-  opendcl_host_arch(_host_arch)
+  if(ARGC GREATER_EQUAL 3 AND ARGV2)
+    set(_host_arch "${ARGV2}")
+  else()
+    opendcl_host_arch(_host_arch)
+  endif()
 
   set(_min_ts_num 0)
   if(OPENDCL_RUNTIME_MIN_TOOLSET)

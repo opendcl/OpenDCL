@@ -201,8 +201,46 @@ function(opendcl_configure_runtime_static_lib tgt lib_ts crt_label)
   message(STATUS "Library: ${tgt} (toolset ${lib_ts}, ${crt_label})")
 endfunction()
 
+# Archive dir for nest-shared zlib/png (lib-only nests always use ts/<tag>/).
+function(opendcl_library_archive_dir arch runtime_crt toolset_tag out_var)
+  string(REGEX REPLACE "[^A-Za-z0-9]" "_" _ts_safe "${toolset_tag}")
+  set(${out_var}
+    "${OPENDCL_OUTPUT_ROOT}/Library/ts/${_ts_safe}/${arch}-${runtime_crt}"
+    PARENT_SCOPE)
+endfunction()
+
+function(opendcl_add_imported_static_lib name arch runtime_crt toolset_tag)
+  if(TARGET ${name})
+    return()
+  endif()
+  opendcl_library_archive_dir("${arch}" "${runtime_crt}" "${toolset_tag}" _out_base)
+  add_library(${name} STATIC IMPORTED GLOBAL)
+  # md/mt: FullDebug maps beside Debug; mdd keeps FullDebug outs.
+  if(runtime_crt STREQUAL "mdd")
+    set_target_properties(${name} PROPERTIES
+      IMPORTED_LOCATION_DEBUG "${_out_base}/Debug/${name}.lib"
+      IMPORTED_LOCATION_FULLDEBUG "${_out_base}/FullDebug/${name}.lib"
+      IMPORTED_LOCATION_RELEASE "${_out_base}/Release/${name}.lib"
+    )
+  else()
+    set_target_properties(${name} PROPERTIES
+      IMPORTED_LOCATION_DEBUG "${_out_base}/Debug/${name}.lib"
+      IMPORTED_LOCATION_FULLDEBUG "${_out_base}/Debug/${name}.lib"
+      IMPORTED_LOCATION_RELEASE "${_out_base}/Release/${name}.lib"
+    )
+  endif()
+  # IMPORTED includes are SYSTEM (/external:I) by default; old nest toolsets
+  # misparse that and drop png.h/zlib.h (or treat the dir as a source file).
+  set_target_properties(${name} PROPERTIES IMPORTED_NO_SYSTEM TRUE)
+  target_include_directories(${name} INTERFACE
+    "${OPENDCL_LIBRARY_DIR}/ZLib"
+    "${OPENDCL_LIBRARY_DIR}/LibPNG"
+  )
+endfunction()
+
 # Ensure zlib+png exist for (arch, module_toolset, CRT).
 # runtime_crt: "md" (fake FullDebug / always /MD) or "mdd" (real FullDebug /MDd)
+# Optional 6th arg exact=1: do not map modern toolsets to host (lib-only nests).
 function(opendcl_ensure_runtime_png arch toolset runtime_crt out_zlib out_png)
   if(NOT arch STREQUAL "x64" AND NOT arch STREQUAL "x86")
     message(FATAL_ERROR "opendcl_ensure_runtime_png: arch must be x64 or x86 (got '${arch}')")
@@ -211,7 +249,15 @@ function(opendcl_ensure_runtime_png arch toolset runtime_crt out_zlib out_png)
     message(FATAL_ERROR "opendcl_ensure_runtime_png: runtime_crt must be md or mdd (got '${runtime_crt}')")
   endif()
 
-  opendcl_png_lib_toolset("${toolset}" _lib_ts)
+  set(_exact FALSE)
+  if(ARGC GREATER_EQUAL 6 AND ARGV5)
+    set(_exact TRUE)
+  endif()
+  if(_exact)
+    set(_lib_ts "${toolset}")
+  else()
+    opendcl_png_lib_toolset("${toolset}" _lib_ts)
+  endif()
   string(REGEX REPLACE "[^A-Za-z0-9]" "_" _ts_safe "${_lib_ts}")
   set(_z "zlib_${arch}_${runtime_crt}_${_ts_safe}")
   set(_p "png_${arch}_${runtime_crt}_${_ts_safe}")
@@ -220,6 +266,15 @@ function(opendcl_ensure_runtime_png arch toolset runtime_crt out_zlib out_png)
     set(_crt_label "/MDd")
   else()
     set(_crt_label "/MD")
+  endif()
+
+  if(OPENDCL_LIBRARY_IMPORTED)
+    opendcl_add_imported_static_lib(${_z} ${arch} ${runtime_crt} "${_lib_ts}")
+    opendcl_add_imported_static_lib(${_p} ${arch} ${runtime_crt} "${_lib_ts}")
+    set_property(TARGET ${_p} PROPERTY INTERFACE_LINK_LIBRARIES ${_z})
+    set(${out_zlib} "${_z}" PARENT_SCOPE)
+    set(${out_png} "${_p}" PARENT_SCOPE)
+    return()
   endif()
 
   # Default host pair is created at the bottom of this file; only create extras here.
@@ -247,12 +302,6 @@ else()
   set(_ha "x86")
 endif()
 
-# /MD pair - Debug, fake FullDebug (maps to Debug), Release.
-opendcl_add_static_lib(zlib_${_ha}_md_${_hts} ${_ha} "${_ZLIB_SOURCES}" md)
-opendcl_add_static_lib(png_${_ha}_md_${_hts} ${_ha} "${_PNG_SOURCES}" md)
-target_link_libraries(png_${_ha}_md_${_hts} PUBLIC zlib_${_ha}_md_${_hts})
-
-# /MDd pair - real host-debug FullDebug (only when FullDebug is a solution config).
 set(_opendcl_have_fulldebug FALSE)
 if(CMAKE_CONFIGURATION_TYPES)
   if("FullDebug" IN_LIST CMAKE_CONFIGURATION_TYPES)
@@ -261,6 +310,70 @@ if(CMAKE_CONFIGURATION_TYPES)
 elseif(CMAKE_BUILD_TYPE STREQUAL "FullDebug")
   set(_opendcl_have_fulldebug TRUE)
 endif()
+
+# Lib-only nest: compile exactly one (toolset, CRT) zlib+png pair into ts/ leaf.
+if(OPENDCL_LIBRARY_ONLY_TOOLSET AND OPENDCL_LIBRARY_ONLY_CRT)
+  set(_lots "${OPENDCL_LIBRARY_ONLY_TOOLSET}")
+  set(_locrt "${OPENDCL_LIBRARY_ONLY_CRT}")
+  string(REGEX REPLACE "[^A-Za-z0-9]" "_" _lots_safe "${_lots}")
+  if(NOT _locrt STREQUAL "md" AND NOT _locrt STREQUAL "mdd" AND NOT _locrt STREQUAL "mt")
+    message(FATAL_ERROR
+      "OPENDCL_LIBRARY_ONLY_CRT must be md, mdd, or mt (got '${_locrt}')")
+  endif()
+  if(_locrt STREQUAL "mt")
+    opendcl_add_static_lib(zlib_${_ha}_mt_${_lots_safe} ${_ha} "${_ZLIB_SOURCES}" mt "${_lots_safe}")
+    opendcl_add_static_lib(png_${_ha}_mt_${_lots_safe} ${_ha} "${_PNG_SOURCES}" mt "${_lots_safe}")
+    opendcl_configure_runtime_static_lib(zlib_${_ha}_mt_${_lots_safe} "${_lots}" "/MT")
+    opendcl_configure_runtime_static_lib(png_${_ha}_mt_${_lots_safe} "${_lots}" "/MT")
+    target_link_libraries(png_${_ha}_mt_${_lots_safe} PUBLIC zlib_${_ha}_mt_${_lots_safe})
+    set(OPENDCL_ZLIB_MT_TARGET "zlib_${_ha}_mt_${_lots_safe}" CACHE INTERNAL "")
+    set(OPENDCL_PNG_MT_TARGET "png_${_ha}_mt_${_lots_safe}" CACHE INTERNAL "")
+  else()
+    opendcl_ensure_runtime_png("${_ha}" "${_lots}" "${_locrt}" _z _p TRUE)
+  endif()
+  message(STATUS
+    "Library: lib-only nest ${_ha} toolset ${_lots} crt ${_locrt}")
+  return()
+endif()
+
+# Import-only nest: no compiled defaults; ensure_* creates IMPORTED on demand.
+if(OPENDCL_LIBRARY_IMPORTED)
+  set(OPENDCL_ZLIB_MD_TARGET "zlib_${_ha}_md_${_hts}" CACHE INTERNAL "")
+  set(OPENDCL_PNG_MD_TARGET  "png_${_ha}_md_${_hts}"  CACHE INTERNAL "")
+  set(OPENDCL_ZLIB_MT_TARGET "zlib_${_ha}_mt_${_hts}" CACHE INTERNAL "")
+  set(OPENDCL_PNG_MT_TARGET  "png_${_ha}_mt_${_hts}"  CACHE INTERNAL "")
+  opendcl_add_imported_static_lib(${OPENDCL_ZLIB_MD_TARGET} ${_ha} md "${_hts}")
+  opendcl_add_imported_static_lib(${OPENDCL_PNG_MD_TARGET} ${_ha} md "${_hts}")
+  set_property(TARGET ${OPENDCL_PNG_MD_TARGET} PROPERTY
+    INTERFACE_LINK_LIBRARIES ${OPENDCL_ZLIB_MD_TARGET})
+  opendcl_add_imported_static_lib(${OPENDCL_ZLIB_MT_TARGET} ${_ha} mt "${_hts}")
+  opendcl_add_imported_static_lib(${OPENDCL_PNG_MT_TARGET} ${_ha} mt "${_hts}")
+  set_property(TARGET ${OPENDCL_PNG_MT_TARGET} PROPERTY
+    INTERFACE_LINK_LIBRARIES ${OPENDCL_ZLIB_MT_TARGET})
+  if(_opendcl_have_fulldebug)
+    set(OPENDCL_ZLIB_MDD_TARGET "zlib_${_ha}_mdd_${_hts}" CACHE INTERNAL "")
+    set(OPENDCL_PNG_MDD_TARGET  "png_${_ha}_mdd_${_hts}"  CACHE INTERNAL "")
+    opendcl_add_imported_static_lib(${OPENDCL_ZLIB_MDD_TARGET} ${_ha} mdd "${_hts}")
+    opendcl_add_imported_static_lib(${OPENDCL_PNG_MDD_TARGET} ${_ha} mdd "${_hts}")
+    set_property(TARGET ${OPENDCL_PNG_MDD_TARGET} PROPERTY
+      INTERFACE_LINK_LIBRARIES ${OPENDCL_ZLIB_MDD_TARGET})
+  else()
+    unset(OPENDCL_ZLIB_MDD_TARGET CACHE)
+    unset(OPENDCL_PNG_MDD_TARGET CACHE)
+  endif()
+  message(STATUS
+    "Library: IMPORTED ${_ha} toolset ${_hts} from ${OPENDCL_OUTPUT_ROOT}/Library/ts/...")
+  return()
+endif()
+
+# /MD pair - Debug, fake FullDebug (maps to Debug), Release.
+# Host defaults keep the classic non-ts leaf (out/Library/<arch>-md/); lib-only
+# nests always use ts/<toolset>/ for stable IMPORTED sharing.
+opendcl_add_static_lib(zlib_${_ha}_md_${_hts} ${_ha} "${_ZLIB_SOURCES}" md)
+opendcl_add_static_lib(png_${_ha}_md_${_hts} ${_ha} "${_PNG_SOURCES}" md)
+target_link_libraries(png_${_ha}_md_${_hts} PUBLIC zlib_${_ha}_md_${_hts})
+
+# /MDd pair - real host-debug FullDebug (only when FullDebug is a solution config).
 if(_opendcl_have_fulldebug)
   opendcl_add_static_lib(zlib_${_ha}_mdd_${_hts} ${_ha} "${_ZLIB_SOURCES}" mdd)
   opendcl_add_static_lib(png_${_ha}_mdd_${_hts} ${_ha} "${_PNG_SOURCES}" mdd)
