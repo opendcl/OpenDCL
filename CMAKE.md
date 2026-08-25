@@ -117,11 +117,11 @@ cmake --build --preset vs2022-full-release
 .\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full -ModuleSet Full
 # Full local make-release (dist + optional -Sign) - verifies before WiX:
 .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
-  -ProductVersion 10.1.1.1 -ModuleSet Full -Sign
+  -ProductVersion 10.1.2.1 -ModuleSet Full -Sign
 # After a full set exists, compare packages to the previous release:
 .\scripts\compare-release-packages.ps1 `
   -BaselinePackageDir dist\10.0.0.0 `
-  -NewPackageDir dist\10.1.1.1
+  -NewPackageDir dist\10.1.2.1
 ```
 
 Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
@@ -455,7 +455,7 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 
 # Full product release (all catalog modules + all languages; missing files fail)
 .\scripts\build-wix.ps1
-# or: .\scripts\make-release.ps1 -ProductVersion 10.1.1.1
+# or: .\scripts\make-release.ps1 -ProductVersion 10.1.2.1
 ```
 
 `-Runtimes` accepts matrix IDs (`BRX.27.x64`), families (`BRX`), or wildcards (`BRX.2*`).

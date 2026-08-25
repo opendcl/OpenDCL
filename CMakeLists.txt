@@ -27,7 +27,7 @@ endif()
 
 project(${_opendcl_project_name}
   # Must match Runtime/ARX.rc (and Studio/RxInstall) FILEVERSION / PRODUCTVERSION.
-  VERSION 10.1.1.1
+  VERSION 10.1.2.1
   DESCRIPTION "OpenDCL Studio and Runtime"
   LANGUAGES CXX C RC
 )

@@ -31,7 +31,7 @@ From this repository root (after a Release compile):
 ```powershell
 # Preferred full local release (verify -> WiX -> dist -> loc zips [-> sign]):
 .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
-  -ProductVersion 10.1.1.1 -ModuleSet Full
+  -ProductVersion 10.1.2.1 -ModuleSet Full
 
 # Full product WiX only:
 .\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full)
@@ -82,7 +82,7 @@ Runtime MSM remains under **Common Files\OpenDCL** (historical x86 MSM /
 Override versions when cutting a release:
 
 ```powershell
-.\scripts\build-wix.ps1 -ModuleVersion 10.1.1.1 -ProductVersion 10.1.101
+.\scripts\build-wix.ps1 -ModuleVersion 10.1.2.1 -ProductVersion 10.1.201
 ```
 
 ## Post-package steps (WiX -> dist -> localization -> sign -> release)
@@ -92,7 +92,7 @@ the **combined** helper:
 
 ```powershell
 # One-shot: package + versioned MSI/MSM + localization zips [+ sign]
-.\scripts\make-release.ps1 -ProductVersion 10.1.1.1 -Sign
+.\scripts\make-release.ps1 -ProductVersion 10.1.2.1 -Sign
 ```
 
 | Step | Script / workflow | Replaces |
@@ -116,13 +116,13 @@ OpenDCL.<LANG>.zip                 # localization packs (same folder)
 Example step-by-step (same result as `make-release.ps1` without `-Sign`):
 
 ```powershell
-.\scripts\build-wix.ps1 -ModuleVersion 10.1.1.1 -ProductVersion 10.1.101
-.\scripts\make-dist.ps1 -ProductVersion 10.1.1.1
-.\scripts\make-localization-zips.ps1 -OutDir .\dist\10.1.1.1
+.\scripts\build-wix.ps1 -ModuleVersion 10.1.2.1 -ProductVersion 10.1.201
+.\scripts\make-dist.ps1 -ProductVersion 10.1.2.1
+.\scripts\make-localization-zips.ps1 -OutDir .\dist\10.1.2.1
 $env:SIGN_STORE_PASSWORD = "<yubikey-pin>"   # process env only; never commit
-.\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
+.\scripts\sign-files.ps1 -Path .\dist\10.1.2.1
 # Product v* release: MSI/MSM only. Language zips -> rolling tag localization-packs.
-gh release create "v10.1.1.1" .\dist\10.1.1.1\*.msi .\dist\10.1.1.1\*.msm --title "OpenDCL 10.1.1.1"
+gh release create "v10.1.2.1" .\dist\10.1.2.1\*.msi .\dist\10.1.2.1\*.msm --title "OpenDCL 10.1.2.1"
 ```
 
 **Signing (YubiKey + SSL.com + jsign):** insert YubiKey, set `SIGN_STORE_PASSWORD`
@@ -140,7 +140,7 @@ OpenDCL.Runtime.<ver>.msi / .msm
 OpenDCL.Studio.<LANG>.<ver>.msi
 ```
 
-Tag: `v<ver>` (e.g. `v10.1.1.1`).
+Tag: `v<ver>` (e.g. `v10.1.2.1`).
 
 **Localization packs** (translator zips, not installers):  
 `.\scripts\make-localization-zips.ps1` and workflow
@@ -178,7 +178,7 @@ Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no st
 - **No Detected Dependencies** - only intentional product files (modules, `Runtime.Res`, licenses, Studio app/help/samples). VC++ CRT/MFC redistributables are not bundled.
 - **Module Guid** `0C4E4759-A6C2-4D0E-BAE5-7719C3BCF049` matches the historical VS MSM modularization id.
 - **RxInstall** custom actions preserved (machine/user install + uninstall); user CAs impersonate.
-- **ProductVersion** is 3-part MSI encoding (`10.1.101` for file version `10.1.1.1`). **ModuleVersion** is 4-part.
+- **ProductVersion** is 3-part MSI encoding (`10.1.201` for file version `10.1.2.1`). **ModuleVersion** is 4-part.
 - **UpgradeCodes** preserved from the old Studio language packages / Runtime MSI.
 - Component GUIDs are **stable** (MD5 of logical path).
 - Studio shortcuts are **advertised** and nested on their target files

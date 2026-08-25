@@ -28,7 +28,7 @@
 [CmdletBinding()]
 param(
   [string] $OpenDclRoot = "",
-  [string] $ProductVersion = "10.1.1.1",
+  [string] $ProductVersion = "10.1.2.1",
   [string] $Configuration = "Release",
   [string] $DestDir = "",
   [string] $SourceDir = ""

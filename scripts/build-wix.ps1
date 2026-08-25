@@ -30,11 +30,11 @@
   Build configuration folder to harvest (default Release).
 
 .PARAMETER ProductVersion
-  MSI 3-part ProductVersion. Default 10.1.101 encodes file version 10.1.1.1
+  MSI 3-part ProductVersion. Default 10.1.201 encodes file version 10.1.2.1
   as major.minor.(patch*100+revision) for MSI upgrade comparison.
 
 .PARAMETER ModuleVersion
-  Merge module 4-part version (default 10.1.1.1).
+  Merge module 4-part version (default 10.1.2.1).
 
 .PARAMETER WixBin
   Path to candle.exe/light.exe directory. Auto-detected if empty.
@@ -65,8 +65,8 @@
 param(
   [string] $OpenDclRoot = "",
   [string] $Configuration = "Release",
-  [string] $ProductVersion = "10.1.101",
-  [string] $ModuleVersion = "10.1.1.1",
+  [string] $ProductVersion = "10.1.201",
+  [string] $ModuleVersion = "10.1.2.1",
   [string] $WixBin = "",
   [string] $OutDir = "",
   [string[]] $Languages = @(),
