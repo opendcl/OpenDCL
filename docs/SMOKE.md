@@ -79,7 +79,7 @@ Goal: Studio ENU (or one lang) embeds Runtime MSM; Studio.Res PE matches Studio.
 
 ```powershell
 # From the packaging repo root
-$ver  = "10.1.1.1"
+$ver  = "10.1.2.1"
 $prev = "10.0.0.0"   # last shipped / last accepted dry-run version
 
 # Clean empty tree (example)
