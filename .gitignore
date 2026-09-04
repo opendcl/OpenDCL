@@ -42,6 +42,13 @@ BuildLog.htm
 x64/
 Win32/
 *.dll
+# Vendored Evergreen WebView2 loader (Html control).
+!Library/WebView2/
+!Library/WebView2/**
+!Library/WebView2/x64/
+!Library/WebView2/x86/
+!Library/WebView2/x64/*.dll
+!Library/WebView2/x86/*.dll
 *.exe
 *.lib
 *.exp

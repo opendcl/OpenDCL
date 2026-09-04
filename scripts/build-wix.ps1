@@ -579,6 +579,18 @@ function New-RuntimeFilesFragment {
     [void]$sb.AppendLine((Write-ComponentXml -ComponentId $cid -Guid $guid -DirectoryId "OpenDCLFolder" -SourcePath $srcXml -FileName $name))
     if ($full -match '[\\/]out[\\/]') { $fromOut++ } else { $fromOther++ }
   }
+
+  foreach ($wv in @(
+      @{ Rel = "Library\WebView2\x64\WebView2Loader.dll"; Dir = "WebView2X64"; Id = "wv2_x64" },
+      @{ Rel = "Library\WebView2\x86\WebView2Loader.dll"; Dir = "WebView2X86"; Id = "wv2_x86" }
+    )) {
+    $full = Resolve-ProductFile $wv.Rel
+    Assert-File $full
+    $guid = Get-StableGuid "opendcl.runtime.webview2|$($wv.Id)"
+    $srcXml = $full.Replace('&', '&amp;')
+    [void]$sb.AppendLine((Write-ComponentXml -ComponentId $wv.Id -Guid $guid -DirectoryId $wv.Dir -SourcePath $srcXml -FileName "WebView2Loader.dll"))
+  }
+
   Write-Host ("Runtime modules: {0} total ({1} from out\, {2} from OpenDclRoot/repo)" -f `
     $RuntimeModules.Count, $fromOut, $fromOther)
   [void]$sb.AppendLine('    </ComponentGroup>')
@@ -762,7 +774,11 @@ function New-StudioFilesFragment([string] $lang) {
       )
     },
     @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\License.htm"); Dir = "LangFolder"; Name = "License.htm"; FileId = "fil_StudioLicenseHtm" },
-    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\GNU-GPL.txt"); Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" }
+    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\GNU-GPL.txt"); Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" },
+    @{
+      Full = (Resolve-ProductFile $(if ($script:StudioIsX64) { "Library\WebView2\x64\WebView2Loader.dll" } else { "Library\WebView2\x86\WebView2Loader.dll" }))
+      Dir = "INSTALLDIR"; Name = "WebView2Loader.dll"; FileId = "fil_StudioWebView2"
+    }
   )
 
   foreach ($f in $appFiles) {

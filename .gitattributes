@@ -14,3 +14,4 @@ Runtime/Methods/** text eol=crlf
 *.cur  binary
 *.pdf  binary
 *.zip  binary
+Library/WebView2/**/*.dll binary

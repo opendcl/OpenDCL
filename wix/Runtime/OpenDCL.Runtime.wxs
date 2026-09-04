@@ -28,6 +28,10 @@
       <Directory Id="CommonFilesFolder">
         <Directory Id="OpenDCLFolder" Name="OpenDCL">
           <!-- Component group RuntimeModules injected via fragment -->
+          <Directory Id="WebView2Folder" Name="WebView2">
+            <Directory Id="WebView2X64" Name="x64" />
+            <Directory Id="WebView2X86" Name="x86" />
+          </Directory>
           <Directory Id="LangENU" Name="ENU" />
           <Directory Id="LangDEU" Name="DEU" />
           <Directory Id="LangESM" Name="ESM" />
