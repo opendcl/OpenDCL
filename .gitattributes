@@ -1,4 +1,7 @@
 Runtime/Methods/** text eol=crlf
+# Store CRLF like the rest of Common/Controls (do not normalize to LF).
+Common/Controls/HtmlBrowser.cpp -text
+Common/Controls/HtmlBrowser.h   -text
 *.vcxproj          text eol=crlf
 *.vcxproj.filters  text eol=crlf
 *.vcxproj.user     text eol=crlf
@@ -14,3 +17,4 @@ Runtime/Methods/** text eol=crlf
 *.cur  binary
 *.pdf  binary
 *.zip  binary
+Library/WebView2/**/*.dll binary
