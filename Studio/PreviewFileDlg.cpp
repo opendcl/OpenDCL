@@ -25,12 +25,10 @@ IMPLEMENT_DYNAMIC(CPreviewFileDlg, CFileDialog)
 
 CPreviewFileDlg::CPreviewFileDlg(BOOL bOpenFileDialog, LPCTSTR lpszDefExt, LPCTSTR lpszFileName,
 		DWORD dwFlags, LPCTSTR lpszFilter, CWnd* pParentWnd)
-: CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
+	// OFN_ENABLETEMPLATE needs the explorer hook dialog. Passing FALSE here
+	// prevents CFileDialog() from Advise()'ing IFileDialog (m_dwRef leak).
+: CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd, 0, FALSE)
 {
-__if_exists(m_bVistaStyle)
-{
-	m_bVistaStyle = FALSE;
-}
 	m_ofn.Flags |= (OFN_EXPLORER | OFN_ENABLETEMPLATE);
 	m_ofn.lpTemplateName = MAKEINTRESOURCE(IDD_FILEOPENPREVIEW);
 	m_bPreview = TRUE;
