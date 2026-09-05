@@ -18,7 +18,7 @@ static AcGiVisualStyle::Type RenderModeToVisualStyle( long nRenderMode )
 {
 	switch( nRenderMode )
 	{
-	case 0: return AcGiVisualStyle::kFlat;
+	case 0: return AcGiVisualStyle::k2DWireframe;
 	case 1: return AcGiVisualStyle::kFlat;
 	case 2: return AcGiVisualStyle::k3DWireframe;
 	case 3: return AcGiVisualStyle::kHidden;
