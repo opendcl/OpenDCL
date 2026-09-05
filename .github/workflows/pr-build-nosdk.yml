@@ -1,0 +1,71 @@
+# No-CAD-SDK PR coverage: Studio + Res + RxInstall + host libs (Win32 + x64).
+# Path filters limit runs to product build surface (mirror localization-packs style).
+name: PR build (no CAD SDK)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "Common/**"
+      - "Studio/**"
+      - "Runtime/**"
+      - "Library/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - "CMAKE.md"
+      - "scripts/verify-nosdk-outputs.ps1"
+      - ".github/workflows/pr-build-nosdk.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: pr-build-nosdk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nosdk:
+    name: ${{ matrix.preset }}
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: pwsh
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - preset: vs2022-nosdk
+            build_preset: vs2022-nosdk-release
+            arch: Win32
+          - preset: vs2022-nosdk-x64
+            build_preset: vs2022-nosdk-x64-release
+            arch: x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure (${{ matrix.preset }}, fresh)
+        run: cmake --preset ${{ matrix.preset }} --fresh
+
+      - name: Build Release
+        run: cmake --build --preset ${{ matrix.build_preset }}
+
+      - name: Verify nosdk outputs
+        run: |
+          & ./scripts/verify-nosdk-outputs.ps1 `
+            -OpenDclRoot "build/${{ matrix.preset }}" `
+            -Arch ${{ matrix.arch }} `
+            -Configuration Release
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: nosdk-${{ matrix.arch }}-${{ github.run_id }}
+          path: |
+            build/${{ matrix.preset }}/out/Studio/**
+            build/${{ matrix.preset }}/out/Runtime/Localized/ENU/**
+            build/${{ matrix.preset }}/out/Runtime/RxInstall/**
+            build/${{ matrix.preset }}/out/Library/**
+          if-no-files-found: warn
+          retention-days: 3

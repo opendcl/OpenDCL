@@ -206,6 +206,60 @@
       }
     },
     {
+      "name": "vs2022-nosdk",
+      "displayName": "VS2022 Win32 - no CAD SDK (Studio + Res + RxInstall + libs)",
+      "description": "PR/CI coverage without CAD SDKs. Studio host PE, classic_x86 Runtime.Res, RxInstall ON, RES DLLs ON, Studio help OFF, ENU only. Runtime modules OFF; NEST_WIN32 OFF.",
+      "inherits": "base",
+      "architecture": {
+        "value": "Win32",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "ON",
+        "OPENDCL_BUILD_RUNTIME": "OFF",
+        "OPENDCL_BUILD_RXINSTALL": "ON",
+        "OPENDCL_BUILD_RES_DLLS": "ON",
+        "OPENDCL_BUILD_STUDIO_HELP": "OFF",
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_NEST_WIN32": "OFF",
+        "OPENDCL_STUDIO_PE": "host",
+        "OPENDCL_RES_PE": "classic_x86",
+        "OPENDCL_LANGS": "ENU"
+      }
+    },
+    {
+      "name": "vs2022-nosdk-x64",
+      "displayName": "VS2022 x64 - no CAD SDK (Studio + Res + RxInstall + libs)",
+      "description": "PR/CI coverage without CAD SDKs. x64 Studio host PE; classic_x86 Runtime.Res via private res-win32; RxInstall via private rxinstall-win32 (x86 MSI CA; NEST_WIN32 OFF). Studio help OFF, ENU only.",
+      "inherits": "base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "OPENDCL_BUILD_STUDIO": "ON",
+        "OPENDCL_BUILD_RUNTIME": "OFF",
+        "OPENDCL_BUILD_RXINSTALL": "ON",
+        "OPENDCL_BUILD_RES_DLLS": "ON",
+        "OPENDCL_BUILD_STUDIO_HELP": "OFF",
+        "OPENDCL_ENABLE_ARX": "OFF",
+        "OPENDCL_ENABLE_BRX": "OFF",
+        "OPENDCL_ENABLE_GRX": "OFF",
+        "OPENDCL_ENABLE_ZRX": "OFF",
+        "OPENDCL_RUNTIME_TARGETS": "",
+        "OPENDCL_RUNTIME_AUTO": "OFF",
+        "OPENDCL_NEST_WIN32": "OFF",
+        "OPENDCL_STUDIO_PE": "host",
+        "OPENDCL_RES_PE": "classic_x86",
+        "OPENDCL_LANGS": "ENU"
+      }
+    },
+    {
       "name": "vs2026-dev",
       "displayName": "VS2026 — latest modern SDK per family (dev); classic x86 Runtime.Res",
       "inherits": "base-vs2026",
@@ -430,6 +484,16 @@
     {
       "name": "vs2022-x86-studio-release",
       "configurePreset": "vs2022-x86-studio",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2022-nosdk-release",
+      "configurePreset": "vs2022-nosdk",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2022-nosdk-x64-release",
+      "configurePreset": "vs2022-nosdk-x64",
       "configuration": "Release"
     },
     {
