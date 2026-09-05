@@ -8,7 +8,7 @@
 #include "SafeImageListWrite.h"
 #include <IImgCtx.h>
 
-//#include <AtlImage.h> //for CImage
+#include "png.h"
 
 
 static const CLSID _afx_CLSID_StdPicture2_V1 =
@@ -351,9 +351,117 @@ bool CDclPicture::Export( LPCTSTR pszFile )
 	return true;
 }
 
+static bool LoadPngFileViaLibPng( LPCTSTR pszFile, LPPICTURE& lpPicture )
+{
+	USES_CONVERSION;
+	png_image image;
+	memset( &image, 0, sizeof( image ) );
+	image.version = PNG_IMAGE_VERSION;
+
+	if( !png_image_begin_read_from_file( &image, T2CA( pszFile ) ) )
+		return false;
+
+	image.format = PNG_FORMAT_BGRA;
+	const png_int_32 nStride = PNG_IMAGE_ROW_STRIDE( image );
+	const size_t cbImage = PNG_IMAGE_SIZE( image );
+	BYTE* pPixels = (BYTE*)malloc( cbImage );
+	if( !pPixels )
+	{
+		png_image_free( &image );
+		return false;
+	}
+
+	if( !png_image_finish_read( &image, NULL, pPixels, nStride, NULL ) )
+	{
+		free( pPixels );
+		png_image_free( &image );
+		return false;
+	}
+
+	// Composite onto PictureBox transparent key color (fully transparent -> grey).
+	const BYTE keyR = GetRValue( rgbLightGrey );
+	const BYTE keyG = GetGValue( rgbLightGrey );
+	const BYTE keyB = GetBValue( rgbLightGrey );
+	const UINT nWidth = image.width;
+	const UINT nHeight = image.height;
+	for( UINT y = 0; y < nHeight; ++y )
+	{
+		BYTE* p = pPixels + (size_t)y * (size_t)nStride;
+		for( UINT x = 0; x < nWidth; ++x, p += 4 )
+		{
+			const BYTE b = p[0];
+			const BYTE g = p[1];
+			const BYTE r = p[2];
+			const BYTE a = p[3];
+			if( a == 0 )
+			{
+				p[0] = keyB;
+				p[1] = keyG;
+				p[2] = keyR;
+			}
+			else if( a < 255 )
+			{
+				p[0] = (BYTE)( ( (UINT)b * a + (UINT)keyB * ( 255 - a ) ) / 255 );
+				p[1] = (BYTE)( ( (UINT)g * a + (UINT)keyG * ( 255 - a ) ) / 255 );
+				p[2] = (BYTE)( ( (UINT)r * a + (UINT)keyR * ( 255 - a ) ) / 255 );
+			}
+			p[3] = 0;
+		}
+	}
+
+	BITMAPINFO bmi = { 0 };
+	bmi.bmiHeader.biSize = sizeof( BITMAPINFOHEADER );
+	bmi.bmiHeader.biWidth = (LONG)nWidth;
+	bmi.bmiHeader.biHeight = -(LONG)nHeight; // top-down
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+
+	HDC hScrDC = CreateDC( _T("DISPLAY"), NULL, NULL, NULL );
+	void* pBits = NULL;
+	HBITMAP hbmp = CreateDIBSection( hScrDC, &bmi, DIB_RGB_COLORS, &pBits, NULL, 0 );
+	DeleteDC( hScrDC );
+	if( !hbmp || !pBits )
+	{
+		if( hbmp )
+			DeleteObject( hbmp );
+		free( pPixels );
+		png_image_free( &image );
+		return false;
+	}
+
+	memcpy( pBits, pPixels, cbImage );
+	free( pPixels );
+	png_image_free( &image );
+
+	PICTDESC pd = { sizeof( PICTDESC ), PICTYPE_BITMAP };
+	pd.bmp.hbitmap = hbmp;
+	pd.bmp.hpal = NULL;
+	return SUCCEEDED( OleCreatePictureIndirect( &pd, IID_IPicture, TRUE, (LPVOID*)&lpPicture ) )
+		&& lpPicture != NULL;
+}
+
+static bool PreferLibPngForAlpha( LPCTSTR pszFile )
+{
+	if( !pszFile )
+		return false;
+	LPCTSTR pszExt = _tcsrchr( pszFile, _T('.') );
+	return pszExt && 0 == _tcsicmp( pszExt, _T(".png") );
+}
+
 bool CDclPicture::LoadFile( LPCTSTR pszFile )
 {
 	Clear();
+
+	LPPICTURE lpPicture = NULL;
+
+	// OleLoadPicture flattens PNG alpha to black; prefer libpng composite first.
+	if( PreferLibPngForAlpha( pszFile ) && LoadPngFileViaLibPng( pszFile, lpPicture ) )
+	{
+		Update( lpPicture );
+		return true;
+	}
+
 	// open file
 	HANDLE hFile = CreateFile(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	if( INVALID_HANDLE_VALUE == hFile )
@@ -384,11 +492,16 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile )
 	_ASSERTE(SUCCEEDED(hr) && pstm);
 
 	// Create IPicture from image file
-	LPPICTURE lpPicture = NULL;
 	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
 	pstm->Release();
-	if( FAILED(hr) )
-	{ //try plan B
+	if( FAILED(hr) || !lpPicture )
+	{
+		if( PreferLibPngForAlpha( pszFile ) && LoadPngFileViaLibPng( pszFile, lpPicture ) )
+		{
+			Update( lpPicture );
+			return true;
+		}
+		//try plan B
 		CComPtr< IImgCtx > pImgCtx;
 		hr = CoCreateInstance( CLSID_IImgCtx, NULL, CLSCTX_INPROC_SERVER, IID_IImgCtx, (LPVOID*)&pImgCtx );
 		if( SUCCEEDED(hr) )
@@ -426,7 +539,7 @@ bool CDclPicture::LoadFile( LPCTSTR pszFile )
 						hOldPal = SelectPalette( hdc, hPal, TRUE );
 						RealizePalette( hdc );
 					}
-					SetBkColor( hdc, RGB(192,192,192) );
+					SetBkColor( hdc, rgbLightGrey );
 					SetBkMode( hdc, OPAQUE );
 					SetMapMode( hdc, MM_TEXT );
 					ExtTextOut( hdc, 0, 0, ETO_OPAQUE, &rcImg, NULL, 0, NULL );

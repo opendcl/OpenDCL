@@ -57,6 +57,12 @@ static void DrawTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int
 	// Select the image into the appropriate dc
 	CBitmap* pOldBitmapImage = dcImage.SelectObject(pBitmap);
 
+	BITMAP bm;
+	pBitmap->GetBitmap(&bm);
+	const int nSrcW = bm.bmWidth;
+	const int nSrcH = bm.bmHeight;
+	const bool bStretch = (nSrcW != nWidth || nSrcH != nHeight);
+
 	// Create the mask bitmap
 	CBitmap bitmapTrans;
 	bitmapTrans.CreateBitmap(nWidth, nHeight, 1, 1, NULL);
@@ -66,13 +72,25 @@ static void DrawTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int
 
 	// Build mask based on transparent colour
 	dcImage.SetBkColor(crTransparent);
-	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+	if( bStretch )
+		dcTrans.StretchBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, SRCCOPY);
+	else
+		dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
 
 	// Do the work - True Mask method - cool if not actual display
 	COLORREF clrOldBk = pDC->SetBkColor( RGB(255,255,255) );
-	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
-	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
-	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+	if( bStretch )
+	{
+		pDC->StretchBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, SRCINVERT);
+		pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
+		pDC->StretchBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, SRCINVERT);
+	}
+	else
+	{
+		pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+		pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
+		pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+	}
 
 	// Restore settings
 	pDC->SetBkColor( clrOldBk );
@@ -92,6 +110,12 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 	// Select the image into the appropriate dc
 	CBitmap* pOldBitmapImage = dcImage.SelectObject(pBitmap);
 
+	BITMAP bm;
+	pBitmap->GetBitmap(&bm);
+	const int nSrcW = bm.bmWidth;
+	const int nSrcH = bm.bmHeight;
+	const bool bStretch = (nSrcW != nWidth || nSrcH != nHeight);
+
 	// Create the mask bitmap
 	CBitmap bitmapTrans;
 	bitmapTrans.CreateBitmap(nWidth, nHeight, 1, 1, NULL);
@@ -101,7 +125,10 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 
 	// Build mask based on transparent colour
 	dcImage.SetBkColor(crTransparent);
-	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+	if( bStretch )
+		dcTrans.StretchBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, SRCCOPY);
+	else
+		dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
 
 	// Create monochrome DC
 	CDC dcBW;
@@ -144,20 +171,29 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 		SelectObject(dcBW.m_hDC, hbmBW);
 
 		// BitBlt the bitmap into the monochrome DIB section
-		dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+		if( bStretch )
+			dcBW.StretchBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, SRCCOPY);
+		else
+			dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
 
 		// BitBlt the black bits in the monochrome bitmap into COLOR_3DHILIGHT bits in the destination DC
 		// The magic ROP comes from Charles Petzold's book
 		CBrush brush;
 		brush.CreateSolidBrush(GetSysColor(COLOR_3DHILIGHT));
 		CBrush* pOldBrush = dcBW.SelectObject(&brush);
-		dcBW.BitBlt(1, 1, nWidth, nHeight, &dcImage, 0, 0, 0xB8074A);
+		if( bStretch )
+			dcBW.StretchBlt(1, 1, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, 0xB8074A);
+		else
+			dcBW.BitBlt(1, 1, nWidth, nHeight, &dcImage, 0, 0, 0xB8074A);
 
 		// BitBlt the black bits in the monochrome bitmap into COLOR_3DSHADOW bits in the destination DC
 		brush.DeleteObject();
 		brush.CreateSolidBrush(GetSysColor(COLOR_3DSHADOW));
 		dcBW.SelectObject(&brush);
-		dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, 0xB8074A);
+		if( bStretch )
+			dcBW.StretchBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, 0xB8074A);
+		else
+			dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, 0xB8074A);
 
 		dcBW.SelectObject(pOldBrush);
 		brush.DeleteObject();
@@ -277,7 +313,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bFitToCtrl /*= false*/
 		nPicLeft = ( (rcCell.Width() - nPicWidth) / 2 ); // Center the icon horizontally
 		rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
 	}
-	if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bFitToCtrl )
+	if( PICTYPE_BITMAP == mpPicture->GetPicType() )
 	{			
 		if( IsWindowEnabled() )
 			DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
