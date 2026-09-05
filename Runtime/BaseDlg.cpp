@@ -297,7 +297,7 @@ void CBaseDlg::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
 	if( !bCalcValidRects || mbHasTitleBar || !mbResizable )
 		return;
 
-	RECT rcFrame = {};
+	RECT rcFrame = {0};
 	AdjustWindowRectEx( &rcFrame, GetStyle() & ~WS_CAPTION, FALSE, GetExStyle() );
 	lpncsp->rgrc[0].top += rcFrame.top;
 }
