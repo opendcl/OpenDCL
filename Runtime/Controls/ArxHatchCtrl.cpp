@@ -6,6 +6,19 @@
 #include "ControlPane.h"
 
 
+// Individual PAT files need kCustomDefined. setPattern resets scale/angle.
+static Acad::ErrorStatus SetHatchPattern( AcDbHatch* pHatch, AcDbHatch::HatchPatternType type,
+	LPCTSTR pszPattern, double dblPatternScale )
+{
+	Acad::ErrorStatus es = pHatch->setPattern( type, pszPattern );
+	if( es != Acad::eOk )
+		return es;
+	pHatch->setPatternScale( dblPatternScale );
+	pHatch->setPatternAngle( 0.0 );
+	return Acad::eOk;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CArxHatchCtrl
 
@@ -132,16 +145,19 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 			pWorkingDb->setMeasurement( pCurDwg->measurement() );
 		}
 
+		const double dblPatternScale =
+			dblPatternScaleFactor * mpTemplate->GetDoubleProperty( Prop::HatchScale );
+
 		AcDbHatch* pHatch = new AcDbHatch;
 		pHatch->setNormal( AcGeVector3d( 0.0, 0.0, 1.0 ) );
 		pHatch->setElevation( 0.0 );
-		pHatch->setPatternScale( dblPatternScaleFactor * mpTemplate->GetDoubleProperty( Prop::HatchScale ) );
-		pHatch->setPatternAngle( 0.0 );
 		//pHatch->setAssociative(Adesk::kTrue);
 		//pHatch->setHatchStyle(AcDbHatch::kNormal);
 		pHatch->appendLoop( AcDbHatch::kExternal, mridLoop );
-		pHatch->setPattern( AcDbHatch::kPreDefined, pszPattern );
 		pHatch->setColor( clr );
+
+		if( SetHatchPattern( pHatch, AcDbHatch::kPreDefined, pszPattern, dblPatternScale ) != Acad::eOk )
+			SetHatchPattern( pHatch, AcDbHatch::kCustomDefined, pszPattern, dblPatternScale );
 
 		es = pModelSpace->appendAcDbEntity( midHatch, pHatch );
 		assert( es == Acad::eOk );
@@ -149,7 +165,10 @@ bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 			delete pHatch;
 		else
 		{
-			pHatch->evaluateHatch();
+			if( pHatch->evaluateHatch() != Acad::eOk &&
+					pHatch->patternType() == AcDbHatch::kPreDefined &&
+					SetHatchPattern( pHatch, AcDbHatch::kCustomDefined, pszPattern, dblPatternScale ) == Acad::eOk )
+				pHatch->evaluateHatch();
 			pHatch->close();
 		}
 	}
