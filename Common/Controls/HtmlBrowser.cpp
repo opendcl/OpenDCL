@@ -10,12 +10,28 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 
+// Lambdas, nullptr, and WebView2.h need VS2012+. Older CAD toolsets (v90/v100)
+// compile this TU as IE-only; StartWebView2() returns false.
+#if _MSC_VER >= 1700
+#ifndef DEFINE_ENUM_FLAG_OPERATORS
+#define DEFINE_ENUM_FLAG_OPERATORS(ENUMTYPE)
+#endif
 #include "../../Library/WebView2/include/WebView2.h"
+#define OPENDCL_HAVE_WEBVIEW2 1
+#else
+#define OPENDCL_HAVE_WEBVIEW2 0
+#endif
 
 #if (_MSC_VER <= 1400)
 #define OLECMDID_OPTICAL_ZOOM ((OLECMDID)63)
 #endif
+#if _MSC_VER < 1600
+#ifndef override
+#define override
+#endif
+#endif
 
+#if OPENDCL_HAVE_WEBVIEW2
 // WRL requires NTDDI_VISTA+; BRX/GRX/legacy ARX still compile this TU with
 // WINVER 0x0500/0x0501. Homegrown COM callbacks keep the host SDK macros intact.
 template<typename Interface, typename Arg1, typename Arg2, typename Fn>
@@ -62,6 +78,7 @@ CComPtr<Interface> Wv2Handler(const Fn& fn)
 	p.Attach(new CWv2Handler<Interface, Arg1, Arg2, Fn>(fn));
 	return p;
 }
+#endif /* OPENDCL_HAVE_WEBVIEW2 */
 
 #define WM_OPENDCL_WV2_ENV    (WM_APP + 210)
 #define WM_OPENDCL_WV2_CTRL   (WM_APP + 211)
@@ -128,6 +145,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // WebView2 state
 
+#if OPENDCL_HAVE_WEBVIEW2
 struct CHtmlBrowser::Wv2
 {
 	enum Kind { None, Starting, Ready, Failed };
@@ -286,9 +304,9 @@ static bool PumpUntil(bool& done, DWORD timeoutMs)
 static HMODULE LoadWebView2Loader()
 {
 	HMODULE self = NULL;
-	GetModuleHandleEx(
-		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-		(LPCTSTR)&LoadWebView2Loader, &self);
+	MEMORY_BASIC_INFORMATION mbi = {};
+	if (VirtualQuery((LPCVOID)&LoadWebView2Loader, &mbi, sizeof(mbi)))
+		self = (HMODULE)mbi.AllocationBase;
 	TCHAR dir[MAX_PATH] = {};
 	if (self)
 		GetModuleFileName(self, dir, MAX_PATH);
@@ -320,6 +338,7 @@ static CString WebView2UserDataFolder()
 	SHCreateDirectoryEx(NULL, folder, NULL);
 	return folder;
 }
+#endif /* OPENDCL_HAVE_WEBVIEW2 */
 
 // IE WebBrowser loads these; Edge WebView2 does not (CHM mk:/its:, Win32 res://).
 static bool UrlHasPrefix(LPCTSTR url, LPCTSTR prefix)
@@ -344,18 +363,24 @@ static bool UrlNeedsInternetExplorer(LPCTSTR url)
 CHtmlBrowser::CHtmlBrowser()
 	: mbSubclassedControl(true)
 	, m_ie(NULL)
+#if OPENDCL_HAVE_WEBVIEW2
 	, m_wv2(new Wv2())
+#else
+	, m_wv2(NULL)
+#endif
 {
 }
 
 CHtmlBrowser::~CHtmlBrowser()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2)
 	{
 		m_wv2->Close();
 		delete m_wv2;
 		m_wv2 = NULL;
 	}
+#endif
 	if (m_ie)
 	{
 		if (m_ie->GetSafeHwnd())
@@ -367,7 +392,11 @@ CHtmlBrowser::~CHtmlBrowser()
 
 bool CHtmlBrowser::UsingWebView2() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	return m_wv2 && m_wv2->kind == Wv2::Ready && m_wv2->webview;
+#else
+	return false;
+#endif
 }
 
 bool CHtmlBrowser::UsingInternetExplorer() const
@@ -389,8 +418,10 @@ void CHtmlBrowser::CreateInternetExplorerChild()
 {
 	if (m_ie && m_ie->GetSafeHwnd())
 		return;
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->host.GetSafeHwnd())
 		m_wv2->host.ShowWindow(SW_HIDE);
+#endif
 
 	AfxEnableControlContainer();
 	if (!m_ie)
@@ -409,6 +440,9 @@ void CHtmlBrowser::CreateInternetExplorerChild()
 
 bool CHtmlBrowser::StartWebView2()
 {
+#if !OPENDCL_HAVE_WEBVIEW2
+	return false;
+#else
 	if (!m_wv2)
 		m_wv2 = new Wv2();
 	m_wv2->loader = LoadWebView2Loader();
@@ -436,7 +470,7 @@ bool CHtmlBrowser::StartWebView2()
 	m_wv2->busy = true;
 
 	const HRESULT hr = createEnv(
-		nullptr, userData, nullptr,
+		NULL, userData, NULL,
 		Wv2Handler<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler, HRESULT, ICoreWebView2Environment*>(
 			[hwnd](HRESULT errorCode, ICoreWebView2Environment* env) -> HRESULT {
 				if (env)
@@ -453,10 +487,12 @@ bool CHtmlBrowser::StartWebView2()
 		return false;
 	}
 	return true;
+#endif
 }
 
 void CHtmlBrowser::FallbackToInternetExplorer()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (UsingInternetExplorer() &&
 		!(m_wv2 && (m_wv2->kind == Wv2::Starting || m_wv2->kind == Wv2::Ready)))
 		return;
@@ -465,13 +501,19 @@ void CHtmlBrowser::FallbackToInternetExplorer()
 		m_wv2->kind = Wv2::Failed;
 		m_wv2->Close();
 	}
+#endif
 	CreateInternetExplorerChild();
 	LayoutChildren();
+#if OPENDCL_HAVE_WEBVIEW2
 	DrainQueue();
+#endif
 }
 
 void CHtmlBrowser::DrainQueue()
 {
+#if !OPENDCL_HAVE_WEBVIEW2
+	return;
+#else
 	if (!m_wv2)
 		return;
 	std::vector<Wv2::Op> ops;
@@ -493,12 +535,14 @@ void CHtmlBrowser::DrainQueue()
 		case Wv2::OpReplace: ReplaceText(op.a, op.b); break;
 		}
 	}
+#endif
 }
 
 void CHtmlBrowser::LayoutChildren()
 {
 	CRect rc;
 	GetClientRect(&rc);
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->host.GetSafeHwnd())
 	{
 		m_wv2->host.MoveWindow(rc);
@@ -512,12 +556,14 @@ void CHtmlBrowser::LayoutChildren()
 			m_wv2->controller->put_Bounds(bounds);
 		}
 	}
+#endif
 	if (m_ie && m_ie->GetSafeHwnd())
 		m_ie->MoveWindow(rc);
 }
 
 CString CHtmlBrowser::GetFullName() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (UsingWebView2() && m_wv2->env)
 	{
 		LPWSTR ver = NULL;
@@ -525,6 +571,7 @@ CString CHtmlBrowser::GetFullName() const
 			return Wv2TakeString(ver);
 		return CString();
 	}
+#endif
 	IWebBrowser2* app = IeApp();
 	if (!app)
 		return CString();
@@ -535,8 +582,10 @@ CString CHtmlBrowser::GetFullName() const
 
 CString CHtmlBrowser::GetType() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (UsingWebView2())
 		return _T("WebView2");
+#endif
 	IWebBrowser2* app = IeApp();
 	if (!app)
 		return CString();
@@ -547,8 +596,10 @@ CString CHtmlBrowser::GetType() const
 
 CString CHtmlBrowser::GetLocationName() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && (m_wv2->kind == Wv2::Ready || m_wv2->kind == Wv2::Starting))
 		return m_wv2->locationName;
+#endif
 	IWebBrowser2* app = IeApp();
 	if (!app)
 		return CString();
@@ -559,8 +610,10 @@ CString CHtmlBrowser::GetLocationName() const
 
 CString CHtmlBrowser::GetLocationURL() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && (m_wv2->kind == Wv2::Ready || m_wv2->kind == Wv2::Starting))
 		return m_wv2->locationUrl;
+#endif
 	IWebBrowser2* app = IeApp();
 	if (!app)
 		return CString();
@@ -582,6 +635,7 @@ void CHtmlBrowser::Navigate2( LPCTSTR lpszURL, DWORD dwFlags /* = 0 */,
 															LPCTSTR lpszHeaders /* = NULL */, LPVOID lpvPostData /* = NULL */,
 															DWORD dwPostDataLen /* = 0 */)
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (UrlNeedsInternetExplorer(lpszURL) &&
 		m_wv2 && (m_wv2->kind == Wv2::Starting || m_wv2->kind == Wv2::Ready))
 		FallbackToInternetExplorer();
@@ -606,12 +660,14 @@ void CHtmlBrowser::Navigate2( LPCTSTR lpszURL, DWORD dwFlags /* = 0 */,
 		}
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->Navigate2(lpszURL, dwFlags, lpszTargetFrameName, lpszHeaders, lpvPostData, dwPostDataLen);
 }
 
 void CHtmlBrowser::Stop()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpStop);
@@ -623,12 +679,14 @@ void CHtmlBrowser::Stop()
 		m_wv2->busy = false;
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->Stop();
 }
 
 void CHtmlBrowser::Refresh()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpRefresh);
@@ -640,12 +698,14 @@ void CHtmlBrowser::Refresh()
 		m_wv2->webview->Reload();
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->Refresh();
 }
 
 void CHtmlBrowser::GoBack()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpBack);
@@ -662,12 +722,14 @@ void CHtmlBrowser::GoBack()
 		}
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->GoBack();
 }
 
 void CHtmlBrowser::GoForward()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpForward);
@@ -684,12 +746,14 @@ void CHtmlBrowser::GoForward()
 		}
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->GoForward();
 }
 
 void CHtmlBrowser::GoHome()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpHome);
@@ -697,15 +761,17 @@ void CHtmlBrowser::GoHome()
 	}
 	if (UsingWebView2())
 	{
-		Navigate2(m_wv2->homeUrl.IsEmpty() ? _T("about:blank") : m_wv2->homeUrl);
+		Navigate2(m_wv2->homeUrl.IsEmpty() ? _T("about:blank") : (LPCTSTR)m_wv2->homeUrl);
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->GoHome();
 }
 
 void CHtmlBrowser::GoSearch()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpSearch);
@@ -713,34 +779,42 @@ void CHtmlBrowser::GoSearch()
 	}
 	if (UsingWebView2())
 		return;
+#endif
 	if (m_ie)
 		m_ie->GoSearch();
 }
 
 BOOL CHtmlBrowser::GetBusy() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && (m_wv2->kind == Wv2::Starting || m_wv2->kind == Wv2::Ready))
 		return m_wv2->busy ? TRUE : FALSE;
+#endif
 	return (m_ie && m_ie->GetBusy()) ? TRUE : FALSE;
 }
 
 BOOL CHtmlBrowser::GetOffline() const
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && (m_wv2->kind == Wv2::Starting || m_wv2->kind == Wv2::Ready))
 		return m_wv2->offline ? TRUE : FALSE;
+#endif
 	return (m_ie && m_ie->GetOffline()) ? TRUE : FALSE;
 }
 
 void CHtmlBrowser::SetOffline( BOOL bOffline )
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2)
 		m_wv2->offline = bOffline ? true : false;
+#endif
 	if (m_ie)
 		m_ie->SetOffline(bOffline);
 }
 
 void CHtmlBrowser::SetSilent( BOOL bSilent )
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2)
 		m_wv2->silent = bSilent ? true : false;
 	if (UsingWebView2() && m_wv2->webview)
@@ -750,6 +824,7 @@ void CHtmlBrowser::SetSilent( BOOL bSilent )
 			settings->put_AreDefaultScriptDialogsEnabled(bSilent ? FALSE : TRUE);
 		return;
 	}
+#endif
 	if (m_ie)
 		m_ie->SetSilent(bSilent);
 }
@@ -759,7 +834,7 @@ BOOL CHtmlBrowser::LoadFromResource( LPCTSTR lpszResource )
 	HINSTANCE hInstance = AfxGetResourceHandle();
 	ASSERT(hInstance != NULL);
 	CString strResourceURL;
-	TCHAR szModule[_MAX_PATH] = {};
+	TCHAR szModule[_MAX_PATH] = _T("");
 	if (!GetModuleFileName(hInstance, szModule, _MAX_PATH))
 		return FALSE;
 	strResourceURL.Format(_T("res://%s/%s"), szModule, lpszResource);
@@ -772,7 +847,7 @@ BOOL CHtmlBrowser::LoadFromResource( UINT nRes )
 	HINSTANCE hInstance = AfxGetResourceHandle();
 	ASSERT(hInstance != NULL);
 	CString strResourceURL;
-	TCHAR szModule[_MAX_PATH] = {};
+	TCHAR szModule[_MAX_PATH] = _T("");
 	if (!GetModuleFileName(hInstance, szModule, _MAX_PATH))
 		return FALSE;
 	strResourceURL.Format(_T("res://%s/%d"), szModule, nRes);
@@ -799,6 +874,7 @@ void CHtmlBrowser::OnBeforeNavigate2( LPCTSTR lpszURL,
 
 void CHtmlBrowser::LoadHtmlCode( const CString& sHtmlCode )
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpHtml, sHtmlCode);
@@ -811,6 +887,7 @@ void CHtmlBrowser::LoadHtmlCode( const CString& sHtmlCode )
 		m_wv2->webview->NavigateToString(CComBSTR(sHtmlCode));
 		return;
 	}
+#endif
 
 	IWebBrowser2* app = IeApp();
 	if (!app)
@@ -852,6 +929,7 @@ HRESULT CHtmlBrowser::LoadWebBrowserFromStream(IWebBrowser* pWebBrowser, IStream
 
 void CHtmlBrowser::ReplaceText( LPCTSTR pszOldText, LPCTSTR pszNewText )
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpReplace, pszOldText, pszNewText);
@@ -877,6 +955,7 @@ void CHtmlBrowser::ReplaceText( LPCTSTR pszOldText, LPCTSTR pszNewText )
 				}));
 		return;
 	}
+#endif
 
 	if (!m_ie)
 		return;
@@ -915,6 +994,7 @@ void CHtmlBrowser::ReplaceText( LPCTSTR pszOldText, LPCTSTR pszNewText )
 
 CString CHtmlBrowser::GetHtmlText()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (UsingWebView2())
 	{
 		m_wv2->scriptDone = false;
@@ -934,6 +1014,7 @@ CString CHtmlBrowser::GetHtmlText()
 		PumpUntil(m_wv2->scriptDone, 4000);
 		return m_wv2->scriptResult;
 	}
+#endif
 
 	if (!m_ie)
 		return CString();
@@ -964,6 +1045,7 @@ CString CHtmlBrowser::GetHtmlText()
 
 HRESULT CHtmlBrowser::SetOpticalZoom( long nZoomPercentage )
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2)
 		m_wv2->zoomPercent = nZoomPercentage;
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
@@ -976,6 +1058,7 @@ HRESULT CHtmlBrowser::SetOpticalZoom( long nZoomPercentage )
 		const double factor = nZoomPercentage <= 0 ? 1.0 : (double)nZoomPercentage / 100.0;
 		return m_wv2->controller->put_ZoomFactor(factor);
 	}
+#endif
 	IWebBrowser2* app = IeApp();
 	if (!app)
 		return E_FAIL;
@@ -987,10 +1070,12 @@ BEGIN_MESSAGE_MAP(CHtmlBrowser, CWnd)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_MOUSEACTIVATE()
+#if OPENDCL_HAVE_WEBVIEW2
 	ON_MESSAGE(WM_OPENDCL_WV2_ENV, &CHtmlBrowser::OnWebView2Environment)
 	ON_MESSAGE(WM_OPENDCL_WV2_CTRL, &CHtmlBrowser::OnWebView2Controller)
 	ON_MESSAGE(WM_OPENDCL_WV2_NAV, &CHtmlBrowser::OnWebView2Nav)
 	ON_MESSAGE(WM_OPENDCL_WV2_SCRIPT, &CHtmlBrowser::OnWebView2Script)
+#endif
 END_MESSAGE_MAP()
 
 void CHtmlBrowser::PostNcDestroy()
@@ -1000,12 +1085,14 @@ void CHtmlBrowser::PostNcDestroy()
 
 void CHtmlBrowser::OnDestroy()
 {
+#if OPENDCL_HAVE_WEBVIEW2
 	if (m_wv2)
 	{
 		m_wv2->kind = Wv2::Failed;
 		m_wv2->queue.clear();
 		m_wv2->Close();
 	}
+#endif
 	if (m_ie && m_ie->GetSafeHwnd())
 		m_ie->DestroyWindow();
 	CWnd::OnDestroy();
@@ -1036,6 +1123,7 @@ BOOL CHtmlBrowser::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD d
 	return TRUE;
 }
 
+#if OPENDCL_HAVE_WEBVIEW2
 LRESULT CHtmlBrowser::OnWebView2Environment(WPARAM wParam, LPARAM lParam)
 {
 	CComPtr<ICoreWebView2Environment> env;
@@ -1242,6 +1330,12 @@ LRESULT CHtmlBrowser::OnWebView2Script(WPARAM, LPARAM lParam)
 	}
 	return 0;
 }
+#else
+LRESULT CHtmlBrowser::OnWebView2Environment(WPARAM, LPARAM) { return 0; }
+LRESULT CHtmlBrowser::OnWebView2Controller(WPARAM, LPARAM) { return 0; }
+LRESULT CHtmlBrowser::OnWebView2Nav(WPARAM, LPARAM) { return 0; }
+LRESULT CHtmlBrowser::OnWebView2Script(WPARAM, LPARAM) { return 0; }
+#endif
 
 BOOL CHtmlBrowser::PreTranslateMessage(MSG* pMsg)
 {

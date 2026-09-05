@@ -1,6 +1,8 @@
 # Microsoft Edge WebView2 (Evergreen loader)
 
 Vendored from NuGet `Microsoft.Web.WebView2` **1.0.4191.47** (BSD-3-Clause, `LICENSE.txt`).
+`include/EventToken.h` is a Win8 SDK shim (one copy) so older CAD toolsets
+that still use the Win7/XP SDK can compile `WebView2.h`.
 
 The Html control delay-loads `WebView2Loader.dll` from the module directory (or
 `WebView2\x64` / `WebView2\x86` beside the runtime install folder) and uses the
