@@ -321,6 +321,23 @@ static CString WebView2UserDataFolder()
 	return folder;
 }
 
+// IE WebBrowser loads these; Edge WebView2 does not (CHM mk:/its:, Win32 res://).
+static bool UrlHasPrefix(LPCTSTR url, LPCTSTR prefix)
+{
+	const int n = lstrlen(prefix);
+	return url && n > 0 &&
+		CompareString(LOCALE_INVARIANT, NORM_IGNORECASE, url, n, prefix, n) == CSTR_EQUAL;
+}
+
+static bool UrlNeedsInternetExplorer(LPCTSTR url)
+{
+	return UrlHasPrefix(url, _T("mk:"))
+		|| UrlHasPrefix(url, _T("its:"))
+		|| UrlHasPrefix(url, _T("ms-its:"))
+		|| UrlHasPrefix(url, _T("res://"))
+		|| UrlHasPrefix(url, _T("chm://"));
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CHtmlBrowser
 
@@ -440,12 +457,16 @@ bool CHtmlBrowser::StartWebView2()
 
 void CHtmlBrowser::FallbackToInternetExplorer()
 {
+	if (UsingInternetExplorer() &&
+		!(m_wv2 && (m_wv2->kind == Wv2::Starting || m_wv2->kind == Wv2::Ready)))
+		return;
 	if (m_wv2)
 	{
 		m_wv2->kind = Wv2::Failed;
 		m_wv2->Close();
 	}
 	CreateInternetExplorerChild();
+	LayoutChildren();
 	DrainQueue();
 }
 
@@ -561,6 +582,10 @@ void CHtmlBrowser::Navigate2( LPCTSTR lpszURL, DWORD dwFlags /* = 0 */,
 															LPCTSTR lpszHeaders /* = NULL */, LPVOID lpvPostData /* = NULL */,
 															DWORD dwPostDataLen /* = 0 */)
 {
+	if (UrlNeedsInternetExplorer(lpszURL) &&
+		m_wv2 && (m_wv2->kind == Wv2::Starting || m_wv2->kind == Wv2::Ready))
+		FallbackToInternetExplorer();
+
 	if (m_wv2 && m_wv2->kind == Wv2::Starting)
 	{
 		m_wv2->Enqueue(Wv2::OpNavigate, lpszURL);
@@ -570,9 +595,15 @@ void CHtmlBrowser::Navigate2( LPCTSTR lpszURL, DWORD dwFlags /* = 0 */,
 	if (UsingWebView2())
 	{
 		m_wv2->busy = true;
+		m_wv2->locationUrl = lpszURL;
 		if (m_wv2->homeUrl.IsEmpty())
 			m_wv2->homeUrl = lpszURL;
-		m_wv2->webview->Navigate(CComBSTR(lpszURL));
+		if (FAILED(m_wv2->webview->Navigate(CComBSTR(lpszURL))))
+		{
+			FallbackToInternetExplorer();
+			if (m_ie)
+				m_ie->Navigate2(lpszURL, dwFlags, lpszTargetFrameName, lpszHeaders, lpvPostData, dwPostDataLen);
+		}
 		return;
 	}
 	if (m_ie)
@@ -1080,7 +1111,18 @@ LRESULT CHtmlBrowser::OnWebView2Controller(WPARAM wParam, LPARAM lParam)
 					LPWSTR uri = NULL;
 					args->get_Uri(&uri);
 					if (uri && _wcsnicmp(uri, L"app:", 4) == 0)
+					{
 						args->put_Cancel(TRUE);
+						CoTaskMemFree(uri);
+						return S_OK;
+					}
+					if (UrlNeedsInternetExplorer(uri))
+					{
+						args->put_Cancel(TRUE);
+						if (!::PostMessage(hwnd, WM_OPENDCL_WV2_NAV, 4, (LPARAM)uri) && uri)
+							CoTaskMemFree(uri);
+						return S_OK;
+					}
 					if (uri)
 						CoTaskMemFree(uri);
 				}
@@ -1090,13 +1132,24 @@ LRESULT CHtmlBrowser::OnWebView2Controller(WPARAM wParam, LPARAM lParam)
 
 	m_wv2->webview->add_NavigationCompleted(
 		Wv2Handler<ICoreWebView2NavigationCompletedEventHandler, ICoreWebView2*, ICoreWebView2NavigationCompletedEventArgs*>(
-			[hwnd](ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs*) -> HRESULT {
+			[hwnd](ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs* args) -> HRESULT {
+				BOOL ok = TRUE;
+				COREWEBVIEW2_WEB_ERROR_STATUS status = COREWEBVIEW2_WEB_ERROR_STATUS_UNKNOWN;
+				if (args)
+				{
+					args->get_IsSuccess(&ok);
+					args->get_WebErrorStatus(&status);
+				}
+				const bool canceled =
+					status == COREWEBVIEW2_WEB_ERROR_STATUS_OPERATION_CANCELED ||
+					status == COREWEBVIEW2_WEB_ERROR_STATUS_CONNECTION_ABORTED;
 				LPWSTR src = NULL;
 				if (sender)
 					sender->get_Source(&src);
-				if (!::PostMessage(hwnd, WM_OPENDCL_WV2_NAV, 0, (LPARAM)src) && src)
+				const WPARAM wp = (!ok && !canceled) ? 3 : 0;
+				if (!::PostMessage(hwnd, WM_OPENDCL_WV2_NAV, wp, (LPARAM)src) && src)
 					CoTaskMemFree(src);
-				if (sender)
+				if (ok && sender)
 				{
 					LPWSTR title = NULL;
 					sender->get_DocumentTitle(&title);
@@ -1141,11 +1194,31 @@ LRESULT CHtmlBrowser::OnWebView2Nav(WPARAM wParam, LPARAM lParam)
 		m_wv2->locationName = Wv2TakeString((LPWSTR)lParam);
 		return 0;
 	}
-	m_wv2->locationUrl = Wv2TakeString((LPWSTR)lParam);
+	if (wParam == 4)
+	{
+		const CString url = Wv2TakeString((LPWSTR)lParam);
+		FallbackToInternetExplorer();
+		Navigate2(url);
+		return 0;
+	}
+	CString url = Wv2TakeString((LPWSTR)lParam);
 	m_wv2->busy = false;
+	if (wParam == 3)
+	{
+		if (url.IsEmpty())
+			url = m_wv2->locationUrl;
+		if (UrlNeedsInternetExplorer(url) || UrlNeedsInternetExplorer(m_wv2->locationUrl))
+		{
+			if (!UrlNeedsInternetExplorer(url))
+				url = m_wv2->locationUrl;
+			FallbackToInternetExplorer();
+			Navigate2(url);
+			return 0;
+		}
+	}
+	m_wv2->locationUrl = url;
 	if (UsingWebView2())
 	{
-		const CString url = m_wv2->locationUrl;
 		OnNavigateComplete2(url);
 		OnDocumentComplete(url);
 		BOOL canBack = FALSE;
