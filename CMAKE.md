@@ -21,6 +21,7 @@ Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 | `CMakePresets.json` | Dev, auto, **full classic-parity** (x64 + Win32) presets |
 | `scripts/build-cmake-full.ps1` | Configure/build full presets + optional WiX package |
 | `scripts/verify-build-outputs.ps1` | Pre-package gate (catalog / Res / Studio / RxInstall) |
+| `scripts/verify-nosdk-outputs.ps1` | No-SDK PR gate (Studio / Res / RxInstall / libs; not Full/Available)
 | `scripts/compare-release-packages.ps1` | Diff installers vs previous release package set |
 | `cmake/OpenDCLHelpers.cmake` | Options, registry, SDK detect, selection |
 | `cmake/OpenDCLRuntimeMatrix.cmake` | All runtime rows (from `VI/*.props`) |
@@ -134,6 +135,7 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | **`vs2022-x64-full`** | Same dual-arch module nest + classic x86 Runtime.Res, but **`host`** Studio -> **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; classic x86 Runtime.Res (native on Win32) |
 | **`vs2022-x86-studio`** | **Win32 Studio only** (no CAD runtimes / Runtime.Res / RxInstall / nest). Studio.Res still builds with Studio. Configs: **Debug\|Release only** (`OPENDCL_BUILD_RUNTIME=OFF` omits FullDebug). `cmake --preset vs2022-x86-studio` then `cmake --build --preset vs2022-x86-studio-debug` |
+| **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** | **No CAD SDK PR/CI:** Studio ON, Runtime OFF, all `ENABLE_*` OFF, `RUNTIME_AUTO` OFF, empty `RUNTIME_TARGETS`, Res ON (`classic_x86`), RxInstall ON, `STUDIO_HELP` OFF, `LANGS=ENU`, `NEST_WIN32` OFF. Win32: host Studio + native Res/RxInstall. x64: host Studio; classic x86 Res via private `res-win32`; RxInstall via private `rxinstall-win32` (x86 MSI CA — not full nest). Build: `cmake --preset vs2022-nosdk` / `vs2022-nosdk-x64` then `--preset *-release`. Verify: `scripts/verify-nosdk-outputs.ps1` (not Full/Available). Workflow: `.github/workflows/pr-build-nosdk.yml`.
 | **`vs2026-*`** | Same roles as the `vs2022-*` set (`dev`, specialty, `full`, `x64-full`, `win32-full`, `x86-studio`). Still uses the **Visual Studio 17 2022** generator (CMake has no VS 18 generator yet) and pins **v143 14.44.35207** so `cmake --build` matches a VS 2026 IDE session. Binary dirs: `build/vs2026-…`. |
 | Configurations | **FullDebug** is in the `.sln` only when `OPENDCL_BUILD_RUNTIME` is ON. Studio-only / no-runtime presets use `Debug;Release`. |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |

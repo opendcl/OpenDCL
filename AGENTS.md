@@ -43,7 +43,7 @@ wix/out/                 Generated packages (gitignored)
 
 Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-dev` /
 `vs2026-dev`: auto-detect SDKs, max one modern toolset >= v141 runtime per family;
-ship **`vs2022-full`** / **`vs2026-full`**).
+ship **`vs2022-full`** / **`vs2026-full`**; no-SDK PR presets **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** — see **`CMAKE.md`**).
 Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`. First-time
 human steps: **`docs/BUILD-QUICKSTART.md`**.
 
