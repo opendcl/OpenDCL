@@ -2557,6 +2557,10 @@
 					<param name="Local" value="Reference\Method\Control/Dump.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetControlType">
+					<param name="Local" value="Reference\Method\Control/GetControlType.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetHWND">
 					<param name="Local" value="Reference\Method\Control/GetHWND.htm">
 					</OBJECT>

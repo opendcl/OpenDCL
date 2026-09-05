@@ -19,6 +19,7 @@ namespace Control
 {
 ADSRESULT GetHWND();
 ADSRESULT GetName();
+ADSRESULT GetControlType();
 ADSRESULT GetProperties();
 ADSRESULT GetProperty();
 ADSRESULT GetPos();
