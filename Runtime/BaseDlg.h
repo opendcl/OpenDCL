@@ -41,6 +41,7 @@ public:
 	CAcadColorService* GetColorService() override { return &mColorService; }
 	bool IsResizable() const override { return mbResizable; }
 	bool OnApplyResizable( TPropertyPtr pProp ) override; //Prop::AllowResizing
+	bool OnApplyTitleBar( TPropertyPtr pProp ) override; //Prop::TitleBar
 
 	virtual const CDialogObject& GetDialogObject() const { return *this; }
 	virtual CDialogObject& GetDialogObject() { return *this; }
@@ -61,7 +62,8 @@ protected:
 	afx_msg void OnTimer( UINT_PTR nID );
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-  afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	void PostNcDestroy() override;
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

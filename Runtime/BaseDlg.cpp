@@ -82,6 +82,13 @@ bool CBaseDlg::OnApplyResizable( TPropertyPtr pProp )
 	return __super::OnApplyResizable( pProp );
 }
 
+bool CBaseDlg::OnApplyTitleBar( TPropertyPtr pProp )
+{
+	mbHasTitleBar = pProp->GetBooleanValue();
+	return __super::OnApplyTitleBar( pProp );
+}
+
+
 BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_HELPINFO()
 	ON_WM_CLOSE()
@@ -90,6 +97,7 @@ BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_CAPTURECHANGED()
 	ON_WM_SIZE()
 	ON_WM_NCHITTEST()
+	ON_WM_NCCALCSIZE()
 	ON_WM_TIMER()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_WM_ERASEBKGND()
@@ -279,6 +287,19 @@ void CBaseDlg::OnSize(UINT nType, int cx, int cy)
 	mpTemplate->SetLongProperty( Prop::Height, ToDIP( cy ) );
 	mpControlPane->RecalcLayout();
 	//RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+}
+
+void CBaseDlg::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
+{
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+
+	// Fold captionless WS_THICKFRAME top NC strip into client.
+	if( !bCalcValidRects || mbHasTitleBar || !mbResizable )
+		return;
+
+	RECT rcFrame = {};
+	AdjustWindowRectEx( &rcFrame, GetStyle() & ~WS_CAPTION, FALSE, GetExStyle() );
+	lpncsp->rgrc[0].top += rcFrame.top;
 }
 
 __UINT_LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
