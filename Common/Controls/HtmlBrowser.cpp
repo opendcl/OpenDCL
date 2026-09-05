@@ -109,6 +109,12 @@ public:
 			m_owner->OnDocumentComplete(lpszURL);
 		CHtmlView::OnDocumentComplete(lpszURL);
 	}
+	void OnCommandStateChange(long nCommand, BOOL bEnable) override
+	{
+		if (m_owner)
+			m_owner->OnCommandStateChange(nCommand, bEnable);
+		CHtmlView::OnCommandStateChange(nCommand, bEnable);
+	}
 	void PostNcDestroy() override { CWnd::PostNcDestroy(); }
 	void OnDestroy() { CWnd::OnDestroy(); }
 
@@ -1142,6 +1148,12 @@ LRESULT CHtmlBrowser::OnWebView2Nav(WPARAM wParam, LPARAM lParam)
 		const CString url = m_wv2->locationUrl;
 		OnNavigateComplete2(url);
 		OnDocumentComplete(url);
+		BOOL canBack = FALSE;
+		BOOL canFwd = FALSE;
+		m_wv2->webview->get_CanGoBack(&canBack);
+		m_wv2->webview->get_CanGoForward(&canFwd);
+		OnCommandStateChange(CSC_NAVIGATEBACK, canBack);
+		OnCommandStateChange(CSC_NAVIGATEFORWARD, canFwd);
 	}
 	return 0;
 }

@@ -27,7 +27,6 @@ class CControlBrowser : public CResizableDialog
 		NoNavigateBrowser( CControlBrowser& Browser ) : mBrowser( Browser ), mbEnableNavigate( false ) {}
 	protected:
 		void OnDocumentComplete(LPCTSTR lpszURL) override;
-		void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel) override;
 		void OnCommandStateChange(long nCommand, BOOL bEnable) override;
 	public:
 		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,
@@ -38,23 +37,12 @@ class CControlBrowser : public CResizableDialog
 				mbEnableNavigate = true;
 				__super::Navigate( URL, dwFlags, lpszTargetFrameName, lpszHeaders, lpvPostData, dwPostDataLen );
 			}
-		void Navigate2(LPITEMIDLIST pIDL, DWORD dwFlags = 0, LPCTSTR lpszTargetFrameName = NULL)
-			{
-				mbEnableNavigate = true;
-				__super::Navigate2( pIDL, dwFlags, lpszTargetFrameName );
-			}
 		void Navigate2(LPCTSTR lpszURL, DWORD dwFlags = 0,
 									 LPCTSTR lpszTargetFrameName = NULL,	LPCTSTR lpszHeaders = NULL,
 									 LPVOID lpvPostData = NULL, DWORD dwPostDataLen = 0)
 			{
 				mbEnableNavigate = true;
 				__super::Navigate2( lpszURL, dwFlags, lpszTargetFrameName, lpszHeaders, lpvPostData, dwPostDataLen );
-			}
-		void Navigate2(LPCTSTR lpszURL, DWORD dwFlags, CByteArray& baPostedData,
-									 LPCTSTR lpszTargetFrameName = NULL, LPCTSTR lpszHeader = NULL)
-			{
-				mbEnableNavigate = true;
-				__super::Navigate2( lpszURL, dwFlags, baPostedData, lpszTargetFrameName, lpszHeader );
 			}
 	} mDescription;
 

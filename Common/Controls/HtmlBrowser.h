@@ -68,6 +68,7 @@ protected:
 	virtual HRESULT OnGetHostInfo(DOCHOSTUIINFO* pInfo);
 	virtual void OnNavigateComplete2(LPCTSTR) {}
 	virtual void OnDocumentComplete(LPCTSTR) {}
+	virtual void OnCommandStateChange(long /*nCommand*/, BOOL /*bEnable*/) {}
 
 	bool UsingWebView2() const;
 	bool UsingInternetExplorer() const;
