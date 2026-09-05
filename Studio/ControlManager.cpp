@@ -597,6 +597,17 @@ HBRUSH CControlManager::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 			return hbrBackground;
 		switch( mpDlgControl->GetControlType() )
 		{
+		case CtlFrame:
+			{ //caption needs the form brush; CTLCOLORSTATIC reflects to Frame::CtlColor (NULL)
+				CWnd* pParent = mpControlPane->GetHostDialog();
+				if( pParent )
+				{
+					hbrBackground = (HBRUSH)pParent->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pParent->m_hWnd );
+					if( hbrBackground )
+						return hbrBackground;
+				}
+			}
+			break;
 		case CtlCheckBox:
 		case CtlTextBox:
 			{ //these controls display a black background in XP w/ themes when returning a hollow brush
