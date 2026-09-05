@@ -680,12 +680,6 @@ void CDclControlTemplate::Serialize(CArchive& ar)
 				case FrmModalDlg:
 					break;
 				case FrmModelessDlg:
-					switch( nID )
-					{
-					case Prop::TitleBarIcon:
-						mProperties.erase( iterAt );
-						continue;
-					}
 					break;
 				case FrmControlBar:
 					//switch( nID )

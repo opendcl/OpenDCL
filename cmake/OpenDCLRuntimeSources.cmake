@@ -4,6 +4,7 @@ include_guard(GLOBAL)
 set(OPENDCL_RUNTIME_SOURCES
   "${CMAKE_SOURCE_DIR}/Common/Controls/ListCtrlHdr.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DclAxCtrlInitInfo.cpp"
+  "${CMAKE_SOURCE_DIR}/Common/ControlApiName.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DclImageList.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DpiAwarenessAPI.cpp"
   "${CMAKE_SOURCE_DIR}/Common/ThemeAPI.cpp"

@@ -154,6 +154,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	// General control methods
 	{_T("Control-GetHWND"),              Control::GetHWND},
 	{_T("Control-GetName"),              Control::GetName},
+	{_T("Control-GetControlType"),       Control::GetControlType},
 	{_T("Control-GetProperties"),        Control::GetProperties},
 	{_T("Control-GetProperty"),          Control::GetProperty}, //used to get any property of any control
 	{_T("Control-GetPos"),               Control::GetPos},

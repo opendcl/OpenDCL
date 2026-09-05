@@ -348,6 +348,7 @@ Reference\Method\ComboBox\SetEditSel.htm
 Reference\Method\ComboBox\SetItemData.htm
 Reference\Method\ComboBox\SetTopIndex.htm
 Reference\Method\Control\Dump.htm
+Reference\Method\Control\GetControlType.htm
 Reference\Method\Control\GetHWND.htm
 Reference\Method\Control\GetPos.htm
 Reference\Method\Control\GetProperties.htm
