@@ -977,15 +977,6 @@ void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 	mBrowser.OnDocumentLoaded( bClickedLink );
 }
 
-void CControlBrowser::NoNavigateBrowser::OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel)
-{
-	mbEnableNavigate = false;
-	__super::OnNavigateError( lpszURL, lpszFrame, dwError, pbCancel );
-	//TODO: Cancel the default error page and display a custom localized error page
-	//assert( pbCancel != NULL );
-	//*pbCancel = TRUE;
-}
-
 void CControlBrowser::NoNavigateBrowser::OnCommandStateChange(long nCommand, BOOL bEnable)
 {
 	mbEnableNavigate = false;
