@@ -128,6 +128,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::TitleBarIcon, PropPicture, -1 );
 		pDclControl->AddBooleanProperty( Prop::TitleBar, PropBool, true );
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
