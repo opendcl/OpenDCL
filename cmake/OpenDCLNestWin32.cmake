@@ -442,6 +442,27 @@ function(opendcl_add_win32_nest)
   endforeach()
   add_dependencies(Nest_Win32 Nest_Win32_Common)
 
+  # Parent MSBuild /m would otherwise start every Nest_Lib_* / Nest_Win32_*
+  # CustomBuild at once (each is its own cmake --build). That races .obj/.lib
+  # writes (C1083 permission denied) and MSB0001. Chain so only one nested
+  # MSBuild runs at a time: lib nests, then runtime nests, then common.
+  set(_nest_serial "")
+  foreach(_t IN LISTS _all_lib_targets)
+    if(_nest_serial)
+      add_dependencies(${_t} ${_nest_serial})
+    endif()
+    set(_nest_serial "${_t}")
+  endforeach()
+  foreach(_t IN LISTS _all_rt_targets)
+    if(_nest_serial)
+      add_dependencies(${_t} ${_nest_serial})
+    endif()
+    set(_nest_serial "${_t}")
+  endforeach()
+  if(_nest_serial AND TARGET Nest_Win32_Common)
+    add_dependencies(Nest_Win32_Common ${_nest_serial})
+  endif()
+
   list(LENGTH _all_lib_targets _nlib)
   list(LENGTH _all_rt_targets _nrt)
   message(STATUS

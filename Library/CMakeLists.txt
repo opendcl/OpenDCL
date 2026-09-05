@@ -90,6 +90,7 @@ if(NOT TARGET WebView2)
       "${_wv2}/LICENSE.txt"
       "${_wv2}/include/WebView2.h"
       "${_wv2}/include/WebView2EnvironmentOptions.h"
+      "${_wv2}/include/EventToken.h"
       "${_wv2}/x64/WebView2Loader.dll"
       "${_wv2}/x86/WebView2Loader.dll"
     )
@@ -101,7 +102,8 @@ if(NOT TARGET WebView2)
     )
     source_group("include" FILES
       "${_wv2}/include/WebView2.h"
-      "${_wv2}/include/WebView2EnvironmentOptions.h")
+      "${_wv2}/include/WebView2EnvironmentOptions.h"
+      "${_wv2}/include/EventToken.h")
     source_group("x64" FILES "${_wv2}/x64/WebView2Loader.dll")
     source_group("x86" FILES "${_wv2}/x86/WebView2Loader.dll")
     set_source_files_properties(${_wv2_files} PROPERTIES HEADER_FILE_ONLY TRUE)
