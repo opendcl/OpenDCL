@@ -40,6 +40,9 @@
     <ClCompile Include="..\..\..\Common\DclImageList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Common\ControlApiName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Common\DpiAwarenessAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -631,6 +634,9 @@
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\DclImageList.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ControlApiName.h">
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\DpiAwarenessAPI.h">

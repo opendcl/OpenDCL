@@ -8,6 +8,7 @@
 #include "DclControlTemplate.h"
 #include "PropertyObject.h"
 #include "ControlTypes.h"
+#include "ControlApiName.h"
 #include "ArxWorkspace.h"
 #include "Resource.h"
 #include "ArxDialogControl.h"
@@ -539,6 +540,21 @@ ADSRESULT Control::GetName()
 		return RSERR;
 
 	acedRetStr( pControl->GetStringProperty( Prop::Name ) );
+	return RSRSLT;
+}
+
+ADSRESULT Control::GetControlType()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TDclControlPtr pControl;
+	if( !GetControlArgument( pArgs, pControl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	acedRetStr( GetControlApiName( pControl->GetType() ) );
 	return RSRSLT;
 }
 

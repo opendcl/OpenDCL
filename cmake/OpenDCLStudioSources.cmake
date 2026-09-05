@@ -90,6 +90,7 @@ set(OPENDCL_STUDIO_SOURCES
   "${CMAKE_SOURCE_DIR}/Common/Base64.cpp"
   "${CMAKE_SOURCE_DIR}/Common/CeXDib.cpp"
   "${CMAKE_SOURCE_DIR}/Common/ControlPane.cpp"
+  "${CMAKE_SOURCE_DIR}/Common/ControlApiName.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DclControlTemplate.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DclControlProp.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DclFormTemplate.cpp"
