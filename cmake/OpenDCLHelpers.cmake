@@ -4,15 +4,19 @@ include_guard(GLOBAL)
 # Enable target FOLDER -> Visual Studio solution folders (Library/ZLib, ...).
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Copy the arch-matching WebView2Loader.dll next to a PE (Html control Evergreen host).
+# Copy the arch-matching WebView2 loader next to a PE (Html control Evergreen host).
+# Installed name is WebView2Loader.x64.dll / WebView2Loader.x86.dll so both
+# arches can share Common Files\OpenDCL. Vendored NuGet files keep the stock name.
 function(opendcl_copy_webview2_loader target)
   if(NOT TARGET ${target})
     message(FATAL_ERROR "opendcl_copy_webview2_loader: unknown target '${target}'")
   endif()
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(_wv2_dll "${CMAKE_SOURCE_DIR}/Library/WebView2/x64/WebView2Loader.dll")
+    set(_wv2_name "WebView2Loader.x64.dll")
   else()
     set(_wv2_dll "${CMAKE_SOURCE_DIR}/Library/WebView2/x86/WebView2Loader.dll")
+    set(_wv2_name "WebView2Loader.x86.dll")
   endif()
   if(NOT EXISTS "${_wv2_dll}")
     message(FATAL_ERROR "opendcl_copy_webview2_loader: missing ${_wv2_dll}")
@@ -20,8 +24,8 @@ function(opendcl_copy_webview2_loader target)
   add_custom_command(TARGET ${target} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
       "${_wv2_dll}"
-      "$<TARGET_FILE_DIR:${target}>/WebView2Loader.dll"
-    COMMENT "Copy WebView2Loader.dll beside ${target}"
+      "$<TARGET_FILE_DIR:${target}>/${_wv2_name}"
+    COMMENT "Copy ${_wv2_name} beside ${target}"
   )
   # Visible in Solution Explorer (post-build copy is not a project item).
   target_sources(${target} PRIVATE "${_wv2_dll}")

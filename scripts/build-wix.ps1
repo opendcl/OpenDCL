@@ -581,14 +581,14 @@ function New-RuntimeFilesFragment {
   }
 
   foreach ($wv in @(
-      @{ Rel = "Library\WebView2\x64\WebView2Loader.dll"; Dir = "WebView2X64"; Id = "wv2_x64" },
-      @{ Rel = "Library\WebView2\x86\WebView2Loader.dll"; Dir = "WebView2X86"; Id = "wv2_x86" }
+      @{ Rel = "Library\WebView2\x64\WebView2Loader.dll"; Name = "WebView2Loader.x64.dll"; Id = "wv2_loader_x64" },
+      @{ Rel = "Library\WebView2\x86\WebView2Loader.dll"; Name = "WebView2Loader.x86.dll"; Id = "wv2_loader_x86" }
     )) {
     $full = Resolve-ProductFile $wv.Rel
     Assert-File $full
     $guid = Get-StableGuid "opendcl.runtime.webview2|$($wv.Id)"
     $srcXml = $full.Replace('&', '&amp;')
-    [void]$sb.AppendLine((Write-ComponentXml -ComponentId $wv.Id -Guid $guid -DirectoryId $wv.Dir -SourcePath $srcXml -FileName "WebView2Loader.dll"))
+    [void]$sb.AppendLine((Write-ComponentXml -ComponentId $wv.Id -Guid $guid -DirectoryId "OpenDCLFolder" -SourcePath $srcXml -FileName $wv.Name))
   }
 
   Write-Host ("Runtime modules: {0} total ({1} from out\, {2} from OpenDclRoot/repo)" -f `
@@ -777,7 +777,9 @@ function New-StudioFilesFragment([string] $lang) {
     @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\GNU-GPL.txt"); Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" },
     @{
       Full = (Resolve-ProductFile $(if ($script:StudioIsX64) { "Library\WebView2\x64\WebView2Loader.dll" } else { "Library\WebView2\x86\WebView2Loader.dll" }))
-      Dir = "INSTALLDIR"; Name = "WebView2Loader.dll"; FileId = "fil_StudioWebView2"
+      Dir = "INSTALLDIR"
+      Name = $(if ($script:StudioIsX64) { "WebView2Loader.x64.dll" } else { "WebView2Loader.x86.dll" })
+      FileId = "fil_StudioWebView2"
     }
   )
 
