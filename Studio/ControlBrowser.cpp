@@ -1044,6 +1044,29 @@ static void FixChmImageSrcs( CHtmlView& htmlView )
 	}
 }
 
+// CHM does not load Utility.js in this host, so copyclip is undefined. Define it after navigate.
+static void InjectCopyclip( CHtmlView& htmlView )
+{
+	LPDISPATCH pDisp = htmlView.GetHtmlDocument();
+	if( !pDisp )
+		return;
+	CComQIPtr< IHTMLDocument2 > pDoc( pDisp );
+	pDisp->Release();
+	if( !pDoc )
+		return;
+	CComBSTR bUrl;
+	if( FAILED( pDoc->get_URL( &bUrl ) ) || !bUrl || CString( bUrl ).Find( _T("::") ) < 0 )
+		return;
+	CComPtr< IHTMLWindow2 > pWin;
+	if( FAILED( pDoc->get_parentWindow( &pWin ) ) || !pWin )
+		return;
+	CComVariant vRet;
+	pWin->execScript(
+		CComBSTR( L"function copyclip(elem){if(elem)window.clipboardData.setData('Text',elem.innerText);}" ),
+		CComBSTR( L"JavaScript" ),
+		&vRet );
+}
+
 #define WM_OPENDCL_HTML_LAYOUT (WM_APP + 0x4C1)
 
 void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
@@ -1068,6 +1091,7 @@ void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 void CControlBrowser::NoNavigateBrowser::FinishHtmlLoad()
 {
 	FixChmImageSrcs( *this );
+	InjectCopyclip( *this );
 	CRect rc;
 	GetClientRect( &rc );
 	if( m_wndBrowser.GetSafeHwnd() )
