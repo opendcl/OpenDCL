@@ -55,6 +55,8 @@ $env:SIGN_STORE_PASSWORD = "<yubikey-pin>"
 - Timestamp: `http://ts.ssl.com` (RFC3161)
 - Description: `https://www.opendcl.com`
 - Directory scan: `*.msi`, `*.msm` only (`-IncludeBinaries` for exe/dll)
+- Skips files that already have a **Valid** Authenticode signature (Microsoft
+  WebView2 loaders, previously signed PE). Pass `-Replace` to re-sign.
 - Verifies each file with `Get-AuthenticodeSignature` unless `-SkipVerify`
 
 ### Full release folder (installers + localization zips + optional sign)

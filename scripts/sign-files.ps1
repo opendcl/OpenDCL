@@ -35,6 +35,11 @@
 .PARAMETER Recurse
   Search directories recursively.
 
+.PARAMETER Replace
+  Re-sign files that already have a Valid Authenticode signature (jsign --replace).
+  Default skips Valid signatures so Microsoft-signed loaders (and previously
+  signed ship PE) are left alone.
+
 .EXAMPLE
   $env:SIGN_STORE_PASSWORD = "<token-pin>"
   .\scripts\sign-files.ps1 -Path .\dist\10.1.1.1
@@ -140,6 +145,16 @@ function Get-FilesToSign([string[]] $paths) {
   return @($list | Select-Object -Unique)
 }
 
+function Test-ValidAuthenticode([string] $file) {
+  try {
+    $sig = Get-AuthenticodeSignature -FilePath $file
+    return $sig.Status -eq "Valid"
+  }
+  catch {
+    return $false
+  }
+}
+
 function Get-SignBatches {
   param(
     [Parameter(Mandatory = $true)]
@@ -179,11 +194,36 @@ function Normalize-Digest([string] $d) {
   }
 }
 
-$jsignPath = Find-Jsign
 $files = @(Get-FilesToSign $Path)
 if ($files.Count -eq 0) {
   throw "No signable files matched under: $($Path -join ', ') (directories default to *.msi/*.msm; use -IncludeBinaries for PE)"
 }
+
+$skippedSigned = New-Object System.Collections.Generic.List[string]
+if (-not $Replace) {
+  $pending = New-Object System.Collections.Generic.List[string]
+  foreach ($f in $files) {
+    if (Test-ValidAuthenticode $f) {
+      [void]$skippedSigned.Add($f)
+    }
+    else {
+      [void]$pending.Add($f)
+    }
+  }
+  $files = @($pending)
+}
+
+if ($skippedSigned.Count -gt 0) {
+  Write-Host "Skip already signed: $($skippedSigned.Count) file(s)"
+  foreach ($f in $skippedSigned) { Write-Host "  $f" }
+}
+
+if ($files.Count -eq 0) {
+  Write-Host "OK nothing to sign ($($skippedSigned.Count) already-signed file(s) skipped)"
+  exit 0
+}
+
+$jsignPath = Find-Jsign
 
 $digest = Normalize-Digest $FileDigest
 $argList = [System.Collections.Generic.List[string]]::new()
