@@ -1,16 +1,12 @@
-# Nested Win32 under an x64 Visual Studio parent — split nests:
+# Nested Win32 under an x64 Visual Studio parent.
 #
-#   win32-lib/<toolset>-<crt>/  zlib+png only (one config); shared by runtimes
-#   win32-rt/<id>/              one CAD Runtime_<id> (IMPORTED libs)
-#   win32-common/               Res + Studio + RxInstall (IMPORTED host mt libs)
+#   win32-lib/<toolset>-<crt>/  zlib+png for one toolset/CRT
+#   win32-rt/<id>/              one CAD Runtime (IMPORTED libs)
+#   win32-common/               Res + Studio + RxInstall
 #
-# Parent CustomBuilds invoke cmake --build on each nest (-A Win32). Imported
-# w32_* projects are Explorer-only (EXCLUDE_FROM_DEFAULT_BUILD; parent Platform
-# x64 would MSB8013). Nest MSBuild uses MSBUILDDISABLENODEREUSE + /nodeReuse:false
-# (MSB0001 under parallel VS solution builds).
-#
-# Product gates: native Studio / x64 runtimes -> Res_Win32 (common Res once).
-# Nest_Win32 ALL umbrella depends on lib nests, then runtime nests, then common.
+# Nest_Libs builds every win32-lib tree in one CustomBuild (serial COMMAND list).
+# Runtime nests and Nest_Win32_Common follow; imported w32_* are Explorer-only.
+# Nest MSBuild: MSBUILDDISABLENODEREUSE + /nodeReuse:false.
 
 include_guard(GLOBAL)
 
@@ -37,16 +33,10 @@ endfunction()
 function(opendcl_nest_build_cmd out_var nest_bin)
   set(_cfg "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
   opendcl_nest_msbuild_args(_args)
-  # Serialize every nest cmake --build behind scripts/run-nest-build.ps1.
-  # Parent cmake --build --parallel / MSBuild /m can start Nest_* utility
-  # projects concurrently and ignore add_dependencies between them (C1083).
-  set(_guard "${CMAKE_SOURCE_DIR}/scripts/run-nest-build.ps1")
   set(_cmd
-    powershell -NoProfile -ExecutionPolicy Bypass -File "${_guard}"
     ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
     ${CMAKE_COMMAND} --build "${nest_bin}" --config "${_cfg}"
   )
-  # Remaining ARGN: extra --target / args before _args
   foreach(_a IN LISTS ARGN)
     list(APPEND _cmd "${_a}")
   endforeach()
@@ -185,7 +175,8 @@ function(opendcl_add_win32_nest)
     set(_have_fulldebug TRUE)
   endif()
 
-  # --- Unique lib nests: (mapped_toolset, crt) ---
+
+  # Lib nests: configure each win32-lib tree; build them all via Nest_Libs.
   set(_lib_keys "")
   foreach(_id IN LISTS _w32_ids)
     opendcl_rt_get("${_id}" TOOLSET _ts)
@@ -196,7 +187,6 @@ function(opendcl_add_win32_nest)
       list(APPEND _lib_keys "${_lib_safe}|mdd")
     endif()
   endforeach()
-  # Host mt for Studio in common nest.
   string(REGEX REPLACE "[^A-Za-z0-9]" "_" _host_safe "${OPENDCL_HOST_TOOLSET_TAG}")
   list(APPEND _lib_keys "${_host_safe}|mt")
   if(_have_fulldebug)
@@ -208,18 +198,16 @@ function(opendcl_add_win32_nest)
   list(REMOVE_DUPLICATES _lib_keys)
   list(SORT _lib_keys)
 
-  set(_all_lib_targets "")
+  set(_nest_libs_args "")
   foreach(_key IN LISTS _lib_keys)
     string(REPLACE "|" ";" _kv "${_key}")
     list(GET _kv 0 _ts_safe)
     list(GET _kv 1 _crt)
-    # Recover toolset string: matrix tags are already safe; host tag from cache.
     set(_ts_raw "${_ts_safe}")
     if(_ts_safe STREQUAL _host_safe)
       set(_ts_raw "${OPENDCL_HOST_TOOLSET_TAG}")
     endif()
     set(_lib_bin "${CMAKE_BINARY_DIR}/win32-lib/${_ts_safe}-${_crt}")
-    set(_lib_tgt "Nest_Lib_${_ts_safe}_${_crt}")
     opendcl_nest_configure("${_lib_bin}"
       "set(OPENDCL_BUILD_RUNTIME OFF CACHE BOOL \"\" FORCE)"
       "set(OPENDCL_BUILD_STUDIO OFF CACHE BOOL \"\" FORCE)"
@@ -232,16 +220,16 @@ function(opendcl_add_win32_nest)
       "set(OPENDCL_RUNTIME_TARGETS [==[]==] CACHE STRING \"\" FORCE)"
     )
     opendcl_nest_build_cmd(_lib_cmd "${_lib_bin}")
-    if(NOT TARGET ${_lib_tgt})
-      add_custom_target(${_lib_tgt}
-        COMMAND ${_lib_cmd}
-        COMMENT "Win32 lib nest ${_ts_safe}-${_crt} (/m:${_nest_m})"
-        VERBATIM
-      )
-      set_property(TARGET ${_lib_tgt} PROPERTY FOLDER "CMake/Win32 Lib")
-    endif()
-    list(APPEND _all_lib_targets ${_lib_tgt})
+    list(APPEND _nest_libs_args COMMAND ${_lib_cmd})
   endforeach()
+
+  if(NOT TARGET Nest_Libs)
+    add_custom_target(Nest_Libs ${_nest_libs_args}
+      COMMENT "Win32 lib nests"
+      VERBATIM
+    )
+    set_property(TARGET Nest_Libs PROPERTY FOLDER "CMake")
+  endif()
 
   # --- Per-runtime nests ---
   set(_all_rt_targets "")
@@ -290,12 +278,7 @@ function(opendcl_add_win32_nest)
       )
       set_property(TARGET ${_rt_tgt} PROPERTY FOLDER "CMake/Win32 Runtime")
     endif()
-    if(TARGET "Nest_Lib_${_lib_safe}_md")
-      add_dependencies(${_rt_tgt} "Nest_Lib_${_lib_safe}_md")
-    endif()
-    if(_have_fulldebug AND TARGET "Nest_Lib_${_lib_safe}_mdd")
-      add_dependencies(${_rt_tgt} "Nest_Lib_${_lib_safe}_mdd")
-    endif()
+    add_dependencies(${_rt_tgt} Nest_Libs)
     list(APPEND _all_rt_targets ${_rt_tgt})
   endforeach()
 
@@ -372,9 +355,7 @@ function(opendcl_add_win32_nest)
     endif()
     set_property(TARGET Nest_Win32_Common PROPERTY FOLDER "CMake")
   endif()
-  if(TARGET "Nest_Lib_${_host_safe}_mt")
-    add_dependencies(Nest_Win32_Common "Nest_Lib_${_host_safe}_mt")
-  endif()
+  add_dependencies(Nest_Win32_Common Nest_Libs)
 
   # Res_Win32: Res targets only (build-once).
   if(_common_res AND _w32_res_targets)
@@ -424,53 +405,37 @@ function(opendcl_add_win32_nest)
     message(STATUS "Win32 Res gate for Studio/runtimes: Res_Win32")
   endif()
 
-  # Nest_Win32 umbrella: libs -> runtimes -> common.
+  # Nest_Win32: Nest_Libs -> runtime nests -> common (serial via deps).
   if(NOT TARGET Nest_Win32)
     if(OPENDCL_WIN32_IN_ALL)
       add_custom_target(Nest_Win32 ALL
-        COMMENT "Win32 nest umbrella (libs + runtimes + common)"
+        COMMENT "Win32 nests"
         VERBATIM
       )
     else()
       add_custom_target(Nest_Win32
-        COMMENT "Win32 nest umbrella (libs + runtimes + common)"
+        COMMENT "Win32 nests"
         VERBATIM
       )
     endif()
     set_property(TARGET Nest_Win32 PROPERTY FOLDER "CMake")
   endif()
-  foreach(_t IN LISTS _all_lib_targets)
-    add_dependencies(Nest_Win32 ${_t})
-  endforeach()
+  add_dependencies(Nest_Win32 Nest_Libs)
   foreach(_t IN LISTS _all_rt_targets)
     add_dependencies(Nest_Win32 ${_t})
   endforeach()
   add_dependencies(Nest_Win32 Nest_Win32_Common)
 
-  # Parent MSBuild /m would otherwise start every Nest_Lib_* / Nest_Win32_*
-  # CustomBuild at once (each is its own cmake --build). That races .obj/.lib
-  # writes (C1083 permission denied) and MSB0001. Chain so only one nested
-  # MSBuild runs at a time: lib nests, then runtime nests, then common.
-  set(_nest_serial "")
-  foreach(_t IN LISTS _all_lib_targets)
-    if(_nest_serial)
-      add_dependencies(${_t} ${_nest_serial})
-    endif()
-    set(_nest_serial "${_t}")
-  endforeach()
+  set(_nest_serial Nest_Libs)
   foreach(_t IN LISTS _all_rt_targets)
-    if(_nest_serial)
-      add_dependencies(${_t} ${_nest_serial})
-    endif()
+    add_dependencies(${_t} ${_nest_serial})
     set(_nest_serial "${_t}")
   endforeach()
-  if(_nest_serial AND TARGET Nest_Win32_Common)
-    add_dependencies(Nest_Win32_Common ${_nest_serial})
-  endif()
+  add_dependencies(Nest_Win32_Common ${_nest_serial})
 
-  list(LENGTH _all_lib_targets _nlib)
+  list(LENGTH _lib_keys _nlib)
   list(LENGTH _all_rt_targets _nrt)
   message(STATUS
-    "Win32 nests: ${_nlib} lib, ${_nrt} runtime, 1 common; "
+    "Win32 nests: Nest_Libs (${_nlib} trees), ${_nrt} runtime, 1 common; "
     "IN_ALL=${OPENDCL_WIN32_IN_ALL}")
 endfunction()
