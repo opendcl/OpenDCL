@@ -151,7 +151,7 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | Runtime | `win32-rt/<id>/` | One `Runtime_<id>` only; **IMPORTED** zlib/png from `out/Library/ts/...` (no lib recompile). |
 | Common | `win32-common/` | Classic x86 **Runtime.Res**, **Studio** + Studio.Res, **RxInstall**; IMPORTED host `mt` libs. |
 
-Parent targets: `Nest_Lib_*`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32` (Res-only from common), umbrella **`Nest_Win32`** (libs → runtimes → common). Nest CustomBuilds use `MSBUILDDISABLENODEREUSE` + `/nodeReuse:false`. Imported `w32_*` are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged.
+Parent targets: `Nest_Libs`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32` (Res-only from common), umbrella **`Nest_Win32`** (libs → runtimes → common). Nest CustomBuilds use `MSBUILDDISABLENODEREUSE` + `/nodeReuse:false`. Imported `w32_*` are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged.
 
 **Day-to-day x64 without full nest** (`vs2022-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella. Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
 
@@ -164,8 +164,8 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 | **C1060** compiler out of heap (`afxtempl.h`, old ATL) under `Nest_Win32` | Nest builds many **32-bit-era toolsets** (v100/v110/...) in one MSBuild; 32-bit `cl` heap is small | Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=2`, `OPENDCL_NEST_CL_MP_COUNT=1`. Try `=1` / `=1`. Still may fail on a full nest Debug/Release under heavy machine load. |
 | **C1001** ICE in nest modules (PCH, PaletteDlg, etc.) | Same pressure / parallel compile instability | Same throttle; rebuild single target or stand-alone `build/.../win32` with low `/m`. |
 | Cancel in VS does not stop nest `cmake --build` cleanly | Nested MSBuild is a child process of a CustomBuild step | Kill stray `MSBuild`/`cl` if needed; known CustomBuild limitation. |
-| **C1083** `Permission denied` on `zlib_*.dir\...\*.obj` under `Nest_Lib_*` | Parent `cmake --build --parallel` / MSBuild `/m` can start multiple `Nest_*` utility projects and **ignore** `add_dependencies` between them, so two nest MSBuilds overlap | Every nest `cmake --build` runs under `scripts/run-nest-build.ps1` (machine-wide mutex). Nest `/m` defaults to **1**. Static zlib/png use absolute `VS_GLOBAL_IntDir`. Keep sibling `Nest_*` dependency chaining. |
-| **MSB0001** / `EndBuild has already been called` on `Res_Win32` / png | Nested nest MSBuild during a parallel parent VS build (and/or ZERO_CHECK regenerating the `.sln` mid-build) | Nest commands use `MSBUILDDISABLENODEREUSE=1` + `/nodeReuse:false`. Sibling `Nest_Lib_*` / `Nest_Win32_*` CustomBuilds are **dependency-chained** (one nested MSBuild at a time). After editing CMake files, let configure finish / reload the `.sln`, then rebuild (do not Build Solution in the same pass that rewrites projects). |
+| **Nest lib races / C1083 on zlib IntDir** | Overlapping `win32-lib` builds | Use `Nest_Libs` (single serial CustomBuild). Nest `/m` defaults to 1. |
+| **MSB0001** / `EndBuild has already been called` on `Res_Win32` / png | Nested nest MSBuild during a parallel parent VS build (and/or ZERO_CHECK regenerating the `.sln` mid-build) | Nest commands use `MSBUILDDISABLENODEREUSE=1` + `/nodeReuse:false`. Sibling `Nest_Libs` / `Nest_Win32_*` CustomBuilds are **dependency-chained** (one nested MSBuild at a time). After editing CMake files, let configure finish / reload the `.sln`, then rebuild (do not Build Solution in the same pass that rewrites projects). |
 | Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
 | Studio MSI includes Runtime MSM | Separate Runtime MSI not required for Studio install smoke | Install **Studio.\<LANG\>.msi** only for Studio+Runtime install tests (see **docs/SMOKE.md**). |
 
@@ -173,7 +173,7 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 
 ```powershell
 cmake --build build/vs2022-full --config Release --target Res_Win32
-cmake --build build/vs2022-full --config Release --target Nest_Lib_v100_md
+cmake --build build/vs2022-full --config Release --target Nest_Libs
 cmake --build build/vs2022-full --config Release --target Nest_Win32_ZRX_2019
 # or inside a nest tree:
 cmake --build build/vs2022-full/win32-rt/ZRX.2019 --config Release --parallel 1 -- /m:1 /p:CL_MPCount=1

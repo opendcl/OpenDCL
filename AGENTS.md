@@ -58,8 +58,8 @@ human steps: **`docs/BUILD-QUICKSTART.md`**.
 | ENU CHM | Target `StudioHelp_ENU` (depends from Studio); needs HTML Help Workshop `hhc.exe`. Output `Studio/Localized/ENU/Content/OpenDCL.chm` (gitignored). |
 | Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: OpenDclRoot / `out\` / packaging repo only. |
 | Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` ((c)). Do not re-save as UTF-8. |
-| Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** holding x64 + imported Win32 peers. Split nests: `win32-lib/<ts>-<crt>`, `win32-rt/<id>`, `win32-common` (Res/Studio/RxInstall). Build via `Nest_Lib_*` / `Nest_Win32_*` / `Nest_Win32`. **`vs2022-x64-full`**: x64 Studio + classic x86 Res. Helper: `scripts/build-cmake-full.ps1`. |
-| Nest Win32 full build | Split nests + `scripts/run-nest-build.ps1` mutex (no overlapping nest MSBuilds). Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=1`, `OPENDCL_NEST_CL_MP_COUNT=1`, `/nodeReuse:false`. Old toolsets can still hit **C1060/C1001** if you raise `/m`. Prefer `vs2022-dev` for daily IDE work. |
+| Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** holding x64 + imported Win32 peers. Split nests: `win32-lib/<ts>-<crt>`, `win32-rt/<id>`, `win32-common` (Res/Studio/RxInstall). Build via `Nest_Libs` / `Nest_Win32_*` / `Nest_Win32`. **`vs2022-x64-full`**: x64 Studio + classic x86 Res. Helper: `scripts/build-cmake-full.ps1`. |
+| Nest Win32 full build | `Nest_Libs` builds all `win32-lib` trees in one serial CustomBuild. Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=1`, `OPENDCL_NEST_CL_MP_COUNT=1`, `/nodeReuse:false`. Prefer `vs2022-dev` for daily IDE work. |
 Sibling clones (typical workspace: product + private lab + Pages side by side):
 
 | Clone / path | Role |
