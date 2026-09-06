@@ -165,6 +165,8 @@ function(opendcl_add_static_lib name arch sources runtime_lib)
     # MultiByte + MFC => MSB8031 on older toolsets (v120+). Keep Unicode / no MFC.
     VS_GLOBAL_UseOfMfc "false"
     VS_GLOBAL_CharacterSet "Unicode"
+    # Absolute IntDir so overlapping nest MSBuilds cannot share relative .dir paths.
+    VS_GLOBAL_IntDir "${CMAKE_CURRENT_BINARY_DIR}/${name}.dir/$(Configuration)/"
   )
   target_compile_definitions(${name} PRIVATE UNICODE _UNICODE)
   # /FS when toolset is VS2013+ (host defaults are modern). Applied again below

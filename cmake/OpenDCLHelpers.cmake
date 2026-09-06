@@ -191,8 +191,8 @@ option(OPENDCL_LIBRARY_IMPORTED
   "Create zlib/png as IMPORTED from OPENDCL_OUTPUT_ROOT (nest sharing)" OFF)
 # Full dual-arch nest compiles many old toolsets (v100/v110/...) under one MSBuild.
 # Unbounded /m + /MP OOMs 32-bit cl (C1060 heap) and triggers C1001 ICEs.
-set(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT "2" CACHE STRING
-  "MSBuild /m for cmake --build of the Win32 nest (Nest_Win32 / Res / RxInstall); raise carefully")
+set(OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT "1" CACHE STRING
+  "MSBuild /m for each Win32 nest cmake --build; default 1 avoids C1083 races (raise carefully for heap/C1060 tradeoffs)")
 set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
   "CL_MPCount for nest builds (cl /MP within each project); 1 is safest for old toolsets")
 
