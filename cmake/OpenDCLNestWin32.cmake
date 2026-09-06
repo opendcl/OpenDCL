@@ -18,7 +18,7 @@ function(opendcl_nest_msbuild_args out_var)
   set(_m "${OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT}")
   set(_clmp "${OPENDCL_NEST_CL_MP_COUNT}")
   if(NOT _m MATCHES "^[0-9]+$" OR _m STREQUAL "0")
-    set(_m "2")
+    set(_m "1")
   endif()
   if(NOT _clmp MATCHES "^[0-9]+$" OR _clmp STREQUAL "0")
     set(_clmp "1")
@@ -37,7 +37,12 @@ endfunction()
 function(opendcl_nest_build_cmd out_var nest_bin)
   set(_cfg "$<IF:$<CONFIG:FullDebug>,Debug,$<CONFIG>>")
   opendcl_nest_msbuild_args(_args)
+  # Serialize every nest cmake --build behind scripts/run-nest-build.ps1.
+  # Parent cmake --build --parallel / MSBuild /m can start Nest_* utility
+  # projects concurrently and ignore add_dependencies between them (C1083).
+  set(_guard "${CMAKE_SOURCE_DIR}/scripts/run-nest-build.ps1")
   set(_cmd
+    powershell -NoProfile -ExecutionPolicy Bypass -File "${_guard}"
     ${CMAKE_COMMAND} -E env MSBUILDDISABLENODEREUSE=1 --
     ${CMAKE_COMMAND} --build "${nest_bin}" --config "${_cfg}"
   )
