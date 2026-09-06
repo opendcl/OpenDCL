@@ -26,12 +26,11 @@ static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayNam
 	if( !sTypeNameHtml.IsEmpty() )
 	{
 		CString sFilename;
-		sFilename.Format( _T("/Reference/DataType/%s.htm"), (LPCTSTR) pszTypeName );
+		sFilename.Format( _T("/Reference/DataType/%s.htm"), (LPCTSTR)pszTypeName );
 		if( IsChmFile( sFilename ) )
 		{
 			CString sLinkedType;
-			sLinkedType.Format( _T("<a href=\"/Reference/DataType/%s.htm\">%s</a>"), pszTypeName,
-				pszDisplayName ? pszDisplayName : pszTypeName );
+			sLinkedType.Format( _T("<a href=\"/Reference/DataType/%s.htm\">%s</a>"), pszTypeName, pszDisplayName? pszDisplayName : pszTypeName );
 			sTypeNameHtml = sLinkedType;
 		}
 	}
@@ -42,8 +41,8 @@ static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayNam
 static void CompactWhiteSpace( CString& sHtml )
 {
 	sHtml.Trim( _T(" \t") );
-	sHtml.Remove( _T( '\r' ) );
-	sHtml.Remove( _T( '\n' ) );
+	sHtml.Remove( _T('\r') );
+	sHtml.Remove( _T('\n') );
 	CString sCompact;
 	int nSpace = 0;
 	do
@@ -58,23 +57,19 @@ static void CompactWhiteSpace( CString& sHtml )
 class CTreeNode
 {
 	CString msName;
-
 public:
-	CTreeNode( LPCTSTR pszName )
-	: msName( pszName )
-	{
-	}
+	CTreeNode( LPCTSTR pszName ) : msName( pszName ) {}
 	virtual ~CTreeNode() {}
 
 	virtual void onSelected( CControlBrowser& Browser )
-	{
-		std::map<CString, CString> params;
-		Browser.SetDescription( description( params ), params );
-	}
+		{
+			std::map< CString, CString > params;
+			Browser.SetDescription( description( params ), params );
+		}
 
 	virtual LPCTSTR name() const { return msName; }
 	virtual int image() const { return -1; }
-	virtual CString description( std::map<CString, CString>& params ) const { return NULL; }
+	virtual CString description( std::map< CString, CString >& params ) const { return NULL; }
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) { return true; }
 	static bool addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR pszControlType, CString& sMethodsHtml );
 	static bool addEvent( CControlBrowser& Browser, HTREEITEM hParent, TPropertyPtr pEvent );
@@ -83,28 +78,26 @@ public:
 class CDclControlNode : public CTreeNode
 {
 	TDclControlPtr mpDclControl;
-
 public:
 	CDclControlNode( TDclControlPtr pDclControl )
-	: CTreeNode( GetControlDisplayName( pDclControl ) )
-	, mpDclControl( pDclControl )
-	{
-	}
+		: CTreeNode( GetControlDisplayName( pDclControl ) )
+		, mpDclControl( pDclControl )
+		{}
 	CDclControlNode( TDclControlPtr pDclControl, LPCTSTR pszName )
-	: CTreeNode( pszName )
-	, mpDclControl( pDclControl )
-	{
-	}
+		: CTreeNode( pszName )
+		, mpDclControl( pDclControl )
+		{}
 	virtual ~CDclControlNode() {}
 
 	int image() const override { return 5; }
 	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override;
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sPath;
-		sPath.Format( _T("chm://Reference/Control/%s.htm"), (LPCTSTR) GetControlApiName( mpDclControl ) );
-		return sPath;
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			CString sPath;
+			sPath.Format( _T("chm://Reference/Control/%s.htm"),
+										(LPCTSTR)GetControlApiName( mpDclControl ) );
+			return sPath;
+		}
 
 	virtual bool addPropertyChildItems( CControlBrowser& Browser, HTREEITEM hParent, CAxContainerCtrl* pAxCont = NULL );
 };
@@ -115,17 +108,17 @@ class CDclFormNode : public CDclControlNode
 
 public:
 	CDclFormNode( TDclFormPtr pDclForm )
-	: CDclControlNode( pDclForm->GetControlProperties(), GetFormDisplayName( pDclForm ) )
-	, mpDclForm( pDclForm )
-	{
-	}
+		: CDclControlNode( pDclForm->GetControlProperties(), GetFormDisplayName( pDclForm ) )
+		, mpDclForm( pDclForm )
+		{}
 	virtual ~CDclFormNode() {}
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sPath;
-		sPath.Format( _T("chm://Reference/Form/%s.htm"), (LPCTSTR) GetFormApiName( mpDclForm ) );
-		return sPath;
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			CString sPath;
+			sPath.Format( _T("chm://Reference/Form/%s.htm"),
+										(LPCTSTR)GetFormApiName( mpDclForm ) );
+			return sPath;
+		}
 	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override;
 };
 
@@ -135,16 +128,15 @@ class CDclProjectNode : public CTreeNode
 
 public:
 	CDclProjectNode( TProjectPtr pProject )
-	: CTreeNode( pProject->GetKeyName() )
-	, mpProject( pProject )
-	{
-	}
+		: CTreeNode( pProject->GetKeyName() )
+		, mpProject( pProject )
+		{}
 	virtual ~CDclProjectNode() {}
 	int image() const override { return 1; }
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		return _T("chm://Reference/DataType/Project.htm");
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			return _T("chm://Reference/DataType/Project.htm");
+		}
 	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override;
 };
 
@@ -154,41 +146,42 @@ class CPropertyNode : public CTreeNode
 
 public:
 	CPropertyNode( TPropertyPtr pProp )
-	: CTreeNode( pProp->GetName() )
-	, mpProp( pProp )
-	{
-	}
+		: CTreeNode( pProp->GetName() )
+		, mpProp( pProp )
+		{
+		}
 	virtual ~CPropertyNode() {}
 	virtual TPropertyPtr prop() const { return mpProp; }
 
 	int image() const override { return 4; }
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sPath;
-		sPath.Format( _T("chm://Reference/Property/%s.htm"), (LPCTSTR) GetPropertyApiName( mpProp->GetID() ) );
-		return sPath;
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			CString sPath;
+			sPath.Format( _T("chm://Reference/Property/%s.htm"),
+										(LPCTSTR)GetPropertyApiName( mpProp->GetID() ) );
+			return sPath;
+		}
 
 protected:
 	virtual bool isRuntimeNotAllowed()
-	{
-		bool bAllowed = true;
-		switch( prop()->GetID() )
 		{
-		case Prop::ComboBoxStyle:
-		case Prop::GraphicButtonStyle:
-		case Prop::FilterStyle:
-		case Prop::MultiRow:
-		case Prop::Orientation:
-		case Prop::SelectionStyle:
-		case Prop::BlockListStyle:
-		case Prop::DockableSides:
-		case Prop::DefaultDockedSide:
-			bAllowed = false;
-			break;
+			bool bAllowed = true;
+			switch( prop()->GetID() )
+			{
+			case Prop::ComboBoxStyle:
+			case Prop::GraphicButtonStyle:
+			case Prop::FilterStyle:
+			case Prop::MultiRow:
+			case Prop::Orientation:
+			case Prop::SelectionStyle:
+			case Prop::BlockListStyle:
+			case Prop::DockableSides:
+			case Prop::DefaultDockedSide:
+				bAllowed = false;
+				break;
+			}
+			return !bAllowed;
 		}
-		return !bAllowed;
-	}
 };
 
 class CMethodNode : public CTreeNode
@@ -198,21 +191,20 @@ class CMethodNode : public CTreeNode
 
 public:
 	CMethodNode( TDclControlPtr pDclControl, LPCTSTR pszName, LPCTSTR pszFilename )
-	: CTreeNode( pszName )
-	, mpDclControl( pDclControl )
-	, msFilename( pszFilename )
-	{
-	}
+		: CTreeNode( pszName )
+		, mpDclControl( pDclControl )
+		, msFilename( pszFilename )
+		{}
 	virtual ~CMethodNode() {}
 	virtual TDclControlPtr control() const { return mpDclControl; }
 
 	int image() const override { return 3; }
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sPath;
-		sPath.Format( _T("chm://Reference/Method/%s"), (LPCTSTR) msFilename );
-		return sPath;
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			CString sPath;
+			sPath.Format( _T("chm://Reference/Method/%s"), (LPCTSTR)msFilename );
+			return sPath;
+		}
 };
 
 class CEventNode : public CTreeNode
@@ -222,23 +214,23 @@ class CEventNode : public CTreeNode
 
 public:
 	CEventNode( TPropertyPtr pProp, LPCTSTR pszFilename )
-	: CTreeNode(
-			pProp->GetType() == PropActiveXEvent ? pProp->GetConstAxInterfaceDescriptorPtr()->GetName() : pProp->GetName() )
-	, mpProp( pProp )
-	, msFilename( pszFilename )
-	{
-	}
+		: CTreeNode( pProp->GetType() == PropActiveXEvent? pProp->GetConstAxInterfaceDescriptorPtr()->GetName() : pProp->GetName() )
+		, mpProp( pProp )
+		, msFilename( pszFilename )
+		{
+		}
 	virtual ~CEventNode() {}
 	virtual TPropertyPtr prop() const { return mpProp; }
 
 	int image() const override { return 2; }
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		params[_T("<CONTROL-NAME>")] = mpProp->GetOwnerControl()->GetVarName();
-		CString sPath;
-		sPath.Format( _T("chm://Reference/Event/%s"), (LPCTSTR) msFilename );
-		return sPath;
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			params[_T("<CONTROL-NAME>")] = mpProp->GetOwnerControl()->GetVarName();
+			CString sPath;
+			sPath.Format( _T("chm://Reference/Event/%s"),
+										(LPCTSTR)msFilename );
+			return sPath;
+		}
 };
 
 class CAxObjectNode : public CDclControlNode
@@ -258,24 +250,23 @@ class CAxObjectNode : public CDclControlNode
 
 public:
 	CAxObjectNode( CAxContainerCtrl* pAxCont, TDclControlPtr pAxInfo )
-	: CDclControlNode( pAxInfo, GetAxShortName( pAxInfo->GetAxCtrlInitInfo() ) )
-	, mpAxCont( pAxCont )
-	{
-	}
+		: CDclControlNode( pAxInfo, GetAxShortName(pAxInfo->GetAxCtrlInitInfo()) )
+		, mpAxCont( pAxCont )
+		{}
 	virtual ~CAxObjectNode() {}
 
 	int image() const override { return 5; }
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		return _T("chm://Reference/DataType/AxObject.htm");
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			return _T("chm://Reference/DataType/AxObject.htm");
+		}
 	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override
-	{
-		CString sMethodsHtml;
-		addMethods( Browser, hParent, _T("AxObject"), sMethodsHtml );
-		addPropertyChildItems( Browser, hParent, mpAxCont );
-		return true;
-	}
+		{
+			CString sMethodsHtml;
+			addMethods( Browser, hParent, _T("AxObject"), sMethodsHtml );
+			addPropertyChildItems( Browser, hParent, mpAxCont );
+			return true;
+		}
 };
 
 class CAxPropertyNode : public CPropertyNode
@@ -284,160 +275,176 @@ class CAxPropertyNode : public CPropertyNode
 	CAxContainerCtrl* mpAxCont;
 
 public:
-	CAxPropertyNode( TPropertyPtr pProp, const AxInterfaceDescriptor* pIDesc, CAxContainerCtrl* pAxCont = NULL )
-	: CPropertyNode( pProp )
-	, mpIDesc( pIDesc )
-	, mpAxCont( pAxCont )
-	{
-	}
+	CAxPropertyNode( TPropertyPtr pProp, const AxInterfaceDescriptor* pIDesc,
+									 CAxContainerCtrl* pAxCont = NULL )
+		: CPropertyNode( pProp )
+		, mpIDesc( pIDesc )
+		, mpAxCont( pAxCont )
+		{
+		}
 	virtual ~CAxPropertyNode() {}
 	CAxContainerCtrl* axCont() const { return mpAxCont; }
 
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sName = name();
-		params[_T("{TITLE}")] = sName;
-		params[_T("{FRIENDLYNAME}")] = sName;
-		params[_T("{APINAME}")] = sName;
-		params[_T("{TYPE}")] = ConstructTypeNameHtml( propType() );
-		params[_T("{RESTRICTIONS}")] = _T("&nbsp;");
-		bool bAxControl = ( prop()->GetOwnerControl()->GetType() == CtlActiveX );
-		CString sAx = bAxControl ? _T("AxControl") : _T("AxObject");
-		CString sOb = bAxControl ? prop()->GetOwnerControl()->GetVarName() : _T("&lt;AXOBJECT&gt;");
-		CString sObType = ConstructTypeNameHtml( bAxControl ? _T("Control") : _T("AxObject"), sOb );
-		CString sGetFunction;
-		sGetFunction.Format( _T("(dcl-%s-Get <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"), (LPCTSTR) sAx,
-			(LPCTSTR) sObType, (LPCTSTR) sName, (LPCTSTR) propGetArgList() );
-		params[_T("{GETPROPFUNCTION}")] = sGetFunction;
-		CString sSetFunction = _T("&nbsp;");
-		if( mpIDesc->GetPropPut() || mpIDesc->GetPropPutRef() )
-			sSetFunction.Format( _T("(dcl-%s-Put <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"), (LPCTSTR) sAx,
-				(LPCTSTR) sObType, (LPCTSTR) sName, (LPCTSTR) propPutArgList() );
-		params[_T("{SETPROPFUNCTION}")] = sSetFunction;
-		params[_T("{APPLIESTO}")] = _T("&nbsp;");
-		CString sDesc;
-		sDesc.Format( _T("<p>%s</p>%s"), (LPCTSTR) mpIDesc->GetDesc(), (LPCTSTR) propDescExtra() );
-		params[_T("{DESCRIPTION}")] = sDesc;
-		return _T("chm://Reference/Property/@Template.htm");
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			CString sName = name();
+			params[_T("{TITLE}")] = sName;
+			params[_T("{FRIENDLYNAME}")] = sName;
+			params[_T("{APINAME}")] = sName;
+			params[_T("{TYPE}")] = ConstructTypeNameHtml( propType() );
+			params[_T("{RESTRICTIONS}")] = _T("&nbsp;");
+			bool bAxControl = (prop()->GetOwnerControl()->GetType() == CtlActiveX);
+			CString sAx = bAxControl? _T("AxControl") : _T("AxObject");
+			CString sOb = bAxControl? prop()->GetOwnerControl()->GetVarName() : _T("&lt;AXOBJECT&gt;");
+			CString sObType = ConstructTypeNameHtml( bAxControl? _T("Control") : _T("AxObject"), sOb );
+			CString sGetFunction;
+			sGetFunction.Format(
+				_T("(dcl-%s-Get <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
+				(LPCTSTR)sAx, (LPCTSTR)sObType, (LPCTSTR)sName, (LPCTSTR)propGetArgList() );
+			params[_T("{GETPROPFUNCTION}")] = sGetFunction;
+			CString sSetFunction = _T("&nbsp;");
+			if( mpIDesc->GetPropPut() || mpIDesc->GetPropPutRef() )
+				sSetFunction.Format(
+					_T("(dcl-%s-Put <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
+					(LPCTSTR)sAx, (LPCTSTR)sObType, (LPCTSTR)sName, (LPCTSTR)propPutArgList() );
+			params[_T("{SETPROPFUNCTION}")] = sSetFunction;
+			params[_T("{APPLIESTO}")] = _T("&nbsp;");
+			CString sDesc;
+			sDesc.Format( _T("<p>%s</p>%s"), (LPCTSTR)mpIDesc->GetDesc(), (LPCTSTR)propDescExtra() );
+			params[_T("{DESCRIPTION}")] = sDesc;
+			return _T("chm://Reference/Property/@Template.htm");
+		}
 	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override
-	{
-		if( mpIDesc->GetGuid() == GUID_NULL )
+		{
+			if( mpIDesc->GetGuid() == GUID_NULL )
+				return true;
+			if( mpIDesc->GetEnumDescriptor() )
+				return true;
+			CAxContainerCtrl* pAxCont = axCont();
+			if( !pAxCont )
+				return false;
+			TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
+			TAxCtrlInitInfoPtr pAxCtrlInitInfo = new CDclAxCtrlInitInfo( mpIDesc->GetGuid() );
+			pNewItem->SetAxCtrlInitInfo( pAxCtrlInitInfo );
+			if( !pAxCont->ExtractComponentsFromTLB( pNewItem ) )
+				return false;
+			if( pAxCtrlInitInfo->GetDisplayName().IsEmpty() )
+				return false; //don't display unnamed objects
+			Browser.InsertItem( TVI_ROOT, new CAxObjectNode( pAxCont, pNewItem ) );
 			return true;
-		if( mpIDesc->GetEnumDescriptor() )
-			return true;
-		CAxContainerCtrl* pAxCont = axCont();
-		if( !pAxCont )
-			return false;
-		TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
-		TAxCtrlInitInfoPtr pAxCtrlInitInfo = new CDclAxCtrlInitInfo( mpIDesc->GetGuid() );
-		pNewItem->SetAxCtrlInitInfo( pAxCtrlInitInfo );
-		if( !pAxCont->ExtractComponentsFromTLB( pNewItem ) )
-			return false;
-		if( pAxCtrlInitInfo->GetDisplayName().IsEmpty() )
-			return false; //don't display unnamed objects
-		Browser.InsertItem( TVI_ROOT, new CAxObjectNode( pAxCont, pNewItem ) );
-		return true;
-	}
+		}
 
 protected:
 	virtual CString propType() const
-	{
-		AxPropertyDescriptor* pAxPropGet = mpIDesc->GetGetDescriptor();
-		if( pAxPropGet )
-			return pAxPropGet->GetTypeDisplayName();
-		AxPropertyDescriptor* pAxPropPut = mpIDesc->GetPutDescriptor();
-		if( pAxPropPut )
-			return pAxPropPut->GetTypeDisplayName();
-		return NULL;
-	}
+		{
+			AxPropertyDescriptor* pAxPropGet = mpIDesc->GetGetDescriptor();
+			if( pAxPropGet )
+				return pAxPropGet->GetTypeDisplayName();
+			AxPropertyDescriptor* pAxPropPut = mpIDesc->GetPutDescriptor();
+			if( pAxPropPut )
+				return pAxPropPut->GetTypeDisplayName();
+			return NULL;
+		}
 	virtual CString propGetArgList() const
-	{
-		CString sArgList;
-		AxPropertyDescriptor* pPropGet = mpIDesc->GetProp();
-		if( !pPropGet )
-			pPropGet = mpIDesc->GetPropGet();
-		if( pPropGet )
 		{
-			const std::vector<AxArg>& rArgs = pPropGet->GetArgs();
-			for( std::vector<AxArg>::const_iterator iter = rArgs.begin(); iter != rArgs.end(); ++iter )
+			CString sArgList;
+			AxPropertyDescriptor* pPropGet = mpIDesc->GetProp();
+			if( !pPropGet )
+				pPropGet = mpIDesc->GetPropGet();
+			if( pPropGet )
 			{
-				const AxArg& arg = *iter;
-				CString sArg = arg.name;
-				if( sArg.IsEmpty() )
-					sArg = _T("Arg");
-				CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt, arg.clsid ) );
-				if( sType.IsEmpty() )
-					sType = _T("??");
-				CString sArgHtml;
-				if( arg.optional )
-					sArgHtml.Format( _T(" <font color=\"red\">{%s [%s %s]}</font>"), (LPCTSTR) sArg,
-						(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
-				else
-					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"), (LPCTSTR) sArg,
-						(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
-				sArgList += sArgHtml;
-			}
-		}
-		return sArgList;
-	}
-	virtual CString propPutArgList() const
-	{
-		CString sArgList;
-		AxPropertyDescriptor* pPropPut = mpIDesc->GetPropPut();
-		if( !pPropPut )
-			pPropPut = mpIDesc->GetPropPutRef();
-		if( pPropPut )
-		{
-			const std::vector<AxArg>& rArgs = pPropPut->GetArgs();
-			for( std::vector<AxArg>::const_iterator iter = rArgs.begin(); iter != rArgs.end(); ++iter )
-			{
-				bool bLastArg = ( ( iter + 1 ) == rArgs.end() );
-				const AxArg& arg = *iter;
-				CString sArg = arg.name;
-				if( sArg.IsEmpty() )
-					sArg = bLastArg ? _T("NewValue") : _T("Arg");
-				CString sType = AxTypeToDisplayableLispType( arg.vt, arg.clsid );
-				if( sType.Trim( _T( '\'' ) ).IsEmpty() )
-					sType += bLastArg ? propType() : _T("??");
-				else if( bLastArg )
+				const std::vector< AxArg >& rArgs = pPropGet->GetArgs();
+				for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+						 iter != rArgs.end();
+						 ++iter )
 				{
-					if( sType.Trim( _T( '\'' ) ) == _T("AxObject") )
-						sType = propType();
-					else if( sType == _T("Long") && propType() == _T("OLEColor") )
-						sType = _T("OLEColor"); //it's really an OLEColor
+					const AxArg& arg = *iter;
+					CString sArg = arg.name;
+					if( sArg.IsEmpty() )
+						sArg = _T("Arg");
+					CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt, arg.clsid ) );
+					if( sType.IsEmpty() )
+						sType = _T("??");
+					CString sArgHtml;
+					if( arg.optional )
+						sArgHtml.Format( _T(" <font color=\"red\">{%s [%s %s]}</font>"),
+														 (LPCTSTR)sArg,
+														 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+														 (LPCTSTR)sType );
+					else
+						sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+														 (LPCTSTR)sArg,
+														 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+														 (LPCTSTR)sType );
+					sArgList += sArgHtml;
 				}
-				CString sTypeHtml = ConstructTypeNameHtml( sType );
-				CString sArgHtml;
-				if( arg.optional )
-					sArgHtml.Format( _T(" <font color=\"red\">{%s [%s %s]}</font>"), (LPCTSTR) sArg,
-						(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sTypeHtml );
-				else
-					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"), (LPCTSTR) sArg,
-						(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sTypeHtml );
-				sArgList += sArgHtml;
 			}
+			return sArgList;
 		}
-		return sArgList;
-	}
-	virtual CString propDescExtra() const
-	{
-		CString sExtraInfo;
-		switch( mpIDesc->GetType() )
+	virtual CString propPutArgList() const
 		{
-		case VT_DISPATCH:
-		case VT_UNKNOWN: {
-			CString sObjName = _T("ActiveX Object");
-			if( mpIDesc->GetGuid() != GUID_NULL )
-				sObjName = propType();
-			CString sFmt;
-			sFmt.Format( theWorkspace.LoadResourceString( IDS_AXNOTERELEASEOBJECT ), (LPCTSTR) sObjName );
-			sExtraInfo += sFmt;
+			CString sArgList;
+			AxPropertyDescriptor* pPropPut = mpIDesc->GetPropPut();
+			if( !pPropPut )
+				pPropPut = mpIDesc->GetPropPutRef();
+			if( pPropPut )
+			{
+				const std::vector< AxArg >& rArgs = pPropPut->GetArgs();
+				for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+						 iter != rArgs.end();
+						 ++iter )
+				{
+					bool bLastArg = ((iter + 1) == rArgs.end());
+					const AxArg& arg = *iter;
+					CString sArg = arg.name;
+					if( sArg.IsEmpty() )
+						sArg = bLastArg? _T("NewValue") : _T("Arg");
+					CString sType = AxTypeToDisplayableLispType( arg.vt, arg.clsid );
+					if( sType.Trim( _T('\'') ).IsEmpty() )
+						sType += bLastArg? propType() : _T("??");
+					else if( bLastArg )
+					{
+						if( sType.Trim( _T('\'') ) == _T("AxObject") )
+							sType = propType();
+						else if( sType == _T("Long") && propType() == _T("OLEColor") )
+							sType = _T("OLEColor"); //it's really an OLEColor
+					}
+					CString sTypeHtml = ConstructTypeNameHtml( sType );
+					CString sArgHtml;
+					if( arg.optional )
+						sArgHtml.Format( _T(" <font color=\"red\">{%s [%s %s]}</font>"),
+														 (LPCTSTR)sArg,
+														 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+														 (LPCTSTR)sTypeHtml );
+					else
+						sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+														 (LPCTSTR)sArg,
+														 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+														 (LPCTSTR)sTypeHtml );
+					sArgList += sArgHtml;
+				}
+			}
+			return sArgList;
 		}
-		break;
+	virtual CString propDescExtra() const
+		{
+			CString sExtraInfo;
+			switch( mpIDesc->GetType() )
+			{
+			case VT_DISPATCH:
+			case VT_UNKNOWN:
+				{
+					CString sObjName = _T("ActiveX Object");
+					if( mpIDesc->GetGuid() != GUID_NULL )
+						sObjName = propType();
+					CString sFmt;
+					sFmt.Format( theWorkspace.LoadResourceString( IDS_AXNOTERELEASEOBJECT ), (LPCTSTR)sObjName );
+					sExtraInfo += sFmt;
+				}
+				break;
+			}
+			return sExtraInfo;
 		}
-		return sExtraInfo;
-	}
 	virtual bool isDesignTimeOnly() { return false; }
 	virtual bool isHidden() { return prop()->IsHidden(); }
 	virtual bool isRuntimeNotAllowed() { return false; }
@@ -449,136 +456,149 @@ class CAxMethodNode : public CMethodNode
 	CAxContainerCtrl* mpAxCont;
 
 public:
-	CAxMethodNode( TPropertyPtr pProp, const AxMethodDescriptor* pMethodDesc, CAxContainerCtrl* pAxCont = NULL )
-	: CMethodNode( pProp->GetOwnerControl(), pMethodDesc->GetName(), NULL )
-	, mpMethodDesc( pMethodDesc )
-	, mpAxCont( pAxCont )
-	{
-	}
+	CAxMethodNode( TPropertyPtr pProp, const AxMethodDescriptor* pMethodDesc,
+								 CAxContainerCtrl* pAxCont = NULL )
+		: CMethodNode( pProp->GetOwnerControl(), pMethodDesc->GetName(), NULL )
+		, mpMethodDesc( pMethodDesc )
+		, mpAxCont( pAxCont )
+		{
+		}
 	virtual ~CAxMethodNode() {}
 	CAxContainerCtrl* axCont() const { return mpAxCont; }
 
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sName = name();
-		params[_T("{TITLE}")] = sName;
-		params[_T("{FUNCTIONNAME}")] = sName;
-		params[_T("{TYPE}")] = ConstructTypeNameHtml( methodType() );
-		bool bAxControl = ( control()->GetType() == CtlActiveX );
-		CString sAx = bAxControl ? _T("AxControl") : _T("AxObject");
-		CString sOb = bAxControl ? control()->GetVarName() : _T("&lt;AXOBJECT&gt;");
-		CString sObType = ConstructTypeNameHtml( bAxControl ? _T("Control") : _T("AxObject"), sOb );
-		CString sFunction;
-		sFunction.Format( _T("(dcl-%s-Invoke <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"), (LPCTSTR) sAx,
-			(LPCTSTR) sObType, (LPCTSTR) sName, (LPCTSTR) methodArgList() );
-		params[_T("{FUNCTION}")] = sFunction;
-		params[_T("{APPLIESTO}")] = _T("&nbsp;");
-		CString sDesc;
-		sDesc.Format( _T("<p>%s</p>%s"), (LPCTSTR) methodDesc(), (LPCTSTR) methodDescExtra() );
-		params[_T("{DESCRIPTION}")] = sDesc;
-		return _T("chm://Reference/Method/@Template.htm");
-	}
+	CString description( std::map< CString, CString >& params ) const override
+		{
+			CString sName = name();
+			params[_T("{TITLE}")] = sName;
+			params[_T("{FUNCTIONNAME}")] = sName;
+			params[_T("{TYPE}")] = ConstructTypeNameHtml( methodType() );
+			bool bAxControl = (control()->GetType() == CtlActiveX);
+			CString sAx = bAxControl? _T("AxControl") : _T("AxObject");
+			CString sOb = bAxControl? control()->GetVarName() : _T("&lt;AXOBJECT&gt;");
+			CString sObType = ConstructTypeNameHtml( bAxControl? _T("Control") : _T("AxObject"), sOb );
+			CString sFunction;
+			sFunction.Format(
+				_T("(dcl-%s-Invoke <i>%s</i> <font color=\"brown\">\"%s\"</font>%s)"),
+				(LPCTSTR)sAx, (LPCTSTR)sObType, (LPCTSTR)sName, (LPCTSTR)methodArgList() );
+			params[_T("{FUNCTION}")] = sFunction;
+			params[_T("{APPLIESTO}")] = _T("&nbsp;");
+			CString sDesc;
+			sDesc.Format( _T("<p>%s</p>%s"), (LPCTSTR)methodDesc(), (LPCTSTR)methodDescExtra() );
+			params[_T("{DESCRIPTION}")] = sDesc;
+			return _T("chm://Reference/Method/@Template.htm");
+		}
 	bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) override
-	{
-		if( mpMethodDesc->GetReturnGuid() == GUID_NULL )
+		{
+			if( mpMethodDesc->GetReturnGuid() == GUID_NULL )
+				return true;
+			CAxContainerCtrl* pAxCont = axCont();
+			if( !pAxCont )
+				return false;
+			TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
+			TAxCtrlInitInfoPtr pAxCtrlInitInfo = new CDclAxCtrlInitInfo( mpMethodDesc->GetReturnGuid() );
+			pNewItem->SetAxCtrlInitInfo( pAxCtrlInitInfo );
+			if( !pAxCont->ExtractComponentsFromTLB( pNewItem ) )
+				return false;
+			if( pAxCtrlInitInfo->GetDisplayName().IsEmpty() )
+				return false; //don't display unnamed objects
+			Browser.InsertItem( TVI_ROOT, new CAxObjectNode( pAxCont, pNewItem ) );
 			return true;
-		CAxContainerCtrl* pAxCont = axCont();
-		if( !pAxCont )
-			return false;
-		TDclControlPtr pNewItem = new CDclControlTemplate( _CtlInvalid, NULL );
-		TAxCtrlInitInfoPtr pAxCtrlInitInfo = new CDclAxCtrlInitInfo( mpMethodDesc->GetReturnGuid() );
-		pNewItem->SetAxCtrlInitInfo( pAxCtrlInitInfo );
-		if( !pAxCont->ExtractComponentsFromTLB( pNewItem ) )
-			return false;
-		if( pAxCtrlInitInfo->GetDisplayName().IsEmpty() )
-			return false; //don't display unnamed objects
-		Browser.InsertItem( TVI_ROOT, new CAxObjectNode( pAxCont, pNewItem ) );
-		return true;
-	}
+		}
 
 protected:
 	virtual CString methodType() const
-	{
-		CString sArgList;
-		const std::vector<AxArg>& rArgs = mpMethodDesc->GetArgs();
-		for( std::vector<AxArg>::const_iterator iter = rArgs.begin(); iter != rArgs.end(); ++iter )
 		{
-			const AxArg& arg = *iter;
-			if( arg.vt & VT_BYREF )
+			CString sArgList;
+			const std::vector< AxArg >& rArgs = mpMethodDesc->GetArgs();
+			for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+					 iter != rArgs.end();
+					 ++iter )
 			{
+				const AxArg& arg = *iter;
+				if( arg.vt & VT_BYREF )
+				{
+					CString sArg = arg.name;
+					if( sArg.IsEmpty() )
+						sArg = _T("Arg");
+					CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt & VT_TYPEMASK, arg.clsid ) );
+					if( sType.IsEmpty() )
+						sType = _T("??");
+					CString sArgHtml;
+					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+													 (LPCTSTR)sArg,
+													 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+													 (LPCTSTR)sType );
+					sArgList += sArgHtml;
+				}
+			}
+			CString sReturnType = mpMethodDesc->GetReturnTypeDisplayName();
+			CString sType;
+			if( !sReturnType.IsEmpty() )
+				sType.Format( _T("(%s%s)"), (LPCTSTR)sReturnType, (LPCTSTR)sArgList );
+			else if( !sArgList.IsEmpty() )
+				sType.Format( _T("(%s)"), (LPCTSTR)sArgList.Trim() );
+			return sType;
+		}
+	virtual CString methodDesc() const
+		{
+			CString sDesc = mpMethodDesc->GetDesc();
+			sDesc.Replace( _T("\\"), _T("\\\\") );
+			return sDesc;
+		}
+	virtual CString methodArgList() const
+		{
+			CString sArgList;
+			const std::vector< AxArg >& rArgs = mpMethodDesc->GetArgs();
+			for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+					 iter != rArgs.end();
+					 ++iter )
+			{
+				const AxArg& arg = *iter;
 				CString sArg = arg.name;
 				if( sArg.IsEmpty() )
 					sArg = _T("Arg");
-				CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt & VT_TYPEMASK, arg.clsid ) );
+				CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt, arg.clsid ) );
 				if( sType.IsEmpty() )
 					sType = _T("??");
 				CString sArgHtml;
-				sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"), (LPCTSTR) sArg,
-					(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
+				if( arg.optional )
+					sArgHtml.Format( _T(" <font color=\"red\">{%s [%s %s]}</font>"),
+													 (LPCTSTR)sArg,
+													 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+													 (LPCTSTR)sType );
+				else
+					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+													 (LPCTSTR)sArg,
+													 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+													 (LPCTSTR)sType );
 				sArgList += sArgHtml;
 			}
+			return sArgList;
 		}
-		CString sReturnType = mpMethodDesc->GetReturnTypeDisplayName();
-		CString sType;
-		if( !sReturnType.IsEmpty() )
-			sType.Format( _T("(%s%s)"), (LPCTSTR) sReturnType, (LPCTSTR) sArgList );
-		else if( !sArgList.IsEmpty() )
-			sType.Format( _T("(%s)"), (LPCTSTR) sArgList.Trim() );
-		return sType;
-	}
-	virtual CString methodDesc() const
-	{
-		CString sDesc = mpMethodDesc->GetDesc();
-		sDesc.Replace( _T("\\"), _T("\\\\") );
-		return sDesc;
-	}
-	virtual CString methodArgList() const
-	{
-		CString sArgList;
-		const std::vector<AxArg>& rArgs = mpMethodDesc->GetArgs();
-		for( std::vector<AxArg>::const_iterator iter = rArgs.begin(); iter != rArgs.end(); ++iter )
-		{
-			const AxArg& arg = *iter;
-			CString sArg = arg.name;
-			if( sArg.IsEmpty() )
-				sArg = _T("Arg");
-			CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt, arg.clsid ) );
-			if( sType.IsEmpty() )
-				sType = _T("??");
-			CString sArgHtml;
-			if( arg.optional )
-				sArgHtml.Format( _T(" <font color=\"red\">{%s [%s %s]}</font>"), (LPCTSTR) sArg,
-					(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
-			else
-				sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"), (LPCTSTR) sArg,
-					(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
-			sArgList += sArgHtml;
-		}
-		return sArgList;
-	}
 	virtual CString methodDescExtra() const
-	{
-		CString sExtraInfo;
-		switch( mpMethodDesc->GetReturnType() )
 		{
-		case VT_DISPATCH:
-		case VT_UNKNOWN: {
-			CString sObjName = _T("ActiveX Object");
-			if( mpMethodDesc->GetReturnGuid() != GUID_NULL )
-				sObjName = methodType();
-			CString sFmt;
-			sFmt.Format( theWorkspace.LoadResourceString( IDS_AXNOTERELEASEOBJECT ), (LPCTSTR) sObjName );
-			sExtraInfo += sFmt;
+			CString sExtraInfo;
+			switch( mpMethodDesc->GetReturnType() )
+			{
+			case VT_DISPATCH:
+			case VT_UNKNOWN:
+				{
+					CString sObjName = _T("ActiveX Object");
+					if( mpMethodDesc->GetReturnGuid() != GUID_NULL )
+						sObjName = methodType();
+					CString sFmt;
+					sFmt.Format( theWorkspace.LoadResourceString( IDS_AXNOTERELEASEOBJECT ), (LPCTSTR)sObjName );
+					sExtraInfo += sFmt;
+				}
+				break;
+			}
+			sExtraInfo += _T("<p>");
+			sExtraInfo += theWorkspace.LoadResourceString( IDS_AXMETHODMOREINFO );
+			if( IsMicrosoftCtrl(control()->GetAxCtrlInitInfo()->GetClsid()) )
+				sExtraInfo += theWorkspace.LoadResourceString( IDS_AXMETHODMSDN );
+			sExtraInfo += _T("</p>");
+			return sExtraInfo;
 		}
-		break;
-		}
-		sExtraInfo += _T("<p>");
-		sExtraInfo += theWorkspace.LoadResourceString( IDS_AXMETHODMOREINFO );
-		if( IsMicrosoftCtrl( control()->GetAxCtrlInitInfo()->GetClsid() ) )
-			sExtraInfo += theWorkspace.LoadResourceString( IDS_AXMETHODMSDN );
-		sExtraInfo += _T("</p>");
-		return sExtraInfo;
-	}
 };
 
 class CAxEventNode : public CEventNode
@@ -587,92 +607,103 @@ class CAxEventNode : public CEventNode
 	CAxContainerCtrl* mpAxCont;
 
 public:
-	CAxEventNode( TPropertyPtr pProp, const AxEventDescriptor* pEventDesc, CAxContainerCtrl* pAxCont = NULL )
-	: CEventNode( pProp, NULL )
-	, mpEventDesc( pEventDesc )
-	, mpAxCont( pAxCont )
-	{
-	}
+	CAxEventNode( TPropertyPtr pProp, const AxEventDescriptor* pEventDesc,
+								CAxContainerCtrl* pAxCont = NULL )
+		: CEventNode( pProp, NULL )
+		, mpEventDesc( pEventDesc )
+		, mpAxCont( pAxCont )
+		{
+		}
 	virtual ~CAxEventNode() {}
 	CAxContainerCtrl* axCont() const { return mpAxCont; }
 
 protected:
-	CString description( std::map<CString, CString>& params ) const override
-	{
-		CString sName = name();
-		params[_T("{TITLE}")] = sName;
-		CString sOb = prop()->GetOwnerControl()->GetVarName();
-		CString sFunctionName;
-		sFunctionName.Format( _T("c:%s#On%s"), (LPCTSTR) sOb, (LPCTSTR) sName );
-		params[_T("{FUNCTIONNAME}")] = sFunctionName;
-		CString sEventResultList = eventResultList().Trim();
-		CString sType;
-		if( !sEventResultList.IsEmpty() )
-			sType.Format( _T("(%s)"), (LPCTSTR) sEventResultList );
-		params[_T("{TYPE}")] = sType;
-		CString sEventArgList = eventArgList().Trim();
-		if( sEventArgList.IsEmpty() )
-			sEventArgList = _T("/");
-		else
+
+	CString description( std::map< CString, CString >& params ) const override
 		{
-			CString sFont = _T("<font color=\"red\">");
-			sFont += sEventArgList;
-			sFont += _T("</font> /");
-			sEventArgList = sFont;
-		}
-		CString sFunction;
-		sFunction.Format(
-			_T("(<font color=\"brown\">defun</font> %s (%s)<br />)"), (LPCTSTR) sFunctionName, (LPCTSTR) sEventArgList );
-		params[_T("{FUNCTION}")] = sFunction;
-		params[_T("{APPLIESTO}")] = _T("&nbsp;");
-		CString sDesc;
-		sDesc.Format( _T("<p>%s</p>"), (LPCTSTR) mpEventDesc->GetDesc() );
-		params[_T("{DESCRIPTION}")] = sDesc;
-		return _T("chm://Reference/Event/@Template.htm");
-	}
-	virtual CString eventArgList() const
-	{
-		CString sArgList;
-		const std::vector<AxArg>& rArgs = mpEventDesc->GetArgs();
-		for( std::vector<AxArg>::const_iterator iter = rArgs.begin(); iter != rArgs.end(); ++iter )
-		{
-			const AxArg& arg = *iter;
-			CString sArg = arg.name;
-			if( sArg.IsEmpty() )
-				sArg = _T("Arg");
-			CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt, arg.clsid ) );
-			if( sType.IsEmpty() )
-				sType = _T("??");
-			CString sArgHtml;
-			sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"), (LPCTSTR) sArg,
-				(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
-			sArgList += sArgHtml;
-		}
-		return sArgList;
-	}
-	virtual CString eventResultList() const
-	{
-		CString sArgList;
-		const std::vector<AxArg>& rArgs = mpEventDesc->GetArgs();
-		for( std::vector<AxArg>::const_iterator iter = rArgs.begin(); iter != rArgs.end(); ++iter )
-		{
-			const AxArg& arg = *iter;
-			if( arg.vt & VT_BYREF )
+			CString sName = name();
+			params[_T("{TITLE}")] = sName;
+			CString sOb = prop()->GetOwnerControl()->GetVarName();
+			CString sFunctionName;
+			sFunctionName.Format( _T("c:%s#On%s"), (LPCTSTR)sOb, (LPCTSTR)sName );
+			params[_T("{FUNCTIONNAME}")] = sFunctionName;
+			CString sEventResultList = eventResultList().Trim();
+			CString sType;
+			if( !sEventResultList.IsEmpty() )
+				sType.Format( _T("(%s)"), (LPCTSTR)sEventResultList );
+			params[_T("{TYPE}")] = sType;
+			CString sEventArgList = eventArgList().Trim();
+			if( sEventArgList.IsEmpty() )
+				sEventArgList = _T("/");
+			else
 			{
+				CString sFont = _T("<font color=\"red\">");
+				sFont += sEventArgList;
+				sFont += _T("</font> /");
+				sEventArgList = sFont;
+			}
+			CString sFunction;
+			sFunction.Format(
+				_T("(<font color=\"brown\">defun</font> %s (%s)<br />)"),
+				(LPCTSTR)sFunctionName, (LPCTSTR)sEventArgList );
+			params[_T("{FUNCTION}")] = sFunction;
+			params[_T("{APPLIESTO}")] = _T("&nbsp;");
+			CString sDesc;
+			sDesc.Format( _T("<p>%s</p>"), (LPCTSTR)mpEventDesc->GetDesc() );
+			params[_T("{DESCRIPTION}")] = sDesc;
+			return _T("chm://Reference/Event/@Template.htm");
+		}
+	virtual CString eventArgList() const
+		{
+			CString sArgList;
+			const std::vector< AxArg >& rArgs = mpEventDesc->GetArgs();
+			for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+					 iter != rArgs.end();
+					 ++iter )
+			{
+				const AxArg& arg = *iter;
 				CString sArg = arg.name;
 				if( sArg.IsEmpty() )
 					sArg = _T("Arg");
-				CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt & VT_TYPEMASK, arg.clsid ) );
+				CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt, arg.clsid ) );
 				if( sType.IsEmpty() )
 					sType = _T("??");
 				CString sArgHtml;
-				sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"), (LPCTSTR) sArg,
-					(LPCTSTR) theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR) sType );
+				sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+												 (LPCTSTR)sArg,
+												 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+												 (LPCTSTR)sType );
 				sArgList += sArgHtml;
 			}
+			return sArgList;
 		}
-		return sArgList;
-	}
+	virtual CString eventResultList() const
+		{
+			CString sArgList;
+			const std::vector< AxArg >& rArgs = mpEventDesc->GetArgs();
+			for( std::vector< AxArg >::const_iterator iter = rArgs.begin();
+					 iter != rArgs.end();
+					 ++iter )
+			{
+				const AxArg& arg = *iter;
+				if( arg.vt & VT_BYREF )
+				{
+					CString sArg = arg.name;
+					if( sArg.IsEmpty() )
+						sArg = _T("Arg");
+					CString sType = ConstructTypeNameHtml( AxTypeToDisplayableLispType( arg.vt & VT_TYPEMASK, arg.clsid ) );
+					if( sType.IsEmpty() )
+						sType = _T("??");
+					CString sArgHtml;
+					sArgHtml.Format( _T(" <font color=\"red\">%s [%s %s]</font>"),
+													 (LPCTSTR)sArg,
+													 (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ),
+													 (LPCTSTR)sType );
+					sArgList += sArgHtml;
+				}
+			}
+			return sArgList;
+		}
 };
 
 
@@ -691,13 +722,12 @@ bool CDclControlNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent
 	return true;
 }
 
-bool CDclControlNode::addPropertyChildItems(
-	CControlBrowser& Browser, HTREEITEM hParent, CAxContainerCtrl* pAxCont /*= NULL*/ )
+bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM hParent, CAxContainerCtrl* pAxCont /*= NULL*/ )
 {
 	const TPropertyList& Props = mpDclControl->GetPropertyList();
 	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		TPropertyPtr pProp = ( *iter );
+		TPropertyPtr pProp = (*iter);
 		Prop::Id id = pProp->GetID();
 		switch( id )
 		{
@@ -711,34 +741,36 @@ bool CDclControlNode::addPropertyChildItems(
 			addEvent( Browser, hParent, pProp );
 			break;
 		case PropActiveXEvent:
-			Browser.InsertItem(
-				hParent, new CAxEventNode( pProp, pProp->GetConstAxInterfaceDescriptorPtr()->GetEvent(), pAxCont ) );
+			Browser.InsertItem( hParent, new CAxEventNode( pProp, pProp->GetConstAxInterfaceDescriptorPtr()->GetEvent(), pAxCont ) );
 			break;
-		case PropActiveXMethods: {
-			for( int idx = pProp->size() - 1; idx >= 0; --idx )
+		case PropActiveXMethods:
 			{
-				RefCountedPtr<AxMethodDescriptor> pDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->at( idx );
-				Browser.InsertItem( hParent, new CAxMethodNode( pProp, pDesc, pAxCont ) );
+				for( int idx = pProp->size() - 1; idx >= 0; --idx )
+				{
+					RefCountedPtr< AxMethodDescriptor > pDesc =
+						pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->at( idx );
+					Browser.InsertItem( hParent, new CAxMethodNode( pProp, pDesc, pAxCont ) );
+				}
 			}
-		}
-		break;
+			break;
 		case PropActiveXPropPages:
 		case PropCustom:
-			//case PropImageList:
-			//case PropStringArray:
-			//case PropIntArray:
+		//case PropImageList:
+		//case PropStringArray:
+		//case PropIntArray:
 			break;
 		case PropActiveXProp:
 		case PropActiveXRunTime:
-		case PropActiveXEnum: {
-			//if( pProp->IsHidden() )
-			//	continue;
-			const AxInterfaceDescriptor* pPropDesc = pProp->GetConstAxInterfaceDescriptorPtr();
-			if( !pPropDesc )
-				continue;
-			Browser.InsertItem( hParent, new CAxPropertyNode( pProp, pPropDesc, pAxCont ) );
-		}
-		break;
+		case PropActiveXEnum:
+			{
+				//if( pProp->IsHidden() )
+				//	continue;
+				const AxInterfaceDescriptor* pPropDesc = pProp->GetConstAxInterfaceDescriptorPtr();
+				if( !pPropDesc )
+					continue;
+				Browser.InsertItem( hParent, new CAxPropertyNode( pProp, pPropDesc, pAxCont ) );
+			}
+			break;
 		default:
 			bool bHidden = pProp->IsHidden();
 			switch( pProp->GetID() )
@@ -811,8 +843,9 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 			int nEnd = sMethodsHtml.Find( _T("</ul>"), nStart );
 			if( nEnd > nStart )
 			{
-				for( int nLineStart = sMethodsHtml.Find( _T("<li"), nStart ); nLineStart < nEnd;
-					nLineStart = sMethodsHtml.Find( _T("<li"), nLineStart + 4 ) )
+				for( int nLineStart = sMethodsHtml.Find( _T("<li"), nStart );
+						 nLineStart < nEnd;
+						 nLineStart = sMethodsHtml.Find( _T("<li"), nLineStart + 4 ) )
 				{
 					int nLineEnd = sMethodsHtml.Find( _T("</li>"), nLineStart );
 					if( nLineEnd < nLineStart )
@@ -848,9 +881,9 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 	TDclControlPtr pDclControl = pEvent->GetOwnerControl();
 	CString sControlFile;
 	if( pDclControl->GetType() == _CtlForm )
-		sControlFile.Format( _T("/Reference/Form/%s.htm"), (LPCTSTR) GetFormApiName( pDclControl->GetOwnerForm() ) );
+		sControlFile.Format( _T("/Reference/Form/%s.htm"), (LPCTSTR)GetFormApiName( pDclControl->GetOwnerForm() ) );
 	else
-		sControlFile.Format( _T("/Reference/Control/%s.htm"), (LPCTSTR) GetControlApiName( pDclControl ) );
+		sControlFile.Format( _T("/Reference/Control/%s.htm"), (LPCTSTR)GetControlApiName( pDclControl ) );
 	CString sControlHtml;
 	if( !ReadChmFile( sControlFile, sControlHtml ) )
 		return false;
@@ -866,8 +899,9 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 			int nEnd = sControlHtml.Find( _T("</table>"), nStart );
 			if( nEnd > nStart )
 			{
-				for( int nLineStart = sControlHtml.Find( _T("<li"), nStart ); nLineStart >= 0 && nLineStart < nEnd;
-					nLineStart = sControlHtml.Find( _T("<li"), nLineStart + 4 ) )
+				for( int nLineStart = sControlHtml.Find( _T("<li"), nStart );
+						 nLineStart >= 0 && nLineStart < nEnd;
+						 nLineStart = sControlHtml.Find( _T("<li"), nLineStart + 4 ) )
 				{
 					int nLineEnd = sControlHtml.Find( _T("</li>"), nLineStart );
 					if( nLineEnd < nLineStart )
@@ -903,27 +937,29 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 // CControlBrowser dialog
 
 CControlBrowser::CControlBrowser( TDclControlPtr pDclControl, CWnd* pParent /*=NULL*/ )
-: CResizableDialog( CControlBrowser::IDD, pParent )
-, mpDclControl( pDclControl )
-, mhtiInitialProp( NULL )
-, mDescription( *this )
-, mbClosing( false )
+	: CResizableDialog( CControlBrowser::IDD, pParent )
+	, mpDclControl( pDclControl )
+	, mhtiInitialProp( NULL )
+	, mDescription( *this )
+	, mbClosing( false )
 {
 }
 
 CControlBrowser::CControlBrowser( TPropertyPtr pProp, CWnd* pParent /*=NULL*/ )
-: CResizableDialog( CControlBrowser::IDD, pParent )
-, mpDclControl( pProp->GetOwnerControl() )
-, mpInitialProp( pProp )
-, mhtiInitialProp( NULL )
-, mDescription( *this )
-, mbClosing( false )
+	: CResizableDialog( CControlBrowser::IDD, pParent )
+	, mpDclControl( pProp->GetOwnerControl() )
+	, mpInitialProp( pProp )
+	, mhtiInitialProp( NULL )
+	, mDescription( *this )
+	, mbClosing( false )
 {
 }
 
-CControlBrowser::~CControlBrowser() {}
+CControlBrowser::~CControlBrowser()
+{
+}
 
-void CControlBrowser::NoNavigateBrowser::OnDocumentComplete( LPCTSTR lpszURL )
+void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 {
 	bool bClickedLink = !mbEnableNavigate;
 	mbEnableNavigate = false;
@@ -941,7 +977,16 @@ void CControlBrowser::NoNavigateBrowser::OnDocumentComplete( LPCTSTR lpszURL )
 	mBrowser.OnDocumentLoaded( bClickedLink );
 }
 
-void CControlBrowser::NoNavigateBrowser::OnCommandStateChange( long nCommand, BOOL bEnable )
+void CControlBrowser::NoNavigateBrowser::OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel)
+{
+	mbEnableNavigate = false;
+	__super::OnNavigateError( lpszURL, lpszFrame, dwError, pbCancel );
+	//TODO: Cancel the default error page and display a custom localized error page
+	//assert( pbCancel != NULL );
+	//*pbCancel = TRUE;
+}
+
+void CControlBrowser::NoNavigateBrowser::OnCommandStateChange(long nCommand, BOOL bEnable)
 {
 	mbEnableNavigate = false;
 	__super::OnCommandStateChange( nCommand, bEnable );
@@ -961,13 +1006,14 @@ HTREEITEM CControlBrowser::InsertItem( HTREEITEM hParent, CTreeNode* pItem )
 	}
 	if( hParent == TVI_ROOT )
 	{
-		for( HTREEITEM hCursor = mObjectTree.GetChildItem( hParent ); hCursor;
-			hCursor = mObjectTree.GetNextSiblingItem( hCursor ) )
+		for( HTREEITEM hCursor = mObjectTree.GetChildItem( hParent );
+				 hCursor;
+				 hCursor = mObjectTree.GetNextSiblingItem( hCursor ) )
 		{
 			if( sName == mObjectTree.GetItemText( hCursor ) )
 			{
 				delete pItem; //caller relinquished ownership
-				return NULL;	//already exists
+				return NULL; //already exists
 			}
 		}
 	}
@@ -992,7 +1038,7 @@ HTREEITEM CControlBrowser::InsertItem( HTREEITEM hParent, CTreeNode* pItem )
 		if( nInitialPropImage == nImage && sName == mpInitialProp->GetName() )
 			mhtiInitialProp = hItem;
 	}
-	mObjectTree.SetItemData( hItem, (DWORD_PTR) pItem );
+	mObjectTree.SetItemData( hItem, (DWORD_PTR)pItem );
 	pItem->addChildItems( *this, hItem );
 	return hItem;
 }
@@ -1000,12 +1046,12 @@ HTREEITEM CControlBrowser::InsertItem( HTREEITEM hParent, CTreeNode* pItem )
 void CControlBrowser::RemoveItem( HTREEITEM hTarget )
 {
 	assert( hTarget != NULL );
-	CTreeNode* pItem = (CTreeNode*) mObjectTree.GetItemData( hTarget );
+	CTreeNode* pItem = (CTreeNode*)mObjectTree.GetItemData( hTarget );
 	delete pItem;
 	mObjectTree.DeleteItem( hTarget );
 }
 
-void CControlBrowser::SetDescription( LPCTSTR pszDescription, const std::map<CString, CString>& params )
+void CControlBrowser::SetDescription( LPCTSTR pszDescription, const std::map< CString, CString >& params )
 {
 	mParams = params;
 	if( CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("file://"), 7, pszDescription, 7 ) == CSTR_EQUAL )
@@ -1013,10 +1059,10 @@ void CControlBrowser::SetDescription( LPCTSTR pszDescription, const std::map<CSt
 	else if( CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("chm://"), 6, pszDescription, 6 ) == CSTR_EQUAL )
 	{
 		CString sChmUrl;
-		sChmUrl.Format(
-			_T("mk:@MSITStore:%s::%s"), AfxGetApp()->m_pszHelpFilePath, (LPCTSTR) CString( pszDescription ).Mid( 5 ) );
+		sChmUrl.Format( _T("mk:@MSITStore:%s::%s"), AfxGetApp()->m_pszHelpFilePath, (LPCTSTR)CString( pszDescription ).Mid( 5 ) );
 		mDescription.Navigate( sChmUrl );
-	} else
+	}
+	else
 		mDescription.LoadHtmlCode( pszDescription );
 }
 
@@ -1024,7 +1070,9 @@ void CControlBrowser::OnDocumentLoaded( bool bClickedLink )
 {
 	if( bClickedLink )
 		mObjectTree.SelectItem( NULL );
-	for( std::map<CString, CString>::const_iterator iter = mParams.begin(); iter != mParams.end(); ++iter )
+	for( std::map< CString, CString >::const_iterator iter = mParams.begin();
+			 iter != mParams.end();
+			 ++iter )
 	{
 		mDescription.ReplaceText( iter->first, iter->second );
 	}
@@ -1034,34 +1082,36 @@ void CControlBrowser::OnCommandStateChange( long nCommand, BOOL bEnable )
 {
 	switch( nCommand )
 	{
-	case CSC_NAVIGATEBACK: {
-		CWnd* pCtrl = GetDlgItem( IDC_BACK );
-		if( pCtrl )
-			pCtrl->EnableWindow( bEnable );
-		break;
-	}
-	case CSC_NAVIGATEFORWARD: {
-		CWnd* pCtrl = GetDlgItem( IDC_FORWARD );
-		if( pCtrl )
-			pCtrl->EnableWindow( bEnable );
-		break;
-	}
+	case CSC_NAVIGATEBACK:
+		{
+			CWnd* pCtrl = GetDlgItem( IDC_BACK );
+			if( pCtrl )
+				pCtrl->EnableWindow( bEnable );
+			break;
+		}
+	case CSC_NAVIGATEFORWARD:
+		{
+			CWnd* pCtrl = GetDlgItem( IDC_FORWARD );
+			if( pCtrl )
+				pCtrl->EnableWindow( bEnable );
+			break;
+		}
 	}
 }
 
-void CControlBrowser::DoDataExchange( CDataExchange* pDX )
+void CControlBrowser::DoDataExchange(CDataExchange* pDX)
 {
-	CResizableDialog::DoDataExchange( pDX );
-	DDX_Control( pDX, IDC_DESCRIPTIONHTML, mDescription );
-	DDX_Control( pDX, IDC_CONTROLTREE, mObjectTree );
+	CResizableDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_DESCRIPTIONHTML, mDescription);
+	DDX_Control(pDX, IDC_CONTROLTREE, mObjectTree);
 }
 
 
-BEGIN_MESSAGE_MAP( CControlBrowser, CResizableDialog )
-ON_WM_DESTROY()
-ON_NOTIFY( TVN_SELCHANGED, IDC_CONTROLTREE, &CControlBrowser::OnSelchanged )
-ON_BN_CLICKED( IDC_BACK, &CControlBrowser::OnBackClicked )
-ON_BN_CLICKED( IDC_FORWARD, &CControlBrowser::OnForwardClicked )
+BEGIN_MESSAGE_MAP(CControlBrowser, CResizableDialog)
+	ON_WM_DESTROY()
+	ON_NOTIFY(TVN_SELCHANGED, IDC_CONTROLTREE, &CControlBrowser::OnSelchanged)
+	ON_BN_CLICKED(IDC_BACK, &CControlBrowser::OnBackClicked)
+	ON_BN_CLICKED(IDC_FORWARD, &CControlBrowser::OnForwardClicked)
 END_MESSAGE_MAP()
 
 
@@ -1073,14 +1123,14 @@ INT_PTR CControlBrowser::DoModal()
 	return __super::DoModal();
 }
 
-void CControlBrowser::OnDestroy()
+void CControlBrowser::OnDestroy() 
 {
 	mbClosing = true;
 	HTREEITEM hCurrent = NULL;
-	while( ( hCurrent = mObjectTree.GetChildItem( TVI_ROOT ) ) != NULL )
+	while( (hCurrent = mObjectTree.GetChildItem( TVI_ROOT )) != NULL )
 	{
 		HTREEITEM hChild = NULL;
-		while( ( hChild = mObjectTree.GetChildItem( hCurrent ) ) != NULL )
+		while( (hChild = mObjectTree.GetChildItem( hCurrent )) != NULL )
 			RemoveItem( hChild );
 		RemoveItem( hCurrent );
 	}
@@ -1104,12 +1154,12 @@ BOOL CControlBrowser::OnInitDialog()
 	mImageList.SetBkColor( mObjectTree.GetBkColor() );
 	mObjectTree.SetImageList( &mImageList, TVSIL_NORMAL );
 
-	AddAnchor( mObjectTree.m_hWnd, TOP_LEFT, BOTTOM_LEFT );
-	AddAnchor( mDescription.m_hWnd, TOP_LEFT, BOTTOM_RIGHT );
-	AddAnchor( IDC_METHDEF, TOP_LEFT, TOP_RIGHT );
-	AddAnchor( IDC_BACK, TOP_RIGHT );
-	AddAnchor( IDC_FORWARD, TOP_RIGHT );
-	AddAnchor( IDOK, TOP_RIGHT );
+	AddAnchor( mObjectTree.m_hWnd, TOP_LEFT, BOTTOM_LEFT ); 
+	AddAnchor( mDescription.m_hWnd, TOP_LEFT, BOTTOM_RIGHT ); 
+	AddAnchor( IDC_METHDEF, TOP_LEFT, TOP_RIGHT ); 
+	AddAnchor( IDC_BACK, TOP_RIGHT ); 
+	AddAnchor( IDC_FORWARD, TOP_RIGHT ); 
+	AddAnchor( IDOK, TOP_RIGHT ); 
 	EnableSaveRestore( _T("ControlBrowser"), _T("Size") );
 
 	CWnd* pCtrl = GetDlgItem( IDC_BACK );
@@ -1131,21 +1181,21 @@ BOOL CControlBrowser::OnInitDialog()
 		mObjectTree.SelectItem( htiControl );
 	ShowSizeGrip( TRUE );
 
-	return TRUE; // return TRUE unless you set the focus to a control
-							 // EXCEPTION: OCX Property Pages should return FALSE
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CControlBrowser::OnSelchanged( NMHDR* pNMHDR, LRESULT* pResult )
+void CControlBrowser::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	if( !mbClosing )
 	{
-		NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*) pNMHDR;
+		NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 		HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 		if( hItem == NULL )
 			hItem = mObjectTree.GetSelectedItem();
 		if( hItem != NULL )
 		{
-			CTreeNode* pItem = (CTreeNode*) mObjectTree.GetItemData( hItem );
+			CTreeNode* pItem = (CTreeNode*)mObjectTree.GetItemData( hItem );
 			if( pItem )
 				pItem->onSelected( *this );
 		}
@@ -1153,12 +1203,12 @@ void CControlBrowser::OnSelchanged( NMHDR* pNMHDR, LRESULT* pResult )
 	*pResult = 0;
 }
 
-void CControlBrowser::OnBackClicked()
+void CControlBrowser::OnBackClicked() 
 {
 	mDescription.GoBack();
 }
 
-void CControlBrowser::OnForwardClicked()
+void CControlBrowser::OnForwardClicked() 
 {
 	mDescription.GoForward();
 }
