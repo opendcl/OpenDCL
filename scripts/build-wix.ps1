@@ -580,17 +580,6 @@ function New-RuntimeFilesFragment {
     if ($full -match '[\\/]out[\\/]') { $fromOut++ } else { $fromOther++ }
   }
 
-  foreach ($wv in @(
-      @{ Rel = "Library\WebView2\x64\WebView2Loader.dll"; Name = "WebView2Loader.x64.dll"; Id = "wv2_loader_x64" },
-      @{ Rel = "Library\WebView2\x86\WebView2Loader.dll"; Name = "WebView2Loader.x86.dll"; Id = "wv2_loader_x86" }
-    )) {
-    $full = Resolve-ProductFile $wv.Rel
-    Assert-File $full
-    $guid = Get-StableGuid "opendcl.runtime.webview2|$($wv.Id)"
-    $srcXml = $full.Replace('&', '&amp;')
-    [void]$sb.AppendLine((Write-ComponentXml -ComponentId $wv.Id -Guid $guid -DirectoryId "OpenDCLFolder" -SourcePath $srcXml -FileName $wv.Name))
-  }
-
   Write-Host ("Runtime modules: {0} total ({1} from out\, {2} from OpenDclRoot/repo)" -f `
     $RuntimeModules.Count, $fromOut, $fromOther)
   [void]$sb.AppendLine('    </ComponentGroup>')

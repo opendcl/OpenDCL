@@ -1,4 +1,4 @@
-# Bundled third-party: ZLib, LibPNG, and the WebView2 Evergreen loader.
+# Bundled third-party: ZLib and LibPNG.
 #
 # CAD modules use older PlatformToolsets (v70-v140) that cannot link objects
 # compiled with the VS2022 default toolset (UCRT helpers such as
@@ -21,7 +21,6 @@
 # Solution Explorer folders (classic-like):
 #   Library/ZLib
 #   Library/LibPNG
-#   Library/WebView2
 
 set(_ZLIB_SOURCES
   ZLib/adler32.cpp
@@ -80,35 +79,6 @@ endif()
 string(REGEX REPLACE "[^A-Za-z0-9]" "_" OPENDCL_HOST_TOOLSET_TAG "${_opendcl_host_toolset}")
 set(OPENDCL_HOST_TOOLSET_TAG "${OPENDCL_HOST_TOOLSET_TAG}" CACHE INTERNAL
   "Sanitized host VS toolset tag for Library target names (e.g. v143)")
-
-# Evergreen loader + headers (delay-loaded by HtmlBrowser; not compiled).
-if(NOT TARGET WebView2)
-  set(_wv2 "${CMAKE_CURRENT_SOURCE_DIR}/WebView2")
-  if(EXISTS "${_wv2}/include/WebView2.h")
-    set(_wv2_files
-      "${_wv2}/README.md"
-      "${_wv2}/LICENSE.txt"
-      "${_wv2}/include/WebView2.h"
-      "${_wv2}/include/WebView2EnvironmentOptions.h"
-      "${_wv2}/include/EventToken.h"
-      "${_wv2}/x64/WebView2Loader.dll"
-      "${_wv2}/x86/WebView2Loader.dll"
-    )
-    add_custom_target(WebView2 SOURCES ${_wv2_files})
-    opendcl_solution_folder(_wv2_folder "" "WebView2")
-    set_target_properties(WebView2 PROPERTIES
-      FOLDER "${_wv2_folder}"
-      VS_GLOBAL_UseOfMfc "false"
-    )
-    source_group("include" FILES
-      "${_wv2}/include/WebView2.h"
-      "${_wv2}/include/WebView2EnvironmentOptions.h"
-      "${_wv2}/include/EventToken.h")
-    source_group("x64" FILES "${_wv2}/x64/WebView2Loader.dll")
-    source_group("x86" FILES "${_wv2}/x86/WebView2Loader.dll")
-    set_source_files_properties(${_wv2_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-  endif()
-endif()
 
 # name: {zlib|png}_{x86|x64}_{md|mdd|mt}_{toolset}
 # runtime_lib: "md" | "mdd" | "mt"
