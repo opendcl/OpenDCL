@@ -29,6 +29,12 @@ class CControlBrowser : public CResizableDialog
 		void OnDocumentComplete(LPCTSTR lpszURL) override;
 		void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel) override;
 		void OnCommandStateChange(long nCommand, BOOL bEnable) override;
+		void OnBeforeNavigate2( LPCTSTR lpszURL, DWORD nFlags, LPCTSTR lpszTargetFrameName,
+														CByteArray& baPostedData, LPCTSTR lpszHeaders, BOOL* pbCancel ) override;
+		void OnNewWindow2( LPDISPATCH* ppDisp, BOOL* Cancel ) override;
+		void OnNewWindow3( LPDISPATCH* ppDisp, BOOL* Cancel, DWORD dwFlags,
+											 LPCTSTR lpszUrlContext, LPCTSTR lpszUrl );
+		DECLARE_EVENTSINK_MAP()
 	public:
 		void FinishHtmlLoad();
 		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,
