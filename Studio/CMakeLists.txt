@@ -317,8 +317,6 @@ add_custom_command(TARGET Studio POST_BUILD
   ${_studio_post_cmds}
   COMMENT "Mirror Studio.exe + side-by-side Studio.Res/CHM for classic F5 paths"
 )
-opendcl_copy_webview2_loader(Studio)
-
 message(STATUS "Studio: Studio (${_studio_plat}, static MFC+/MT; FullDebug->Debug) + Studio.Res for: ${OPENDCL_LANGS}")
 
 endif() # _studio_native - Studio.exe + matching Studio.Res

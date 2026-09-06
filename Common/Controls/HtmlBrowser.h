@@ -14,14 +14,13 @@ class CIeHtmlView;
 class CHtmlBrowser : public CWnd
 {
 	bool mbSubclassedControl;
-	bool mbForceIe;
 	CIeHtmlView* m_ie;
 	struct Wv2;
 	Wv2* m_wv2;
 
 	// Construction
 public:
-	explicit CHtmlBrowser( bool forceIe = false );
+	CHtmlBrowser();
 	virtual ~CHtmlBrowser();
 
 public:

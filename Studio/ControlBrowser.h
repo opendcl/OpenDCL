@@ -24,11 +24,7 @@ class CControlBrowser : public CResizableDialog
 		CControlBrowser& mBrowser;
 		bool mbEnableNavigate;
 	public:
-		NoNavigateBrowser( CControlBrowser& Browser )
-			: CHtmlBrowser( true )
-			, mBrowser( Browser )
-			, mbEnableNavigate( false )
-		{}
+		NoNavigateBrowser( CControlBrowser& Browser ) : mBrowser( Browser ), mbEnableNavigate( false ) {}
 	protected:
 		void OnDocumentComplete(LPCTSTR lpszURL) override;
 		void OnCommandStateChange(long nCommand, BOOL bEnable) override;

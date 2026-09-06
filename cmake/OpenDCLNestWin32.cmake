@@ -116,6 +116,7 @@ function(opendcl_nest_import_vcxprojs nest_bin name_prefix skip_names out_bases 
   list(APPEND _skip
     ALL_BUILD INSTALL PACKAGE RUN_TESTS
     Continuous Experimental Nightly NightlyMemoryCheck ZERO_CHECK
+    WebView2  # parent already has it; w32_WebView2 duplicates on IDE reload
   )
   foreach(_proj IN LISTS _vcxprojs)
     if(_proj MATCHES "[/\\\\]CMakeFiles[/\\\\]")

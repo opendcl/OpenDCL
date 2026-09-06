@@ -774,13 +774,7 @@ function New-StudioFilesFragment([string] $lang) {
       )
     },
     @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\License.htm"); Dir = "LangFolder"; Name = "License.htm"; FileId = "fil_StudioLicenseHtm" },
-    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\GNU-GPL.txt"); Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" },
-    @{
-      Full = (Resolve-ProductFile $(if ($script:StudioIsX64) { "Library\WebView2\x64\WebView2Loader.dll" } else { "Library\WebView2\x86\WebView2Loader.dll" }))
-      Dir = "INSTALLDIR"
-      Name = $(if ($script:StudioIsX64) { "WebView2Loader.x64.dll" } else { "WebView2Loader.x86.dll" })
-      FileId = "fil_StudioWebView2"
-    }
+    @{ Full = (Resolve-ProductFile "Studio\Localized\$lang\Content\GNU-GPL.txt"); Dir = "LangFolder"; Name = "GNU-GPL.txt"; FileId = "fil_StudioGpl" }
   )
 
   foreach ($f in $appFiles) {

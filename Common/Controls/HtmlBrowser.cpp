@@ -389,12 +389,11 @@ static bool UrlNeedsInternetExplorer( LPCTSTR url )
 /////////////////////////////////////////////////////////////////////////////
 // CHtmlBrowser
 
-CHtmlBrowser::CHtmlBrowser( bool forceIe /*= false*/ )
+CHtmlBrowser::CHtmlBrowser()
 : mbSubclassedControl( true )
-, mbForceIe( forceIe )
 , m_ie( NULL )
 #if OPENDCL_HAVE_WEBVIEW2
-, m_wv2( forceIe ? NULL : new Wv2() )
+, m_wv2( new Wv2() )
 #else
 , m_wv2( NULL )
 #endif
@@ -470,8 +469,6 @@ void CHtmlBrowser::CreateInternetExplorerChild()
 
 bool CHtmlBrowser::StartWebView2()
 {
-	if( mbForceIe )
-		return false;
 #if !OPENDCL_HAVE_WEBVIEW2
 	return false;
 #else
