@@ -276,9 +276,8 @@ target_precompile_headers(Studio PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.h"
 )
 
-# Side-by-side layout next to Studio.exe so classic Workspace FindFile /
-# GetLocalResourceModule work without special F5 path logic:
-#   Studio.Res.dll, OpenDCL.chm (ENU), and the classic tree mirror.
+# Side-by-side Studio.Res.dll next to Studio.exe (GetLocalResourceModule).
+# Debug FindFile loads OpenDCL.chm from Localized/<lang>/Content (hhc output).
 set(_studio_classic_out "${CMAKE_SOURCE_DIR}/Studio/${_studio_plat}/${OPENDCL_CFG_DIR}")
 set(_studio_post_cmds
   COMMAND ${CMAKE_COMMAND} -E make_directory "${_studio_classic_out}"
@@ -298,24 +297,9 @@ if(TARGET "StudioRes_${_studio_default_lang}")
       "${_studio_classic_out}/$<TARGET_FILE_NAME:StudioRes_${_studio_default_lang}>"
   )
 endif()
-# CHM is arch-independent (same Content path). Parent builds StudioHelp_*;
-# nest (OPENDCL_BUILD_STUDIO_HELP=OFF) still mirrors CHM next to Studio when present.
-set(_studio_chm
-  "${CMAKE_SOURCE_DIR}/Studio/Localized/${_studio_default_lang}/Content/OpenDCL.chm")
-if(TARGET "StudioHelp_${_studio_default_lang}" OR EXISTS "${_studio_chm}")
-  list(APPEND _studio_post_cmds
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${_studio_chm}"
-      "$<TARGET_FILE_DIR:Studio>/OpenDCL.chm"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${_studio_chm}"
-      "${_studio_classic_out}/OpenDCL.chm"
-  )
-endif()
-
 add_custom_command(TARGET Studio POST_BUILD
   ${_studio_post_cmds}
-  COMMENT "Mirror Studio.exe + side-by-side Studio.Res/CHM for classic F5 paths"
+  COMMENT "Mirror Studio.exe + side-by-side Studio.Res for classic F5 paths"
 )
 message(STATUS "Studio: Studio (${_studio_plat}, static MFC+/MT; FullDebug->Debug) + Studio.Res for: ${OPENDCL_LANGS}")
 
@@ -358,13 +342,42 @@ function(opendcl_add_studio_help lang)
   file(GLOB_RECURSE _help_sources CONFIGURE_DEPENDS "${_content}/*")
   list(FILTER _help_sources EXCLUDE REGEX "\\.[Cc][Hh][Mm]$")
 
-  add_custom_command(
-    OUTPUT "${_chm}"
+  set(_hhc_cmds
     COMMAND ${CMAKE_COMMAND}
       "-DHHC=${OPENDCL_HHC_EXECUTABLE}"
       "-DHHP=Content/OpenDCL.hhp"
       "-DWORKDIR=${_help_dir}"
       -P "${_run_hhc}"
+  )
+  # Default-language CHM: copy next to Release Studio.exe whenever hhc runs
+  # (any config). Debug/FullDebug FindFile uses Content; Release F5 uses this copy.
+  if(lang STREQUAL _studio_help_default_lang AND TARGET Studio)
+    get_target_property(_studio_rel_out Studio RUNTIME_OUTPUT_DIRECTORY_RELEASE)
+    if(NOT _studio_rel_out)
+      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(_studio_rel_out "${OPENDCL_OUTPUT_ROOT}/Studio/x64/Release")
+      else()
+        set(_studio_rel_out "${OPENDCL_OUTPUT_ROOT}/Studio/Win32/Release")
+      endif()
+    endif()
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      set(_studio_rel_classic "${CMAKE_SOURCE_DIR}/Studio/x64/Release")
+    else()
+      set(_studio_rel_classic "${CMAKE_SOURCE_DIR}/Studio/Win32/Release")
+    endif()
+    list(APPEND _hhc_cmds
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${_studio_rel_out}"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${_chm}" "${_studio_rel_out}/OpenDCL.chm"
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${_studio_rel_classic}"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${_chm}" "${_studio_rel_classic}/OpenDCL.chm"
+    )
+  endif()
+
+  add_custom_command(
+    OUTPUT "${_chm}"
+    ${_hhc_cmds}
     DEPENDS ${_help_sources} "${_run_hhc}"
     COMMENT "Build Studio ${lang} OpenDCL.chm (hhc)"
     VERBATIM
@@ -379,7 +392,6 @@ function(opendcl_add_studio_help lang)
   )
   opendcl_solution_folder(_sh_folder "any" "StudioHelp_${lang}")
   set_target_properties(${_target} PROPERTIES FOLDER "${_sh_folder}")
-  # Default language CHM before Studio POST_BUILD mirror when Studio is native.
   if(lang STREQUAL _studio_help_default_lang AND TARGET Studio)
     add_dependencies(Studio ${_target})
   endif()
