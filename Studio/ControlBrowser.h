@@ -30,6 +30,7 @@ class CControlBrowser : public CResizableDialog
 		void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel) override;
 		void OnCommandStateChange(long nCommand, BOOL bEnable) override;
 	public:
+		void FinishHtmlLoad();
 		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,
 									LPCTSTR lpszTargetFrameName = NULL,
 									LPCTSTR lpszHeaders = NULL, LPVOID lpvPostData = NULL,
@@ -92,4 +93,5 @@ protected:
 	afx_msg void OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBackClicked();
 	afx_msg void OnForwardClicked();
+	afx_msg LRESULT OnHtmlLayout( WPARAM wParam, LPARAM lParam );
 };

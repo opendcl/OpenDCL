@@ -7,4 +7,5 @@
 bool IsChmFile( LPCTSTR pszFilename );
 bool IsChmFolder( LPCTSTR pszFolder );
 bool ReadChmFile( LPCTSTR pszFilename, CString& sContent );
+bool ReadChmBinary( LPCTSTR pszFilename, CByteArray& buf );
 bool EnumChmFolder( /*in*/LPCTSTR pszFolder, /*out*/CStringArray& rsStreams );
