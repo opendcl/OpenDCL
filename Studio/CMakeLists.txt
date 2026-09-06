@@ -195,7 +195,6 @@ target_include_directories(Studio PRIVATE
   "${CMAKE_SOURCE_DIR}/Common/Controls"
   "${CMAKE_SOURCE_DIR}/Library/ZLib"
   "${CMAKE_SOURCE_DIR}/Library/LibPNG"
-  "${CMAKE_SOURCE_DIR}/Library/WebView2/include"
 )
 
 target_compile_definitions(Studio PRIVATE

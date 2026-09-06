@@ -154,7 +154,6 @@ function(opendcl_add_runtime id)
     "${CMAKE_SOURCE_DIR}/Common/Controls"
     "${CMAKE_SOURCE_DIR}/Library/ZLib"
     "${CMAKE_SOURCE_DIR}/Library/LibPNG"
-    "${CMAKE_SOURCE_DIR}/Library/WebView2/include"
     "${CMAKE_SOURCE_DIR}/${_vi_dir}"
     ${_inc_paths}
     ${_extra_inc}
@@ -421,8 +420,6 @@ function(opendcl_add_runtime id)
       endfunction()
     endif()
   endif()
-
-  opendcl_copy_webview2_loader(${_target})
 
   # Friendly alias
   add_library(OpenDCL::${id} ALIAS ${_target})

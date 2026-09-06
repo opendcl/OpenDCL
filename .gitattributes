@@ -17,4 +17,3 @@ Common/Controls/HtmlBrowser.h   -text
 *.cur  binary
 *.pdf  binary
 *.zip  binary
-Library/WebView2/**/*.dll binary
