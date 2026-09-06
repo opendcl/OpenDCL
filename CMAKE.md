@@ -479,7 +479,7 @@ Notes:
 - **Static MFC + /MT** (classic). zlib/png use matching `*_mt` static CRT variants.
 - **No FullDebug product**: solution `FullDebug` maps Studio + Studio.Res to **Debug** (policy for all non-runtime-module targets).
 - **WINVER** forced to 0x0601+ for modern MFC headers; arch-correct embedded manifest (classic RC is X86-only).
-- **HTML Help**: `StudioHelp_<LANG>` builds each language CHM via `hhc.exe`. The default language is a Studio dependency; **post-build copies** `Studio.Res.dll` + `OpenDCL.chm` next to `Studio.exe` so classic `Workspace::FindFile` / `GetLocalResourceModule` work without special F5 path logic.
+- **HTML Help**: `StudioHelp_<LANG>` builds each language CHM via `hhc.exe` into `Studio/Localized/<LANG>/Content/OpenDCL.chm`. Debug/FullDebug `FindFile` uses that file. After hhc, the default-language CHM is copied next to Release `Studio.exe` (cmake out + classic tree) regardless of which config ran the help build.
 - **Multimon stubs**: Studio sets `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (static MFC has no `_AFXDLL`; `FolderTreeCtrl.cpp` also includes `MultiMon.h` and must not compile stubs). Runtime modules still rely on `_AFXDLL` in source.
 
 ## Known gaps

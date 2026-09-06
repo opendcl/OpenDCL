@@ -18,6 +18,8 @@
 #include "AxContainerCtrl.h"
 #include "OpenDCL.h"
 #include "ChmLib.h"
+#include "Base64.h"
+#include <exdispid.h>
 
 
 static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayName = NULL )
@@ -959,6 +961,115 @@ CControlBrowser::~CControlBrowser()
 {
 }
 
+// IE maps CHM relative img src to file://, which does not paint. Rewrite from the CHM stream.
+static CString ResolveItsPath( const CString& sDocUrl, CString sRel )
+{
+	int nIts = sDocUrl.Find( _T("::") );
+	if( nIts < 0 || sRel.IsEmpty() )
+		return CString();
+	sRel.Replace( _T('\\'), _T('/') );
+	int nContent = sRel.Find( _T("/Content/") );
+	if( nContent >= 0 )
+		sRel = sRel.Mid( nContent + 8 );
+	else if( sRel.Find( _T("://") ) >= 0 )
+		return CString();
+	else if( sRel[0] != _T('/') )
+	{
+		CString sDir = sDocUrl.Mid( nIts + 2 );
+		int nHash = sDir.Find( _T('#') );
+		if( nHash >= 0 )
+			sDir = sDir.Left( nHash );
+		sDir.Replace( _T('\\'), _T('/') );
+		int nSlash = sDir.ReverseFind( _T('/') );
+		sDir = ( nSlash >= 0 ) ? sDir.Left( nSlash + 1 ) : CString( _T("/") );
+		sRel = sDir + sRel;
+	}
+	sRel.Replace( _T('/'), _T('\\') );
+	TCHAR szCanon[MAX_PATH];
+	if( !PathCanonicalize( szCanon, sRel ) )
+		return CString();
+	sRel = szCanon;
+	sRel.Replace( _T('\\'), _T('/') );
+	return sRel;
+}
+
+static void FixChmImageSrcs( CHtmlView& htmlView )
+{
+	LPDISPATCH pDisp = htmlView.GetHtmlDocument();
+	if( !pDisp )
+		return;
+	CComQIPtr< IHTMLDocument2 > pDoc( pDisp );
+	pDisp->Release();
+	if( !pDoc )
+		return;
+	CComBSTR bUrl;
+	if( FAILED( pDoc->get_URL( &bUrl ) ) || !bUrl )
+		return;
+	CString sDocUrl( bUrl );
+	if( sDocUrl.Find( _T("::") ) < 0 )
+		return;
+
+	CComQIPtr< IHTMLDocument3 > pDoc3( pDoc );
+	CComPtr< IHTMLElementCollection > pImgs;
+	if( !pDoc3 || FAILED( pDoc3->getElementsByTagName( CComBSTR( L"img" ), &pImgs ) ) || !pImgs )
+		return;
+	long nLen = 0;
+	pImgs->get_length( &nLen );
+	for( long i = 0; i < nLen; ++i )
+	{
+		CComVariant vIdx( i ), vEmpty;
+		CComPtr< IDispatch > pItem;
+		if( FAILED( pImgs->item( vIdx, vEmpty, &pItem ) ) || !pItem )
+			continue;
+		CComQIPtr< IHTMLImgElement > pImg( pItem );
+		CComQIPtr< IHTMLElement > pEl( pItem );
+		if( !pImg || !pEl )
+			continue;
+		CString sSrc;
+		CComVariant vAttr;
+		if( SUCCEEDED( pEl->getAttribute( CComBSTR( L"src" ), 2, &vAttr ) ) && vAttr.vt == VT_BSTR && vAttr.bstrVal )
+			sSrc = vAttr.bstrVal;
+		if( sSrc.IsEmpty() )
+		{
+			CComBSTR bSrc;
+			if( SUCCEEDED( pImg->get_src( &bSrc ) ) && bSrc )
+				sSrc = bSrc;
+		}
+		CString sIts = ResolveItsPath( sDocUrl, sSrc );
+		CByteArray buf;
+		if( sIts.IsEmpty() || !ReadChmBinary( sIts, buf ) )
+			continue;
+		CString sPut( _T("data:image/png;base64,") );
+		sPut += CString( base64_encode( buf.GetData(), (unsigned)buf.GetSize(), 0 ).c_str() );
+		pImg->put_src( CComBSTR( sPut ) );
+	}
+}
+
+// CHM does not load Utility.js in this host, so copyclip is undefined. Define it after navigate.
+static void InjectCopyclip( CHtmlView& htmlView )
+{
+	LPDISPATCH pDisp = htmlView.GetHtmlDocument();
+	if( !pDisp )
+		return;
+	CComQIPtr< IHTMLDocument2 > pDoc( pDisp );
+	pDisp->Release();
+	if( !pDoc )
+		return;
+	CComBSTR bUrl;
+	if( FAILED( pDoc->get_URL( &bUrl ) ) || !bUrl || CString( bUrl ).Find( _T("::") ) < 0 )
+		return;
+	CComPtr< IHTMLWindow2 > pWin;
+	if( FAILED( pDoc->get_parentWindow( &pWin ) ) || !pWin )
+		return;
+	CComVariant vRet;
+	pWin->execScript(
+		CComBSTR( L"function copyclip(elem){if(elem)window.clipboardData.setData('Text',elem.innerText);}" ),
+		CComBSTR( L"JavaScript" ),
+		&vRet );
+}
+
+#define WM_OPENDCL_HTML_LAYOUT (WM_APP + 0x4C1)
+
 void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 {
 	bool bClickedLink = !mbEnableNavigate;
@@ -975,6 +1086,97 @@ void CControlBrowser::NoNavigateBrowser::OnDocumentComplete(LPCTSTR lpszURL)
 		ReplaceText( _T("<PROJECT>"), sProjectKey );
 	}
 	mBrowser.OnDocumentLoaded( bClickedLink );
+	mBrowser.PostMessage( WM_OPENDCL_HTML_LAYOUT );
+}
+
+void CControlBrowser::NoNavigateBrowser::FinishHtmlLoad()
+{
+	FixChmImageSrcs( *this );
+	InjectCopyclip( *this );
+	CRect rc;
+	GetClientRect( &rc );
+	if( m_wndBrowser.GetSafeHwnd() )
+		m_wndBrowser.MoveWindow( 0, 0, rc.Width(), rc.Height() );
+}
+
+static bool IsExternalUrl( LPCTSTR pszUrl )
+{
+	if( !pszUrl || !*pszUrl )
+		return false;
+	return CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("http:"), 5, pszUrl, 5 ) == CSTR_EQUAL
+			|| CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("https:"), 6, pszUrl, 6 ) == CSTR_EQUAL
+			|| CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("mailto:"), 7, pszUrl, 7 ) == CSTR_EQUAL;
+}
+
+static void OpenExternalUrl( LPCTSTR pszUrl )
+{
+	if( !IsExternalUrl( pszUrl ) )
+		return;
+	static CString sLast;
+	static DWORD dwLast = 0;
+	DWORD dwNow = GetTickCount();
+	if( sLast.CompareNoCase( pszUrl ) == 0 && (dwNow - dwLast) < 750 )
+		return;
+	sLast = pszUrl;
+	dwLast = dwNow;
+	::ShellExecute( NULL, _T("open"), pszUrl, NULL, NULL, SW_SHOWNORMAL );
+}
+
+static void OpenActiveAnchor( CHtmlView& htmlView )
+{
+	LPDISPATCH pDisp = htmlView.GetHtmlDocument();
+	if( !pDisp )
+		return;
+	CComQIPtr< IHTMLDocument2 > pDoc( pDisp );
+	pDisp->Release();
+	CComPtr< IHTMLElement > pEl;
+	if( !pDoc || FAILED( pDoc->get_activeElement( &pEl ) ) )
+		return;
+	while( pEl )
+	{
+		CComQIPtr< IHTMLAnchorElement > pA( pEl );
+		CComBSTR bHref;
+		if( pA && SUCCEEDED( pA->get_href( &bHref ) ) && bHref )
+		{
+			OpenExternalUrl( CString( bHref ) );
+			return;
+		}
+		CComPtr< IHTMLElement > pParent;
+		pEl->get_parentElement( &pParent );
+		pEl = pParent;
+	}
+}
+
+BEGIN_EVENTSINK_MAP(CControlBrowser::NoNavigateBrowser, CHtmlBrowser)
+	ON_EVENT(CControlBrowser::NoNavigateBrowser, AFX_IDW_PANE_FIRST, DISPID_NEWWINDOW3, OnNewWindow3, VTS_PDISPATCH VTS_PBOOL VTS_I4 VTS_BSTR VTS_BSTR)
+END_EVENTSINK_MAP()
+
+void CControlBrowser::NoNavigateBrowser::OnBeforeNavigate2( LPCTSTR lpszURL, DWORD nFlags, LPCTSTR lpszTargetFrameName,
+																														CByteArray& baPostedData, LPCTSTR lpszHeaders, BOOL* pbCancel )
+{
+	if( IsExternalUrl( lpszURL ) )
+	{
+		OpenExternalUrl( lpszURL );
+		if( pbCancel )
+			*pbCancel = TRUE;
+		return;
+	}
+	__super::OnBeforeNavigate2( lpszURL, nFlags, lpszTargetFrameName, baPostedData, lpszHeaders, pbCancel );
+}
+
+void CControlBrowser::NoNavigateBrowser::OnNewWindow2( LPDISPATCH* /*ppDisp*/, BOOL* Cancel )
+{
+	if( Cancel )
+		*Cancel = TRUE;
+	OpenActiveAnchor( *this );
+}
+
+void CControlBrowser::NoNavigateBrowser::OnNewWindow3( LPDISPATCH* /*ppDisp*/, BOOL* Cancel, DWORD /*dwFlags*/,
+																											 LPCTSTR /*lpszUrlContext*/, LPCTSTR lpszUrl )
+{
+	if( Cancel )
+		*Cancel = TRUE;
+	OpenExternalUrl( lpszUrl );
 }
 
 void CControlBrowser::NoNavigateBrowser::OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel)
@@ -1058,8 +1260,12 @@ void CControlBrowser::SetDescription( LPCTSTR pszDescription, const std::map< CS
 		mDescription.Navigate( pszDescription );
 	else if( CompareString( LOCALE_INVARIANT, NORM_IGNORECASE, _T("chm://"), 6, pszDescription, 6 ) == CSTR_EQUAL )
 	{
+		CString sChm( AfxGetApp()->m_pszHelpFilePath );
+		sChm.Replace( _T('\\'), _T('/') );
+		CString sTopic = CString( pszDescription ).Mid( 5 );
+		sTopic.Replace( _T('\\'), _T('/') );
 		CString sChmUrl;
-		sChmUrl.Format( _T("mk:@MSITStore:%s::%s"), AfxGetApp()->m_pszHelpFilePath, (LPCTSTR)CString( pszDescription ).Mid( 5 ) );
+		sChmUrl.Format( _T("ms-its:%s::%s"), (LPCTSTR)sChm, (LPCTSTR)sTopic );
 		mDescription.Navigate( sChmUrl );
 	}
 	else
@@ -1112,6 +1318,7 @@ BEGIN_MESSAGE_MAP(CControlBrowser, CResizableDialog)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_CONTROLTREE, &CControlBrowser::OnSelchanged)
 	ON_BN_CLICKED(IDC_BACK, &CControlBrowser::OnBackClicked)
 	ON_BN_CLICKED(IDC_FORWARD, &CControlBrowser::OnForwardClicked)
+	ON_MESSAGE( WM_OPENDCL_HTML_LAYOUT, &CControlBrowser::OnHtmlLayout )
 END_MESSAGE_MAP()
 
 
@@ -1121,6 +1328,12 @@ INT_PTR CControlBrowser::DoModal()
 {
 	DisableUndoManager DisableUndo( mpDclControl->GetUndoManager() );
 	return __super::DoModal();
+}
+
+LRESULT CControlBrowser::OnHtmlLayout( WPARAM, LPARAM )
+{
+	mDescription.FinishHtmlLoad();
+	return 0;
 }
 
 void CControlBrowser::OnDestroy() 

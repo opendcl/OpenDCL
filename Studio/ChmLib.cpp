@@ -132,6 +132,30 @@ bool ReadChmFile( LPCTSTR pszFilename, CString& sContent )
 }
 
 
+bool ReadChmBinary( LPCTSTR pszFilename, CByteArray& buf )
+{
+	CComPtr< IStream > pStream;
+	HRESULT hr = OpenChmStream( pszFilename, &pStream );
+	if( FAILED(hr) )
+		return false;
+	STATSTG entry = {0};
+	hr = pStream->Stat( &entry, STATFLAG_NONAME );
+	if( FAILED(hr) )
+		return false;
+	ULONG cbRead = 0;
+	ULONG cbSize = (ULONG)entry.cbSize.QuadPart;
+	buf.SetSize( int(cbSize) );
+	hr = pStream->Read( buf.GetData(), cbSize, &cbRead );
+	if( FAILED(hr) || cbRead == 0 )
+	{
+		buf.RemoveAll();
+		return false;
+	}
+	buf.SetSize( int(cbRead) );
+	return true;
+}
+
+
 bool EnumChmFolder( /*in*/LPCTSTR pszFolder, /*out*/CStringArray& rsStreams )
 {
 	CComPtr< IITStorage > pITStorage;
