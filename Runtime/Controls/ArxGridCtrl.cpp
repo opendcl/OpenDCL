@@ -813,7 +813,6 @@ void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 
 void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, MK_RBUTTON, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnContextMenu(pTarget, point);
 }
 

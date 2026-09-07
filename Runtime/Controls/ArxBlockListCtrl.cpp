@@ -488,7 +488,6 @@ void CArxBlockListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CArxBlockListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, MK_RBUTTON, ToDIP( point.x ), ToDIP( point.y ) ) );
 	__super::OnContextMenu(pTarget, point);
 }
 
