@@ -1173,6 +1173,7 @@ public:
 	#ifdef _USE_ODCL_DROPTARGET
 		acedRemoveDropTarget( &mOdclDropTarget );
 	#endif
+		UpdateCheckShutdown();
 		try
 		{
 			theArxWorkspace.UnloadAllProjects();
