@@ -1976,6 +1976,9 @@ void CPropertyGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		//PropertyType type = GetPropertyType( nRow );
 		bool bVaries = ((nCustomState & INDEXTOSTATEIMAGEMASK(PGIS_INDETERMINATE)) != 0);
 		rcCell = GetCellRect( nRow, 1 );
+		CRect rcFill = rcCell;
+		rcFill.DeflateRect( 1, 0, 1, 1 ); // keep LVS_EX_GRIDLINES on the cell edges
+		pDC->FillSolidRect( &rcFill, pDC->GetBkColor() );
 		if( (nCustomState & INDEXTOSTATEIMAGEMASK(PGIS_BOOLEAN)) != 0 )
 		{
 			if( rcCell.right - rcCell.left > 4 )
