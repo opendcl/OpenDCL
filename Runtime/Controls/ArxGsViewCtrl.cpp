@@ -73,6 +73,21 @@ void CArxGsViewCtrl::clearAll()
 	RemoveHighlight();
 }
 
+void CArxGsViewCtrl::ReleaseGsOwnedBy( AcApDocument* pDoc )
+{
+	if( !pDoc || !mpGsManager || mpGsManager->ownerDocument() != pDoc )
+		return;
+	if( acDocManager && acDocManager->mdiActiveDocument() == pDoc )
+		clearAll();
+	else
+	{
+		mpGsManager->abandon();
+		delete mpGsManager;
+		mpGsManager = NULL;
+		RemoveHighlight();
+	}
+}
+
 bool CArxGsViewCtrl::UpdateModel( AcGiDrawable* pDrawable )
 {
 	if( !mpGsManager )

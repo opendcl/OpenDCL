@@ -73,7 +73,9 @@ CArxBlockViewCtrl::~CArxBlockViewCtrl()
 		DeleteObject( mhCrossCursor );
 	if( mhOrbitCursor )
 		DeleteObject( mhOrbitCursor );
+	clearAll();
 	delete mpSourceDb;
+	mpSourceDb = NULL;
 }
 
 bool CArxBlockViewCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -294,16 +296,6 @@ void CArxBlockViewCtrl::RefreshBlock()
 	if( !m_hWnd )
 		return;
 
-	AcGsView* pView = GetGsView();
-	if( !pView )
-		return;
-
-	AcGePoint3d target = pView->target();
-	AcGePoint3d camera = pView->position();
-	AcGeVector3d upVector = pView->upVector();
-	double fieldHeight = pView->fieldHeight();
-	double fieldWidth = pView->fieldWidth();
-
 	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return;
@@ -320,6 +312,21 @@ void CArxBlockViewCtrl::RefreshBlock()
 	pTab->close();
 	if( es != Acad::eOk )
 		return;
+
+	AcGsView* pView = GetGsView();
+	if( !pView )
+	{
+		DisplayBTR( pRec, 1.0, true, 1, AcGeVector3d::kZAxis );
+		pRec->close();
+		return;
+	}
+
+	AcGePoint3d target = pView->target();
+	AcGePoint3d camera = pView->position();
+	AcGeVector3d upVector = pView->upVector();
+	double fieldHeight = pView->fieldHeight();
+	double fieldWidth = pView->fieldWidth();
+
 	UpdateModel( pRec );
 	pRec->close();
 
