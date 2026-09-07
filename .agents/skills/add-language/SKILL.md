@@ -2,7 +2,7 @@
 name: add-language
 description: >
   Add a new UI/help language pack to OpenDCL (Common SharedRes, Runtime.Res,
-  Studio.Res, HTML help Content, WiX Studio MSI meta, solution wiring). Use when
+  Studio.Res, HTML help Content, WiX Studio MSI meta, CMake `OPENDCL_LANGS`). Use when
   adding a locale, cloning ENU/CHS into a new folder code, or when the user runs
   /add-language. Triggers: "add language", "new language", "new locale",
   "localize", "CHT", "Studio language MSI", "language pack".
@@ -45,20 +45,21 @@ variant). Do **not** copy build outputs (`Debug/`, `Release/`, `.tlog`, `.obj`,
 | Area | Path pattern | Purpose |
 |------|--------------|---------|
 | Shared resources | `Common/<LANG>/` (`Res/`, `SharedRes.<LANG>.rc`) | Shared bitmaps/icons strings |
-| Runtime resources | `Runtime/Localized/<LANG>/Runtime.Res/` | `Runtime.Res.<LANG>.vcxproj`, `.rc`, `Res/` |
+| Runtime resources | `Runtime/Localized/<LANG>/Runtime.Res/` | `Runtime.<LANG>.rc`, `Res/` |
 | Runtime content | `Runtime/Localized/<LANG>/Content/` | `License.txt`, `GNU-GPL.txt` |
-| Studio resources | `Studio/Localized/<LANG>/Studio.Res/` | `Studio.Res.<LANG>.vcxproj`, `.rc`, `Res/` |
+| Studio resources | `Studio/Localized/<LANG>/Studio.Res/` | `Studio.<LANG>.rc`, `Res/` |
 | Studio help | `Studio/Localized/<LANG>/Content/` | HTML topics, `OpenDCL.hhp` / `.hhc`, licenses, Samples |
 | Studio package UI | `Studio/Localized/<LANG>/Package.wxl` | Start Menu shortcuts, ARP comments, shell verb labels (WiX) |
-| HTML Help project | `Studio/Localized/<LANG>/HTMLHelp.<LANG>.vcxproj` (+ `.filters`) | Builds `Content/OpenDCL.chm` via `Studio/Localized/BuildCHM.mak` |
 | Optional | `Studio/Localized/<LANG>/Setup.reg` | Legacy reg sample; WiX owns real file-assoc registry now |
 
 Also wire:
 
-- `OpenDCL.sln` - project entries, configs, solution folder for the new language
-- `OpenDCL.Compile.slnf` if the local compile filter is used
+- `CMakePresets.json` `OPENDCL_LANGS` on the full/ship presets (CMake builds
+  `RuntimeRes_<LANG>`, `StudioRes_<LANG>`, `StudioHelp_<LANG>` from those folders)
 - `scripts/build-wix.ps1` - `$RuntimeLangs` + `$StudioLangMeta`
 - Product version often bumps when shipping the language (`/bump-version`)
+
+Do **not** add `.vcxproj` files or `OpenDCL.sln` entries.
 
 ## Inputs to collect
 
@@ -89,43 +90,32 @@ Copy-Item -Recurse "Runtime\Localized\$src" "Runtime\Localized\$dst"
 Copy-Item -Recurse "Studio\Localized\$src" "Studio\Localized\$dst"
 ```
 
-Then **rename** project files inside the clone:
+Then **rename** identity files inside the clone:
 
 - `SharedRes.ENU.rc` -> `SharedRes.<LANG>.rc`
-- `Runtime.Res.ENU.vcxproj` -> `Runtime.Res.<LANG>.vcxproj` (+ filters)
 - `Runtime.ENU.rc` -> `Runtime.<LANG>.rc` (if so named)
-- `Studio.Res.ENU.vcxproj` -> `Studio.Res.<LANG>.vcxproj` (+ filters)
 - `Studio.ENU.rc` -> `Studio.<LANG>.rc`
-- `HTMLHelp.ENU.vcxproj` -> `HTMLHelp.<LANG>.vcxproj` (+ filters)
 
-Strip accidental build artifacts under the new trees.
+Strip accidental build artifacts and any cloned `.vcxproj` / `.filters` (CMake
+owns those targets).
 
-### 2. Retarget project identity
+### 2. Retarget language identity
 
-In every new `.vcxproj` / `.rc` / `.filters`:
+In every new `.rc` and content path:
 
 1. Replace source language code with the new code in names, paths, and preprocessor
    includes (careful with whole-word replaces so you do not damage unrelated strings).
-2. Assign **new `ProjectGuid`** values (never reuse the clone's GUIDs).
-3. Update `RootNamespace` / output names to the new language suffix.
-4. Ensure `.rc` version resources match current product version and copyright year
+2. Ensure `.rc` version resources match current product version and copyright year
    (or run `/bump-version` + `/update-copyright-year` as part of the release).
-5. Encoding: many localized `.rc` files are **UTF-16 LE**; preserve encoding when
+3. Encoding: many localized `.rc` files are **UTF-16 LE**; preserve encoding when
    editing (same rules as `/bump-version`).
 
-### 3. Solution wiring (`OpenDCL.sln`)
+### 3. CMake language list
 
-1. Add a solution folder for the language if other langs use one (see CHT folder).
-2. Add projects:
-   - SharedRes (if present as a project entry pattern for that language)
-   - `Runtime.Res.<LANG>`
-   - `Studio.Res.<LANG>`
-   - `HTMLHelp.<LANG>`
-3. Copy configuration lines from the source language's projects for all solution
-   configs (`Debug|...`, `Release|...`, `FullDebug|...`, platforms).
-4. Nest projects under the correct solution folders.
-
-Update `OpenDCL.Compile.slnf` when that filter is part of the build workflow.
+Append the code to `OPENDCL_LANGS` on the **full/ship presets** in
+`CMakePresets.json` (and any other preset that should build this pack). CMake
+discovers `Runtime.<LANG>.rc` / `Studio.<LANG>.rc` / `Content/OpenDCL.hhp` under
+the localized folders. Reconfigure with `--fresh` after changing the list.
 
 ### 4. Help content and CHM
 
@@ -135,11 +125,10 @@ Update `OpenDCL.Compile.slnf` when that filter is part of the build workflow.
 4. Ensure installer license sources exist:
    - `License.txt`, `License.htm`, **`License.rtf`** (WiX EULA)
    - `GNU-GPL.txt`
-5. Build CHM via the HTMLHelp project (`BuildCHM.mak` / HTML Help Workshop toolchain).
+5. Build CHM with CMake target `StudioHelp_<LANG>` (HTML Help Workshop `hhc.exe`).
    Output: `Studio/Localized/<LANG>/Content/OpenDCL.chm` (gitignored `*.chm`).
-   CMake dev build wires **ENU only** today (`StudioHelp_ENU` + Studio
-   dependency). Other languages still use classic `HTMLHelp.<LANG>.vcxproj` until
-   multi-lang help is ported; add `OPENDCL_LANGS` / packaging when shipping.
+   Full presets list every language in `OPENDCL_LANGS`; `StudioHelp_All` builds
+   them. Dev presets may stay ENU-only.
 
 ### 5. WiX packaging
 
@@ -178,8 +167,8 @@ Demand-load **OPENDCLDEMO** depends on `HKCR\OpenDCL.Project` from Studio instal
 
 ### 7. Build and smoke-check
 
-1. Build `Runtime.Res.<LANG>` and `Studio.Res.<LANG>` (Release).
-2. Build `HTMLHelp.<LANG>` -> `OpenDCL.chm` present.
+1. CMake Release: `RuntimeRes_<LANG>` and `StudioRes_<LANG>`.
+2. `StudioHelp_<LANG>` -> `OpenDCL.chm` present.
 3. Package:
 
    ```powershell
@@ -205,8 +194,8 @@ Demand-load **OPENDCLDEMO** depends on `HKCR\OpenDCL.Project` from Studio instal
    `Common/<LANG>/**` (one line per language - same list as existing ENU/CHS/...).
    `Runtime/Localized/**` and `Studio/Localized/**` already cover new folders
    under those trees without a new line. Do not remove the `!` exclusions
-   (CMakeLists, `.vcxproj`, BuildCHM, build output dirs) - those files are
-   build plumbing, not translator-facing content. `Content/Samples` is
+   (CMakeLists, `.cmake`, leftover `.vcxproj` if any, build output dirs) - those
+   files are build plumbing, not translator-facing content. `Content/Samples` is
    localizable and must stay included.
 4. Do not assume every Studio language automatically gets a HelpFiles folder.
 
@@ -234,9 +223,9 @@ Only commit if the user asked. Website repo commits are separate.
 ## Quick verification checklist
 
 - [ ] `Common/<LANG>/`, Runtime + Studio Localized trees present without build junk
-- [ ] Unique project GUIDs; names use new language code
-- [ ] `OpenDCL.sln` (+ compile filter if used) includes new projects
-- [ ] Help Content builds to `OpenDCL.chm`
+- [ ] Names use new language code; no cloned `.vcxproj`
+- [ ] `OPENDCL_LANGS` includes the new code on ship presets
+- [ ] Help Content builds to `OpenDCL.chm` via `StudioHelp_<LANG>`
 - [ ] `License.rtf` / `License.txt` / `License.htm` present for Studio
 - [ ] `$RuntimeLangs` + `$StudioLangMeta` updated in `scripts/build-wix.ps1`
 - [ ] `Studio/Localized/<LANG>/Package.wxl` present (clone ENU; localize strings)

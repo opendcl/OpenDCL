@@ -1,4 +1,4 @@
-# Shared runtime translation units (from ARX.26.x64.vcxproj).
+# Shared runtime translation units.
 include_guard(GLOBAL)
 
 set(OPENDCL_RUNTIME_SOURCES

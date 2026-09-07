@@ -23,7 +23,7 @@
 
 .PARAMETER OpenDclRoot
   Path to compiled OpenDCL tree. Defaults to this repository root (where
-  OpenDCL.sln lives). For CMake dual-arch, pass the binary dir that contains
+  CMakeLists.txt lives). For CMake dual-arch, pass the binary dir that contains
   out\ (e.g. build\vs2022-full).
 
 .PARAMETER Configuration
@@ -84,8 +84,8 @@ $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $WixRoot = Join-Path $RepoRoot "wix"
 
 if (-not $OpenDclRoot) {
-  if (-not (Test-Path (Join-Path $RepoRoot "OpenDCL.sln"))) {
-    throw "OpenDCL.sln not found under $RepoRoot; pass -OpenDclRoot to the compiled tree."
+  if (-not (Test-Path (Join-Path $RepoRoot "CMakeLists.txt"))) {
+    throw "CMakeLists.txt not found under $RepoRoot; pass -OpenDclRoot to the compiled tree."
   }
   $OpenDclRoot = $RepoRoot
 }

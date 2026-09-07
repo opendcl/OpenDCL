@@ -1,6 +1,11 @@
 <#
 .SYNOPSIS
-  Regenerate cmake/OpenDCLRuntimeMatrix.cmake from VI/*.props + sibling vcxproj.
+  Regenerate cmake/OpenDCLRuntimeMatrix.cmake from VI/*.props.
+
+.DESCRIPTION
+  SDK paths, defines, libs, and language standard come from each host's
+  VI/*.props. TOOLSET, OUTPUT_NAME, and CHARACTER_SET are preserved from the
+  existing cmake matrix (those used to live on classic .vcxproj files).
 #>
 [CmdletBinding()]
 param(
@@ -13,6 +18,32 @@ Set-Location $RepoRoot
 function ConvertTo-BarList([string] $s) {
   if (-not $s) { return "" }
   return (($s -split ";" | Where-Object { $_ }) -join "|")
+}
+
+function Parse-ExistingMatrix([string] $path) {
+  $map = @{}
+  if (-not (Test-Path $path)) { return $map }
+  $text = Get-Content $path -Raw
+  foreach ($m in [regex]::Matches($text, '(?s)opendcl_register_runtime\((.*?)\)\s*\r?\n')) {
+    $body = $m.Groups[1].Value
+    if ($body -notmatch 'ID\s+"([^"]+)"') { continue }
+    $id = $Matches[1]
+    $toolset = if ($body -match 'TOOLSET\s+"([^"]+)"') { $Matches[1] } else { $null }
+    $output = if ($body -match 'OUTPUT_NAME\s+"([^"]+)"') { $Matches[1] } else { $null }
+    $charset = if ($body -match 'CHARACTER_SET\s+"([^"]+)"') { $Matches[1] } else { $null }
+    $comments = @()
+    foreach ($line in ($body -split '\r?\n')) {
+      $t = $line.Trim()
+      if ($t.StartsWith("#")) { $comments += $t }
+    }
+    $map[$id] = [PSCustomObject]@{
+      Toolset = $toolset
+      Output = $output
+      CharacterSet = $charset
+      Comments = $comments
+    }
+  }
+  return $map
 }
 
 function Parse-Props([string] $propsPath) {
@@ -46,15 +77,10 @@ function Parse-Props([string] $propsPath) {
   $arch = if ($id -match "\.x64$") { "x64" } else { "x86" }
   $ver = $id -replace "^$family\.", "" -replace "\.x64$", ""
 
-  $vcx = Join-Path $projDir "$id.vcxproj"
-  $toolset = "v142"
-  $outName = if ($arch -eq "x64") { "OpenDCL.x64.$ver" } else { "OpenDCL.$ver" }
-  if (Test-Path $vcx) {
-    $vc = Get-Content $vcx -Raw
-    $ts = [regex]::Matches($vc, "<PlatformToolset>([^<]+)</PlatformToolset>") |
-      ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
-    if ($ts) { $toolset = $ts }
-    if ($vc -match "<RootNamespace>([^<]+)</RootNamespace>") { $outName = $Matches[1] }
+  $toolset = if ($content -match "PlatformToolset>([^<]+)") { $Matches[1] } else { $null }
+  $outName = if ($content -match "RootNamespace>([^<]+)") { $Matches[1] } else { $null }
+  if (-not $outName) {
+    $outName = if ($arch -eq "x64") { "OpenDCL.x64.$ver" } else { "OpenDCL.$ver" }
   }
 
   $sdkIncs = @()
@@ -67,6 +93,8 @@ function Parse-Props([string] $propsPath) {
   [PSCustomObject]@{
     Id = $id; Family = $family; Ver = $ver; Arch = $arch; Ext = $ext; SdkEnv = $sdk
     Toolset = $toolset; Output = $outName
+    CharacterSet = $null
+    Comments = @()
     Defines = (ConvertTo-BarList $defs)
     Libs = (ConvertTo-BarList $libs)
     WarningDisables = (ConvertTo-BarList (($wd | Where-Object { $_ }) -join ";"))
@@ -77,6 +105,9 @@ function Parse-Props([string] $propsPath) {
   }
 }
 
+$outPath = Join-Path $RepoRoot "cmake\OpenDCLRuntimeMatrix.cmake"
+$existing = Parse-ExistingMatrix $outPath
+
 $rows = @()
 foreach ($family in @("ARX", "BRX", "GRX", "ZRX")) {
   Get-ChildItem "Runtime\$family" -Directory -ErrorAction SilentlyContinue | ForEach-Object {
@@ -86,6 +117,16 @@ foreach ($family in @("ARX", "BRX", "GRX", "ZRX")) {
   }
 }
 $rows = $rows | Sort-Object Family, Ver, Arch
+foreach ($r in $rows) {
+  $prev = $existing[$r.Id]
+  if ($prev) {
+    if (-not $r.Toolset -and $prev.Toolset) { $r.Toolset = $prev.Toolset }
+    if ($prev.Output) { $r.Output = $prev.Output }
+    $r.CharacterSet = $prev.CharacterSet
+    $r.Comments = $prev.Comments
+  }
+  if (-not $r.Toolset) { $r.Toolset = "v142" }
+}
 
 $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine("# Generated from VI/*.props for the OpenDCL CMake runtime matrix.")
@@ -103,6 +144,12 @@ foreach ($r in $rows) {
   [void]$sb.AppendLine("  EXT `"$($r.Ext)`"")
   [void]$sb.AppendLine("  OUTPUT_NAME `"$($r.Output)`"")
   [void]$sb.AppendLine("  TOOLSET `"$($r.Toolset)`"")
+  foreach ($c in $r.Comments) {
+    [void]$sb.AppendLine("  $c")
+  }
+  if ($r.CharacterSet) {
+    [void]$sb.AppendLine("  CHARACTER_SET `"$($r.CharacterSet)`"")
+  }
   [void]$sb.AppendLine("  SDK_ENV `"$($r.SdkEnv)`"")
   [void]$sb.AppendLine("  SDK_INC `"$($r.SdkInc)`"")
   [void]$sb.AppendLine("  SDK_LIB `"$($r.SdkLib)`"")
@@ -115,7 +162,6 @@ foreach ($r in $rows) {
   [void]$sb.AppendLine("")
 }
 
-$outPath = Join-Path $RepoRoot "cmake\OpenDCLRuntimeMatrix.cmake"
 # UTF-8 no BOM
 $utf8 = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($outPath, $sb.ToString(), $utf8)

@@ -171,7 +171,7 @@ set(OPENDCL_NEST_CL_MP_COUNT "1" CACHE STRING
 # Solution Explorer folder for a product target (classic-style, not arch-first).
 #
 # Dual-arch Mixed / x64-full puts x64 and Win32 (w32_*) peers in the *same*
-# product folders - similar to classic OpenDCL.sln:
+# product folders:
 #   Runtime/Rx/{ARX,BRX,GRX,ZRX}
 #   Runtime/Localized Resources
 #   Runtime                          (RxInstall)
@@ -204,7 +204,7 @@ function(opendcl_solution_folder out_var arch_label base)
   elseif(base MATCHES "StudioRes")
     set(_f "Studio")
   elseif(base MATCHES "StudioHelp_([A-Za-z][A-Za-z0-9]+)")
-    # Classic HTMLHelp.<LANG> under Studio/<LANG>
+    # StudioHelp_<LANG> under Studio/<LANG>
     set(_f "Studio/${CMAKE_MATCH_1}")
   elseif(base MATCHES "StudioHelp")
     set(_f "Studio")

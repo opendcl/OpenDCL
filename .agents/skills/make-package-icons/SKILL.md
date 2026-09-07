@@ -20,7 +20,7 @@ product version (`/bump-version`) or copyright years (`/update-copyright-year`).
 
 ## Where things live
 
-Repo root = this OpenDCL tree (`OpenDCL.sln` / `scripts/build-wix.ps1`).
+Repo root = this OpenDCL tree (`CMakeLists.txt` / `scripts/build-wix.ps1`).
 
 | Asset | Path | Role |
 |-------|------|------|

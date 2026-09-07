@@ -3,7 +3,7 @@
   Configure + build CMake "classic parity" presets (x64 + Win32) and optionally package.
 
 .DESCRIPTION
-  Mirrors a full pre-CMake OpenDCL.sln ship using preset **vs2022-full**:
+  Full dual-arch ship using preset **vs2022-full**:
     - One VS .sln (x64) with nested Win32 projects imported into the solution (Nest_Win32 umbrella)
     - Shared out/ for x64 + x86 modules, Studio, Res, RxInstall
     - All CAD families (AUTO = skip missing SDKs), all UI languages

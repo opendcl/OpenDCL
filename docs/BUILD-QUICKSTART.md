@@ -150,7 +150,5 @@ Exact layout and FullDebug mapping: [CMAKE.md](../CMAKE.md).
 
 All configure/build preset names: `CMakePresets.json`.
 
-## Classic solution
-
-`OpenDCL.sln` remains for historical / transitional builds. For new work,
-prefer the CMake presets above.
+There is no checked-in `OpenDCL.sln`. Open the generated
+`build/<preset>/<preset>.sln` from a CMake preset.

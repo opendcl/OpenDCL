@@ -1,4 +1,4 @@
-# Shared Studio translation units (from Studio.vcxproj).
+# Shared Studio translation units.
 include_guard(GLOBAL)
 
 set(OPENDCL_STUDIO_SOURCES

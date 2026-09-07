@@ -79,9 +79,6 @@ Desktop.ini
 .vscode/
 *.code-workspace
 
-# Local compile solution filter (generated at build time)
-OpenDCL.Compile.slnf
-
 # WiX generated fragments, objs, and built msm/msi
 wix/out/
 
