@@ -693,6 +693,8 @@ BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_SIZE()
 	ON_NOTIFY_REFLECT(NM_SETFOCUS, OnSetfocus)
+	ON_NOTIFY_REFLECT(NM_CLICK, OnClick)
+	ON_NOTIFY_REFLECT(NM_RCLICK, OnRClick)
 	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYUP()
@@ -794,15 +796,41 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	// List-view consumes button-Up in its click/drag loop; MouseUp/Clicked from NM_CLICK.
 	__super::OnLButtonUp(nFlags, point);
-	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	// List-view does not dispatch WM_RBUTTONUP; MouseUp from NM_RCLICK.
 	__super::OnRButtonUp(nFlags, point);
+}
+
+void CArxGridCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	CPoint point = pNMIA->ptAction;
+	UINT nFlags = 0;
+	if (GetKeyState(VK_SHIFT) < 0)
+		nFlags |= MK_SHIFT;
+	if (GetKeyState(VK_CONTROL) < 0)
+		nFlags |= MK_CONTROL;
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
+	*pResult = 0;
+}
+
+void CArxGridCtrl::OnRClick(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	CPoint point = pNMIA->ptAction;
+	UINT nFlags = 0;
+	if (GetKeyState(VK_SHIFT) < 0)
+		nFlags |= MK_SHIFT;
+	if (GetKeyState(VK_CONTROL) < 0)
+		nFlags |= MK_CONTROL;
+	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+	*pResult = 0;
 }
 
 void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point)
