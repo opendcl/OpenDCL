@@ -1,6 +1,5 @@
 # OpenDCL Studio application (static MFC + static CRT, matching classic) +
-# per-language Studio.Res DLLs.
-# HTML Help / CHM remains classic for now (optional later OPENDCL_BUILD_HELP).
+# per-language Studio.Res DLLs + StudioHelp_<LANG> (hhc -> OpenDCL.chm).
 #
 # Not CAD runtime modules - FullDebug -> Debug (opendcl_map_fulldebug_to_debug).
 
@@ -384,10 +383,7 @@ function(opendcl_add_studio_help lang)
 
   add_custom_target(${_target}
     DEPENDS "${_chm}"
-    SOURCES
-      "${_hhp}"
-      "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.mak"
-      "${CMAKE_SOURCE_DIR}/Studio/Localized/BuildCHM.bat"
+    SOURCES "${_hhp}"
   )
   opendcl_solution_folder(_sh_folder "any" "StudioHelp_${lang}")
   set_target_properties(${_target} PROPERTIES FOLDER "${_sh_folder}")

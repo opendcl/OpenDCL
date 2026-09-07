@@ -110,8 +110,6 @@ previous release packages** - not to legacy source trees. Typical baselines:
   -NewPackageDir      dist\$ver
 ```
 
-(Alias: `compare-cmake-classic.ps1` with the same parameters.)
-
 Report under `wix\out\compare\<timestamp>\`. Review presence gaps, large size
 deltas, and PE arch mismatches. Intentional product changes should be explained
 in release notes; unexpected drops or arch flips are blockers.

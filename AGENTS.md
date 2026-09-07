@@ -21,18 +21,17 @@ without checking those resources.
 ## Repository layout
 
 ```text
-OpenDCL.sln              Classic Visual Studio solution
-CMakeLists.txt           CMake multi-runtime + Studio + RxInstall (preferred ship path)
+CMakeLists.txt           CMake multi-runtime + Studio + RxInstall (only ship path)
 cmake/                   Matrix, targets, helpers (see CMAKE.md)
 Common/                  Shared core + per-language SharedRes (<LANG>/)
 Library/                 Third-party (LibPNG, ZLib); CMake builds /MD and /MT variants
 Runtime/
-  ARX|BRX|GRX|ZRX/       Host-specific module projects (+ VI props)
+  ARX|BRX|GRX|ZRX/       Host folders: VI/*.props + ARXVI.h (CMake generates projects)
   Localized/<LANG>/      Runtime.Res + License.txt
   RxInstall/             Demand-load installer DLL (used as WiX Binary CA)
 Studio/
-  Studio.vcxproj         Classic Studio (static MFC + /MT)
-  Localized/<LANG>/      Studio.Res, Content (help + samples), HTMLHelp project
+  CMakeLists.txt         Studio (static MFC + /MT) + Studio.Res + StudioHelp
+  Localized/<LANG>/      Studio.Res, Content (help + samples)
 scripts/build-wix.ps1    Packaging entry point
 wix/                     WiX sources, UI bitmaps/icons, tools
 wix/out/                 Generated packages (gitignored)
@@ -44,7 +43,7 @@ wix/out/                 Generated packages (gitignored)
 Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-dev` /
 `vs2026-dev`: auto-detect SDKs, max one modern toolset >= v141 runtime per family;
 ship **`vs2022-full`** / **`vs2026-full`**; no-SDK PR presets **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** — see **`CMAKE.md`**).
-Private dry-run CI: `opendcl/build-lab` with `compile_engine=cmake`. First-time
+Private dry-run CI: `opendcl/build-lab` (CMake `vs2022-full`). First-time
 human steps: **`docs/BUILD-QUICKSTART.md`**.
 
 | Area | Notes |
@@ -80,7 +79,7 @@ Each language generally needs:
 
 - `Common/<LANG>/`
 - `Runtime/Localized/<LANG>/`
-- `Studio/Localized/<LANG>/` (including `Content/`, `Studio.Res/`, `HTMLHelp.<LANG>.vcxproj`)
+- `Studio/Localized/<LANG>/` (including `Content/` and `Studio.Res/`)
 - WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, UpgradeCode)
 - Studio package UI strings: `Studio/Localized/<LANG>/Package.wxl` (shortcuts, ARP comments, shell labels)
 
@@ -228,7 +227,6 @@ they are absent if the folder exists on disk. Invoke with `/skill-name` when pre
 
 - `wix/out/` - packages and gen fragments
 - `*.chm` - compiled help
-- `OpenDCL.Compile.slnf` - local compile filter
 - Build outputs: `Release/`, `Debug/`, `*.dll`, `*.exe`, etc. (see `.gitignore`)
 - **Do not ignore `.agents/`** merely because skills are uncommitted; leave them
   visible as untracked until the team chooses to commit them
@@ -255,7 +253,7 @@ Historical desktop steps and replacements:
 
 | Legacy | Replacement |
 |--------|-------------|
-| `!BuildRelease.bat` | Self-hosted compile (VS/MSBuild; private build-lab workflows optional) |
+| `!BuildRelease.bat` / classic `OpenDCL.sln` | CMake presets (`vs2022-full` ship; private build-lab `build-cmake.ps1`) |
 | vdproj / early WiX package | `scripts/build-wix.ps1`, `.github/workflows/package.yml` |
 | Full post-package release | `scripts/make-release.ps1` + **Make release** workflow |
 | `!MakeNewDist.bat` | `scripts/make-dist.ps1` (also called by make-release) |

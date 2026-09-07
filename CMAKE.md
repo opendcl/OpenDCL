@@ -6,10 +6,11 @@ CMake is the **supported multi-host and dual-arch ship path** for OpenDCL
 **New here?** First-time generate/build steps:
 **[docs/BUILD-QUICKSTART.md](docs/BUILD-QUICKSTART.md)**.
 
-Classic `OpenDCL.sln` / per-host `.vcxproj` trees remain in the repo for
-historical and transitional builds, but **full product dry-runs and ship
-packaging use CMake** (preset **`vs2022-full`**). Private CI:
-`opendcl/build-lab` package workflow with `compile_engine=cmake`.
+Hand-curated `OpenDCL.sln` / per-host `.vcxproj` trees were **removed**.
+CMake presets are the only generate/build path. Host identity stays in
+`Runtime/*/VI/*.props` plus `cmake/OpenDCLRuntimeMatrix.cmake`. Ship
+packaging uses preset **`vs2022-full`**. Private CI: `opendcl/build-lab`
+package workflow.
 
 Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 
@@ -485,13 +486,13 @@ Notes:
 ## Known gaps
 
 - Full multi-toolset ship CI parity for the oldest hosts (e.g. ARX.16 / BRX.9 and some `v140` + latest Windows SDK edge cases still need host-specific care; toolset-matched zlib/png cover the main UCRT link gap)
-- Classic `.vcxproj` rows may lag CMake for brand-new hosts (e.g. BRX.27 is in the CMake matrix + WiX/RxInstall inventory; classic project scaffolding is optional)
 
 ## Regenerating the matrix
 
 ```powershell
-# See scripts/generate-runtime-matrix.ps1 when present
+pwsh scripts/generate-runtime-matrix.ps1
 ```
 
-The matrix is derived from each `Runtime/*/VI/*.props` plus toolset/output
-names from the corresponding classic `.vcxproj` where one exists.
+SDK paths, defines, and libs come from each `Runtime/*/VI/*.props`. **TOOLSET**,
+**OUTPUT_NAME**, and **CHARACTER_SET** are preserved from the existing cmake
+matrix (do not drop those fields when adding a host).

@@ -27,10 +27,11 @@ OpenDCL is based on ObjectDCL (3rd Day Software), released as open source under 
 ## Repository layout
 
 ```text
-OpenDCL.sln          Visual Studio solution
+CMakeLists.txt       CMake multi-runtime + Studio + RxInstall (supported build)
+CMakePresets.json    Dev / full / no-SDK presets (see CMAKE.md)
 Common/              Shared dialog/control core
 Library/             Bundled third-party code (LibPNG, ZLib)
-Runtime/             CAD runtime modules (ARX / BRX / GRX / ZRX variants)
+Runtime/             CAD runtime modules (ARX / BRX / GRX / ZRX) + VI props
 Studio/              OpenDCL Studio (dialog editor) + localized help content
 ```
 
@@ -58,9 +59,7 @@ cmake --build --preset vs2022-dev-debug
 ```
 
 Open the generated solution under `build/<preset>/<preset>.sln` (for example
-`build/vs2022-dev/vs2022-dev.sln`).
-
-Classic `OpenDCL.sln` remains for historical / transitional builds.
+`build/vs2022-dev/vs2022-dev.sln`). There is no checked-in `OpenDCL.sln`.
 
 **Older Platform Toolsets:** historic matrix rows use pre-VS2015 toolsets
 (`v70`-`v120`, and related XP variants). Install
