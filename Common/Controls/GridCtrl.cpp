@@ -2,6 +2,11 @@
 //
 
 #include "stdafx.h"
+// Temporary #2800 diagnostics: filter Debug Output for [GridMouse2800]
+#ifndef OPENDCL_DIAG_GRID_MOUSE
+#define OPENDCL_DIAG_GRID_MOUSE 1
+#endif
+
 #include "GridCtrl.h"
 #include "ControlPane.h"
 #include "DclControlTemplate.h"
@@ -1048,6 +1053,17 @@ void CGridCtrl::SetupColumns()
 
 bool CGridCtrl::EditCurCell()
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] EditCurCell enter cell=%d,%d style=%d actOnUp=%d\r\n"),
+			mCurrentCell ? mCurrentCell.row() : -1,
+			mCurrentCell ? mCurrentCell.col() : -1,
+			mCurrentCell ? (int)GetEffectiveCellStyle( mCurrentCell.row(), mCurrentCell.col() ) : -1,
+			mbActOnButtonUp ? 1 : 0 );
+		OutputDebugString( s );
+	}
+#endif
 	if( mpCellEditCtrl && mCurrentCell && mCurrentCell.row() == mpCellEditCtrl->row() && mCurrentCell.col() == mpCellEditCtrl->col() )
 		return true; //already editing this cell
 	HideEditControls();
@@ -1058,9 +1074,20 @@ bool CGridCtrl::EditCurCell()
 	}
 	OnEditCurCell();
 	mpCellEditCtrl = CreateEditControl( mCurrentCell.row(), mCurrentCell.col() );
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] EditCurCell CreateEditControl %s\r\n"),
+			mpCellEditCtrl ? _T("created") : _T("NULL") );
+		OutputDebugString( s );
+	}
+#endif
 	if (!mpCellEditCtrl)
 	{
 		OnEndEditCurCell();
+#if OPENDCL_DIAG_GRID_MOUSE
+		OutputDebugString( _T("[GridMouse2800] EditCurCell exit after NULL editor EndEdit\r\n") );
+#endif
 		return true;
 	}
 	mbActOnButtonUp = true;
@@ -2030,22 +2057,41 @@ BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	OutputDebugString( _T("[GridMouse2800] CGridCtrl::OnLButtonDown before __super\r\n") );
+#endif
 	__super::OnLButtonDown(nFlags, point);
+#if OPENDCL_DIAG_GRID_MOUSE
+	OutputDebugString( _T("[GridMouse2800] CGridCtrl::OnLButtonDown after __super (ListCtrl)\r\n") );
+#endif
 	mbActOnButtonUp = false;
 	int nRow = -1;
 	int nCol = -1;
 	if( !CellHitTest( point, nRow, nCol ) )
 	{
 		HideEditControls();
+#if OPENDCL_DIAG_GRID_MOUSE
+		OutputDebugString( _T("[GridMouse2800] CGridCtrl::OnLButtonDown miss hit-test\r\n") );
+#endif
 		return;
 	}
 	if( nRow != mCurrentCell.row() || nCol != mCurrentCell.col() )
 		SetCurCell( nRow, nCol );
 	EditCurCell();
+#if OPENDCL_DIAG_GRID_MOUSE
+	OutputDebugString( _T("[GridMouse2800] CGridCtrl::OnLButtonDown exit after EditCurCell\r\n") );
+#endif
 }
 
 void CGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] CGridCtrl::OnLButtonUp enter actOnUp=%d\r\n"), mbActOnButtonUp ? 1 : 0 );
+		OutputDebugString( s );
+	}
+#endif
 	__super::OnLButtonUp(nFlags, point);
 	if( !mbActOnButtonUp )
 		return;

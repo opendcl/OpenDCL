@@ -2,6 +2,26 @@
 //
 
 #include "stdafx.h"
+// Temporary #2800 diagnostics: filter Debug Output for [GridMouse2800]
+#ifndef OPENDCL_DIAG_GRID_MOUSE
+#define OPENDCL_DIAG_GRID_MOUSE 1
+#endif
+#if OPENDCL_DIAG_GRID_MOUSE
+static void GridMouse2800Log( LPCTSTR pszMsg )
+{
+	OutputDebugString( pszMsg );
+}
+static void GridMouse2800LogEvent( LPCTSTR pszWhere, Prop::Id id, TDclControlPtr pTemplate )
+{
+	CString sHandler;
+	if( pTemplate )
+		sHandler = pTemplate->GetStringProperty( id );
+	CString s;
+	s.Format( _T("[GridMouse2800] %s handler=%s\r\n"), pszWhere,
+		sHandler.IsEmpty() ? _T("(empty)") : (LPCTSTR)sHandler );
+	OutputDebugString( s );
+}
+#endif
 #include "ArxGridCtrl.h"
 #include "DclControlTemplate.h"
 #include "InvokeMethod.h"
@@ -574,17 +594,45 @@ bool CArxGridCtrl::ApplyProperty( TPropertyPtr pProp )
 
 void CArxGridCtrl::OnEditCurCell()
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnEditCurCell BeginLabelEdit cell=%d,%d\r\n"),
+			mCurrentCell.row(), mCurrentCell.col() );
+		GridMouse2800Log( s );
+		GridMouse2800LogEvent( _T("OnEditCurCell BeginLabelEdit"), Prop::EventBeginLabelEdit, mpTemplate );
+	}
+#endif
 	__super::OnEditCurCell();
 	GetArxServices()->HandleEvent( Prop::EventBeginLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnEditCurCell after HandleEvent BeginLabelEdit\r\n") );
+#endif
 }
 
 void CArxGridCtrl::OnEndEditCurCell()
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnEndEditCurCell enter focusIsGrid=%d\r\n"), GetFocus() == this ? 1 : 0 );
+		GridMouse2800Log( s );
+		GridMouse2800LogEvent( _T("OnEndEditCurCell EndLabelEdit"), Prop::EventEndLabelEdit, mpTemplate );
+	}
+#endif
 	__super::OnEndEditCurCell();
 	if( GetArxServices()->HandleEvent( Prop::EventEndLabelEdit, args_NN( mCurrentCell.row(), mCurrentCell.col() ) ) )
 		return;
 	if( GetFocus() != this )
+	{
+#if OPENDCL_DIAG_GRID_MOUSE
+		GridMouse2800Log( _T("[GridMouse2800] OnEndEditCurCell firing KillFocus\r\n") );
+#endif
 		GetArxServices()->HandleEvent( Prop::EventKillFocus );
+	}
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnEndEditCurCell exit\r\n") );
+#endif
 }
 
 CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
@@ -717,16 +765,49 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 
 void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnLButtonDown enter flags=%u pt=%d,%d\r\n"), nFlags, point.x, point.y );
+		GridMouse2800Log( s );
+		GridMouse2800LogEvent( _T("OnLButtonDown MouseDown"), Prop::EventMouseDown, mpTemplate );
+	}
+#endif
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnLButtonDown after HandleEvent MouseDown\r\n") );
+#endif
 	__super::OnLButtonDown(nFlags, point);
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnLButtonDown after __super cell=%d,%d\r\n"),
+			mCurrentCell ? mCurrentCell.row() : -1, mCurrentCell ? mCurrentCell.col() : -1 );
+		GridMouse2800Log( s );
+	}
+#endif
 	if( !mCurrentCell )
 		return;
 }
 
 void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnRButtonDown enter flags=%u\r\n"), nFlags );
+		GridMouse2800Log( s );
+		GridMouse2800LogEvent( _T("OnRButtonDown MouseDown"), Prop::EventMouseDown, mpTemplate );
+	}
+#endif
 	GetArxServices()->HandleEvent( Prop::EventMouseDown, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnRButtonDown after HandleEvent MouseDown\r\n") );
+#endif
 	__super::OnRButtonDown(nFlags, point);
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnRButtonDown after __super\r\n") );
+#endif
 }
 
 void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point)
@@ -794,15 +875,43 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnLButtonUp enter flags=%u\r\n"), nFlags );
+		GridMouse2800Log( s );
+		GridMouse2800LogEvent( _T("OnLButtonUp MouseUp"), Prop::EventMouseUp, mpTemplate );
+	}
+#endif
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 1, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnLButtonUp after HandleEvent MouseUp\r\n") );
+#endif
 	__super::OnLButtonUp(nFlags, point);
 	GetArxServices()->HandleEvent( Prop::EventClicked, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnLButtonUp exit after Clicked\r\n") );
+#endif
 }
 
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnRButtonUp enter flags=%u\r\n"), nFlags );
+		GridMouse2800Log( s );
+		GridMouse2800LogEvent( _T("OnRButtonUp MouseUp"), Prop::EventMouseUp, mpTemplate );
+	}
+#endif
 	GetArxServices()->HandleEvent( Prop::EventMouseUp, args_NNNN( 2, nFlags, ToDIP( point.x ), ToDIP( point.y ) ) );
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnRButtonUp after HandleEvent MouseUp\r\n") );
+#endif
 	__super::OnRButtonUp(nFlags, point);
+#if OPENDCL_DIAG_GRID_MOUSE
+	GridMouse2800Log( _T("[GridMouse2800] OnRButtonUp after __super\r\n") );
+#endif
 }
 
 void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point)
@@ -824,6 +933,14 @@ void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxGridCtrl::OnSelectionChanged()
 {
+#if OPENDCL_DIAG_GRID_MOUSE
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnSelectionChanged cell=%d,%d\r\n"),
+			mCurrentCell.row(), mCurrentCell.col() );
+		GridMouse2800Log( s );
+	}
+#endif
 	GetArxServices()->HandleEvent( Prop::EventSelChanged, args_NN( mCurrentCell.row(), mCurrentCell.col() ) );
 }
 
