@@ -63,6 +63,36 @@ static bool httpGetText( LPCTSTR pszUrl, CStringA& sBody );
 static CStringA sanitizeVersionString( CStringA sVersion );
 static bool isFourPartVersion( const CStringA& sVersion );
 static int compareFourPartVersions( const CStringA& sLeft, const CStringA& sRight );
+static HANDLE SwapHandle( HANDLE* pSlot, HANDLE hNew );
+static void CloseInternetHandles();
+static BOOL IsShuttingDown();
+
+static volatile LONG g_nShutdown = 0;
+static HANDLE g_hCheckThread = NULL;
+static HANDLE g_hNotifyThread = NULL;
+static HWND g_hwndNotify = NULL;
+static HINTERNET g_hInternet = NULL;
+static HINTERNET g_hRequest = NULL;
+
+static HANDLE SwapHandle( HANDLE* pSlot, HANDLE hNew )
+{
+	return (HANDLE)InterlockedExchangePointer( (PVOID*)pSlot, hNew );
+}
+
+static void CloseInternetHandles()
+{
+	HINTERNET hRequest = (HINTERNET)InterlockedExchangePointer( (PVOID*)&g_hRequest, NULL );
+	HINTERNET hInternet = (HINTERNET)InterlockedExchangePointer( (PVOID*)&g_hInternet, NULL );
+	if( hRequest )
+		InternetCloseHandle( hRequest );
+	if( hInternet )
+		InternetCloseHandle( hInternet );
+}
+
+static BOOL IsShuttingDown()
+{
+	return InterlockedCompareExchange( &g_nShutdown, 0, 0 ) != 0;
+}
 
 
 ATOM trayIconWndClass()
@@ -91,17 +121,47 @@ ATOM trayIconWndClass()
 
 bool UpdateCheck( LPCTSTR pszProductName, LPCTSTR pszInstalledVersion /*N.N.N.N format*/ )
 {
+	if( IsShuttingDown() )
+		return false;
 	UpdateCheckParams_t* pParams =
 		new UpdateCheckParams_t( pszProductName, pszInstalledVersion, theWorkspace.GetLanguage() );
-	DWORD dwThreadId;
-	HANDLE hThread = CreateThread( NULL, 4096, BackgroundCheckForUpdates, pParams, 0, &dwThreadId );
+	DWORD dwThreadId = 0;
+	HANDLE hThread = CreateThread( NULL, 0, BackgroundCheckForUpdates, pParams, 0, &dwThreadId );
 	if( !hThread )
 	{
 		delete pParams;
 		return false;
 	}
-	CloseHandle( hThread );
+	HANDLE hPrev = SwapHandle( &g_hCheckThread, hThread );
+	if( hPrev )
+		CloseHandle( hPrev );
 	return true;
+}
+
+void UpdateCheckShutdown()
+{
+	InterlockedExchange( &g_nShutdown, 1 );
+	CloseInternetHandles();
+	HWND hwndNotify = (HWND)InterlockedExchangePointer( (PVOID*)&g_hwndNotify, NULL );
+	if( hwndNotify && ::IsWindow( hwndNotify ) )
+		PostMessage( hwndNotify, WM_QUIT, 0, 0 );
+	HANDLE hCheck = SwapHandle( &g_hCheckThread, NULL );
+	HANDLE hNotify = SwapHandle( &g_hNotifyThread, NULL );
+	HANDLE wait[2];
+	DWORD nWait = 0;
+	if( hCheck )
+		wait[nWait++] = hCheck;
+	if( hNotify )
+		wait[nWait++] = hNotify;
+	DWORD wr = WAIT_OBJECT_0;
+	if( nWait )
+		wr = WaitForMultipleObjects( nWait, wait, TRUE, 8000 );
+	if( hCheck )
+		CloseHandle( hCheck );
+	if( hNotify )
+		CloseHandle( hNotify );
+	if( wr != WAIT_TIMEOUT )
+		InterlockedExchange( &g_nShutdown, 0 );
 }
 
 bool isUsingShellV1()
@@ -219,6 +279,8 @@ int compareFourPartVersions( const CStringA& sLeft, const CStringA& sRight )
 bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
 {
 	sBody.Empty();
+	if( IsShuttingDown() )
+		return false;
 	HINTERNET hConnection = InternetOpen( _T("OpenDCL/1.0"),
 																				INTERNET_OPEN_TYPE_PRECONFIG,
 																				NULL,
@@ -226,6 +288,12 @@ bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
 																				0 );
 	if( !hConnection )
 		return false;
+	InterlockedExchangePointer( (PVOID*)&g_hInternet, hConnection );
+	if( IsShuttingDown() )
+	{
+		CloseInternetHandles();
+		return false;
+	}
 
 	// InternetOpenUrl follows redirects (http→https, apex→www) and uses HTTPS when the URL says so.
 	HINTERNET hRequest = InternetOpenUrl(
@@ -239,7 +307,13 @@ bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
 		0 );
 	if( !hRequest )
 	{
-		InternetCloseHandle( hConnection );
+		CloseInternetHandles();
+		return false;
+	}
+	InterlockedExchangePointer( (PVOID*)&g_hRequest, hRequest );
+	if( IsShuttingDown() )
+	{
+		CloseInternetHandles();
 		return false;
 	}
 
@@ -252,8 +326,7 @@ bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
 											NULL ) ||
 			dwStatus < 200 || dwStatus > 299 )
 	{
-		InternetCloseHandle( hRequest );
-		InternetCloseHandle( hConnection );
+		CloseInternetHandles();
 		return false;
 	}
 
@@ -261,7 +334,8 @@ bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
 	const DWORD kMaxBody = 64;
 	CHAR szChunk[64];
 	DWORD cbRead = 0;
-	while( InternetReadFile( hRequest, szChunk, sizeof(szChunk) - 1, &cbRead ) && cbRead > 0 )
+	while( !IsShuttingDown() &&
+				 InternetReadFile( hRequest, szChunk, sizeof(szChunk) - 1, &cbRead ) && cbRead > 0 )
 	{
 		szChunk[cbRead] = 0;
 		sBody += szChunk;
@@ -272,9 +346,8 @@ bool httpGetText( LPCTSTR pszUrl, CStringA& sBody )
 		}
 	}
 
-	InternetCloseHandle( hRequest );
-	InternetCloseHandle( hConnection );
-	return !sBody.IsEmpty();
+	CloseInternetHandles();
+	return !IsShuttingDown() && !sBody.IsEmpty();
 }
 
 bool CheckForUpdates( const UpdateCheckParams_t& Params, UpdateNotificationParams_t* pResponse /*= NULL*/ )
@@ -332,13 +405,15 @@ bool CheckForUpdates( const UpdateCheckParams_t& Params, UpdateNotificationParam
 			{
 				UpdateNotificationParams_t* pParams =
 					new UpdateNotificationParams_t( sTitle, sMessage, sAction );
-				DWORD dwThreadId;
-				HANDLE hThread = CreateThread( NULL, 4096, BackgroundUpdateNotification, pParams, 0, &dwThreadId );
+				DWORD dwThreadId = 0;
+				HANDLE hThread = CreateThread( NULL, 0, BackgroundUpdateNotification, pParams, 0, &dwThreadId );
 				if( !hThread )
 					delete pParams;
 				else
 				{
-					CloseHandle( hThread );
+					HANDLE hPrev = SwapHandle( &g_hNotifyThread, hThread );
+					if( hPrev )
+						CloseHandle( hPrev );
 					bFailed = false;
 				}
 			}
@@ -353,15 +428,31 @@ DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam )
 {
 	UpdateCheckParams_t Params( *(UpdateCheckParams_t*)pvParam );
 	delete (UpdateCheckParams_t*)pvParam;
-	CheckForUpdates( Params );
+	if( !IsShuttingDown() )
+		CheckForUpdates( Params );
 	return 0;
 }
 
 
 DWORD WINAPI BackgroundUpdateNotification( LPVOID pvParam )
 {
+	if( IsShuttingDown() )
+	{
+		delete (UpdateNotificationParams_t*)pvParam;
+		return 0;
+	}
 	HWND hwndAcad = adsw_acadMainWnd();
 	HWND hwnd = CreateWindow( (LPCTSTR)trayIconWndClass(), NULL, WS_ICONIC | WS_CHILD, 0, 0, 0, 0, hwndAcad, NULL, _hdllInstance, pvParam );
+	InterlockedExchangePointer( (PVOID*)&g_hwndNotify, hwnd );
+	if( !hwnd || IsShuttingDown() )
+	{
+		if( hwnd && ::IsWindow( hwnd ) )
+			PostMessage( hwnd, WM_QUIT, 0, 0 );
+		else
+			delete (UpdateNotificationParams_t*)pvParam;
+		if( !hwnd )
+			return 0;
+	}
 	static class _autohwnd //to make sure the tray icon is destroyed when this module is unloaded
 	{
 		std::set< HWND > hwnds;
