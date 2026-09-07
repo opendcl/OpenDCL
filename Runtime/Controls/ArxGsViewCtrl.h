@@ -72,6 +72,7 @@ protected:
 		AcGsModel* mpGhostModel;
 	#endif
 		AcGsView* mpView;
+		AcApDocument* mpOwnerDoc;
 	public:
 		GsViewManager( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
 			: mpDb( pDb )
@@ -87,6 +88,7 @@ protected:
 			, mpGhostModel( NULL )
 		#endif
 			, mpView( NULL )
+			, mpOwnerDoc( NULL )
 			{
 				acedEditor->addReactor(this);
 				assert( mpCtrl != NULL );
@@ -97,6 +99,7 @@ protected:
 					assert( pManager != NULL );
 					if( !pManager )
 						return;
+					mpOwnerDoc = acDocManager ? acDocManager->mdiActiveDocument() : NULL;
 				#if (_ACADTARGET >= 20)
 					AcGsKernelDescriptor KernelDesc;
 					KernelDesc.addRequirement(AcGsKernelDescriptor::k3DDrawing);
@@ -252,10 +255,40 @@ protected:
 				if( mpDb )
 					mpDb->removeReactor(this);
 				mpDb = NULL;
+				mpOwnerDoc = NULL;
 				mpCtrl->OnNeedRepaint( false );
 			}
 	public:
 		AcDbDatabase* database() const { return mpDb; }
+		AcApDocument* ownerDocument() const { return mpOwnerDoc; }
+		void abandon()
+			{
+				mpModel = NULL;
+				mpDevice = NULL;
+				mpView = NULL;
+			#ifdef USE_ORBIT_GADGET
+				mpGhostModel = NULL;
+			#endif
+			#if (_ACADTARGET >= 20)
+				if( mpKernel )
+				{
+				#if !defined(_BRXTARGET) || (_BRXTARGET >= 17)
+					mpKernel->removeReactor( this );
+				#endif
+					mpKernel = NULL;
+				}
+			#else
+				#ifndef _BRXTARGET
+				if( mpFactory )
+					mpFactory->removeReactor( this );
+				#endif
+				mpFactory = NULL;
+			#endif
+				if( mpDb )
+					mpDb->removeReactor( this );
+				mpDb = NULL;
+				mpOwnerDoc = NULL;
+			}
 		void setDrawable( AcGiDrawable* pDrawable )
 			{
 				if( mpView )
@@ -360,6 +393,7 @@ protected:
 	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }
 #endif
 	void clearAll();
+	void ReleaseGsOwnedBy( AcApDocument* pDoc );
 	bool UpdateModel( AcGiDrawable* pDrawable );
 
 public:

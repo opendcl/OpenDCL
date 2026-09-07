@@ -94,10 +94,10 @@ class CArxBlockViewCtrl : public CArxGsViewCtrl
 			{ acDocManager->addReactor( this ); }
 		~CDocReactor()
 			{ acDocManager->removeReactor( this ); }
-		void documentActivated(AcApDocument* pActivatedDoc)
+		void documentActivated(AcApDocument* pActivatedDoc) override
 			{ mpCtrl->RefreshBlock(); }
-		void documentDestroyed(const char* filename)
-			{ mpCtrl->RefreshBlock(); }
+		void documentToBeDestroyed(AcApDocument* pDocToDestroy) override
+			{ mpCtrl->ReleaseGsOwnedBy( pDocToDestroy ); }
 	} mDocReactor;
 
 	class CEdReactor : public AcEditorReactor 
