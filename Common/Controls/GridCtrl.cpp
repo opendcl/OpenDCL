@@ -2052,6 +2052,18 @@ BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg)
 		if( pMsg->message != WM_MOUSEMOVE )
 			mTipWnd.Hide();
 	}
+#if OPENDCL_DIAG_GRID_MOUSE
+	if( pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_LBUTTONUP ||
+		pMsg->message == WM_RBUTTONDOWN || pMsg->message == WM_RBUTTONUP )
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] PreTranslate hwnd=%p msg=0x%04X wp=%u lp=%d,%d capture=%p focus=%p\r\n"),
+			(void*)pMsg->hwnd, pMsg->message, (UINT)pMsg->wParam,
+			(short)LOWORD(pMsg->lParam), (short)HIWORD(pMsg->lParam),
+			(void*)::GetCapture(), (void*)::GetFocus() );
+		OutputDebugString( s );
+	}
+#endif
 	return __super::PreTranslateMessage(pMsg);
 }
 

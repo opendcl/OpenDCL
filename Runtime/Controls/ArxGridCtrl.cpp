@@ -781,8 +781,11 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 #if OPENDCL_DIAG_GRID_MOUSE
 	{
 		CString s;
-		s.Format( _T("[GridMouse2800] OnLButtonDown after __super cell=%d,%d\r\n"),
-			mCurrentCell ? mCurrentCell.row() : -1, mCurrentCell ? mCurrentCell.col() : -1 );
+		s.Format( _T("[GridMouse2800] OnLButtonDown after __super cell=%d,%d keyL=%d keyR=%d capture=%p\r\n"),
+			mCurrentCell ? mCurrentCell.row() : -1, mCurrentCell ? mCurrentCell.col() : -1,
+			(::GetKeyState( VK_LBUTTON ) & 0x8000) ? 1 : 0,
+			(::GetKeyState( VK_RBUTTON ) & 0x8000) ? 1 : 0,
+			(void*)::GetCapture() );
 		GridMouse2800Log( s );
 	}
 #endif
@@ -806,7 +809,14 @@ void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 #endif
 	__super::OnRButtonDown(nFlags, point);
 #if OPENDCL_DIAG_GRID_MOUSE
-	GridMouse2800Log( _T("[GridMouse2800] OnRButtonDown after __super\r\n") );
+	{
+		CString s;
+		s.Format( _T("[GridMouse2800] OnRButtonDown after __super keyL=%d keyR=%d capture=%p\r\n"),
+			(::GetKeyState( VK_LBUTTON ) & 0x8000) ? 1 : 0,
+			(::GetKeyState( VK_RBUTTON ) & 0x8000) ? 1 : 0,
+			(void*)::GetCapture() );
+		GridMouse2800Log( s );
+	}
 #endif
 }
 
