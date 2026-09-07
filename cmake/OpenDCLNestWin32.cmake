@@ -404,6 +404,9 @@ function(opendcl_add_win32_nest)
     endforeach()
     message(STATUS "Win32 Res gate for Studio/runtimes: Res_Win32")
   endif()
+  if(TARGET Res_Win32)
+    opendcl_attach_pending_runtime_res_copies()
+  endif()
 
   # Nest_Win32: Nest_Libs -> runtime nests -> common (serial via deps).
   if(NOT TARGET Nest_Win32)

@@ -22,6 +22,48 @@ function(opendcl_split_bar input out_var)
   set(${out_var} "${_list}" PARENT_SCOPE)
 endfunction()
 
+# Copy ENU Runtime.Res.dll next to each module (all configs).
+function(opendcl_register_runtime_res_copy runtime_tgt)
+  set_property(GLOBAL APPEND PROPERTY OPENDCL_RUNTIME_RES_COPY_TARGETS "${runtime_tgt}")
+endfunction()
+
+function(opendcl_attach_pending_runtime_res_copies)
+  if(TARGET RuntimeRes_CopyToModules)
+    return()
+  endif()
+  get_property(_tgts GLOBAL PROPERTY OPENDCL_RUNTIME_RES_COPY_TARGETS)
+  if(NOT _tgts)
+    return()
+  endif()
+  if(TARGET RuntimeRes_ENU)
+    set(_res RuntimeRes_ENU)
+    set(_src "$<TARGET_FILE:RuntimeRes_ENU>")
+  elseif(TARGET Res_Win32)
+    set(_res Res_Win32)
+    set(_src
+      "${OPENDCL_OUTPUT_ROOT}/Runtime/Localized/ENU/Runtime.Res/${OPENDCL_CFG_DIR}/Runtime.Res.dll")
+  else()
+    return()
+  endif()
+  set(_cmds)
+  foreach(_rt IN LISTS _tgts)
+    list(APPEND _cmds
+      COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${_rt}>/ENU"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${_src}" "$<TARGET_FILE_DIR:${_rt}>/Runtime.Res.dll"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${_src}" "$<TARGET_FILE_DIR:${_rt}>/ENU/Runtime.Res.dll")
+  endforeach()
+  add_custom_target(RuntimeRes_CopyToModules ALL ${_cmds}
+    COMMENT "Copy Runtime.Res.dll next to runtime modules"
+    VERBATIM)
+  add_dependencies(RuntimeRes_CopyToModules ${_res})
+  set_property(TARGET RuntimeRes_CopyToModules PROPERTY FOLDER "Runtime/Localized Resources")
+  foreach(_rt IN LISTS _tgts)
+    add_dependencies(${_rt} RuntimeRes_CopyToModules)
+  endforeach()
+endfunction()
+
 function(opendcl_add_runtime id)
   opendcl_rt_get("${id}" FAMILY _family)
   opendcl_rt_get("${id}" ARCH _arch)
@@ -408,6 +450,7 @@ function(opendcl_add_runtime id)
   if(TARGET Res_Win32)
     add_dependencies(${_target} Res_Win32)
   endif()
+  opendcl_register_runtime_res_copy(${_target})
 
   # Optional override file: cmake/overrides/<id>.cmake defining opendcl_apply_override(target)
   set(_override "${CMAKE_SOURCE_DIR}/cmake/overrides/${id}.cmake")
@@ -432,4 +475,5 @@ function(opendcl_add_selected_runtimes)
     opendcl_add_runtime("${_id}")
   endforeach()
   set(OPENDCL_ENABLED_RUNTIMES "${_enabled}" CACHE INTERNAL "" FORCE)
+  opendcl_attach_pending_runtime_res_copies()
 endfunction()
