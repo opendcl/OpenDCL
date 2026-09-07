@@ -16,7 +16,7 @@
       .\scripts\update-site-versions.ps1 -DevVersion 10.1.1.1
 
   Promoting a shipped dev build to **stable** (usual stable release):
-    Does not invent a new number; copies current → stable (optionally after
+    Does not invent a new number; copies current -> stable (optionally after
     setting -DevVersion in the same run):
 
       .\scripts\update-site-versions.ps1 -PromoteToStable
@@ -39,7 +39,7 @@
 
 .PARAMETER StableVersion
   Four-part version for version.txt and versions.js "stable".
-  Prefer -PromoteToStable for the common case of promoting current → stable.
+  Prefer -PromoteToStable for the common case of promoting current -> stable.
 
 .PARAMETER PromoteToStable
   Set stable to the resulting current (after -DevVersion if provided, else
@@ -100,7 +100,7 @@ function Read-PlainVersion([string] $path) {
 }
 
 function Write-PlainVersion([string] $path, [string] $version) {
-  # Single line, LF, no BOM — matches typical Pages/static hosts and client trim().
+  # Single line, LF, no BOM - matches typical Pages/static hosts and client trim().
   $text = $version + "`n"
   $utf8NoBom = New-Object System.Text.UTF8Encoding $false
   [System.IO.File]::WriteAllText($path, $text, $utf8NoBom)
@@ -201,7 +201,7 @@ if ($PromoteToStable) {
   if ($StableVersion) {
     # Explicit stable wins; still require it equals resulting current unless both set intentionally different.
     if ($newStable -ne $newDev) {
-      Write-Warning "PromoteToStable with -StableVersion: stable=$newStable current=$newDev (not equal — exception path)."
+      Write-Warning "PromoteToStable with -StableVersion: stable=$newStable current=$newDev (not equal - exception path)."
     }
   }
   else {
@@ -213,7 +213,7 @@ if (-not $DevVersion -and -not $StableVersion -and -not $PromoteToStable) {
   throw @"
 Nothing to do. Specify one of:
   -DevVersion A.B.C.D              # normal ship (current/dev only)
-  -PromoteToStable                 # promote current → stable
+  -PromoteToStable                 # promote current -> stable
   -StableVersion A.B.C.D           # exception: set stable only
   combinations of the above
 "@
@@ -269,7 +269,7 @@ if ($GitCommit) {
       $msg = "Site versions: stable=$newStable current=$newDev"
       git commit -m $msg
       if ($LASTEXITCODE -ne 0) { throw "git commit failed ($LASTEXITCODE)" }
-      Write-Host "Git: committed — $msg"
+      Write-Host "Git: committed - $msg"
       Write-Host "Push when ready: git -C `"$SiteRoot`" push"
     }
   }
