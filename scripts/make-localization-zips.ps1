@@ -137,7 +137,7 @@ function New-LangZip {
       "How to use",
       "----------",
       "1. Edit translated strings in the .rc files and help .htm files.",
-      "2. Prefer submitting a pull request or a zip of your changes on the OpenDCL forum.",
+      "2. Prefer submitting a pull request or a zip of your changes via https://www.opendcl.com/discussion/ .",
       "3. To start a new language, clone ENU (or this pack) to a new three-letter code",
       "   and rewire projects + WiX (see add-language skill / docs).",
       "",
