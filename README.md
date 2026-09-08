@@ -10,7 +10,9 @@ version **10.1.2.1** - see `Runtime/ARX.rc` FILEVERSION / PRODUCTVERSION).
 | Resource | URL |
 | --- | --- |
 | Project site / downloads | [https://opendcl.github.io/](https://opendcl.github.io/) (GitHub Pages) - [https://www.opendcl.com/](https://www.opendcl.com/) |
-| Community (new Q&A) | [GitHub Discussions](https://github.com/opendcl/community/discussions) |
+| Ask a question | [GitHub Discussions Q&A](https://github.com/opendcl/community/discussions/new?category=q-a) |
+| Wishlist | [GitHub Discussions Wishlist](https://github.com/opendcl/community/discussions/new?category=ideas) |
+| Report a bug | [OpenDCL Issues](https://github.com/opendcl/OpenDCL/issues/new?template=bug.yml) |
 | Forum archive (history) | [https://opendcl.github.io/forum-archive/](https://opendcl.github.io/forum-archive/) |
 | Online help | [https://opendcl.github.io/HelpFiles/](https://opendcl.github.io/HelpFiles/) or [https://www.opendcl.com/HelpFiles/](https://www.opendcl.com/HelpFiles/) |
 | Releases (installers) | [GitHub Releases](https://github.com/opendcl/OpenDCL/releases) (when published) |
@@ -71,7 +73,9 @@ There is no public CI build that produces official installers from this tree alo
 
 ## Contributing
 
-- Discuss product topics in [OpenDCL community Discussions](https://github.com/opendcl/community/discussions).
+- **Ask a question** in [Discussions Q&A](https://github.com/opendcl/community/discussions/new?category=q-a).
+- **Wishlist** (new capabilities) in [Discussions Wishlist](https://github.com/opendcl/community/discussions/new?category=ideas).
+- **Report a bug** with [OpenDCL Issues](https://github.com/opendcl/OpenDCL/issues/new?template=bug.yml).
 - Historic forum threads: [forum archive](https://opendcl.github.io/forum-archive/).
 - Prefer pull requests against `main` once the GitHub project is active.
 

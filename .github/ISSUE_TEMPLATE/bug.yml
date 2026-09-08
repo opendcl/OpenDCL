@@ -1,0 +1,56 @@
+name: Bug
+description: Something in OpenDCL already exists but misbehaves
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for **defects** (crash, wrong result, regression).
+
+        - **How-to / support** → [Ask a question](https://github.com/opendcl/community/discussions/new?category=q-a)
+        - **New capability** → [Wishlist](https://github.com/opendcl/community/discussions/new?category=ideas)
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Studio
+        - Runtime
+        - Help
+        - Installer
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OpenDCL version
+      placeholder: "e.g. 10.1.2.1 (Studio Help → About, or installer name)"
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: CAD host and version
+      placeholder: "e.g. AutoCAD 2026, BricsCAD V26, GstarCAD 2025"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps. Attach a minimal .odcl / .lsp if you can.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
