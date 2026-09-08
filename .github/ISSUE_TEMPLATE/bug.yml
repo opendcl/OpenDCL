@@ -8,7 +8,7 @@ body:
         Use this form for **defects** (crash, wrong result, regression).
 
         - **How-to / support** → [Ask a question](https://github.com/opendcl/community/discussions/new?category=q-a)
-        - **New capability** → [Wishlist](https://github.com/opendcl/community/discussions/new?category=ideas)
+        - **New capability** → [Wishlist](https://github.com/opendcl/community/discussions/new?category=wishlist)
   - type: dropdown
     id: component
     attributes:

@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/opendcl/community/discussions/new?category=q-a
     about: How-to and support for Studio, Runtime, and AutoLISP
   - name: Wishlist
-    url: https://github.com/opendcl/community/discussions/new?category=ideas
+    url: https://github.com/opendcl/community/discussions/new?category=wishlist
     about: Request something OpenDCL cannot do today
