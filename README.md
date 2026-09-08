@@ -78,6 +78,7 @@ There is no public CI build that produces official installers from this tree alo
 - **Report a bug** with [OpenDCL Issues](https://github.com/opendcl/OpenDCL/issues/new?template=bug.yml).
 - Historic forum threads: [forum archive](https://opendcl.github.io/forum-archive/).
 - Prefer pull requests against `main` once the GitHub project is active.
+- **Squash-merge** PRs unless there is a reason to keep commits separated.
 
 ## History
 

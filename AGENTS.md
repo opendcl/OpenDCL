@@ -3,6 +3,15 @@
 Durable guidance for coding agents working in this repository. Prefer this file
 plus the skills under `.agents/skills/` over reverse-engineering session history.
 
+## Pull requests
+
+**Always squash-merge** into `main` (`gh pr merge --squash`) unless there is a
+concrete reason to keep individual commits (intentional multi-commit history,
+revert-granularity, or the user says so). Default merge commits are wrong for
+typical feature/fix/docs PRs — including help-only and single-bugfix branches.
+
+Same rule for sibling `opendcl.github.io` when landing help syncs.
+
 ## Product
 
 OpenDCL is a dialog/UI toolkit for AutoLISP on AutoCAD-compatible hosts
