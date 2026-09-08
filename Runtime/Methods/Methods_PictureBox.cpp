@@ -934,19 +934,28 @@ ADSRESULT PictureBox::PaintPicture()
 	{
 		int nStartX;
 		if( bAsPt )
-			nStartX = pt.x;
+		{
+			if( !RoundRealToInt( pt.x, nStartX ) )
+				return RSERR; //invalid input
+		}
 		else if( !GetIntArgument( pArgs, nStartX ) )
 			return RSERR; //invalid input
 
 		int nStartY;
 		if( bAsPt )
-			nStartY = pt.y;
+		{
+			if( !RoundRealToInt( pt.y, nStartY ) )
+				return RSERR; //invalid input
+		}
 		else if( !GetIntArgument( pArgs, nStartY ) )
 			return RSERR; //invalid input
 
 		int nPicID;
 		if( bAsPt )
-			nPicID = pt.z;
+		{
+			if( !RoundRealToInt( pt.z, nPicID ) )
+				return RSERR; //invalid input
+		}
 		else if( !GetIntArgument( pArgs, nPicID ) )
 			return RSERR; //invalid input
 

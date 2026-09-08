@@ -598,15 +598,12 @@ bool GetIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ int& nArg, /*in*/ bool b
 	case RTREAL:
 	case RTANG:
 	case RTORINT:
-		if( pArgs->resval.rreal < INT_MIN ||
-				pArgs->resval.rreal > INT_MAX ||
-				fabs( pArgs->resval.rreal - (ads_real)(int)pArgs->resval.rreal ) > 0.00000001 )
+		if( !RoundRealToInt( pArgs->resval.rreal, nArg ) )
 		{
 			if( !bQuiet )
 				HandleArgError( pArgs, odcl::argInvalid );
 			return false;
 		}
-		nArg = (unsigned int)pArgs->resval.rreal;
 		break;
 	default:
 		if( !bQuiet )
@@ -614,6 +611,29 @@ bool GetIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ int& nArg, /*in*/ bool b
 		return false; //wrong type
 	}
 	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+// floor/ceil so this builds on VC7–VC12 (no C99 lround).
+static bool RoundHalfAwayFromZero( double r, double& rRounded )
+{
+	if( r != r )
+		return false;
+	if( r < 0.0 )
+		rRounded = ceil( r - 0.5 );
+	else
+		rRounded = floor( r + 0.5 );
+	return true;
+}
+
+bool RoundRealToInt( /*in*/ double r, /*out*/ int& nArg )
+{
+	double rRounded;
+	if( !RoundHalfAwayFromZero( r, rRounded ) )
+		return false;
+	if( rRounded < (double)INT_MIN || rRounded > (double)INT_MAX )
+		return false;
+	nArg = (int)rRounded;
 	return true;
 }
 
@@ -648,15 +668,17 @@ bool GetUIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ unsigned int& nArg, /*i
 	case RTREAL:
 	case RTANG:
 	case RTORINT:
-		if( pArgs->resval.rreal < 0 ||
-				pArgs->resval.rreal > UINT_MAX ||
-				fabs( pArgs->resval.rreal - (ads_real)(unsigned int)pArgs->resval.rreal ) > 0.00000001 )
 		{
-			if( !bQuiet )
-				HandleArgError( pArgs, odcl::argInvalid );
-			return false;
+			double rRounded;
+			if( !RoundHalfAwayFromZero( pArgs->resval.rreal, rRounded ) ||
+					rRounded < 0.0 || rRounded > (double)UINT_MAX )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false;
+			}
+			nArg = (unsigned int)rRounded;
 		}
-		nArg = (unsigned int)pArgs->resval.rreal;
 		break;
 	default:
 		if( !bQuiet )
@@ -686,15 +708,17 @@ bool GetLongArgument( /*in-out*/ resbuf*& pArgs, /*out*/ long& nArg, /*in*/ bool
 	case RTREAL:
 	case RTANG:
 	case RTORINT:
-		if( pArgs->resval.rreal < LONG_MIN ||
-				pArgs->resval.rreal > LONG_MAX ||
-				fabs( pArgs->resval.rreal - (ads_real)(long)pArgs->resval.rreal ) > 0.00000001 )
 		{
-			if( !bQuiet )
-				HandleArgError( pArgs, odcl::argInvalid );
-			return false;
+			double rRounded;
+			if( !RoundHalfAwayFromZero( pArgs->resval.rreal, rRounded ) ||
+					rRounded < (double)LONG_MIN || rRounded > (double)LONG_MAX )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false;
+			}
+			nArg = (long)rRounded;
 		}
-		nArg = (long)pArgs->resval.rreal;
 		break;
 	default:
 		if( !bQuiet )
@@ -1230,30 +1254,32 @@ bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ PropVal::TIntArray&
 		AcGePoint3d pnt3IntArray;
 		if( Get2dPointArgument( pArgs, pnt2IntArray, true ) )
 		{
-			if( fabs(pnt2IntArray.x - int(pnt2IntArray.x)) > 0.0001 ||
-					fabs(pnt2IntArray.y - int(pnt2IntArray.y)) > 0.0001 )
+			int nX, nY;
+			if( !RoundRealToInt( pnt2IntArray.x, nX ) ||
+					!RoundRealToInt( pnt2IntArray.y, nY ) )
 			{
 				if( !bQuiet )
 					HandleArgError( pArgC, odcl::argWrongType );
 				return false;
 			}
-			rnArg.push_back( int(pnt2IntArray.x) );
-			rnArg.push_back( int(pnt2IntArray.y) );
+			rnArg.push_back( nX );
+			rnArg.push_back( nY );
 			return true;
 		}
 		else if( Get3dPointArgument( pArgs, pnt3IntArray, true ) )
 		{
-			if( fabs(pnt3IntArray.x - int(pnt3IntArray.x)) > 0.0001 ||
-					fabs(pnt3IntArray.y - int(pnt3IntArray.y)) > 0.0001 ||
-					fabs(pnt3IntArray.z - int(pnt3IntArray.z)) > 0.0001 )
+			int nX, nY, nZ;
+			if( !RoundRealToInt( pnt3IntArray.x, nX ) ||
+					!RoundRealToInt( pnt3IntArray.y, nY ) ||
+					!RoundRealToInt( pnt3IntArray.z, nZ ) )
 			{
 				if( !bQuiet )
 					HandleArgError( pArgC, odcl::argWrongType );
 				return false;
 			}
-			rnArg.push_back( int(pnt3IntArray.x) );
-			rnArg.push_back( int(pnt3IntArray.y) );
-			rnArg.push_back( int(pnt3IntArray.z) );
+			rnArg.push_back( nX );
+			rnArg.push_back( nY );
+			rnArg.push_back( nZ );
 			return true;
 		}
 	}

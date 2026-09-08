@@ -38,6 +38,7 @@ bool GetPropertyArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TPropertyPtr& pProp
 bool GetBoolArgument( /*in-out*/ resbuf*& pArgs, /*out*/ bool& bArg, /*in*/ bool bQuiet = false );
 bool GetStringArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CString& sArg, /*in*/ bool bQuiet = false );
 bool GetIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ int& nArg, /*in*/ bool bQuiet = false );
+bool RoundRealToInt( /*in*/ double r, /*out*/ int& nArg );
 bool GetUIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ unsigned int& nArg, /*in*/ bool bQuiet = false );
 bool GetLongArgument( /*in-out*/ resbuf*& pArgs, /*out*/ long& nArg, /*in*/ bool bQuiet = false );
 bool GetHandleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ DWORD_PTR& nArg, /*in*/ bool bQuiet = false );
