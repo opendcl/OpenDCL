@@ -3,7 +3,7 @@
 OpenDCL is a modern dialog and UI toolkit for AutoLISP programmers. It replaces AutoCAD's limited DCL (Dialog Control Language) with Windows forms and controls for use in AutoCAD and compatible platforms (BricsCAD, ZWCAD, GstarCAD, and others as supported by each release).
 
 This repository is the **source code** for OpenDCL Studio and Runtime (product
-version **10.1.2.1** - see `Runtime/ARX.rc` FILEVERSION / PRODUCTVERSION).
+version **10.1.2.2** - see `Runtime/ARX.rc` FILEVERSION / PRODUCTVERSION).
 
 ## Links
 
@@ -47,7 +47,7 @@ reference: **[CMAKE.md](CMAKE.md)**.
 
 - CMake >= 3.24 (`vs2026-*` needs **CMake 4.2+**)
 - Visual Studio 2022 with Windows desktop C++ and **MFC**
-- **Visual Studio 2026** (same workloads) whenever you compile **`ARX.26.x64`** or later **v145+** hosts — including a Full product catalog. Preferred Full preset is **`vs2026-full`** (`vs2022-full` also works with v145 installed)
+- **Visual Studio 2026** (same workloads) whenever you compile **`ARX.26.x64`** or later **v145+** hosts â€” including a Full product catalog. Preferred Full preset is **`vs2026-full`** (`vs2022-full` also works with v145 installed)
 - ObjectARX / BRX / ZRX / GRX SDKs for any CAD Runtime modules you build (not in this repository); Studio-only builds need no CAD SDK
 
 ```powershell

@@ -126,11 +126,11 @@ cmake --build --preset vs2026-full-release
 .\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2026-full -ModuleSet Full
 # Full local make-release (dist + optional -Sign) - verifies before WiX:
 .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
-  -ProductVersion 10.1.2.1 -ModuleSet Full -Sign
+  -ProductVersion 10.1.2.2 -ModuleSet Full -Sign
 # After a full set exists, compare packages to the previous release:
 .\scripts\compare-release-packages.ps1 `
   -BaselinePackageDir dist\10.0.0.0 `
-  -NewPackageDir dist\10.1.2.1
+  -NewPackageDir dist\10.1.2.2
 ```
 
 Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
@@ -143,9 +143,9 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | **`vs2022-x64-full`** | Same dual-arch module nest + classic x86 Runtime.Res, but **`host`** Studio -> **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; classic x86 Runtime.Res (native on Win32) |
 | **`vs2022-x86-studio`** | **Win32 Studio only** (no CAD runtimes / Runtime.Res / RxInstall / nest). Studio.Res still builds with Studio. Configs: **Debug\|Release only** (`OPENDCL_BUILD_RUNTIME=OFF` omits FullDebug). `cmake --preset vs2022-x86-studio` then `cmake --build --preset vs2022-x86-studio-debug` |
-| **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** | **No CAD SDK PR/CI:** Studio ON, Runtime OFF, all `ENABLE_*` OFF, `RUNTIME_AUTO` OFF, empty `RUNTIME_TARGETS`, Res ON (`classic_x86`), RxInstall ON, `STUDIO_HELP` OFF, `LANGS=ENU`, `NEST_WIN32` OFF. Win32: host Studio + native Res/RxInstall. x64: host Studio; classic x86 Res via private `res-win32`; RxInstall via private `rxinstall-win32` (x86 MSI CA — not full nest). Build: `cmake --preset vs2022-nosdk` / `vs2022-nosdk-x64` then `--preset *-release`. Verify: `scripts/verify-nosdk-outputs.ps1` (not Full/Available). Workflow: `.github/workflows/pr-build-nosdk.yml`.
+| **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** | **No CAD SDK PR/CI:** Studio ON, Runtime OFF, all `ENABLE_*` OFF, `RUNTIME_AUTO` OFF, empty `RUNTIME_TARGETS`, Res ON (`classic_x86`), RxInstall ON, `STUDIO_HELP` OFF, `LANGS=ENU`, `NEST_WIN32` OFF. Win32: host Studio + native Res/RxInstall. x64: host Studio; classic x86 Res via private `res-win32`; RxInstall via private `rxinstall-win32` (x86 MSI CA â€” not full nest). Build: `cmake --preset vs2022-nosdk` / `vs2022-nosdk-x64` then `--preset *-release`. Verify: `scripts/verify-nosdk-outputs.ps1` (not Full/Available). Workflow: `.github/workflows/pr-build-nosdk.yml`.
 | **`vs2026-full`** (Mixed) | **Preferred Full product:** dual-arch layout, **Visual Studio 18 2026** generator (CMake 4.2+). Host toolset is v145. |
-| **`vs2026-*`** | Same roles as the `vs2022-*` set (`dev`, specialty, `full`, `x64-full`, `win32-full`, `x86-studio`). Host toolset is **v145**; module toolsets still come from the matrix (`ARX.26.x64` = **v145**, `BRX.27.x64` = **v143**). Binary dirs: `build/vs2026-…`. |
+| **`vs2026-*`** | Same roles as the `vs2022-*` set (`dev`, specialty, `full`, `x64-full`, `win32-full`, `x86-studio`). Host toolset is **v145**; module toolsets still come from the matrix (`ARX.26.x64` = **v145**, `BRX.27.x64` = **v143**). Binary dirs: `build/vs2026-â€¦`. |
 | Configurations | **FullDebug** is in the `.sln` only when `OPENDCL_BUILD_RUNTIME` is ON. Studio-only / no-runtime presets use `Debug;Release`. |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug->Debug outputs |
@@ -160,7 +160,7 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | Runtime | `win32-rt/<id>/` | One `Runtime_<id>` only; **IMPORTED** zlib/png from `out/Library/ts/...` (no lib recompile). |
 | Common | `win32-common/` | Classic x86 **Runtime.Res**, **Studio** + Studio.Res, **RxInstall**; IMPORTED host `mt` libs. |
 
-Parent targets: `Nest_Libs`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32` (Res-only from common), umbrella **`Nest_Win32`** (libs → runtimes → common). Nest CustomBuilds use `MSBUILDDISABLENODEREUSE` + `/nodeReuse:false`. Imported `w32_*` are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged.
+Parent targets: `Nest_Libs`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32` (Res-only from common), umbrella **`Nest_Win32`** (libs â†’ runtimes â†’ common). Nest CustomBuilds use `MSBUILDDISABLENODEREUSE` + `/nodeReuse:false`. Imported `w32_*` are Explorer-only (parent Platform=x64 -> MSB8013). Nest reconfigure is skipped when init-cache is unchanged.
 
 **Day-to-day x64 without full nest** (`vs2022-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella. Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
 
@@ -467,7 +467,7 @@ Two packaging modes share the same script (`scripts/build-wix.ps1`):
 
 # Full product release (all catalog modules + all languages; missing files fail)
 .\scripts\build-wix.ps1
-# or: .\scripts\make-release.ps1 -ProductVersion 10.1.2.1
+# or: .\scripts\make-release.ps1 -ProductVersion 10.1.2.2
 ```
 
 `-Runtimes` accepts matrix IDs (`BRX.27.x64`), families (`BRX`), or wildcards (`BRX.2*`).

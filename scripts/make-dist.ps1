@@ -14,7 +14,7 @@
 
 .PARAMETER ProductVersion
   Four-part file version used in filenames (e.g. 10.1.1.1). If empty, tries
-  scripts/build-wix.ps1 defaults / Runtime ARX.rc is not parsed here — pass explicitly.
+  scripts/build-wix.ps1 defaults / Runtime ARX.rc is not parsed here â€” pass explicitly.
 
 .PARAMETER Configuration
   WiX out folder name under wix\out\ (default Release).
@@ -28,7 +28,7 @@
 [CmdletBinding()]
 param(
   [string] $OpenDclRoot = "",
-  [string] $ProductVersion = "10.1.2.1",
+  [string] $ProductVersion = "10.1.2.2",
   [string] $Configuration = "Release",
   [string] $DestDir = "",
   [string] $SourceDir = ""

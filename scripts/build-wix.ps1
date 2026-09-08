@@ -30,28 +30,28 @@
   Build configuration folder to harvest (default Release).
 
 .PARAMETER ProductVersion
-  MSI 3-part ProductVersion. Default 10.1.201 encodes file version 10.1.2.1
+  MSI 3-part ProductVersion. Default 10.1.202 encodes file version 10.1.2.2
   as major.minor.(patch*100+revision) for MSI upgrade comparison.
 
 .PARAMETER ModuleVersion
-  Merge module 4-part version (default 10.1.2.1).
+  Merge module 4-part version (default 10.1.2.2).
 
 .PARAMETER WixBin
   Path to candle.exe/light.exe directory. Auto-detected if empty.
 
 .PARAMETER Languages
-  UI language codes to package (ENU, DEU, …). Empty = all catalog languages
-  for full mode; with -AvailableLanguages, empty means “every language that
-  has Runtime.Res present”.
+  UI language codes to package (ENU, DEU, â€¦). Empty = all catalog languages
+  for full mode; with -AvailableLanguages, empty means â€œevery language that
+  has Runtime.Res presentâ€.
 
 .PARAMETER Runtimes
   Runtime IDs and/or families to package, e.g. BRX.27.x64, ARX.26.x64, BRX, ARX.
   Empty with default -ModuleSet Full = entire catalog. Required for -ModuleSet Selected.
 
 .PARAMETER ModuleSet
-  Full      — all catalog modules (default); missing files fail.
-  Selected  — only -Runtimes (each must resolve); missing files fail.
-  Available — catalog (optionally filtered by -Runtimes) where files exist
+  Full      â€” all catalog modules (default); missing files fail.
+  Selected  â€” only -Runtimes (each must resolve); missing files fail.
+  Available â€” catalog (optionally filtered by -Runtimes) where files exist
               under -OpenDclRoot (and out\); skip missing.
 
 .PARAMETER AvailableLanguages
@@ -65,8 +65,8 @@
 param(
   [string] $OpenDclRoot = "",
   [string] $Configuration = "Release",
-  [string] $ProductVersion = "10.1.201",
-  [string] $ModuleVersion = "10.1.2.1",
+  [string] $ProductVersion = "10.1.202",
+  [string] $ModuleVersion = "10.1.2.2",
   [string] $WixBin = "",
   [string] $OutDir = "",
   [string[]] $Languages = @(),
@@ -170,7 +170,7 @@ function Test-ProductFile([string] $rel) {
 }
 
 function Get-RuntimeIdFromRel([string] $rel) {
-  # Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx → BRX.27.x64
+  # Runtime\BRX\BRX.27.x64\Release\OpenDCL.x64.27.brx â†’ BRX.27.x64
   $parts = $rel -split '[\\/]'
   if ($parts.Count -ge 3) { return $parts[2] }
   return [IO.Path]::GetFileNameWithoutExtension($rel)
@@ -388,7 +388,7 @@ $RuntimeModuleCatalogRels = @(
 
 $AllRuntimeLangs = @("ENU", "DEU", "ESM", "RUS", "CHS", "FRA", "CHT")
 
-# Historical MSM modularization GUID — full product only (third-party merge identity).
+# Historical MSM modularization GUID â€” full product only (third-party merge identity).
 $FullModulePackageId = "0C4E4759-A6C2-4D0E-BAE5-7719C3BCF049"
 $FullRuntimeUpgradeCode = "A3675613-313B-47AC-8DD2-8707F33610AB"
 
@@ -430,7 +430,7 @@ if ($ModuleSet -eq "Available") {
   }
 }
 else {
-  # Full or Selected — all selected must exist (assert later)
+  # Full or Selected â€” all selected must exist (assert later)
   $RuntimeModules = @($selectedCatalog | ForEach-Object { $_.Rel })
 }
 
@@ -503,7 +503,7 @@ $StudioLangMeta = @{
   RUS = @{ ProductCode = "8E7BDDB2-EC97-4FBD-B6B9-67E353F71245"; UpgradeCode = "30C0C78D-D3B1-4C36-B37E-357F50E691D3"; LangId = 1049 }
   CHS = @{ ProductCode = "C6622C7F-E024-4FBF-B14D-DBAFDAC3C34B"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 2052 }
   FRA = @{ ProductCode = "DE91BFF8-E532-4612-8899-F965FC87885C"; UpgradeCode = "140D3C25-5463-4688-8A52-FEA8E9FA4940"; LangId = 1036 }
-  # Historical CHS/CHT shared UpgradeCode — preserved for upgrade continuity
+  # Historical CHS/CHT shared UpgradeCode â€” preserved for upgrade continuity
   CHT = @{ ProductCode = "82CB8DF7-A50B-446D-82C6-362F009A6070"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 1028 }
 }
 
@@ -616,8 +616,8 @@ function New-RuntimeFilesFragment {
 function Resolve-WixUiBitmaps {
   <#
     Use checked-in exact-size WixUI bitmaps under wix\ui\ (no runtime stretch of logos).
-      WixUIBanner.bmp  493x58  — color logo at native size on the right
-      WixUIDialog.bmp  493x312 — CAD-themed left strip (164x312 art), white right
+      WixUIBanner.bmp  493x58  â€” color logo at native size on the right
+      WixUIDialog.bmp  493x312 â€” CAD-themed left strip (164x312 art), white right
   #>
   param(
     [string] $WixRoot,
@@ -691,7 +691,7 @@ function New-StudioFilesFragment([string] $lang) {
   # Layout (paths are MSI [INSTALLDIR], never a hard-coded Program Files string):
   #   {INSTALLDIR}\OpenDCL Studio.exe
   #   {INSTALLDIR}\{Lang}\Studio.Res.dll, License.*, CHM, Samples\...
-  # x64 PE → ProgramFiles64Folder + Win64 components; x86 PE → ProgramFilesFolder.
+  # x64 PE â†’ ProgramFiles64Folder + Win64 components; x86 PE â†’ ProgramFilesFolder.
   # Advertised shortcuts must live on the same Component as their File (ICE69).
   # Advertise=yes avoids ICE43/ICE57 (non-advertised shortcuts require an HKCU keypath).
   $studioExe = Resolve-StudioExe $Configuration
@@ -699,7 +699,7 @@ function New-StudioFilesFragment([string] $lang) {
   $win64Attr = if ($script:StudioIsX64) { ' Win64="yes"' } else { '' }
   Write-Host ("  Studio PE: {0} ({1})" -f $studioExe, $(if ($script:StudioIsX64) { 'x64 -> ProgramFiles64' } else { 'x86 -> ProgramFiles' }))
 
-  # Studio.Res is LoadLibrary'd by Studio.exe — PE must match Studio (not classic_x86 Runtime.Res).
+  # Studio.Res is LoadLibrary'd by Studio.exe â€” PE must match Studio (not classic_x86 Runtime.Res).
   # Prefer package path without Win32\ subfolder (x64); Win32 nest PE lives under Studio.Res\Win32\.
   $studioResCandidates = @(
     "Studio\Localized\$lang\Studio.Res\$Configuration\Studio.Res.dll"
@@ -800,7 +800,7 @@ function New-StudioFilesFragment([string] $lang) {
     [void]$sb.AppendLine("      </Component>")
   }
 
-  # Start-menu folder cleanup only (HKCU keypath — not mixed with per-machine files)
+  # Start-menu folder cleanup only (HKCU keypath â€” not mixed with per-machine files)
   $menuGuid = Get-StableGuid "opendcl.studio.programmenu|$lang"
   [void]$sb.AppendLine("      <Component Id=`"st_${lang}_ProgramMenu`" Guid=`"{$menuGuid}`" Directory=`"ProgramMenuOpenDCL`"$win64Attr>")
   [void]$sb.AppendLine("        <RegistryValue Root=`"HKCU`" Key=`"Software\OpenDCL Consortium\OpenDCL Studio\$lang`" Name=`"ProgramMenu`" Type=`"integer`" Value=`"1`" KeyPath=`"yes`" />")
@@ -810,7 +810,7 @@ function New-StudioFilesFragment([string] $lang) {
   # --- Studio registry parity with vdproj 9.3.3.1 ---
   # HKCR OpenDCL.Project is required: RxInstall IsStudioInstalled() gates OPENDCLDEMO demand-load.
   # Sequence is safe: WriteRegistryValues runs before deferred RxInstallMachine (after StartServices).
-  # All file paths use [INSTALLDIR] (never Program Files (x86)\… hard-coding).
+  # All file paths use [INSTALLDIR] (never Program Files (x86)\â€¦ hard-coding).
   $assocGuid = Get-StableGuid "opendcl.studio.fileassoc|$lang"
   [void]$sb.AppendLine("      <Component Id=`"st_${lang}_FileAssoc`" Guid=`"{$assocGuid}`" Directory=`"INSTALLDIR`"$win64Attr>")
   # .odcl -> OpenDCL.Project (ProgID)
@@ -818,7 +818,7 @@ function New-StudioFilesFragment([string] $lang) {
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project" Type="string" Value="OpenDCL Project" />')
   # Paths use [INSTALLDIR] (not [#fil_StudioExe]) to avoid ICE69 cross-component refs; matches vdproj.
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\DefaultIcon" Type="string" Value="[INSTALLDIR]OpenDCL Studio.exe,0" />')
-  # Shell open verb label from Package.wxl (e.g. DEU &Öffnen); command + DDE
+  # Shell open verb label from Package.wxl (e.g. DEU &Ã–ffnen); command + DDE
   $shellOpenXml = $shellOpen.Replace('&', '&amp;').Replace('"', '&quot;')
   [void]$sb.AppendLine("        <RegistryValue Root=`"HKCR`" Key=`"OpenDCL.Project\shell\open`" Type=`"string`" Value=`"$shellOpenXml`" />")
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\shell\open\command" Type="string" Value="&quot;[INSTALLDIR]OpenDCL Studio.exe&quot; &quot;%1&quot;" />')
@@ -917,7 +917,7 @@ Write-Host "ModuleVersion   : $ModuleVersion"
 Write-Host "WixBin          : $WixBin"
 Write-Host "ModuleSet       : $ModuleSet"
 Write-Host "Full product    : $isFullProduct"
-Write-Host "Package suffix  : $(if ($PackageSuffix) { $PackageSuffix } else { '(none — ship identity)' })"
+Write-Host "Package suffix  : $(if ($PackageSuffix) { $PackageSuffix } else { '(none â€” ship identity)' })"
 Write-Host "Runtimes ($($selectedIds.Count)) : $($selectedIds -join ', ')"
 Write-Host "Languages       : $($RuntimeLangs -join ', ')"
 Write-Host "ModulePackageId : $ModulePackageId"
@@ -1004,7 +1004,7 @@ if (-not $SkipStudio) {
     if (-not $meta) { throw "StudioLangMeta missing for language $lang" }
     $pkgStrings = Read-StudioPackageWxl $lang
     $filesWxs = New-StudioFilesFragment $lang
-    # Checked-in RTF (not generated at package time) — reviewable installer EULA source
+    # Checked-in RTF (not generated at package time) â€” reviewable installer EULA source
     $licenseRtf = Resolve-ProductFile "Studio\Localized\$lang\Content\License.rtf"
     Assert-File $licenseRtf
 
