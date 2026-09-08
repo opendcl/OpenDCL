@@ -286,8 +286,10 @@ BOOL CImageTreeCtrl::SetItemImage( HTREEITEM hItem, int nImage, int nSelImage )
 
 void CImageTreeCtrl::Clear()
 {
+	mbDeleting = true;
 	mTreeItems.clear();
 	DeleteAllItems();
+	mbDeleting = false;
 }
 
 int CImageTreeCtrl::GetExpandedImage( HTREEITEM hItem ) const

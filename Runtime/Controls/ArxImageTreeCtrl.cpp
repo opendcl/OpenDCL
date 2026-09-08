@@ -346,6 +346,11 @@ void CArxImageTreeCtrl::OnTvnItemexpanded(NMHDR *pNMHDR, LRESULT *pResult)
 void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	//__super::OnTvnSelchanged( pNMHDR, pResult );
+	if( IsDeleting() )
+	{
+		*pResult = 0;
+		return;
+	}
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );

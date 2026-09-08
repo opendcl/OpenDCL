@@ -71,6 +71,7 @@ public:
 	BOOL GetItemImage( HTREEITEM hItem, int& nImage, int& nSelImage ) const;
 	BOOL SetItemImage( HTREEITEM hItem, int nImage, int nSelImage );
 	void Clear();
+	bool IsDeleting() const { return mbDeleting; }
 	int GetExpandedImage( HTREEITEM hItem ) const;
 	bool SetExpandedImage( HTREEITEM hItem, int nExpImage );
 
