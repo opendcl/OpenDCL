@@ -16,19 +16,3 @@ function copyclip( elem )
   range.execCommand( "Copy" );
   elem.innerHTML = savedHTML;
 }
-
-(function () {
-  function setHdrlink() {
-    var el = document.getElementById("hdrlink");
-    if (!el) return;
-    el.innerHTML =
-      '<a href="https://www.opendcl.com/go?forum" target="_blank">Ask a Question</a><br />' +
-      '<a href="https://www.opendcl.com/go?wishlist&new" target="_blank">Wishlist</a><br />' +
-      '<a href="https://www.opendcl.com/go?bugreport&new" target="_blank">Report a Bug</a>';
-  }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setHdrlink);
-  } else {
-    setHdrlink();
-  }
-})();
