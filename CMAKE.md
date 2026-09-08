@@ -8,9 +8,13 @@ CMake is the **supported multi-host and dual-arch ship path** for OpenDCL
 
 Hand-curated `OpenDCL.sln` / per-host `.vcxproj` trees were **removed**.
 CMake presets are the only generate/build path. Host identity stays in
-`Runtime/*/VI/*.props` plus `cmake/OpenDCLRuntimeMatrix.cmake`. Ship
-packaging uses preset **`vs2022-full`**. Private CI: `opendcl/build-lab`
-package workflow.
+`Runtime/*/VI/*.props` plus `cmake/OpenDCLRuntimeMatrix.cmake`. A **Full**
+product catalog that includes **`ARX.26.x64`** (matrix `TOOLSET` **v145**)
+requires the **Visual Studio 2026 v145 toolset** on the machine. Later hosts
+that pin **v145+** have the same requirement. Preferred Full preset is
+**`vs2026-full`** (Visual Studio 18 generator, CMake 4.2+). **`vs2022-full`**
+is the VS 17 twin and also works when v145 is installed. Private CI:
+`opendcl/build-lab` package workflow.
 
 Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 
@@ -33,10 +37,10 @@ Details for agents: **`AGENTS.md`**. Installer smoke: **`docs/SMOKE.md`**.
 | `Library/CMakeLists.txt` | ZLib + LibPNG |
 | `Runtime/Localized/CMakeLists.txt` | `Runtime.Res.<lang>` DLLs |
 
-CMake Visual Studio generators write **`build/<preset>/<preset>.sln`** (e.g.
-`build/vs2022-dev/vs2022-dev.sln`) so multiple presets stay distinguishable
-in the IDE. Override with `-DOPENDCL_SOLUTION_NAME=...`. Nested Win32 under a full
-preset is `build/vs2022-full/win32/vs2022-full-win32.sln`.
+CMake Visual Studio generators write **`build/<preset>/<preset>.sln`** (VS 17)
+or **`.slnx`** (VS 18, e.g. `build/vs2026-dev/vs2026-dev.slnx`) so multiple
+presets stay distinguishable in the IDE. Override with `-DOPENDCL_SOLUTION_NAME=...`.
+Nested Win32 under a full preset is `build/<preset>/win32/<preset>-win32.sln`.
 
 **On-disk project layout** (VS generator): product `.vcxproj` files sit under
 product subdirs of the binary dir - `Library/`, `Runtime/` (modules +
@@ -51,13 +55,14 @@ dirs, reconfigure with `--fresh` (or delete stale root-level
 
 | Requirement | Notes |
 | --- | --- |
-| CMake >= 3.24 | Multi-config VS generator + presets |
-| Visual Studio 2022 (or later) | C++ desktop + **MFC** workload |
+| CMake >= 3.24 | Multi-config VS generator + presets. **`vs2026-*` needs CMake 4.2+** (Visual Studio 18 generator). |
+| Visual Studio 2022 | C++ desktop + **MFC**. `vs2022-*` generator. **v145+** rows still need the VS2026 toolset installed. |
+| Visual Studio 2026 | Provides **v145**. Required to **compile `ARX.26.x64`** and any later matrix row with `TOOLSET` **v145+**. Preferred Full product preset is **`vs2026-full`**. C++ desktop + **MFC**. |
 | CAD SDKs | Env vars (`ARX2027`, `BRX26`, `GRX2027`, `ZRX2025`, ...) same as classic `VI/*.props` |
 | HTML Help Workshop (`hhc.exe`) | Optional; builds per-language `OpenDCL.chm` for Studio packaging / F5 Help |
 | Pre-VS2015 Platform Toolsets | Needed only for the full historic matrix (`TOOLSET` in `cmake/OpenDCLRuntimeMatrix.cmake`). Documented in the main **opendcl** public README (Daffodil). Modern-only presets (`v141`+) do not need them. |
 
-Each runtime row's toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET "vNNN"`). CMake sets `VS_PLATFORM_TOOLSET` on the module target. Older toolsets link **toolset-matched** zlib/png static libs (see `Library/CMakeLists.txt` / `opendcl_ensure_runtime_png`) so UCRT objects from the VS2022 default toolset are not mixed into `v100` (and similar) modules.
+Each runtime row's toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET "vNNN"`), not in `VI/*.props`. CMake sets `VS_PLATFORM_TOOLSET` on the module target. **`ARX.26.x64` is `v145`** (VS2026 toolset); **`BRX.27.x64` stays `v143`**. Prefer **`vs2026-full`** / **`vs2026-dev`** for those rows. **`vs2022-full`** also compiles ARX.26 when v145 is installed. A machine with only VS2022 cannot. Older toolsets link **toolset-matched** zlib/png static libs (see `Library/CMakeLists.txt` / `opendcl_ensure_runtime_png`) so UCRT objects from the host default toolset are not mixed into `v100` (and similar) modules. Modern rows (v141+) share the **host** zlib/png pair.
 
 **ZLib / LibPNG target names** (Solution Explorer under classic-like folders `Library/ZLib`, `Library/LibPNG`):
 
@@ -68,6 +73,7 @@ Each runtime row's toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET "v
 | Example | Meaning |
 | --- | --- |
 | `zlib_x64_md_v143` | ZLib, x64, `/MD`, compiled with **v143** (typical VS2022 host default) |
+| `zlib_x64_md_v145` | Same, **v145** host default on `vs2026-*` |
 | `png_x64_mt_v143` | LibPNG, x64, `/MT` (Studio), same host toolset |
 | `png_x86_md_v100` | LibPNG, x86, `/MD`, compiled with **v100** |
 
@@ -89,7 +95,7 @@ Each runtime row's toolset is in `cmake/OpenDCLRuntimeMatrix.cmake` (`TOOLSET "v
 | **`classic_x86`** | **Win32** Studio ship parity (classic vdproj). On x64 parent, skip native Studio; nest builds `out/Studio/Win32` + `Studio.Res/Win32`. Parent still owns CHM help. |
 | **`host`** | Studio PE matches configure arch (x64 Studio on x64 parent / dev). |
 
-Default / all presets use **`classic_x86`** for Runtime.Res. Studio stays **`host`** on day-to-day x64 presets; **`vs2022-full`** forces **`classic_x86`** Studio; **`vs2022-x64-full`** keeps **x64 Studio** (`OPENDCL_STUDIO_PE=host`) with classic x86 Runtime.Res. Packaging prefers Win32 Studio then x64.
+Default / all presets use **`classic_x86`** for Runtime.Res. Studio stays **`host`** on day-to-day x64 presets; **`vs2022-full`** / **`vs2026-full`** force **`classic_x86`** Studio; **`*-x64-full`** keeps **x64 Studio** (`OPENDCL_STUDIO_PE=host`) with classic x86 Runtime.Res. Packaging prefers Win32 Studio then x64.
 
 ```powershell
 cd <OpenDCL repo root>
@@ -109,16 +115,17 @@ cmake --build --preset vs2022-arx-latest-release
 # Auto-detect every installed CAD SDK (x64; no per-family cap / no toolset floor)
 cmake --preset vs2022-auto
 
-# Full ship: one .sln with x64 + nested Win32 (imported into Solution Explorer)
-cmake --preset vs2022-full --fresh
-cmake --build --preset vs2022-full-release
-# Shared out/: x64+Win32 modules; vs2022-full ships Win32 Studio (classic_x86)
+# Full product (preferred): VS2026 + CMake 4.2+
+cmake --preset vs2026-full --fresh
+cmake --build --preset vs2026-full-release
+# Alternative: cmake --preset vs2022-full (also needs the v145 toolset)
+# Shared out/: x64+Win32 modules; *-full ships Win32 Studio (classic_x86)
 
 # One-shot configure+build (no package until verify is green):
 .\scripts\build-cmake-full.ps1 -Fresh
-.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full -ModuleSet Full
+.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2026-full -ModuleSet Full
 # Full local make-release (dist + optional -Sign) - verifies before WiX:
-.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
   -ProductVersion 10.1.2.1 -ModuleSet Full -Sign
 # After a full set exists, compare packages to the previous release:
 .\scripts\compare-release-packages.ps1 `
@@ -132,17 +139,18 @@ Installer smoke checklist: **[docs/SMOKE.md](docs/SMOKE.md)**.
 | --- | --- |
 | **`vs2022-dev`** | Day-to-day: auto-detect SDKs, **one latest modern runtime per family** (`PER_FAMILY_MAX=1`, `MIN_TOOLSET=v141`); Studio-only if no SDKs |
 | **`vs2022-arx-modern`** | ARX only: up to **3** latest modern SDKs (`PER_FAMILY_MAX=3`, `MIN_TOOLSET=v141`) |
-| **`vs2022-full`** (Mixed) | **Public full ship:** x64 `.sln` + nested Win32 modules + **`OPENDCL_RES_PE=classic_x86`** + **`OPENDCL_STUDIO_PE=classic_x86`** (x86 Runtime.Res + **Win32 Studio** / Studio.Res via nest) |
+| **`vs2022-full`** (Mixed) | Dual-arch full layout on the **VS 17 2022** generator. Works for **ARX.26** when v145 is installed; **prefer `vs2026-full`**. |
 | **`vs2022-x64-full`** | Same dual-arch module nest + classic x86 Runtime.Res, but **`host`** Studio -> **x64 Studio** packaging path |
 | **`vs2022-win32-full`** | Standalone Win32 binary dir; classic x86 Runtime.Res (native on Win32) |
 | **`vs2022-x86-studio`** | **Win32 Studio only** (no CAD runtimes / Runtime.Res / RxInstall / nest). Studio.Res still builds with Studio. Configs: **Debug\|Release only** (`OPENDCL_BUILD_RUNTIME=OFF` omits FullDebug). `cmake --preset vs2022-x86-studio` then `cmake --build --preset vs2022-x86-studio-debug` |
 | **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** | **No CAD SDK PR/CI:** Studio ON, Runtime OFF, all `ENABLE_*` OFF, `RUNTIME_AUTO` OFF, empty `RUNTIME_TARGETS`, Res ON (`classic_x86`), RxInstall ON, `STUDIO_HELP` OFF, `LANGS=ENU`, `NEST_WIN32` OFF. Win32: host Studio + native Res/RxInstall. x64: host Studio; classic x86 Res via private `res-win32`; RxInstall via private `rxinstall-win32` (x86 MSI CA — not full nest). Build: `cmake --preset vs2022-nosdk` / `vs2022-nosdk-x64` then `--preset *-release`. Verify: `scripts/verify-nosdk-outputs.ps1` (not Full/Available). Workflow: `.github/workflows/pr-build-nosdk.yml`.
-| **`vs2026-*`** | Same roles as the `vs2022-*` set (`dev`, specialty, `full`, `x64-full`, `win32-full`, `x86-studio`). Still uses the **Visual Studio 17 2022** generator (CMake has no VS 18 generator yet) and pins **v143 14.44.35207** so `cmake --build` matches a VS 2026 IDE session. Binary dirs: `build/vs2026-…`. |
+| **`vs2026-full`** (Mixed) | **Preferred Full product:** dual-arch layout, **Visual Studio 18 2026** generator (CMake 4.2+). Host toolset is v145. |
+| **`vs2026-*`** | Same roles as the `vs2022-*` set (`dev`, specialty, `full`, `x64-full`, `win32-full`, `x86-studio`). Host toolset is **v145**; module toolsets still come from the matrix (`ARX.26.x64` = **v145**, `BRX.27.x64` = **v143**). Binary dirs: `build/vs2026-…`. |
 | Configurations | **FullDebug** is in the `.sln` only when `OPENDCL_BUILD_RUNTIME` is ON. Studio-only / no-runtime presets use `Debug;Release`. |
 | CRT (Release) | Modules/Runtime.Res **`/MD`**; Studio **`/MT`** + `*_mt` zlib/png |
 | CRT (FullDebug) | Modules default **`/MD`** (like Debug); host-debug via `fulldebug.<family>.props`. Non-modules map FullDebug->Debug outputs |
 
-**How dual-arch (Mixed / x64-full) works:** CMake's VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure **split Win32 nests** under `build/<preset>/` with the **same** `OPENDCL_OUTPUT_ROOT=.../out`, and **import** selected nest `.vcxproj` files (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders**. Nest imports are named `w32_*`. **Studio help (CHM)** stays on the parent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2022-full` resolves both arches under `out\`.
+**How dual-arch (Mixed / x64-full) works:** CMake's VS generator cannot put `Debug|x64` and `Debug|Win32` on the **same** native target. These presets configure **x64** as the main `.sln`, then at generate time configure **split Win32 nests** under `build/<preset>/` with the **same** `OPENDCL_OUTPUT_ROOT=.../out`, and **import** selected nest `.vcxproj` files (`include_external_msproject`, `PLATFORM Win32`). Solution Explorer uses **classic-style product folders**. Nest imports are named `w32_*`. **Studio help (CHM)** stays on the parent (nest sets `OPENDCL_BUILD_STUDIO_HELP=OFF`). Packaging `-OpenDclRoot build\vs2026-full` (or `build\vs2022-full`) resolves both arches under `out\`.
 
 **Split Win32 nests** (sharing, less duplication):
 
@@ -156,7 +164,7 @@ Parent targets: `Nest_Libs`, `Nest_Win32_<id>`, `Nest_Win32_Common`, `Res_Win32`
 
 **Day-to-day x64 without full nest** (`vs2022-dev`): still `classic_x86` Runtime.Res via the private `res-win32` tree / `Res_Win32` umbrella. Sticky caches that still have `OPENDCL_RES_PE=host` need `-U OPENDCL_RES_PE` or a clean binary dir.
 
-### Known limitations - nested Win32 full build (`vs2022-full`)
+### Known limitations - nested Win32 full build (`vs2026-full` / `vs2022-full`)
 
 These are **accepted for now** (document and move on; not blocking x64/dev or packaging smoke):
 
@@ -167,17 +175,17 @@ These are **accepted for now** (document and move on; not blocking x64/dev or pa
 | Cancel in VS does not stop nest `cmake --build` cleanly | Nested MSBuild is a child process of a CustomBuild step | Kill stray `MSBuild`/`cl` if needed; known CustomBuild limitation. |
 | **Nest lib races / C1083 on zlib IntDir** | Overlapping `win32-lib` builds | Use `Nest_Libs` (single serial CustomBuild). Nest `/m` defaults to 1. |
 | **MSB0001** / `EndBuild has already been called` on `Res_Win32` / png | Nested nest MSBuild during a parallel parent VS build (and/or ZERO_CHECK regenerating the `.sln` mid-build) | Nest commands use `MSBUILDDISABLENODEREUSE=1` + `/nodeReuse:false`. Sibling `Nest_Libs` / `Nest_Win32_*` CustomBuilds are **dependency-chained** (one nested MSBuild at a time). After editing CMake files, let configure finish / reload the `.sln`, then rebuild (do not Build Solution in the same pass that rewrites projects). |
-| Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2022-dev`** for IDE work; use **`vs2022-full`** for dual-arch Full product. |
+| Full nest green is **not** required for day-to-day | x64 Studio and Available packages work without every old host | Prefer **`vs2026-dev`** / **`vs2022-dev`** for IDE work; use **`vs2026-full`** for dual-arch Full product. |
 | Studio MSI includes Runtime MSM | Separate Runtime MSI not required for Studio install smoke | Install **Studio.\<LANG\>.msi** only for Studio+Runtime install tests (see **docs/SMOKE.md**). |
 
 **Workaround when nest fails:** build a single split nest with low parallelism:
 
 ```powershell
-cmake --build build/vs2022-full --config Release --target Res_Win32
-cmake --build build/vs2022-full --config Release --target Nest_Libs
-cmake --build build/vs2022-full --config Release --target Nest_Win32_ZRX_2019
+cmake --build build/vs2026-full --config Release --target Res_Win32
+cmake --build build/vs2026-full --config Release --target Nest_Libs
+cmake --build build/vs2026-full --config Release --target Nest_Win32_ZRX_2019
 # or inside a nest tree:
-cmake --build build/vs2022-full/win32-rt/ZRX.2019 --config Release --parallel 1 -- /m:1 /p:CL_MPCount=1
+cmake --build build/vs2026-full/win32-rt/ZRX.2019 --config Release --parallel 1 -- /m:1 /p:CL_MPCount=1
 ```
 
 **Parity (not host-kit hacks):** Studio static MFC+`/MT`, modules `/MD` (+ `/MDd` FullDebug for all families), multimon stubs only on `PPTooltip.cpp` - permanent classic/product policy.

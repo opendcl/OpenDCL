@@ -121,7 +121,13 @@ Required fields: `ID`, `FAMILY`, `VERSION`, `ARCH`, `EXT`, `OUTPUT_NAME`,
 `TOOLSET`, `SDK_ENV`, `SDK_INC`, `SDK_LIB`, `VI_DIR`, `DEFINES`. Copy
 `LIBS` / `WARNING_DISABLES` / `CXX_STANDARD` from the clone source when they
 apply. Do **not** default `TOOLSET` to `v142` — take it from the previous host
-or the new SDK's documented toolset.
+or the new SDK's documented toolset. **`TOOLSET` lives in the CMake matrix, not
+`VI/*.props`.**
+
+**v145+:** `ARX.26.x64` is pinned **`v145`**. Any new row with `TOOLSET` **v145**
+or newer requires the **Visual Studio 2026 v145 toolset**. Prefer **`vs2026-full`**
+/ **`vs2026-dev`** for product and ARX.26 iteration; **`vs2022-full`** also works
+when v145 is installed. **`BRX.27.x64` stays `v143`**.
 
 CMake presets pick the row via SDK env detect; no solution file to edit.
 Reconfigure with `--fresh` after adding the row.
@@ -205,6 +211,7 @@ New runtime support almost always ships as a versioned release. Run the
 ### 8. Build and smoke-check
 
 1. CMake configure (matching preset) and build the new `Runtime_<id>` target (Release).
+   Prefer **`vs2026-*`** for **v145+** rows (including **ARX.26**).
 2. Confirm output name/extension under `build/<preset>/out/`.
 3. Build `RxInstall` if registration code changed.
 4. Note any new compiler errors that require shared-code fixes (API removals,
@@ -250,10 +257,12 @@ Only commit if the user asked.
 - Newer hosts are x64-only folders (`ARX.<n>.x64`).
 - ObjectARX major does not always equal marketing year (e.g. ARX `26` used for Acad 2027 in tree).
 - Several AutoCAD years may share one `kARX20xx` major with different minor nibble values in the target enum - copy the latest mapping carefully.
+- **`ARX.26.x64` `TOOLSET` is `v145`.** Full product prefers **`vs2026-full`**. Future ARX rows that stay on v145+ have the same VS2026 requirement.
 
 ### BricsCAD (BRX)
 
 - Folder `BRX.<ver>.x64`, extension `.brx`, env-style `$(BRX26)` / `$(BRX27)`.
+- **`BRX.27.x64` stays `TOOLSET` `v143`** on vs2026 (do not bump it to v145 with ARX.26).
 - `_ACADTARGET` in props is often a compatibility value (commonly `24` in recent BRX props) while `_BRXTARGET` carries the BricsCAD major.
 - RxInstall: `kBRX<ver>`, `kBricscad<ver>x64`, install enumerate, uninstall `Bricsys\Bricscad\V<ver>x64`.
 - WiX: `Runtime\BRX\BRX.<ver>.x64\Release\OpenDCL.x64.<ver>.brx` in `$RuntimeModules`.
@@ -292,7 +301,8 @@ Only commit if the user asked.
 ## Quick verification checklist
 
 - [ ] New host folder with `VI/` only (no build artifacts, no `.vcxproj`)
-- [ ] CMake matrix row: `ID`, `OUTPUT_NAME` matches RxInstall filename scheme, `TOOLSET` from previous/SDK
+- [ ] CMake matrix row: `ID`, `OUTPUT_NAME` matches RxInstall filename scheme, `TOOLSET` from previous/SDK (`v145+` => VS2026)
+- [ ] If `TOOLSET` is v145+, smoke on **`vs2026-dev` / `vs2026-full`**
 - [ ] Props point at the new SDK macros and defines
 - [ ] `RxInstall.cpp` enum + install + uninstall paths
 - [ ] New module path added to `$RuntimeModuleCatalogRels` in `scripts/build-wix.ps1`

@@ -39,7 +39,9 @@ $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
 if (-not $OpenDclRoot) {
   foreach ($c in @(
+      (Join-Path $RepoRoot "build\vs2026-full"),
       (Join-Path $RepoRoot "build\vs2022-full"),
+      (Join-Path $RepoRoot "build\vs2026-x64-full"),
       (Join-Path $RepoRoot "build\vs2022-x64-full"),
       $RepoRoot
     )) {
@@ -47,7 +49,7 @@ if (-not $OpenDclRoot) {
   }
 }
 if (-not $OpenDclRoot -or -not (Test-Path $OpenDclRoot)) {
-  throw "Pass -OpenDclRoot to a compiled tree (e.g. build\vs2022-full)."
+  throw "Pass -OpenDclRoot to a compiled tree (e.g. build\vs2026-full)."
 }
 $OpenDclRoot = (Resolve-Path $OpenDclRoot).Path
 
@@ -201,7 +203,7 @@ foreach ($lang in $langs) {
 
 $studioIssues = @()
 if (-not $SkipStudio) {
-  # Prefer Win32 first (vs2022-full classic_x86 Studio); x64 still accepted (host Studio PE).
+  # Prefer Win32 first (vs2026-full classic_x86 Studio); x64 still accepted (host Studio PE).
   $studioCandidates = @(
     "Studio\Win32\$Configuration\OpenDCL Studio.exe",
     "Studio\x64\$Configuration\OpenDCL Studio.exe",

@@ -51,8 +51,10 @@ wix/out/                 Generated packages (gitignored)
 
 Details: **`CMAKE.md`**, presets in `CMakePresets.json` (dev default `vs2022-dev` /
 `vs2026-dev`: auto-detect SDKs, max one modern toolset >= v141 runtime per family;
-ship **`vs2022-full`** / **`vs2026-full`**; no-SDK PR presets **`vs2022-nosdk`** / **`vs2022-nosdk-x64`** — see **`CMAKE.md`**).
-Private dry-run CI: `opendcl/build-lab` (CMake `vs2022-full`). First-time
+preferred Full product **`vs2026-full`** (`vs2022-full` still works). **`ARX.26.x64`**
+and later **v145+** rows need the **VS2026 v145 toolset**; no-SDK PR presets
+**`vs2022-nosdk`** / **`vs2022-nosdk-x64`** — see **`CMAKE.md`**).
+Private dry-run CI: `opendcl/build-lab` (CMake `vs2026-full`). First-time
 human steps: **`docs/BUILD-QUICKSTART.md`**.
 
 | Area | Notes |
@@ -62,12 +64,12 @@ human steps: **`docs/BUILD-QUICKSTART.md`**.
 | Everything else | **FullDebug -> Debug** on-disk outputs (`opendcl_map_fulldebug_to_debug` / `OPENDCL_CFG_DIR`): Studio, Studio.Res, Runtime.Res, RxInstall, zlib/png (`/MD` and `/MT`). |
 | Studio | Static MFC + `/MT` (classic parity, permanent). `COMPILE_MULTIMON_STUBS` on **`PPTooltip.cpp` only** (not project-wide - `FolderTreeCtrl.cpp` also includes `MultiMon.h`; LNK2005 if broadened). Post-build copies `Studio.Res.dll` next to Studio.exe. Debug `FindFile` loads `OpenDCL.chm` from `Localized/<lang>/Content`. `StudioHelp_ENU` copies that CHM next to Release Studio.exe after hhc. |
 | Resource DLLs | **Runtime.Res** defaults to **`classic_x86`** (`/NOENTRY` x86 PE via `Res_Win32` / nest; legacy ship). **`host`** is an escape hatch. **Studio.Res** always matches **Studio PE** (`OPENDCL_STUDIO_PE`). |
-| Studio PE | **`OPENDCL_STUDIO_PE`**: **`classic_x86`** (public **`vs2022-full`** - Win32 Studio + Studio.Res via nest; classic package parity) or **`host`** (Studio matches configure arch; **`vs2022-x64-full`** / dev). Packaging prefers `out/Studio/Win32` then `x64`. |
+| Studio PE | **`OPENDCL_STUDIO_PE`**: **`classic_x86`** (public **`vs2026-full`** / `vs2022-full` - Win32 Studio + Studio.Res via nest; classic package parity) or **`host`** (Studio matches configure arch; **`*-x64-full`** / dev). Packaging prefers `out/Studio/Win32` then `x64`. |
 | ENU CHM | Target `StudioHelp_ENU` (depends from Studio); needs HTML Help Workshop `hhc.exe`. Output `Studio/Localized/ENU/Content/OpenDCL.chm` (gitignored). |
 | Packaging paths | `build-wix.ps1` `Resolve-ProductFile`: OpenDclRoot / `out\` / packaging repo only. |
 | Studio.rc encoding | **Windows-1252** (no BOM); copyright is single-byte `0xA9` ((c)). Do not re-save as UTF-8. |
-| Full classic parity | Preset **`vs2022-full`** (Mixed): one `.sln` with **classic-style folders** holding x64 + imported Win32 peers. Split nests: `win32-lib/<ts>-<crt>`, `win32-rt/<id>`, `win32-common` (Res/Studio/RxInstall). Build via `Nest_Libs` / `Nest_Win32_*` / `Nest_Win32`. **`vs2022-x64-full`**: x64 Studio + classic x86 Res. Helper: `scripts/build-cmake-full.ps1`. |
-| Nest Win32 full build | `Nest_Libs` builds all `win32-lib` trees in one serial CustomBuild. Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=1`, `OPENDCL_NEST_CL_MP_COUNT=1`, `/nodeReuse:false`. Prefer `vs2022-dev` for daily IDE work. |
+| Full classic parity | Preset **`vs2026-full`** (preferred Mixed product; **`vs2022-full`** is the VS 17 twin): one solution with **classic-style folders** holding x64 + imported Win32 peers. Split nests: `win32-lib/<ts>-<crt>`, `win32-rt/<id>`, `win32-common` (Res/Studio/RxInstall). Build via `Nest_Libs` / `Nest_Win32_*` / `Nest_Win32`. **`vs2026-x64-full`**: x64 Studio + classic x86 Res. Helper: `scripts/build-cmake-full.ps1` (defaults to `vs2026-full`). **ARX.26 / v145+** need the **VS2026 v145 toolset**. |
+| Nest Win32 full build | `Nest_Libs` builds all `win32-lib` trees in one serial CustomBuild. Defaults: `OPENDCL_NEST_MSBUILD_MAX_CPU_COUNT=1`, `OPENDCL_NEST_CL_MP_COUNT=1`, `/nodeReuse:false`. Prefer `vs2022-dev` / `vs2026-dev` for daily IDE work. |
 Sibling clones (typical workspace: product + private lab + Pages side by side):
 
 | Clone / path | Role |
@@ -110,11 +112,11 @@ Adding a language: skill **`add-language`** (`.agents/skills/add-language/`).
 
 ```powershell
 # After a successful Release compile, verify then package (never package mid-build):
-.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full -ModuleSet Full
-.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2026-full -ModuleSet Full
+.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
   -ProductVersion 10.1.1.1 -ModuleSet Full
 # Iterate Studio MSI only (modules already in MSM):
-.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
   -Languages ENU -SkipMsm -SkipRuntimeMsi
 ```
 
@@ -262,7 +264,7 @@ Historical desktop steps and replacements:
 
 | Legacy | Replacement |
 |--------|-------------|
-| `!BuildRelease.bat` / classic `OpenDCL.sln` | CMake presets (`vs2022-full` ship; private build-lab `build-cmake.ps1`) |
+| `!BuildRelease.bat` / classic `OpenDCL.sln` | CMake presets (`vs2026-full` preferred ship; private build-lab `build-cmake.ps1`) |
 | vdproj / early WiX package | `scripts/build-wix.ps1`, `.github/workflows/package.yml` |
 | Full post-package release | `scripts/make-release.ps1` + **Make release** workflow |
 | `!MakeNewDist.bat` | `scripts/make-dist.ps1` (also called by make-release) |

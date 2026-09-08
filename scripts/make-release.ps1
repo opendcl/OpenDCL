@@ -26,7 +26,7 @@
       OpenDCL.<LANG>.zip
 
 .PARAMETER OpenDclRoot
-  Compiled product root for WiX harvest (e.g. build\vs2022-full). Defaults to
+  Compiled product root for WiX harvest (e.g. build\vs2026-full). Defaults to
   this repository root.
 
 .PARAMETER ProductVersion
@@ -55,7 +55,7 @@
 
 .EXAMPLE
   # Full ship package from CMake dual-arch tree (after successful build + verify)
-  .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  .\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
     -ProductVersion 10.1.1.1 -ModuleSet Full -Sign
 
 .EXAMPLE

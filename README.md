@@ -39,14 +39,15 @@ Studio/              OpenDCL Studio (dialog editor) + localized help content
 
 ## Building
 
-**Supported path:** CMake presets (Visual Studio 2022 generator). Step-by-step for
-a first build: **[docs/BUILD-QUICKSTART.md](docs/BUILD-QUICKSTART.md)**. Framework
+**Supported path:** CMake presets. Step-by-step for a first build:
+**[docs/BUILD-QUICKSTART.md](docs/BUILD-QUICKSTART.md)**. Framework
 reference: **[CMAKE.md](CMAKE.md)**.
 
 **Typical requirements:**
 
-- CMake >= 3.24
+- CMake >= 3.24 (`vs2026-*` needs **CMake 4.2+**)
 - Visual Studio 2022 with Windows desktop C++ and **MFC**
+- **Visual Studio 2026** (same workloads) whenever you compile **`ARX.26.x64`** or later **v145+** hosts — including a Full product catalog. Preferred Full preset is **`vs2026-full`** (`vs2022-full` also works with v145 installed)
 - ObjectARX / BRX / ZRX / GRX SDKs for any CAD Runtime modules you build (not in this repository); Studio-only builds need no CAD SDK
 
 ```powershell
@@ -60,8 +61,8 @@ cmake --preset vs2022-dev
 cmake --build --preset vs2022-dev-debug
 ```
 
-Open the generated solution under `build/<preset>/<preset>.sln` (for example
-`build/vs2022-dev/vs2022-dev.sln`). There is no checked-in `OpenDCL.sln`.
+Open the generated solution under `build/<preset>/` (`.sln` on VS2022,
+`.slnx` on VS2026). There is no checked-in `OpenDCL.sln`.
 
 **Older Platform Toolsets:** historic matrix rows use pre-VS2015 toolsets
 (`v70`-`v120`, and related XP variants). Install

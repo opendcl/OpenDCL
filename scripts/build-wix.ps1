@@ -24,7 +24,7 @@
 .PARAMETER OpenDclRoot
   Path to compiled OpenDCL tree. Defaults to this repository root (where
   CMakeLists.txt lives). For CMake dual-arch, pass the binary dir that contains
-  out\ (e.g. build\vs2022-full).
+  out\ (e.g. build\vs2026-full).
 
 .PARAMETER Configuration
   Build configuration folder to harvest (default Release).
@@ -145,7 +145,7 @@ function Resolve-ProductFile([string] $rel) {
     Search order (first existing path wins):
       1) OpenDclRoot\<rel>              classic tree or staged outputs
       2) OpenDclRoot\out\<rel>          CMake binary dir layout (shared x64+Win32 out)
-      3) OpenDclRoot\win32\out\<rel>    nested Win32 under vs2022-full (if separate out)
+      3) OpenDclRoot\win32\out\<rel>    nested Win32 under vs2026-full (if separate out)
       4) RepoRoot\<rel>                 source assets when -OpenDclRoot is a CMake build tree
 
     Package only what lives under the chosen product root / this packaging repo.
@@ -671,7 +671,7 @@ function Test-PeIsX64([string] $pePath) {
 }
 
 function Resolve-StudioExe([string] $configuration = "Release") {
-  # Prefer Win32 (classic vdproj / vs2022-full OPENDCL_STUDIO_PE=classic_x86), then x64.
+  # Prefer Win32 (classic vdproj / vs2026-full OPENDCL_STUDIO_PE=classic_x86), then x64.
   # Paths via Resolve-ProductFile (OpenDclRoot, out\, win32\out\, source tree).
   foreach ($plat in @("Win32", "x64")) {
     $rel = "Studio\$plat\$configuration\OpenDCL Studio.exe"

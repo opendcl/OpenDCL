@@ -15,7 +15,7 @@ The **`.msm` is intentional and permanent** - other developers embed it in their
 ## Prerequisites
 
 1. Prior **completed** compile of the modules/languages you intend to ship:
-   - **Full product release:** all ARX/BRX/GRX/ZRX, all `Runtime.Res`, RxInstall, Studio, Studio.Res, CHM.
+   - **Full product release:** CMake **`vs2026-full`** (preferred; `vs2022-full` also works), all ARX/BRX/GRX/ZRX, all `Runtime.Res`, RxInstall, Studio, Studio.Res, CHM. **ARX.26** / later **v145+** hosts need the **VS2026 v145 toolset**.
    - **Custom installer:** only the chosen runtimes + language packs (+ RxInstall; Studio optional via `-SkipStudio`).
 2. Run **`scripts/verify-build-outputs.ps1`** (or let `make-release.ps1` run it). **Do not package mid-build.**
 3. [WiX Toolset v3.14](https://wixtoolset.org/) (`candle.exe` / `light.exe`).
@@ -30,22 +30,22 @@ From this repository root (after a Release compile):
 
 ```powershell
 # Preferred full local release (verify -> WiX -> dist -> loc zips [-> sign]):
-.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+.\scripts\make-release.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
   -ProductVersion 10.1.2.1 -ModuleSet Full
 
 # Full product WiX only:
-.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full)
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full)
 
 # MSM only (fast iterate on full inventory):
-.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) -SkipStudio -SkipRuntimeMsi
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) -SkipStudio -SkipRuntimeMsi
 
 # Custom subset - explicit runtimes + language(s)
-.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2022-full) `
+.\scripts\build-wix.ps1 -OpenDclRoot (Resolve-Path build\vs2026-full) `
   -Runtimes BRX.27.x64 -Languages ENU -SkipStudio
 
 # Custom subset - package whatever modules/langs are present under -OpenDclRoot/out
 .\scripts\build-wix.ps1 -ModuleSet Available -AvailableLanguages -SkipStudio `
-  -OpenDclRoot (Resolve-Path build\vs2022-full)
+  -OpenDclRoot (Resolve-Path build\vs2026-full)
 ```
 
 | Switch | Role |
