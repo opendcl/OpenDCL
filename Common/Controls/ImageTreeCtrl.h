@@ -71,11 +71,11 @@ public:
 	BOOL GetItemImage( HTREEITEM hItem, int& nImage, int& nSelImage ) const;
 	BOOL SetItemImage( HTREEITEM hItem, int nImage, int nSelImage );
 	void Clear();
-	bool IsDeleting() const { return mbDeleting; }
 	int GetExpandedImage( HTREEITEM hItem ) const;
 	bool SetExpandedImage( HTREEITEM hItem, int nExpImage );
 
 protected:
+	bool IsDeleting() const { return mbDeleting; }
 	CTreeItem* GetTreeItem( HTREEITEM hItem );
 	const CTreeItem* GetTreeItem( HTREEITEM hItem ) const;
 	HTREEITEM CopyTreeItem( HTREEITEM hSource, HTREEITEM hNewParent, HTREEITEM hInsertAfter, bool bCopyKey = false );
