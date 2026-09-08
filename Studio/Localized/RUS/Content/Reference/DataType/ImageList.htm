@@ -37,6 +37,16 @@
       OpenDCL требующие список изображений, и OpenDCL будет интерпретировать их правильно,
       как указатели на список изображений. Use the <a href="../Method/Index.htm#ImageList">
         Image List methods</a> to manage image lists.</p>
+    <p>
+      All images in an image list share one width and height, in pixels. That size
+      is set when the first image is added to an empty list. In Studio, the first
+      picture you import determines the size, and the width and height fields then
+      become read-only. In AutoLISP, you may pass optional Width and Height to
+      <a href="../Method/ImageList/SetAt.htm">dcl-ImageList-SetAt</a> when adding
+      the first image; otherwise the first image's native size is used. Later images
+      are scaled to that size. The size cannot be changed afterward. To use a
+      different size, delete every image from the list and add them again, starting
+      with an image of the desired size.</p>
   </div>
   <hr>
   <div id="footer">

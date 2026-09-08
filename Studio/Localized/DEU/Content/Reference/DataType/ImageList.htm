@@ -35,6 +35,18 @@
       (die AutoLISP-Funktion (entget) kann hier also nicht angewandt werden). Sie k&ouml;nnen jedoch OpenDCL-Funktionen &uuml;bergeben
       werden, die eine Image List erwarten und OpenDCL interpretiert sie korrekterweise
       als Speicheradresse einer Image List. Zur Organisation der Bilder und Symbole in den Image Lists stehen <a href="../Method/Index.htm#ImageList">weitere Methoden </a>zur Verf&uuml;gung.</p>
+    <p>
+      Alle Bilder einer Image List haben dieselbe Breite und Höhe in Pixeln.
+      Diese Größe wird festgelegt, wenn das erste Bild in eine leere Liste
+      eingefügt wird. In Studio bestimmt das zuerst importierte Bild die Größe;
+      die Felder für Breite und Höhe sind danach schreibgeschützt. In AutoLISP
+      können optionale Width- und Height-Werte an
+      <a href="../Method/ImageList/SetAt.htm">dcl-ImageList-SetAt</a> übergeben
+      werden, wenn das erste Bild hinzugefügt wird; sonst gilt die native Größe
+      des ersten Bildes. Weitere Bilder werden auf diese Größe skaliert.
+      Die Größe kann später nicht geändert werden. Für eine andere Größe alle
+      Bilder löschen und erneut hinzufügen, beginnend mit einem Bild der
+      gewünschten Größe.</p>
 </div>
   <hr />
   <div id="footer">
