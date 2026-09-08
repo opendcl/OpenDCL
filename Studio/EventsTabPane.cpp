@@ -315,6 +315,12 @@ BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg)
 				if( 0 == (GetFocus()->SendMessage(WM_GETDLGCODE, 0, 0) & DLGC_WANTARROWS) )
 					break;
 			}
+			case VK_SPACE:
+			{
+				// Space must reach CCheckListBox so it toggles and sends CLBN_CHKCHANGE.
+				if( GetFocus() != &mEventsList )
+					break;
+			}
 			case VK_CONTROL:
 			case VK_DELETE:
 			case 'C':
@@ -501,6 +507,10 @@ void CEventsTabPane::OnSelchangeEventstree()
 void CEventsTabPane::OnCheckChanged()
 {
 	int nCurSel = mEventsList.GetCurSel();
+	if( nCurSel < 0 )
+		nCurSel = mEventsList.GetCaretIndex();
+	if( nCurSel < 0 )
+		return;
 	size_t idxProp = mEventsList.GetItemData( nCurSel );
 	bool bChecked = (mEventsList.GetCheck( nCurSel ) == BST_CHECKED);
 	CString sEventDefun;
