@@ -11,8 +11,9 @@ Framework details (matrix, options, dual-arch ship, debugger overrides):
 | Requirement | Notes |
 | --- | --- |
 | Windows | Native MSVC build only |
-| [CMake](https://cmake.org/) >= 3.24 | On `PATH` (`cmake --version`) |
+| [CMake](https://cmake.org/) >= 3.24 | On `PATH` (`cmake --version`). **`vs2026-*` needs 4.2+** |
 | Visual Studio 2022 | **Desktop development with C++** and **MFC** |
+| Visual Studio 2026 | Required whenever you compile **`ARX.26.x64`** (matrix `TOOLSET` v145) or later v145+ hosts. Preferred Full product preset is **`vs2026-full`** |
 | CAD SDK(s) | Only if you build Runtime modules (not needed for Studio-only) |
 | HTML Help Workshop (`hhc.exe`) | Optional; builds `OpenDCL.chm` for Studio Help / F5 |
 
@@ -61,7 +62,7 @@ still succeeds: **no runtime modules** are selected, and Studio still builds
 
 ### B1. Dev default (recommended)
 
-Preset **`vs2022-dev`**:
+Preset **`vs2022-dev`** (ARX.26 needs the VS2026 **v145** toolset installed):
 
 - Enables ARX / BRX / GRX / ZRX families
 - Skips missing SDKs (`OPENDCL_RUNTIME_AUTO`)
@@ -89,7 +90,7 @@ cmake --build --preset vs2022-dev-release
 
 Configure log lines `ENABLE  <id>  SDK=...` show which modules were selected.
 
-Open: `build/vs2022-dev/vs2022-dev.sln`.
+Open: `build/vs2022-dev/vs2022-dev.sln` or `build/vs2026-dev/vs2026-dev.slnx`.
 
 Set a runtime module (or Studio) as the startup project, then **F5**. CMake fills
 `/ld "<path-to-module>"` and tries to discover the CAD host from the registry
@@ -146,9 +147,10 @@ Exact layout and FullDebug mapping: [CMAKE.md](../CMAKE.md).
 | Preset | When to use |
 | --- | --- |
 | `vs2022-arx-modern` | Up to **3** latest modern ARX SDKs (`PER_FAMILY_MAX=3`, toolset >= v141) |
-| `vs2022-full` | Full dual-arch product / ship layout - not needed for normal contribution. Details: [CMAKE.md](../CMAKE.md), packaging smoke: [SMOKE.md](SMOKE.md) |
+| `vs2026-full` | Preferred Full dual-arch product / ship layout. Details: [CMAKE.md](../CMAKE.md), packaging smoke: [SMOKE.md](SMOKE.md) |
+| `vs2022-full` | Same layout on the VS 17 generator; also works with the v145 toolset installed |
 
 All configure/build preset names: `CMakePresets.json`.
 
 There is no checked-in `OpenDCL.sln`. Open the generated
-`build/<preset>/<preset>.sln` from a CMake preset.
+`build/<preset>/<preset>.sln` (VS2022) or `.slnx` (VS2026) from a CMake preset.

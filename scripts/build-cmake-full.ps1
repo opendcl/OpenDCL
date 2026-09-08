@@ -3,7 +3,8 @@
   Configure + build CMake "classic parity" presets (x64 + Win32) and optionally package.
 
 .DESCRIPTION
-  Full dual-arch ship using preset **vs2022-full**:
+  Full dual-arch ship using preset **vs2026-full** (preferred; vs2022-full also works).
+  ARX.26 / v145+ need the VS2026 v145 toolset.
     - One VS .sln (x64) with nested Win32 projects imported into the solution (Nest_Win32 umbrella)
     - Shared out/ for x64 + x86 modules, Studio, Res, RxInstall
     - All CAD families (AUTO = skip missing SDKs), all UI languages
@@ -26,7 +27,7 @@ param(
   [string] $Configuration = "Release",
   [string] $OutDir = "",
   [switch] $Fresh,
-  [string] $Preset = "vs2022-full",
+  [string] $Preset = "vs2026-full",
   [switch] $SkipVerify,
   [switch] $VerifyOnly
 )

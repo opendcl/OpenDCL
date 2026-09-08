@@ -8,7 +8,8 @@ a compile is still running.
 
 | Check | Requirement |
 | --- | --- |
-| Product tree | CMake preset **`vs2022-full`** (dual-arch ship) |
+| Product tree | CMake preset **`vs2026-full`** (preferred dual-arch ship; `vs2022-full` also works) |
+| VS | **Visual Studio 2026** v145 toolset required for **ARX.26** / later v145+ hosts (side-by-side with VS2022 is enough) |
 | Config | **Release** for ship smoke |
 | SDKs | Host SDKs present for every catalog runtime you expect in a **Full** package |
 | WiX | Toolset **v3.14** (`candle` / `light`) |
@@ -19,12 +20,12 @@ a compile is still running.
 
 ```text
 1. Clean (optional): remove build/, wix/out/, dist/<ver>/ as needed
-2. Configure:  cmake --preset vs2022-full --fresh
-3. Build:      cmake --build --preset vs2022-full-release
+2. Configure:  cmake --preset vs2026-full --fresh
+3. Build:      cmake --build --preset vs2026-full-release
                (or: scripts/build-cmake-full.ps1 -Fresh)
-4. Verify:     scripts/verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full
+4. Verify:     scripts/verify-build-outputs.ps1 -OpenDclRoot build\vs2026-full
                -> fail if Full catalog / Studio / Res / RxInstall incomplete
-5. Package:    scripts/make-release.ps1 -OpenDclRoot build\vs2022-full -ProductVersion A.B.C.D [-Sign]
+5. Package:    scripts/make-release.ps1 -OpenDclRoot build\vs2026-full -ProductVersion A.B.C.D [-Sign]
 6. Smoke:      Runtime MSI alone, then Studio ENU alone (or vice versa on clean machine)
 7. Compare:    new dist packages vs the previous release package set (see below)
 ```
@@ -83,12 +84,12 @@ $ver  = "10.1.2.1"
 $prev = "10.0.0.0"   # last shipped / last accepted dry-run version
 
 # Clean empty tree (example)
-Remove-Item "build\vs2022-full","wix\out","dist\$ver" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "build\vs2026-full","wix\out","dist\$ver" -Recurse -Force -ErrorAction SilentlyContinue
 
-.\scripts\build-cmake-full.ps1 -Fresh -Preset vs2022-full
-.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2022-full -ModuleSet Full
+.\scripts\build-cmake-full.ps1 -Fresh -Preset vs2026-full
+.\scripts\verify-build-outputs.ps1 -OpenDclRoot build\vs2026-full -ModuleSet Full
 .\scripts\make-release.ps1 `
-  -OpenDclRoot (Resolve-Path build\vs2022-full) `
+  -OpenDclRoot (Resolve-Path build\vs2026-full) `
   -ProductVersion $ver `
   -ModuleSet Full `
   -Sign   # PIN prompt; omit for unsigned dry-run

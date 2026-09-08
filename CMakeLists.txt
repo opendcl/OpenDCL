@@ -15,10 +15,10 @@ else()
   get_filename_component(_opendcl_grandparent "${_opendcl_bin_parent}" DIRECTORY)
   get_filename_component(_opendcl_grandparent_leaf "${_opendcl_grandparent}" NAME)
   if(_opendcl_parent_leaf STREQUAL "build")
-    # .../build/vs2022-dev -> vs2022-dev.sln
+    # .../build/vs2026-dev -> vs2026-dev.sln
     set(_opendcl_project_name "${_opendcl_bin_leaf}")
   elseif(_opendcl_grandparent_leaf STREQUAL "build")
-    # .../build/vs2022-full/win32 -> vs2022-full-win32.sln
+    # .../build/vs2026-full/win32 -> vs2026-full-win32.sln
     set(_opendcl_project_name "${_opendcl_parent_leaf}-${_opendcl_bin_leaf}")
   else()
     set(_opendcl_project_name "OpenDCL")

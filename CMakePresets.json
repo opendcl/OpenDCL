@@ -23,12 +23,9 @@
       "name": "base-vs2026",
       "hidden": true,
       "inherits": "base",
-      "displayName": "VS2026 base (VS 17 generator + v143 14.44 pin)",
-      "description": "CMake has no Visual Studio 18 generator yet; pin v143 to 14.44.35207 so cmake --build matches a VS 2026 IDE session on this tree.",
-      "toolset": {
-        "value": "version=14.44.35207,host=x64",
-        "strategy": "set"
-      }
+      "displayName": "VS2026 base (Visual Studio 18 2026)",
+      "description": "Visual Studio 18 2026 generator (CMake 4.2+).",
+      "generator": "Visual Studio 18 2026"
     },
     {
       "name": "vs2022-dev",
@@ -70,7 +67,7 @@
     },
     {
       "name": "vs2022-arx-latest",
-      "displayName": "VS2022 — ARX.26.x64 only",
+      "displayName": "VS2022 — ARX.26.x64 only (requires VS2026 v145 toolset)",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -125,7 +122,7 @@
     },
     {
       "name": "vs2022-full",
-      "displayName": "VS2022 Mixed full ship — x64 .sln + nested Win32 + classic x86 Studio/Res",
+      "displayName": "VS2022 Mixed full (alternative to vs2026-full; ARX.26 needs VS2026 v145)",
       "inherits": "base",
       "architecture": {
         "value": "x64",
@@ -354,7 +351,7 @@
     },
     {
       "name": "vs2026-full",
-      "displayName": "VS2026 Mixed full ship — x64 .sln + nested Win32 + classic x86 Studio/Res",
+      "displayName": "VS2026 Mixed full product — x64 + nested Win32 + classic x86 Studio/Res",
       "inherits": "base-vs2026",
       "architecture": {
         "value": "x64",
