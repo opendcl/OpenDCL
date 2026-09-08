@@ -75,6 +75,7 @@ public:
 	bool SetExpandedImage( HTREEITEM hItem, int nExpImage );
 
 protected:
+	bool IsDeleting() const { return mbDeleting; }
 	CTreeItem* GetTreeItem( HTREEITEM hItem );
 	const CTreeItem* GetTreeItem( HTREEITEM hItem ) const;
 	HTREEITEM CopyTreeItem( HTREEITEM hSource, HTREEITEM hNewParent, HTREEITEM hInsertAfter, bool bCopyKey = false );
