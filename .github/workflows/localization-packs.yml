@@ -87,7 +87,7 @@ jobs:
 
           Each ``OpenDCL.<LANG>.zip`` contains SharedRes/Runtime/Studio .rc files and Studio help Content (HTML/images). Samples and CHM are omitted.
 
-          Regenerated from branch/ref of this workflow run. Prefer these downloads if you do not use git; submit changes via the [forum](https://www.opendcl.com/forum/) or a pull request.
+          Regenerated from branch/ref of this workflow run. Prefer these downloads if you do not use git; submit changes via [Discussion](https://www.opendcl.com/discussion/) or a pull request.
 
           Source: https://github.com/opendcl/OpenDCL
           "@
