@@ -29,10 +29,13 @@ public:
 	void SetGridSpacing( UINT nGridSpacing );
 
 protected:
+	bool m_bConvertMode = false;
+	int m_nConvertExit = 0;
 
 // Overrides
 protected:
 	BOOL InitInstance() override;
+	int ExitInstance() override;
 
 // Implementation
 	DECLARE_MESSAGE_MAP()

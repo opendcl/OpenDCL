@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "OpenDCL.h"
+#include "OdclJson.h"
 #include "StudioFrame.h"
 #include "OpenDCLDoc.h"
 #include "StdioUnicodeFile.h"
@@ -119,8 +120,44 @@ COpenDCLApp theApp;
 
 // COpenDCLApp initialization
 
+int COpenDCLApp::ExitInstance()
+{
+	const int n = CWinApp::ExitInstance();
+	if( m_bConvertMode )
+		return m_nConvertExit;
+	return n;
+}
+
 BOOL COpenDCLApp::InitInstance()
 {
+	CString inPath, outPath;
+	if( StudioTryGetConvertJob( inPath, outPath ) )
+	{
+		m_bConvertMode = true;
+		m_nCmdShow = SW_HIDE;
+		AfxSetResourceHandle( theWorkspace.GetLocalResourceModule() );
+		INITCOMMONCONTROLSEX InitCtrls;
+		InitCtrls.dwSize = sizeof(InitCtrls);
+		InitCtrls.dwICC = ICC_WIN95_CLASSES;
+		InitCommonControlsEx( &InitCtrls );
+		if( !AfxOleInit() )
+		{
+			StudioWriteConsoleMessage( _T("OLE init failed"), true );
+			m_nConvertExit = 1;
+			return FALSE;
+		}
+		CString err;
+		if( !StudioConvertProject( inPath, outPath, err ) )
+		{
+			StudioWriteConsoleMessage( err.IsEmpty() ? _T("/out failed") : err, true );
+			m_nConvertExit = 1;
+			return FALSE;
+		}
+		StudioWriteConsoleMessage( _T("converted: ") + outPath, false );
+		m_nConvertExit = 0;
+		return FALSE;
+	}
+
 	AfxSetResourceHandle( theWorkspace.GetLocalResourceModule() );
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
@@ -182,6 +219,9 @@ BOOL COpenDCLApp::InitInstance()
 	// Dispatch commands specified on the command line.  Will return FALSE if
 	// app was launched with /RegServer, /Register, /Unregserver or /Unregister.
 	if (!ProcessShellCommand(cmdInfo))
+		return FALSE;
+
+	if( m_bConvertMode )
 		return FALSE;
 
 	// The one and only window has been initialized, so show and update it

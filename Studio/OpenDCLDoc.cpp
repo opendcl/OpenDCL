@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "OpenDCL.h"
 #include "OpenDCLDoc.h"
+#include "OdclJson.h"
 #include "Resource.h"
 #include "StudioProject.h"
 #include "StudioFrame.h"
@@ -102,11 +103,23 @@ BOOL COpenDCLDoc::OnOpenDocument( LPCTSTR lpszPathName )
 	if( mpProject )
 		mpProject->ClearDocument();
 	mpProject = new CStudioProject( this );
-	IOStatus stat = mpProject->ReadFromFile( lpszPathName );
-	if( stat != statOK )
+	if( StudioPathIsJson( lpszPathName ) )
 	{
-		ReportSaveLoadException( lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC );
-		return FALSE;
+		CString err;
+		if( !StudioProjectFromJsonFile( lpszPathName, *mpProject, err ) )
+		{
+			ReportSaveLoadException( lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC );
+			return FALSE;
+		}
+	}
+	else
+	{
+		IOStatus stat = mpProject->ReadFromFile( lpszPathName );
+		if( stat != statOK )
+		{
+			ReportSaveLoadException( lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC );
+			return FALSE;
+		}
 	}
 
 	SetModifiedFlag( FALSE );     // start off with unmodified
@@ -131,7 +144,16 @@ BOOL COpenDCLDoc::OnSaveDocument( LPCTSTR lpszPathName )
 	CWaitCursor wait;
 
 	mpProject->SetKeyName( lpszPathName ); //updating the key name *before* saving
-	if( mpProject->WriteToFile( sFileName ) != statOK )
+	if( StudioPathIsJson( sFileName ) )
+	{
+		CString err;
+		if( !StudioProjectToJsonFile( *mpProject, sFileName, err ) )
+		{
+			ReportSaveLoadException( sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC );
+			return FALSE;
+		}
+	}
+	else if( mpProject->WriteToFile( sFileName ) != statOK )
 	{
 		ReportSaveLoadException( sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC );
 		return FALSE;

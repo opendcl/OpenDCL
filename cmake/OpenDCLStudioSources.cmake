@@ -45,6 +45,7 @@ set(OPENDCL_STUDIO_SOURCES
   "${CMAKE_SOURCE_DIR}/Studio/InsertControlDlg.cpp"
   "${CMAKE_SOURCE_DIR}/Studio/ListHeader.cpp"
   "${CMAKE_SOURCE_DIR}/Studio/OpenDCL.cpp"
+  "${CMAKE_SOURCE_DIR}/Studio/OdclJson.cpp"
   "${CMAKE_SOURCE_DIR}/Studio/OpenDCLDoc.cpp"
   "${CMAKE_SOURCE_DIR}/Studio/ParseFuncHelp.cpp"
   "${CMAKE_SOURCE_DIR}/Studio/PictureFolder.cpp"
