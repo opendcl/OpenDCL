@@ -1,10 +1,14 @@
 #include "stdafx.h"
 #include "OdclJson.h"
 
+#include "Base64.h"
 #include "ControlApiName.h"
 #include "ControlTypes.h"
+#include "DclAxCtrlInitInfo.h"
 #include "DclControlTemplate.h"
 #include "DclFormTemplate.h"
+#include "DclImageList.h"
+#include "DclPicture.h"
 #include "FormTypes.h"
 #include "Project.h"
 #include "PropertyIds.h"
@@ -12,9 +16,13 @@
 #include "PropertyObject.h"
 #include "UndoManager.h"
 
+#include <objbase.h>
+#include <oleauto.h>
+
 #include <nlohmann/json.hpp>
 
 #include <cctype>
+#include <cstring>
 #include <fstream>
 #include <iterator>
 #include <set>
@@ -73,6 +81,283 @@ long JsonLong( const nlohmann::json& o, const char* key, long fallback )
 		}
 	}
 	return fallback;
+}
+
+nlohmann::json BytesToBlob( const void* data, size_t n, const char* media )
+{
+	nlohmann::json o = nlohmann::json::object();
+	o["media"] = media ? media : "application/octet-stream";
+	if( !data || n == 0 )
+		o["data"] = "";
+	else
+		o["data"] = base64_encode( static_cast<const unsigned char*>( data ),
+		                           static_cast<unsigned int>( n ), 0 );
+	return o;
+}
+
+bool BlobToBytes( const nlohmann::json& v, std::string& raw, std::string& media )
+{
+	if( !v.is_object() || !v.contains( "data" ) || !v["data"].is_string() )
+		return false;
+	media = v.contains( "media" ) && v["media"].is_string() ? v["media"].get<std::string>()
+	                                                        : "application/octet-stream";
+	raw = base64_decode( v["data"].get<std::string>() );
+	return true;
+}
+
+const char* PictureMedia( short picType )
+{
+	switch( picType )
+	{
+	case PICTYPE_METAFILE:
+		return "image/x-wmf";
+	case PICTYPE_ENHMETAFILE:
+		return "image/x-emf";
+	case PICTYPE_ICON:
+		return "image/bmp";
+	default:
+		return "image/bmp";
+	}
+}
+
+nlohmann::json PictureToBlob( const CDclPicture* pic )
+{
+	if( !pic )
+		return nullptr;
+	LPPICTUREDISP disp = pic->GetPictureDisp();
+	if( !disp )
+		return nullptr;
+	CComQIPtr<IPicture> ip( disp );
+	if( !ip )
+		return nullptr;
+	CComPtr<IStream> stm;
+	if( FAILED( CreateStreamOnHGlobal( NULL, TRUE, &stm ) ) || !stm )
+		return nullptr;
+	if( FAILED( ip->SaveAsFile( stm, TRUE, NULL ) ) )
+		return nullptr;
+	STATSTG stg = {};
+	if( FAILED( stm->Stat( &stg, STATFLAG_NONAME ) ) )
+		return nullptr;
+	const ULONG n = static_cast<ULONG>( stg.cbSize.QuadPart );
+	LARGE_INTEGER zero = {};
+	stm->Seek( zero, STREAM_SEEK_SET, NULL );
+	std::string raw( n, 0 );
+	ULONG got = 0;
+	if( n > 0 && FAILED( stm->Read( &raw[0], n, &got ) ) )
+		return nullptr;
+	raw.resize( got );
+	return BytesToBlob( raw.data(), raw.size(), PictureMedia( pic->GetPicType() ) );
+}
+
+TPicturePtr PictureFromBlob( UINT id, const nlohmann::json& blob )
+{
+	std::string raw, media;
+	if( !BlobToBytes( blob, raw, media ) )
+		return TPicturePtr();
+	HGLOBAL hg = GlobalAlloc( GMEM_MOVEABLE, raw.empty() ? 1 : raw.size() );
+	if( !hg )
+		return TPicturePtr();
+	void* p = GlobalLock( hg );
+	if( p && !raw.empty() )
+		memcpy( p, raw.data(), raw.size() );
+	if( p )
+		GlobalUnlock( hg );
+	CComPtr<IStream> stm;
+	if( FAILED( CreateStreamOnHGlobal( hg, TRUE, &stm ) ) || !stm )
+	{
+		GlobalFree( hg );
+		return TPicturePtr();
+	}
+	CComPtr<IPicture> ip;
+	if( FAILED( OleLoadPicture( stm, static_cast<LONG>( raw.size() ), FALSE, IID_IPicture,
+	                            reinterpret_cast<void**>( &ip ) ) ) ||
+	    !ip )
+		return TPicturePtr();
+	TPicturePtr pic( new CDclPicture( id ) );
+	pic->Update( ip );
+	if( !pic->IsValid() )
+		return TPicturePtr();
+	return pic;
+}
+
+UINT NextPictureId( const CProject& project )
+{
+	UINT m = 0;
+	const TPictureMap& map = project.GetPictureMap();
+	for( TPictureMap::const_iterator it = map.begin(); it != map.end(); ++it )
+	{
+		if( it->first > m )
+			m = it->first;
+	}
+	return m + 1;
+}
+
+nlohmann::json PicturesToJson( const CProject& project )
+{
+	nlohmann::json o = nlohmann::json::object();
+	const TPictureMap& map = project.GetPictureMap();
+	for( TPictureMap::const_iterator it = map.begin(); it != map.end(); ++it )
+	{
+		if( !it->second )
+			continue;
+		nlohmann::json b = PictureToBlob( it->second );
+		if( b.is_null() )
+			continue;
+		o[std::to_string( it->first )] = std::move( b );
+	}
+	return o;
+}
+
+bool PicturesFromJson( CProject& project, const nlohmann::json& o, CString& error )
+{
+	if( !o.is_object() )
+	{
+		error = _T("pictures must be an object keyed by id");
+		return false;
+	}
+	for( nlohmann::json::const_iterator it = o.begin(); it != o.end(); ++it )
+	{
+		UINT id = 0;
+		try
+		{
+			id = static_cast<UINT>( std::stoul( it.key() ) );
+		}
+		catch( ... )
+		{
+			error = _T("pictures keys must be numeric ids");
+			return false;
+		}
+		TPicturePtr pic = PictureFromBlob( id, it.value() );
+		if( !pic )
+		{
+			error.Format( _T("cannot decode picture %u"), id );
+			return false;
+		}
+		project.AddPicture( pic );
+	}
+	return true;
+}
+
+nlohmann::json ImageListToJson( TImageListPtr il )
+{
+	if( !il || il->IsNull() )
+		return nullptr;
+	nlohmann::json o = nlohmann::json::object();
+	o["cx"] = il->GetSize().cx;
+	o["cy"] = il->GetSize().cy;
+	nlohmann::json images = nlohmann::json::array();
+	CImageList& list = il->GetImageList();
+	const int n = list.GetImageCount();
+	for( int i = 0; i < n; ++i )
+	{
+		HICON icon = list.ExtractIcon( i );
+		if( !icon )
+			continue;
+		CPictureHolder holder;
+		holder.CreateFromIcon( icon );
+		DestroyIcon( icon );
+		CDclPicture tmp( 0 );
+		tmp.Update( CComQIPtr<IPicture>( holder.GetPictureDispatch() ) );
+		nlohmann::json b = PictureToBlob( &tmp );
+		if( !b.is_null() )
+			images.push_back( std::move( b ) );
+	}
+	o["images"] = std::move( images );
+	return o;
+}
+
+TImageListPtr ImageListFromJson( const nlohmann::json& v )
+{
+	if( !v.is_object() )
+		return TImageListPtr();
+	TImageListPtr il( new CDclImageList() );
+	const long cx = JsonLong( v, "cx", 16 );
+	const long cy = JsonLong( v, "cy", 16 );
+	il->SetSize( CSize( cx, cy ) );
+	if( !v.contains( "images" ) || !v["images"].is_array() )
+		return il;
+	CDC dc;
+	dc.CreateCompatibleDC( NULL );
+	int idx = 0;
+	for( const auto& img : v["images"] )
+	{
+		TPicturePtr pic = PictureFromBlob( static_cast<UINT>( ++idx ), img );
+		if( !pic )
+			continue;
+		il->AddPicture( &dc, pic->GetPictureDisp() );
+	}
+	return il;
+}
+
+nlohmann::json AxToJson( TAxCtrlInitInfoPtr ax )
+{
+	if( !ax )
+		return nullptr;
+	nlohmann::json o = nlohmann::json::object();
+	wchar_t guid[64] = {};
+	if( StringFromGUID2( ax->GetClsid(), guid, 64 ) > 0 )
+		o["clsid"] = CStringToUtf8( guid );
+	if( ax->GetProgId() && *ax->GetProgId() )
+		o["progId"] = CStringToUtf8( ax->GetProgId() );
+	if( ax->GetLicenseKey() && *ax->GetLicenseKey() )
+		o["license"] = CStringToUtf8( ax->GetLicenseKey() );
+	CComPtr<IStream> stm = ax->GetIStream();
+	if( stm )
+	{
+		STATSTG stg = {};
+		if( SUCCEEDED( stm->Stat( &stg, STATFLAG_NONAME ) ) && stg.cbSize.QuadPart > 0 )
+		{
+			const ULONG n = static_cast<ULONG>( stg.cbSize.QuadPart );
+			LARGE_INTEGER zero = {};
+			stm->Seek( zero, STREAM_SEEK_SET, NULL );
+			std::string raw( n, 0 );
+			ULONG got = 0;
+			if( SUCCEEDED( stm->Read( &raw[0], n, &got ) ) )
+			{
+				raw.resize( got );
+				o["persist"] = BytesToBlob( raw.data(), raw.size(), "application/octet-stream" );
+			}
+			stm->Seek( zero, STREAM_SEEK_SET, NULL );
+		}
+	}
+	return o;
+}
+
+TAxCtrlInitInfoPtr AxFromJson( const nlohmann::json& v )
+{
+	if( !v.is_object() )
+		return TAxCtrlInitInfoPtr();
+	CLSID clsid = CLSID_NULL;
+	const std::string cs = JsonStr( v, "clsid" );
+	if( !cs.empty() )
+		CLSIDFromString( Utf8ToCString( cs ), &clsid );
+	const CString prog = Utf8ToCString( JsonStr( v, "progId" ) );
+	const CString lic = Utf8ToCString( JsonStr( v, "license" ) );
+	TAxCtrlInitInfoPtr ax( new CDclAxCtrlInitInfo( clsid, lic.IsEmpty() ? NULL : lic.GetString(),
+	                                               prog.IsEmpty() ? NULL : prog.GetString() ) );
+	if( v.contains( "persist" ) )
+	{
+		std::string raw, media;
+		if( BlobToBytes( v["persist"], raw, media ) && !raw.empty() )
+		{
+			HGLOBAL hg = GlobalAlloc( GMEM_MOVEABLE, raw.size() );
+			if( hg )
+			{
+				void* p = GlobalLock( hg );
+				if( p )
+				{
+					memcpy( p, raw.data(), raw.size() );
+					GlobalUnlock( hg );
+				}
+				CComPtr<IStream> stm;
+				if( SUCCEEDED( CreateStreamOnHGlobal( hg, TRUE, &stm ) ) )
+					ax->GetIStream() = stm;
+				else
+					GlobalFree( hg );
+			}
+		}
+	}
+	return ax;
 }
 
 CString PathExt( const CString& path )
@@ -169,7 +454,7 @@ bool IsReservedKey( const std::string& k )
 	return k == "format" || k == "name" || k == "type" || k == "left" || k == "top" ||
 	       k == "width" || k == "height" || k == "caption" || k == "text" || k == "events" ||
 	       k == "controls" || k == "forms" || k == "output" || k == "tabs" || k == "parent" ||
-	       k == "tabIndex" || k == "lispFile";
+	       k == "tabIndex" || k == "lispFile" || k == "pictures" || k == "imageList" || k == "ax";
 }
 
 bool IsGeometryOrName( Prop::Id id )
@@ -234,6 +519,20 @@ void ApplyOneProperty( TDclControlPtr ctrl, Prop::Id id, const nlohmann::json& v
 	{
 		if( v.is_string() )
 			ctrl->SetStringProperty( id, Utf8ToCString( v.get<std::string>() ) );
+		return;
+	}
+	if( pt == PropPicture && v.is_object() )
+	{
+		TProjectPtr proj = ctrl->GetOwnerProject();
+		CProject* rawProj = proj;
+		if( !rawProj )
+			return;
+		const UINT picId = NextPictureId( *rawProj );
+		TPicturePtr pic = PictureFromBlob( picId, v );
+		if( !pic )
+			return;
+		rawProj->AddPicture( pic );
+		ctrl->SetLongProperty( id, static_cast<long>( picId ) );
 		return;
 	}
 	if( v.is_boolean() )
@@ -369,6 +668,10 @@ void ApplyPropertyBag( TDclControlPtr ctrl, const nlohmann::json& node )
 	if( !text.empty() )
 		ctrl->SetStringProperty( Prop::Text, Utf8ToCString( text ) );
 	ApplyEvents( ctrl, node );
+	if( node.contains( "imageList" ) )
+		ctrl->SetImageList( ImageListFromJson( node["imageList"] ) );
+	if( node.contains( "ax" ) )
+		ctrl->SetAxCtrlInitInfo( AxFromJson( node["ax"] ) );
 	for( nlohmann::json::const_iterator it = node.begin(); it != node.end(); ++it )
 	{
 		if( IsReservedKey( it.key() ) )
@@ -657,6 +960,18 @@ nlohmann::json WriteControl( TDclControlPtr pCtl )
 	c["width"] = rc.Width();
 	c["height"] = rc.Height();
 	EmitSparseProperties( c, pCtl, DefaultControlProps( pCtl->GetType(), rc ) );
+	if( pCtl->GetImageList() && !pCtl->GetImageList()->IsNull() )
+	{
+		nlohmann::json il = ImageListToJson( pCtl->GetImageList() );
+		if( !il.is_null() )
+			c["imageList"] = std::move( il );
+	}
+	if( pCtl->GetAxCtrlInitInfo() )
+	{
+		nlohmann::json ax = AxToJson( pCtl->GetAxCtrlInitInfo() );
+		if( !ax.is_null() && !ax.empty() )
+			c["ax"] = std::move( ax );
+	}
 	return c;
 }
 
@@ -772,6 +1087,11 @@ bool StudioProjectFromJsonFile( const CString& jsonPath, CProject& project, CStr
 	project.SetKeyName( Utf8ToCString( key ) );
 	if( ir.contains( "lispFile" ) && ir["lispFile"].is_string() )
 		project.SetLispFileName( Utf8ToCString( ir["lispFile"].get<std::string>() ) );
+	if( ir.contains( "pictures" ) )
+	{
+		if( !PicturesFromJson( project, ir["pictures"], error ) )
+			return false;
+	}
 	if( !ir.contains( "forms" ) || !ir["forms"].is_array() || ir["forms"].empty() )
 	{
 		error = _T("JSON needs a non-empty forms array");
@@ -810,6 +1130,11 @@ bool StudioProjectToJsonFile( const CProject& project, const CString& jsonPath, 
 	root["name"] = CStringToUtf8( project.GetKeyName() );
 	if( !project.GetLispFileName().IsEmpty() )
 		root["lispFile"] = CStringToUtf8( project.GetLispFileName() );
+	{
+		nlohmann::json pics = PicturesToJson( project );
+		if( !pics.empty() )
+			root["pictures"] = std::move( pics );
+	}
 	nlohmann::json forms = nlohmann::json::array();
 	const TDclFormList& list = project.GetDclFormList();
 	for( TDclFormList::const_iterator it = list.begin(); it != list.end(); ++it )
