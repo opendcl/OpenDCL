@@ -29,6 +29,288 @@
 // Single source of truth for the Studio HTML Help file name (FindFile + missing dialog).
 static const TCHAR g_szHelpFileName[] = _T("OpenDCL.chm");
 
+namespace {
+
+void AppendFilterPair( CString& filter, OPENFILENAME& ofn, const CString& name, const CString& spec )
+{
+	filter += name;
+	filter += (TCHAR)'\0';
+	filter += spec;
+	filter += (TCHAR)'\0';
+	ofn.nMaxCustFilter++;
+}
+
+void CollectFilterExts( const CString& filterExt, CStringArray& exts )
+{
+	int iStart = 0;
+	for( ;; )
+	{
+		CString ext = filterExt.Tokenize( _T(";"), iStart );
+		if( ext.IsEmpty() )
+			break;
+		if( ext[0] == _T('.') )
+			exts.Add( ext );
+	}
+}
+
+CString CombinedFilterSpec( const CStringArray& exts )
+{
+	CString spec;
+	for( INT_PTR i = 0; i < exts.GetSize(); ++i )
+	{
+		if( i )
+			spec += _T(';');
+		spec += _T('*');
+		spec += exts[i];
+	}
+	return spec;
+}
+
+CString FilterDisplayBase( const CString& filterName )
+{
+	CString base = filterName;
+	const int paren = base.ReverseFind( _T('(') );
+	if( paren > 0 )
+		base = base.Left( paren );
+	base.TrimRight();
+	return base.IsEmpty() ? filterName : base;
+}
+
+void AddStripExt( CStringArray& exts, const CString& ext )
+{
+	const int n = ext.GetLength();
+	INT_PTR i = 0;
+	for( ; i < exts.GetSize(); ++i )
+	{
+		if( exts[i].GetLength() < n )
+			break;
+	}
+	exts.InsertAt( i, ext );
+}
+
+bool PathEndsWithI( const CString& path, const CString& suffix )
+{
+	if( path.GetLength() < suffix.GetLength() )
+		return false;
+	return path.Right( suffix.GetLength() ).CompareNoCase( suffix ) == 0;
+}
+
+// IFileDialog treats only the last dotted component as the extension, so
+// xxx.odcl.json + default "odcl" becomes xxx.odcl.odcl. Strip known project
+// suffixes (longest first, repeatedly) before applying the selected one.
+CString StripProjectSuffix( CString name, const CStringArray& stripExts )
+{
+	bool stripped = true;
+	while( stripped )
+	{
+		stripped = false;
+		for( INT_PTR i = 0; i < stripExts.GetSize(); ++i )
+		{
+			if( PathEndsWithI( name, stripExts[i] ) )
+			{
+				name = name.Left( name.GetLength() - stripExts[i].GetLength() );
+				stripped = true;
+				break;
+			}
+		}
+	}
+	return name;
+}
+
+CString ApplyProjectSuffix( const CString& fileName, const CString& extNoDot,
+		const CStringArray& stripExts )
+{
+	if( extNoDot.IsEmpty() || fileName.IsEmpty() )
+		return fileName;
+	CString stem = StripProjectSuffix( fileName, stripExts );
+	if( stem.IsEmpty() )
+		return fileName;
+	return stem + _T('.') + extNoDot;
+}
+
+class CStudioProjectFileDlg : public CFileDialog
+{
+public:
+	CStudioProjectFileDlg( BOOL bOpen, DWORD dwFlags )
+		: CFileDialog( bOpen, NULL, NULL, dwFlags, NULL, NULL, 0, TRUE )
+	{
+		m_szDefExt[0] = 0;
+		m_nLastFilterIndex = 1;
+	}
+
+	TCHAR m_szDefExt[32];
+	CStringArray m_extByFilter; // nFilterIndex-1; no leading dot; empty = none
+	CStringArray m_stripExts;   // leading dots, longest first
+	DWORD m_nLastFilterIndex;
+
+	CString FilterExtNoDot() const
+	{
+		const int idx = static_cast<int>( m_ofn.nFilterIndex ) - 1;
+		if( idx >= 0 && idx < m_extByFilter.GetSize() )
+			return m_extByFilter[idx];
+		return CString();
+	}
+
+	void SetFilterDefaultExt( const CString& ext )
+	{
+		lstrcpyn( m_szDefExt, ext, _countof( m_szDefExt ) );
+		m_ofn.lpstrDefExt = m_szDefExt[0] ? m_szDefExt : NULL;
+		if( m_pIFileDialog )
+		{
+			IFileDialog* pfd = static_cast<IFileDialog*>( m_pIFileDialog );
+			pfd->SetDefaultExtension( CStringW( m_szDefExt ) );
+		}
+	}
+
+	void RewriteFileNameForFilter( const CString& extNoDot )
+	{
+		if( m_bOpenFileDialog || extNoDot.IsEmpty() || m_pIFileDialog == NULL )
+			return;
+		IFileDialog* pfd = static_cast<IFileDialog*>( m_pIFileDialog );
+		LPWSTR pszName = NULL;
+		if( FAILED( pfd->GetFileName( &pszName ) ) || pszName == NULL )
+			return;
+		const CString cur( pszName );
+		CoTaskMemFree( pszName );
+		const CString next = ApplyProjectSuffix( cur, extNoDot, m_stripExts );
+		if( next.IsEmpty() || next.CompareNoCase( cur ) == 0 )
+			return;
+		pfd->SetFileName( CStringW( next ) );
+	}
+
+	void OnTypeChange() override
+	{
+		const CString ext = FilterExtNoDot();
+		SetFilterDefaultExt( ext );
+		if( m_ofn.nFilterIndex == m_nLastFilterIndex )
+			return;
+		m_nLastFilterIndex = m_ofn.nFilterIndex;
+		RewriteFileNameForFilter( ext );
+	}
+};
+
+class CStudioDocManager : public CDocManager
+{
+public:
+	BOOL DoPromptFileName( CString& fileName, UINT nIDSTitle,
+			DWORD lFlags, BOOL bOpenFileDialog, CDocTemplate* pTemplate ) override;
+	void RegisterShellFileTypes( BOOL bCompat ) override;
+};
+
+BOOL CStudioDocManager::DoPromptFileName( CString& fileName, UINT nIDSTitle,
+		DWORD lFlags, BOOL bOpenFileDialog, CDocTemplate* pTemplate )
+{
+	CDocTemplate* pDocTemplate = pTemplate;
+	if( pDocTemplate == NULL )
+	{
+		POSITION pos = GetFirstDocTemplatePosition();
+		if( pos != NULL )
+			pDocTemplate = GetNextDocTemplate( pos );
+	}
+
+	CStudioProjectFileDlg dlgFile( bOpenFileDialog,
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | lFlags );
+
+	CString title;
+	ENSURE( title.LoadString( nIDSTitle ) );
+
+	CString strFilter;
+	CString strFilterName;
+	CString strFilterExt;
+	CStringArray exts;
+	if( pDocTemplate != NULL &&
+			pDocTemplate->GetDocString( strFilterExt, CDocTemplate::filterExt ) &&
+			!strFilterExt.IsEmpty() &&
+			pDocTemplate->GetDocString( strFilterName, CDocTemplate::filterName ) &&
+			!strFilterName.IsEmpty() )
+	{
+		CollectFilterExts( strFilterExt, exts );
+		if( exts.GetSize() > 0 )
+		{
+			for( INT_PTR i = 0; i < exts.GetSize(); ++i )
+				AddStripExt( dlgFile.m_stripExts, exts[i] );
+
+			AppendFilterPair( strFilter, dlgFile.m_ofn, strFilterName, CombinedFilterSpec( exts ) );
+			dlgFile.m_extByFilter.Add( exts[0].Mid( 1 ) );
+			dlgFile.SetFilterDefaultExt( exts[0].Mid( 1 ) );
+			dlgFile.m_ofn.nFilterIndex = 1;
+			dlgFile.m_nLastFilterIndex = 1;
+
+			if( exts.GetSize() > 1 )
+			{
+				const CString base = FilterDisplayBase( strFilterName );
+				for( INT_PTR i = 0; i < exts.GetSize(); ++i )
+				{
+					CString name;
+					name.Format( _T("%s (*%s)"), static_cast<LPCTSTR>( base ),
+							static_cast<LPCTSTR>( exts[i] ) );
+					AppendFilterPair( strFilter, dlgFile.m_ofn, name, _T("*") + exts[i] );
+					dlgFile.m_extByFilter.Add( exts[i].Mid( 1 ) );
+				}
+			}
+		}
+	}
+
+	CString allFilter;
+	VERIFY( allFilter.LoadString( AFX_IDS_ALLFILTER ) );
+	AppendFilterPair( strFilter, dlgFile.m_ofn, allFilter, _T("*.*") );
+	dlgFile.m_extByFilter.Add( CString() );
+
+	dlgFile.m_ofn.lpstrFilter = strFilter;
+	dlgFile.m_ofn.lpstrTitle = title;
+	dlgFile.m_ofn.lpstrFile = fileName.GetBuffer( _MAX_PATH );
+
+	const INT_PTR nResult = dlgFile.DoModal();
+	fileName.ReleaseBuffer();
+	if( nResult == IDOK && !bOpenFileDialog )
+	{
+		const CString ext = dlgFile.FilterExtNoDot();
+		// Combined filter (index 1) must not rewrite an existing .odcl.json on Save.
+		if( !ext.IsEmpty() && dlgFile.m_ofn.nFilterIndex >= 2 )
+			fileName = ApplyProjectSuffix( fileName, ext, dlgFile.m_stripExts );
+	}
+	return nResult == IDOK;
+}
+
+void CStudioDocManager::RegisterShellFileTypes( BOOL bCompat )
+{
+	CDocManager::RegisterShellFileTypes( bCompat );
+
+	// MFC writes filterExt as one HKCR key, so ".odcl;.odcl.lsp;.odcl.json"
+	// never becomes a real association. Register each token instead.
+	POSITION pos = GetFirstDocTemplatePosition();
+	while( pos != NULL )
+	{
+		CDocTemplate* pTemplate = GetNextDocTemplate( pos );
+		CString strFileTypeId, strFilterExt;
+		if( pTemplate == NULL ||
+				!pTemplate->GetDocString( strFileTypeId, CDocTemplate::regFileTypeId ) ||
+				strFileTypeId.IsEmpty() ||
+				!pTemplate->GetDocString( strFilterExt, CDocTemplate::filterExt ) ||
+				strFilterExt.IsEmpty() )
+			continue;
+
+		CStringArray exts;
+		CollectFilterExts( strFilterExt, exts );
+		for( INT_PTR i = 0; i < exts.GetSize(); ++i )
+		{
+			const CString& ext = exts[i];
+			CString strTemp;
+			LONG lSize = _MAX_PATH * 2;
+			const LONG lResult = AfxRegQueryValue( HKEY_CLASSES_ROOT, ext,
+					strTemp.GetBuffer( lSize ), &lSize );
+			strTemp.ReleaseBuffer();
+			if( lResult != ERROR_SUCCESS || strTemp.IsEmpty() || strTemp == strFileTypeId )
+			{
+				AfxRegSetValue( HKEY_CLASSES_ROOT, ext, REG_SZ, strFileTypeId,
+						static_cast<DWORD>( ( strFileTypeId.GetLength() + 1 ) * sizeof( TCHAR ) ) );
+			}
+		}
+	}
+}
+
+} // namespace
+
 
 // COpenDCLApp
 
@@ -196,6 +478,8 @@ BOOL COpenDCLApp::InitInstance()
 
 	// Register the application's document templates.  Document templates
 	//  serve as the connection between documents, frame windows and views
+	if( m_pDocManager == NULL )
+		m_pDocManager = new CStudioDocManager;
 	CSingleDocTemplate* pDocTemplate;
 	pDocTemplate = new CSingleDocTemplate(
 		IDR_MAINFRAME,

@@ -813,8 +813,10 @@ function New-StudioFilesFragment([string] $lang) {
   # All file paths use [INSTALLDIR] (never Program Files (x86)\â€¦ hard-coding).
   $assocGuid = Get-StableGuid "opendcl.studio.fileassoc|$lang"
   [void]$sb.AppendLine("      <Component Id=`"st_${lang}_FileAssoc`" Guid=`"{$assocGuid}`" Directory=`"INSTALLDIR`"$win64Attr>")
-  # .odcl -> OpenDCL.Project (ProgID)
+  # .odcl / .odcl.lsp / .odcl.json -> OpenDCL.Project (ProgID)
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key=".odcl" Type="string" Value="OpenDCL.Project" KeyPath="yes" />')
+  [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key=".odcl.lsp" Type="string" Value="OpenDCL.Project" />')
+  [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key=".odcl.json" Type="string" Value="OpenDCL.Project" />')
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project" Type="string" Value="OpenDCL Project" />')
   # Paths use [INSTALLDIR] (not [#fil_StudioExe]) to avoid ICE69 cross-component refs; matches vdproj.
   [void]$sb.AppendLine('        <RegistryValue Root="HKCR" Key="OpenDCL.Project\DefaultIcon" Type="string" Value="[INSTALLDIR]OpenDCL Studio.exe,0" />')
