@@ -26,13 +26,15 @@ Copyright (c) 2007-2026 OpenDCL Consortium. OpenDCL is a trademark of OpenDCL Co
 
 OpenDCL is based on ObjectDCL (3rd Day Software), released as open source under the GPL in 2006 by Chad Wanless.
 
+**JSON for Modern C++** (Niels Lohmann, MIT License) is used by OpenDCL Studio. In-tree notice: `Library/nlohmann/LICENSE.MIT`.
+
 ## Repository layout
 
 ```text
 CMakeLists.txt       CMake multi-runtime + Studio + RxInstall (supported build)
 CMakePresets.json    Dev / full / no-SDK presets (see CMAKE.md)
 Common/              Shared dialog/control core
-Library/             Bundled third-party code (LibPNG, ZLib)
+Library/             Bundled third-party code (LibPNG, ZLib; nlohmann MIT notice)
 Runtime/             CAD runtime modules (ARX / BRX / GRX / ZRX) + VI props
 Studio/              OpenDCL Studio (dialog editor) + localized help content
 ```

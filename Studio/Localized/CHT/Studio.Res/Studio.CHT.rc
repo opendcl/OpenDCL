@@ -1145,7 +1145,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "OpenDCL Studio\n\nOpenDCL Studio\nOpenDCL Project (*.odcl,*.odcl.lsp)\n.odcl;.odcl.lsp\nOpenDCL.Document\nOpenDCL Project"
+    IDR_MAINFRAME           "OpenDCL Studio\n\nOpenDCL Studio\nOpenDCL Project (*.odcl,*.odcl.lsp,*.odcl.json)\n.odcl;.odcl.lsp;.odcl.json\nOpenDCL.Document\nOpenDCL Project"
     IDP_OLE_INIT_FAILED     "OLE 初始化失敗。 確保 OLE 函式庫是正確的版本。"
 END
 

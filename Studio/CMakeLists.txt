@@ -174,6 +174,19 @@ add_executable(Studio WIN32
   "${_studio_manifest_rc}"
 )
 
+# nlohmann JSON: Studio-only. Do not add to Common or Runtime TUs.
+# MIT notice kept in-tree: Library/nlohmann/LICENSE.MIT (v3.11.3 copyright 2013-2022).
+set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
+set(JSON_Install OFF CACHE BOOL "" FORCE)
+include(FetchContent)
+FetchContent_Declare(nlohmann_json
+  URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(nlohmann_json)
+target_link_libraries(Studio PRIVATE nlohmann_json::nlohmann_json)
+set_source_files_properties("${CMAKE_SOURCE_DIR}/Studio/OdclJson.cpp" PROPERTIES
+  SKIP_PRECOMPILE_HEADERS ON)
+
 # IDE browse: product headers (not compiled).
 opendcl_target_ide_headers(Studio Common Studio)
 
