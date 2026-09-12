@@ -12,6 +12,7 @@
 #include "ControlTypes.h"
 #include "InvokeMethod.h"
 #include "DclControlTemplate.h"
+#include "DialogObject.h"
 
 
 CWorkspace* theWorkspacePtr()
@@ -63,7 +64,8 @@ static CString CreateUniqueName()
 
 
 CArxWorkspace::CArxWorkspace()
-: mDocReactor( this )
+: mColorService( this )
+, mDocReactor( this )
 {
 }
 
@@ -229,6 +231,7 @@ bool CArxWorkspace::UnloadProject( TArxProjectPtr pProject, bool bForce )
 bool CArxWorkspace::RegisterDialog( CDialogObject* pDialog )
 {
 	mDialogs.AddTail( pDialog );
+	mColorService.AddClient();
 	return true;
 }
 
@@ -241,10 +244,25 @@ bool CArxWorkspace::UnregisterDialog( CDialogObject* pDialog )
 		if( pDialog == mDialogs.GetNext( posDialog ) )
 		{
 			mDialogs.RemoveAt( posAt );
+			mColorService.ReleaseClient();
 			return true;
 		}
 	}
 	return true;
+}
+
+void CArxWorkspace::OnHostThemeChanged()
+{
+	CArray< CDialogObject*, CDialogObject* > snapshot;
+	POSITION posDialog = mDialogs.GetHeadPosition();
+	while( posDialog )
+		snapshot.Add( mDialogs.GetNext( posDialog ) );
+	for( INT_PTR i = 0; i < snapshot.GetSize(); ++i )
+	{
+		CDialogObject* pDialog = snapshot[i];
+		if( pDialog )
+			pDialog->OnHostThemeChanged();
+	}
 }
 
 void CArxWorkspace::CloseAllDialogs( DWORD dwMask /*= (DWORD)-1*/ )

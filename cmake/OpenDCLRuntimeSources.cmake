@@ -13,6 +13,7 @@ set(OPENDCL_RUNTIME_SOURCES
   "${CMAKE_SOURCE_DIR}/Runtime/AcadPaletteHost.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/acrxEntryPoint.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/ARX.cpp"
+  "${CMAKE_SOURCE_DIR}/Runtime/ArxColorService.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/ArxControlAcadDropTarget.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/ArxControlDropTarget.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/ArxControlPane.cpp"

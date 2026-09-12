@@ -42,6 +42,14 @@ CDialogObject::~CDialogObject()
 		mpSourceForm->SetFormInstance( NULL );
 }
 
+void CDialogObject::OnHostThemeChanged()
+{
+	CWnd* pWnd = GetControlWnd();
+	if( !pWnd || !pWnd->m_hWnd )
+		return;
+	pWnd->RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN );
+}
+
 bool CDialogObject::Show(bool bShow /*= true*/)
 {
 	::ShowWindow( GetHWnd(), bShow? SW_SHOW : SW_HIDE );
