@@ -171,7 +171,8 @@ void COptionListCtrl::ResetTooltips()
 
 BEGIN_MESSAGE_MAP(COptionListCtrl, CListBox)
 	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_MOUSELEAVE, &COptionListCtrl::OnMouseLeave)   
+	ON_MESSAGE(WM_MOUSELEAVE, &COptionListCtrl::OnMouseLeave)
+	ON_WM_TIMER()
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_CONTROL_REFLECT(LBN_SELCHANGE, &COptionListCtrl::OnLbnSelchange)
 	ON_WM_CTLCOLOR_REFLECT()
@@ -206,6 +207,7 @@ LRESULT COptionListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 void COptionListCtrl::PostNcDestroy() 
 {
+	mbTrackingMouse = false;
 	__super::PostNcDestroy();
 	delete this;
 }
@@ -293,6 +295,52 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
+void COptionListCtrl::DrawOptionGlyphs(CPoint point, bool bAllowHover)
+{
+	if( !m_hWnd || !IsWindowEnabled() )
+		return;
+
+	CDC *pDC = GetDC();
+	if( !pDC )
+		return;
+	pDC->SaveDC();
+	int nSel = GetCurSel();
+
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	rcClient.InflateRect( 1, 1 );
+	for( int idxItem = 0; idxItem < GetCount(); ++idxItem )
+	{
+		CRect rcItem;
+		if( LB_ERR == GetItemRect( idxItem, &rcItem ) )
+			continue;
+		rcItem.bottom = rcItem.top + mnRowHeight;
+		if( !rcClient.PtInRect( rcItem.TopLeft() ) || !rcClient.PtInRect( rcItem.BottomRight() ) )
+			continue;
+
+		bool bSelected = (nSel == idxItem);
+		bool bHighlighted = bAllowHover && (rcItem.PtInRect( point ) != FALSE);
+		int idxImage = bHighlighted? 1 : 0;
+		if( bSelected )
+			idxImage += 3;
+		mImageList.Draw( pDC, idxImage, CPoint( rcItem.left + 2, rcItem.top + 2 ), ILD_NORMAL );
+	}
+	pDC->RestoreDC( -1 );
+	ReleaseDC(pDC);
+}
+
+void COptionListCtrl::EndHoverTracking()
+{
+	if( mbTrackingMouse )
+	{
+		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_LEAVE | TME_CANCEL, m_hWnd, 0 };
+		_TrackMouseEvent( &tm );
+	}
+	mbTrackingMouse = false;
+	KillTimer( kMouseLeaveTimer );
+	DrawOptionGlyphs( CPoint( -1, -1 ), false );
+}
+
 void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	__super::OnMouseMove(nFlags, point);
@@ -302,43 +350,37 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_hWnd, 0 };
 		if( _TrackMouseEvent( &tm ) )
 			mbTrackingMouse = true;
+		SetTimer( kMouseLeaveTimer, 100, NULL );
 	}
 
-	if( !IsWindowEnabled() )
-		return;
-
-	CDC *pDC = GetDC();
-	pDC->SaveDC();
-	int nSel = GetCurSel();
-
-	CRect rcClient;
-	GetClientRect( &rcClient );
-	rcClient.InflateRect( 1, 1 );
-	for( int idxItem = 0; idxItem < GetCount(); ++idxItem )
-	{		
-		CRect rcItem;
-		if( LB_ERR == GetItemRect( idxItem, &rcItem ) )
-			continue;
-		rcItem.bottom = rcItem.top + mnRowHeight;
-		if( !rcClient.PtInRect( rcItem.TopLeft() ) || !rcClient.PtInRect( rcItem.BottomRight() ) )
-			continue;
-
-		bool bSelected = (nSel == idxItem);
-		bool bHighlighted = (rcItem.PtInRect( point ) != FALSE);
-		int idxImage = bHighlighted? 1 : 0;
-		if( bSelected )
-			idxImage += 3;
-		mImageList.Draw( pDC, idxImage, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
-	}
-	pDC->RestoreDC( -1 );
-	ReleaseDC(pDC);
+	DrawOptionGlyphs( point, true );
 }
 
 LRESULT COptionListCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	mbTrackingMouse = false;
-	OnNeedRepaint( true );
-	return FALSE;
+	EndHoverTracking();
+	return 0;
+}
+
+#if (_MFC_VER < 0x0800)
+void COptionListCtrl::OnTimer(UINT nIDEvent)
+#else
+void COptionListCtrl::OnTimer(UINT_PTR nIDEvent)
+#endif
+{
+	if( nIDEvent != kMouseLeaveTimer )
+	{
+		__super::OnTimer( nIDEvent );
+		return;
+	}
+
+	CPoint ptCursor;
+	if( !GetCursorPos( &ptCursor ) )
+		return;
+	CRect rcWnd;
+	GetWindowRect( &rcWnd );
+	if( !rcWnd.PtInRect( ptCursor ) )
+		EndHoverTracking();
 }
 
 void COptionListCtrl::OnLbnSelchange()

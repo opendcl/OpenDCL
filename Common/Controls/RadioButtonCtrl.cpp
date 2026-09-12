@@ -12,6 +12,9 @@
 //from CommCtrl.h
 #define BCN_FIRST               (0U-1250U)
 #define BCN_HOTITEMCHANGE       (BCN_FIRST + 0x0001)
+#ifndef HICF_LEAVING
+#define HICF_LEAVING            0x0020
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -137,5 +140,22 @@ void CRadioButtonCtrl::PostNcDestroy()
 void CRadioButtonCtrl::OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	*pResult = 0;
-	//OnNeedRepaint();
+	struct HotItem { NMHDR hdr; DWORD dwFlags; };
+	HotItem* pHot = reinterpret_cast<HotItem*>( pNMHDR );
+	if( !pHot || !(pHot->dwFlags & HICF_LEAVING) )
+		return;
+
+	// Themed option buttons paint a hot fill that is larger than the glyph.
+	// Transparent erase skips that fill, so it stays after the mouse leaves
+	// unless the parent background is redrawn first.
+	CWnd* pParent = GetParent();
+	if( pParent && pParent->m_hWnd )
+	{
+		CRect rc;
+		GetWindowRect( &rc );
+		pParent->ScreenToClient( &rc );
+		pParent->RedrawWindow( &rc, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW | RDW_ALLCHILDREN );
+	}
+	else
+		RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW );
 }

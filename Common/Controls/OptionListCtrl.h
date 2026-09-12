@@ -24,6 +24,10 @@ class COptionListCtrl : public CListBox, public CDialogControl
 	bool mbTrackingMouse;
 	int idxInitialFocusItem;
 
+	enum { kMouseLeaveTimer = 1 };
+	void DrawOptionGlyphs(CPoint point, bool bAllowHover);
+	void EndHoverTracking();
+
 // Construction
 public:
 	COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -51,7 +55,12 @@ protected:
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
+#if (_MFC_VER < 0x0800)
+	afx_msg void OnTimer(UINT nIDEvent);
+#else
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+#endif
 	afx_msg void OnLbnSelchange();
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
