@@ -135,8 +135,8 @@ BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 		}
 	}
 */
-	//CDialogControl::HandleEraseBkgnd( pDC ); //bypass CDialogObject to get transparency
-	//return TRUE;
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
 

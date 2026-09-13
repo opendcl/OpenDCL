@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "GridCtrl.h"
+#include "ColorService.h"
+#include "Workspace.h"
 #include "ControlPane.h"
 #include "DclControlTemplate.h"
 #include "PropertyObject.h"
@@ -28,7 +30,6 @@
 #include "TimeFilter.h"
 #include "UpperCaseFilter.h"
 #include "ComboFilter.h"
-#include "Workspace.h"
 #include "AcadColorTable.h"
 #include "Resource.h"
 #include <algorithm>
@@ -146,7 +147,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mbIgnoreChange( false )
 , mbActOnButtonUp( false )
 {
-	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
+	mColorService.SetForegroundColor( -19L );
 	mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 2, 1 );
 	CBitmap bmpNon;
 	bmpNon.LoadBitmap( IDB_OPTBTN );
@@ -1270,21 +1271,21 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 		//Draw cell background and border
 		if( !IsWindowEnabled() )
 		{
-			crBackground = GetSysColor( COLOR_INACTIVEBORDER );
+			crBackground = OdclSysColor( COLOR_INACTIVEBORDER );
 			cdc.FillSolidRect( &rcBounds, crBackground );
 			cdc.SetBkColor( crBackground );
 			cdc.SetTextColor( mColorService.GetForegroundColor() );
 		}
 		else if( nCol == 0 && mbHasRowHeader )
 		{
-			cdc.SetBkColor( GetSysColor( COLOR_BTNFACE ) );
-			cdc.SetTextColor( GetSysColor( COLOR_BTNTEXT ) );
+			cdc.SetBkColor( OdclSysColor( COLOR_BTNFACE ) );
+			cdc.SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
 			CRect rcHeader = rcBounds;
 			WndTheme HeaderTheme( GetSafeHwnd(), VSCLASS_HEADER );
 			if( HeaderTheme )
 			{
 				HeaderTheme.DrawThemeBackground( cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
-				CPen penHighlight( PS_SOLID, 1, ::GetSysColor( COLOR_BTNHIGHLIGHT ) );
+				CPen penHighlight( PS_SOLID, 1, OdclSysColor( COLOR_BTNHIGHLIGHT ) );
 				CPen* pOldPen = cdc.SelectObject( &penHighlight );
 				cdc.MoveTo( rcHeader.left, rcHeader.top );
 				cdc.LineTo( rcHeader.right, rcHeader.top );
@@ -1292,7 +1293,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 			}
 			else
 			{
-				cdc.FillSolidRect( &rcHeader, GetSysColor( COLOR_BTNFACE ) );
+				cdc.FillSolidRect( &rcHeader, OdclSysColor( COLOR_BTNFACE ) );
 				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
 			}
 			cdc.SetBkColor( crBackground );
@@ -1302,9 +1303,9 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 		{
 			if( bHighlight )
 			{
-				cdc.FillSolidRect( &rcBounds, GetSysColor( COLOR_HIGHLIGHT ) );
-				cdc.SetBkColor( ::GetSysColor( COLOR_HIGHLIGHT ) );
-				cdc.SetTextColor( ::GetSysColor( COLOR_HIGHLIGHTTEXT ) );
+				cdc.FillSolidRect( &rcBounds, OdclSysColor( COLOR_HIGHLIGHT ) );
+				cdc.SetBkColor( OdclSysColor( COLOR_HIGHLIGHT ) );
+				cdc.SetTextColor( OdclSysColor( COLOR_HIGHLIGHTTEXT ) );
 			}
 			else
 			{
@@ -1314,7 +1315,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 			}
 			if (mbHasGridLines)
 			{
-				CPen penBackground( PS_SOLID, 1, ::GetSysColor( COLOR_BTNFACE ) );
+				CPen penBackground( PS_SOLID, 1, OdclSysColor( COLOR_BTNFACE ) );
 				CPen* pOldPen = cdc.SelectObject( &penBackground );
 				cdc.MoveTo( rcBounds.left, rcBounds.bottom - 1 );
 				cdc.LineTo( rcBounds.right, rcBounds.bottom - 1 );

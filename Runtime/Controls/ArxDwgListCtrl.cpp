@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ArxDwgListCtrl.h"
 #include "Resource.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
@@ -198,14 +199,14 @@ void CArxDwgListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	ASSERT(pDC); // Attached failed
 	int nIndexDC = pDC->SaveDC();
 
-	COLORREF clrBackground = GetSysColor(COLOR_WINDOW);
-	COLORREF clrForeground = GetSysColor(COLOR_BTNTEXT);
+	COLORREF clrBackground = OdclSysColor(COLOR_WINDOW);
+	COLORREF clrForeground = OdclSysColor(COLOR_BTNTEXT);
 
 	bool bSelected = ((GetCurSel() == lpDrawItemStruct->itemID) || (lpDrawItemStruct->itemState & ODS_SELECTED && GetFocus() == this));
 	if( bSelected )
 	{
-		clrBackground = GetSysColor(COLOR_HIGHLIGHT);
-		clrForeground = GetSysColor(COLOR_HIGHLIGHTTEXT);
+		clrBackground = OdclSysColor(COLOR_HIGHLIGHT);
+		clrForeground = OdclSysColor(COLOR_HIGHLIGHTTEXT);
 	}
 	else
 	{

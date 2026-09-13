@@ -63,6 +63,11 @@ public:
 		__super::SetForegroundColor( color );
 		ResetButtonForegroundColor();
 	}
+	void RefreshColors()
+	{
+		ResetButtonForegroundColor();
+		ResetButtonBackgroundColor();
+	}
 };
 
 /////////////////////////////////////////////////////////////////////////////

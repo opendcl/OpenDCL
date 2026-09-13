@@ -8,14 +8,14 @@
 
 CComboExCtrl::CComboExCtrl()
 : _TComboExBase()
-, mColorService( RGB(0, 0, 0), RGB(255, 255, 255) )
+, mColorService( -19L, -6L )
 , mbAutoComplete( true )
 {
 }
 
 CComboExCtrl::CComboExCtrl( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwComboStyle, UINT nID )
 : _TComboExBase()
-, mColorService( RGB(0, 0, 0), RGB(255, 255, 255) )
+, mColorService( -19L, -6L )
 , mbAutoComplete( true )
 {
 	Create( pParentWnd, rectWnd, dwComboStyle, nID );

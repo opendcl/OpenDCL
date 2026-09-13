@@ -5,6 +5,7 @@
 
 #include "Workspace.h"
 #include "ArxProject.h"
+#include "ArxColorService.h"
 #include <list>
 
 
@@ -43,6 +44,7 @@ class CArxWorkspace : public CWorkspace
 	TDialogList mDialogs;
 	TProjectList mProjects;
 	std::list< IUnknown* > mUnknowns;
+	CArxColorService mColorService;
 	class CDocReactor : public AcApDocManagerReactor
 	{
 		const CArxWorkspace* mpWorkspace;
@@ -72,6 +74,7 @@ public:
 	bool DisplayAlert( LPCTSTR pszMessage ) const override; //display alert dialog; returns true if displayed, false if suppressed
 	bool DisplayStatus( LPCTSTR pszMessage ) const override; //display modeless status message; returns true if displayed, false if suppressed
 	CString FindFile( LPCTSTR pszFilePath ) const override;
+	CArxColorService& GetColorService() override { return mColorService; }
 
 	//Searching
 	TArxProjectPtr FindProject( LPCTSTR pszKeyName ) const;
@@ -86,6 +89,7 @@ public:
 	bool UnloadProject( LPCTSTR pszKeyName, bool bForce = false );
 	bool RegisterDialog( CDialogObject* pDialog );
 	bool UnregisterDialog( CDialogObject* pDialog );
+	void OnHostThemeChanged();
 	TArxProjectPtr ImportProject( CFile& src, LPCTSTR pszKeyName = NULL );
 	bool ExportProject( TArxProjectPtr pProject, CFile& src );
 	TArxProjectPtr LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName = NULL, bool bReload = false );

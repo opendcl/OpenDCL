@@ -2,6 +2,7 @@
 
 #include "FontCollection.h"
 #include "Project.h"
+#include "ColorService.h"
 
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
@@ -49,6 +50,7 @@ public:
 	virtual void SetModified( bool bModified = true );
 	virtual CDocument* GetActiveDocument(void) const { return NULL; }
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;
+	virtual CColorService& GetColorService() = 0;
 
 	virtual bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;
 	virtual bool DisplayAlert( UINT nResourceId, HMODULE hmodRes = NULL ) const;
