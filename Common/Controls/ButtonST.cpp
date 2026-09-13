@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "ButtonST.h"
+#include "ColorService.h"
+#include "Workspace.h"
 
 #ifdef	BTNST_USE_SOUND
 #pragma comment(lib, "winmm.lib")
@@ -839,10 +841,10 @@ void CButtonST::DrawTheText(CDC* pDC, LPCTSTR lpszText, RECT* rpItem, CRect* rpC
 	if (m_bIsDisabled)
 	{
 		rpCaption->OffsetRect(1, 1);
-		pDC->SetTextColor(::GetSysColor(COLOR_3DHILIGHT));
+		pDC->SetTextColor(OdclSysColor(COLOR_3DHILIGHT));
 		pDC->DrawText(lpszText, -1, rpCaption, DT_WORDBREAK | DT_CENTER);
 		rpCaption->OffsetRect(-1, -1);
-		pDC->SetTextColor(::GetSysColor(COLOR_3DSHADOW));
+		pDC->SetTextColor(OdclSysColor(COLOR_3DSHADOW));
 		pDC->DrawText(lpszText, -1, rpCaption, DT_WORDBREAK | DT_CENTER);
 	} // if
 	else
@@ -1696,12 +1698,12 @@ int CButtonST::GetCheck()
 //
 DWORD CButtonST::SetDefaultColors(BOOL bRepaint)
 {
-	m_crColors[BTNST_COLOR_BK_IN]		= ::GetSysColor(COLOR_BTNFACE);
-	m_crColors[BTNST_COLOR_FG_IN]		= ::GetSysColor(COLOR_BTNTEXT);
-	m_crColors[BTNST_COLOR_BK_OUT]		= ::GetSysColor(COLOR_BTNFACE);
-	m_crColors[BTNST_COLOR_FG_OUT]		= ::GetSysColor(COLOR_BTNTEXT);
-	m_crColors[BTNST_COLOR_BK_FOCUS]	= ::GetSysColor(COLOR_BTNFACE);
-	m_crColors[BTNST_COLOR_FG_FOCUS]	= ::GetSysColor(COLOR_BTNTEXT);
+	m_crColors[BTNST_COLOR_BK_IN]		= OdclSysColor(COLOR_BTNFACE);
+	m_crColors[BTNST_COLOR_FG_IN]		= OdclSysColor(COLOR_BTNTEXT);
+	m_crColors[BTNST_COLOR_BK_OUT]		= OdclSysColor(COLOR_BTNFACE);
+	m_crColors[BTNST_COLOR_FG_OUT]		= OdclSysColor(COLOR_BTNTEXT);
+	m_crColors[BTNST_COLOR_BK_FOCUS]	= OdclSysColor(COLOR_BTNFACE);
+	m_crColors[BTNST_COLOR_FG_FOCUS]	= OdclSysColor(COLOR_BTNTEXT);
 
 	if (bRepaint)	Invalidate();
 
@@ -2435,11 +2437,11 @@ DWORD CButtonST::OnDrawBorder(CDC* pDC, CRect* pRect)
 		if (m_bIsFlat)
 		{
 			if (m_bDrawBorder)
-				pDC->Draw3dRect(pRect, ::GetSysColor(COLOR_BTNSHADOW), ::GetSysColor(COLOR_BTNHILIGHT));
+				pDC->Draw3dRect(pRect, OdclSysColor(COLOR_BTNSHADOW), OdclSysColor(COLOR_BTNHILIGHT));
 		}
 		else    
 		{
-			CBrush brBtnShadow(GetSysColor(COLOR_BTNSHADOW));
+			CBrush brBtnShadow(OdclSysColor(COLOR_BTNSHADOW));
 			pDC->FrameRect(pRect, &brBtnShadow);
 		}
 	}
@@ -2448,14 +2450,14 @@ DWORD CButtonST::OnDrawBorder(CDC* pDC, CRect* pRect)
 		if (m_bIsFlat)
 		{
 			if (m_bMouseOnButton && m_bDrawBorder)
-				pDC->Draw3dRect(pRect, ::GetSysColor(COLOR_BTNHILIGHT), ::GetSysColor(COLOR_BTNSHADOW));
+				pDC->Draw3dRect(pRect, OdclSysColor(COLOR_BTNHILIGHT), OdclSysColor(COLOR_BTNSHADOW));
 		}
 		else
 		{
-			CPen penBtnHiLight(PS_SOLID, 0, GetSysColor(COLOR_BTNHILIGHT)); // White
-			CPen pen3DLight(PS_SOLID, 0, GetSysColor(COLOR_3DLIGHT));       // Light gray
-			CPen penBtnShadow(PS_SOLID, 0, GetSysColor(COLOR_BTNSHADOW));   // Dark gray
-			CPen pen3DDKShadow(PS_SOLID, 0, GetSysColor(COLOR_3DDKSHADOW)); // Black
+			CPen penBtnHiLight(PS_SOLID, 0, OdclSysColor(COLOR_BTNHILIGHT)); // White
+			CPen pen3DLight(PS_SOLID, 0, OdclSysColor(COLOR_3DLIGHT));       // Light gray
+			CPen penBtnShadow(PS_SOLID, 0, OdclSysColor(COLOR_BTNSHADOW));   // Dark gray
+			CPen pen3DDKShadow(PS_SOLID, 0, OdclSysColor(COLOR_3DDKSHADOW)); // Black
 			// Draw top-left borders
 			// White line
 			CPen* pOldPen = pDC->SelectObject(&penBtnHiLight);

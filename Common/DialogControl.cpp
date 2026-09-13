@@ -8,6 +8,7 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "ToolTips.h"
 #include "UndoManager.h"
@@ -137,7 +138,7 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	}
 	if( !mpControlWnd->IsWindowEnabled() && !GetTheme().IsThemeActive() )
 	{
-		pDC->FillSolidRect( &rcClip, GetSysColor( COLOR_INACTIVEBORDER ) );
+		pDC->FillSolidRect( &rcClip, OdclSysColor( COLOR_INACTIVEBORDER ) );
 		return TRUE;
 	}
 	CAcadColorService* pColorService = GetColorService();

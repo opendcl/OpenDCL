@@ -351,3 +351,8 @@ COLORREF GetSafeRGBColor( long nColorIndex, const COLORREF& crBackground )
 {
 	return theWorkspace.GetColorService().GetSafeRGBColor( nColorIndex, crBackground );
 }
+
+COLORREF OdclSysColor( int nIndex )
+{
+	return theWorkspace.GetColorService().GetSysColor( nIndex );
+}

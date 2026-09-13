@@ -11,7 +11,7 @@
 
 CFrameCtrl::CFrameCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mColorService( GetSysColor( COLOR_BTNTEXT ), CLR_DEFAULT )
+, mColorService()
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );

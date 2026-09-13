@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComboHandler.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "AutoDocLock.h"
 #include "Resource.h"
@@ -73,29 +74,29 @@ public:
 			{
 				if (lpDrawItemStruct->itemState & ODS_SELECTED)
 				{
-					pDC->FillSolidRect(rc, GetSysColor(COLOR_HIGHLIGHT));
-					pDC->SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
+					pDC->FillSolidRect(rc, OdclSysColor(COLOR_HIGHLIGHT));
+					pDC->SetTextColor(OdclSysColor(COLOR_HIGHLIGHTTEXT));
 				}
 				else if (lpDrawItemStruct->itemState & ODS_DISABLED)
 				{
 					Theme.DrawThemeBackground(CP_BACKGROUND, CBTBS_DISABLED, &rc, NULL);
-					pDC->SetTextColor(GetSysColor(COLOR_GRAYTEXT));
+					pDC->SetTextColor(OdclSysColor(COLOR_GRAYTEXT));
 				}
 				else
 				{
 					Theme.DrawThemeBackground(CP_BACKGROUND, CBTBS_NORMAL, &rc, NULL);
-					pDC->SetTextColor(GetSysColor(COLOR_BTNTEXT));
+					pDC->SetTextColor(OdclSysColor(COLOR_BTNTEXT));
 				}
 			}
 			else
 			{
 				if (lpDrawItemStruct->itemState & ODS_SELECTED)
 				{
-					pDC->FillSolidRect(rc, GetSysColor(COLOR_HIGHLIGHT));
-					pDC->SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
+					pDC->FillSolidRect(rc, OdclSysColor(COLOR_HIGHLIGHT));
+					pDC->SetTextColor(OdclSysColor(COLOR_HIGHLIGHTTEXT));
 				}
 				else if (lpDrawItemStruct->itemState & ODS_DISABLED)
-					pDC->FillSolidRect(rc, GetSysColor(COLOR_3DFACE));
+					pDC->FillSolidRect(rc, OdclSysColor(COLOR_3DFACE));
 				else
 					pDC->FillSolidRect(rc, pDC->GetBkColor());
 			}

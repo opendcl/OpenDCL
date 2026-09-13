@@ -185,7 +185,7 @@ HBRUSH COptionsTabDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	if( GetTheme().GetWindowTheme() )
 	{
-		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+		mColorService.SetBackgroundColor( -6L );
 		return mColorService.GetBackgroundBrush();
 	}
 	return __super::OnCtlColor(pDC, pWnd, nCtlColor);

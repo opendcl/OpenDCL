@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "SplitterCtrl.h"
+#include "ColorService.h"
+#include "Workspace.h"
 #include "ControlPane.h"
 #include "DialogObject.h"
 
@@ -203,7 +205,7 @@ void CSplitterCtrl::OnPaint()
 	switch( mpTemplate->GetLongProperty( Prop::SplitterStyle ) )
 	{
 	case Splitter_DoubleRaised:
-		dc.FillSolidRect( &rcPaint, GetSysColor( COLOR_BTNFACE ) );
+		dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
 		if( mbVertical )
 		{
 			CRect rc1 = rcPaint;
@@ -238,7 +240,7 @@ void CSplitterCtrl::OnPaint()
 		dc.DrawEdge( &rcPaint, EDGE_BUMP, BF_RECT | BF_MIDDLE );
 		break;
 	default:
-		dc.FillSolidRect( &rcPaint, GetSysColor( COLOR_BTNFACE ) );
+		dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
 		break;
 	}
 }

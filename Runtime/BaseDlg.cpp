@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "BaseDlg.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "PropertyIds.h"
 #include "DclControlTemplate.h"
@@ -356,7 +357,7 @@ BOOL CBaseDlg::OnEraseBkgnd(CDC* pDC)
 					CPoint ptLR( mrectGrip.BottomRight() - CSize( (nCol * 2 + 1) * nBlock, (nRow * 2 + 1) * nBlock ) );
 					CRect rcBlock( ptLR - CSize( nBlock, nBlock ), ptLR );
 					if( rcBlock.IntersectRect( &rcBlock, &rcClip ) )
-						pDC->FillSolidRect( &rcBlock, GetSysColor( COLOR_BTNSHADOW ) );
+						pDC->FillSolidRect( &rcBlock, OdclSysColor( COLOR_BTNSHADOW ) );
 				}
 			}
 		}

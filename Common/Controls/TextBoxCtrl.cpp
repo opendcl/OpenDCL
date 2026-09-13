@@ -2,6 +2,8 @@
 #include "TextBoxCtrl.h"
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
+#include "ColorService.h"
+#include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -298,9 +300,16 @@ HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		return hbrBackground;
 	if( (GetStyle() & ES_READONLY) )
 	{
-		COLORREF crReadOnly = GetSysColor( COLOR_BTNFACE );
+		COLORREF crReadOnly = OdclSysColor( COLOR_BTNFACE );
 		pDC->SetBkColor( crReadOnly );
-		static CBrush mbrReadOnly( crReadOnly );
+		static CBrush mbrReadOnly;
+		static COLORREF crBrush = (COLORREF)-1;
+		if( crBrush != crReadOnly )
+		{
+			mbrReadOnly.DeleteObject();
+			mbrReadOnly.CreateSolidBrush( crReadOnly );
+			crBrush = crReadOnly;
+		}
 		return mbrReadOnly;
 	}
 	return NULL;

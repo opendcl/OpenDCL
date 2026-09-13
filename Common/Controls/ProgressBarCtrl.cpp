@@ -7,6 +7,7 @@
 #include "PropertyObject.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "Resource.h"
 #include "MemDC.h"
@@ -241,7 +242,7 @@ void CProgressBarCtrl::OnPaint()
 		return;
 	}
 	CPaintDC dcPaint( this );
-	CBrush brush( ::GetSysColor( COLOR_HIGHLIGHT ) );
+	CBrush brush( OdclSysColor( COLOR_HIGHLIGHT ) );
 
 	int nLower, nUpper;
 	GetRange( nLower, nUpper );
@@ -307,13 +308,13 @@ void CProgressBarCtrl::OnPaint()
 
       dc.SaveDC();
       dc.IntersectClipRect(rcComplete);
-      dc.SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+      dc.SetTextColor(OdclSysColor(COLOR_HIGHLIGHTTEXT));
       dc.ExtTextOut(ptText.x, ptText.y, ETO_CLIPPED, rcClient, strRemaining, NULL);
       dc.RestoreDC(-1);
 
       dc.SaveDC();
       dc.ExcludeClipRect(rcComplete);
-      dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+      dc.SetTextColor(OdclSysColor(COLOR_WINDOWTEXT));
       dc.ExtTextOut(ptText.x, ptText.y, ETO_CLIPPED, rcClient, strRemaining, NULL);
       dc.RestoreDC(-1);
 
@@ -327,13 +328,13 @@ void CProgressBarCtrl::OnPaint()
 
       dc.SaveDC();
       dc.IntersectClipRect(rcComplete);
-      dc.SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+      dc.SetTextColor(OdclSysColor(COLOR_HIGHLIGHTTEXT));
       dc.DrawText(strRemaining, rcClient, DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER | DT_CENTER);
       dc.RestoreDC(-1);
 
       dc.SaveDC();
       dc.ExcludeClipRect(rcComplete);
-      dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+      dc.SetTextColor(OdclSysColor(COLOR_WINDOWTEXT));
       dc.DrawText(strRemaining, rcClient, DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER | DT_CENTER);
       dc.RestoreDC(-1);
 

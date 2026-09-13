@@ -472,7 +472,7 @@ HBRUSH CTabStripCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
 	if( GetTheme().GetWindowTheme() )
 	{
-		mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+		mColorService.SetBackgroundColor( -6L );
 		return mColorService.GetBackgroundBrush();
 	}
 	return hbr;

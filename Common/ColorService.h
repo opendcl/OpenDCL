@@ -19,3 +19,6 @@ class CWin32ColorService : public CColorService
 public:
 	COLORREF GetSysColor( int nIndex ) const override { return ::GetSysColor( nIndex ); }
 };
+
+// Process syscolor via the workspace color service (CAD tables at Runtime).
+COLORREF OdclSysColor( int nIndex );
