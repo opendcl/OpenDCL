@@ -12,6 +12,9 @@
 //from CommCtrl.h
 #define BCN_FIRST               (0U-1250U)
 #define BCN_HOTITEMCHANGE       (BCN_FIRST + 0x0001)
+#ifndef HICF_ENTERING
+#define HICF_ENTERING           0x0010
+#endif
 #ifndef HICF_LEAVING
 #define HICF_LEAVING            0x0020
 #endif
@@ -22,6 +25,7 @@
 
 CRadioButtonCtrl::CRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mbTrackingMouse( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -73,6 +77,9 @@ BEGIN_MESSAGE_MAP(CRadioButtonCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_REFLECT(BCN_HOTITEMCHANGE, &CRadioButtonCtrl::OnBnHotItemChange)
+	ON_WM_MOUSEMOVE()
+	ON_MESSAGE(WM_MOUSELEAVE, &CRadioButtonCtrl::OnMouseLeave)
+	ON_WM_TIMER()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CRadioButtonCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -110,7 +117,7 @@ void CRadioButtonCtrl::OnSetFocus(CWnd* pOldWnd)
 
 void CRadioButtonCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
-	OnNeedRepaint();
+	EndHoverTracking();
 	__super::OnKillFocus(pNewWnd);
 }
 
@@ -137,25 +144,95 @@ void CRadioButtonCtrl::PostNcDestroy()
 	delete this;
 }
 
-void CRadioButtonCtrl::OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult)
+void CRadioButtonCtrl::StartHoverTracking()
 {
-	*pResult = 0;
-	struct HotItem { NMHDR hdr; DWORD dwFlags; };
-	HotItem* pHot = reinterpret_cast<HotItem*>( pNMHDR );
-	if( !pHot || !(pHot->dwFlags & HICF_LEAVING) )
+	if( mbTrackingMouse )
 		return;
+	TRACKMOUSEEVENT tm = { sizeof( TRACKMOUSEEVENT ), TME_LEAVE, m_hWnd, 0 };
+	if( _TrackMouseEvent( &tm ) )
+		mbTrackingMouse = true;
+	SetTimer( kMouseLeaveTimer, 100, NULL );
+}
 
-	// Themed option buttons paint a hot fill that is larger than the glyph.
-	// Transparent erase skips that fill, so it stays after the mouse leaves
-	// unless the parent background is redrawn first.
+void CRadioButtonCtrl::EraseHotFill()
+{
 	CWnd* pParent = GetParent();
 	if( pParent && pParent->m_hWnd )
 	{
 		CRect rc;
 		GetWindowRect( &rc );
 		pParent->ScreenToClient( &rc );
-		pParent->RedrawWindow( &rc, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW | RDW_ALLCHILDREN );
+		pParent->RedrawWindow( &rc, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW | RDW_NOCHILDREN );
 	}
-	else
-		RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW );
+	Invalidate();
+	UpdateWindow();
+}
+
+void CRadioButtonCtrl::EndHoverTracking()
+{
+	if( mbTrackingMouse )
+	{
+		TRACKMOUSEEVENT tm = { sizeof( TRACKMOUSEEVENT ), TME_LEAVE | TME_CANCEL, m_hWnd, 0 };
+		_TrackMouseEvent( &tm );
+	}
+	mbTrackingMouse = false;
+	KillTimer( kMouseLeaveTimer );
+	EraseHotFill();
+}
+
+void CRadioButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
+{
+	__super::OnMouseMove( nFlags, point );
+	StartHoverTracking();
+}
+
+LRESULT CRadioButtonCtrl::OnMouseLeave(WPARAM, LPARAM)
+{
+	EndHoverTracking();
+	return 0;
+}
+
+#if (_MFC_VER < 0x0800)
+void CRadioButtonCtrl::OnTimer(UINT nIDEvent)
+#else
+void CRadioButtonCtrl::OnTimer(UINT_PTR nIDEvent)
+#endif
+{
+	if( nIDEvent != kMouseLeaveTimer )
+	{
+		__super::OnTimer( nIDEvent );
+		return;
+	}
+	CPoint ptCursor;
+	if( !GetCursorPos( &ptCursor ) )
+		return;
+	CRect rcWnd;
+	GetWindowRect( &rcWnd );
+	if( !rcWnd.PtInRect( ptCursor ) )
+		EndHoverTracking();
+}
+
+void CRadioButtonCtrl::OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	*pResult = 0;
+	struct HotItem { NMHDR hdr; DWORD dwFlags; };
+	HotItem* pHot = reinterpret_cast<HotItem*>( pNMHDR );
+	if( !pHot )
+		return;
+	if( pHot->dwFlags & HICF_ENTERING )
+	{
+		StartHoverTracking();
+		return;
+	}
+	if( !( pHot->dwFlags & HICF_LEAVING ) )
+		return;
+	CPoint ptCursor;
+	if( GetCursorPos( &ptCursor ) )
+	{
+		CRect rcWnd;
+		GetWindowRect( &rcWnd );
+		if( rcWnd.PtInRect( ptCursor ) )
+			return;
+	}
+	EndHoverTracking();
 }
