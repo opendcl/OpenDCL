@@ -27,6 +27,9 @@ bool CLabelCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	if( bSuccess && ( !mpTemplate || !mpTemplate->GetPropertyObject( Prop::UseVisualStyle ) ) )
+		GetTheme().SetWindowTheme( L"", L"" );
+
 	return bSuccess;
 }
 

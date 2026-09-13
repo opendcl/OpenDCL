@@ -269,20 +269,19 @@ void CDialogObject::HandleDpiChanged()
 
 BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 {
-	//TraceFmt( _T("# CDialogObject(%s)::HandleEraseBkgnd(%s)\r\n"),
-	//					asString( this ),
-	//					asString( pDC ) );
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
-		return FALSE;
-	if( pColorService->IsBackgroundTransparent() )
 		return FALSE;
 	CRect rcClip;
 	pDC->GetClipBox( &rcClip );
 	CRect rcClient;
 	mpControlWnd->GetClientRect( &rcClient );
-	if( rcClip.IntersectRect( &rcClip, &rcClient ) )
-		pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
+	if( !rcClip.IntersectRect( &rcClip, &rcClient ) )
+		return TRUE;
+	COLORREF crFill = pColorService->GetBackgroundColor();
+	if( pColorService->IsBackgroundTransparent() || pColorService->IsBackgroundNotSet() )
+		crFill = OdclSysColor( COLOR_BTNFACE );
+	pDC->FillSolidRect( &rcClip, crFill );
 	return TRUE;
 }
 

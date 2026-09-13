@@ -540,6 +540,11 @@ void ApplyOneProperty( TDclControlPtr ctrl, Prop::Id id, const nlohmann::json& v
 		ctrl->SetBooleanProperty( id, v.get<bool>() );
 		return;
 	}
+	if( v.is_number() && pt == PropBool )
+	{
+		ctrl->SetBooleanProperty( id, v.get<long long>() != 0 );
+		return;
+	}
 	if( v.is_number() && pt == PropDouble && existing )
 	{
 		existing->SetDoubleValue( v.get<double>() );

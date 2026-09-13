@@ -136,8 +136,7 @@ bool CButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 
 DWORD CButtonCtrl::OnDrawBackground(CDC* pDC, CRect* pRect)
 {
-	//if( mpTemplate->GetLongProperty( Prop::GraphicButtonStyle ) == ButtonStyle_XPTheme )
-	//	return BTNST_OK;
+	mColorService.RefreshColors();
 	return __super::OnDrawBackground( pDC, pRect );
 }
 

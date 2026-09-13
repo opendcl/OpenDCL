@@ -68,6 +68,24 @@ void CDialogControl::OnThemeRequested( WndTheme& Theme ) const
 	Theme.Attach( NULL, GetHWnd() );
 }
 
+namespace {
+
+HBRUSH HostDialogFaceBrush()
+{
+	static CBrush brFace;
+	static COLORREF crFace = (COLORREF)-1;
+	const COLORREF cr = OdclSysColor( COLOR_BTNFACE );
+	if( crFace != cr || !(HBRUSH)brFace )
+	{
+		brFace.DeleteObject();
+		brFace.CreateSolidBrush( cr );
+		crFace = cr;
+	}
+	return brFace;
+}
+
+} // namespace
+
 HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 {
 	if( !mpControlWnd->IsWindowEnabled() )
@@ -86,21 +104,12 @@ HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
 			if( pDlgColor )
 			{
-				if( pDlgColor->IsBackgroundNotSet() )
+				if( pDlgColor->IsBackgroundNotSet() || pDlgColor->IsBackgroundTransparent() )
 				{
-					if( !pDlgColor->IsBackgroundTransparent() )
-					{
-						pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
-						pDC->SetBkMode( OPAQUE );
-					}
-					else
-						pDC->SetBkMode( TRANSPARENT );
-					int nDCInfo = pDC->SaveDC();
-					HBRUSH hbrBackground = (HBRUSH)pHostDlg->GetControlWnd()->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pHostDlg->GetControlWnd()->m_hWnd );
-					if (nDCInfo != 0 )
-						pDC->RestoreDC(nDCInfo);
-					if( hbrBackground )
-						return hbrBackground;
+					const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
+					pDC->SetBkColor( crFace );
+					pDC->SetBkMode( OPAQUE );
+					return HostDialogFaceBrush();
 				}
 				else if( !pDlgColor->IsBackgroundTransparent() )
 				{

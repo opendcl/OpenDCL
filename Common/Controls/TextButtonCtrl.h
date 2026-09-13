@@ -15,6 +15,7 @@ class CPropertyObject;
 class CTextButtonCtrl : public CButton, public CDialogControl
 {
 	CAcadColorService mColorService;
+	BOOL m_bIsDefault;
 
 // Construction
 public:
@@ -37,10 +38,12 @@ protected:
 protected:
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	void PostNcDestroy() override;
+	void DrawItem(LPDRAWITEMSTRUCT lpDIS) override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnNcPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg UINT OnGetDlgCode();
+	afx_msg LRESULT OnSetStyle(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };
