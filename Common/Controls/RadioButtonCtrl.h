@@ -15,6 +15,8 @@ class CPropertyObject;
 class CRadioButtonCtrl : public CButton, public CDialogControl
 {
 	CAcadColorService mColorService;
+	bool mbTrackingMouse;
+	enum { kMouseLeaveTimer = 1 };
 
 // Construction
 public:
@@ -41,5 +43,15 @@ protected:
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
+#if (_MFC_VER < 0x0800)
+	afx_msg void OnTimer(UINT nIDEvent);
+#else
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+#endif
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
+	void StartHoverTracking();
+	void EndHoverTracking();
+	void EraseHotFill();
 };
