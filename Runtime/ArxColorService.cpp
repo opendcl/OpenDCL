@@ -4,6 +4,45 @@
 #include "ArxColorService.h"
 #include "ArxWorkspace.h"
 
+// Sampled AutoCAD/BricsCAD dark dialog chrome (COLORTHEME 0), mapped onto
+// Win32 GetSysColor indices. Light table stays live GetSysColor.
+static const COLORREF kCadDarkSysColors[] =
+{
+	RGB( 59,  68,  83 ), //  0 COLOR_SCROLLBAR
+	RGB( 33,  40,  48 ), //  1 COLOR_BACKGROUND / COLOR_DESKTOP
+	RGB(  0,  82, 117 ), //  2 COLOR_ACTIVECAPTION
+	RGB( 59,  68,  83 ), //  3 COLOR_INACTIVECAPTION
+	RGB( 59,  68,  83 ), //  4 COLOR_MENU
+	RGB( 33,  40,  48 ), //  5 COLOR_WINDOW
+	RGB(  0,   0,   0 ), //  6 COLOR_WINDOWFRAME
+	RGB(255, 255, 255 ), //  7 COLOR_MENUTEXT
+	RGB(255, 255, 255 ), //  8 COLOR_WINDOWTEXT
+	RGB(255, 255, 255 ), //  9 COLOR_CAPTIONTEXT
+	RGB( 59,  68,  83 ), // 10 COLOR_ACTIVEBORDER
+	RGB( 59,  68,  83 ), // 11 COLOR_INACTIVEBORDER
+	RGB( 33,  40,  48 ), // 12 COLOR_APPWORKSPACE
+	RGB(  0, 120, 215 ), // 13 COLOR_HIGHLIGHT
+	RGB(255, 255, 255 ), // 14 COLOR_HIGHLIGHTTEXT
+	RGB( 59,  68,  83 ), // 15 COLOR_BTNFACE / COLOR_3DFACE
+	RGB( 37,  45,  56 ), // 16 COLOR_BTNSHADOW / COLOR_3DSHADOW
+	RGB(128, 128, 128 ), // 17 COLOR_GRAYTEXT
+	RGB(255, 255, 255 ), // 18 COLOR_BTNTEXT
+	RGB(160, 160, 160 ), // 19 COLOR_INACTIVECAPTIONTEXT
+	RGB( 90, 100, 115 ), // 20 COLOR_BTNHIGHLIGHT / COLOR_3DHIGHLIGHT
+	RGB( 20,  25,  30 ), // 21 COLOR_3DDKSHADOW
+	RGB( 80,  90, 105 ), // 22 COLOR_3DLIGHT
+	RGB(255, 255, 255 ), // 23 COLOR_INFOTEXT
+	RGB( 45,  52,  64 ), // 24 COLOR_INFOBK
+	RGB( 59,  68,  83 ), // 25 (unused)
+	RGB(  0, 162, 232 ), // 26 COLOR_HOTLIGHT
+	RGB(  0,  82, 117 ), // 27 COLOR_GRADIENTACTIVECAPTION
+	RGB( 59,  68,  83 ), // 28 COLOR_GRADIENTINACTIVECAPTION
+	RGB(  0, 120, 215 ), // 29 COLOR_MENUHILIGHT
+	RGB( 59,  68,  83 ), // 30 COLOR_MENUBAR
+	RGB( 59,  68,  83 ), // 31
+};
+C_ASSERT( sizeof( kCadDarkSysColors ) == 32 * sizeof( COLORREF ) );
+
 CArxColorService::CArxColorService( CArxWorkspace* pWorkspace )
 : mpWorkspace( pWorkspace )
 , m_pTable( NULL )
@@ -13,7 +52,7 @@ CArxColorService::CArxColorService( CArxWorkspace* pWorkspace )
 , mEdReactor( this )
 {
 	memset( m_light, 0, sizeof( m_light ) );
-	memset( m_dark, 0, sizeof( m_dark ) );
+	memcpy( m_dark, kCadDarkSysColors, sizeof( m_dark ) );
 }
 
 CArxColorService::~CArxColorService()
@@ -57,8 +96,6 @@ bool CArxColorService::ColorThemeExistsAndIsZero() const
 bool CArxColorService::SelectTable()
 {
 	FillFromSysColors( m_light );
-	// Placeholder: dark table matches light until sampled CAD dark colors exist.
-	FillFromSysColors( m_dark );
 
 	const COLORREF* pNew = m_light;
 	if( ColorThemeExistsAndIsZero() )
