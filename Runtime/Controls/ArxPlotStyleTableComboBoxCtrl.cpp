@@ -3,6 +3,7 @@
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
+#include "ComboHostThemeHelper.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -27,6 +28,9 @@ bool CArxPlotStyleTableComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncAcUiComboHostTheme( this, this );
 
 	return bSuccess;
 }
@@ -94,7 +98,9 @@ bool CArxPlotStyleTableComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 		}
 	}
 #endif
-	return __super::OnApplyUseVisualStyle( pProp );
+	const bool bOk = __super::OnApplyUseVisualStyle( pProp );
+	SyncAcUiComboHostTheme( this, this );
+	return bOk;
 }
 
 void CArxPlotStyleTableComboBoxCtrl::OnListChanged()
@@ -121,7 +127,49 @@ void CArxPlotStyleTableComboBoxCtrl::OnListChanged()
 	}
 }
 
+
+void CArxPlotStyleTableComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+{
+	if( !lpDrawItemStruct || !CHostThemeHelper::HostMaps() )
+	{
+		__super::DrawItem( lpDrawItemStruct );
+		return;
+	}
+#if defined(_BRXTARGET)
+	__super::DrawItem( lpDrawItemStruct );
+#else
+	OdclAcUiComboHostDrawItem( this, lpDrawItemStruct );
+#endif
+}
+
+BOOL CArxPlotStyleTableComboBoxCtrl::GetItemColors(DRAWITEMSTRUCT& dis, COLORREF& fgColor, COLORREF& bgColor, COLORREF& fillColor)
+{
+	const BOOL bOk = __super::GetItemColors( dis, fgColor, bgColor, fillColor );
+	RemapAcUiComboItemColors( fgColor, bgColor, fillColor );
+	return bOk;
+}
+
+void CArxPlotStyleTableComboBoxCtrl::HandleHostThemeChanged()
+{
+	SyncAcUiComboHostTheme( this, this );
+}
+
+HBRUSH CArxPlotStyleTableComboBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
+{
+	return AcUiComboHostCtlColor( this, pDC, nCtlColor );
+}
+
+HBRUSH CArxPlotStyleTableComboBoxCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = AcUiComboHostCtlColor( this, pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
+}
+
 BEGIN_MESSAGE_MAP(CArxPlotStyleTableComboBoxCtrl, CAcUiPlotStyleTablesComboBox)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()

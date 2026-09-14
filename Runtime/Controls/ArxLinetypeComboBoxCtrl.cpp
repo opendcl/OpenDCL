@@ -3,6 +3,7 @@
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
+#include "ComboHostThemeHelper.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,6 +31,9 @@ bool CArxLinetypeComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncAcUiComboHostTheme( this, this );
 
 	return bSuccess;
 }
@@ -97,7 +101,9 @@ bool CArxLinetypeComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 		}
 	}
 #endif
-	return __super::OnApplyUseVisualStyle( pProp );
+	const bool bOk = __super::OnApplyUseVisualStyle( pProp );
+	SyncAcUiComboHostTheme( this, this );
+	return bOk;
 }
 
 void CArxLinetypeComboBoxCtrl::OnListChanged()
@@ -124,7 +130,49 @@ void CArxLinetypeComboBoxCtrl::OnListChanged()
 	}
 }
 
+
+void CArxLinetypeComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+{
+	if( !lpDrawItemStruct || !CHostThemeHelper::HostMaps() )
+	{
+		__super::DrawItem( lpDrawItemStruct );
+		return;
+	}
+#if defined(_BRXTARGET)
+	__super::DrawItem( lpDrawItemStruct );
+#else
+	OdclAcUiComboHostDrawItem( this, lpDrawItemStruct );
+#endif
+}
+
+BOOL CArxLinetypeComboBoxCtrl::GetItemColors(DRAWITEMSTRUCT& dis, COLORREF& fgColor, COLORREF& bgColor, COLORREF& fillColor)
+{
+	const BOOL bOk = __super::GetItemColors( dis, fgColor, bgColor, fillColor );
+	RemapAcUiComboItemColors( fgColor, bgColor, fillColor );
+	return bOk;
+}
+
+void CArxLinetypeComboBoxCtrl::HandleHostThemeChanged()
+{
+	SyncAcUiComboHostTheme( this, this );
+}
+
+HBRUSH CArxLinetypeComboBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
+{
+	return AcUiComboHostCtlColor( this, pDC, nCtlColor );
+}
+
+HBRUSH CArxLinetypeComboBoxCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = AcUiComboHostCtlColor( this, pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
+}
+
 BEGIN_MESSAGE_MAP(CArxLinetypeComboBoxCtrl, CAcUiLineTypeComboBox)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
