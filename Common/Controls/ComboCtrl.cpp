@@ -175,6 +175,8 @@ HBRUSH CComboCtrl::CtlColor( CDC* pDC, UINT nCtlColor )
 	if( !pColorService )
 		return NULL;
 	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	pDC->SetBkColor( pColorService->GetBackgroundColor() );
+	pDC->SetBkMode( OPAQUE );
 	return pColorService->GetBackgroundBrush();
 }
 

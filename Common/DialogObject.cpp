@@ -8,6 +8,7 @@
 #include "DclControlTemplate.h"
 #include "DclPicture.h"
 #include "AcadColorService.h"
+#include "ColorService.h"
 #include "PropertyIds.h"
 
 
@@ -40,14 +41,6 @@ CDialogObject::~CDialogObject()
 {
 	if( mpSourceForm )
 		mpSourceForm->SetFormInstance( NULL );
-}
-
-void CDialogObject::OnHostThemeChanged()
-{
-	CWnd* pWnd = GetControlWnd();
-	if( !pWnd || !pWnd->m_hWnd )
-		return;
-	pWnd->RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN );
 }
 
 bool CDialogObject::Show(bool bShow /*= true*/)
@@ -265,6 +258,13 @@ void CDialogObject::HandleDpiChanged()
 																	SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
 	IgnoreSizing( bIgnoreSizing );
+}
+
+void CDialogObject::HandleHostThemeChanged()
+{
+	CControlPane* pPane = GetControlPane();
+	if( pPane )
+		pPane->HandleHostThemeChanged();
 }
 
 BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )

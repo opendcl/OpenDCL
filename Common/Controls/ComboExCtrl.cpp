@@ -1,6 +1,58 @@
 #include "stdafx.h"
 #include "ComboExCtrl.h"
 #include "InputFilter.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
+
+namespace
+{
+const int knMaxInnerHooks = 32;
+struct InnerHook
+{
+	HWND hwnd;
+	CComboExCtrl* pThis;
+	WNDPROC pfnOld;
+};
+InnerHook gInnerHooks[knMaxInnerHooks];
+
+UINT CtlColorTypeFromMsg( UINT message )
+{
+	if( message == WM_CTLCOLORLISTBOX )
+		return CTLCOLOR_LISTBOX;
+	if( message == WM_CTLCOLORSTATIC )
+		return CTLCOLOR_STATIC;
+	return CTLCOLOR_EDIT;
+}
+
+WNDPROC SetWndProc( HWND hwnd, WNDPROC pfn )
+{
+#ifdef _WIN64
+	return (WNDPROC)::SetWindowLongPtr( hwnd, GWLP_WNDPROC, (LONG_PTR)pfn );
+#else
+	return (WNDPROC)::SetWindowLong( hwnd, GWL_WNDPROC, (LONG)(LONG_PTR)pfn );
+#endif
+}
+
+InnerHook* FindInnerHook( HWND hwnd )
+{
+	for( int i = 0; i < knMaxInnerHooks; ++i )
+	{
+		if( gInnerHooks[i].hwnd == hwnd )
+			return &gInnerHooks[i];
+	}
+	return NULL;
+}
+
+InnerHook* AllocInnerHook()
+{
+	for( int i = 0; i < knMaxInnerHooks; ++i )
+	{
+		if( !gInnerHooks[i].hwnd )
+			return &gInnerHooks[i];
+	}
+	return NULL;
+}
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -10,6 +62,8 @@ CComboExCtrl::CComboExCtrl()
 : _TComboExBase()
 , mColorService( -19L, -6L )
 , mbAutoComplete( true )
+, mhwndInnerCombo( NULL )
+, mpfnInnerComboProc( NULL )
 {
 }
 
@@ -17,6 +71,8 @@ CComboExCtrl::CComboExCtrl( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwComb
 : _TComboExBase()
 , mColorService( -19L, -6L )
 , mbAutoComplete( true )
+, mhwndInnerCombo( NULL )
+, mpfnInnerComboProc( NULL )
 {
 	Create( pParentWnd, rectWnd, dwComboStyle, nID );
 }
@@ -42,6 +98,8 @@ bool CComboExCtrl::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwCombo
 	CComboBox* pComboCtrl = GetComboBoxCtrl();
 	if( pComboCtrl )
 		pComboCtrl->ModifyStyle( 0, CBS_HASSTRINGS | CBS_NOINTEGRALHEIGHT );
+	if( bSuccess )
+		SubclassInnerCombo();
 
 	return bSuccess;
 }
@@ -70,6 +128,29 @@ END_MESSAGE_MAP()
 
 LRESULT CComboExCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if( message == WM_DESTROY )
+		UnsubclassInnerCombo();
+	if( message == WM_CTLCOLOREDIT || message == WM_CTLCOLORLISTBOX || message == WM_CTLCOLORSTATIC )
+	{
+		CDC dc;
+		dc.Attach( (HDC)wParam );
+		HBRUSH hbr = CtlColor( &dc, CtlColorTypeFromMsg( message ) );
+		dc.Detach();
+		if( hbr )
+			return (LRESULT)hbr;
+	}
+	if( message == WM_DRAWITEM )
+	{
+		LPDRAWITEMSTRUCT lpDrawItem = (LPDRAWITEMSTRUCT)lParam;
+		if( lpDrawItem && DrawHostMappedItem( lpDrawItem ) )
+			return TRUE;
+	}
+	if( message == WM_PAINT || message == WM_PRINT || message == WM_PRINTCLIENT )
+	{
+		LRESULT lResult = __super::WindowProc( message, wParam, lParam );
+		PaintHostMappedClosedFace( (message == WM_PAINT)? NULL : (HDC)wParam );
+		return lResult;
+	}
 	if( message == WM_SETTEXT )
 	{
 		CInputFilter* pFilter = GetInputFilter();
@@ -171,7 +252,197 @@ HBRUSH CComboExCtrl::CtlColor( CDC* pDC, UINT nCtlColor )
 	if( !pColorService )
 		return NULL;
 	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	pDC->SetBkColor( pColorService->GetBackgroundColor() );
+	pDC->SetBkMode( OPAQUE );
 	return pColorService->GetBackgroundBrush();
+}
+
+
+bool CComboExCtrl::DrawHostMappedItem( LPDRAWITEMSTRUCT lpDrawItem )
+{
+	if( !lpDrawItem || !CHostThemeHelper::HostMaps() )
+		return false;
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return false;
+
+	const bool bEdit = ((lpDrawItem->itemState & ODS_COMBOBOXEDIT) != 0);
+	const bool bSelected = ((lpDrawItem->itemState & ODS_SELECTED) != 0) && !bEdit;
+	const COLORREF crBk = bSelected? OdclSysColor( COLOR_HIGHLIGHT ) : pColorService->GetBackgroundColor();
+	const COLORREF crFg = bSelected? OdclSysColor( COLOR_HIGHLIGHTTEXT ) : pColorService->GetForegroundColor();
+
+	HBRUSH hbr = ::CreateSolidBrush( crBk );
+	::FillRect( lpDrawItem->hDC, &lpDrawItem->rcItem, hbr );
+	::DeleteObject( hbr );
+
+	// Editable ComboBoxEx already paints the Edit via CtlColor; only fill the item chrome.
+	if( bEdit && GetEditCtrl() )
+		return true;
+
+	CString sText;
+	int nItem = (int)lpDrawItem->itemID;
+	if( nItem < 0 )
+		nItem = GetCurSel();
+	if( nItem >= 0 )
+		GetLBText( nItem, sText );
+	else
+		GetWindowText( sText );
+
+	CRect rcText( lpDrawItem->rcItem );
+	CImageList* pImageList = GetImageList();
+	if( pImageList && pImageList->GetSafeHandle() )
+	{
+		COMBOBOXEXITEM cbei = { 0 };
+		cbei.mask = CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT;
+		cbei.iItem = nItem;
+		if( nItem >= 0 && GetItem( &cbei ) )
+		{
+			rcText.left += cbei.iIndent * ::GetSystemMetrics( SM_CXSMICON );
+			const int nImage = (bSelected && cbei.iSelectedImage >= 0)? cbei.iSelectedImage : cbei.iImage;
+			if( nImage >= 0 )
+			{
+				IMAGEINFO ii = { 0 };
+				if( pImageList->GetImageInfo( nImage, &ii ) )
+				{
+					const int cx = ii.rcImage.right - ii.rcImage.left;
+					const int cy = ii.rcImage.bottom - ii.rcImage.top;
+					CPoint pt( rcText.left, rcText.top + (rcText.Height() - cy) / 2 );
+					pImageList->Draw( CDC::FromHandle( lpDrawItem->hDC ), nImage, pt, ILD_TRANSPARENT );
+					rcText.left += cx + 4;
+				}
+			}
+		}
+	}
+
+	CFont* pFont = GetFont();
+	HGDIOBJ hOldFont = pFont? ::SelectObject( lpDrawItem->hDC, pFont->GetSafeHandle() ) : NULL;
+	::SetBkMode( lpDrawItem->hDC, TRANSPARENT );
+	::SetTextColor( lpDrawItem->hDC, crFg );
+	::DrawText( lpDrawItem->hDC, sText, sText.GetLength(), &rcText, HostMappedTextFormat() );
+	if( hOldFont )
+		::SelectObject( lpDrawItem->hDC, hOldFont );
+
+	if( !bEdit && (lpDrawItem->itemState & ODS_FOCUS) )
+		::DrawFocusRect( lpDrawItem->hDC, &lpDrawItem->rcItem );
+	return true;
+}
+
+UINT CComboExCtrl::HostMappedTextFormat() const
+{
+	UINT nFormat = DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX | DT_END_ELLIPSIS;
+	const DWORD dwEx = GetExStyle();
+	if( dwEx & WS_EX_RTLREADING )
+		nFormat |= DT_RTLREADING;
+	if( dwEx & WS_EX_RIGHT )
+		nFormat |= DT_RIGHT;
+	return nFormat;
+}
+
+void CComboExCtrl::PaintHostMappedClosedFace( HDC hdc )
+{
+	if( !CHostThemeHelper::HostMaps() )
+		return;
+	if( (GetStyle() & CBS_DROPDOWNLIST) != CBS_DROPDOWNLIST )
+		return;
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService || !m_hWnd )
+		return;
+
+	CComboBox* pInner = GetComboBoxCtrl();
+	HWND hwndCombo = (pInner && pInner->m_hWnd)? pInner->m_hWnd : m_hWnd;
+
+	CRect rc;
+	::GetClientRect( hwndCombo, &rc );
+	const int cxBtn = ::GetSystemMetrics( SM_CXVSCROLL );
+	if( ::GetWindowLong( hwndCombo, GWL_EXSTYLE ) & 0x00400000 ) // WS_EX_LAYOUTRTL
+		rc.left += cxBtn;
+	else
+		rc.right -= cxBtn;
+
+	HDC hdcPaint = hdc;
+	if( !hdcPaint )
+		hdcPaint = ::GetDC( hwndCombo );
+	else if( hwndCombo != m_hWnd )
+		::MapWindowPoints( hwndCombo, m_hWnd, (LPPOINT)&rc, 2 );
+
+	HBRUSH hbr = ::CreateSolidBrush( pColorService->GetBackgroundColor() );
+	::FillRect( hdcPaint, &rc, hbr );
+	::DeleteObject( hbr );
+
+	CString sText;
+	int nSel = GetCurSel();
+	if( nSel >= 0 )
+		GetLBText( nSel, sText );
+	else
+		GetWindowText( sText );
+
+	CFont* pFont = GetFont();
+	HGDIOBJ hOldFont = pFont? ::SelectObject( hdcPaint, pFont->GetSafeHandle() ) : NULL;
+	::SetBkMode( hdcPaint, TRANSPARENT );
+	::SetTextColor( hdcPaint, pColorService->GetForegroundColor() );
+	::DrawText( hdcPaint, sText, sText.GetLength(), &rc, HostMappedTextFormat() );
+	if( hOldFont )
+		::SelectObject( hdcPaint, hOldFont );
+	if( !hdc )
+		::ReleaseDC( hwndCombo, hdcPaint );
+}
+
+LRESULT CALLBACK CComboExCtrl::InnerComboSubclass( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam )
+{
+	InnerHook* pHook = FindInnerHook( hwnd );
+	if( !pHook || !pHook->pfnOld || !pHook->pThis )
+		return ::DefWindowProc( hwnd, message, wParam, lParam );
+
+	if( message == WM_CTLCOLOREDIT || message == WM_CTLCOLORLISTBOX || message == WM_CTLCOLORSTATIC )
+	{
+		CDC dc;
+		dc.Attach( (HDC)wParam );
+		HBRUSH hbr = pHook->pThis->CtlColor( &dc, CtlColorTypeFromMsg( message ) );
+		dc.Detach();
+		if( hbr )
+			return (LRESULT)hbr;
+	}
+
+	WNDPROC pfnOld = pHook->pfnOld;
+	if( message == WM_NCDESTROY )
+		pHook->pThis->UnsubclassInnerCombo();
+	return ::CallWindowProc( pfnOld, hwnd, message, wParam, lParam );
+}
+
+void CComboExCtrl::SubclassInnerCombo()
+{
+	CComboBox* pInner = GetComboBoxCtrl();
+	if( !pInner || !pInner->m_hWnd )
+		return;
+	if( mhwndInnerCombo == pInner->m_hWnd )
+		return;
+	UnsubclassInnerCombo();
+	InnerHook* pHook = AllocInnerHook();
+	if( !pHook )
+		return;
+	mhwndInnerCombo = pInner->m_hWnd;
+	mpfnInnerComboProc = SetWndProc( mhwndInnerCombo, InnerComboSubclass );
+	pHook->hwnd = mhwndInnerCombo;
+	pHook->pThis = this;
+	pHook->pfnOld = mpfnInnerComboProc;
+}
+
+void CComboExCtrl::UnsubclassInnerCombo()
+{
+	if( !mhwndInnerCombo )
+		return;
+	InnerHook* pHook = FindInnerHook( mhwndInnerCombo );
+	WNDPROC pfnOld = pHook? pHook->pfnOld : mpfnInnerComboProc;
+	if( pfnOld && ::IsWindow( mhwndInnerCombo ) )
+		SetWndProc( mhwndInnerCombo, pfnOld );
+	if( pHook )
+	{
+		pHook->hwnd = NULL;
+		pHook->pThis = NULL;
+		pHook->pfnOld = NULL;
+	}
+	mhwndInnerCombo = NULL;
+	mpfnInnerComboProc = NULL;
 }
 
 void CComboExCtrl::OnEditchange()

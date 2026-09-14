@@ -195,6 +195,29 @@ void CControlPane::RecalcLayout()
 	mbDpiChanged = false;
 }
 
+void CControlPane::HandleHostThemeChanged()
+{
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	{
+		if( !*iter )
+			continue;
+		(*iter)->HandleHostThemeChanged();
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				CControlPane* pChild = const_cast< CControlPane* >( *iterChild );
+				if( pChild )
+					pChild->HandleHostThemeChanged();
+			}
+		}
+	}
+	if( mpHostDlg && mpHostDlg->m_hWnd )
+		mpHostDlg->RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN );
+}
+
 void CControlPane::InvalidateControls()
 {
 	if( !mpSourceForm )

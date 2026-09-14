@@ -30,6 +30,8 @@ public:
 	DWORD GetWndStyle() const override;
 	void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast ) override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return CFilteredComboCtrl::GetColorService(); }
 
 public:
@@ -39,6 +41,7 @@ public:
 
 protected:
 	virtual void OnListChanged();
+	void SyncHostComboTheme();
 
 protected:
 	DECLARE_MESSAGE_MAP();
@@ -46,6 +49,8 @@ protected:
 protected:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	BOOL PreTranslateMessage(MSG* pMsg) override;
+	HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	void PostNcDestroy() override;
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);

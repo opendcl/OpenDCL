@@ -261,7 +261,7 @@ void CArxWorkspace::OnHostThemeChanged()
 	{
 		CDialogObject* pDialog = snapshot[i];
 		if( pDialog )
-			pDialog->OnHostThemeChanged();
+			pDialog->HandleHostThemeChanged();
 	}
 }
 

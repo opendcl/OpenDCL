@@ -186,6 +186,7 @@ private:
 public:
 	void OnThemeChanged(); //relay WM_THEMECHANGED message (only required if derived class provides a theme)
 	virtual void OnThemeRequested( WndTheme& Theme ) const; //derived class can supply a theme; default is no theme
+	virtual void HandleHostThemeChanged() {}
 	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
 	virtual BOOL HandleEraseBkgnd( CDC* pDC );
 

@@ -117,6 +117,8 @@ protected:
 	// Windows painting helpers
 protected:
 	BOOL HandleEraseBkgnd( CDC* pDC ) override;
+public:
+	void HandleHostThemeChanged() override;
 
 	// Creation & Property Application
 public:
@@ -124,7 +126,6 @@ public:
 	DWORD GetWndStyle() const override; //get window style from properties
 	CString GetWndCaption() const override; //get window caption from properties
 	void OnFrameChanged() override; //called by member functions that change the non-client size
-	void OnHostThemeChanged();
 	void ApplyPosition() override; //move control window to new position
 	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
 

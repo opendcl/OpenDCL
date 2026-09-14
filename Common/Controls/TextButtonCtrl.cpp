@@ -126,12 +126,12 @@ UINT CTextButtonCtrl::OnGetDlgCode()
 
 LRESULT CTextButtonCtrl::OnSetStyle(WPARAM wParam, LPARAM lParam)
 {
-	const UINT nNewType = (UINT)( wParam & BS_TYPEMASK );
+	const UINT nNewType = (UINT)( wParam & 0x0F ); // BS_TYPEMASK
 	if( nNewType == BS_DEFPUSHBUTTON )
 		m_bIsDefault = TRUE;
 	else if( nNewType == BS_PUSHBUTTON )
 		m_bIsDefault = FALSE;
-	return DefWindowProc( BM_SETSTYLE, ( wParam & ~BS_TYPEMASK ) | BS_OWNERDRAW, lParam );
+	return DefWindowProc( BM_SETSTYLE, ( wParam & ~0x0F ) | BS_OWNERDRAW, lParam );
 }
 
 static COLORREF MixRgb( COLORREF a, COLORREF b, int nNum, int nDen )
@@ -257,8 +257,8 @@ void CTextButtonCtrl::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	UINT dt = DT_WORDBREAK | DT_CENTER;
 	if( GetExStyle() & WS_EX_RTLREADING )
 		dt |= DT_RTLREADING;
-	if( SendMessage( WM_QUERYUISTATE ) & UISF_HIDEACCEL )
-		dt |= DT_HIDEPREFIX;
+	if( SendMessage( 0x0129 ) & 0x0002 ) // WM_QUERYUISTATE / UISF_HIDEACCEL (0 on Win2k)
+		dt |= 0x00100000; // DT_HIDEPREFIX
 
 	CRect rcCalc( rcText );
 	pDC->DrawText( sCaption, &rcCalc, dt | DT_CALCRECT );

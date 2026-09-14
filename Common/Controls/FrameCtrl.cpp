@@ -115,8 +115,8 @@ void CFrameCtrl::OnPaint()
 		dt |= DT_LEFT;
 	if( GetExStyle() & WS_EX_RTLREADING )
 		dt |= DT_RTLREADING;
-	if( SendMessage( WM_QUERYUISTATE ) & UISF_HIDEACCEL )
-		dt |= DT_HIDEPREFIX;
+	if( SendMessage( 0x0129 ) & 0x0002 ) // WM_QUERYUISTATE / UISF_HIDEACCEL (0 on Win2k)
+		dt |= 0x00100000; // DT_HIDEPREFIX
 	CRect rcText( 0, 0, 0, 0 );
 	TEXTMETRIC tm = { 0 };
 	dc.GetTextMetrics( &tm );

@@ -8,6 +8,7 @@ set(OPENDCL_RUNTIME_SOURCES
   "${CMAKE_SOURCE_DIR}/Common/DclImageList.cpp"
   "${CMAKE_SOURCE_DIR}/Common/DpiAwarenessAPI.cpp"
   "${CMAKE_SOURCE_DIR}/Common/ThemeAPI.cpp"
+  "${CMAKE_SOURCE_DIR}/Common/HostThemeHelper.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/AcadBlockInsertDropTarget.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/AcadDockBarHost.cpp"
   "${CMAKE_SOURCE_DIR}/Runtime/AcadPaletteHost.cpp"

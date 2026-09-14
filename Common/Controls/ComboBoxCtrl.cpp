@@ -3,7 +3,9 @@
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "ComboHandler.h"
+#include "HostThemeHelper.h"
 #include "ComboStyles.h"
+#include "PropertyIds.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,6 +36,9 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostComboTheme();
 
 	SetEditSel( -1, -1 );
 
@@ -162,6 +167,14 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !CDialogControl::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	SyncHostComboTheme();
+	return true;
+}
+
 DWORD CComboBoxCtrl::GetComboStyle() const
 {
 	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )
@@ -200,8 +213,26 @@ void CComboBoxCtrl::OnListChanged()
 	}
 }
 
+void CComboBoxCtrl::HandleHostThemeChanged()
+{
+	SyncHostComboTheme();
+}
+
+void CComboBoxCtrl::SyncHostComboTheme()
+{
+	if( !m_hWnd )
+		return;
+	const bool bVisual = mpTemplate && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
+}
+
 
 BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboBoxCtrl::OnCbnDropdown)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboBoxCtrl::OnCbnCloseup)
@@ -223,6 +254,19 @@ LRESULT CComboBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 {
 	HandleDpiChanged();
 	return 0;
+}
+
+HBRUSH CComboBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
+{
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+HBRUSH CComboBoxCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = HandleCtlColor( pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
 }
 
 LRESULT CComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
