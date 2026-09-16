@@ -40,7 +40,15 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostOptionListTheme();
+	int OptionGlyphPad() const;
+	int OptionGlyphSize() const;
+	int OptionTextIndent() const;
+	void DrawHostOptionGlyph( CDC* pDC, CPoint pt, bool bSelected, bool bHover, bool bDisabled );
 
 // Operations
 public:
