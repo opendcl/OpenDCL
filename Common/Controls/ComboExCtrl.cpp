@@ -342,8 +342,6 @@ void CComboExCtrl::PaintHostMappedClosedFace( HDC hdc )
 {
 	if( !CHostThemeHelper::HostMaps() )
 		return;
-	if( (GetStyle() & CBS_DROPDOWNLIST) != CBS_DROPDOWNLIST )
-		return;
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService || !m_hWnd )
 		return;
@@ -351,38 +349,52 @@ void CComboExCtrl::PaintHostMappedClosedFace( HDC hdc )
 	CComboBox* pInner = GetComboBoxCtrl();
 	HWND hwndCombo = (pInner && pInner->m_hWnd)? pInner->m_hWnd : m_hWnd;
 
-	CRect rc;
-	::GetClientRect( hwndCombo, &rc );
-	const int cxBtn = ::GetSystemMetrics( SM_CXVSCROLL );
-	if( ::GetWindowLong( hwndCombo, GWL_EXSTYLE ) & 0x00400000 ) // WS_EX_LAYOUTRTL
-		rc.left += cxBtn;
-	else
-		rc.right -= cxBtn;
-
 	HDC hdcPaint = hdc;
 	if( !hdcPaint )
 		hdcPaint = ::GetDC( hwndCombo );
-	else if( hwndCombo != m_hWnd )
-		::MapWindowPoints( hwndCombo, m_hWnd, (LPPOINT)&rc, 2 );
 
-	HBRUSH hbr = ::CreateSolidBrush( pColorService->GetBackgroundColor() );
-	::FillRect( hdcPaint, &rc, hbr );
-	::DeleteObject( hbr );
+	COMBOBOXINFO cbi = {};
+	cbi.cbSize = sizeof( cbi );
+	if( ::GetComboBoxInfo( hwndCombo, &cbi ) )
+	{
+		CRect rcBtn( cbi.rcButton );
+		if( hdc && hwndCombo != m_hWnd )
+			::MapWindowPoints( hwndCombo, m_hWnd, (LPPOINT)&rcBtn, 2 );
+		CHostThemeHelper::PaintComboDropButton( hdcPaint, rcBtn, IsWindowEnabled() != FALSE );
+	}
 
-	CString sText;
-	int nSel = GetCurSel();
-	if( nSel >= 0 )
-		GetLBText( nSel, sText );
-	else
-		GetWindowText( sText );
+	if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
+	{
+		CRect rc;
+		::GetClientRect( hwndCombo, &rc );
+		const int cxBtn = ::GetSystemMetrics( SM_CXVSCROLL );
+		if( ::GetWindowLong( hwndCombo, GWL_EXSTYLE ) & 0x00400000 ) // WS_EX_LAYOUTRTL
+			rc.left += cxBtn;
+		else
+			rc.right -= cxBtn;
+		if( hdc && hwndCombo != m_hWnd )
+			::MapWindowPoints( hwndCombo, m_hWnd, (LPPOINT)&rc, 2 );
 
-	CFont* pFont = GetFont();
-	HGDIOBJ hOldFont = pFont? ::SelectObject( hdcPaint, pFont->GetSafeHandle() ) : NULL;
-	::SetBkMode( hdcPaint, TRANSPARENT );
-	::SetTextColor( hdcPaint, pColorService->GetForegroundColor() );
-	::DrawText( hdcPaint, sText, sText.GetLength(), &rc, HostMappedTextFormat() );
-	if( hOldFont )
-		::SelectObject( hdcPaint, hOldFont );
+		HBRUSH hbr = ::CreateSolidBrush( pColorService->GetBackgroundColor() );
+		::FillRect( hdcPaint, &rc, hbr );
+		::DeleteObject( hbr );
+
+		CString sText;
+		int nSel = GetCurSel();
+		if( nSel >= 0 )
+			GetLBText( nSel, sText );
+		else
+			GetWindowText( sText );
+
+		CFont* pFont = GetFont();
+		HGDIOBJ hOldFont = pFont? ::SelectObject( hdcPaint, pFont->GetSafeHandle() ) : NULL;
+		::SetBkMode( hdcPaint, TRANSPARENT );
+		::SetTextColor( hdcPaint, pColorService->GetForegroundColor() );
+		::DrawText( hdcPaint, sText, sText.GetLength(), &rc, HostMappedTextFormat() );
+		if( hOldFont )
+			::SelectObject( hdcPaint, hOldFont );
+	}
+
 	if( !hdc )
 		::ReleaseDC( hwndCombo, hdcPaint );
 }

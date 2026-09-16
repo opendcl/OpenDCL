@@ -4,6 +4,7 @@
 #include "ControlPane.h"
 #include "ComboHandler.h"
 #include "HostThemeHelper.h"
+#include "ColorService.h"
 #include "ComboStyles.h"
 #include "PropertyIds.h"
 
@@ -243,6 +244,7 @@ BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_MESSAGE(CB_SETITEMDATA, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CComboBoxCtrl::OnResetContent)
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CComboBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -395,4 +397,58 @@ BOOL CComboBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+bool CComboBoxCtrl::UseHostOwnerDraw() const
+{
+	return CHostThemeHelper::HostMaps() || !mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+}
+
+void CComboBoxCtrl::PaintHostComboChrome( CDC* pDC )
+{
+	if( !pDC || !m_hWnd )
+		return;
+	COMBOBOXINFO cbi = {};
+	cbi.cbSize = sizeof( cbi );
+	if( !GetComboBoxInfo( &cbi ) )
+		return;
+	const bool bEnabled = (IsWindowEnabled() != FALSE);
+	CHostThemeHelper::PaintComboDropButton( pDC->GetSafeHdc(), cbi.rcButton, bEnabled );
+
+	const DWORD dwStyle = GetStyle();
+	if( (dwStyle & CBS_DROPDOWNLIST) != CBS_DROPDOWNLIST )
+		return;
+	if( dwStyle & (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE) )
+		return;
+
+	CAcadColorService* pColorService = GetColorService();
+	const COLORREF crBk = pColorService ? pColorService->GetBackgroundColor() : OdclSysColor( COLOR_WINDOW );
+	const COLORREF crFg = pColorService ? pColorService->GetForegroundColor() : OdclSysColor( COLOR_WINDOWTEXT );
+	CRect rcFace( cbi.rcItem );
+	pDC->FillSolidRect( &rcFace, crBk );
+	CString sText;
+	const int nSel = GetCurSel();
+	if( nSel >= 0 )
+		GetLBText( nSel, sText );
+	else
+		GetWindowText( sText );
+	CFont* pFont = GetFont();
+	CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
+	const COLORREF crOld = pDC->SetTextColor( bEnabled ? crFg : OdclSysColor( COLOR_GRAYTEXT ) );
+	const int nOldBk = pDC->SetBkMode( TRANSPARENT );
+	rcFace.DeflateRect( FromDIP( 4 ), 0 );
+	pDC->DrawText( sText, &rcFace, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS );
+	pDC->SetBkMode( nOldBk );
+	pDC->SetTextColor( crOld );
+	if( pOldFont )
+		pDC->SelectObject( pOldFont );
+}
+
+void CComboBoxCtrl::OnPaint()
+{
+	Default();
+	if( !UseHostOwnerDraw() )
+		return;
+	CClientDC dc( this );
+	PaintHostComboChrome( &dc );
 }

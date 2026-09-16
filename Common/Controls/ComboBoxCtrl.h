@@ -42,6 +42,8 @@ public:
 protected:
 	virtual void OnListChanged();
 	void SyncHostComboTheme();
+	bool UseHostOwnerDraw() const;
+	void PaintHostComboChrome( CDC* pDC );
 
 protected:
 	DECLARE_MESSAGE_MAP();
@@ -59,5 +61,6 @@ protected:
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };
