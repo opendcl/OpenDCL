@@ -933,6 +933,21 @@ bool ReadForm( CProject& project, TDclFormPtr parent, const nlohmann::json& form
 			props->SetStringProperty( Prop::Name, Utf8ToCString( fname ) );
 		if( form.contains( "tabIndex" ) )
 			pForm->SetTabIndex( static_cast<short>( JsonLong( form, "tabIndex", 0 ) ) );
+		else if( pForm->GetTabIndex() < 0 )
+		{
+			short nNext = 0;
+			TDclFormList siblings;
+			project.FindChildForms( parent, siblings );
+			for( TDclFormList::const_iterator it = siblings.begin(); it != siblings.end(); ++it )
+			{
+				if( *it == pForm )
+					continue;
+				const short nIndex = (*it)->GetTabIndex();
+				if( nIndex >= nNext )
+					nNext = static_cast<short>( nIndex + 1 );
+			}
+			pForm->SetTabIndex( nNext );
+		}
 	}
 	const long width = JsonLong( form, "width", -1 );
 	const long height = JsonLong( form, "height", -1 );
