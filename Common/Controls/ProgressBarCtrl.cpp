@@ -11,6 +11,7 @@
 #include "Workspace.h"
 #include "Resource.h"
 #include "MemDC.h"
+#include "HostThemeHelper.h"
 
 
 static CString GetDisplayText( TDclControlPtr pControl, Prop::Id id, UINT idRes )
@@ -49,6 +50,9 @@ bool CProgressBarCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostProgressTheme();
 
 	return bSuccess;
 }
@@ -121,6 +125,34 @@ void CProgressBarCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst,
 {
 	__super::ApplyPropertiesOrder( ridFirst, ridLast );
 	ridLast.push_back( Prop::Value );
+}
+
+bool CProgressBarCtrl::UseHostOwnerDraw() const
+{
+	return CHostThemeHelper::HostMaps() || !mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+}
+
+void CProgressBarCtrl::HandleHostThemeChanged()
+{
+	SyncHostProgressTheme();
+}
+
+bool CProgressBarCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	SyncHostProgressTheme();
+	return true;
+}
+
+void CProgressBarCtrl::SyncHostProgressTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
 }
 
 void CProgressBarCtrl::Reset(void)
@@ -223,6 +255,13 @@ HBRUSH CProgressBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CProgressBarCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( UseHostOwnerDraw() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_3DSHADOW ) );
+		return TRUE;
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
@@ -236,7 +275,7 @@ void CProgressBarCtrl::PostNcDestroy()
 
 void CProgressBarCtrl::OnPaint() 
 {
-	if( mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	if( !UseHostOwnerDraw() )
 	{
 		__super::OnPaint();
 		return;
@@ -274,8 +313,7 @@ void CProgressBarCtrl::OnPaint()
     nBlocks = (int)((lfPercent*18.0)+0.9);
   }
 
-  if (GetParent() != NULL)
-    ::FillRect(dc, &rcClient, (HBRUSH)GetParent()->SendMessage(WM_CTLCOLORSTATIC, (WPARAM)(HDC)dc, (LPARAM)this->GetSafeHwnd()));
+  dc.FillSolidRect( &rcClient, OdclSysColor( COLOR_3DSHADOW ) );
 
   for( int nLoop = 1; nLoop <= nBlocks; nLoop++ )
   {
