@@ -25,9 +25,16 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
 
 	virtual void OnPositionChanged( int nNewPos, bool bNotify = true ) {}
+
+protected:
+	void SyncHostSliderTheme();
+	bool UseHostOwnerDraw() const;
+	void PaintHostSlider( CDC* pDC );
 
 	// Generated message map functions
 protected:
@@ -39,5 +46,6 @@ protected:
 	afx_msg void VScroll(UINT nSBCode, UINT nPos);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };
