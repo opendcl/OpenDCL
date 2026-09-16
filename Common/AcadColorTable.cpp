@@ -285,6 +285,12 @@ COLORREF CColorService::GetRGBColor( long nColorIndex ) const
 			return RGB(0,0,0);
 		return stColors.dwGfxModelBkColor;
 	#else //_ACADTARGET
+		// BRX has no acedGetCurrentColors. Light stays model-space black so
+		// ACI 7 hatch remains visible. Dark uses COLOR_WINDOW so empty GS
+		// matches CAD chrome instead of a black well with a white GDI corner.
+		const COLORREF crWindow = GetSysColor( COLOR_WINDOW );
+		if( crWindow != ::GetSysColor( COLOR_WINDOW ) )
+			return crWindow;
 		return RGB(0,0,0);
 	#endif //_ACADTARGET
 	}
