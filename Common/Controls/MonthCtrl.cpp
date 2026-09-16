@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "MonthCtrl.h"
 #include "ControlPane.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,6 +54,9 @@ bool CMonthCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	if( bSuccess )
+		SyncHostMonthTheme();
+
 	return bSuccess;
 }
 
@@ -79,6 +84,30 @@ bool CMonthCtrl::ApplyProperty( TPropertyPtr pProp )
 		break;
 	}
 	return !bFailed;
+}
+
+void CMonthCtrl::HandleHostThemeChanged()
+{
+	SyncHostMonthTheme();
+}
+
+void CMonthCtrl::SyncHostMonthTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
+	if( CHostThemeHelper::HostMaps() )
+	{
+		SetColor( MCSC_BACKGROUND, OdclSysColor( COLOR_WINDOW ) );
+		SetColor( MCSC_MONTHBK, OdclSysColor( COLOR_WINDOW ) );
+		SetColor( MCSC_TEXT, OdclSysColor( COLOR_WINDOWTEXT ) );
+		SetColor( MCSC_TITLEBK, OdclSysColor( COLOR_ACTIVECAPTION ) );
+		SetColor( MCSC_TITLETEXT, OdclSysColor( COLOR_CAPTIONTEXT ) );
+		SetColor( MCSC_TRAILINGTEXT, OdclSysColor( COLOR_GRAYTEXT ) );
+	}
+	OnNeedRepaint( true );
 }
 
 

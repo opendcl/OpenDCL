@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "ListCtrlHdr.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 #define HDM_GETBITMAPMARGIN (HDM_FIRST + 21)
 
@@ -124,11 +126,46 @@ BEGIN_MESSAGE_MAP(CListCtrlHdr, CHeaderCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE, &CListCtrlHdr::OnMouseLeave)
 	ON_MESSAGE(WM_MOUSEHOVER, &CListCtrlHdr::OnMouseHover)
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CListCtrlHdr message handlers
+
+void CListCtrlHdr::OnPaint()
+{
+	if( !CHostThemeHelper::HostMaps() )
+	{
+		__super::OnPaint();
+		return;
+	}
+	CPaintDC dc( this );
+	CRect rc;
+	GetClientRect( &rc );
+	dc.FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+	CFont* pFont = GetFont();
+	CFont* pOldFont = pFont ? dc.SelectObject( pFont ) : NULL;
+	dc.SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
+	dc.SetBkMode( TRANSPARENT );
+	const int nCount = GetItemCount();
+	for( int i = 0; i < nCount; ++i )
+	{
+		CRect rcItem;
+		if( !GetItemRect( i, &rcItem ) )
+			continue;
+		TCHAR sz[256] = {};
+		HDITEM item = {};
+		item.mask = HDI_TEXT;
+		item.pszText = sz;
+		item.cchTextMax = 255;
+		GetItem( i, &item );
+		rcItem.DeflateRect( 6, 0 );
+		dc.DrawText( sz, &rcItem, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS );
+	}
+	if( pOldFont )
+		dc.SelectObject( pOldFont );
+}
 
 int CListCtrlHdr::OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message)
 {

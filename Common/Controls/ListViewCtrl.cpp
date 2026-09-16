@@ -9,6 +9,8 @@
 #include "PropertyIds.h"
 #include "Resource.h"
 #include "Workspace.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 #undef SubclassWindow
 
@@ -95,6 +97,9 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	if( bSuccess )
+		SyncHostListTheme();
+
 	return bSuccess;
 }
 
@@ -119,7 +124,7 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
-				pImageList->GetImageList().SetBkColor( RGB(255,255,255) );
+				pImageList->GetImageList().SetBkColor( CLR_NONE );
 				SetImageList( &pImageList->GetImageList(), TVSIL_NORMAL );
 				SetImageList( &pImageList->GetImageList(), LVSIL_SMALL );
 			}
@@ -373,9 +378,7 @@ bool CListViewCtrl::OnApplyForegroundColor( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyForegroundColor( pProp ) )
 		return false;
-	CAcadColorService* pColorService = GetColorService();
-	if( pColorService )
-		SetTextColor( pColorService->GetForegroundColor() );
+	ApplyHostListColors();
 	return true;
 }
 
@@ -383,13 +386,40 @@ bool CListViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyBackgroundColor( pProp ) )
 		return false;
-	CAcadColorService* pColorService = GetColorService();
-	if( pColorService )
-	{
-		SetBkColor( pColorService->GetBackgroundColor() );
-		SetTextBkColor( pColorService->GetBackgroundColor() );
-	}
+	ApplyHostListColors();
 	return true;
+}
+
+void CListViewCtrl::HandleHostThemeChanged()
+{
+	SyncHostListTheme();
+}
+
+void CListViewCtrl::ApplyHostListColors()
+{
+	if( !m_hWnd )
+		return;
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
+		return;
+	COLORREF crBk = pColorService->GetBackgroundColor();
+	if( pColorService->IsBackgroundNotSet() || pColorService->IsBackgroundTransparent() )
+		crBk = OdclSysColor( COLOR_WINDOW );
+	SetBkColor( crBk );
+	SetTextBkColor( crBk );
+	SetTextColor( pColorService->GetForegroundColor() );
+}
+
+void CListViewCtrl::SyncHostListTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	CHostThemeHelper::ApplyHeader( GetHeaderCtrl() );
+	ApplyHostListColors();
+	OnNeedRepaint( true );
 }
 
 DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
@@ -756,6 +786,7 @@ BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_INSERTITEM, &CListViewCtrl::OnLvnInsertitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, &CListViewCtrl::OnLvnDeleteitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, &CListViewCtrl::OnLvnDeleteallitems)
+	ON_NOTIFY(NM_CUSTOMDRAW, 0, &CListViewCtrl::OnHdrCustomDraw)
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CListViewCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -767,6 +798,11 @@ LRESULT CListViewCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 {
 	HandleDpiChanged();
 	return 0;
+}
+
+void CListViewCtrl::OnHdrCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
+{
+	CHostThemeHelper::PaintHeaderCustomDraw( GetHeaderCtrl(), pNMHDR, pResult );
 }
 
 void CListViewCtrl::OnDestroy() 

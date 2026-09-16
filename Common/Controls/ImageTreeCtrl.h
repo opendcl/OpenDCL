@@ -54,7 +54,11 @@ public:
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostTreeTheme();
 	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override;
 	DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState ) override;
 	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;

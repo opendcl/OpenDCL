@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "GridCtrl.h"
 #include "ColorService.h"
+#include "HostThemeHelper.h"
 #include "Workspace.h"
 #include "ControlPane.h"
 #include "DclControlTemplate.h"
@@ -198,6 +199,9 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		HandleHostThemeChanged();
 
 	return bSuccess;
 }
@@ -1282,7 +1286,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 			cdc.SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
 			CRect rcHeader = rcBounds;
 			WndTheme HeaderTheme( GetSafeHwnd(), VSCLASS_HEADER );
-			if( HeaderTheme )
+			if( HeaderTheme && !CHostThemeHelper::HostMaps() )
 			{
 				HeaderTheme.DrawThemeBackground( cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
 				CPen penHighlight( PS_SOLID, 1, OdclSysColor( COLOR_BTNHIGHLIGHT ) );
@@ -1957,6 +1961,7 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_MESSAGE(WM_MOUSELEAVE, &CGridCtrl::OnMouseLeave)
 	ON_MESSAGE(WM_MOUSEHOVER, &CGridCtrl::OnMouseHover)
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CGridCtrl::OnDpiChanged)
+	ON_NOTIFY(NM_CUSTOMDRAW, 0, &CGridCtrl::OnHdrCustomDraw)
 END_MESSAGE_MAP()
 
 
@@ -1967,6 +1972,22 @@ LRESULT CGridCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 {
 	HandleDpiChanged();
 	return 0;
+}
+
+void CGridCtrl::HandleHostThemeChanged()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	CHostThemeHelper::ApplyHeader( GetHeaderCtrl() );
+	OnNeedRepaint( true );
+}
+
+void CGridCtrl::OnHdrCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
+{
+	CHostThemeHelper::PaintHeaderCustomDraw( GetHeaderCtrl(), pNMHDR, pResult );
 }
 
 void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)

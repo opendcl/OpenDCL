@@ -89,7 +89,12 @@ public:
 	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
 	bool OnApplyForegroundColor( TPropertyPtr pProp ) override;
 	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostListTheme();
+	void ApplyHostListColors();
 	COleDropSource* GetDropSource() override { return &mDropSource; }
 	DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ) override; //called to get drag data from this control
 	bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT& dropEffect ) override;
@@ -126,5 +131,6 @@ protected:
 	afx_msg void OnLvnInsertitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteallitems(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnHdrCustomDraw( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };
