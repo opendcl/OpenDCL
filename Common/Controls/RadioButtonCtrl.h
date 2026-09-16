@@ -29,7 +29,14 @@ public:
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostOptionTheme();
+	bool UseHostOwnerDraw() const;
+	void PaintHostOption( CDC* pDC );
 
 // Generated message map functions
 protected:
@@ -42,6 +49,7 @@ protected:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg void OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);

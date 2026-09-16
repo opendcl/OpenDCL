@@ -7,6 +7,9 @@
 #include "PropertyObject.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
+#include "MemDC.h"
 
 
 //from CommCtrl.h
@@ -42,6 +45,9 @@ bool CRadioButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	if( bSuccess )
+		SyncHostOptionTheme();
+
 	return bSuccess;
 }
 
@@ -70,12 +76,107 @@ bool CRadioButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CRadioButtonCtrl::UseHostOwnerDraw() const
+{
+	return CHostThemeHelper::HostMaps() || !mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+}
+
+void CRadioButtonCtrl::HandleHostThemeChanged()
+{
+	SyncHostOptionTheme();
+}
+
+bool CRadioButtonCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	SyncHostOptionTheme();
+	return true;
+}
+
+void CRadioButtonCtrl::SyncHostOptionTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
+}
+
+void CRadioButtonCtrl::PaintHostOption( CDC* pDC )
+{
+	if( !pDC )
+		return;
+
+	CRect rcClient;
+	GetClientRect( &rcClient );
+
+	COLORREF crBk = OdclSysColor( COLOR_BTNFACE );
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService && !pColorService->IsBackgroundNotSet() && !pColorService->IsBackgroundTransparent() )
+		crBk = pColorService->GetBackgroundColor();
+	pDC->FillSolidRect( &rcClient, crBk );
+
+	const bool bEnabled = (IsWindowEnabled() != FALSE);
+	const int nCheck = GetCheck();
+	const int nBox = (int)FromDIP( 13 );
+	const int nGap = (int)FromDIP( 4 );
+	const int nPad = (int)FromDIP( 1 );
+	int yBox = rcClient.top + (rcClient.Height() - nBox) / 2;
+	if( yBox < rcClient.top )
+		yBox = rcClient.top;
+	CRect rcBox( rcClient.left + nPad, yBox, rcClient.left + nPad + nBox, yBox + nBox );
+
+	const COLORREF crRing = OdclSysColor( bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT );
+	CPen penRing( PS_SOLID, 1, crRing );
+	CBrush brFill( OdclSysColor( COLOR_WINDOW ) );
+	CPen* pOldPen = pDC->SelectObject( &penRing );
+	CBrush* pOldBrush = pDC->SelectObject( &brFill );
+	pDC->Ellipse( &rcBox );
+	if( nCheck == BST_CHECKED )
+	{
+		CRect rcDot = rcBox;
+		rcDot.DeflateRect( nBox / 4, nBox / 4 );
+		CBrush brDot( crRing );
+		pDC->SelectObject( &brDot );
+		pDC->Ellipse( &rcDot );
+		pDC->SelectObject( pOldBrush );
+	}
+	pDC->SelectObject( pOldBrush );
+	pDC->SelectObject( pOldPen );
+
+	CString sCaption;
+	GetWindowText( sCaption );
+	CRect rcText = rcClient;
+	rcText.left = rcBox.right + nGap;
+	COLORREF crText = crRing;
+	if( bEnabled && pColorService )
+		crText = pColorService->GetForegroundColor();
+	const COLORREF crOld = pDC->SetTextColor( crText );
+	const int nOldBk = pDC->SetBkMode( TRANSPARENT );
+	CFont* pFont = GetFont();
+	CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
+	pDC->DrawText( sCaption, &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS );
+	if( GetFocus() == this )
+	{
+		CRect rcFocus = rcText;
+		pDC->DrawText( sCaption, &rcFocus, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_CALCRECT );
+		rcFocus.InflateRect( (int)FromDIP( 1 ), (int)FromDIP( 1 ) );
+		pDC->DrawFocusRect( &rcFocus );
+	}
+	if( pOldFont )
+		pDC->SelectObject( pOldFont );
+	pDC->SetBkMode( nOldBk );
+	pDC->SetTextColor( crOld );
+}
 
 BEGIN_MESSAGE_MAP(CRadioButtonCtrl, CButton)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_NOTIFY_REFLECT(BCN_HOTITEMCHANGE, &CRadioButtonCtrl::OnBnHotItemChange)
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE, &CRadioButtonCtrl::OnMouseLeave)
@@ -133,9 +234,30 @@ HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CRadioButtonCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( UseHostOwnerDraw() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		return TRUE;
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CRadioButtonCtrl::OnPaint()
+{
+	if( !UseHostOwnerDraw() )
+	{
+		Default();
+		return;
+	}
+	CPaintDC dcPaint( this );
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	CMemDCx dc( &dcPaint, rcClient );
+	PaintHostOption( &dc );
 }
 
 void CRadioButtonCtrl::PostNcDestroy() 
