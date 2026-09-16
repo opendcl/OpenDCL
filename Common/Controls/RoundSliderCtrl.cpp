@@ -180,7 +180,7 @@ IMPLEMENT_DYNAMIC(CRoundSliderCtrl, CSliderCtrl)
 
 CRoundSliderCtrl::CRoundSliderCtrl()
 {
-	m_strText = "%ld�";
+	m_strText = _T("%ld\x00B0"); // U+00B0 degree sign (source must not embed a raw UTF-8 glyph)
 	m_nKnobRadius = 7;
 	m_nZero = 0;
 	m_bInverted = false;
@@ -271,8 +271,21 @@ BOOL CRoundSliderCtrl::OnEraseBkgnd(CDC* pDC)
 }
 #pragma warning(default:4100)
 
+void CRoundSliderCtrl::RecreateHostBrushes()
+{
+	m_crText = OdclSysColor(COLOR_WINDOWTEXT);
+	if( m_brKnob.m_hObject )
+		m_brKnob.DeleteObject();
+	if( m_brDial.m_hObject )
+		m_brDial.DeleteObject();
+	m_brKnob.CreateSolidBrush(OdclSysColor(COLOR_3DFACE));
+	m_brDial.CreateSolidBrush(OdclSysColor(COLOR_3DFACE));
+}
+
 void CRoundSliderCtrl::OnPaint() 
 {
+	RecreateHostBrushes();
+
 	const int nMin = GetRangeMin();
 	const int nMax = GetRangeMax()+1;
 
@@ -333,7 +346,7 @@ void CRoundSliderCtrl::OnPaint()
 	// Draw the focus circle on the inside of the knob
 	if(GetFocus() == this)
 	{
-		DrawCircle(pDC, ptKnobCenter, nKnobRadius-2, RGB(0, 0, 0), TRUE);
+		DrawCircle(pDC, ptKnobCenter, nKnobRadius-2, OdclSysColor(COLOR_WINDOWTEXT), TRUE);
 	}
 
 	// Draw the text

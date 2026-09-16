@@ -58,6 +58,11 @@ bool CAngleSlideCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+void CAngleSlideCtrl::HandleHostThemeChanged()
+{
+	OnNeedRepaint( true );
+}
+
 
 BEGIN_MESSAGE_MAP(CAngleSlideCtrl, CRoundSliderCtrl)
 	ON_WM_HSCROLL_REFLECT()
