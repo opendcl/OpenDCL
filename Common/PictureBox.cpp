@@ -247,6 +247,11 @@ CSize CPictureBox::GetPictureSize() const
 	return CSize( 0, 0 );
 }
 
+COLORREF CPictureBox::GetFillColor() const
+{
+	return OdclSysColor( COLOR_WINDOW );
+}
+
 void CPictureBox::Clear() 
 {
 	if( mhbmMem )
@@ -298,6 +303,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bFitToCtrl /*= false*/
 	CDC* pdc = pDestDC? pDestDC : GetDC();
 	CRect rcCell;	
 	GetClientRect(&rcCell);
+	pdc->FillSolidRect( &rcCell, GetFillColor() );
 	pdc->IntersectClipRect( &rcCell );
 
 	// get width and height of picture
@@ -816,6 +822,6 @@ BOOL CPictureBox::OnEraseBkgnd(CDC* pDC)
 	CRect rcClient;
 	GetClientRect( &rcClient );
 	rcClip.IntersectRect( &rcClip, &rcClient );
-	pDC->FillSolidRect( &rcClip, RGB(255,255,255) );
+	pDC->FillSolidRect( &rcClip, GetFillColor() );
 	return TRUE;
 }
