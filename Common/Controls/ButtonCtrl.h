@@ -88,10 +88,12 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
 
 protected:
 	DWORD OnDrawBackground(CDC* pDC, CRect* pRect) override;
+	DWORD OnDrawBorder(CDC* pDC, CRect* pRect) override;
 	virtual bool IsUsingPresetGraphic() const { return mbUsingPresetGraphic; }
 	virtual void UpdateButtonGraphic() {}
 	void SetResourceIcon(UINT idIcon);

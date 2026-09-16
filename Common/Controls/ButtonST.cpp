@@ -2391,7 +2391,7 @@ DWORD CButtonST::OnDrawBackground(CDC* pDC, CRect* pRect)
 	{
 		if (m_bIsFocused || m_bIsDefault)
 		{
-			CBrush br(RGB(0,0,0));  
+			CBrush br(OdclSysColor(COLOR_BTNTEXT));
 			pDC->FrameRect(pRect, &br);
 			pRect->DeflateRect(1, 1);
 		} // if

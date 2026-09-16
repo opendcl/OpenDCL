@@ -5,6 +5,8 @@
 #include "ControlPane.h"
 #include "Workspace.h"
 #include "Resource.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 void CButtonAcadColorService::ResetButtonForegroundColor() const
@@ -18,6 +20,8 @@ void CButtonAcadColorService::ResetButtonForegroundColor() const
 void CButtonAcadColorService::ResetButtonBackgroundColor() const
 {
 	COLORREF crBkgnd = GetBackgroundColor();
+	if( IsBackgroundNotSet() || IsBackgroundTransparent() )
+		crBkgnd = OdclSysColor( COLOR_BTNFACE );
 	mButton.SetColor( CButtonST::BTNST_COLOR_BK_IN, crBkgnd, FALSE );
 	mButton.SetColor( CButtonST::BTNST_COLOR_BK_OUT, crBkgnd, FALSE );
 	mButton.SetColor( CButtonST::BTNST_COLOR_BK_FOCUS, crBkgnd, FALSE );
@@ -134,10 +138,29 @@ bool CButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+void CButtonCtrl::HandleHostThemeChanged()
+{
+	mColorService.RefreshColors();
+	OnNeedRepaint( true );
+}
+
 DWORD CButtonCtrl::OnDrawBackground(CDC* pDC, CRect* pRect)
 {
 	mColorService.RefreshColors();
 	return __super::OnDrawBackground( pDC, pRect );
+}
+
+DWORD CButtonCtrl::OnDrawBorder(CDC* pDC, CRect* pRect)
+{
+	if( !CHostThemeHelper::HostMaps() )
+		return __super::OnDrawBorder( pDC, pRect );
+	if( m_bIsFlat && !m_bDrawBorder )
+		return BTNST_OK;
+	if( !pDC || !pRect )
+		return BTNST_OK;
+	CBrush br( OdclSysColor( COLOR_BTNTEXT ) );
+	pDC->FrameRect( pRect, &br );
+	return BTNST_OK;
 }
 
 void CButtonCtrl::SetResourceIcon(UINT idIcon)

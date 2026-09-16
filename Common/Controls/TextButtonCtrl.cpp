@@ -8,6 +8,7 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 #include "ColorService.h"
+#include "HostThemeHelper.h"
 #include <math.h>
 
 
@@ -60,6 +61,10 @@ bool CTextButtonCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+void CTextButtonCtrl::HandleHostThemeChanged()
+{
+	OnNeedRepaint( true );
+}
 
 BEGIN_MESSAGE_MAP(CTextButtonCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
@@ -235,12 +240,24 @@ void CTextButtonCtrl::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	COLORREF crBase = mColorService.GetBackgroundColor();
 	if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
 		crBase = OdclSysColor( COLOR_BTNFACE );
-	COLORREF crFace = MixRgb( crBase, OdclSysColor( COLOR_BTNHIGHLIGHT ), 2, 3 );
-	COLORREF crBorder = OdclSysColor( COLOR_3DDKSHADOW );
-	if( bPressed )
+	COLORREF crFace;
+	COLORREF crBorder;
+	if( CHostThemeHelper::HostMaps() )
 	{
-		crFace = MixRgb( crBase, OdclSysColor( COLOR_BTNSHADOW ), 1, 3 );
-		crBorder = MixRgb( crBorder, RGB( 0, 0, 0 ), 1, 3 );
+		crFace = crBase;
+		crBorder = OdclSysColor( COLOR_BTNTEXT );
+		if( bPressed )
+			crFace = MixRgb( crBase, OdclSysColor( COLOR_3DSHADOW ), 1, 3 );
+	}
+	else
+	{
+		crFace = MixRgb( crBase, OdclSysColor( COLOR_BTNHIGHLIGHT ), 2, 3 );
+		crBorder = OdclSysColor( COLOR_3DDKSHADOW );
+		if( bPressed )
+		{
+			crFace = MixRgb( crBase, OdclSysColor( COLOR_BTNSHADOW ), 1, 3 );
+			crBorder = MixRgb( crBorder, RGB( 0, 0, 0 ), 1, 3 );
+		}
 	}
 	const COLORREF crText = bDisabled ? OdclSysColor( COLOR_GRAYTEXT ) : mColorService.GetForegroundColor();
 
@@ -268,5 +285,11 @@ void CTextButtonCtrl::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	pDC->SetBkMode( TRANSPARENT );
 	pDC->SetTextColor( crText );
 	pDC->DrawText( sCaption, &rcText, dt );
+	if( bFocus && !bDisabled )
+	{
+		CRect rcFocus( rc );
+		rcFocus.DeflateRect( FromDIP( 3 ), FromDIP( 3 ) );
+		pDC->DrawFocusRect( &rcFocus );
+	}
 	pDC->SelectObject( pOldFont );
 }
