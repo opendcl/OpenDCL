@@ -15,6 +15,7 @@
 #include "DragDropService.h"
 #include "DialogObject.h"
 #include "ThemeAPI.h"
+#include "HostThemeHelper.h"
 #include <algorithm>
 
 
@@ -651,6 +652,7 @@ bool CDialogControl::ApplyPropertiesEnum()
 		ApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	mbEnumProps = false;
 	ApplyPosition();
+	CHostThemeHelper::InstallNcBorderTree( GetHWnd() );
 	return bSuccess;
 }
 
@@ -770,6 +772,7 @@ bool CDialogControl::OnApplyBorderStyle( TPropertyPtr pProp )
 		mpControlWnd->ModifyStyleEx( WS_EX_CLIENTEDGE, WS_EX_STATICEDGE, SWP_FRAMECHANGED );
 		break;
 	}
+	CHostThemeHelper::InstallNcBorderTree( GetHWnd() );
 	OnFrameChanged();
 	return true;
 }

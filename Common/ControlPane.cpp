@@ -10,6 +10,7 @@
 #include "ControlTypes.h"
 #include "UndoManager.h"
 #include "Project.h"
+#include "HostThemeHelper.h"
 #include <algorithm>
 
 
@@ -202,6 +203,7 @@ void CControlPane::HandleHostThemeChanged()
 		if( !*iter )
 			continue;
 		(*iter)->HandleHostThemeChanged();
+		CHostThemeHelper::InstallNcBorderTree( (*iter)->GetHWnd() );
 		std::list< const CControlPane* > listChildren;
 		if( (*iter)->GetChildPanes( listChildren ) )
 		{
@@ -215,7 +217,7 @@ void CControlPane::HandleHostThemeChanged()
 		}
 	}
 	if( mpHostDlg && mpHostDlg->m_hWnd )
-		mpHostDlg->RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN );
+		mpHostDlg->RedrawWindow( NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME );
 }
 
 void CControlPane::InvalidateControls()
