@@ -7,6 +7,9 @@
 #include "DclImageList.h"
 #include "DclControlTemplate.h"
 #include "DialogObject.h"
+#include "HostThemeHelper.h"
+#include "PropertyIds.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,6 +35,9 @@ bool CTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostTabTheme();
 
 	return bSuccess;
 }
@@ -334,6 +340,7 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_HSCROLL()
 	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnCbnSelchange)
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnNMCustomDraw)
 	ON_WM_NCHITTEST()
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
@@ -371,6 +378,13 @@ HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CTabStripCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( CHostThemeHelper::HostMaps() )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		return TRUE;
+	}
 	//if( HandleEraseBkgnd( pDC ) )
 	//	return TRUE;
 	return __super::OnEraseBkgnd(pDC);
@@ -409,6 +423,11 @@ void CTabStripCtrl::OnPaint()
 	//}
 	CRect rcPaint = ps.rcPaint;
 	__super::OnPaint();
+	if( CHostThemeHelper::HostMaps() )
+	{
+		CClientDC dc( this );
+		PaintHostThemedTabs( &dc );
+	}
 	if( !rcPaint.IsRectEmpty() )
 	{
 		CRect rcTarget = GetUsedArea();
@@ -470,10 +489,203 @@ void CTabStripCtrl::PostNcDestroy()
 HBRUSH CTabStripCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+	if( CHostThemeHelper::HostMaps() )
+	{
+		// Match tab-page erase (COLOR_BTNFACE), not COLOR_WINDOW.
+		mColorService.SetBackgroundColor( -16L );
+		pDC->SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
+		pDC->SetBkColor( mColorService.GetBackgroundColor() );
+		return mColorService.GetBackgroundBrush();
+	}
 	if( GetTheme().GetWindowTheme() )
 	{
 		mColorService.SetBackgroundColor( -6L );
 		return mColorService.GetBackgroundBrush();
 	}
 	return hbr;
+}
+
+bool CTabStripCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !CDialogControl::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	SyncHostTabTheme();
+	return true;
+}
+
+void CTabStripCtrl::HandleHostThemeChanged()
+{
+	SyncHostTabTheme();
+}
+
+void CTabStripCtrl::SyncHostTabTheme()
+{
+	if( !m_hWnd )
+		return;
+	const bool bVisual = mpTemplate && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
+}
+
+void CTabStripCtrl::DrawHostThemedTabItem( CDC* pDC, const CRect& rcItem, bool bSelected, bool bHot, const CString& sText, int nImage )
+{
+	if( !pDC || rcItem.IsRectEmpty() )
+		return;
+
+	const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
+	const COLORREF crWindow = OdclSysColor( COLOR_WINDOW );
+	const COLORREF crText = OdclSysColor( COLOR_BTNTEXT );
+	const COLORREF crEdge = OdclSysColor( COLOR_3DSHADOW );
+	const bool bButtons = (GetStyle() & TCS_BUTTONS) != 0;
+
+	// Selected matches tab page face; inactive uses window (darker under HostMaps).
+	COLORREF crFill = bSelected ? crFace : crWindow;
+	if( bHot && !bSelected )
+		crFill = crFace;
+
+	pDC->FillSolidRect( &rcItem, crFill );
+
+	CPen pen( PS_SOLID, 1, crEdge );
+	CPen* pOldPen = pDC->SelectObject( &pen );
+	const int xL = rcItem.left;
+	const int xR = rcItem.right - 1;
+	const int yT = rcItem.top;
+	const int yB = rcItem.bottom - 1;
+	pDC->MoveTo( xL, yB );
+	pDC->LineTo( xL, yT );
+	pDC->LineTo( xR, yT );
+	pDC->LineTo( xR, yB + 1 );
+	if( bButtons || !bSelected )
+	{
+		pDC->MoveTo( xL, yB );
+		pDC->LineTo( xR + 1, yB );
+	}
+	pDC->SelectObject( pOldPen );
+
+	CRect rcText = rcItem;
+	rcText.DeflateRect( 6, 2, 6, 2 );
+	if( nImage >= 0 )
+	{
+		CImageList* pList = GetImageList();
+		if( pList && pList->GetSafeHandle() )
+		{
+			IMAGEINFO ii = {};
+			if( pList->GetImageInfo( nImage, &ii ) )
+			{
+				const int cx = ii.rcImage.right - ii.rcImage.left;
+				const int cy = ii.rcImage.bottom - ii.rcImage.top;
+				const int x = rcText.left;
+				const int y = rcText.top + max( 0, (rcText.Height() - cy) / 2 );
+				pList->Draw( pDC, nImage, CPoint( x, y ), ILD_TRANSPARENT );
+				rcText.left += cx + 4;
+			}
+		}
+	}
+
+	const COLORREF crOldText = pDC->SetTextColor( crText );
+	const int nOldBk = pDC->SetBkMode( TRANSPARENT );
+	CFont* pFont = GetFont();
+	CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
+	UINT nFormat = DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+	if( mpTemplate && mpTemplate->GetLongProperty( Prop::LabelAlignment ) == 0 )
+		nFormat |= DT_LEFT;
+	else
+		nFormat |= DT_CENTER;
+	pDC->DrawText( sText, &rcText, nFormat );
+	if( pOldFont )
+		pDC->SelectObject( pOldFont );
+	pDC->SetBkMode( nOldBk );
+	pDC->SetTextColor( crOldText );
+}
+
+void CTabStripCtrl::PaintHostThemedTabs( CDC* pDC )
+{
+	if( !pDC || !CHostThemeHelper::HostMaps() )
+		return;
+
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	int nMaxBottom = 0;
+	const int nCount = GetItemCount();
+	for( int i = 0; i < nCount; ++i )
+	{
+		CRect rcItem;
+		if( GetItemRect( i, &rcItem ) && rcItem.bottom > nMaxBottom )
+			nMaxBottom = rcItem.bottom;
+	}
+	if( nMaxBottom > 0 )
+	{
+		CRect rcRow = rcClient;
+		rcRow.bottom = nMaxBottom + 2;
+		pDC->FillSolidRect( &rcRow, OdclSysColor( COLOR_BTNFACE ) );
+	}
+
+	for( int i = 0; i < nCount; ++i )
+	{
+		CRect rcItem;
+		if( !GetItemRect( i, &rcItem ) )
+			continue;
+		TCITEM item = {};
+		item.mask = TCIF_TEXT | TCIF_IMAGE;
+		TCHAR sz[256] = {};
+		item.pszText = sz;
+		item.cchTextMax = 255;
+		if( !GetItem( i, &item ) )
+			continue;
+		const bool bSelected = (GetCurSel() == i);
+		DrawHostThemedTabItem( pDC, rcItem, bSelected, false, CString( sz ), item.iImage );
+	}
+}
+
+void CTabStripCtrl::OnNMCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast< LPNMCUSTOMDRAW >( pNMHDR );
+	*pResult = CDRF_DODEFAULT;
+	if( !pNMCD || !CHostThemeHelper::HostMaps() )
+		return;
+
+	switch( pNMCD->dwDrawStage )
+	{
+	case CDDS_PREPAINT:
+		{
+			CDC* pDC = CDC::FromHandle( pNMCD->hdc );
+			if( pDC )
+			{
+				CRect rc;
+				GetClientRect( &rc );
+				CRect rcRow = rc;
+				int nMaxBottom = 0;
+				for( int i = GetItemCount() - 1; i >= 0; --i )
+				{
+					CRect rcItem;
+					if( GetItemRect( i, &rcItem ) && rcItem.bottom > nMaxBottom )
+						nMaxBottom = rcItem.bottom;
+				}
+				if( nMaxBottom > 0 )
+					rcRow.bottom = nMaxBottom + 2;
+				pDC->FillSolidRect( &rcRow, OdclSysColor( COLOR_BTNFACE ) );
+			}
+			*pResult = CDRF_NOTIFYITEMDRAW;
+		}
+		break;
+	case CDDS_ITEMPREPAINT:
+		{
+			const int nItem = (int)pNMCD->dwItemSpec;
+			TCITEM item = {};
+			item.mask = TCIF_TEXT | TCIF_IMAGE;
+			TCHAR sz[256] = {};
+			item.pszText = sz;
+			item.cchTextMax = 255;
+			if( !GetItem( nItem, &item ) )
+				break;
+			const bool bSelected = (GetCurSel() == nItem) || ((pNMCD->uItemState & CDIS_SELECTED) != 0);
+			const bool bHot = (pNMCD->uItemState & CDIS_HOT) != 0;
+			CDC* pDC = CDC::FromHandle( pNMCD->hdc );
+			DrawHostThemedTabItem( pDC, CRect( pNMCD->rc ), bSelected, bHot, CString( sz ), item.iImage );
+			*pResult = CDRF_SKIPDEFAULT;
+		}
+		break;
+	}
 }

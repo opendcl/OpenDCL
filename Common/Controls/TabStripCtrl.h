@@ -34,6 +34,8 @@ public:
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
 	bool OnApplyToolTip( TPropertyPtr pProp ) override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
 	CAcadColorService* GetColorService() override { return &mColorService; }
 
@@ -48,6 +50,9 @@ protected:
 	virtual void SetupTabs();
 	virtual void ResetTooltips();
 	virtual void OnUsedAreaChanged();
+	void SyncHostTabTheme();
+	void DrawHostThemedTabItem( CDC* pDC, const CRect& rcItem, bool bSelected, bool bHot, const CString& sText, int nImage );
+	void PaintHostThemedTabs( CDC* pDC );
 
 	// Generated message map functions
 protected:
@@ -64,5 +69,7 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnNMCustomDraw( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };
+
