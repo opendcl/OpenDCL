@@ -239,13 +239,13 @@ void CTextButtonCtrl::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	COLORREF crBase = mColorService.GetBackgroundColor();
 	if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
-		crBase = OdclSysColor( COLOR_BTNFACE );
+		crBase = GetPaneFaceColor();
 	COLORREF crFace;
 	COLORREF crBorder;
 	if( CHostThemeHelper::HostMaps() )
 	{
 		crFace = crBase;
-		crBorder = OdclSysColor( COLOR_BTNTEXT );
+		crBorder = OdclSysColor( COLOR_3DSHADOW );
 		if( bPressed )
 			crFace = MixRgb( crBase, OdclSysColor( COLOR_3DSHADOW ), 1, 3 );
 	}
@@ -259,9 +259,9 @@ void CTextButtonCtrl::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 			crBorder = MixRgb( crBorder, RGB( 0, 0, 0 ), 1, 3 );
 		}
 	}
-	const COLORREF crText = bDisabled ? OdclSysColor( COLOR_GRAYTEXT ) : mColorService.GetForegroundColor();
+	const COLORREF crText = bDisabled ? CHostThemeHelper::DisabledTextColor() : mColorService.GetForegroundColor();
 
-	const COLORREF crBk = OdclSysColor( COLOR_BTNFACE );
+	const COLORREF crBk = GetPaneFaceColor();
 	int nR = FromDIP( 4 );
 	DrawRoundRectAA( pDC, rc, nR, crFace, crBorder, crBk );
 

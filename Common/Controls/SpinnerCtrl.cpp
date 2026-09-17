@@ -134,7 +134,7 @@ static void DrawSpinArrow( CDC* pDC, const CRect& rc, int nDir )
 	const int cx = (rc.left + rc.right) / 2;
 	const int cy = (rc.top + rc.bottom) / 2;
 	const int s = max( 2, min( rc.Width(), rc.Height() ) / 4 );
-	POINT pts[3] = {};
+	POINT pts[3] = {0};
 	switch( nDir )
 	{
 	case 0: // up
@@ -158,7 +158,7 @@ static void DrawSpinArrow( CDC* pDC, const CRect& rc, int nDir )
 		pts[2].x = cx - s / 2; pts[2].y = cy + s;
 		break;
 	}
-	CBrush br( OdclSysColor( COLOR_BTNTEXT ) );
+	CBrush br( CHostThemeHelper::SoftGlyphColor() );
 	pOldBrush = pDC->SelectObject( &br );
 	pOldPen = (CPen*)pDC->SelectStockObject( NULL_PEN );
 	pDC->Polygon( pts, 3 );
@@ -261,7 +261,7 @@ BOOL CSpinnerCtrl::OnEraseBkgnd(CDC* pDC)
 	{
 		CRect rc;
 		GetClientRect( &rc );
-		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
 		return TRUE;
 	}
 	if( HandleEraseBkgnd( pDC ) )

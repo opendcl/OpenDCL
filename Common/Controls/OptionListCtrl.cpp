@@ -157,7 +157,7 @@ void COptionListCtrl::SyncHostOptionListTheme()
 {
 	if( !m_hWnd )
 		return;
-	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::Apply( m_hWnd, pszTheme );
 	OnNeedRepaint( true );
@@ -540,9 +540,10 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		if( !(lpDrawItemStruct->itemData & 2) )
 			pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_NOPREFIX );	
 		else
-		{ // draw the text as disabled
-			pDC->DrawState( rcText.TopLeft(), CSize( rcText.Width(), rcText.Height() ),
-											sCaption, DSS_DISABLED, FALSE, 0, (HBRUSH)NULL );
+		{
+			const COLORREF crOld = pDC->SetTextColor( CHostThemeHelper::DisabledTextColor() );
+			pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_NOPREFIX );
+			pDC->SetTextColor( crOld );
 		}
 		pDC->SetBkMode( TRANSPARENT );
 	}

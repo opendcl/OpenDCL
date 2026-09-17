@@ -686,7 +686,7 @@ void CFolderComboBox::OnPaint()
 			else
 			{
 				clrBackground = OdclSysColor( mfState.isDisabled()? COLOR_3DFACE : COLOR_WINDOW );
-				clrForeground = OdclSysColor( mfState.isDisabled()? COLOR_GRAYTEXT : COLOR_BTNTEXT );
+				clrForeground = ( mfState.isDisabled()? CHostThemeHelper::DisabledTextColor() : OdclSysColor( COLOR_BTNTEXT ) );
 				rcBackground.DeflateRect(0, 0, -1, 0);
 			}
 			if( mbPreVistaBehavior )
@@ -719,7 +719,10 @@ void CFolderComboBox::OnPaint()
 			nBtnState |= DFCS_PUSHED;
 		//if( mfState.isHot() )
 		//	nBtnState |= 0x1000/*DFCS_HOT*/;
-		dc.DrawEdge( &rcClient, EDGE_SUNKEN, BF_RECT );
+		if( CHostThemeHelper::HostMaps() )
+			CHostThemeHelper::PaintEtchedRect( dc.GetSafeHdc(), rcClient );
+		else
+			dc.DrawEdge( &rcClient, EDGE_SUNKEN, BF_RECT );
 		dc.DrawFrameControl( &rcButton, DFC_SCROLL, DFCS_SCROLLCOMBOBOX | nBtnState );
 		if( !sLabel.IsEmpty() )
 		{
@@ -727,7 +730,7 @@ void CFolderComboBox::OnPaint()
 			if( bHighlighted )
 				clrForeground = OdclSysColor( COLOR_HIGHLIGHTTEXT );
 			else
-				clrForeground = OdclSysColor( mfState.isDisabled()? COLOR_GRAYTEXT : COLOR_BTNTEXT );
+				clrForeground = ( mfState.isDisabled()? CHostThemeHelper::DisabledTextColor() : OdclSysColor( COLOR_BTNTEXT ) );
 			dc.SetTextColor( clrForeground );
 			dc.SetBkMode(TRANSPARENT);
 			dc.SelectObject(GetFont());

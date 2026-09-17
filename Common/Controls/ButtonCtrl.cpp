@@ -158,7 +158,7 @@ DWORD CButtonCtrl::OnDrawBorder(CDC* pDC, CRect* pRect)
 		return BTNST_OK;
 	if( !pDC || !pRect )
 		return BTNST_OK;
-	CBrush br( OdclSysColor( COLOR_BTNTEXT ) );
+	CBrush br( OdclSysColor( COLOR_3DSHADOW ) );
 	pDC->FrameRect( pRect, &br );
 	return BTNST_OK;
 }

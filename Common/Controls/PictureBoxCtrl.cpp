@@ -172,7 +172,7 @@ bool CPictureBoxCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyBackgroundColor( pProp ) )
 		return false;
-	Clear();
+	CPictureBox::Clear();
 	Refresh();
 	return true;
 }
@@ -187,7 +187,7 @@ COLORREF CPictureBoxCtrl::GetFillColor() const
 
 void CPictureBoxCtrl::HandleHostThemeChanged()
 {
-	Clear();
+	CPictureBox::Clear();
 	Refresh();
 }
 

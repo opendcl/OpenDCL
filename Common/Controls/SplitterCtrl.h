@@ -33,6 +33,7 @@ public:
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
+	void HandleHostThemeChanged() override;
 	CRect ValidatePosition( const CRect& rcProposed ) const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyLeft( TPropertyPtr pProp ) override; //Prop::Left

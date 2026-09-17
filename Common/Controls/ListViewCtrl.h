@@ -132,5 +132,6 @@ protected:
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteallitems(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnHdrCustomDraw( NMHDR* pNMHDR, LRESULT* pResult );
+	afx_msg void OnListCustomDraw( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

@@ -216,7 +216,15 @@ void CImageComboBoxCtrl::SyncHostComboTheme()
 	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
 	CComboBox* pInner = GetComboBoxCtrl();
 	if( pInner )
+	{
 		CHostThemeHelper::ApplyTree( pInner->m_hWnd, pszTheme );
+#if defined(ODCL_HOST_COLORTHEME)
+		COMBOBOXINFO cbi = {0};
+		cbi.cbSize = sizeof( cbi );
+		if( ::GetComboBoxInfo( pInner->m_hWnd, &cbi ) && cbi.hwndList )
+			CHostThemeHelper::Apply( cbi.hwndList, CHostThemeHelper::ScrollTheme() );
+#endif
+	}
 	CEdit* pEdit = GetEditCtrl();
 	if( pEdit )
 		CHostThemeHelper::Apply( pEdit->m_hWnd, pszTheme );
@@ -337,6 +345,7 @@ BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_MESSAGE(CB_SETITEMDATA, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CImageComboBoxCtrl::OnResetContent)
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CImageComboBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -400,6 +409,12 @@ BOOL CImageComboBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CImageComboBoxCtrl::OnPaint()
+{
+	Default();
+	CHostThemeHelper::PaintComboChrome( m_hWnd );
 }
 
 void CImageComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)

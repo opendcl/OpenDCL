@@ -185,7 +185,7 @@ void CSlideCtrl::PaintHostSlider( CDC* pDC )
 
 	CRect rcClient;
 	GetClientRect( &rcClient );
-	pDC->FillSolidRect( &rcClient, OdclSysColor( COLOR_BTNFACE ) );
+	pDC->FillSolidRect( &rcClient, GetPaneFaceColor() );
 
 	const bool bVert = (GetStyle() & TBS_VERT) != 0;
 	CRect rcChannel;

@@ -135,10 +135,10 @@ void CArxArrowComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		__super::DrawItem( lpDrawItemStruct );
 		return;
 	}
-#if defined(_BRXTARGET)
-	__super::DrawItem( lpDrawItemStruct );
-#else
+#if defined(ODCL_ACUI_HOST_DRAWITEM)
 	OdclAcUiComboHostDrawItem( this, lpDrawItemStruct );
+#else
+	__super::DrawItem( lpDrawItemStruct );
 #endif
 }
 
@@ -190,6 +190,8 @@ END_MESSAGE_MAP()
 LRESULT CArxArrowComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	if( message == WM_PAINT )
+		PaintAcUiComboChrome( this );
 	switch( message )
 	{
 		case CB_SELECTSTRING:

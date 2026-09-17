@@ -39,5 +39,7 @@ protected:
 	void PostNcDestroy() override;
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
+	afx_msg LRESULT OnMonthNavPaint( WPARAM, LPARAM );
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

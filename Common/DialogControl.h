@@ -189,6 +189,8 @@ public:
 	virtual void HandleHostThemeChanged() {}
 	virtual HBRUSH HandleCtlColor( CDC* pDC, UINT nCtlColor );
 	virtual BOOL HandleEraseBkgnd( CDC* pDC );
+	COLORREF GetPaneFaceColor() const;
+	HBRUSH GetPaneFaceBrush() const;
 
 	// Drag and Drop Support
 public:

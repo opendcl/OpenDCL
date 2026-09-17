@@ -392,36 +392,8 @@ BOOL CTabStripCtrl::OnEraseBkgnd(CDC* pDC)
 
 void CTabStripCtrl::OnPaint() 
 {
-	PAINTSTRUCT ps;
-	/*CDC* pDC = */BeginPaint( &ps );
-	EndPaint( &ps );
-	InvalidateRect( &ps.rcPaint );
-	//CRect rcTarget = GetUsedArea();
-	//if( rcTarget.IntersectRect( &rcTarget, &ps.rcPaint ) )
-	//{
-	//	for( CWnd* pTabPage = GetWindow( GW_CHILD ); pTabPage; pTabPage = pTabPage->GetWindow( GW_HWNDNEXT ) )
-	//	{
-	//		if( !pTabPage->IsWindowVisible() )
-	//			continue;
-	//		CRect rcPage = rcTarget;
-	//		ClientToScreen( &rcPage );
-	//		pTabPage->ScreenToClient( &rcPage );
-	//		pTabPage->InvalidateRect( &rcPage );
-	//		for( CWnd* pChild = pTabPage->GetWindow( GW_CHILD ); pChild; pChild = pChild->GetWindow( GW_HWNDNEXT ) )
-	//		{
-	//			if( !pChild->IsWindowVisible() )
-	//				continue;
-	//			if( pChild->GetExStyle() & WS_EX_TRANSPARENT )
-	//				continue;
-	//			CRect rcChild;
-	//			pChild->GetWindowRect( &rcChild );
-	//			ScreenToClient( &rcChild );
-	//			rcChild.IntersectRect( &rcChild, &rcTarget );
-	//			ValidateRect( &rcChild );
-	//		}
-	//	}
-	//}
-	CRect rcPaint = ps.rcPaint;
+	CRect rcPaint;
+	GetUpdateRect( &rcPaint, FALSE );
 	__super::OnPaint();
 	if( CHostThemeHelper::HostMaps() )
 	{
@@ -491,8 +463,8 @@ HBRUSH CTabStripCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
 	if( CHostThemeHelper::HostMaps() )
 	{
-		// Match tab-page erase (COLOR_BTNFACE), not COLOR_WINDOW.
-		mColorService.SetBackgroundColor( -16L );
+		// Pane is lighter than the form face so the selected tab can match it.
+		mColorService.SetBackgroundColor( OdclSysColor( COLOR_3DLIGHT ) );
 		pDC->SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
 		pDC->SetBkColor( mColorService.GetBackgroundColor() );
 		return mColorService.GetBackgroundBrush();
@@ -535,13 +507,17 @@ void CTabStripCtrl::DrawHostThemedTabItem( CDC* pDC, const CRect& rcItem, bool b
 		return;
 
 	const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
-	const COLORREF crWindow = OdclSysColor( COLOR_WINDOW );
+	const COLORREF crPane = OdclSysColor( COLOR_3DLIGHT );
+	const COLORREF crWin = OdclSysColor( COLOR_WINDOW );
 	const COLORREF crText = OdclSysColor( COLOR_BTNTEXT );
 	const COLORREF crEdge = OdclSysColor( COLOR_3DSHADOW );
 	const bool bButtons = (GetStyle() & TCS_BUTTONS) != 0;
 
-	// Selected matches tab page face; inactive uses window (darker under HostMaps).
-	COLORREF crFill = bSelected ? crFace : crWindow;
+	const COLORREF crInactive = RGB(
+		( GetRValue( crFace ) + GetRValue( crWin ) ) / 2,
+		( GetGValue( crFace ) + GetGValue( crWin ) ) / 2,
+		( GetBValue( crFace ) + GetBValue( crWin ) ) / 2 );
+	COLORREF crFill = bSelected ? crPane : crInactive;
 	if( bHot && !bSelected )
 		crFill = crFace;
 
@@ -571,7 +547,7 @@ void CTabStripCtrl::DrawHostThemedTabItem( CDC* pDC, const CRect& rcItem, bool b
 		CImageList* pList = GetImageList();
 		if( pList && pList->GetSafeHandle() )
 		{
-			IMAGEINFO ii = {};
+			IMAGEINFO ii = {0};
 			if( pList->GetImageInfo( nImage, &ii ) )
 			{
 				const int cx = ii.rcImage.right - ii.rcImage.left;
@@ -620,6 +596,9 @@ void CTabStripCtrl::PaintHostThemedTabs( CDC* pDC )
 		CRect rcRow = rcClient;
 		rcRow.bottom = nMaxBottom + 2;
 		pDC->FillSolidRect( &rcRow, OdclSysColor( COLOR_BTNFACE ) );
+		CRect rcPaneFill = rcClient;
+		rcPaneFill.top = nMaxBottom;
+		pDC->FillSolidRect( &rcPaneFill, OdclSysColor( COLOR_3DLIGHT ) );
 	}
 
 	for( int i = 0; i < nCount; ++i )
@@ -627,9 +606,9 @@ void CTabStripCtrl::PaintHostThemedTabs( CDC* pDC )
 		CRect rcItem;
 		if( !GetItemRect( i, &rcItem ) )
 			continue;
-		TCITEM item = {};
+		TCITEM item = {0};
 		item.mask = TCIF_TEXT | TCIF_IMAGE;
-		TCHAR sz[256] = {};
+		TCHAR sz[256] = {0};
 		item.pszText = sz;
 		item.cchTextMax = 255;
 		if( !GetItem( i, &item ) )
@@ -637,6 +616,39 @@ void CTabStripCtrl::PaintHostThemedTabs( CDC* pDC )
 		const bool bSelected = (GetCurSel() == i);
 		DrawHostThemedTabItem( pDC, rcItem, bSelected, false, CString( sz ), item.iImage );
 	}
+
+	CRect rcPane = rcClient;
+	if( nMaxBottom > 0 )
+		rcPane.top = nMaxBottom;
+	CRect rcBand = rcPane;
+	rcBand.InflateRect( 2, 2 );
+	rcBand.IntersectRect( &rcBand, &rcClient );
+	const COLORREF crPane = OdclSysColor( COLOR_3DLIGHT );
+	pDC->FillSolidRect( CRect( rcBand.left, rcPane.top - 2, rcBand.right, rcPane.top + 2 ), crPane );
+	pDC->FillSolidRect( CRect( rcPane.left, rcPane.top, rcPane.left + 2, rcPane.bottom ), crPane );
+	pDC->FillSolidRect( CRect( rcPane.right - 2, rcPane.top, rcPane.right, rcPane.bottom ), crPane );
+	pDC->FillSolidRect( CRect( rcPane.left, rcPane.bottom - 2, rcPane.right, rcPane.bottom ), crPane );
+
+	CRect rcSel;
+	const int nSel = GetCurSel();
+	const bool bHaveSel = (nSel >= 0 && GetItemRect( nSel, &rcSel ));
+	CPen pen( PS_SOLID, 1, OdclSysColor( COLOR_3DSHADOW ) );
+	CPen* pOldPen = pDC->SelectObject( &pen );
+	const int xL = rcPane.left;
+	const int xR = rcPane.right - 1;
+	const int yT = rcPane.top;
+	const int yB = rcPane.bottom - 1;
+	pDC->MoveTo( xL, yB );
+	pDC->LineTo( xL, yT );
+	if( bHaveSel )
+	{
+		pDC->LineTo( rcSel.left, yT );
+		pDC->MoveTo( rcSel.right - 1, yT );
+	}
+	pDC->LineTo( xR, yT );
+	pDC->LineTo( xR, yB );
+	pDC->LineTo( xL, yB );
+	pDC->SelectObject( pOldPen );
 }
 
 void CTabStripCtrl::OnNMCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
@@ -673,9 +685,9 @@ void CTabStripCtrl::OnNMCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
 	case CDDS_ITEMPREPAINT:
 		{
 			const int nItem = (int)pNMCD->dwItemSpec;
-			TCITEM item = {};
+			TCITEM item = {0};
 			item.mask = TCIF_TEXT | TCIF_IMAGE;
-			TCHAR sz[256] = {};
+			TCHAR sz[256] = {0};
 			item.pszText = sz;
 			item.cchTextMax = 255;
 			if( !GetItem( nItem, &item ) )

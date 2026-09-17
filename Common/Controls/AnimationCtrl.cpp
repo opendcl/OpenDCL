@@ -88,7 +88,7 @@ HBRUSH CAnimationCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		return hbrBackground;
 	if( CHostThemeHelper::HostMaps() )
 	{
-		const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
+		const COLORREF crFace = GetPaneFaceColor();
 		pDC->SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
 		pDC->SetBkColor( crFace );
 		static CBrush brFace;
@@ -110,7 +110,7 @@ BOOL CAnimationCtrl::OnEraseBkgnd(CDC* pDC)
 	{
 		CRect rc;
 		GetClientRect( &rc );
-		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
 		return TRUE;
 	}
 	if( HandleEraseBkgnd( pDC ) )

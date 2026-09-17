@@ -112,10 +112,8 @@ void CRadioButtonCtrl::PaintHostOption( CDC* pDC )
 	CRect rcClient;
 	GetClientRect( &rcClient );
 
-	COLORREF crBk = OdclSysColor( COLOR_BTNFACE );
 	CAcadColorService* pColorService = GetColorService();
-	if( pColorService && !pColorService->IsBackgroundNotSet() && !pColorService->IsBackgroundTransparent() )
-		crBk = pColorService->GetBackgroundColor();
+	COLORREF crBk = GetPaneFaceColor();
 	pDC->FillSolidRect( &rcClient, crBk );
 
 	const bool bEnabled = (IsWindowEnabled() != FALSE);
@@ -128,7 +126,7 @@ void CRadioButtonCtrl::PaintHostOption( CDC* pDC )
 		yBox = rcClient.top;
 	CRect rcBox( rcClient.left + nPad, yBox, rcClient.left + nPad + nBox, yBox + nBox );
 
-	const COLORREF crRing = OdclSysColor( bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT );
+	const COLORREF crRing = bEnabled ? OdclSysColor( COLOR_BTNTEXT ) : CHostThemeHelper::DisabledTextColor();
 	CPen penRing( PS_SOLID, 1, crRing );
 	CBrush brFill( OdclSysColor( COLOR_WINDOW ) );
 	CPen* pOldPen = pDC->SelectObject( &penRing );
@@ -238,7 +236,7 @@ BOOL CRadioButtonCtrl::OnEraseBkgnd(CDC* pDC)
 	{
 		CRect rc;
 		GetClientRect( &rc );
-		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
 		return TRUE;
 	}
 	if( HandleEraseBkgnd( pDC ) )

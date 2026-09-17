@@ -227,6 +227,12 @@ void CComboBoxCtrl::SyncHostComboTheme()
 	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
+#if defined(ODCL_HOST_COLORTHEME)
+	COMBOBOXINFO cbi = {0};
+	cbi.cbSize = sizeof( cbi );
+	if( ::GetComboBoxInfo( m_hWnd, &cbi ) && cbi.hwndList )
+		CHostThemeHelper::Apply( cbi.hwndList, CHostThemeHelper::ScrollTheme() );
+#endif
 	OnNeedRepaint( true );
 }
 
@@ -406,14 +412,21 @@ bool CComboBoxCtrl::UseHostOwnerDraw() const
 
 void CComboBoxCtrl::PaintHostComboChrome( CDC* pDC )
 {
+#if !defined(ODCL_HOST_COLORTHEME)
+	UNREFERENCED_PARAMETER( pDC );
+#else
 	if( !pDC || !m_hWnd )
 		return;
-	COMBOBOXINFO cbi = {};
+	COMBOBOXINFO cbi = {0};
 	cbi.cbSize = sizeof( cbi );
-	if( !GetComboBoxInfo( &cbi ) )
+	if( !::GetComboBoxInfo( m_hWnd, &cbi ) )
 		return;
 	const bool bEnabled = (IsWindowEnabled() != FALSE);
 	CHostThemeHelper::PaintComboDropButton( pDC->GetSafeHdc(), cbi.rcButton, bEnabled );
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	CHostThemeHelper::PaintEtchedRect( pDC->GetSafeHdc(), rcClient );
+	CHostThemeHelper::PaintNcBorder( m_hWnd );
 
 	const DWORD dwStyle = GetStyle();
 	if( (dwStyle & CBS_DROPDOWNLIST) != CBS_DROPDOWNLIST )
@@ -434,7 +447,7 @@ void CComboBoxCtrl::PaintHostComboChrome( CDC* pDC )
 		GetWindowText( sText );
 	CFont* pFont = GetFont();
 	CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
-	const COLORREF crOld = pDC->SetTextColor( bEnabled ? crFg : OdclSysColor( COLOR_GRAYTEXT ) );
+	const COLORREF crOld = pDC->SetTextColor( bEnabled ? crFg : CHostThemeHelper::DisabledTextColor() );
 	const int nOldBk = pDC->SetBkMode( TRANSPARENT );
 	rcFace.DeflateRect( FromDIP( 4 ), 0 );
 	pDC->DrawText( sText, &rcFace, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS );
@@ -442,6 +455,7 @@ void CComboBoxCtrl::PaintHostComboChrome( CDC* pDC )
 	pDC->SetTextColor( crOld );
 	if( pOldFont )
 		pDC->SelectObject( pOldFont );
+#endif
 }
 
 void CComboBoxCtrl::OnPaint()

@@ -154,8 +154,8 @@ void CListCtrlHdr::OnPaint()
 		CRect rcItem;
 		if( !GetItemRect( i, &rcItem ) )
 			continue;
-		TCHAR sz[256] = {};
-		HDITEM item = {};
+		TCHAR sz[256] = {0};
+		HDITEM item = {0};
 		item.mask = HDI_TEXT;
 		item.pszText = sz;
 		item.cchTextMax = 255;

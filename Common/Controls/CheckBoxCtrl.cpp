@@ -105,10 +105,8 @@ void CCheckBoxCtrl::PaintHostCheck( CDC* pDC )
 	CRect rcClient;
 	GetClientRect( &rcClient );
 
-	COLORREF crBk = OdclSysColor( COLOR_BTNFACE );
 	CAcadColorService* pColorService = GetColorService();
-	if( pColorService && !pColorService->IsBackgroundNotSet() && !pColorService->IsBackgroundTransparent() )
-		crBk = pColorService->GetBackgroundColor();
+	COLORREF crBk = GetPaneFaceColor();
 	pDC->FillSolidRect( &rcClient, crBk );
 
 	const bool bEnabled = (IsWindowEnabled() != FALSE);
@@ -122,14 +120,14 @@ void CCheckBoxCtrl::PaintHostCheck( CDC* pDC )
 	CRect rcBox( rcClient.left + nPad, yBox, rcClient.left + nPad + nBox, yBox + nBox );
 
 	pDC->FillSolidRect( &rcBox, OdclSysColor( COLOR_WINDOW ) );
-	CPen penBox( PS_SOLID, 1, OdclSysColor( bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT ) );
+	CPen penBox( PS_SOLID, 1, bEnabled ? OdclSysColor( COLOR_BTNTEXT ) : CHostThemeHelper::DisabledTextColor() );
 	CPen* pOldPen = pDC->SelectObject( &penBox );
 	CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
 	pDC->Rectangle( rcBox.left, rcBox.top, rcBox.right, rcBox.bottom );
 	pDC->SelectObject( pOldBrush );
 	pDC->SelectObject( pOldPen );
 
-	const COLORREF crMark = OdclSysColor( bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT );
+	const COLORREF crMark = bEnabled ? OdclSysColor( COLOR_BTNTEXT ) : CHostThemeHelper::DisabledTextColor();
 	if( nCheck == BST_INDETERMINATE )
 	{
 		CRect rcMix = rcBox;
@@ -228,7 +226,7 @@ BOOL CCheckBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	{
 		CRect rc;
 		GetClientRect( &rc );
-		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
 		return TRUE;
 	}
 	if( HandleEraseBkgnd( pDC ) )

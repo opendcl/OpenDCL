@@ -255,13 +255,8 @@ HBRUSH CProgressBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CProgressBarCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	if( UseHostOwnerDraw() && pDC )
-	{
-		CRect rc;
-		GetClientRect( &rc );
-		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_3DSHADOW ) );
+	if( UseHostOwnerDraw() )
 		return TRUE;
-	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);

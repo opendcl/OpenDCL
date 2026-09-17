@@ -110,7 +110,7 @@ void CHostThemeHelper::PaintComboDropButton( HDC hdc, const RECT& rc, bool bEnab
 	if( !pDC )
 		return;
 	pDC->FillSolidRect( &rcBtn, OdclSysColor( COLOR_BTNFACE ) );
-	CPen pen( PS_SOLID, 1, OdclSysColor( bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT ) );
+	CPen pen( PS_SOLID, 1, OdclSysColor( COLOR_3DSHADOW ) );
 	CPen* pOldPen = pDC->SelectObject( &pen );
 	CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
 	pDC->Rectangle( rcBtn.left, rcBtn.top, rcBtn.right, rcBtn.bottom );
@@ -125,12 +125,90 @@ void CHostThemeHelper::PaintComboDropButton( HDC hdc, const RECT& rc, bool bEnab
 		{ cx + s, cy - s / 2 },
 		{ cx, cy + s / 2 }
 	};
-	CBrush br( OdclSysColor( bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT ) );
+	CBrush br( bEnabled ? SoftGlyphColor() : DisabledTextColor() );
 	pOldBrush = pDC->SelectObject( &br );
 	pOldPen = (CPen*)pDC->SelectStockObject( NULL_PEN );
 	pDC->Polygon( pts, 3 );
 	pDC->SelectObject( pOldPen );
 	pDC->SelectObject( pOldBrush );
+}
+
+COLORREF CHostThemeHelper::DisabledTextColor()
+{
+	const COLORREF crFg = OdclSysColor( COLOR_BTNTEXT );
+	const COLORREF crBg = OdclSysColor( COLOR_BTNFACE );
+	// Same polarity as enabled text so ClearType is not inverted. COLOR_GRAYTEXT
+	// is a mid-gray that fringes on dark CAD chrome.
+	return RGB(
+		( GetRValue( crFg ) * 2 + GetRValue( crBg ) * 3 ) / 5,
+		( GetGValue( crFg ) * 2 + GetGValue( crBg ) * 3 ) / 5,
+		( GetBValue( crFg ) * 2 + GetBValue( crBg ) * 3 ) / 5 );
+}
+
+COLORREF CHostThemeHelper::SoftGlyphColor()
+{
+	const COLORREF crFg = OdclSysColor( COLOR_BTNTEXT );
+	const COLORREF crBg = OdclSysColor( COLOR_BTNFACE );
+	return RGB(
+		( GetRValue( crFg ) + GetRValue( crBg ) * 2 ) / 3,
+		( GetGValue( crFg ) + GetGValue( crBg ) * 2 ) / 3,
+		( GetBValue( crFg ) + GetBValue( crBg ) * 2 ) / 3 );
+}
+
+COLORREF CHostThemeHelper::GridLineColor( COLORREF crBackground )
+{
+	// BricsCAD Properties panel (COLORTHEME 0): row (45,49,53), line (68,72,77).
+	return RGB(
+		min( 255, GetRValue( crBackground ) + 23 ),
+		min( 255, GetGValue( crBackground ) + 23 ),
+		min( 255, GetBValue( crBackground ) + 24 ) );
+}
+
+void CHostThemeHelper::PaintComboChrome( HWND hwnd )
+{
+	if( !hwnd || !HostMaps() )
+		return;
+	COMBOBOXINFO cbi = {};
+	cbi.cbSize = sizeof( cbi );
+	HWND hwndCombo = hwnd;
+	if( !::GetComboBoxInfo( hwnd, &cbi ) )
+	{
+		HWND hwndInner = ::FindWindowEx( hwnd, NULL, _T("ComboBox"), NULL );
+		if( !hwndInner || !::GetComboBoxInfo( hwndInner, &cbi ) )
+			return;
+		hwndCombo = hwndInner;
+	}
+	HDC hdc = ::GetDC( hwndCombo );
+	if( hdc )
+	{
+		RECT rc = {};
+		::GetClientRect( hwndCombo, &rc );
+		PaintEtchedRect( hdc, rc );
+		::InflateRect( &rc, -1, -1 );
+		PaintEtchedRect( hdc, rc );
+		PaintComboDropButton( hdc, cbi.rcButton, ::IsWindowEnabled( hwndCombo ) != FALSE );
+		::ReleaseDC( hwndCombo, hdc );
+	}
+	InstallNcBorder( hwndCombo );
+	PaintNcBorder( hwndCombo );
+	if( hwndCombo != hwnd )
+	{
+		InstallNcBorder( hwnd );
+		PaintNcBorder( hwnd );
+		HDC hdcEx = ::GetDC( hwnd );
+		if( hdcEx )
+		{
+			RECT rcEx = {};
+			::GetClientRect( hwnd, &rcEx );
+			PaintEtchedRect( hdcEx, rcEx );
+			::ReleaseDC( hwnd, hdcEx );
+		}
+	}
+}
+
+LPCWSTR CHostThemeHelper::ScrollTheme()
+{
+	return HostMaps()? L"DarkMode_Explorer" : NULL;
 }
 
 namespace {
@@ -157,6 +235,143 @@ void FrameRectColor( HDC hdc, const RECT& rc, COLORREF cr )
 	FillEdgeBand( hdc, rc.right - 1, rc.top, 1, h, cr );
 }
 
+void DrawNcScrollArrow( HDC hdc, const RECT& rc, int nDir )
+{
+	FillEdgeBand( hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
+		OdclSysColor( COLOR_BTNFACE ) );
+	FrameRectColor( hdc, rc, OdclSysColor( COLOR_3DSHADOW ) );
+	CDC* pDC = CDC::FromHandle( hdc );
+	if( !pDC )
+		return;
+	const int cx = (rc.left + rc.right) / 2;
+	const int cy = (rc.top + rc.bottom) / 2;
+	const int s = max( 2, min( rc.right - rc.left, rc.bottom - rc.top ) / 4 );
+	POINT pts[3] = {};
+	switch( nDir )
+	{
+	case 0:
+		pts[0].x = cx; pts[0].y = cy - s;
+		pts[1].x = cx - s; pts[1].y = cy + s / 2;
+		pts[2].x = cx + s; pts[2].y = cy + s / 2;
+		break;
+	case 1:
+		pts[0].x = cx; pts[0].y = cy + s;
+		pts[1].x = cx - s; pts[1].y = cy - s / 2;
+		pts[2].x = cx + s; pts[2].y = cy - s / 2;
+		break;
+	case 2:
+		pts[0].x = cx - s; pts[0].y = cy;
+		pts[1].x = cx + s / 2; pts[1].y = cy - s;
+		pts[2].x = cx + s / 2; pts[2].y = cy + s;
+		break;
+	default:
+		pts[0].x = cx + s; pts[0].y = cy;
+		pts[1].x = cx - s / 2; pts[1].y = cy - s;
+		pts[2].x = cx - s / 2; pts[2].y = cy + s;
+		break;
+	}
+	CBrush br( CHostThemeHelper::SoftGlyphColor() );
+	CBrush* pOldBrush = pDC->SelectObject( &br );
+	CPen* pOldPen = (CPen*)pDC->SelectStockObject( NULL_PEN );
+	pDC->Polygon( pts, 3 );
+	pDC->SelectObject( pOldPen );
+	pDC->SelectObject( pOldBrush );
+}
+
+void PaintNcScrollBar( HDC hdc, HWND hwnd, RECT rc, bool bVert )
+{
+	const int nW = rc.right - rc.left;
+	const int nH = rc.bottom - rc.top;
+	if( nW < 8 || nH < 8 )
+		return;
+	const int nArrow = bVert ? nW : nH;
+	RECT rcA1 = rc;
+	RECT rcA2 = rc;
+	RECT rcTrack = rc;
+	if( bVert )
+	{
+		rcA1.bottom = rc.top + nArrow;
+		rcA2.top = rc.bottom - nArrow;
+		rcTrack.top = rcA1.bottom;
+		rcTrack.bottom = rcA2.top;
+	}
+	else
+	{
+		rcA1.right = rc.left + nArrow;
+		rcA2.left = rc.right - nArrow;
+		rcTrack.left = rcA1.right;
+		rcTrack.right = rcA2.left;
+	}
+	FillEdgeBand( hdc, rcTrack.left, rcTrack.top,
+		rcTrack.right - rcTrack.left, rcTrack.bottom - rcTrack.top, OdclSysColor( COLOR_3DSHADOW ) );
+	DrawNcScrollArrow( hdc, rcA1, bVert ? 0 : 2 );
+	DrawNcScrollArrow( hdc, rcA2, bVert ? 1 : 3 );
+
+	SCROLLINFO si = {};
+	si.cbSize = sizeof( si );
+	si.fMask = SIF_ALL;
+	if( !::GetScrollInfo( hwnd, bVert ? SB_VERT : SB_HORZ, &si ) )
+		return;
+	const int nRange = si.nMax - si.nMin + 1;
+	const int nPage = (int)max( (UINT)1, si.nPage );
+	const int nTrack = bVert ? (rcTrack.bottom - rcTrack.top) : (rcTrack.right - rcTrack.left);
+	if( nRange <= nPage || nTrack <= 0 )
+		return;
+	int nThumb = max( nArrow, MulDiv( nPage, nTrack, nRange ) );
+	if( nThumb > nTrack )
+		nThumb = nTrack;
+	const int nTravel = nTrack - nThumb;
+	const int nMaxPos = max( 1, nRange - nPage );
+	const int nOffset = MulDiv( si.nPos - si.nMin, nTravel, nMaxPos );
+	RECT rcThumb = rcTrack;
+	if( bVert )
+	{
+		rcThumb.top = rcTrack.top + nOffset;
+		rcThumb.bottom = rcThumb.top + nThumb;
+	}
+	else
+	{
+		rcThumb.left = rcTrack.left + nOffset;
+		rcThumb.right = rcThumb.left + nThumb;
+	}
+	FillEdgeBand( hdc, rcThumb.left, rcThumb.top,
+		rcThumb.right - rcThumb.left, rcThumb.bottom - rcThumb.top, OdclSysColor( COLOR_BTNFACE ) );
+	FrameRectColor( hdc, rcThumb, OdclSysColor( COLOR_3DSHADOW ) );
+}
+
+} // namespace
+
+void CHostThemeHelper::PaintEtchedRect( HDC hdc, const RECT& rc )
+{
+	if( !hdc )
+		return;
+	const int w = rc.right - rc.left;
+	const int h = rc.bottom - rc.top;
+	if( w <= 0 || h <= 0 )
+		return;
+	const COLORREF crSh = OdclSysColor( COLOR_3DSHADOW );
+	const COLORREF crDk = OdclSysColor( COLOR_3DDKSHADOW );
+	FillEdgeBand( hdc, rc.left, rc.top, w - 1, 1, crSh );
+	FillEdgeBand( hdc, rc.left, rc.top, 1, h - 1, crSh );
+	FillEdgeBand( hdc, rc.left, rc.bottom - 1, w, 1, crDk );
+	FillEdgeBand( hdc, rc.right - 1, rc.top, 1, h, crDk );
+}
+
+void CHostThemeHelper::PaintRaisedInner( HDC hdc, const RECT& rc )
+{
+	if( !hdc )
+		return;
+	const int w = rc.right - rc.left;
+	const int h = rc.bottom - rc.top;
+	if( w <= 0 || h <= 0 )
+		return;
+	const COLORREF crSh = OdclSysColor( COLOR_3DSHADOW );
+	FillEdgeBand( hdc, rc.left, rc.bottom - 1, w, 1, crSh );
+	FillEdgeBand( hdc, rc.right - 1, rc.top, 1, h, crSh );
+}
+
+namespace {
+
 LRESULT CALLBACK HostNcBorderWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	WNDPROC pfnOld = (WNDPROC)::GetProp( hWnd, kNcBorderOldProcProp );
@@ -169,10 +384,19 @@ LRESULT CALLBACK HostNcBorderWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		::RemoveProp( hWnd, kNcBorderOldProcProp );
 		return ::CallWindowProc( pfnOld, hWnd, uMsg, wParam, lParam );
 	}
-	if( uMsg == WM_NCPAINT )
+	if( uMsg == WM_NCPAINT || uMsg == WM_HSCROLL || uMsg == WM_VSCROLL || uMsg == WM_MOUSEWHEEL )
 	{
 		const LRESULT lr = ::CallWindowProc( pfnOld, hWnd, uMsg, wParam, lParam );
 		CHostThemeHelper::PaintNcBorder( hWnd );
+		return lr;
+	}
+	if( uMsg == WM_PAINT )
+	{
+		const LRESULT lr = ::CallWindowProc( pfnOld, hWnd, uMsg, wParam, lParam );
+		TCHAR szCls[32] = {};
+		::GetClassName( hWnd, szCls, 32 );
+		if( !lstrcmpi( szCls, _T("ComboBox") ) || !lstrcmpi( szCls, _T("ComboBoxEx32") ) )
+			CHostThemeHelper::PaintComboChrome( hWnd );
 		return lr;
 	}
 	return ::CallWindowProc( pfnOld, hWnd, uMsg, wParam, lParam );
@@ -212,7 +436,9 @@ bool CHostThemeHelper::PaintNcBorder( HWND hwnd )
 	const bool bClient = (dwEx & WS_EX_CLIENTEDGE) != 0;
 	const bool bStatic = (dwEx & WS_EX_STATICEDGE) != 0;
 	const bool bBorder = (dwStyle & WS_BORDER) != 0;
-	if( !bClient && !bStatic && !bBorder )
+	const bool bHScroll = (dwStyle & WS_HSCROLL) != 0;
+	const bool bVScroll = (dwStyle & WS_VSCROLL) != 0;
+	if( !bClient && !bStatic && !bBorder && !bHScroll && !bVScroll )
 		return false;
 
 	RECT rcWnd = {};
@@ -225,6 +451,36 @@ bool CHostThemeHelper::PaintNcBorder( HWND hwnd )
 	HDC hdc = ::GetWindowDC( hwnd );
 	if( !hdc )
 		return false;
+
+	if( bHScroll || bVScroll )
+	{
+		RECT rcC = {};
+		::GetClientRect( hwnd, &rcC );
+		POINT pt = { rcC.left, rcC.top };
+		::ClientToScreen( hwnd, &pt );
+		const int x = pt.x - rcWnd.left;
+		const int y = pt.y - rcWnd.top;
+		const RECT rcClientWnd = { x, y, x + (rcC.right - rcC.left), y + (rcC.bottom - rcC.top) };
+		int nBtm = 0;
+		int nRgt = 0;
+		if( bClient )
+			nBtm = nRgt = 2;
+		else if( bStatic || bBorder )
+			nBtm = nRgt = 1;
+		if( bHScroll )
+		{
+			RECT rcH = { rcClientWnd.left, rcClientWnd.bottom, rcClientWnd.right, cy - nBtm };
+			PaintNcScrollBar( hdc, hwnd, rcH, false );
+		}
+		if( bVScroll )
+		{
+			RECT rcV = { rcClientWnd.right, rcClientWnd.top, cx - nRgt, rcClientWnd.bottom };
+			PaintNcScrollBar( hdc, hwnd, rcV, true );
+		}
+		if( rcClientWnd.right < cx && rcClientWnd.bottom < cy )
+			FillEdgeBand( hdc, rcClientWnd.right, rcClientWnd.bottom,
+				cx - rcClientWnd.right, cy - rcClientWnd.bottom, OdclSysColor( COLOR_BTNFACE ) );
+	}
 
 	RECT rc = { 0, 0, cx, cy };
 	if( bClient )

@@ -95,7 +95,7 @@ void CScrollBarCtrl::ApplyScrollInfo()
 {
 	if( !m_hWnd || !mpTemplate )
 		return;
-	SCROLLINFO si = {};
+	SCROLLINFO si = {0};
 	si.cbSize = sizeof( si );
 	si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
 	si.nMin = mpTemplate->GetLongProperty( Prop::MinValue );
@@ -148,7 +148,7 @@ static void DrawScrollArrow( CDC* pDC, const CRect& rc, int nDir )
 	const int cx = (rc.left + rc.right) / 2;
 	const int cy = (rc.top + rc.bottom) / 2;
 	const int s = max( 2, min( rc.Width(), rc.Height() ) / 4 );
-	POINT pts[3] = {};
+	POINT pts[3] = {0};
 	switch( nDir )
 	{
 	case 0: // up
@@ -172,7 +172,7 @@ static void DrawScrollArrow( CDC* pDC, const CRect& rc, int nDir )
 		pts[2].x = cx - s / 2; pts[2].y = cy + s;
 		break;
 	}
-	CBrush br( OdclSysColor( COLOR_BTNTEXT ) );
+	CBrush br( CHostThemeHelper::SoftGlyphColor() );
 	pOldBrush = pDC->SelectObject( &br );
 	pOldPen = (CPen*)pDC->SelectStockObject( NULL_PEN );
 	pDC->Polygon( pts, 3 );
@@ -211,7 +211,7 @@ void CScrollBarCtrl::PaintHostScrollBar( CDC* pDC )
 	DrawScrollArrow( pDC, rcArrow1, bVert? 0 : 2 );
 	DrawScrollArrow( pDC, rcArrow2, bVert? 1 : 3 );
 
-	SCROLLINFO si = {};
+	SCROLLINFO si = {0};
 	si.cbSize = sizeof( si );
 	si.fMask = SIF_ALL;
 	GetScrollInfo( &si );

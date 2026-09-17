@@ -180,7 +180,7 @@ bool CListViewCtrl::ApplyProperty( TPropertyPtr pProp )
 		}
 	case Prop::GridLines:
 		{
-			if( pProp->GetBooleanValue() )
+			if( pProp->GetBooleanValue() && !CHostThemeHelper::HostMaps() )
 				SetExtendedStyle( GetExtendedStyle() | LVS_EX_GRIDLINES );
 			else
 				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_GRIDLINES );
@@ -414,11 +414,13 @@ void CListViewCtrl::SyncHostListTheme()
 {
 	if( !m_hWnd )
 		return;
-	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::Apply( m_hWnd, pszTheme );
 	CHostThemeHelper::ApplyHeader( GetHeaderCtrl() );
 	ApplyHostListColors();
+	if( mpTemplate )
+		ApplyProperty( mpTemplate->GetPropertyObject( Prop::GridLines ) );
 	OnNeedRepaint( true );
 }
 
@@ -787,6 +789,7 @@ BEGIN_MESSAGE_MAP(CListViewCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, &CListViewCtrl::OnLvnDeleteitem)
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, &CListViewCtrl::OnLvnDeleteallitems)
 	ON_NOTIFY(NM_CUSTOMDRAW, 0, &CListViewCtrl::OnHdrCustomDraw)
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, &CListViewCtrl::OnListCustomDraw)
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CListViewCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -803,6 +806,51 @@ LRESULT CListViewCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 void CListViewCtrl::OnHdrCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
 {
 	CHostThemeHelper::PaintHeaderCustomDraw( GetHeaderCtrl(), pNMHDR, pResult );
+}
+
+void CListViewCtrl::OnListCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
+{
+	*pResult = CDRF_DODEFAULT;
+	if( !pNMHDR || !CHostThemeHelper::HostMaps() )
+		return;
+	if( !mpTemplate || !mpTemplate->GetBooleanProperty( Prop::GridLines ) )
+		return;
+	LPNMLVCUSTOMDRAW pNMCD = reinterpret_cast< LPNMLVCUSTOMDRAW >( pNMHDR );
+	switch( pNMCD->nmcd.dwDrawStage )
+	{
+	case CDDS_PREPAINT:
+		*pResult = CDRF_NOTIFYITEMDRAW;
+		break;
+	case CDDS_ITEMPREPAINT:
+		*pResult = CDRF_NOTIFYPOSTPAINT;
+		break;
+	case CDDS_ITEMPOSTPAINT:
+		{
+			CDC* pDC = CDC::FromHandle( pNMCD->nmcd.hdc );
+			if( !pDC )
+				break;
+			CRect rcItem = pNMCD->nmcd.rc;
+			if( rcItem.IsRectEmpty() )
+				GetItemRect( (int)pNMCD->nmcd.dwItemSpec, &rcItem, LVIR_BOUNDS );
+			const COLORREF crLine = CHostThemeHelper::GridLineColor( GetBkColor() );
+			CPen pen( PS_SOLID, 1, crLine );
+			CPen* pOldPen = pDC->SelectObject( &pen );
+			pDC->MoveTo( rcItem.left, rcItem.bottom - 1 );
+			pDC->LineTo( rcItem.right, rcItem.bottom - 1 );
+			CHeaderCtrl* pHeader = GetHeaderCtrl();
+			int x = rcItem.left;
+			const int nColCount = (pHeader && pHeader->m_hWnd) ? pHeader->GetItemCount() : 0;
+			for( int i = 0; i < nColCount; ++i )
+			{
+				x += GetColumnWidth( i );
+				pDC->MoveTo( x - 1, rcItem.top );
+				pDC->LineTo( x - 1, rcItem.bottom );
+			}
+			pDC->SelectObject( pOldPen );
+			*pResult = CDRF_DODEFAULT;
+		}
+		break;
+	}
 }
 
 void CListViewCtrl::OnDestroy() 

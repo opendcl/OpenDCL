@@ -280,7 +280,7 @@ BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 		return TRUE;
 	COLORREF crFill = pColorService->GetBackgroundColor();
 	if( pColorService->IsBackgroundTransparent() || pColorService->IsBackgroundNotSet() )
-		crFill = OdclSysColor( COLOR_BTNFACE );
+		crFill = GetPaneFaceColor();
 	pDC->FillSolidRect( &rcClip, crFill );
 	return TRUE;
 }

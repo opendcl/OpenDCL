@@ -28,6 +28,13 @@ public:
 	static void ApplyHeader( CHeaderCtrl* pHeader );
 	static bool PaintHeaderCustomDraw( CHeaderCtrl* pHeader, tagNMHDR* pNMHDR, LRESULT* pResult );
 	static void PaintComboDropButton( HDC hdc, const RECT& rc, bool bEnabled );
+	static void PaintComboChrome( HWND hwnd );
+	static COLORREF DisabledTextColor();
+	static COLORREF SoftGlyphColor();
+	static COLORREF GridLineColor( COLORREF crBackground );
+	static LPCWSTR ScrollTheme();
+	static void PaintEtchedRect( HDC hdc, const RECT& rc );
+	static void PaintRaisedInner( HDC hdc, const RECT& rc );
 	static void InstallNcBorder( HWND hwnd );
 	static void InstallNcBorderTree( HWND hwndRoot );
 	static bool PaintNcBorder( HWND hwnd );
@@ -50,6 +57,13 @@ public:
 		return false;
 	}
 	static void PaintComboDropButton( HDC, const RECT&, bool ) {}
+	static void PaintComboChrome( HWND ) {}
+	static COLORREF DisabledTextColor() { return ::GetSysColor( COLOR_GRAYTEXT ); }
+	static COLORREF SoftGlyphColor() { return ::GetSysColor( COLOR_BTNTEXT ); }
+	static COLORREF GridLineColor( COLORREF ) { return ::GetSysColor( COLOR_BTNFACE ); }
+	static LPCWSTR ScrollTheme() { return NULL; }
+	static void PaintEtchedRect( HDC, const RECT& ) {}
+	static void PaintRaisedInner( HDC, const RECT& ) {}
 	static void InstallNcBorder( HWND ) {}
 	static void InstallNcBorderTree( HWND ) {}
 	static bool PaintNcBorder( HWND ) { return false; }

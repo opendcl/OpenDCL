@@ -277,7 +277,7 @@ bool CGridCtrl::ApplyProperty( TPropertyPtr pProp )
 	case Prop::GridLines:
 		{
 			DWORD dwExStyle = GetExtendedStyle();
-			if( pProp->GetBooleanValue() )
+			if( pProp->GetBooleanValue() && !CHostThemeHelper::HostMaps() )
 				dwExStyle |= LVS_EX_GRIDLINES;
 			else
 				dwExStyle &= ~LVS_EX_GRIDLINES;
@@ -1298,7 +1298,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 			else
 			{
 				cdc.FillSolidRect( &rcHeader, OdclSysColor( COLOR_BTNFACE ) );
-				cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
+				CHostThemeHelper::PaintRaisedInner( cdc.GetSafeHdc(), rcHeader );
 			}
 			cdc.SetBkColor( crBackground );
 			cdc.SetTextColor( mColorService.GetForegroundColor() );
@@ -1319,7 +1319,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 			}
 			if (mbHasGridLines)
 			{
-				CPen penBackground( PS_SOLID, 1, OdclSysColor( COLOR_BTNFACE ) );
+				CPen penBackground( PS_SOLID, 1, CHostThemeHelper::GridLineColor( crBackground ) );
 				CPen* pOldPen = cdc.SelectObject( &penBackground );
 				cdc.MoveTo( rcBounds.left, rcBounds.bottom - 1 );
 				cdc.LineTo( rcBounds.right, rcBounds.bottom - 1 );
@@ -1595,7 +1595,7 @@ void CGridCtrl::DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool
 		ButtonTheme.DrawThemeBackground( cdc.GetSafeHdc(), BP_CHECKBOX, (bPressed? RBS_CHECKEDNORMAL : RBS_UNCHECKEDNORMAL), &rc, NULL );
 	else
 	{
-		cdc.DrawEdge( &rc, EDGE_SUNKEN, BF_RECT );
+		CHostThemeHelper::PaintEtchedRect( cdc.GetSafeHdc(), rc );
 		rc.DeflateRect( FromDIP(2), FromDIP(2) );
 		CBrush brFill( cdc.GetBkColor() );
 		cdc.FillRect( &rc, &brFill );
@@ -1978,10 +1978,11 @@ void CGridCtrl::HandleHostThemeChanged()
 {
 	if( !m_hWnd )
 		return;
-	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::Apply( m_hWnd, pszTheme );
 	CHostThemeHelper::ApplyHeader( GetHeaderCtrl() );
+	ApplyProperty( mpTemplate->GetPropertyObject( Prop::GridLines ) );
 	OnNeedRepaint( true );
 }
 

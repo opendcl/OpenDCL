@@ -5,6 +5,7 @@
 #include "FrameCtrl.h"
 #include "ControlPane.h"
 #include "ColorService.h"
+#include "HostThemeHelper.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -73,7 +74,7 @@ HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	if( hbrBackground )
 		return hbrBackground;
-	const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
+	const COLORREF crFace = GetPaneFaceColor();
 	pDC->SetTextColor( mColorService.GetForegroundColor() );
 	pDC->SetBkColor( crFace );
 	pDC->SetBkMode( OPAQUE );
@@ -103,8 +104,8 @@ void CFrameCtrl::OnPaint()
 	CString sCaption;
 	GetWindowText( sCaption );
 	CFont* pOldFont = dc.SelectObject( GetFont() );
-	const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
-	const COLORREF crText = IsWindowEnabled() ? mColorService.GetForegroundColor() : OdclSysColor( COLOR_GRAYTEXT );
+	const COLORREF crFace = GetPaneFaceColor();
+	const COLORREF crText = IsWindowEnabled() ? mColorService.GetForegroundColor() : CHostThemeHelper::DisabledTextColor();
 	const DWORD dwStyle = GetStyle();
 	UINT dt = DT_SINGLELINE | DT_VCENTER;
 	if( dwStyle & BS_RIGHT )
@@ -125,7 +126,10 @@ void CFrameCtrl::OnPaint()
 	const int nCy = max( rcText.Height(), tm.tmHeight );
 	CRect rcBox( rc );
 	rcBox.top += nCy / 2;
-	dc.DrawEdge( &rcBox, EDGE_ETCHED, BF_RECT );
+	if( CHostThemeHelper::HostMaps() )
+		CHostThemeHelper::PaintEtchedRect( dc.GetSafeHdc(), rcBox );
+	else
+		dc.DrawEdge( &rcBox, EDGE_ETCHED, BF_RECT );
 	if( !sCaption.IsEmpty() )
 	{
 		const int nPad = FromDIP( 8 );

@@ -148,7 +148,7 @@ void CImageTreeCtrl::SyncHostTreeTheme()
 {
 	if( !m_hWnd )
 		return;
-	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::Apply( m_hWnd, pszTheme );
 	const COLORREF crBk = mColorService.GetBackgroundColor();

@@ -29,6 +29,7 @@ inline void SyncAcUiComboHostTheme( CDialogControl* pDlg, CWnd* pWnd )
 {
 	if( !pWnd || !pWnd->m_hWnd )
 		return;
+#if defined(ODCL_HOST_COLORTHEME)
 	const bool bVisual = (pDlg && pDlg->GetTemplate()
 		&& pDlg->GetTemplate()->GetBooleanProperty( Prop::UseVisualStyle ));
 #if defined(_ARXTARGET) && !defined(_BRXTARGET)
@@ -36,14 +37,37 @@ inline void SyncAcUiComboHostTheme( CDialogControl* pDlg, CWnd* pWnd )
 	if( pCombo )
 		pCombo->SetIsThemed( bVisual && !CHostThemeHelper::HostMaps() );
 #endif
-	// Dark: keep UxTheme on the HWND so the drop button stays a real
-	// chevron. L"" made ARX paint a blank white slab. Item interiors
-	// are owner-draw (SetIsThemed false + DrawItem).
-	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()
-		? NULL
-		: CHostThemeHelper::ThemeClass( bVisual );
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
 	CHostThemeHelper::ApplyTree( pWnd->m_hWnd, pszTheme );
+	COMBOBOXINFO cbi = {0};
+	cbi.cbSize = sizeof( cbi );
+	if( ::GetComboBoxInfo( pWnd->m_hWnd, &cbi ) )
+	{
+		CHostThemeHelper::InstallNcBorder( cbi.hwndItem );
+		CHostThemeHelper::InstallNcBorder( cbi.hwndList );
+		if( cbi.hwndList )
+			CHostThemeHelper::Apply( cbi.hwndList, CHostThemeHelper::ScrollTheme() );
+	}
 	pWnd->Invalidate( TRUE );
+#else
+	UNREFERENCED_PARAMETER( pDlg );
+#endif
+}
+
+inline void PaintAcUiComboChrome( CWnd* pWnd )
+{
+#if defined(ODCL_HOST_COLORTHEME)
+	if( !pWnd || !pWnd->m_hWnd || !CHostThemeHelper::HostMaps() )
+		return;
+	COMBOBOXINFO cbi = {0};
+	cbi.cbSize = sizeof( cbi );
+	if( !::GetComboBoxInfo( pWnd->m_hWnd, &cbi ) )
+		return;
+	CHostThemeHelper::PaintComboChrome( pWnd->m_hWnd );
+	CHostThemeHelper::InstallNcBorder( cbi.hwndList );
+#else
+	UNREFERENCED_PARAMETER( pWnd );
+#endif
 }
 
 inline HBRUSH AcUiComboHostCtlColor( CDialogControl* pDlg, CDC* pDC, UINT nCtlColor )
@@ -88,9 +112,21 @@ inline void RemapAcUiComboItemColors( COLORREF& fgColor, COLORREF& bgColor, COLO
 // SetupForImageDraw / DrawItemImageFromCargo / DrawTextAndFocusRect are
 // protected on CAcUiMRUComboBox, so each CArx* combo friends this template.
 // BRX keeps __super::DrawItem (GetItemColors remap is enough).
+// ZRX ZwUI.lib exports the helpers from 2017; 2014/2015 declare them only.
+// GRX gcui.lib / gcad.lib export them from 2015 (oldest GRX target).
+// ARX.16 has no helpers (ODCL_HOST_COLORTHEME is off).
+#if defined(_ARXTARGET)
+#define ODCL_ACUI_HOST_DRAWITEM 1
+#elif defined(_ZRXTARGET) && (_ZRXTARGET >= 2017)
+#define ODCL_ACUI_HOST_DRAWITEM 1
+#elif defined(_GRXTARGET) && (_GRXTARGET >= 2015)
+#define ODCL_ACUI_HOST_DRAWITEM 1
+#endif
+
 template<typename TCombo>
 inline void OdclAcUiComboHostDrawItem( TCombo* pCombo, LPDRAWITEMSTRUCT lpDrawItemStruct )
 {
+#if defined(ODCL_HOST_COLORTHEME) && defined(ODCL_ACUI_HOST_DRAWITEM)
 	if( !pCombo || !lpDrawItemStruct )
 		return;
 
@@ -120,5 +156,9 @@ inline void OdclAcUiComboHostDrawItem( TCombo* pCombo, LPDRAWITEMSTRUCT lpDrawIt
 		pCombo->DrawItemImageFromCargo( pDC, rImage, (int)lpDrawItemStruct->itemID );
 	pCombo->DrawTextAndFocusRect( lpDrawItemStruct, pDC, rItem,
 		(int)lpDrawItemStruct->itemID, fgColor, bgColor );
+#else
+	UNREFERENCED_PARAMETER( pCombo );
+	UNREFERENCED_PARAMETER( lpDrawItemStruct );
+#endif
 }
 

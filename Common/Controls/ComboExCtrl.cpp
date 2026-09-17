@@ -353,7 +353,8 @@ void CComboExCtrl::PaintHostMappedClosedFace( HDC hdc )
 	if( !hdcPaint )
 		hdcPaint = ::GetDC( hwndCombo );
 
-	COMBOBOXINFO cbi = {};
+#if defined(ODCL_HOST_COLORTHEME)
+	COMBOBOXINFO cbi = {0};
 	cbi.cbSize = sizeof( cbi );
 	if( ::GetComboBoxInfo( hwndCombo, &cbi ) )
 	{
@@ -362,6 +363,7 @@ void CComboExCtrl::PaintHostMappedClosedFace( HDC hdc )
 			::MapWindowPoints( hwndCombo, m_hWnd, (LPPOINT)&rcBtn, 2 );
 		CHostThemeHelper::PaintComboDropButton( hdcPaint, rcBtn, IsWindowEnabled() != FALSE );
 	}
+#endif
 
 	if( (GetStyle() & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST )
 	{
@@ -397,6 +399,7 @@ void CComboExCtrl::PaintHostMappedClosedFace( HDC hdc )
 
 	if( !hdc )
 		::ReleaseDC( hwndCombo, hdcPaint );
+	CHostThemeHelper::PaintComboChrome( m_hWnd );
 }
 
 LRESULT CALLBACK CComboExCtrl::InnerComboSubclass( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam )
@@ -418,6 +421,12 @@ LRESULT CALLBACK CComboExCtrl::InnerComboSubclass( HWND hwnd, UINT message, WPAR
 	WNDPROC pfnOld = pHook->pfnOld;
 	if( message == WM_NCDESTROY )
 		pHook->pThis->UnsubclassInnerCombo();
+	if( message == WM_PAINT )
+	{
+		const LRESULT lr = ::CallWindowProc( pfnOld, hwnd, message, wParam, lParam );
+		CHostThemeHelper::PaintComboChrome( hwnd );
+		return lr;
+	}
 	return ::CallWindowProc( pfnOld, hwnd, message, wParam, lParam );
 }
 

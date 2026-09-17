@@ -69,13 +69,31 @@ void CDialogControl::OnThemeRequested( WndTheme& Theme ) const
 	Theme.Attach( NULL, GetHWnd() );
 }
 
-namespace {
+COLORREF CDialogControl::GetPaneFaceColor() const
+{
+	CAcadColorService* pColorService = const_cast< CDialogControl* >( this )->GetColorService();
+	if( pColorService && !pColorService->IsBackgroundNotSet() && !pColorService->IsBackgroundTransparent() )
+		return pColorService->GetBackgroundColor();
+	if( mpControlPane )
+	{
+		CDialogObject* pHostDlg = mpControlPane->GetDialogObject();
+		if( pHostDlg )
+		{
+			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
+			if( pDlgColor && !pDlgColor->IsBackgroundNotSet() && !pDlgColor->IsBackgroundTransparent() )
+				return pDlgColor->GetBackgroundColor();
+			if( CHostThemeHelper::HostMaps() && pHostDlg->GetType() == FrmTabPage )
+				return OdclSysColor( COLOR_3DLIGHT );
+		}
+	}
+	return OdclSysColor( COLOR_BTNFACE );
+}
 
-HBRUSH HostDialogFaceBrush()
+HBRUSH CDialogControl::GetPaneFaceBrush() const
 {
 	static CBrush brFace;
 	static COLORREF crFace = (COLORREF)-1;
-	const COLORREF cr = OdclSysColor( COLOR_BTNFACE );
+	const COLORREF cr = GetPaneFaceColor();
 	if( crFace != cr || !(HBRUSH)brFace )
 	{
 		brFace.DeleteObject();
@@ -85,43 +103,28 @@ HBRUSH HostDialogFaceBrush()
 	return brFace;
 }
 
-} // namespace
-
 HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
 {
-	if( !mpControlWnd->IsWindowEnabled() )
-		return NULL;
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
 		return NULL;
-	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	const bool bEnabled = (mpControlWnd->IsWindowEnabled() != FALSE);
+	pDC->SetTextColor( bEnabled ? pColorService->GetForegroundColor() : CHostThemeHelper::DisabledTextColor() );
 	if( pColorService->IsBackgroundNotSet() )
 		return NULL;
 	if( pColorService->IsBackgroundTransparent() )
 	{
-		CDialogObject* pHostDlg = mpControlPane->GetDialogObject();
+		const COLORREF crFace = GetPaneFaceColor();
+		pDC->SetBkColor( crFace );
+		pDC->SetBkMode( OPAQUE );
+		CDialogObject* pHostDlg = mpControlPane ? mpControlPane->GetDialogObject() : NULL;
 		if( pHostDlg )
 		{
 			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
-			if( pDlgColor )
-			{
-				if( pDlgColor->IsBackgroundNotSet() || pDlgColor->IsBackgroundTransparent() )
-				{
-					const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
-					pDC->SetBkColor( crFace );
-					pDC->SetBkMode( OPAQUE );
-					return HostDialogFaceBrush();
-				}
-				else if( !pDlgColor->IsBackgroundTransparent() )
-				{
-					pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
-					pDC->SetBkMode( OPAQUE );
-					return pDlgColor->GetBackgroundBrush();
-				}
-			}
+			if( pDlgColor && !pDlgColor->IsBackgroundNotSet() && !pDlgColor->IsBackgroundTransparent() )
+				return pDlgColor->GetBackgroundBrush();
 		}
-		pDC->SetBkMode( TRANSPARENT );
-		return NULL;
+		return GetPaneFaceBrush();
 	}
 	pDC->SetBkColor( pColorService->GetBackgroundColor() );
 	pDC->SetBkMode( OPAQUE );
@@ -148,7 +151,7 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	}
 	if( !mpControlWnd->IsWindowEnabled() && !GetTheme().IsThemeActive() )
 	{
-		pDC->FillSolidRect( &rcClip, OdclSysColor( COLOR_INACTIVEBORDER ) );
+		pDC->FillSolidRect( &rcClip, GetPaneFaceColor() );
 		return TRUE;
 	}
 	CAcadColorService* pColorService = GetColorService();
