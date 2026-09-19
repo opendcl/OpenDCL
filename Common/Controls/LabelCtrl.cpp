@@ -115,6 +115,18 @@ BOOL CLabelCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
+void CLabelCtrl::HandleHostThemeChanged()
+{
+	if( !m_hWnd )
+		return;
+	const bool bVisual = (mpTemplate && mpTemplate->GetPropertyObject( Prop::UseVisualStyle )
+		&& mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ));
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	Invalidate();
+}
+
 HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
