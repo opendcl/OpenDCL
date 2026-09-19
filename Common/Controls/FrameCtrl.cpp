@@ -78,15 +78,7 @@ HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	pDC->SetTextColor( mColorService.GetForegroundColor() );
 	pDC->SetBkColor( crFace );
 	pDC->SetBkMode( OPAQUE );
-	static CBrush brFace;
-	static COLORREF crCached = (COLORREF)-1;
-	if( crCached != crFace || !(HBRUSH)brFace )
-	{
-		brFace.DeleteObject();
-		brFace.CreateSolidBrush( crFace );
-		crCached = crFace;
-	}
-	return brFace;
+	return OdclCachedSolidBrush( crFace );
 }
 
 BOOL CFrameCtrl::OnEraseBkgnd(CDC* pDC)

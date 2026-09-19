@@ -13,16 +13,7 @@
 
 inline HBRUSH AcUiHostWindowBrush()
 {
-	static COLORREF s_cr = CLR_NONE;
-	static CBrush s_br;
-	const COLORREF cr = OdclSysColor( COLOR_WINDOW );
-	if( cr != s_cr )
-	{
-		s_br.DeleteObject();
-		s_br.CreateSolidBrush( cr );
-		s_cr = cr;
-	}
-	return (HBRUSH)s_br;
+	return OdclCachedSolidBrush( OdclSysColor( COLOR_WINDOW ) );
 }
 
 inline void SyncAcUiComboHostTheme( CDialogControl* pDlg, CWnd* pWnd )

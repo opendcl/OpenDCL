@@ -10,7 +10,7 @@ class CArxWorkspace;
 
 class CArxColorService : public CWin32ColorService
 {
-	enum { kSysColorCount = 32 }; // COLOR_GRADIENTINACTIVECAPTION is 30
+	enum { kSysColorCount = 32 }; // COLOR_MENUBAR is 30
 
 	CArxWorkspace* mpWorkspace;
 	COLORREF m_light[kSysColorCount];

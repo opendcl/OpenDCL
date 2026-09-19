@@ -98,24 +98,12 @@ void CMonthCtrl::SyncHostMonthTheme()
 	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
-	if( CHostThemeHelper::HostMaps() )
-	{
-		SetColor( MCSC_BACKGROUND, OdclSysColor( COLOR_WINDOW ) );
-		SetColor( MCSC_MONTHBK, OdclSysColor( COLOR_WINDOW ) );
-		SetColor( MCSC_TEXT, OdclSysColor( COLOR_WINDOWTEXT ) );
-		SetColor( MCSC_TITLEBK, OdclSysColor( COLOR_ACTIVECAPTION ) );
-		SetColor( MCSC_TITLETEXT, OdclSysColor( COLOR_CAPTIONTEXT ) );
-		SetColor( MCSC_TRAILINGTEXT, OdclSysColor( COLOR_GRAYTEXT ) );
-	}
-	else
-	{
-		SetColor( MCSC_BACKGROUND, ::GetSysColor( COLOR_WINDOW ) );
-		SetColor( MCSC_MONTHBK, ::GetSysColor( COLOR_WINDOW ) );
-		SetColor( MCSC_TEXT, ::GetSysColor( COLOR_WINDOWTEXT ) );
-		SetColor( MCSC_TITLEBK, ::GetSysColor( COLOR_ACTIVECAPTION ) );
-		SetColor( MCSC_TITLETEXT, ::GetSysColor( COLOR_CAPTIONTEXT ) );
-		SetColor( MCSC_TRAILINGTEXT, ::GetSysColor( COLOR_GRAYTEXT ) );
-	}
+	SetColor( MCSC_BACKGROUND, OdclSysColor( COLOR_WINDOW ) );
+	SetColor( MCSC_MONTHBK, OdclSysColor( COLOR_WINDOW ) );
+	SetColor( MCSC_TEXT, OdclSysColor( COLOR_WINDOWTEXT ) );
+	SetColor( MCSC_TITLEBK, OdclSysColor( COLOR_ACTIVECAPTION ) );
+	SetColor( MCSC_TITLETEXT, OdclSysColor( COLOR_CAPTIONTEXT ) );
+	SetColor( MCSC_TRAILINGTEXT, OdclSysColor( COLOR_GRAYTEXT ) );
 	OnNeedRepaint( true );
 }
 

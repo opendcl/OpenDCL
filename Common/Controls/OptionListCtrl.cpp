@@ -466,15 +466,7 @@ HBRUSH COptionListCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
 		pDC->SetTextColor( mColorService.GetForegroundColor() );
 		pDC->SetBkColor( crFace );
-		static CBrush brFace;
-		static COLORREF crCached = (COLORREF)-1;
-		if( crCached != crFace || !(HBRUSH)brFace )
-		{
-			brFace.DeleteObject();
-			brFace.CreateSolidBrush( crFace );
-			crCached = crFace;
-		}
-		return brFace;
+		return OdclCachedSolidBrush( crFace );
 	}
 	if( GetTheme().IsThemeActive() )
 		return NULL; //when using visual style, transparent brush causes class background to be used

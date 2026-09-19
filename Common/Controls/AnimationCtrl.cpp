@@ -91,15 +91,7 @@ HBRUSH CAnimationCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		const COLORREF crFace = GetPaneFaceColor();
 		pDC->SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
 		pDC->SetBkColor( crFace );
-		static CBrush brFace;
-		static COLORREF crCached = (COLORREF)-1;
-		if( crCached != crFace || !(HBRUSH)brFace )
-		{
-			brFace.DeleteObject();
-			brFace.CreateSolidBrush( crFace );
-			crCached = crFace;
-		}
-		return brFace;
+		return OdclCachedSolidBrush( crFace );
 	}
 	return NULL;
 }

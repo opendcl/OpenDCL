@@ -91,16 +91,7 @@ COLORREF CDialogControl::GetPaneFaceColor() const
 
 HBRUSH CDialogControl::GetPaneFaceBrush() const
 {
-	static CBrush brFace;
-	static COLORREF crFace = (COLORREF)-1;
-	const COLORREF cr = GetPaneFaceColor();
-	if( crFace != cr || !(HBRUSH)brFace )
-	{
-		brFace.DeleteObject();
-		brFace.CreateSolidBrush( cr );
-		crFace = cr;
-	}
-	return brFace;
+	return OdclCachedSolidBrush( GetPaneFaceColor() );
 }
 
 HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
