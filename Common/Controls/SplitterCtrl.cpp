@@ -184,6 +184,15 @@ BOOL CSplitterCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
+#if defined(ODCL_HOST_COLORTHEME)
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		return TRUE;
+	}
+#endif
 	return __super::OnEraseBkgnd(pDC);
 }
 

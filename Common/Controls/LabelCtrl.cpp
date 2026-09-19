@@ -139,6 +139,15 @@ BOOL CLabelCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
+#if defined(ODCL_HOST_COLORTHEME)
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
+		return TRUE;
+	}
+#endif
 	return __super::OnEraseBkgnd(pDC);
 }
 

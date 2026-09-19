@@ -127,22 +127,14 @@ void CRadioButtonCtrl::PaintHostOption( CDC* pDC )
 	CRect rcBox( rcClient.left + nPad, yBox, rcClient.left + nPad + nBox, yBox + nBox );
 
 	const COLORREF crRing = bEnabled ? OdclSysColor( COLOR_BTNTEXT ) : CHostThemeHelper::DisabledTextColor();
-	CPen penRing( PS_SOLID, 1, crRing );
-	CBrush brFill( OdclSysColor( COLOR_WINDOW ) );
-	CPen* pOldPen = pDC->SelectObject( &penRing );
-	CBrush* pOldBrush = pDC->SelectObject( &brFill );
-	pDC->Ellipse( &rcBox );
+	CHostThemeHelper::DrawSmoothEllipse( pDC->GetSafeHdc(), rcBox,
+		OdclSysColor( COLOR_WINDOW ), crRing, true );
 	if( nCheck == BST_CHECKED )
 	{
 		CRect rcDot = rcBox;
 		rcDot.DeflateRect( nBox / 4, nBox / 4 );
-		CBrush brDot( crRing );
-		pDC->SelectObject( &brDot );
-		pDC->Ellipse( &rcDot );
-		pDC->SelectObject( pOldBrush );
+		CHostThemeHelper::DrawSmoothEllipse( pDC->GetSafeHdc(), rcDot, crRing, crRing, true );
 	}
-	pDC->SelectObject( pOldBrush );
-	pDC->SelectObject( pOldPen );
 
 	CString sCaption;
 	GetWindowText( sCaption );

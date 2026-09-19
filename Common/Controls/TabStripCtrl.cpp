@@ -391,15 +391,39 @@ BOOL CTabStripCtrl::OnEraseBkgnd(CDC* pDC)
 	return __super::OnEraseBkgnd(pDC);
 }
 
-void CTabStripCtrl::OnPaint() 
+void CTabStripCtrl::OnPaint()
 {
 	CRect rcPaint;
 	GetUpdateRect( &rcPaint, FALSE );
-	__super::OnPaint();
-	// Tab faces come from DrawItem (TCS_OWNERDRAWFIXED). Paint only the page pane chrome.
-	if( CHostThemeHelper::HostMaps() )
+	if( !CHostThemeHelper::HostMaps() )
 	{
-		CClientDC dc( this );
+		// Light: stock SysTabControl32 painter (TCS_OWNERDRAWFIXED is off).
+		__super::OnPaint();
+	}
+	else
+	{
+		// Dark: paint ourselves so stock cannot leave bright Win32 bevels.
+		CPaintDC dc( this );
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		dc.FillSolidRect( &rcClient, OdclSysColor( COLOR_BTNFACE ) );
+
+		const int nCount = GetItemCount();
+		for( int i = 0; i < nCount; ++i )
+		{
+			CRect rcItem;
+			if( !GetItemRect( i, &rcItem ) )
+				continue;
+			TCITEM item = {0};
+			item.mask = TCIF_TEXT | TCIF_IMAGE;
+			TCHAR sz[256] = {0};
+			item.pszText = sz;
+			item.cchTextMax = 255;
+			if( !GetItem( i, &item ) )
+				continue;
+			const bool bSelected = (GetCurSel() == i);
+			DrawHostThemedTabItem( &dc, rcItem, bSelected, false, CString( sz ), item.iImage );
+		}
 		PaintHostThemedTabPane( &dc );
 	}
 	if( !rcPaint.IsRectEmpty() )

@@ -91,6 +91,16 @@ void CMonthCtrl::HandleHostThemeChanged()
 	SyncHostMonthTheme();
 }
 
+static COLORREF LightenMonthFace( COLORREF cr )
+{
+	// Stock weekday captions stay gray and cannot be recolored via MCSC_*.
+	// Lift the month face so those captions keep readable contrast in dark.
+	return RGB(
+		( GetRValue( cr ) + 230 * 2 ) / 3,
+		( GetGValue( cr ) + 234 * 2 ) / 3,
+		( GetBValue( cr ) + 240 * 2 ) / 3 );
+}
+
 void CMonthCtrl::SyncHostMonthTheme()
 {
 	if( !m_hWnd )
@@ -98,8 +108,11 @@ void CMonthCtrl::SyncHostMonthTheme()
 	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
-	SetColor( MCSC_BACKGROUND, OdclSysColor( COLOR_WINDOW ) );
-	SetColor( MCSC_MONTHBK, OdclSysColor( COLOR_WINDOW ) );
+	COLORREF crFace = OdclSysColor( COLOR_WINDOW );
+	if( CHostThemeHelper::HostMaps() )
+		crFace = LightenMonthFace( crFace );
+	SetColor( MCSC_BACKGROUND, crFace );
+	SetColor( MCSC_MONTHBK, crFace );
 	SetColor( MCSC_TEXT, OdclSysColor( COLOR_WINDOWTEXT ) );
 	SetColor( MCSC_TITLEBK, OdclSysColor( COLOR_ACTIVECAPTION ) );
 	SetColor( MCSC_TITLETEXT, OdclSysColor( COLOR_CAPTIONTEXT ) );

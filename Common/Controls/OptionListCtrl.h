@@ -22,6 +22,7 @@ class COptionListCtrl : public CListBox, public CDialogControl
 	int mnRowHeight;
 	CImageList mImageList;
 	bool mbTrackingMouse;
+	int mnHotGlyph;
 	int idxInitialFocusItem;
 
 	enum { kMouseLeaveTimer = 1 };

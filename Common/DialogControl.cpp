@@ -149,7 +149,17 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	if( !pColorService )
 		return FALSE;
 	if( pColorService->IsBackgroundNotSet() )
+	{
+#if defined(ODCL_HOST_COLORTHEME)
+		// Stock erase is light; splitter/layout invalidate flashes gray before dark paint.
+		if( CHostThemeHelper::HostMaps() )
+		{
+			pDC->FillSolidRect( &rcClip, GetPaneFaceColor() );
+			return TRUE;
+		}
+#endif
 		return FALSE;
+	}
 	if( pColorService->IsBackgroundTransparent() )
 	{
 		CWnd* pParent = mpControlWnd->GetParent();

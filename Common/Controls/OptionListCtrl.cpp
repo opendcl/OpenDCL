@@ -21,7 +21,7 @@
 COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mnRowHeight( 20 )
-, mbTrackingMouse( false )
+, mbTrackingMouse(false), mnHotGlyph( -1 )
 , idxInitialFocusItem( -1 )
 {
 	mImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 4, 1 );
@@ -196,24 +196,20 @@ void COptionListCtrl::DrawHostOptionGlyph( CDC* pDC, CPoint pt, bool bSelected, 
 	}
 	const int nSize = OptionGlyphSize();
 	CRect rc( pt.x, pt.y, pt.x + nSize, pt.y + nSize );
+	// Clear hover/selection chrome under the glyph so supersample blit does not punch the ring.
+	const COLORREF crFace = GetPaneFaceColor();
+	pDC->FillSolidRect( &rc, crFace );
 	rc.DeflateRect( 1, 1 );
 	COLORREF crRing = bDisabled? OdclSysColor( COLOR_GRAYTEXT ) : OdclSysColor( COLOR_BTNTEXT );
 	if( bHover && !bDisabled )
 		crRing = OdclSysColor( COLOR_HIGHLIGHT );
-	CPen pen( PS_SOLID, 1, crRing );
-	CPen* pOldPen = pDC->SelectObject( &pen );
-	CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
-	pDC->Ellipse( &rc );
+	CHostThemeHelper::DrawSmoothEllipse( pDC->GetSafeHdc(), rc, crFace, crRing, true );
 	if( bSelected )
 	{
 		CRect rcDot = rc;
 		rcDot.DeflateRect( rc.Width() / 4, rc.Height() / 4 );
-		CBrush brDot( crRing );
-		pDC->SelectObject( &brDot );
-		pDC->Ellipse( &rcDot );
+		CHostThemeHelper::DrawSmoothEllipse( pDC->GetSafeHdc(), rcDot, crRing, crRing, true );
 	}
-	pDC->SelectObject( pOldBrush );
-	pDC->SelectObject( pOldPen );
 }
 
 void COptionListCtrl::ResetTooltips()
@@ -405,6 +401,7 @@ void COptionListCtrl::EndHoverTracking()
 		_TrackMouseEvent( &tm );
 	}
 	mbTrackingMouse = false;
+	mnHotGlyph = -1;
 	KillTimer( kMouseLeaveTimer );
 	DrawOptionGlyphs( CPoint( -1, -1 ), false );
 }
@@ -421,6 +418,23 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		SetTimer( kMouseLeaveTimer, 100, NULL );
 	}
 
+	// Only redraw glyphs when the hot item changes — per-move supersample redraw jittered.
+	int nHot = -1;
+	for( int i = 0; i < GetCount(); ++i )
+	{
+		CRect rcItem;
+		if( LB_ERR == GetItemRect( i, &rcItem ) )
+			continue;
+		rcItem.bottom = rcItem.top + mnRowHeight;
+		if( rcItem.PtInRect( point ) )
+		{
+			nHot = i;
+			break;
+		}
+	}
+	if( nHot == mnHotGlyph )
+		return;
+	mnHotGlyph = nHot;
 	DrawOptionGlyphs( point, true );
 }
 

@@ -38,6 +38,7 @@ public:
 	static void InstallNcBorder( HWND hwnd );
 	static void InstallNcBorderTree( HWND hwndRoot );
 	static bool PaintNcBorder( HWND hwnd );
+	static void DrawSmoothEllipse( HDC hdc, const RECT& rc, COLORREF crFill, COLORREF crPen, bool bFill );
 };
 
 #else
@@ -67,6 +68,55 @@ public:
 	static void InstallNcBorder( HWND ) {}
 	static void InstallNcBorderTree( HWND ) {}
 	static bool PaintNcBorder( HWND ) { return false; }
+	static void DrawSmoothEllipse( HDC, const RECT&, COLORREF, COLORREF, bool ) {}
 };
 
 #endif
+
+#if defined(ODCL_HOST_COLORTHEME)
+inline void CHostThemeHelper::DrawSmoothEllipse( HDC hdc, const RECT& rc, COLORREF crFill, COLORREF crPen, bool bFill )
+{
+	if( !hdc )
+		return;
+	const int nW = rc.right - rc.left;
+	const int nH = rc.bottom - rc.top;
+	if( nW < 3 || nH < 3 )
+		return;
+	// Build AA on a solid fill - never StretchBlt-sample the destination (that
+	// re-samples the previous ring on hover and makes glyphs jitter).
+	const COLORREF crBk = bFill ? crFill : ::GetPixel( hdc, rc.left + nW / 2, rc.top + nH / 2 );
+	const int nXW = nW * 2;
+	const int nXH = nH * 2;
+	HDC hdcMem = ::CreateCompatibleDC( hdc );
+	if( !hdcMem )
+		return;
+	HBITMAP hbm = ::CreateCompatibleBitmap( hdc, nXW, nXH );
+	if( !hbm )
+	{
+		::DeleteDC( hdcMem );
+		return;
+	}
+	HGDIOBJ hbmOld = ::SelectObject( hdcMem, hbm );
+	HBRUSH brBk = ::CreateSolidBrush( crBk );
+	RECT rcMem = { 0, 0, nXW, nXH };
+	::FillRect( hdcMem, &rcMem, brBk );
+	::DeleteObject( brBk );
+	HPEN pen = ::CreatePen( PS_SOLID, 2, crPen );
+	HBRUSH br = bFill ? ::CreateSolidBrush( crFill ) : (HBRUSH)::GetStockObject( NULL_BRUSH );
+	HGDIOBJ penOld = ::SelectObject( hdcMem, pen );
+	HGDIOBJ brOld = ::SelectObject( hdcMem, br );
+	::Ellipse( hdcMem, 1, 1, nXW - 1, nXH - 1 );
+	::SelectObject( hdcMem, brOld );
+	::SelectObject( hdcMem, penOld );
+	if( bFill )
+		::DeleteObject( br );
+	::DeleteObject( pen );
+	const int nOldMode = ::SetStretchBltMode( hdc, HALFTONE );
+	::StretchBlt( hdc, rc.left, rc.top, nW, nH, hdcMem, 0, 0, nXW, nXH, SRCCOPY );
+	::SetStretchBltMode( hdc, nOldMode );
+	::SelectObject( hdcMem, hbmOld );
+	::DeleteObject( hbm );
+	::DeleteDC( hdcMem );
+}
+#endif
+
