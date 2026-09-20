@@ -112,7 +112,7 @@ Installer-only escape hatch: `make-release.ps1 -Sign -SkipBinarySign`.
 | Workflow | Role |
 |----------|------|
 | `.github/workflows/package.yml` | WiX + dist + localization artifacts |
-| `.github/workflows/release.yml` (**Make release**) | Full pipeline + sign + `gh release` |
+| `.github/workflows/release.yml` (**Make release**) | Full pipeline + sign + `gh release` + Chocolatey/WinGet |
 | `.github/workflows/localization-packs.yml` | Loc zips only (rolling tag) |
 
 **Runner:** self-hosted Windows with the signing token available when signing.
@@ -192,6 +192,7 @@ Never run this during private dry-run. Operator notes: private build-lab
 ### Release checklist (append)
 
 - [ ] Installers built, signed, GitHub Release `vA.B.C.D` published  
+- [ ] Chocolatey / WinGet: Make release step, or `scripts/publish-package-managers.ps1` (needs `CHOCOLATEY_API_KEY` / `WINGET_GITHUB_TOKEN`)  
 - [ ] Localization packs refreshed if needed  
 - [ ] **Site versions:** `-DevVersion` for normal ship, or `-PromoteToStable` when promoting  
 - [ ] **`opendcl.github.io` committed and pushed;** GET `version/*.txt` is bare `A.B.C.D`  

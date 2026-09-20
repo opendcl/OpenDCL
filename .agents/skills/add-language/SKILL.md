@@ -57,6 +57,7 @@ Also wire:
 - `CMakePresets.json` `OPENDCL_LANGS` on the full/ship presets (CMake builds
   `RuntimeRes_<LANG>`, `StudioRes_<LANG>`, `StudioHelp_<LANG>` from those folders)
 - `scripts/build-wix.ps1` - `$RuntimeLangs` + `$StudioLangMeta`
+- `packaging/catalog.json` - Studio language row for Chocolatey/WinGet
 - Product version often bumps when shipping the language (`/bump-version`)
 
 Do **not** add `.vcxproj` files or `OpenDCL.sln` entries.
@@ -150,6 +151,10 @@ Edit **`scripts/build-wix.ps1`**:
    }
    ```
 
+   Add the same **code**, BCP-47 **locale**, and **UpgradeCode** to
+   `packaging/catalog.json` (`studio.languages`) so Chocolatey/WinGet ship the
+   new language MSI.
+
 3. Clone and edit **`Studio/Localized/<LANG>/Package.wxl`** (Start Menu names,
    ARP comments, shell labels). Start from ENU; translators update `String` values.
    Required Ids: `ArpComments`, `ShortcutStudio`, `ShortcutHelp`, `ShortcutLicense`,
@@ -233,6 +238,7 @@ Only commit if the user asked. Website repo commits are separate.
 - [ ] Help Content builds to `OpenDCL.chm` via `StudioHelp_<LANG>`
 - [ ] `License.rtf` / `License.txt` / `License.htm` present for Studio
 - [ ] `$RuntimeLangs` + `$StudioLangMeta` updated in `scripts/build-wix.ps1`
+- [ ] `packaging/catalog.json` `studio.languages` row (code, locale, UpgradeCode)
 - [ ] `Studio/Localized/<LANG>/Package.wxl` present (clone ENU; localize strings)
 - [ ] Studio MSI builds and installs for the new language
 - [ ] Download/help website follow-ups noted or done

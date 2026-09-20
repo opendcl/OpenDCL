@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>opendcl-runtime</id>
+    <version>{{VERSION}}</version>
+    <title>OpenDCL Runtime</title>
+    <authors>OpenDCL Consortium</authors>
+    <owners>OpenDCL Consortium</owners>
+    <projectUrl>https://www.opendcl.com</projectUrl>
+    <projectSourceUrl>https://github.com/opendcl/OpenDCL</projectSourceUrl>
+    <docsUrl>https://opendcl.github.io/HelpFiles/</docsUrl>
+    <bugTrackerUrl>https://github.com/opendcl/OpenDCL/issues</bugTrackerUrl>
+    <packageSourceUrl>https://github.com/opendcl/OpenDCL/tree/main/packaging/chocolatey/opendcl-runtime</packageSourceUrl>
+    <licenseUrl>https://github.com/opendcl/OpenDCL/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://raw.githubusercontent.com/opendcl/OpenDCL/main/wix/ui/icons/badge/OpenDCLBadge-256.png</iconUrl>
+    <releaseNotes>https://github.com/opendcl/OpenDCL/releases/tag/v{{VERSION}}</releaseNotes>
+    <tags>opendcl cad autolisp autocad bricscad zwcad gstarcad runtime arx brx admin</tags>
+    <summary>OpenDCL runtime modules for AutoCAD-compatible hosts.</summary>
+    <description>OpenDCL Runtime deploys the host modules (.arx / .brx / .grx / .zrx) and demand-load registration used by AutoLISP applications built with OpenDCL.
+
+Use this package on end-user CAD machines that do not need the Studio editor. OpenDCL Studio already includes Runtime; installing both is usually unnecessary.
+
+This package downloads the signed MSI from the GitHub Release for this version.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="legal\**" target="legal" />
+  </files>
+</package>

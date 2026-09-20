@@ -104,6 +104,7 @@ the **combined** helper:
 | Product GitHub Release | `.github/workflows/release.yml` (**Make release**) | Manual upload |
 | Package + dist (CI) | `.github/workflows/package.yml` | Ad-hoc package on build PC |
 | Localization-only refresh | `.github/workflows/localization-packs.yml` | Standalone translator packs |
+| Chocolatey + WinGet | `scripts/publish-package-managers.ps1` (Make release after `v*`) | — |
 
 `make-release.ps1` writes everything under `dist\<ver>\`:
 
@@ -123,6 +124,8 @@ $env:SIGN_STORE_PASSWORD = "<yubikey-pin>"   # process env only; never commit
 .\scripts\sign-files.ps1 -Path .\dist\10.1.2.2
 # Product v* release: MSI/MSM only. Language zips -> rolling tag localization-packs.
 gh release create "v10.1.2.2" .\dist\10.1.2.2\*.msi .\dist\10.1.2.2\*.msm --title "OpenDCL 10.1.2.2"
+# After the GitHub Release is public (download URLs live):
+.\scripts\publish-package-managers.ps1 -ProductVersion 10.1.2.2
 ```
 
 **Signing (YubiKey + SSL.com + jsign):** insert YubiKey, set `SIGN_STORE_PASSWORD`

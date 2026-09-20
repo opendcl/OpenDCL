@@ -42,7 +42,9 @@ Studio/
   CMakeLists.txt         Studio (static MFC + /MT) + Studio.Res + StudioHelp
   Localized/<LANG>/      Studio.Res, Content (help + samples)
 scripts/build-wix.ps1    Packaging entry point
+scripts/publish-package-managers.ps1  Chocolatey + WinGet after a public v* release
 wix/                     WiX sources, UI bitmaps/icons, tools
+packaging/               Chocolatey / WinGet catalog (see packaging/README.md)
 wix/out/                 Generated packages (gitignored)
 .agents/skills/          Optional agent skills (often untracked until ready)
 ```
@@ -144,7 +146,7 @@ Runtime modules (MSM): still **`CommonFilesFolder\OpenDCL`** (historical).
 |------|----------------------|--------|
 | RC comma | `10, 1, 1, 1` | `.rc` FILEVERSION/PRODUCTVERSION |
 | ModuleVersion | `10.1.1.1` | MSM `Module/@Version` |
-| ProductVersion | `10.1.101` | MSI (`Patch*100+Build`) |
+| ProductVersion | `10.1.101` | MSI (`Patch*100+Build`); ARP DisplayVersion |
 
 Defaults live in `scripts/build-wix.ps1` (`-ProductVersion`, `-ModuleVersion`).
 Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-...`) stable
