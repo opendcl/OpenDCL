@@ -27,15 +27,16 @@ if (-not $checksums.ContainsKey($lang)) {
 
 $fileName = "OpenDCL.Studio.$lang.$version.msi"
 $url = "https://github.com/opendcl/OpenDCL/releases/download/v$version/$fileName"
+# Scalar so CPMR0073 sees a Checksum parameter (hashtable index is not enough).
+$checksum = $checksums[$lang]
+$checksumType = 'sha256'
 
-$packageArgs = @{
-  packageName    = $env:ChocolateyPackageName
-  fileType       = 'msi'
-  url            = $url
-  checksum       = $checksums[$lang]
-  checksumType   = 'sha256'
-  silentArgs     = '/qn /norestart ALLUSERS=1'
-  validExitCodes = @(0, 3010, 1641)
-  softwareName   = 'OpenDCL Studio*'
-}
-Install-ChocolateyPackage @packageArgs
+Install-ChocolateyPackage `
+  -PackageName $env:ChocolateyPackageName `
+  -FileType 'msi' `
+  -Url $url `
+  -Checksum $checksum `
+  -ChecksumType $checksumType `
+  -SilentArgs '/qn /norestart ALLUSERS=1' `
+  -ValidExitCodes @(0, 3010, 1641) `
+  -SoftwareName 'OpenDCL Studio*'
