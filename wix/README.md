@@ -180,6 +180,9 @@ Checked-in exact-size bitmaps under `wix\ui\` (package script copies them; no st
 - **RxInstall** custom actions preserved (machine/user install + uninstall); user CAs impersonate.
 - **ProductVersion** is 3-part MSI encoding (`10.1.202` for file version `10.1.2.2`). **ModuleVersion** is 4-part.
 - **UpgradeCodes** preserved from the old Studio language packages / Runtime MSI.
+  Each Studio language has its own UpgradeCode. CHT originally shipped sharing
+  CHS; it now has `FF358620-…` and a language-filtered `LegacyUpgradeCode` so
+  those older CHT MSIs still upgrade without touching CHS.
 - Component GUIDs are **stable** (MD5 of logical path).
 - Studio shortcuts are **advertised** and nested on their target files
   (`Advertise="yes"` on the same component as the file):

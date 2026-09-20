@@ -68,9 +68,13 @@ Do **not** add `.vcxproj` files or `OpenDCL.sln` entries.
 3. **English display name** for ARP comments (e.g. `OpenDCL Studio (Italian)`).
 4. **LCID** for WiX `ProductLanguage` / MSI language.
 5. **UpgradeCode policy**:
-   - Prefer a **new** stable UpgradeCode GUID for the language MSI.
-   - Exception: historical CHT shares UpgradeCode with CHS - only reuse when the
-     user explicitly wants upgrade continuity with an existing package.
+   - Always a **new** stable UpgradeCode GUID for the language MSI. Never share
+     one with another locale (CHS/CHT did that as a clone leftover; CHT now has
+     its own, plus `LegacyUpgradeCode` so already-shipped CHT still upgrades).
+   - If a language already shipped under the wrong UpgradeCode, keep that GUID
+     as `$StudioLangMeta['LANG'].LegacyUpgradeCode`. Studio MSI `MajorUpgrade`
+     is language-filtered; the legacy row is too, so it cannot remove a sibling
+     locale that still owns that GUID.
 6. **ProductCode**: generate a new GUID (historical Studio packages used fixed
    ProductCodes in `$StudioLangMeta`; WiX Studio `Product Id="*"` still auto-
    generates build ProductCodes, but meta table keeps the historical codes for
@@ -142,6 +146,7 @@ Edit **`scripts/build-wix.ps1`**:
      ProductCode = "<new-guid>"
      UpgradeCode = "<new-stable-guid>"
      LangId = <LCID>
+     # LegacyUpgradeCode = "<old-guid>"  # only if this locale already shipped under another code
    }
    ```
 

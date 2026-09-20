@@ -91,7 +91,7 @@ Each language generally needs:
 - `Common/<LANG>/`
 - `Runtime/Localized/<LANG>/`
 - `Studio/Localized/<LANG>/` (including `Content/` and `Studio.Res/`)
-- WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, UpgradeCode)
+- WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, unique UpgradeCode per language; optional `LegacyUpgradeCode`)
 - Studio package UI strings: `Studio/Localized/<LANG>/Package.wxl` (shortcuts, ARP comments, shell labels)
 
 Installer EULA for Studio is checked-in **`License.rtf`** (WixUI); also keep
@@ -147,7 +147,8 @@ Runtime modules (MSM): still **`CommonFilesFolder\OpenDCL`** (historical).
 | ProductVersion | `10.1.101` | MSI (`Patch*100+Build`) |
 
 Defaults live in `scripts/build-wix.ps1` (`-ProductVersion`, `-ModuleVersion`).
-Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-...`) stable.
+Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-...`) stable
+(CHT has its own UpgradeCode plus `LegacyUpgradeCode` for builds that reused CHS).
 Component GUIDs are stable MD5 seeds of logical paths.
 
 Runtime module **catalog** lives in `scripts/build-wix.ps1` (`$RuntimeModuleCatalogRels`).
