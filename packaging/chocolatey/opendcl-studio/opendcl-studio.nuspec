@@ -12,8 +12,9 @@
     <bugTrackerUrl>https://github.com/opendcl/OpenDCL/issues</bugTrackerUrl>
     <packageSourceUrl>https://github.com/opendcl/OpenDCL/tree/main/packaging/chocolatey/opendcl-studio</packageSourceUrl>
     <licenseUrl>https://github.com/opendcl/OpenDCL/blob/main/LICENSE</licenseUrl>
+    <copyright>Copyright (c) OpenDCL Consortium</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://raw.githubusercontent.com/opendcl/OpenDCL/main/wix/ui/icons/badge/OpenDCLBadge-256.png</iconUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/opendcl/OpenDCL@v{{VERSION}}/wix/ui/icons/badge/OpenDCLBadge-256.png</iconUrl>
     <releaseNotes>https://github.com/opendcl/OpenDCL/releases/tag/v{{VERSION}}</releaseNotes>
     <tags>opendcl cad autolisp autocad bricscad zwcad gstarcad dialog dcl studio admin</tags>
     <summary>Visual dialog editor for AutoLISP (includes OpenDCL Runtime).</summary>
