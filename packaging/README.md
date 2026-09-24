@@ -51,6 +51,19 @@ The WinGet PAT must be able to create a fork of `microsoft/winget-pkgs` and
 open PRs (typically `public_repo`). First Studio/Runtime versions are new
 packages; later versions are additional PRs (one package version per PR).
 
+## Chocolatey community rules (do not regress)
+
+- **`iconUrl`:** jsDelivr pinned to the **release tag**, not `raw.githubusercontent.com`.
+  Nuspec uses `https://cdn.jsdelivr.net/gh/opendcl/OpenDCL@v{{VERSION}}/wix/ui/icons/badge/OpenDCLBadge-256.png`.
+- **`<copyright>Copyright (c) OpenDCL Consortium</copyright>`** in both nuspecs.
+- **CPMR0073:** Studio `chocolateyInstall.ps1` must call
+  `Install-ChocolateyPackage -Checksum $checksum -ChecksumType $checksumType`
+  as **named parameters**. A splat with `checksum = $checksums[$lang]` fails
+  automated validation.
+- Same-version re-push during moderation. After a human reviewer asks for
+  changes, also post in the package **Review Comments** box (not email/Disqus)
+  so status becomes Responded.
+
 ## Adding a Studio language
 
 1. `$StudioLangMeta` in `scripts/build-wix.ps1` (unique UpgradeCode).
