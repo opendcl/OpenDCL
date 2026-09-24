@@ -57,6 +57,7 @@ Also wire:
 - `CMakePresets.json` `OPENDCL_LANGS` on the full/ship presets (CMake builds
   `RuntimeRes_<LANG>`, `StudioRes_<LANG>`, `StudioHelp_<LANG>` from those folders)
 - `scripts/build-wix.ps1` - `$RuntimeLangs` + `$StudioLangMeta`
+- `packaging/catalog.json` - Studio language row for Chocolatey/WinGet
 - Product version often bumps when shipping the language (`/bump-version`)
 
 Do **not** add `.vcxproj` files or `OpenDCL.sln` entries.
@@ -68,9 +69,13 @@ Do **not** add `.vcxproj` files or `OpenDCL.sln` entries.
 3. **English display name** for ARP comments (e.g. `OpenDCL Studio (Italian)`).
 4. **LCID** for WiX `ProductLanguage` / MSI language.
 5. **UpgradeCode policy**:
-   - Prefer a **new** stable UpgradeCode GUID for the language MSI.
-   - Exception: historical CHT shares UpgradeCode with CHS - only reuse when the
-     user explicitly wants upgrade continuity with an existing package.
+   - Always a **new** stable UpgradeCode GUID for the language MSI. Never share
+     one with another locale (CHS/CHT did that as a clone leftover; CHT now has
+     its own, plus `LegacyUpgradeCode` so already-shipped CHT still upgrades).
+   - If a language already shipped under the wrong UpgradeCode, keep that GUID
+     as `$StudioLangMeta['LANG'].LegacyUpgradeCode`. Studio MSI `MajorUpgrade`
+     is language-filtered; the legacy row is too, so it cannot remove a sibling
+     locale that still owns that GUID.
 6. **ProductCode**: generate a new GUID (historical Studio packages used fixed
    ProductCodes in `$StudioLangMeta`; WiX Studio `Product Id="*"` still auto-
    generates build ProductCodes, but meta table keeps the historical codes for
@@ -142,8 +147,13 @@ Edit **`scripts/build-wix.ps1`**:
      ProductCode = "<new-guid>"
      UpgradeCode = "<new-stable-guid>"
      LangId = <LCID>
+     # LegacyUpgradeCode = "<old-guid>"  # only if this locale already shipped under another code
    }
    ```
+
+   Add the same **code**, BCP-47 **locale**, and **UpgradeCode** to
+   `packaging/catalog.json` (`studio.languages`) so Chocolatey/WinGet ship the
+   new language MSI.
 
 3. Clone and edit **`Studio/Localized/<LANG>/Package.wxl`** (Start Menu names,
    ARP comments, shell labels). Start from ENU; translators update `String` values.
@@ -228,6 +238,7 @@ Only commit if the user asked. Website repo commits are separate.
 - [ ] Help Content builds to `OpenDCL.chm` via `StudioHelp_<LANG>`
 - [ ] `License.rtf` / `License.txt` / `License.htm` present for Studio
 - [ ] `$RuntimeLangs` + `$StudioLangMeta` updated in `scripts/build-wix.ps1`
+- [ ] `packaging/catalog.json` `studio.languages` row (code, locale, UpgradeCode)
 - [ ] `Studio/Localized/<LANG>/Package.wxl` present (clone ENU; localize strings)
 - [ ] Studio MSI builds and installs for the new language
 - [ ] Download/help website follow-ups noted or done
