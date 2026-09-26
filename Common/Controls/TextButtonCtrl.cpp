@@ -289,7 +289,7 @@ void CTextButtonCtrl::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	{
 		CRect rcFocus( rc );
 		rcFocus.DeflateRect( FromDIP( 3 ), FromDIP( 3 ) );
-		pDC->DrawFocusRect( &rcFocus );
+		OdclDrawDottedRect( pDC->GetSafeHdc(), rcFocus, crText );
 	}
 	pDC->SelectObject( pOldFont );
 }

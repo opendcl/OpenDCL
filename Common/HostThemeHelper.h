@@ -29,6 +29,7 @@ public:
 	static bool PaintHeaderCustomDraw( CHeaderCtrl* pHeader, tagNMHDR* pNMHDR, LRESULT* pResult );
 	static void PaintComboDropButton( HDC hdc, const RECT& rc, bool bEnabled );
 	static void PaintComboChrome( HWND hwnd );
+	static void ApplyCombo( HWND hwnd );
 	static COLORREF DisabledTextColor();
 	static COLORREF SoftGlyphColor();
 	static COLORREF GridLineColor( COLORREF crBackground );
@@ -59,6 +60,7 @@ public:
 	}
 	static void PaintComboDropButton( HDC, const RECT&, bool ) {}
 	static void PaintComboChrome( HWND ) {}
+	static void ApplyCombo( HWND ) {}
 	static COLORREF DisabledTextColor() { return ::GetSysColor( COLOR_GRAYTEXT ); }
 	static COLORREF SoftGlyphColor() { return ::GetSysColor( COLOR_BTNTEXT ); }
 	static COLORREF GridLineColor( COLORREF ) { return ::GetSysColor( COLOR_BTNFACE ); }
@@ -119,4 +121,57 @@ inline void CHostThemeHelper::DrawSmoothEllipse( HDC hdc, const RECT& rc, COLORR
 	::DeleteDC( hdcMem );
 }
 #endif
+
+#ifndef PS_ALTERNATE
+#define PS_ALTERNATE 8
+#endif
+
+// DrawFocusRect XORs the fill (blue-gray face -> beige/orange dots). Paint a
+// 1px every-other-pixel frame in cr instead.
+inline void OdclDrawDottedRect( HDC hdc, const RECT& rc, COLORREF cr )
+{
+	if( !hdc )
+		return;
+	const int nW = rc.right - rc.left;
+	const int nH = rc.bottom - rc.top;
+	if( nW < 3 || nH < 3 )
+		return;
+	LOGBRUSH lb = { BS_SOLID, cr, 0 };
+	HPEN pen = ::ExtCreatePen( PS_COSMETIC | PS_ALTERNATE, 1, &lb, 0, NULL );
+	if( !pen )
+		return;
+	HGDIOBJ penOld = ::SelectObject( hdc, pen );
+	HGDIOBJ brOld = ::SelectObject( hdc, ::GetStockObject( NULL_BRUSH ) );
+	const int nOld = ::SetBkMode( hdc, TRANSPARENT );
+	::Rectangle( hdc, rc.left, rc.top, rc.right, rc.bottom );
+	::SetBkMode( hdc, nOld );
+	::SelectObject( hdc, brOld );
+	::SelectObject( hdc, penOld );
+	::DeleteObject( pen );
+}
+
+// DT_CALCRECT ignores DT_VCENTER and keeps top at the layout rect, so Inflate
+// can put the top edge at y=-1 (clipped / almost invisible). Center like
+// DrawText DT_VCENTER and keep a 1px inset so the dots stay in the client.
+inline void OdclDrawCaptionFocusRect( HDC hdc, const RECT& rcText, const RECT& rcClient, LPCTSTR pszCaption )
+{
+	if( !hdc || !pszCaption || !*pszCaption )
+		return;
+	RECT rcFocus = rcText;
+	::DrawText( hdc, pszCaption, -1, &rcFocus, DT_LEFT | DT_SINGLELINE | DT_CALCRECT );
+	const int nH = rcFocus.bottom - rcFocus.top;
+	const int nW = rcFocus.right - rcFocus.left;
+	if( nH <= 0 || nW <= 0 )
+		return;
+	const int nLayoutH = rcText.bottom - rcText.top;
+	rcFocus.top = rcText.top + (nLayoutH - nH) / 2;
+	rcFocus.bottom = rcFocus.top + nH;
+	rcFocus.right = rcFocus.left + nW;
+	::InflateRect( &rcFocus, 1, 1 );
+	RECT rcClip = rcClient;
+	::InflateRect( &rcClip, -1, -1 );
+	if( !::IntersectRect( &rcFocus, &rcFocus, &rcClip ) )
+		return;
+	OdclDrawDottedRect( hdc, rcFocus, ::GetTextColor( hdc ) );
+}
 

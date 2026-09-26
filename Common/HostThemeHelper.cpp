@@ -110,11 +110,12 @@ void CHostThemeHelper::PaintComboDropButton( HDC hdc, const RECT& rc, bool bEnab
 	if( !pDC )
 		return;
 	pDC->FillSolidRect( &rcBtn, OdclSysColor( COLOR_BTNFACE ) );
+	// Left separator only. Outer combo frame is PaintEtchedRect after this,
+	// so a full Rectangle here stacked a second pixel on the right combo.
 	CPen pen( PS_SOLID, 1, OdclSysColor( COLOR_3DSHADOW ) );
 	CPen* pOldPen = pDC->SelectObject( &pen );
-	CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
-	pDC->Rectangle( rcBtn.left, rcBtn.top, rcBtn.right, rcBtn.bottom );
-	pDC->SelectObject( pOldBrush );
+	pDC->MoveTo( rcBtn.left, rcBtn.top );
+	pDC->LineTo( rcBtn.left, rcBtn.bottom );
 	pDC->SelectObject( pOldPen );
 
 	const int cx = (rcBtn.left + rcBtn.right) / 2;
@@ -126,7 +127,7 @@ void CHostThemeHelper::PaintComboDropButton( HDC hdc, const RECT& rc, bool bEnab
 		{ cx, cy + s / 2 }
 	};
 	CBrush br( bEnabled ? SoftGlyphColor() : DisabledTextColor() );
-	pOldBrush = pDC->SelectObject( &br );
+	CBrush* pOldBrush = pDC->SelectObject( &br );
 	pOldPen = (CPen*)pDC->SelectStockObject( NULL_PEN );
 	pDC->Polygon( pts, 3 );
 	pDC->SelectObject( pOldPen );
@@ -164,6 +165,33 @@ COLORREF CHostThemeHelper::GridLineColor( COLORREF crBackground )
 		min( 255, GetBValue( crBackground ) + 24 ) );
 }
 
+void CHostThemeHelper::ApplyCombo( HWND hwnd )
+{
+	if( !hwnd )
+		return;
+	LPCWSTR pszTheme = HostMaps()? L"" : NULL;
+	Apply( hwnd, pszTheme );
+	COMBOBOXINFO cbi = {};
+	cbi.cbSize = sizeof( cbi );
+	if( !::GetComboBoxInfo( hwnd, &cbi ) )
+	{
+		HWND hwndInner = ::FindWindowEx( hwnd, NULL, _T("ComboBox"), NULL );
+		if( !hwndInner )
+			return;
+		Apply( hwndInner, pszTheme );
+		cbi.cbSize = sizeof( cbi );
+		if( !::GetComboBoxInfo( hwndInner, &cbi ) )
+			return;
+	}
+	if( cbi.hwndItem )
+		Apply( cbi.hwndItem, pszTheme );
+	if( cbi.hwndList )
+	{
+		Apply( cbi.hwndList, pszTheme );
+		InstallNcBorder( cbi.hwndList );
+	}
+}
+
 void CHostThemeHelper::PaintComboChrome( HWND hwnd )
 {
 	if( !hwnd || !HostMaps() )
@@ -183,10 +211,35 @@ void CHostThemeHelper::PaintComboChrome( HWND hwnd )
 	{
 		RECT rc = {};
 		::GetClientRect( hwndCombo, &rc );
-		PaintEtchedRect( hdc, rc );
-		::InflateRect( &rc, -1, -1 );
-		PaintEtchedRect( hdc, rc );
+		const COLORREF crWin = OdclSysColor( COLOR_WINDOW );
+		const COLORREF crTxt = OdclSysColor( COLOR_WINDOWTEXT );
+		::FillRect( hdc, &rc, OdclCachedSolidBrush( crWin ) );
+		if( cbi.rcItem.right > cbi.rcItem.left )
+		{
+			::FillRect( hdc, &cbi.rcItem, OdclCachedSolidBrush( crWin ) );
+			const DWORD dwStyle = (DWORD)::GetWindowLong( hwndCombo, GWL_STYLE );
+			if( (dwStyle & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST
+					&& !(dwStyle & (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE)) )
+			{
+				TCHAR sz[512] = {};
+				::GetWindowText( hwndCombo, sz, 511 );
+				HFONT hFont = (HFONT)::SendMessage( hwndCombo, WM_GETFONT, 0, 0 );
+				HGDIOBJ hOld = hFont ? ::SelectObject( hdc, hFont ) : NULL;
+				const COLORREF crOld = ::SetTextColor( hdc,
+					::IsWindowEnabled( hwndCombo ) ? crTxt : DisabledTextColor() );
+				const int nOldBk = ::SetBkMode( hdc, TRANSPARENT );
+				RECT rcText = cbi.rcItem;
+				::InflateRect( &rcText, -4, 0 );
+				::DrawText( hdc, sz, -1, &rcText,
+					DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS );
+				::SetBkMode( hdc, nOldBk );
+				::SetTextColor( hdc, crOld );
+				if( hOld )
+					::SelectObject( hdc, hOld );
+			}
+		}
 		PaintComboDropButton( hdc, cbi.rcButton, ::IsWindowEnabled( hwndCombo ) != FALSE );
+		PaintEtchedRect( hdc, rc );
 		::ReleaseDC( hwndCombo, hdc );
 	}
 	InstallNcBorder( hwndCombo );
@@ -208,7 +261,9 @@ void CHostThemeHelper::PaintComboChrome( HWND hwnd )
 
 LPCWSTR CHostThemeHelper::ScrollTheme()
 {
-	return HostMaps()? L"DarkMode_Explorer" : NULL;
+	// DarkMode_Explorer list/tree item fills stick after SetWindowTheme(NULL).
+	// Pin Explorer on light so subitems leave the dark palette.
+	return HostMaps()? L"DarkMode_Explorer" : L"Explorer";
 }
 
 namespace {

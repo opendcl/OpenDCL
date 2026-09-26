@@ -99,6 +99,8 @@ public:
 							rcCtrl,
 							0,
 							100 );
+			SyncHostFolderTheme( false );
+			CHostThemeHelper::ApplyCombo( m_hWnd );
 			SetFont( pGridCtrl->GetFont() );
 			GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
@@ -1260,6 +1262,8 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 	if( !bCalcOnly )
 	{
 		COLORREF crBackground = mColorService.GetBackgroundColor();
+		if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
+			crBackground = OdclSysColor( COLOR_WINDOW );
 		if( !mbAlternateColumnColors )
 		{
 			if( (nRow % 2) != 0 )
@@ -1322,8 +1326,8 @@ void CGridCtrl::DrawCell( int nRow, int nCol, CDC& cdc, CSize sizCell /*= CSize(
 				CPen penBackground( PS_SOLID, 1, CHostThemeHelper::GridLineColor( crBackground ) );
 				CPen* pOldPen = cdc.SelectObject( &penBackground );
 				cdc.MoveTo( rcBounds.left, rcBounds.bottom - 1 );
-				cdc.LineTo( rcBounds.right, rcBounds.bottom - 1 );
-				cdc.LineTo( rcBounds.right, rcBounds.top );
+				cdc.LineTo( rcBounds.right - 1, rcBounds.bottom - 1 );
+				cdc.LineTo( rcBounds.right - 1, rcBounds.top );
 				cdc.SelectObject( pOldPen );
 			}
 		}
@@ -1575,7 +1579,19 @@ void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, 
 	//	//	pDC->SetPixel( nX - 2, nY - 3, pDC->GetBkColor() );
 	//	//pDC->SelectObject( &pOldPen );
 	//}
-	//else
+	if( CHostThemeHelper::HostMaps() )
+	{
+		const COLORREF crFill = OdclSysColor( COLOR_WINDOW );
+		const COLORREF crRing = OdclSysColor( COLOR_BTNTEXT );
+		CHostThemeHelper::DrawSmoothEllipse( cdc.GetSafeHdc(), rc, crFill, crRing, true );
+		if( bPressed )
+		{
+			CRect rcDot = rc;
+			rcDot.DeflateRect( rc.Width() / 4, rc.Height() / 4 );
+			CHostThemeHelper::DrawSmoothEllipse( cdc.GetSafeHdc(), rcDot, crRing, crRing, true );
+		}
+	}
+	else
 	{
 		mOptionButtonImageList.Draw( &cdc, (bPressed? 1 : 0), rc.TopLeft(), ILD_TRANSPARENT );
 	}
@@ -1591,35 +1607,29 @@ void CGridCtrl::DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool
 	if( rc.bottom > rcIcon.bottom )
 		rc.bottom = rcIcon.bottom;
 	WndTheme ButtonTheme( GetSafeHwnd(), L"BUTTON" );
-	if( ButtonTheme )
+	if( ButtonTheme && !CHostThemeHelper::HostMaps() )
 		ButtonTheme.DrawThemeBackground( cdc.GetSafeHdc(), BP_CHECKBOX, (bPressed? RBS_CHECKEDNORMAL : RBS_UNCHECKEDNORMAL), &rc, NULL );
 	else
 	{
-		CHostThemeHelper::PaintEtchedRect( cdc.GetSafeHdc(), rc );
-		rc.DeflateRect( FromDIP(2), FromDIP(2) );
-		CBrush brFill( cdc.GetBkColor() );
-		cdc.FillRect( &rc, &brFill );
-
+		const COLORREF crBox = OdclSysColor( COLOR_WINDOW );
+		const COLORREF crMark = OdclSysColor( COLOR_BTNTEXT );
+		cdc.FillSolidRect( &rc, crBox );
+		CPen penBox( PS_SOLID, 1, crMark );
+		CPen* pOldPen = cdc.SelectObject( &penBox );
+		CBrush* pOldBrush = (CBrush*)cdc.SelectStockObject( NULL_BRUSH );
+		cdc.Rectangle( rc.left, rc.top, rc.right, rc.bottom );
+		cdc.SelectObject( pOldBrush );
+		cdc.SelectObject( pOldPen );
 		if( bPressed )
 		{
-			rc.InflateRect( FromDIP(4), FromDIP(4) );
-			CPen penBlack( PS_SOLID, 1, RGB(0,0,0) );
-			CPen* pOldPen = cdc.SelectObject( &penBlack );
-			cdc.MoveTo( rc.left + FromDIP(5), rc.top + FromDIP(7) );
-			cdc.LineTo( rc.left + FromDIP(5), rc.top + FromDIP(10) );
-			cdc.MoveTo( rc.left + FromDIP(6), rc.top + FromDIP(8) );
-			cdc.LineTo( rc.left + FromDIP(6), rc.top + FromDIP(11) );
-			cdc.MoveTo( rc.left + FromDIP(7), rc.top + FromDIP(9) );
-			cdc.LineTo( rc.left + FromDIP(7), rc.top + FromDIP(12) );
-			cdc.MoveTo( rc.left + FromDIP(8), rc.top + FromDIP(8) );
-			cdc.LineTo( rc.left + FromDIP(8), rc.top + FromDIP(11) );
-			cdc.MoveTo( rc.left + FromDIP(9), rc.top + FromDIP(7) );
-			cdc.LineTo( rc.left + FromDIP(9), rc.top + FromDIP(10) );
-			cdc.MoveTo( rc.left + FromDIP(10), rc.top + FromDIP(6) );
-			cdc.LineTo( rc.left + FromDIP(10), rc.top + FromDIP(9) );
-			cdc.MoveTo( rc.left + FromDIP(11), rc.top + FromDIP(5) );
-			cdc.LineTo( rc.left + FromDIP(11), rc.top + FromDIP(8) );
-			cdc.SelectObject( &pOldPen );
+			const int nBox = rc.Width();
+			const int nThick = max( 1, (int)FromDIP( 2 ) );
+			CPen penMark( PS_SOLID, nThick, crMark );
+			pOldPen = cdc.SelectObject( &penMark );
+			cdc.MoveTo( rc.left + nBox * 3 / 13, rc.top + nBox * 7 / 13 );
+			cdc.LineTo( rc.left + nBox * 5 / 13, rc.top + nBox * 10 / 13 );
+			cdc.LineTo( rc.left + nBox * 10 / 13, rc.top + nBox * 4 / 13 );
+			cdc.SelectObject( pOldPen );
 		}
 	}
 }
@@ -1982,7 +1992,17 @@ void CGridCtrl::HandleHostThemeChanged()
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::Apply( m_hWnd, pszTheme );
 	CHostThemeHelper::ApplyHeader( GetHeaderCtrl() );
-	ApplyProperty( mpTemplate->GetPropertyObject( Prop::GridLines ) );
+	if( mpTemplate )
+	{
+		ApplyProperty( mpTemplate->GetPropertyObject( Prop::AlternatingColor ) );
+		ApplyProperty( mpTemplate->GetPropertyObject( Prop::GridLines ) );
+	}
+	COLORREF crBk = mColorService.GetBackgroundColor();
+	if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
+		crBk = OdclSysColor( COLOR_WINDOW );
+	SetBkColor( crBk );
+	SetTextBkColor( crBk );
+	SetTextColor( mColorService.GetForegroundColor() );
 	OnNeedRepaint( true );
 }
 
@@ -1997,7 +2017,10 @@ void CGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		return;
 	int nRow = lpDrawItemStruct->itemID;
 	CDC* pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
-	pDC->SetBkColor( mColorService.GetBackgroundColor() );
+	COLORREF crBk = mColorService.GetBackgroundColor();
+	if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
+		crBk = OdclSysColor( COLOR_WINDOW );
+	pDC->SetBkColor( crBk );
 	pDC->SetTextColor( mColorService.GetForegroundColor() );
 
 	LONG nRightEdge = lpDrawItemStruct->rcItem.right;

@@ -173,11 +173,15 @@ void CLabelCtrl::OnPaint()
 		crText = OdclSysColor( COLOR_BTNTEXT );
 	dc.SetTextColor( crText );
 	dc.SetBkColor( crBk );
-	dc.SetBkMode( OPAQUE );
+	dc.SetBkMode( TRANSPARENT );
 	CFont* pFont = GetFont();
 	CFont* pOldFont = pFont ? dc.SelectObject( pFont ) : NULL;
-	UINT dt = DT_EXPANDTABS | DT_NOPREFIX;
+	UINT dt = DT_EXPANDTABS;
 	const DWORD dwStyle = GetStyle();
+	if( dwStyle & SS_NOPREFIX )
+		dt |= DT_NOPREFIX;
+	else if( SendMessage( 0x0129 ) & 0x0002 ) // WM_QUERYUISTATE / UISF_HIDEACCEL
+		dt |= 0x00100000; // DT_HIDEPREFIX
 	if( dwStyle & SS_CENTER )
 		dt |= DT_CENTER;
 	else if( dwStyle & SS_RIGHT )

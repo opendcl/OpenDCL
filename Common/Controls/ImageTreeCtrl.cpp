@@ -151,7 +151,9 @@ void CImageTreeCtrl::SyncHostTreeTheme()
 	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::Apply( m_hWnd, pszTheme );
-	const COLORREF crBk = mColorService.GetBackgroundColor();
+	COLORREF crBk = mColorService.GetBackgroundColor();
+	if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
+		crBk = OdclSysColor( COLOR_WINDOW );
 	const COLORREF crFg = mColorService.GetForegroundColor();
 	SetBkColor( crBk );
 	SetTextColor( crFg );

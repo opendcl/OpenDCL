@@ -35,6 +35,13 @@ bool CFolderComboBox::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwSt
 		CRect rcTree( 0, 0, rectWnd.Width(), 120 );
 		DWORD dwStylePopup = (WS_POPUP | WS_BORDER | WS_VSCROLL | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_HASBUTTONS);
 		bSuccess = mPopupCtrl.Create( this, rcTree, dwStylePopup, 0 );
+		if( bSuccess && CHostThemeHelper::HostMaps() )
+		{
+			CHostThemeHelper::Apply( mPopupCtrl.m_hWnd, L"" );
+			mPopupCtrl.SetBkColor( OdclSysColor( COLOR_WINDOW ) );
+			mPopupCtrl.SetTextColor( OdclSysColor( COLOR_WINDOWTEXT ) );
+			CHostThemeHelper::InstallNcBorder( mPopupCtrl.m_hWnd );
+		}
 		if( bSuccess && (dwStyle & WS_DISABLED) )
 			mfState.setDisabled();
 	}
@@ -701,8 +708,6 @@ void CFolderComboBox::OnPaint()
 	}
 	else
 	{
-		rcButton.DeflateRect(-1, 1, 1, 1);
-
 		dc.FillSolidRect( &rcClient, OdclSysColor( mfState.isDisabled()? COLOR_3DFACE : COLOR_WINDOW ) );
 		if( bFocused )
 		{
@@ -720,10 +725,17 @@ void CFolderComboBox::OnPaint()
 		//if( mfState.isHot() )
 		//	nBtnState |= 0x1000/*DFCS_HOT*/;
 		if( CHostThemeHelper::HostMaps() )
+		{
+			CHostThemeHelper::PaintComboDropButton( dc.GetSafeHdc(), rcButton,
+				mfState.isDisabled() == false );
 			CHostThemeHelper::PaintEtchedRect( dc.GetSafeHdc(), rcClient );
+		}
 		else
+		{
+			rcButton.DeflateRect(-1, 1, 1, 1);
 			dc.DrawEdge( &rcClient, EDGE_SUNKEN, BF_RECT );
-		dc.DrawFrameControl( &rcButton, DFC_SCROLL, DFCS_SCROLLCOMBOBOX | nBtnState );
+			dc.DrawFrameControl( &rcButton, DFC_SCROLL, DFCS_SCROLLCOMBOBOX | nBtnState );
+		}
 		if( !sLabel.IsEmpty() )
 		{
 			COLORREF clrForeground;

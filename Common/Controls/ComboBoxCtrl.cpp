@@ -227,12 +227,7 @@ void CComboBoxCtrl::SyncHostComboTheme()
 	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
 	GetTheme().SetWindowTheme( pszTheme, pszTheme );
 	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
-#if defined(ODCL_HOST_COLORTHEME)
-	COMBOBOXINFO cbi = {0};
-	cbi.cbSize = sizeof( cbi );
-	if( ::GetComboBoxInfo( m_hWnd, &cbi ) && cbi.hwndList )
-		CHostThemeHelper::Apply( cbi.hwndList, CHostThemeHelper::ScrollTheme() );
-#endif
+	CHostThemeHelper::ApplyCombo( m_hWnd );
 	OnNeedRepaint( true );
 }
 
@@ -335,6 +330,7 @@ void CComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 void CComboBoxCtrl::OnCbnDropdown()
 {
+	CHostThemeHelper::ApplyCombo( m_hWnd );
 }
 
 void CComboBoxCtrl::OnCbnCloseup()
@@ -425,36 +421,35 @@ void CComboBoxCtrl::PaintHostComboChrome( CDC* pDC )
 	CHostThemeHelper::PaintComboDropButton( pDC->GetSafeHdc(), cbi.rcButton, bEnabled );
 	CRect rcClient;
 	GetClientRect( &rcClient );
-	CHostThemeHelper::PaintEtchedRect( pDC->GetSafeHdc(), rcClient );
-	CHostThemeHelper::PaintNcBorder( m_hWnd );
 
 	const DWORD dwStyle = GetStyle();
-	if( (dwStyle & CBS_DROPDOWNLIST) != CBS_DROPDOWNLIST )
-		return;
-	if( dwStyle & (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE) )
-		return;
-
-	CAcadColorService* pColorService = GetColorService();
-	const COLORREF crBk = pColorService ? pColorService->GetBackgroundColor() : OdclSysColor( COLOR_WINDOW );
-	const COLORREF crFg = pColorService ? pColorService->GetForegroundColor() : OdclSysColor( COLOR_WINDOWTEXT );
-	CRect rcFace( cbi.rcItem );
-	pDC->FillSolidRect( &rcFace, crBk );
-	CString sText;
-	const int nSel = GetCurSel();
-	if( nSel >= 0 )
-		GetLBText( nSel, sText );
-	else
-		GetWindowText( sText );
-	CFont* pFont = GetFont();
-	CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
-	const COLORREF crOld = pDC->SetTextColor( bEnabled ? crFg : CHostThemeHelper::DisabledTextColor() );
-	const int nOldBk = pDC->SetBkMode( TRANSPARENT );
-	rcFace.DeflateRect( FromDIP( 4 ), 0 );
-	pDC->DrawText( sText, &rcFace, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS );
-	pDC->SetBkMode( nOldBk );
-	pDC->SetTextColor( crOld );
-	if( pOldFont )
-		pDC->SelectObject( pOldFont );
+	if( (dwStyle & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST
+			&& !(dwStyle & (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE)) )
+	{
+		CAcadColorService* pColorService = GetColorService();
+		const COLORREF crBk = pColorService ? pColorService->GetBackgroundColor() : OdclSysColor( COLOR_WINDOW );
+		const COLORREF crFg = pColorService ? pColorService->GetForegroundColor() : OdclSysColor( COLOR_WINDOWTEXT );
+		CRect rcFace( cbi.rcItem );
+		pDC->FillSolidRect( &rcFace, crBk );
+		CString sText;
+		const int nSel = GetCurSel();
+		if( nSel >= 0 )
+			GetLBText( nSel, sText );
+		else
+			GetWindowText( sText );
+		CFont* pFont = GetFont();
+		CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
+		const COLORREF crOld = pDC->SetTextColor( bEnabled ? crFg : CHostThemeHelper::DisabledTextColor() );
+		const int nOldBk = pDC->SetBkMode( TRANSPARENT );
+		rcFace.DeflateRect( FromDIP( 4 ), 0 );
+		pDC->DrawText( sText, &rcFace, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS );
+		pDC->SetBkMode( nOldBk );
+		pDC->SetTextColor( crOld );
+		if( pOldFont )
+			pDC->SelectObject( pOldFont );
+	}
+	CHostThemeHelper::PaintEtchedRect( pDC->GetSafeHdc(), rcClient );
+	CHostThemeHelper::PaintNcBorder( m_hWnd );
 #endif
 }
 

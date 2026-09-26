@@ -149,12 +149,7 @@ void CRadioButtonCtrl::PaintHostOption( CDC* pDC )
 	CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
 	pDC->DrawText( sCaption, &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS );
 	if( GetFocus() == this )
-	{
-		CRect rcFocus = rcText;
-		pDC->DrawText( sCaption, &rcFocus, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_CALCRECT );
-		rcFocus.InflateRect( (int)FromDIP( 1 ), (int)FromDIP( 1 ) );
-		pDC->DrawFocusRect( &rcFocus );
-	}
+		OdclDrawCaptionFocusRect( pDC->GetSafeHdc(), rcText, rcClient, sCaption );
 	if( pOldFont )
 		pDC->SelectObject( pOldFont );
 	pDC->SetBkMode( nOldBk );
