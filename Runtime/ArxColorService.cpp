@@ -6,6 +6,8 @@
 
 // Sampled AutoCAD/BricsCAD dark dialog chrome (COLORTHEME 0), mapped onto
 // Win32 GetSysColor indices. Light table stays live GetSysColor.
+// Body text is a cool off-white so labels and owner-drawn lines are not
+// full-bright on dark fills. COLOR_HIGHLIGHTTEXT stays white.
 static const COLORREF kCadDarkSysColors[] =
 {
 	RGB( 59,  68,  83 ), //  0 COLOR_SCROLLBAR
@@ -15,9 +17,9 @@ static const COLORREF kCadDarkSysColors[] =
 	RGB( 59,  68,  83 ), //  4 COLOR_MENU
 	RGB( 33,  40,  48 ), //  5 COLOR_WINDOW
 	RGB(  0,   0,   0 ), //  6 COLOR_WINDOWFRAME
-	RGB(255, 255, 255 ), //  7 COLOR_MENUTEXT
-	RGB(255, 255, 255 ), //  8 COLOR_WINDOWTEXT
-	RGB(255, 255, 255 ), //  9 COLOR_CAPTIONTEXT
+	RGB(204, 210, 218 ), //  7 COLOR_MENUTEXT
+	RGB(204, 210, 218 ), //  8 COLOR_WINDOWTEXT
+	RGB(204, 210, 218 ), //  9 COLOR_CAPTIONTEXT
 	RGB( 59,  68,  83 ), // 10 COLOR_ACTIVEBORDER
 	RGB( 59,  68,  83 ), // 11 COLOR_INACTIVEBORDER
 	RGB( 33,  40,  48 ), // 12 COLOR_APPWORKSPACE
@@ -26,12 +28,12 @@ static const COLORREF kCadDarkSysColors[] =
 	RGB( 59,  68,  83 ), // 15 COLOR_BTNFACE / COLOR_3DFACE
 	RGB( 37,  45,  56 ), // 16 COLOR_BTNSHADOW / COLOR_3DSHADOW
 	RGB(128, 128, 128 ), // 17 COLOR_GRAYTEXT
-	RGB(255, 255, 255 ), // 18 COLOR_BTNTEXT
+	RGB(204, 210, 218 ), // 18 COLOR_BTNTEXT
 	RGB(160, 160, 160 ), // 19 COLOR_INACTIVECAPTIONTEXT
 	RGB( 90, 100, 115 ), // 20 COLOR_BTNHIGHLIGHT / COLOR_3DHIGHLIGHT
 	RGB( 20,  25,  30 ), // 21 COLOR_3DDKSHADOW
 	RGB( 80,  90, 105 ), // 22 COLOR_3DLIGHT
-	RGB(255, 255, 255 ), // 23 COLOR_INFOTEXT
+	RGB(204, 210, 218 ), // 23 COLOR_INFOTEXT
 	RGB( 45,  52,  64 ), // 24 COLOR_INFOBK
 	RGB( 59,  68,  83 ), // 25 (unused)
 	RGB(  0, 162, 232 ), // 26 COLOR_HOTLIGHT
