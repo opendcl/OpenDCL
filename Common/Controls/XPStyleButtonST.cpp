@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "XPStyleButtonST.h"
+#include "HostThemeHelper.h"
 #include <Windows.h>
 #include <Winuser.h>
 
@@ -43,7 +44,7 @@ CXPStyleButtonST::~CXPStyleButtonST()
 //
 DWORD CXPStyleButtonST::OnDrawBorder(CDC* pDC, CRect* pRect)
 {
-	if (m_pTheme == NULL || m_pTheme->IsAppThemed() == FALSE)
+	if (m_pTheme == NULL || m_pTheme->IsAppThemed() == FALSE || CHostThemeHelper::HostMaps())
 	{
 		return CButtonST::OnDrawBorder(pDC, pRect);
 	} // if
@@ -72,7 +73,7 @@ DWORD CXPStyleButtonST::OnDrawBackground(CDC* pDC, CRect* pRect)
 	BOOL	bDefaultDraw = FALSE;
 
 	// No theme helper passed
-	if (m_pTheme == NULL || m_pTheme->IsAppThemed() == FALSE)
+	if (m_pTheme == NULL || m_pTheme->IsAppThemed() == FALSE || CHostThemeHelper::HostMaps())
 	{
 		bDefaultDraw = TRUE;
 	} // if

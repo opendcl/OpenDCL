@@ -26,7 +26,11 @@ public:
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostMonthTheme();
 
 // Generated message map functions
 protected:
@@ -35,5 +39,7 @@ protected:
 	void PostNcDestroy() override;
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
+	afx_msg LRESULT OnMonthNavPaint( WPARAM, LPARAM );
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

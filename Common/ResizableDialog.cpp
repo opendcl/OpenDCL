@@ -13,6 +13,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "ColorService.h"
+#include "Workspace.h"
 #include "ResizableDialog.h"
 
 
@@ -120,7 +122,7 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 			{
 				CPoint ptLR( m_rcGripRect.BottomRight() - CSize( (nCol * 2 + 1) * nBlock, (nRow * 2 + 1) * nBlock ) );
 				CRect rcBlock( ptLR - CSize( nBlock, nBlock ), ptLR );
-				pDC->FillSolidRect( &rcBlock, GetSysColor( COLOR_BTNSHADOW ) );
+				pDC->FillSolidRect( &rcBlock, OdclSysColor( COLOR_BTNSHADOW ) );
 			}
 		}
 	}

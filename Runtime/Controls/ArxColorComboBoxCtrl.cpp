@@ -3,6 +3,7 @@
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "InvokeMethod.h"
+#include "ComboHostThemeHelper.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,6 +35,9 @@ bool CArxColorComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncAcUiComboHostTheme( this, this );
 
 	return bSuccess;
 }
@@ -101,7 +105,9 @@ bool CArxColorComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 		}
 	}
 #endif
-	return __super::OnApplyUseVisualStyle( pProp );
+	const bool bOk = __super::OnApplyUseVisualStyle( pProp );
+	SyncAcUiComboHostTheme( this, this );
+	return bOk;
 }
 
 void CArxColorComboBoxCtrl::OnListChanged()
@@ -128,7 +134,49 @@ void CArxColorComboBoxCtrl::OnListChanged()
 	}
 }
 
+
+void CArxColorComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+{
+	if( !lpDrawItemStruct || !CHostThemeHelper::HostMaps() )
+	{
+		__super::DrawItem( lpDrawItemStruct );
+		return;
+	}
+#if defined(ODCL_ACUI_HOST_DRAWITEM)
+	OdclAcUiComboHostDrawItem( this, lpDrawItemStruct );
+#else
+	__super::DrawItem( lpDrawItemStruct );
+#endif
+}
+
+BOOL CArxColorComboBoxCtrl::GetItemColors(DRAWITEMSTRUCT& dis, COLORREF& fgColor, COLORREF& bgColor, COLORREF& fillColor)
+{
+	const BOOL bOk = __super::GetItemColors( dis, fgColor, bgColor, fillColor );
+	RemapAcUiComboItemColors( fgColor, bgColor, fillColor );
+	return bOk;
+}
+
+void CArxColorComboBoxCtrl::HandleHostThemeChanged()
+{
+	SyncAcUiComboHostTheme( this, this );
+}
+
+HBRUSH CArxColorComboBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
+{
+	return AcUiComboHostCtlColor( this, pDC, nCtlColor );
+}
+
+HBRUSH CArxColorComboBoxCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = AcUiComboHostCtlColor( this, pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
+}
+
 BEGIN_MESSAGE_MAP(CArxColorComboBoxCtrl, CAcUiColorComboBox)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
@@ -149,6 +197,8 @@ END_MESSAGE_MAP()
 LRESULT CArxColorComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	if( message == WM_PAINT )
+		PaintAcUiComboChrome( this );
 	switch( message )
 	{
 		case CB_SELECTSTRING:

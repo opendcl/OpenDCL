@@ -30,6 +30,7 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override; //Prop::UseVisualStyle
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return CFilteredComboExCtrl::GetColorService(); }
 
 public:
@@ -41,6 +42,7 @@ public:
 
 protected:
 	virtual void OnListChanged();
+	void SyncHostComboTheme();
 
 protected:
 	DECLARE_MESSAGE_MAP();
@@ -48,6 +50,8 @@ protected:
 protected:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	BOOL PreTranslateMessage(MSG* pMsg) override;
+	HBRUSH CtlColor(CDC* pDC, UINT nCtlColor) override;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	void PostNcDestroy() override;
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
@@ -56,5 +60,6 @@ protected:
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

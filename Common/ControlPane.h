@@ -54,6 +54,7 @@ public:
 	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
 	bool IsModal() const;
 	bool IsClosing() const;
+	void HandleHostThemeChanged();
 	virtual bool IsInvisibleControlAllowed( TDialogControlPtr pDlgControl ) const { return true; }
 
 // Operations

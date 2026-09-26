@@ -4,6 +4,9 @@
 #include "stdafx.h"
 #include "ScrollBarCtrl.h"
 #include "ControlPane.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
+#include "PropertyIds.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -39,6 +42,12 @@ bool CScrollBarCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	if( bSuccess )
+	{
+		ApplyScrollInfo();
+		SyncHostScrollTheme();
+	}
+
 	return bSuccess;
 }
 
@@ -64,14 +73,11 @@ bool CScrollBarCtrl::ApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Value:
-		SetScrollPos( pProp->GetLongValue() );
-		break;
 	case Prop::MinValue:
-		SetScrollRange( pProp->GetLongValue(), mpTemplate->GetLongProperty( Prop::MaxValue ) );
-		break;
 	case Prop::MaxValue:
+	case Prop::LargeChange:
 		if( !IsEnumeratingProperties() )
-			SetScrollRange( mpTemplate->GetLongProperty( Prop::MinValue ), pProp->GetLongValue() );
+			ApplyScrollInfo();
 		break;
 	case Prop::Orientation:
 		if( pProp->GetLongValue() == 0 )
@@ -81,10 +87,164 @@ bool CScrollBarCtrl::ApplyProperty( TPropertyPtr pProp )
 		break;
 	case Prop::SmallChange:
 		break;
-	case Prop::LargeChange:
-		break;
 	}
 	return !bFailed;
+}
+
+void CScrollBarCtrl::ApplyScrollInfo()
+{
+	if( !m_hWnd || !mpTemplate )
+		return;
+	SCROLLINFO si = {0};
+	si.cbSize = sizeof( si );
+	si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
+	si.nMin = mpTemplate->GetLongProperty( Prop::MinValue );
+	si.nMax = mpTemplate->GetLongProperty( Prop::MaxValue );
+	const UINT nPage = (UINT)max( 1L, mpTemplate->GetLongProperty( Prop::LargeChange ) );
+	si.nPage = nPage;
+	si.nPos = mpTemplate->GetLongProperty( Prop::Value );
+	SetScrollInfo( &si, TRUE );
+}
+
+bool CScrollBarCtrl::UseHostOwnerDraw() const
+{
+	// Always owner-draw. Native UxTheme (especially Win11 overlay) is light
+	// on CAD chrome and does not consume OdclSysColor.
+	return true;
+}
+
+void CScrollBarCtrl::HandleHostThemeChanged()
+{
+	SyncHostScrollTheme();
+}
+
+bool CScrollBarCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	SyncHostScrollTheme();
+	return true;
+}
+
+void CScrollBarCtrl::SyncHostScrollTheme()
+{
+	if( !m_hWnd )
+		return;
+	GetTheme().SetWindowTheme( L"", L"" );
+	CHostThemeHelper::Apply( m_hWnd, L"" );
+	OnNeedRepaint( true );
+}
+
+static void DrawScrollArrow( CDC* pDC, const CRect& rc, int nDir )
+{
+	pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+	CPen pen( PS_SOLID, 1, OdclSysColor( COLOR_3DSHADOW ) );
+	CPen* pOldPen = pDC->SelectObject( &pen );
+	CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
+	pDC->Rectangle( rc.left, rc.top, rc.right, rc.bottom );
+	pDC->SelectObject( pOldBrush );
+	pDC->SelectObject( pOldPen );
+
+	const int cx = (rc.left + rc.right) / 2;
+	const int cy = (rc.top + rc.bottom) / 2;
+	const int s = max( 2, min( rc.Width(), rc.Height() ) / 4 );
+	POINT pts[3] = {0};
+	switch( nDir )
+	{
+	case 0: // up
+		pts[0].x = cx; pts[0].y = cy - s;
+		pts[1].x = cx - s; pts[1].y = cy + s / 2;
+		pts[2].x = cx + s; pts[2].y = cy + s / 2;
+		break;
+	case 1: // down
+		pts[0].x = cx; pts[0].y = cy + s;
+		pts[1].x = cx - s; pts[1].y = cy - s / 2;
+		pts[2].x = cx + s; pts[2].y = cy - s / 2;
+		break;
+	case 2: // left
+		pts[0].x = cx - s; pts[0].y = cy;
+		pts[1].x = cx + s / 2; pts[1].y = cy - s;
+		pts[2].x = cx + s / 2; pts[2].y = cy + s;
+		break;
+	default: // right
+		pts[0].x = cx + s; pts[0].y = cy;
+		pts[1].x = cx - s / 2; pts[1].y = cy - s;
+		pts[2].x = cx - s / 2; pts[2].y = cy + s;
+		break;
+	}
+	CBrush br( CHostThemeHelper::SoftGlyphColor() );
+	pOldBrush = pDC->SelectObject( &br );
+	pOldPen = (CPen*)pDC->SelectStockObject( NULL_PEN );
+	pDC->Polygon( pts, 3 );
+	pDC->SelectObject( pOldPen );
+	pDC->SelectObject( pOldBrush );
+}
+
+void CScrollBarCtrl::PaintHostScrollBar( CDC* pDC )
+{
+	if( !pDC )
+		return;
+	CRect rc;
+	GetClientRect( &rc );
+	const bool bVert = (GetStyle() & SBS_VERT) != 0;
+	const int nArrow = bVert? GetSystemMetrics( SM_CYVSCROLL ) : GetSystemMetrics( SM_CXHSCROLL );
+
+	CRect rcArrow1 = rc;
+	CRect rcArrow2 = rc;
+	CRect rcTrack = rc;
+	if( bVert )
+	{
+		rcArrow1.bottom = rc.top + nArrow;
+		rcArrow2.top = rc.bottom - nArrow;
+		rcTrack.top = rcArrow1.bottom;
+		rcTrack.bottom = rcArrow2.top;
+	}
+	else
+	{
+		rcArrow1.right = rc.left + nArrow;
+		rcArrow2.left = rc.right - nArrow;
+		rcTrack.left = rcArrow1.right;
+		rcTrack.right = rcArrow2.left;
+	}
+
+	pDC->FillSolidRect( &rcTrack, OdclSysColor( COLOR_3DSHADOW ) );
+	DrawScrollArrow( pDC, rcArrow1, bVert? 0 : 2 );
+	DrawScrollArrow( pDC, rcArrow2, bVert? 1 : 3 );
+
+	SCROLLINFO si = {0};
+	si.cbSize = sizeof( si );
+	si.fMask = SIF_ALL;
+	GetScrollInfo( &si );
+	const int nRange = si.nMax - si.nMin + 1;
+	const int nPage = (int)max( (UINT)1, si.nPage );
+	const int nTrack = bVert? rcTrack.Height() : rcTrack.Width();
+	if( nRange > nPage && nTrack > 0 )
+	{
+		int nThumb = max( nArrow, MulDiv( nPage, nTrack, nRange ) );
+		if( nThumb > nTrack )
+			nThumb = nTrack;
+		const int nTravel = nTrack - nThumb;
+		const int nMaxPos = max( 1, nRange - nPage );
+		const int nOffset = MulDiv( si.nPos - si.nMin, nTravel, nMaxPos );
+		CRect rcThumb = rcTrack;
+		if( bVert )
+		{
+			rcThumb.top = rcTrack.top + nOffset;
+			rcThumb.bottom = rcThumb.top + nThumb;
+		}
+		else
+		{
+			rcThumb.left = rcTrack.left + nOffset;
+			rcThumb.right = rcThumb.left + nThumb;
+		}
+		pDC->FillSolidRect( &rcThumb, OdclSysColor( COLOR_BTNFACE ) );
+		CPen pen( PS_SOLID, 1, OdclSysColor( COLOR_3DLIGHT ) );
+		CPen* pOldPen = pDC->SelectObject( &pen );
+		CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
+		pDC->Rectangle( rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom );
+		pDC->SelectObject( pOldBrush );
+		pDC->SelectObject( pOldPen );
+	}
 }
 
 bool CScrollBarCtrl::OnApplyForegroundColor( TPropertyPtr pProp )
@@ -153,6 +313,7 @@ BEGIN_MESSAGE_MAP(CScrollBarCtrl, CScrollBar)
 	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CScrollBarCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -204,7 +365,25 @@ HBRUSH CScrollBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CScrollBarCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( UseHostOwnerDraw() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_3DSHADOW ) );
+		return TRUE;
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CScrollBarCtrl::OnPaint()
+{
+	if( !UseHostOwnerDraw() )
+	{
+		Default();
+		return;
+	}
+	CPaintDC dc( this );
+	PaintHostScrollBar( &dc );
 }

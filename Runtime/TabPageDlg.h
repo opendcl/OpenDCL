@@ -32,6 +32,7 @@ public:
 	bool IsResizable() const override { return false; }
 	void CloseDialog(int nStatus) override {}
 	CAcadColorService* GetColorService() override { return &mColorService; }
+	void HandleHostThemeChanged() override;
 	bool Create( CWnd* pParentWnd, UINT nID ) override { return false; }
 	void ApplyPosition() override; //move control window to new position
 

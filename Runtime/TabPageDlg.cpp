@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "TabPageDlg.h"
 #include "Resource.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -37,6 +39,16 @@ CTabPageDlg::CTabPageDlg( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rec
 	ApplyPropertiesEnum();
 	GetControlPane()->CreateControls( nId );
 	GetControlPane()->RecalcLayout();
+	HandleHostThemeChanged();
+}
+
+void CTabPageDlg::HandleHostThemeChanged()
+{
+	if( CHostThemeHelper::HostMaps() )
+		mColorService.SetBackgroundColor( OdclSysColor( COLOR_3DLIGHT ) );
+	else
+		mColorService.SetBackgroundColor( CLR_DEFAULT );
+	__super::HandleHostThemeChanged();
 }
 
 CTabPageDlg::~CTabPageDlg()
@@ -114,6 +126,13 @@ BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 {
 	if( !IsWindowVisible() )
 		return TRUE;
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_3DLIGHT ) );
+		return TRUE;
+	}
 /*
 	CRect rcTarget;
 	pDC->GetClipBox( &rcTarget );
@@ -135,8 +154,8 @@ BOOL CTabPageDlg::OnEraseBkgnd(CDC* pDC)
 		}
 	}
 */
-	//CDialogControl::HandleEraseBkgnd( pDC ); //bypass CDialogObject to get transparency
-	//return TRUE;
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }
 

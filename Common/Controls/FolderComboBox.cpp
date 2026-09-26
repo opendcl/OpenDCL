@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "FolderComboBox.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -33,6 +35,13 @@ bool CFolderComboBox::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwSt
 		CRect rcTree( 0, 0, rectWnd.Width(), 120 );
 		DWORD dwStylePopup = (WS_POPUP | WS_BORDER | WS_VSCROLL | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_HASBUTTONS);
 		bSuccess = mPopupCtrl.Create( this, rcTree, dwStylePopup, 0 );
+		if( bSuccess && CHostThemeHelper::HostMaps() )
+		{
+			CHostThemeHelper::Apply( mPopupCtrl.m_hWnd, L"" );
+			mPopupCtrl.SetBkColor( OdclSysColor( COLOR_WINDOW ) );
+			mPopupCtrl.SetTextColor( OdclSysColor( COLOR_WINDOWTEXT ) );
+			CHostThemeHelper::InstallNcBorder( mPopupCtrl.m_hWnd );
+		}
 		if( bSuccess && (dwStyle & WS_DISABLED) )
 			mfState.setDisabled();
 	}
@@ -595,6 +604,30 @@ LRESULT CFolderComboBox::OnThemechanged(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+
+void CFolderComboBox::SyncHostFolderTheme( bool bVisual )
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	if( mPopupCtrl.m_hWnd )
+	{
+		CHostThemeHelper::Apply( mPopupCtrl.m_hWnd, pszTheme );
+		if( CHostThemeHelper::HostMaps() )
+		{
+			mPopupCtrl.SetBkColor( OdclSysColor( COLOR_WINDOW ) );
+			mPopupCtrl.SetTextColor( OdclSysColor( COLOR_WINDOWTEXT ) );
+		}
+		else
+		{
+			mPopupCtrl.SetBkColor( (COLORREF)-1 );
+			mPopupCtrl.SetTextColor( (COLORREF)-1 );
+		}
+	}
+	Invalidate( TRUE );
+}
+
 void CFolderComboBox::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
@@ -626,7 +659,7 @@ void CFolderComboBox::OnPaint()
 	bool bHighlighted = false;
 
 	DcTheme Theme( GetFolderComboBoxTheme(), dc.GetSafeHdc() );
-	if( Theme )
+	if( Theme && !CHostThemeHelper::HostMaps() )
 	{
 		int nTBState = (mfState.isDisabled()? CBTBS_DISABLED : (bFocused? CBTBS_FOCUSED : (mfState.isHot()? CBTBS_HOT : CBTBS_NORMAL)));
 		Theme.DrawThemeBackground( CP_BACKGROUND, nTBState, &rcClient, NULL );
@@ -653,14 +686,14 @@ void CFolderComboBox::OnPaint()
 			if( bFocused && mbPreVistaBehavior )
 			{
 				bHighlighted = true;
-				clrBackground = GetSysColor( COLOR_HIGHLIGHT );
-				clrForeground = GetSysColor( COLOR_HIGHLIGHTTEXT );
+				clrBackground = OdclSysColor( COLOR_HIGHLIGHT );
+				clrForeground = OdclSysColor( COLOR_HIGHLIGHTTEXT );
 				rcBackground.DeflateRect(1, 1, 0, 1);
 			}
 			else
 			{
-				clrBackground = GetSysColor( mfState.isDisabled()? COLOR_3DFACE : COLOR_WINDOW );
-				clrForeground = GetSysColor( mfState.isDisabled()? COLOR_GRAYTEXT : COLOR_BTNTEXT );
+				clrBackground = OdclSysColor( mfState.isDisabled()? COLOR_3DFACE : COLOR_WINDOW );
+				clrForeground = ( mfState.isDisabled()? CHostThemeHelper::DisabledTextColor() : OdclSysColor( COLOR_BTNTEXT ) );
 				rcBackground.DeflateRect(0, 0, -1, 0);
 			}
 			if( mbPreVistaBehavior )
@@ -675,15 +708,13 @@ void CFolderComboBox::OnPaint()
 	}
 	else
 	{
-		rcButton.DeflateRect(-1, 1, 1, 1);
-
-		dc.FillSolidRect( &rcClient, GetSysColor( mfState.isDisabled()? COLOR_3DFACE : COLOR_WINDOW ) );
+		dc.FillSolidRect( &rcClient, OdclSysColor( mfState.isDisabled()? COLOR_3DFACE : COLOR_WINDOW ) );
 		if( bFocused )
 		{
 			bHighlighted = true;
 			CRect rcHighlight = rcItem;
 			rcHighlight.DeflateRect(1, 1, mbPreVistaBehavior? 1 : 0, 1);
-			dc.FillSolidRect( &rcHighlight, GetSysColor( COLOR_HIGHLIGHT ) );
+			dc.FillSolidRect( &rcHighlight, OdclSysColor( COLOR_HIGHLIGHT ) );
 		}
 
 		UINT nBtnState = 0;
@@ -693,15 +724,25 @@ void CFolderComboBox::OnPaint()
 			nBtnState |= DFCS_PUSHED;
 		//if( mfState.isHot() )
 		//	nBtnState |= 0x1000/*DFCS_HOT*/;
-		dc.DrawEdge( &rcClient, EDGE_SUNKEN, BF_RECT );
-		dc.DrawFrameControl( &rcButton, DFC_SCROLL, DFCS_SCROLLCOMBOBOX | nBtnState );
+		if( CHostThemeHelper::HostMaps() )
+		{
+			CHostThemeHelper::PaintComboDropButton( dc.GetSafeHdc(), rcButton,
+				mfState.isDisabled() == false );
+			CHostThemeHelper::PaintEtchedRect( dc.GetSafeHdc(), rcClient );
+		}
+		else
+		{
+			rcButton.DeflateRect(-1, 1, 1, 1);
+			dc.DrawEdge( &rcClient, EDGE_SUNKEN, BF_RECT );
+			dc.DrawFrameControl( &rcButton, DFC_SCROLL, DFCS_SCROLLCOMBOBOX | nBtnState );
+		}
 		if( !sLabel.IsEmpty() )
 		{
 			COLORREF clrForeground;
 			if( bHighlighted )
-				clrForeground = GetSysColor( COLOR_HIGHLIGHTTEXT );
+				clrForeground = OdclSysColor( COLOR_HIGHLIGHTTEXT );
 			else
-				clrForeground = GetSysColor( mfState.isDisabled()? COLOR_GRAYTEXT : COLOR_BTNTEXT );
+				clrForeground = ( mfState.isDisabled()? CHostThemeHelper::DisabledTextColor() : OdclSysColor( COLOR_BTNTEXT ) );
 			dc.SetTextColor( clrForeground );
 			dc.SetBkMode(TRANSPARENT);
 			dc.SelectObject(GetFont());

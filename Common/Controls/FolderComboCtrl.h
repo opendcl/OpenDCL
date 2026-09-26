@@ -26,6 +26,8 @@ public:
 	CRect GetWndRect() const override;
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
 	void OnThemeRequested( WndTheme& Theme ) const override { if( !Theme ) Theme.Attach( GetFolderComboBoxTheme(), GetHWnd() ); }
 

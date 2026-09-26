@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ComboHandler.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "Resource.h"
 #include <string>
@@ -105,8 +106,8 @@ protected:
 			// Draw selection state
 			if (lpDIS->itemState & ODS_SELECTED)
 			{
-				brushFill.CreateSolidBrush(::GetSysColor(COLOR_HIGHLIGHT));
-				pDC->SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+				brushFill.CreateSolidBrush(OdclSysColor(COLOR_HIGHLIGHT));
+				pDC->SetTextColor(OdclSysColor(COLOR_HIGHLIGHTTEXT));
 			}
 			else
 				brushFill.CreateSolidBrush(pDC->GetBkColor());

@@ -74,6 +74,7 @@ protected:
 	virtual void Init();
 	virtual bool SetKnob(const CPoint& pt);
 	virtual void PostMessageToParent(const int nTBCode) const;
+	void RecreateHostBrushes();
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

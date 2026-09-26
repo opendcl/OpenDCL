@@ -33,7 +33,13 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast ) override;
+	void HandleHostThemeChanged() override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostProgressTheme();
+	bool UseHostOwnerDraw() const;
 
 public:
 	void Reset();

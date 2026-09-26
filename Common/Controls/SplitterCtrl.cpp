@@ -3,6 +3,9 @@
 
 #include "stdafx.h"
 #include "SplitterCtrl.h"
+#include "ColorService.h"
+#include "HostThemeHelper.h"
+#include "Workspace.h"
 #include "ControlPane.h"
 #include "DialogObject.h"
 
@@ -44,6 +47,11 @@ bool CSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 		bSuccess = false;
 
 	return bSuccess;
+}
+
+void CSplitterCtrl::HandleHostThemeChanged()
+{
+	OnNeedRepaint( true );
 }
 
 CRect CSplitterCtrl::ValidatePosition( const CRect& rcProposed ) const
@@ -176,6 +184,15 @@ BOOL CSplitterCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
+#if defined(ODCL_HOST_COLORTHEME)
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		return TRUE;
+	}
+#endif
 	return __super::OnEraseBkgnd(pDC);
 }
 
@@ -200,10 +217,12 @@ void CSplitterCtrl::OnPaint()
 	GetWindowRect( &rcPaint );
 	ScreenToClient( &rcPaint );
 
+	const bool bHost = CHostThemeHelper::HostMaps();
+
 	switch( mpTemplate->GetLongProperty( Prop::SplitterStyle ) )
 	{
 	case Splitter_DoubleRaised:
-		dc.FillSolidRect( &rcPaint, GetSysColor( COLOR_BTNFACE ) );
+		dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
 		if( mbVertical )
 		{
 			CRect rc1 = rcPaint;
@@ -211,8 +230,18 @@ void CSplitterCtrl::OnPaint()
 			CRect rc2 = rc1;
 			rc2.left = rc1.left + 3;
 			rc2.right = rc2.left + 3;
-			dc.DrawEdge( &rc1, BDR_RAISEDINNER, BF_RECT );
-			dc.DrawEdge( &rc2, BDR_RAISEDINNER, BF_RECT );
+			if( bHost )
+			{
+				dc.FillSolidRect( &rc1, OdclSysColor( COLOR_BTNFACE ) );
+				CHostThemeHelper::PaintRaisedInner( dc.GetSafeHdc(), rc1 );
+				dc.FillSolidRect( &rc2, OdclSysColor( COLOR_BTNFACE ) );
+				CHostThemeHelper::PaintRaisedInner( dc.GetSafeHdc(), rc2 );
+			}
+			else
+			{
+				dc.DrawEdge( &rc1, BDR_RAISEDINNER, BF_RECT );
+				dc.DrawEdge( &rc2, BDR_RAISEDINNER, BF_RECT );
+			}
 		}
 		else
 		{
@@ -221,24 +250,58 @@ void CSplitterCtrl::OnPaint()
 			CRect rc2 = rc1;
 			rc2.top = rc1.top + 3;
 			rc2.bottom = rc2.top + 3;
-			dc.DrawEdge( &rc1, BDR_RAISEDINNER, BF_RECT );
-			dc.DrawEdge( &rc2, BDR_RAISEDINNER, BF_RECT );
+			if( bHost )
+			{
+				dc.FillSolidRect( &rc1, OdclSysColor( COLOR_BTNFACE ) );
+				CHostThemeHelper::PaintRaisedInner( dc.GetSafeHdc(), rc1 );
+				dc.FillSolidRect( &rc2, OdclSysColor( COLOR_BTNFACE ) );
+				CHostThemeHelper::PaintRaisedInner( dc.GetSafeHdc(), rc2 );
+			}
+			else
+			{
+				dc.DrawEdge( &rc1, BDR_RAISEDINNER, BF_RECT );
+				dc.DrawEdge( &rc2, BDR_RAISEDINNER, BF_RECT );
+			}
 		}
 		break;
 	case Splitter_Raised:
-		dc.DrawEdge( &rcPaint, EDGE_RAISED, BF_RECT | BF_MIDDLE );
+		if( bHost )
+		{
+			dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
+			CHostThemeHelper::PaintRaisedInner( dc.GetSafeHdc(), rcPaint );
+		}
+		else
+			dc.DrawEdge( &rcPaint, EDGE_RAISED, BF_RECT | BF_MIDDLE );
 		break;
 	case Splitter_Sunken:
-		dc.DrawEdge( &rcPaint, EDGE_SUNKEN, BF_RECT | BF_MIDDLE );
+		if( bHost )
+		{
+			dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
+			CHostThemeHelper::PaintEtchedRect( dc.GetSafeHdc(), rcPaint );
+		}
+		else
+			dc.DrawEdge( &rcPaint, EDGE_SUNKEN, BF_RECT | BF_MIDDLE );
 		break;
 	case Splitter_Etched:
-		dc.DrawEdge( &rcPaint, EDGE_ETCHED, BF_RECT | BF_MIDDLE );
+		if( bHost )
+		{
+			dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
+			CHostThemeHelper::PaintEtchedRect( dc.GetSafeHdc(), rcPaint );
+		}
+		else
+			dc.DrawEdge( &rcPaint, EDGE_ETCHED, BF_RECT | BF_MIDDLE );
 		break;
 	case Splitter_Bump:
-		dc.DrawEdge( &rcPaint, EDGE_BUMP, BF_RECT | BF_MIDDLE );
+		if( bHost )
+		{
+			dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
+			CHostThemeHelper::PaintRaisedInner( dc.GetSafeHdc(), rcPaint );
+		}
+		else
+			dc.DrawEdge( &rcPaint, EDGE_BUMP, BF_RECT | BF_MIDDLE );
 		break;
 	default:
-		dc.FillSolidRect( &rcPaint, GetSysColor( COLOR_BTNFACE ) );
+		dc.FillSolidRect( &rcPaint, OdclSysColor( COLOR_BTNFACE ) );
 		break;
 	}
 }

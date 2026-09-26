@@ -8,6 +8,7 @@
 #include "DclControlTemplate.h"
 #include "DclPicture.h"
 #include "AcadColorService.h"
+#include "ColorService.h"
 #include "PropertyIds.h"
 
 
@@ -259,22 +260,28 @@ void CDialogObject::HandleDpiChanged()
 	IgnoreSizing( bIgnoreSizing );
 }
 
+void CDialogObject::HandleHostThemeChanged()
+{
+	CControlPane* pPane = GetControlPane();
+	if( pPane )
+		pPane->HandleHostThemeChanged();
+}
+
 BOOL CDialogObject::HandleEraseBkgnd( CDC* pDC )
 {
-	//TraceFmt( _T("# CDialogObject(%s)::HandleEraseBkgnd(%s)\r\n"),
-	//					asString( this ),
-	//					asString( pDC ) );
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
-		return FALSE;
-	if( pColorService->IsBackgroundTransparent() )
 		return FALSE;
 	CRect rcClip;
 	pDC->GetClipBox( &rcClip );
 	CRect rcClient;
 	mpControlWnd->GetClientRect( &rcClient );
-	if( rcClip.IntersectRect( &rcClip, &rcClient ) )
-		pDC->FillSolidRect( &rcClip, pColorService->GetBackgroundColor() );
+	if( !rcClip.IntersectRect( &rcClip, &rcClient ) )
+		return TRUE;
+	COLORREF crFill = pColorService->GetBackgroundColor();
+	if( pColorService->IsBackgroundTransparent() || pColorService->IsBackgroundNotSet() )
+		crFill = GetPaneFaceColor();
+	pDC->FillSolidRect( &rcClip, crFill );
 	return TRUE;
 }
 

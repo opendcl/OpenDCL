@@ -44,5 +44,6 @@ protected:
 	BOOL PreTranslateMessage( MSG* pMsg ) override;
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
 	afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
+	afx_msg HBRUSH OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
 	afx_msg void OnEditchange();
 };

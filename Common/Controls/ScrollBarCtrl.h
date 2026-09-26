@@ -28,7 +28,15 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyForegroundColor( TPropertyPtr pProp ) override; //Prop::ForegroundColor
+	void HandleHostThemeChanged() override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void SyncHostScrollTheme();
+	void ApplyScrollInfo();
+	bool UseHostOwnerDraw() const;
+	void PaintHostScrollBar( CDC* pDC );
 
 	// Generated message map functions
 protected:
@@ -41,5 +49,6 @@ protected:
 	afx_msg void VScroll(UINT nSBCode, UINT nPos);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

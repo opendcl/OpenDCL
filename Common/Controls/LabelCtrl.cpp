@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "LabelCtrl.h"
 #include "ControlPane.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -26,6 +28,9 @@ bool CLabelCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess && ( !mpTemplate || !mpTemplate->GetPropertyObject( Prop::UseVisualStyle ) ) )
+		GetTheme().SetWindowTheme( L"", L"" );
 
 	return bSuccess;
 }
@@ -90,6 +95,7 @@ bool CLabelCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CLabelCtrl, CStatic)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CLabelCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -109,6 +115,18 @@ BOOL CLabelCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
+void CLabelCtrl::HandleHostThemeChanged()
+{
+	if( !m_hWnd )
+		return;
+	const bool bVisual = (mpTemplate && mpTemplate->GetPropertyObject( Prop::UseVisualStyle )
+		&& mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ));
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	Invalidate();
+}
+
 HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
@@ -121,7 +139,64 @@ BOOL CLabelCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
+#if defined(ODCL_HOST_COLORTHEME)
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
+		return TRUE;
+	}
+#endif
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CLabelCtrl::OnPaint()
+{
+	if( !CHostThemeHelper::HostMaps() )
+	{
+		Default();
+		return;
+	}
+	CPaintDC dc( this );
+	CRect rc;
+	GetClientRect( &rc );
+	CAcadColorService* pColorService = GetColorService();
+	const COLORREF crBk = GetPaneFaceColor();
+	dc.FillSolidRect( &rc, crBk );
+	CString sCaption;
+	GetWindowText( sCaption );
+	COLORREF crText = CHostThemeHelper::DisabledTextColor();
+	if( IsWindowEnabled() && pColorService )
+		crText = pColorService->GetForegroundColor();
+	else if( IsWindowEnabled() )
+		crText = OdclSysColor( COLOR_BTNTEXT );
+	dc.SetTextColor( crText );
+	dc.SetBkColor( crBk );
+	dc.SetBkMode( TRANSPARENT );
+	CFont* pFont = GetFont();
+	CFont* pOldFont = pFont ? dc.SelectObject( pFont ) : NULL;
+	UINT dt = DT_EXPANDTABS;
+	const DWORD dwStyle = GetStyle();
+	if( dwStyle & SS_NOPREFIX )
+		dt |= DT_NOPREFIX;
+	else if( SendMessage( 0x0129 ) & 0x0002 ) // WM_QUERYUISTATE / UISF_HIDEACCEL
+		dt |= 0x00100000; // DT_HIDEPREFIX
+	if( dwStyle & SS_CENTER )
+		dt |= DT_CENTER;
+	else if( dwStyle & SS_RIGHT )
+		dt |= DT_RIGHT;
+	else
+		dt |= DT_LEFT;
+	if( dwStyle & SS_CENTERIMAGE )
+		dt |= DT_SINGLELINE | DT_VCENTER;
+	else
+		dt |= DT_WORDBREAK;
+	if( GetExStyle() & WS_EX_RTLREADING )
+		dt |= DT_RTLREADING;
+	dc.DrawText( sCaption, &rc, dt );
+	if( pOldFont )
+		dc.SelectObject( pOldFont );
 }
 
 void CLabelCtrl::PostNcDestroy() 
