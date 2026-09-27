@@ -14,6 +14,9 @@
 
 CScrollBarCtrl::CScrollBarCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mbThumbDrag( false )
+, mbApplyingTheme( false )
+, mnDragPos( 0 )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -103,7 +106,10 @@ void CScrollBarCtrl::ApplyScrollInfo()
 	const UINT nPage = (UINT)max( 1L, mpTemplate->GetLongProperty( Prop::LargeChange ) );
 	si.nPage = nPage;
 	si.nPos = mpTemplate->GetLongProperty( Prop::Value );
-	SetScrollInfo( &si, TRUE );
+	// TRUE lets user32 UxTheme-paint over owner-draw after a click.
+	SetScrollInfo( &si, FALSE );
+	if( UseHostOwnerDraw() )
+		PaintHostNow();
 }
 
 bool CScrollBarCtrl::UseHostOwnerDraw() const
@@ -128,10 +134,12 @@ bool CScrollBarCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 
 void CScrollBarCtrl::SyncHostScrollTheme()
 {
-	if( !m_hWnd )
+	if( !m_hWnd || mbApplyingTheme )
 		return;
+	mbApplyingTheme = true;
 	GetTheme().SetWindowTheme( L"", L"" );
 	CHostThemeHelper::Apply( m_hWnd, L"" );
+	mbApplyingTheme = false;
 	OnNeedRepaint( true );
 }
 
@@ -180,6 +188,117 @@ static void DrawScrollArrow( CDC* pDC, const CRect& rc, int nDir )
 	pDC->SelectObject( pOldBrush );
 }
 
+bool CScrollBarCtrl::HostThumbRect( CRect& rcThumb )
+{
+	CRect rc;
+	GetClientRect( &rc );
+	const bool bVert = (GetStyle() & SBS_VERT) != 0;
+	const int nArrow = bVert? GetSystemMetrics( SM_CYVSCROLL ) : GetSystemMetrics( SM_CXHSCROLL );
+	CRect rcTrack = rc;
+	if( bVert )
+	{
+		rcTrack.top = rc.top + nArrow;
+		rcTrack.bottom = rc.bottom - nArrow;
+	}
+	else
+	{
+		rcTrack.left = rc.left + nArrow;
+		rcTrack.right = rc.right - nArrow;
+	}
+	SCROLLINFO si = {0};
+	si.cbSize = sizeof( si );
+	si.fMask = SIF_ALL;
+	GetScrollInfo( &si );
+	const int nRange = si.nMax - si.nMin + 1;
+	const int nPage = (int)max( (UINT)1, si.nPage );
+	const int nTrack = bVert? rcTrack.Height() : rcTrack.Width();
+	if( nRange <= nPage || nTrack <= 0 )
+		return false;
+	int nThumb = max( nArrow, MulDiv( nPage, nTrack, nRange ) );
+	if( nThumb > nTrack )
+		nThumb = nTrack;
+	const int nTravel = nTrack - nThumb;
+	const int nMaxPos = max( 1, nRange - nPage );
+	const int nOffset = MulDiv( si.nPos - si.nMin, nTravel, nMaxPos );
+	rcThumb = rcTrack;
+	if( bVert )
+	{
+		rcThumb.top = rcTrack.top + nOffset;
+		rcThumb.bottom = rcThumb.top + nThumb;
+	}
+	else
+	{
+		rcThumb.left = rcTrack.left + nOffset;
+		rcThumb.right = rcThumb.left + nThumb;
+	}
+	return true;
+}
+
+int CScrollBarCtrl::HostHitTest( CPoint pt )
+{
+	CRect rc;
+	GetClientRect( &rc );
+	if( !rc.PtInRect( pt ) )
+		return 0;
+	const bool bVert = (GetStyle() & SBS_VERT) != 0;
+	const int nArrow = bVert? GetSystemMetrics( SM_CYVSCROLL ) : GetSystemMetrics( SM_CXHSCROLL );
+	CRect rcArrow1 = rc;
+	CRect rcArrow2 = rc;
+	if( bVert )
+	{
+		rcArrow1.bottom = rc.top + nArrow;
+		rcArrow2.top = rc.bottom - nArrow;
+	}
+	else
+	{
+		rcArrow1.right = rc.left + nArrow;
+		rcArrow2.left = rc.right - nArrow;
+	}
+	if( rcArrow1.PtInRect( pt ) )
+		return 1;
+	if( rcArrow2.PtInRect( pt ) )
+		return 2;
+	CRect rcThumb;
+	if( HostThumbRect( rcThumb ) && rcThumb.PtInRect( pt ) )
+		return 3;
+	if( HostThumbRect( rcThumb ) )
+	{
+		if( bVert )
+			return (pt.y < rcThumb.top)? 4 : 5;
+		return (pt.x < rcThumb.left)? 4 : 5;
+	}
+	return 0;
+}
+
+int CScrollBarCtrl::HostPosFromDrag( CPoint pt )
+{
+	CRect rcThumb;
+	if( !HostThumbRect( rcThumb ) )
+		return mnDragPos;
+	const bool bVert = (GetStyle() & SBS_VERT) != 0;
+	CRect rc;
+	GetClientRect( &rc );
+	const int nArrow = bVert? GetSystemMetrics( SM_CYVSCROLL ) : GetSystemMetrics( SM_CXHSCROLL );
+	const int nTrack = bVert? (rc.Height() - 2 * nArrow) : (rc.Width() - 2 * nArrow);
+	const int nThumb = bVert? rcThumb.Height() : rcThumb.Width();
+	const int nTravel = max( 1, nTrack - nThumb );
+	SCROLLINFO si = {0};
+	si.cbSize = sizeof( si );
+	si.fMask = SIF_RANGE | SIF_PAGE;
+	GetScrollInfo( &si );
+	const int nRange = si.nMax - si.nMin + 1;
+	const int nPage = (int)max( (UINT)1, si.nPage );
+	const int nMaxPos = max( 1, nRange - nPage );
+	const int nDelta = bVert? (pt.y - mptDrag.y) : (pt.x - mptDrag.x);
+	int nPos = mnDragPos + MulDiv( nDelta, nMaxPos, nTravel );
+	const int nHi = si.nMin + nMaxPos;
+	if( nPos < si.nMin )
+		nPos = si.nMin;
+	if( nPos > nHi )
+		nPos = nHi;
+	return nPos;
+}
+
 void CScrollBarCtrl::PaintHostScrollBar( CDC* pDC )
 {
 	if( !pDC )
@@ -211,32 +330,9 @@ void CScrollBarCtrl::PaintHostScrollBar( CDC* pDC )
 	DrawScrollArrow( pDC, rcArrow1, bVert? 0 : 2 );
 	DrawScrollArrow( pDC, rcArrow2, bVert? 1 : 3 );
 
-	SCROLLINFO si = {0};
-	si.cbSize = sizeof( si );
-	si.fMask = SIF_ALL;
-	GetScrollInfo( &si );
-	const int nRange = si.nMax - si.nMin + 1;
-	const int nPage = (int)max( (UINT)1, si.nPage );
-	const int nTrack = bVert? rcTrack.Height() : rcTrack.Width();
-	if( nRange > nPage && nTrack > 0 )
+	CRect rcThumb;
+	if( HostThumbRect( rcThumb ) )
 	{
-		int nThumb = max( nArrow, MulDiv( nPage, nTrack, nRange ) );
-		if( nThumb > nTrack )
-			nThumb = nTrack;
-		const int nTravel = nTrack - nThumb;
-		const int nMaxPos = max( 1, nRange - nPage );
-		const int nOffset = MulDiv( si.nPos - si.nMin, nTravel, nMaxPos );
-		CRect rcThumb = rcTrack;
-		if( bVert )
-		{
-			rcThumb.top = rcTrack.top + nOffset;
-			rcThumb.bottom = rcThumb.top + nThumb;
-		}
-		else
-		{
-			rcThumb.left = rcTrack.left + nOffset;
-			rcThumb.right = rcThumb.left + nThumb;
-		}
 		pDC->FillSolidRect( &rcThumb, OdclSysColor( COLOR_BTNFACE ) );
 		CPen pen( PS_SOLID, 1, OdclSysColor( COLOR_3DLIGHT ) );
 		CPen* pOldPen = pDC->SelectObject( &pen );
@@ -310,6 +406,7 @@ BEGIN_MESSAGE_MAP(CScrollBarCtrl, CScrollBar)
 	ON_WM_HSCROLL_REFLECT()
 	ON_WM_VSCROLL_REFLECT()
 	ON_WM_SETFOCUS()
+	ON_WM_KILLFOCUS()
 	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
@@ -332,6 +429,14 @@ void CScrollBarCtrl::OnSetFocus(CWnd* pOldWnd)
 	__super::OnSetFocus(pOldWnd);
 	if( pOldWnd )
 		pOldWnd->SetFocus();
+	PaintHostNow();
+}
+
+void CScrollBarCtrl::OnKillFocus(CWnd* pNewWnd)
+{
+	UNREFERENCED_PARAMETER( pNewWnd );
+	// DefWindowProc paints a themed thumb here, often not where the dark thumb is.
+	PaintHostNow();
 }
 
 
@@ -375,6 +480,109 @@ BOOL CScrollBarCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CScrollBarCtrl::PaintHostNow()
+{
+	if( !m_hWnd || !UseHostOwnerDraw() )
+		return;
+	CClientDC dc( this );
+	PaintHostScrollBar( &dc );
+}
+
+LRESULT CScrollBarCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// WM_THEMECHANGED restores the class theme and starts the overlay thumb fade
+	// (several seconds). Re-apply the empty theme, but SetWindowTheme sends
+	// WM_THEMECHANGED again — mbApplyingTheme stops that loop.
+	if( UseHostOwnerDraw() && message == WM_THEMECHANGED )
+	{
+		if( !mbApplyingTheme )
+			SyncHostScrollTheme();
+		PaintHostNow();
+		return 0;
+	}
+	if( UseHostOwnerDraw() && message == WM_TIMER && GetCapture() != this )
+		return 0;
+	if( UseHostOwnerDraw() && (message == WM_PRINTCLIENT || message == WM_PRINT) )
+	{
+		HDC hdc = (HDC)wParam;
+		if( hdc )
+		{
+			CDC dc;
+			dc.Attach( hdc );
+			PaintHostScrollBar( &dc );
+			dc.Detach();
+		}
+		return 0;
+	}
+	// user32's thumb track paints UxTheme for the whole drag and does not
+	// return until the button is up. Track the thumb here instead.
+	if( UseHostOwnerDraw() && (message == WM_LBUTTONDOWN || message == WM_LBUTTONDBLCLK) )
+	{
+		CPoint pt( (short)LOWORD( lParam ), (short)HIWORD( lParam ) );
+		const int nHit = HostHitTest( pt );
+		if( nHit == 3 )
+		{
+			SCROLLINFO si = {0};
+			si.cbSize = sizeof( si );
+			si.fMask = SIF_POS;
+			GetScrollInfo( &si );
+			mbThumbDrag = true;
+			mnDragPos = si.nPos;
+			mptDrag = pt;
+			SetCapture();
+			return 0;
+		}
+		if( nHit == 1 )
+			OnScroll( SB_LINEUP, 0 );
+		else if( nHit == 2 )
+			OnScroll( SB_LINEDOWN, 0 );
+		else if( nHit == 4 )
+			OnScroll( SB_PAGEUP, 0 );
+		else if( nHit == 5 )
+			OnScroll( SB_PAGEDOWN, 0 );
+		PaintHostNow();
+		return 0;
+	}
+	if( UseHostOwnerDraw() && (message == WM_MOUSEMOVE || message == WM_MOUSEHOVER || message == WM_MOUSELEAVE
+			|| message == 0x0245 || message == 0x0249 || message == 0x024A) )
+	{
+		if( mbThumbDrag && message == WM_MOUSEMOVE )
+		{
+			const int nPos = HostPosFromDrag( CPoint( (short)LOWORD( lParam ), (short)HIWORD( lParam ) ) );
+			OnScroll( SB_THUMBTRACK, (UINT)nPos );
+		}
+		// DefWindowProc hot-tracks the thumb and arrows with UxTheme.
+		return 0;
+	}
+	if( mbThumbDrag && (message == WM_LBUTTONUP || message == WM_CAPTURECHANGED) )
+	{
+		mbThumbDrag = false;
+		if( message == WM_LBUTTONUP && GetCapture() == this )
+			ReleaseCapture();
+		OnScroll( SB_ENDSCROLL, 0 );
+		PaintHostNow();
+		return 0;
+	}
+	const LRESULT lResult = __super::WindowProc( message, wParam, lParam );
+	if( UseHostOwnerDraw() )
+	{
+		switch( message )
+		{
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
+		case WM_CAPTURECHANGED:
+		case WM_ENABLE:
+		case SBM_SETPOS:
+		case SBM_SETRANGE:
+		case SBM_SETRANGEREDRAW:
+			PaintHostNow();
+			break;
+		}
+	}
+	return lResult;
 }
 
 void CScrollBarCtrl::OnPaint()

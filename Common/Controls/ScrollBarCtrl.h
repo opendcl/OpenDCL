@@ -13,6 +13,10 @@
 class CScrollBarCtrl : public CScrollBar, public CDialogControl
 {
 	CAcadColorService mColorService;
+	bool mbThumbDrag;
+	bool mbApplyingTheme;
+	int mnDragPos;
+	CPoint mptDrag;
 
 public:
 	CScrollBarCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -37,6 +41,9 @@ protected:
 	void ApplyScrollInfo();
 	bool UseHostOwnerDraw() const;
 	void PaintHostScrollBar( CDC* pDC );
+	bool HostThumbRect( CRect& rcThumb );
+	int HostPosFromDrag( CPoint pt );
+	int HostHitTest( CPoint pt );
 
 	// Generated message map functions
 protected:
@@ -45,10 +52,13 @@ protected:
 	afx_msg void PostNcDestroy() override;
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void HScroll(UINT nSBCode, UINT nPos);
 	afx_msg void VScroll(UINT nSBCode, UINT nPos);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	void PaintHostNow();
 };
