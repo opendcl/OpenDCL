@@ -42,7 +42,9 @@ Studio/
   CMakeLists.txt         Studio (static MFC + /MT) + Studio.Res + StudioHelp
   Localized/<LANG>/      Studio.Res, Content (help + samples)
 scripts/build-wix.ps1    Packaging entry point
+scripts/publish-package-managers.ps1  Chocolatey + WinGet after a public v* release
 wix/                     WiX sources, UI bitmaps/icons, tools
+packaging/               Chocolatey / WinGet catalog (see packaging/README.md)
 wix/out/                 Generated packages (gitignored)
 .agents/skills/          Optional agent skills (often untracked until ready)
 ```
@@ -91,7 +93,7 @@ Each language generally needs:
 - `Common/<LANG>/`
 - `Runtime/Localized/<LANG>/`
 - `Studio/Localized/<LANG>/` (including `Content/` and `Studio.Res/`)
-- WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, UpgradeCode)
+- WiX: `$RuntimeLangs` + `$StudioLangMeta` in `scripts/build-wix.ps1` (LCID, unique UpgradeCode per language; optional `LegacyUpgradeCode`)
 - Studio package UI strings: `Studio/Localized/<LANG>/Package.wxl` (shortcuts, ARP comments, shell labels)
 
 Installer EULA for Studio is checked-in **`License.rtf`** (WixUI); also keep
@@ -144,10 +146,11 @@ Runtime modules (MSM): still **`CommonFilesFolder\OpenDCL`** (historical).
 |------|----------------------|--------|
 | RC comma | `10, 1, 1, 1` | `.rc` FILEVERSION/PRODUCTVERSION |
 | ModuleVersion | `10.1.1.1` | MSM `Module/@Version` |
-| ProductVersion | `10.1.101` | MSI (`Patch*100+Build`) |
+| ProductVersion | `10.1.101` | MSI (`Patch*100+Build`); ARP DisplayVersion |
 
 Defaults live in `scripts/build-wix.ps1` (`-ProductVersion`, `-ModuleVersion`).
-Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-...`) stable.
+Leave **UpgradeCodes** and MSM modularization GUID (`0C4E4759-...`) stable
+(CHT has its own UpgradeCode plus `LegacyUpgradeCode` for builds that reused CHS).
 Component GUIDs are stable MD5 seeds of logical paths.
 
 Runtime module **catalog** lives in `scripts/build-wix.ps1` (`$RuntimeModuleCatalogRels`).

@@ -503,8 +503,14 @@ $StudioLangMeta = @{
   RUS = @{ ProductCode = "8E7BDDB2-EC97-4FBD-B6B9-67E353F71245"; UpgradeCode = "30C0C78D-D3B1-4C36-B37E-357F50E691D3"; LangId = 1049 }
   CHS = @{ ProductCode = "C6622C7F-E024-4FBF-B14D-DBAFDAC3C34B"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 2052 }
   FRA = @{ ProductCode = "DE91BFF8-E532-4612-8899-F965FC87885C"; UpgradeCode = "140D3C25-5463-4688-8A52-FEA8E9FA4940"; LangId = 1036 }
-  # Historical CHS/CHT shared UpgradeCode â€” preserved for upgrade continuity
-  CHT = @{ ProductCode = "82CB8DF7-A50B-446D-82C6-362F009A6070"; UpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"; LangId = 1028 }
+  # CHT originally shipped sharing CHS UpgradeCode (clone leftover). Own code going
+  # forward; LegacyUpgradeCode + ProductLanguage 1028 still MajorUpgrades those builds.
+  CHT = @{
+    ProductCode = "82CB8DF7-A50B-446D-82C6-362F009A6070"
+    UpgradeCode = "FF358620-E4B8-4B32-BC31-FAF1D1879F0D"
+    LangId = 1028
+    LegacyUpgradeCode = "AF16E7D3-800C-4BE7-BA12-B9C62FF78F51"
+  }
 }
 
 function Read-StudioPackageWxl([string] $lang) {
@@ -1042,28 +1048,32 @@ if (-not $SkipStudio) {
       (Get-Item $iconStudio).Length, (Get-Item $iconHelp).Length, (Get-Item $iconLicense).Length)
 
     $studioMsi = Join-Path $OutDir "OpenDCL.Studio.$lang.msi"
+    $studioDefines = @{
+      OpenDclRoot       = $OpenDclRoot
+      ProductVersion    = $ProductVersion
+      UpgradeCode       = $meta.UpgradeCode
+      ProductLanguage   = $meta.LangId
+      ArpComments       = $pkgStrings.ArpComments
+      Lang              = $lang
+      MsmPath           = $msmPath
+      LicenseRtf        = $licenseRtf
+      BannerBmp         = $bannerBmp
+      DialogBmp         = $dialogBmp
+      IconStudio        = $iconStudio
+      IconHelp          = $iconHelp
+      IconLicense       = $iconLicense
+      StudioPlatform    = $studioPlatform
+      PfDir             = $pfDir
+    }
+    if ($meta.LegacyUpgradeCode) {
+      $studioDefines.LegacyUpgradeCode = $meta.LegacyUpgradeCode
+    }
     Invoke-CandleLight `
       -WxsFiles @((Join-Path $WixRoot "Studio\OpenDCL.Studio.wxs"), $filesWxs) `
       -OutFile $studioMsi `
       -ObjectPrefix "studio_${lang}_" `
       -Extensions @("WixUIExtension") `
-      -Defines @{
-        OpenDclRoot       = $OpenDclRoot
-        ProductVersion    = $ProductVersion
-        UpgradeCode       = $meta.UpgradeCode
-        ProductLanguage   = $meta.LangId
-        ArpComments       = $pkgStrings.ArpComments
-        Lang              = $lang
-        MsmPath           = $msmPath
-        LicenseRtf        = $licenseRtf
-        BannerBmp         = $bannerBmp
-        DialogBmp         = $dialogBmp
-        IconStudio        = $iconStudio
-        IconHelp          = $iconHelp
-        IconLicense       = $iconLicense
-        StudioPlatform    = $studioPlatform
-        PfDir             = $pfDir
-      }
+      -Defines $studioDefines
     Write-Host "OK $studioMsi"
   }
 }

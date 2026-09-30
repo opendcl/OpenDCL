@@ -43,6 +43,16 @@ on:
         type: boolean
         required: true
         default: false
+      publish_chocolatey:
+        description: "Push opendcl-studio and opendcl-runtime to the Chocolatey community repository"
+        type: boolean
+        required: true
+        default: true
+      publish_winget:
+        description: "Submit OpenDCL.Studio and OpenDCL.Runtime manifests to winget-pkgs"
+        type: boolean
+        required: true
+        default: true
 
 concurrency:
   group: opendcl-release
@@ -161,3 +171,33 @@ jobs:
           gh release create $tag @zips --title $title --notes $notes --latest=false
           if ($LASTEXITCODE -ne 0) { throw "localization-packs release failed" }
           Write-Host "Updated $tag ($($zips.Count) zips)"
+
+      - name: Publish Chocolatey and WinGet
+        if: ${{ !inputs.draft && (inputs.publish_chocolatey || inputs.publish_winget) }}
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+          WINGET_GITHUB_TOKEN: ${{ secrets.WINGET_GITHUB_TOKEN }}
+        run: |
+          $ver = "${{ steps.ver.outputs.file_ver }}"
+          $args = @{
+            ProductVersion = $ver
+            DistDir        = Join-Path $env:GITHUB_WORKSPACE "dist\$ver"
+          }
+          $pubChoco = "${{ inputs.publish_chocolatey }}" -eq "true"
+          $pubWinget = "${{ inputs.publish_winget }}" -eq "true"
+          if (-not $pubChoco) { $args.SkipChocolatey = $true }
+          elseif (-not $env:CHOCOLATEY_API_KEY) {
+            Write-Warning "CHOCOLATEY_API_KEY secret is empty; skipping Chocolatey"
+            $args.SkipChocolatey = $true
+          }
+          if (-not $pubWinget) { $args.SkipWinget = $true }
+          elseif (-not $env:WINGET_GITHUB_TOKEN) {
+            Write-Warning "WINGET_GITHUB_TOKEN secret is empty; skipping WinGet"
+            $args.SkipWinget = $true
+          }
+          if ($args.SkipChocolatey -and $args.SkipWinget) {
+            Write-Host "No package-manager catalogs to publish"
+            return
+          }
+          & "$env:GITHUB_WORKSPACE\scripts\publish-package-managers.ps1" @args
+

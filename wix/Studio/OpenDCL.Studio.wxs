@@ -5,7 +5,9 @@
   Preprocessor variables (set by build-wix.ps1):
     Lang          e.g. ENU
     ProductCode   language-specific product code
-    UpgradeCode   language-specific upgrade code
+    UpgradeCode          language-specific upgrade code (unique per language)
+    LegacyUpgradeCode    optional; previous UpgradeCode this language shipped under
+                         (language-filtered so it cannot upgrade a sibling locale)
     ProductLanguage LCID (1033, ...)
     ArpComments   e.g. OpenDCL Studio (US English)
     OpenDclRoot, ProductVersion, MsmPath
@@ -28,8 +30,21 @@
              Comments="$(var.ArpComments)"
              Manufacturer="OpenDCL Consortium" />
 
+    <!-- Language-filter so a sibling locale that once shared UpgradeCode (CHS/CHT)
+         is not treated as the same product. -->
     <MajorUpgrade DowngradeErrorMessage="A newer version of OpenDCL Studio is already installed."
-                  Schedule="afterInstallInitialize" />
+                  Schedule="afterInstallInitialize"
+                  Language="$(var.ProductLanguage)" />
+    <?ifdef LegacyUpgradeCode ?>
+    <Upgrade Id="$(var.LegacyUpgradeCode)">
+      <UpgradeVersion Property="LEGACY_LANG_UPGRADE"
+                      Minimum="0.0.0"
+                      IncludeMinimum="yes"
+                      Maximum="$(var.ProductVersion)"
+                      IncludeMaximum="no"
+                      Language="$(var.ProductLanguage)" />
+    </Upgrade>
+    <?endif?>
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <Property Id="ARPHELPLINK" Value="https://www.opendcl.com" />

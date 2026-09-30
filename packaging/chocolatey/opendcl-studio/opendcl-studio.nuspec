@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>opendcl-studio</id>
+    <version>{{VERSION}}</version>
+    <title>OpenDCL Studio</title>
+    <authors>OpenDCL Consortium</authors>
+    <owners>OpenDCL Consortium</owners>
+    <projectUrl>https://www.opendcl.com</projectUrl>
+    <projectSourceUrl>https://github.com/opendcl/OpenDCL</projectSourceUrl>
+    <docsUrl>https://opendcl.github.io/HelpFiles/</docsUrl>
+    <bugTrackerUrl>https://github.com/opendcl/OpenDCL/issues</bugTrackerUrl>
+    <packageSourceUrl>https://github.com/opendcl/OpenDCL/tree/main/packaging/chocolatey/opendcl-studio</packageSourceUrl>
+    <licenseUrl>https://github.com/opendcl/OpenDCL/blob/main/LICENSE</licenseUrl>
+    <copyright>Copyright (c) OpenDCL Consortium</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://cdn.jsdelivr.net/gh/opendcl/OpenDCL@v{{VERSION}}/wix/ui/icons/badge/OpenDCLBadge-256.png</iconUrl>
+    <releaseNotes>https://github.com/opendcl/OpenDCL/releases/tag/v{{VERSION}}</releaseNotes>
+    <tags>opendcl cad autolisp autocad bricscad zwcad gstarcad dialog dcl studio admin</tags>
+    <summary>Visual dialog editor for AutoLISP (includes OpenDCL Runtime).</summary>
+    <description>OpenDCL Studio is the visual dialog editor for AutoLISP programmers. It replaces AutoCAD DCL with Windows forms and controls, and installs the OpenDCL Runtime for AutoCAD-compatible hosts (AutoCAD, BricsCAD, ZWCAD, GstarCAD).
+
+Default language follows the OS UI culture (ENU if unknown). Override with:
+
+choco install opendcl-studio --params "'/Language:DEU'"
+
+Language codes: ENU, DEU, ESM, FRA, RUS, CHS, CHT.
+
+This package downloads the signed MSI from the GitHub Release for this version. Studio already includes Runtime; do not also install opendcl-runtime unless you only want runtime modules.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="legal\**" target="legal" />
+  </files>
+</package>

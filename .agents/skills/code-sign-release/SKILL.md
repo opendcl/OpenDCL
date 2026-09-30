@@ -106,13 +106,14 @@ Installer-only escape hatch: `make-release.ps1 -Sign -SkipBinarySign`.
 | `scripts/make-release.ps1` | verify -> [sign PE] -> WiX -> dist -> loc -> [sign MSI] |
 | `scripts/build-wix.ps1` | WiX MSM/MSI build |
 | `scripts/update-site-versions.ps1` | After public Release: Pages `version/*.txt` + `versions.js` |
+| `scripts/publish-package-managers.ps1` | Chocolatey push + WinGet `wingetcreate submit` from `dist\<ver>\` |
 
 ## GitHub Actions
 
 | Workflow | Role |
 |----------|------|
 | `.github/workflows/package.yml` | WiX + dist + localization artifacts |
-| `.github/workflows/release.yml` (**Make release**) | Full pipeline + sign + `gh release` |
+| `.github/workflows/release.yml` (**Make release**) | Full pipeline + sign + `gh release` + Chocolatey/WinGet |
 | `.github/workflows/localization-packs.yml` | Loc zips only (rolling tag) |
 
 **Runner:** self-hosted Windows with the signing token available when signing.
@@ -192,6 +193,7 @@ Never run this during private dry-run. Operator notes: private build-lab
 ### Release checklist (append)
 
 - [ ] Installers built, signed, GitHub Release `vA.B.C.D` published  
+- [ ] Chocolatey / WinGet: Make release step, or `scripts/publish-package-managers.ps1` (needs `CHOCOLATEY_API_KEY` / `WINGET_GITHUB_TOKEN`; see `packaging/README.md`)  
 - [ ] Localization packs refreshed if needed  
 - [ ] **Site versions:** `-DevVersion` for normal ship, or `-PromoteToStable` when promoting  
 - [ ] **`opendcl.github.io` committed and pushed;** GET `version/*.txt` is bare `A.B.C.D`  
@@ -210,3 +212,16 @@ Never run this during private dry-run. Operator notes: private build-lab
 If the signing cert is rekeyed/renewed, update **machine env / alias notes**
 and the private build-lab operator skill - not the PIN, and not hard-coded
 values in this public skill.
+
+Chocolatey / WinGet (details in `packaging/README.md`):
+
+- Community Chocolatey **rejects** `iconUrl` on `raw.githubusercontent.com`. Use
+  jsDelivr pinned to the GitHub tag (`@vA.B.C.D` / nuspec `{{VERSION}}`) for
+  `wix/ui/icons/badge/OpenDCLBadge-256.png`.
+- Keep `<copyright>Copyright (c) OpenDCL Consortium</copyright>` in both nuspecs.
+- CPMR0073: Studio must pass `-Checksum` / `-ChecksumType` as named parameters
+  on `Install-ChocolateyPackage`. Hashtable splat `checksum = $checksums[$lang]`
+  fails the validator even when hashes are present.
+- Re-push the **same** version during moderation. After a human comment, also
+  reply in the Chocolatey **Review Comments** box (not email/Disqus) or the
+  package stays “Waiting for Maintainer”.

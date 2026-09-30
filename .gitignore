@@ -85,6 +85,9 @@ wix/out/
 # Versioned package output (scripts/make-dist.ps1)
 dist/
 
+# Generated Chocolatey nupkgs / WinGet manifests (scripts/publish-package-managers.ps1)
+packaging/out/
+
 # Compiled HTML Help (built from Studio Content; not source)
 *.chm
 
