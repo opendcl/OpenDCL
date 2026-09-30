@@ -109,7 +109,9 @@ END_MESSAGE_MAP()
 
 BOOL CModelessDlg::OnInitDialog() 
 {
-	ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
+	// Tool windows do not paint a caption icon.
+	if( !mpTemplate || mpTemplate->GetLongProperty( Prop::TitleBarIcon ) <= 0 )
+		ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
 	__super::OnInitDialog();
 
 	// Modify the style

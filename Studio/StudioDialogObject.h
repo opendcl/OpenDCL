@@ -98,6 +98,7 @@ protected:
 	DWORD GetWndStyle() const override; //get window style from properties
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	bool OnApplyName( TPropertyPtr pProp ) override; //Prop::Name
+	bool OnApplyIcon( TPropertyPtr pProp ) override; //Prop::TitleBarIcon
 
 	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
 

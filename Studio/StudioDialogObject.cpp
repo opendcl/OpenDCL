@@ -200,6 +200,37 @@ bool CStudioDialogObject::OnApplyName( TPropertyPtr pProp )
 	return true;
 }
 
+bool CStudioDialogObject::OnApplyIcon( TPropertyPtr pProp )
+{
+	CWnd* pWnd = mpControlWnd;
+	const long nIcon = pProp->GetLongValue();
+
+	// Switch WS_EX_TOOLWINDOW to support showing a title-bar icon; it hides the icon.
+	// SWP_FRAMECHANGED is required so NC chrome (incl. rounded/square corners) recalculates.
+	if( IsModeless() )
+	{
+		const bool bWantTool = ( nIcon <= 0 );
+		const bool bIsTool = ( pWnd->GetExStyle() & WS_EX_TOOLWINDOW ) != 0;
+		if( bWantTool != bIsTool )
+		{
+			if( bWantTool )
+				pWnd->ModifyStyleEx( 0, WS_EX_TOOLWINDOW, SWP_FRAMECHANGED );
+			else
+				pWnd->ModifyStyleEx( WS_EX_TOOLWINDOW, 0, SWP_FRAMECHANGED );
+		}
+	}
+
+	DestroyIcon( pWnd->SetIcon( NULL, FALSE ) );
+	TPicturePtr pPicture = mpSourceForm->GetProject()->FindPicture( nIcon );
+	if( pPicture )
+	{
+		pWnd->ModifyStyle( 0, WS_SYSMENU, SWP_FRAMECHANGED );
+		pWnd->SetIcon( pPicture->CloneIcon(), FALSE );
+	}
+	OnFrameChanged();
+	return true;
+}
+
 TDialogControlPtr CStudioDialogObject::CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID )
 {
 	return CStudioDialogControl::Create( pTemplate, &mControlPane, nID );
@@ -603,7 +634,7 @@ void CStudioDialogObject::TabOrderSelectedControls( bool bToFront )
 
 BOOL CStudioDialogObject::OnInitDialog()
 {
-	if( IsModeless() )
+	if( IsModeless() && ( !mpTemplate || mpTemplate->GetLongProperty( Prop::TitleBarIcon ) <= 0 ) )
 		ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
 	//ModifyStyleEx( 0, 0x02000000L/*WS_EX_COMPOSITED*/ | 0x08000000L/*WS_EX_NOACTIVATE*/ );
 
