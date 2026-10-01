@@ -36,6 +36,8 @@ public:
 	bool OnApplyCaption( TPropertyPtr pProp ) override { return true; }
 	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
 	void HandleDpiChanged() override;
+	void HandleHostThemeChanged() override;
+	COLORREF GetFillColor() const override;
 
 public:
 	virtual bool IsAutoSized();

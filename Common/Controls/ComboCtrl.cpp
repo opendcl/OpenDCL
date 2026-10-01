@@ -48,6 +48,7 @@ void CComboCtrl::GetRawWindowText( CString& sText )
 BEGIN_MESSAGE_MAP(CComboCtrl, _TComboBase)
 	ON_WM_KILLFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CComboCtrl::OnEditchange)
 END_MESSAGE_MAP()
 
@@ -168,6 +169,7 @@ BOOL CComboCtrl::PreTranslateMessage( MSG* pMsg )
 
 HBRUSH CComboCtrl::CtlColor( CDC* pDC, UINT nCtlColor ) 
 {
+	UNREFERENCED_PARAMETER( nCtlColor );
 	if( !IsWindowEnabled() )
 		return NULL;
 
@@ -175,7 +177,17 @@ HBRUSH CComboCtrl::CtlColor( CDC* pDC, UINT nCtlColor )
 	if( !pColorService )
 		return NULL;
 	pDC->SetTextColor( pColorService->GetForegroundColor() );
+	pDC->SetBkColor( pColorService->GetBackgroundColor() );
+	pDC->SetBkMode( OPAQUE );
 	return pColorService->GetBackgroundBrush();
+}
+
+HBRUSH CComboCtrl::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor )
+{
+	HBRUSH hbr = CtlColor( pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
 }
 
 void CComboCtrl::OnEditchange()

@@ -6,6 +6,10 @@
 #include "ControlPane.h"
 #include "Workspace.h"
 #include "SharedRes.Local.h"
+#include "ColorService.h"
+#include "HostThemeHelper.h"
+
+#include <mshtml.h>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,6 +17,8 @@
 
 CHtmlCtrl::CHtmlCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mbAuthorHtmlBg( false )
+, mbAuthorHtmlText( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -88,6 +94,96 @@ bool CHtmlCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+static CString HtmlRgb( COLORREF cr )
+{
+	CString s;
+	s.Format( _T("#%02X%02X%02X"), GetRValue( cr ), GetGValue( cr ), GetBValue( cr ) );
+	return s;
+}
+
+static bool IsHtmlColorSpecified( const VARIANT& v )
+{
+	if( v.vt == VT_BSTR && v.bstrVal && *v.bstrVal )
+	{
+		CString s( v.bstrVal );
+		s.Trim();
+		if( s.IsEmpty() )
+			return false;
+		if( s.CompareNoCase( _T("transparent") ) == 0 )
+			return false;
+		if( s.CompareNoCase( _T("inherit") ) == 0 )
+			return false;
+		return true;
+	}
+	if( v.vt == VT_I4 || v.vt == VT_UI4 )
+		return true;
+	return false;
+}
+
+void CHtmlCtrl::HandleHostThemeChanged()
+{
+	ApplyHostDocumentColors( false );
+	OnNeedRepaint( true );
+}
+
+void CHtmlCtrl::ApplyHostDocumentColors( bool bDetectAuthor )
+{
+	LPDISPATCH pDisp = GetHtmlDocument();
+	if( !pDisp )
+		return;
+	CComQIPtr< IHTMLDocument2 > pDoc( pDisp );
+	pDisp->Release();
+	if( !pDoc )
+		return;
+	CComPtr< IHTMLElement > pBodyEl;
+	if( FAILED( pDoc->get_body( &pBodyEl ) ) || !pBodyEl )
+		return;
+	CComQIPtr< IHTMLBodyElement > pBody( pBodyEl );
+	CComPtr< IHTMLStyle > pStyle;
+	pBodyEl->get_style( &pStyle );
+
+	if( bDetectAuthor )
+	{
+		mbAuthorHtmlBg = false;
+		mbAuthorHtmlText = false;
+		if( pBody )
+		{
+			CComVariant vBg;
+			if( SUCCEEDED( pBody->get_bgColor( &vBg ) ) && IsHtmlColorSpecified( vBg ) )
+				mbAuthorHtmlBg = true;
+			CComVariant vText;
+			if( SUCCEEDED( pBody->get_text( &vText ) ) && IsHtmlColorSpecified( vText ) )
+				mbAuthorHtmlText = true;
+		}
+		if( pStyle )
+		{
+			CComVariant vStyleBg;
+			if( !mbAuthorHtmlBg && SUCCEEDED( pStyle->get_backgroundColor( &vStyleBg ) ) && IsHtmlColorSpecified( vStyleBg ) )
+				mbAuthorHtmlBg = true;
+			CComVariant vStyleFg;
+			if( !mbAuthorHtmlText && SUCCEEDED( pStyle->get_color( &vStyleFg ) ) && IsHtmlColorSpecified( vStyleFg ) )
+				mbAuthorHtmlText = true;
+		}
+	}
+
+	const CComVariant vHostBg( HtmlRgb( OdclSysColor( COLOR_WINDOW ) ) );
+	const CComVariant vHostFg( HtmlRgb( OdclSysColor( COLOR_WINDOWTEXT ) ) );
+	if( !mbAuthorHtmlBg )
+	{
+		if( pBody )
+			pBody->put_bgColor( vHostBg );
+		if( pStyle )
+			pStyle->put_backgroundColor( vHostBg );
+	}
+	if( !mbAuthorHtmlText )
+	{
+		if( pBody )
+			pBody->put_text( vHostFg );
+		if( pStyle )
+			pStyle->put_color( vHostFg );
+	}
+}
+
 
 BEGIN_MESSAGE_MAP(CHtmlCtrl, CHtmlBrowser)
 	ON_WM_CTLCOLOR_REFLECT()
@@ -118,6 +214,7 @@ void CHtmlCtrl::OnDocumentComplete(LPCTSTR lpszURL)
 {
 	__super::OnDocumentComplete(lpszURL);
 	SetOpticalZoom( FromDIP( 100 ) );
+	ApplyHostDocumentColors( true );
 }
 
 BOOL CHtmlCtrl::PreTranslateMessage(MSG* pMsg) 
@@ -133,6 +230,13 @@ HBRUSH CHtmlCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL CHtmlCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_WINDOW ) );
+		return TRUE;
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);

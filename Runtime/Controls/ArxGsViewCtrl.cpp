@@ -54,6 +54,15 @@ bool CArxGsViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 	return true;
 }
 
+void CArxGsViewCtrl::HandleHostThemeChanged()
+{
+	TPropertyPtr pAcadColor = mpTemplate->GetPropertyObject( Prop::BackgroundColor );
+	AcGsDevice* pGsDevice = GetGsDevice();
+	if( pAcadColor && pGsDevice )
+		pGsDevice->setBackgroundColor( GsColorConvertor( GetRGBColor( pAcadColor->GetLongValue() ) ) );
+	OnNeedRepaint( true );
+}
+
 void CArxGsViewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
 	mclrHighlight = clrHighlight;		
@@ -302,12 +311,24 @@ END_MESSAGE_MAP()
 
 BOOL CArxGsViewCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	return HandleEraseBkgnd( pDC );
+	if( HandleEraseBkgnd( pDC ) )
+		return TRUE;
+	if( pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, mColorService.GetBackgroundColor() );
+		return TRUE;
+	}
+	return TRUE;
 }
 
 void CArxGsViewCtrl::OnPaint()
 {
 	CPaintDC dc(this);
+	CRect rcFill;
+	GetClientRect( &rcFill );
+	dc.FillSolidRect( &rcFill, mColorService.GetBackgroundColor() );
 
 	AcGsView* pView = GetGsView();
 	if( pView )

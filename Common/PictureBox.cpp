@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "PictureBox.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "DclPicture.h"
 
@@ -179,7 +180,7 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 		// BitBlt the black bits in the monochrome bitmap into COLOR_3DHILIGHT bits in the destination DC
 		// The magic ROP comes from Charles Petzold's book
 		CBrush brush;
-		brush.CreateSolidBrush(GetSysColor(COLOR_3DHILIGHT));
+		brush.CreateSolidBrush(OdclSysColor(COLOR_3DHILIGHT));
 		CBrush* pOldBrush = dcBW.SelectObject(&brush);
 		if( bStretch )
 			dcBW.StretchBlt(1, 1, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, 0xB8074A);
@@ -188,7 +189,7 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 
 		// BitBlt the black bits in the monochrome bitmap into COLOR_3DSHADOW bits in the destination DC
 		brush.DeleteObject();
-		brush.CreateSolidBrush(GetSysColor(COLOR_3DSHADOW));
+		brush.CreateSolidBrush(OdclSysColor(COLOR_3DSHADOW));
 		dcBW.SelectObject(&brush);
 		if( bStretch )
 			dcBW.StretchBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, nSrcW, nSrcH, 0xB8074A);
@@ -246,6 +247,11 @@ CSize CPictureBox::GetPictureSize() const
 	return CSize( 0, 0 );
 }
 
+COLORREF CPictureBox::GetFillColor() const
+{
+	return OdclSysColor( COLOR_WINDOW );
+}
+
 void CPictureBox::Clear() 
 {
 	if( mhbmMem )
@@ -297,6 +303,7 @@ void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bFitToCtrl /*= false*/
 	CDC* pdc = pDestDC? pDestDC : GetDC();
 	CRect rcCell;	
 	GetClientRect(&rcCell);
+	pdc->FillSolidRect( &rcCell, GetFillColor() );
 	pdc->IntersectClipRect( &rcCell );
 
 	// get width and height of picture
@@ -815,6 +822,6 @@ BOOL CPictureBox::OnEraseBkgnd(CDC* pDC)
 	CRect rcClient;
 	GetClientRect( &rcClient );
 	rcClip.IntersectRect( &rcClip, &rcClient );
-	pDC->FillSolidRect( &rcClip, RGB(255,255,255) );
+	pDC->FillSolidRect( &rcClip, GetFillColor() );
 	return TRUE;
 }

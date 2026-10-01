@@ -374,6 +374,7 @@ public:
 	CAcadColorService* GetColorService() override { return &mColorService; }
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 

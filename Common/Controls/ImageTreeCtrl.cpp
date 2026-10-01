@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "ImageTreeCtrl.h"
 #include "ControlPane.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 static UINT GetTreeItemClipboardFormat()
@@ -17,7 +19,7 @@ static UINT GetTreeItemClipboardFormat()
 
 CImageTreeCtrl::CImageTreeCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mColorService( RGB(0, 0, 0), RGB(255, 255, 255) )
+, mColorService( (long)-19, (long)-6 )
 , mbDeleting( false )
 , mhtiDragSource( NULL )
 {
@@ -44,6 +46,9 @@ bool CImageTreeCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostTreeTheme();
 
 	return bSuccess;
 }
@@ -132,6 +137,31 @@ bool CImageTreeCtrl::ApplyProperty( TPropertyPtr pProp )
 		break;
 	}
 	return !bFailed;
+}
+
+void CImageTreeCtrl::HandleHostThemeChanged()
+{
+	SyncHostTreeTheme();
+}
+
+void CImageTreeCtrl::SyncHostTreeTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	COLORREF crBk = mColorService.GetBackgroundColor();
+	if( mColorService.IsBackgroundNotSet() || mColorService.IsBackgroundTransparent() )
+		crBk = OdclSysColor( COLOR_WINDOW );
+	const COLORREF crFg = mColorService.GetForegroundColor();
+	SetBkColor( crBk );
+	SetTextColor( crFg );
+	SendMessage( TVM_SETLINECOLOR, 0, (LPARAM)OdclSysColor( COLOR_GRAYTEXT ) );
+	CImageList* pList = GetImageList( TVSIL_NORMAL );
+	if( pList && pList->GetSafeHandle() )
+		pList->SetBkColor( crBk );
+	OnNeedRepaint( true );
 }
 
 DROPEFFECT CImageTreeCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )

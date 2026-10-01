@@ -7,6 +7,8 @@
 #include "FilteredComboCtrl.h"
 #include "GridCtrl.h"
 #include "ComboHandler.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -45,6 +47,8 @@ public:
 							rcCtrl,
 							dwComboStyle,
 							100 );
+			CHostThemeHelper::Apply( mClippingWnd, CHostThemeHelper::HostMaps()? L"" : NULL );
+			CHostThemeHelper::ApplyCombo( m_hWnd );
 			SetFont( pGridCtrl->GetFont() );
 			GetWindowRect( &rcCtrl );
 			mClippingWnd.ScreenToClient( &rcCtrl );
@@ -112,8 +116,11 @@ protected:
 			typedef CFilteredComboCtrl TheBaseClass;
 			static const AFX_MSGMAP_ENTRY _messageEntries[] =
 			{
+				ON_WM_PAINT()
+				ON_WM_ERASEBKGND()
 				ON_WM_MEASUREITEM_REFLECT()
 				ON_CONTROL_REFLECT(CBN_KILLFOCUS, &CComboEditCtrlBase::OnKillFocus)
+				ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboEditCtrlBase::OnCbnDropdown)
 				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboEditCtrlBase::OnCbnCloseup)
 				{0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 },
 			};
@@ -144,6 +151,27 @@ protected:
 		{
 			mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 			//mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
+		}
+	afx_msg void OnPaint()
+		{
+			Default();
+			CHostThemeHelper::PaintComboChrome( m_hWnd );
+		}
+	afx_msg BOOL OnEraseBkgnd( CDC* pDC )
+		{
+			if( CHostThemeHelper::HostMaps() && pDC )
+			{
+				CRect rc;
+				GetClientRect( &rc );
+				pDC->FillSolidRect( &rc, OdclSysColor( COLOR_WINDOW ) );
+				return TRUE;
+			}
+			return (BOOL)Default();
+		}
+	afx_msg void OnCbnDropdown()
+		{
+			CHostThemeHelper::ApplyCombo( m_hWnd );
+			CHostThemeHelper::PaintComboChrome( m_hWnd );
 		}
 	afx_msg void OnCbnCloseup()
 		{

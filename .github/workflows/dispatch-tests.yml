@@ -1,6 +1,11 @@
 # Thin public gate: dispatch private opendcl/opendcl-tests harness for same-repo PRs only.
 # External forks never run tests (no secrets, no private checkout).
 #
+# Same-named tests branch: if opendcl-tests has a branch matching the PR head
+# (e.g. product `colortheme` -> tests `colortheme`), run harness-test.yml on
+# that ref via workflow_dispatch so unstable stub/harness edits stay off tests
+# main. Otherwise repository_dispatch (tests default branch).
+#
 # Skip (status success, no harness dispatch):
 #   - PR label `skip-tests`, or
 #   - head commit message contains `@skip-tests` (anywhere in subject/body)
@@ -106,28 +111,47 @@ jobs:
           fi
           SHA="${{ github.event.pull_request.head.sha }}"
           PR="${{ github.event.pull_request.number }}"
-          curl -sS -f -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/opendcl/opendcl-tests/dispatches" \
-            -d "$(jq -n \
-              --arg et "pr_harness" \
-              --arg ref "$SHA" \
-              --arg sha "$SHA" \
-              --argjson pr "$PR" \
-              '{
-                event_type: $et,
-                client_payload: {
-                  opendcl_ref: $ref,
-                  opendcl_sha: $sha,
-                  pr_number: $pr,
-                  status_context: "opendcl-tests / pr_harness",
-                  configuration: "Release",
-                  rth_level: "cad"
-                }
-              }')"
-          echo "Dispatched pr_harness to opendcl-tests for $SHA (PR #$PR)"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          TESTS_REPO="opendcl/opendcl-tests"
+          # Prefer a same-named tests branch so product PRs can land harness
+          # stubs without merging tests to main. workflow_dispatch --ref uses
+          # that branch's workflow + sources. Fall back to repository_dispatch
+          # on the tests default branch when no matching ref exists.
+          if gh api "repos/${TESTS_REPO}/git/ref/heads/${BRANCH}" --silent; then
+            echo "opendcl-tests has branch '${BRANCH}'; workflow_dispatch on that ref"
+            gh workflow run harness-test.yml --repo "$TESTS_REPO" --ref "$BRANCH" \
+              -f lane=pr_harness \
+              -f opendcl_ref="$SHA" \
+              -f opendcl_sha="$SHA" \
+              -f status_context="opendcl-tests / pr_harness" \
+              -f configuration=Release \
+              -f rth_level=cad
+            echo "Dispatched pr_harness workflow on opendcl-tests@${BRANCH} for $SHA (PR #$PR)"
+          else
+            echo "No opendcl-tests branch '${BRANCH}'; repository_dispatch on default branch"
+            curl -sS -f -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${TESTS_REPO}/dispatches" \
+              -d "$(jq -n \
+                --arg et "pr_harness" \
+                --arg ref "$SHA" \
+                --arg sha "$SHA" \
+                --argjson pr "$PR" \
+                '{
+                  event_type: $et,
+                  client_payload: {
+                    opendcl_ref: $ref,
+                    opendcl_sha: $sha,
+                    pr_number: $pr,
+                    status_context: "opendcl-tests / pr_harness",
+                    configuration: "Release",
+                    rth_level: "cad"
+                  }
+                }')"
+            echo "Dispatched pr_harness to opendcl-tests (default) for $SHA (PR #$PR)"
+          fi
 
       - name: Mark error if dispatch failed
         if: failure() && steps.gate.outputs.skip != 'true'

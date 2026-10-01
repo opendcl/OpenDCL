@@ -27,15 +27,22 @@ public:
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
+	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
 
 protected:
+	void SyncHostCheckTheme();
+	bool UseHostOwnerDraw() const;
+	void PaintHostCheck( CDC* pDC );
+
 	DECLARE_MESSAGE_MAP()
 
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	void PostNcDestroy() override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);

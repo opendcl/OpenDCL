@@ -27,6 +27,7 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
 
 // Generated message map functions
@@ -37,5 +38,6 @@ protected:
 	void PostNcDestroy() override;
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 };

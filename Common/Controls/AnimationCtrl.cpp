@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "AnimationCtrl.h"
 #include "ControlPane.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -26,6 +28,9 @@ bool CAnimationCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostAnimTheme();
 
 	return bSuccess;
 }
@@ -61,13 +66,45 @@ BOOL CAnimationCtrl::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
+void CAnimationCtrl::HandleHostThemeChanged()
+{
+	SyncHostAnimTheme();
+}
+
+void CAnimationCtrl::SyncHostAnimTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::HostMaps()? L"" : NULL;
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
+}
+
 HBRUSH CAnimationCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return HandleCtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
+	if( hbrBackground )
+		return hbrBackground;
+	if( CHostThemeHelper::HostMaps() )
+	{
+		const COLORREF crFace = GetPaneFaceColor();
+		pDC->SetTextColor( OdclSysColor( COLOR_BTNTEXT ) );
+		pDC->SetBkColor( crFace );
+		return OdclCachedSolidBrush( crFace );
+	}
+	return NULL;
 }
 
 BOOL CAnimationCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, GetPaneFaceColor() );
+		return TRUE;
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);

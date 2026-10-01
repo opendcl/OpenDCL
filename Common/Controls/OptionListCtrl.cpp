@@ -9,6 +9,8 @@
 #include "ControlPane.h"
 #include "PropertyObject.h"
 #include "ToolTips.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 
 #define GLYPH_WIDTH 17 
 
@@ -19,7 +21,7 @@
 COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mnRowHeight( 20 )
-, mbTrackingMouse( false )
+, mbTrackingMouse(false), mnHotGlyph( -1 )
 , idxInitialFocusItem( -1 )
 {
 	mImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 4, 1 );
@@ -83,6 +85,7 @@ bool COptionListCtrl::Create( CWnd* pParentWnd, UINT nID )
 		MoveWindow( &rc );
 
 		ResetTooltips();
+		SyncHostOptionListTheme();
 	}
 
 	return bSuccess;
@@ -143,6 +146,70 @@ bool COptionListCtrl::ApplyProperty( TPropertyPtr pProp )
 		}
 	}
 	return !bFailed;
+}
+
+void COptionListCtrl::HandleHostThemeChanged()
+{
+	SyncHostOptionListTheme();
+}
+
+void COptionListCtrl::SyncHostOptionListTheme()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
+}
+
+int COptionListCtrl::OptionGlyphPad() const
+{
+	return CHostThemeHelper::HostMaps()? FromDIP( 2 ) : 2;
+}
+
+int COptionListCtrl::OptionGlyphSize() const
+{
+	return CHostThemeHelper::HostMaps()? FromDIP( 13 ) : 13;
+}
+
+int COptionListCtrl::OptionTextIndent() const
+{
+	// Light keeps the historic 17+3 inset. Dark glyphs are DPI-scaled, so
+	// indent from pad + size + gap or the ring sits on the caption.
+	if( CHostThemeHelper::HostMaps() )
+		return OptionGlyphPad() + OptionGlyphSize() + FromDIP( 8 );
+	return GLYPH_WIDTH + 3;
+}
+
+void COptionListCtrl::DrawHostOptionGlyph( CDC* pDC, CPoint pt, bool bSelected, bool bHover, bool bDisabled )
+{
+	if( !pDC )
+		return;
+	if( !CHostThemeHelper::HostMaps() )
+	{
+		int idxImage = bDisabled? 2 : (bHover? 1 : 0);
+		if( bSelected )
+			idxImage += 3;
+		mImageList.Draw( pDC, idxImage, pt, ILD_NORMAL );
+		return;
+	}
+	const int nSize = OptionGlyphSize();
+	CRect rc( pt.x, pt.y, pt.x + nSize, pt.y + nSize );
+	// Clear hover/selection chrome under the glyph so supersample blit does not punch the ring.
+	const COLORREF crFace = GetPaneFaceColor();
+	pDC->FillSolidRect( &rc, crFace );
+	rc.DeflateRect( 1, 1 );
+	COLORREF crRing = bDisabled? OdclSysColor( COLOR_GRAYTEXT ) : OdclSysColor( COLOR_BTNTEXT );
+	if( bHover && !bDisabled )
+		crRing = OdclSysColor( COLOR_HIGHLIGHT );
+	CHostThemeHelper::DrawSmoothEllipse( pDC->GetSafeHdc(), rc, crFace, crRing, true );
+	if( bSelected )
+	{
+		CRect rcDot = rc;
+		rcDot.DeflateRect( rc.Width() / 4, rc.Height() / 4 );
+		CHostThemeHelper::DrawSmoothEllipse( pDC->GetSafeHdc(), rcDot, crRing, crRing, true );
+	}
 }
 
 void COptionListCtrl::ResetTooltips()
@@ -320,10 +387,7 @@ void COptionListCtrl::DrawOptionGlyphs(CPoint point, bool bAllowHover)
 
 		bool bSelected = (nSel == idxItem);
 		bool bHighlighted = bAllowHover && (rcItem.PtInRect( point ) != FALSE);
-		int idxImage = bHighlighted? 1 : 0;
-		if( bSelected )
-			idxImage += 3;
-		mImageList.Draw( pDC, idxImage, CPoint( rcItem.left + 2, rcItem.top + 2 ), ILD_NORMAL );
+		DrawHostOptionGlyph( pDC, CPoint( rcItem.left + OptionGlyphPad(), rcItem.top + OptionGlyphPad() ), bSelected, bHighlighted, false );
 	}
 	pDC->RestoreDC( -1 );
 	ReleaseDC(pDC);
@@ -337,6 +401,7 @@ void COptionListCtrl::EndHoverTracking()
 		_TrackMouseEvent( &tm );
 	}
 	mbTrackingMouse = false;
+	mnHotGlyph = -1;
 	KillTimer( kMouseLeaveTimer );
 	DrawOptionGlyphs( CPoint( -1, -1 ), false );
 }
@@ -353,6 +418,23 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		SetTimer( kMouseLeaveTimer, 100, NULL );
 	}
 
+	// Only redraw glyphs when the hot item changes — per-move supersample redraw jittered.
+	int nHot = -1;
+	for( int i = 0; i < GetCount(); ++i )
+	{
+		CRect rcItem;
+		if( LB_ERR == GetItemRect( i, &rcItem ) )
+			continue;
+		rcItem.bottom = rcItem.top + mnRowHeight;
+		if( rcItem.PtInRect( point ) )
+		{
+			nHot = i;
+			break;
+		}
+	}
+	if( nHot == mnHotGlyph )
+		return;
+	mnHotGlyph = nHot;
 	DrawOptionGlyphs( point, true );
 }
 
@@ -393,6 +475,13 @@ HBRUSH COptionListCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	HBRUSH hbrBackground = HandleCtlColor( pDC, nCtlColor );
 	if( hbrBackground )
 		return hbrBackground;
+	if( CHostThemeHelper::HostMaps() )
+	{
+		const COLORREF crFace = OdclSysColor( COLOR_BTNFACE );
+		pDC->SetTextColor( mColorService.GetForegroundColor() );
+		pDC->SetBkColor( crFace );
+		return OdclCachedSolidBrush( crFace );
+	}
 	if( GetTheme().IsThemeActive() )
 		return NULL; //when using visual style, transparent brush causes class background to be used
 	return CAcadColorService::GetTransparentBrush();
@@ -400,6 +489,13 @@ HBRUSH COptionListCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 BOOL COptionListCtrl::OnEraseBkgnd(CDC* pDC)
 {
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_BTNFACE ) );
+		return TRUE;
+	}
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
@@ -427,16 +523,22 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	pDC->SaveDC();
 
 	CRect rcItem( lpDrawItemStruct->rcItem );
+	COLORREF crFill = OdclSysColor( COLOR_BTNFACE );
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService && !pColorService->IsBackgroundTransparent() && !pColorService->IsBackgroundNotSet() )
+		crFill = pColorService->GetBackgroundColor();
+	if( (lpDrawItemStruct->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)) != 0 )
+		pDC->FillSolidRect( &rcItem, crFill );
 
 	//calculate text area
 	CRect rcText( rcItem );
 	rcText.top += 2;
-	rcText.left += (GLYPH_WIDTH + 3);
+	rcText.left += OptionTextIndent();
 	CString sCaption;
 	GetText( lpDrawItemStruct->itemID, sCaption );
 	pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_CALCRECT | DT_NOPREFIX );	
 
-	if( (lpDrawItemStruct->itemAction & ODA_DRAWENTIRE) )
+	if( (lpDrawItemStruct->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)) )
 	{
 		pDC->SetTextColor( GetColorService()->GetForegroundColor() );
 		pDC->SetBkMode( TRANSPARENT );
@@ -444,20 +546,18 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		if( !(lpDrawItemStruct->itemData & 2) )
 			pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_NOPREFIX );	
 		else
-		{ // draw the text as disabled
-			pDC->DrawState( rcText.TopLeft(), CSize( rcText.Width(), rcText.Height() ),
-											sCaption, DSS_DISABLED, FALSE, 0, (HBRUSH)NULL );
+		{
+			const COLORREF crOld = pDC->SetTextColor( CHostThemeHelper::DisabledTextColor() );
+			pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_NOPREFIX );
+			pDC->SetTextColor( crOld );
 		}
-		pDC->SetBkMode( OPAQUE );
+		pDC->SetBkMode( TRANSPARENT );
 	}
 	if( (lpDrawItemStruct->itemAction & (ODA_SELECT | ODA_DRAWENTIRE)) )
 	{
 		bool bSelected = ((lpDrawItemStruct->itemState & ODS_SELECTED) != 0);
 		bool bDisabled = ((lpDrawItemStruct->itemData & 2) != 0);
-		int idxImage = bDisabled? 2 : 0;
-		if( bSelected )
-			idxImage += 3;
-		mImageList.Draw( pDC, idxImage, CPoint( rcItem.left + 2, rcItem.top + 2 ), ILD_NORMAL );
+		DrawHostOptionGlyph( pDC, CPoint( rcItem.left + OptionGlyphPad(), rcItem.top + OptionGlyphPad() ), bSelected, false, bDisabled );
 	}
 	if( (lpDrawItemStruct->itemAction & ODA_FOCUS) )
 	{
@@ -469,7 +569,17 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			CRect rcFocus( rcText );
 			rcFocus.InflateRect( 2, 2 );
 			rcFocus &= rcItem;
-			pDC->DrawFocusRect( &rcFocus );
+			if( CHostThemeHelper::HostMaps() )
+			{
+				CPen pen( PS_DOT, 1, OdclSysColor( COLOR_BTNHIGHLIGHT ) );
+				CPen* pOldPen = pDC->SelectObject( &pen );
+				CBrush* pOldBrush = (CBrush*)pDC->SelectStockObject( NULL_BRUSH );
+				pDC->Rectangle( &rcFocus );
+				pDC->SelectObject( pOldBrush );
+				pDC->SelectObject( pOldPen );
+			}
+			else
+				pDC->DrawFocusRect( &rcFocus );
 		}
 	}
 

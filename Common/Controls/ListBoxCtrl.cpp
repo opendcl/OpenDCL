@@ -7,6 +7,7 @@
 #include "ControlPane.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
+#include "HostThemeHelper.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,6 +33,9 @@ bool CListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		HandleHostThemeChanged();
 
 	return bSuccess;
 }
@@ -60,6 +64,15 @@ DWORD CListBoxCtrl::GetWndStyle() const
 		break;
 	}
 	return dwStyle;
+}
+
+void CListBoxCtrl::HandleHostThemeChanged()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	OnNeedRepaint( true );
 }
 
 void CListBoxCtrl::HandleDpiChanged()

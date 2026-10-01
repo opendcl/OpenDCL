@@ -19,6 +19,8 @@ class CComboExCtrl : public _TComboExBase
 {
 	CAcadColorService mColorService;
 	bool mbAutoComplete;
+	HWND mhwndInnerCombo;
+	WNDPROC mpfnInnerComboProc;
 
 public:
 	CComboExCtrl();
@@ -43,6 +45,12 @@ protected:
 	void PreSubclassWindow() override;
 	BOOL PreTranslateMessage( MSG* pMsg ) override;
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
-	afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
+	virtual afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
 	afx_msg void OnEditchange();
+	static LRESULT CALLBACK InnerComboSubclass( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam );
+	void SubclassInnerCombo();
+	void UnsubclassInnerCombo();
+	bool DrawHostMappedItem( LPDRAWITEMSTRUCT lpDrawItem );
+	UINT HostMappedTextFormat() const;
+	void PaintHostMappedClosedFace( HDC hdc );
 };

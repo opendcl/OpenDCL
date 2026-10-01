@@ -354,7 +354,9 @@ TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentUniqueName, size_t n
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-		if ((*iterForm)->GetParentName() == pszParentUniqueName && static_cast<size_t>( (*iterForm)->GetTabIndex() ) == nTabIndex)
+		const short nIndex = (*iterForm)->GetTabIndex();
+		if( (*iterForm)->GetParentName() == pszParentUniqueName && nIndex >= 0
+				&& static_cast<size_t>( nIndex ) == nTabIndex )
 			return (*iterForm);
 	}
 	return NULL;

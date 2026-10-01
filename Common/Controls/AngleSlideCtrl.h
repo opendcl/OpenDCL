@@ -25,6 +25,7 @@ public:
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
 
 	// Generated message map functions

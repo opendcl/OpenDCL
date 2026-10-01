@@ -4,6 +4,8 @@
 #include "ControlPane.h"
 #include "ComboStyles.h"
 #include "ComboHandler.h"
+#include "HostThemeHelper.h"
+#include "PropertyIds.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,6 +44,9 @@ bool CImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostComboTheme();
 
 	return bSuccess;
 }
@@ -190,16 +195,52 @@ bool CImageComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 
 bool CImageComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 {
-	if( !__super::OnApplyUseVisualStyle( pProp ) )
+	if( !CDialogControl::OnApplyUseVisualStyle( pProp ) )
 		return false;
-	CComboBox* pComboCtrl = GetComboBoxCtrl();
-	if( !pComboCtrl )
-		return false;
-	if( pProp->GetBooleanValue() )
-		GetTheme().SetWindowTheme( NULL, NULL );
-	else
-		GetTheme().SetWindowTheme( L"", L"" );
+	SyncHostComboTheme();
 	return true;
+}
+
+void CImageComboBoxCtrl::HandleHostThemeChanged()
+{
+	SyncHostComboTheme();
+}
+
+void CImageComboBoxCtrl::SyncHostComboTheme()
+{
+	if( !m_hWnd )
+		return;
+	const bool bVisual = mpTemplate && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
+	CComboBox* pInner = GetComboBoxCtrl();
+	if( pInner )
+	{
+		CHostThemeHelper::ApplyTree( pInner->m_hWnd, pszTheme );
+#if defined(ODCL_HOST_COLORTHEME)
+		COMBOBOXINFO cbi = {0};
+		cbi.cbSize = sizeof( cbi );
+		if( ::GetComboBoxInfo( pInner->m_hWnd, &cbi ) && cbi.hwndList )
+			CHostThemeHelper::Apply( cbi.hwndList, CHostThemeHelper::ScrollTheme() );
+#endif
+	}
+	CEdit* pEdit = GetEditCtrl();
+	if( pEdit )
+		CHostThemeHelper::Apply( pEdit->m_hWnd, pszTheme );
+	SubclassInnerCombo();
+	if( mpTemplate )
+	{
+		TImageListPtr pImageList = mpTemplate->GetImageList();
+		if( pImageList && pImageList->GetImageList().GetSafeHandle() )
+		{
+			CImageList& ImageList = pImageList->GetImageList();
+			CAcadColorService* pColorService = GetColorService();
+			ImageList.SetBkColor( pColorService? pColorService->GetBackgroundColor() : CLR_NONE );
+			SetImageList( &ImageList );
+		}
+	}
+	OnNeedRepaint( true );
 }
 
 DWORD CImageComboBoxCtrl::GetComboStyle() const
@@ -292,6 +333,8 @@ void CImageComboBoxCtrl::OnListChanged()
 
 
 BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CImageComboBoxCtrl::OnCbnDropdown)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboBoxCtrl::OnCbnCloseup)
@@ -302,6 +345,7 @@ BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_MESSAGE(CB_SETITEMDATA, &CImageComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CImageComboBoxCtrl::OnResetContent)
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CImageComboBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -313,6 +357,19 @@ LRESULT CImageComboBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 {
 	HandleDpiChanged();
 	return 0;
+}
+
+HBRUSH CImageComboBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
+{
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+HBRUSH CImageComboBoxCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = HandleCtlColor( pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
 }
 
 LRESULT CImageComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -352,6 +409,12 @@ BOOL CImageComboBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CImageComboBoxCtrl::OnPaint()
+{
+	Default();
+	CHostThemeHelper::PaintComboChrome( m_hWnd );
 }
 
 void CImageComboBoxCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)

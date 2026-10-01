@@ -7,6 +7,7 @@
 #include "FilteredComboExCtrl.h"
 #include "GridCtrl.h"
 #include "ComboHandler.h"
+#include "HostThemeHelper.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -44,6 +45,7 @@ public:
 							rcCtrl,
 							dwComboStyle,
 							100 );
+			CHostThemeHelper::ApplyCombo( m_hWnd );
 			SetFont( pGridCtrl->GetFont() );
 			SetImageList( pGridCtrl->GetImageList( LVSIL_SMALL ) );
 			GetWindowRect( &rcCtrl );
@@ -146,6 +148,7 @@ protected:
 			{
 				ON_WM_MEASUREITEM_REFLECT()
 				ON_CONTROL_REFLECT(CBN_KILLFOCUS, &CImageComboEditCtrlBase::OnKillFocus)
+				ON_CONTROL_REFLECT(CBN_DROPDOWN, &CImageComboEditCtrlBase::OnCbnDropdown)
 				ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboEditCtrlBase::OnCbnCloseup)
 				{0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 },
 			};
@@ -176,6 +179,10 @@ protected:
 		{
 			mpGridCtrl->PostMessage( WM_CANCELMODE, 0, 0 );
 			//mpGridCtrl->SendMessage( WM_COMMAND, MAKEWPARAM(0, CBN_KILLFOCUS), (LPARAM)m_hWnd );
+		}
+	afx_msg void OnCbnDropdown()
+		{
+			CHostThemeHelper::ApplyCombo( m_hWnd );
 		}
 	afx_msg void OnCbnCloseup()
 		{

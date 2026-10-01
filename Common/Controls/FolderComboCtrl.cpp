@@ -7,6 +7,7 @@
 #include "ControlPane.h"
 #include "FolderTreeCtrl.h"
 #include "PropertyIds.h"
+#include "HostThemeHelper.h"
 #include "PropertyObject.h"
 
 
@@ -34,6 +35,12 @@ bool CFolderComboCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+	{
+		const bool bVisual = (mpTemplate && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ));
+		SyncHostFolderTheme( bVisual );
+	}
 
 	return bSuccess;
 }
@@ -80,6 +87,22 @@ bool CFolderComboCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+
+
+bool CFolderComboCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !CDialogControl::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	const bool bVisual = (pProp && pProp->GetBooleanValue());
+	SyncHostFolderTheme( bVisual );
+	return true;
+}
+
+void CFolderComboCtrl::HandleHostThemeChanged()
+{
+	const bool bVisual = (mpTemplate && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ));
+	SyncHostFolderTheme( bVisual );
+}
 
 BEGIN_MESSAGE_MAP(CFolderComboCtrl, CFolderComboBox)
 	ON_WM_ERASEBKGND()

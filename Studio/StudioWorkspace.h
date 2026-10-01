@@ -29,6 +29,7 @@ class CStudioWorkspace : public CWorkspace
 	CStudioDialogObject* mpActiveDlgObject;
 	TDclControlPtr mpActiveDclControl;
 	HMODULE mhmodLocalRes;
+	CWin32ColorService mColorService;
 
 public:
 	CStudioWorkspace();
@@ -40,6 +41,7 @@ public:
 	void SetModified( bool bModified = true ) override;
 	CString GetLanguage(void) const override;
 	FontSettings GetDefaultFontSettings() const override;
+	CColorService& GetColorService() override { return mColorService; }
 
 	virtual TStudioProjectPtr GetActiveProject() const;
 	virtual void OnGridSpacingChange( UINT nGridSpacing ); // change grid spacing

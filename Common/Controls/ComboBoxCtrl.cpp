@@ -3,7 +3,10 @@
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
 #include "ComboHandler.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 #include "ComboStyles.h"
+#include "PropertyIds.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,6 +37,9 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
+
+	if( bSuccess )
+		SyncHostComboTheme();
 
 	SetEditSel( -1, -1 );
 
@@ -162,6 +168,14 @@ bool CComboBoxCtrl::ApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !CDialogControl::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	SyncHostComboTheme();
+	return true;
+}
+
 DWORD CComboBoxCtrl::GetComboStyle() const
 {
 	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )
@@ -200,8 +214,27 @@ void CComboBoxCtrl::OnListChanged()
 	}
 }
 
+void CComboBoxCtrl::HandleHostThemeChanged()
+{
+	SyncHostComboTheme();
+}
+
+void CComboBoxCtrl::SyncHostComboTheme()
+{
+	if( !m_hWnd )
+		return;
+	const bool bVisual = mpTemplate && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+	LPCWSTR pszTheme = CHostThemeHelper::ThemeClass( bVisual );
+	GetTheme().SetWindowTheme( pszTheme, pszTheme );
+	CHostThemeHelper::ApplyTree( m_hWnd, pszTheme );
+	CHostThemeHelper::ApplyCombo( m_hWnd );
+	OnNeedRepaint( true );
+}
+
 
 BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_CTLCOLOR()
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboBoxCtrl::OnCbnDropdown)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboBoxCtrl::OnCbnCloseup)
@@ -212,6 +245,7 @@ BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_MESSAGE(CB_SETITEMDATA, &CComboBoxCtrl::OnModifyContent)
 	ON_MESSAGE(CB_RESETCONTENT, &CComboBoxCtrl::OnResetContent)
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_DPICHANGED_AFTERPARENT, &CComboBoxCtrl::OnDpiChanged)
 END_MESSAGE_MAP()
 
@@ -223,6 +257,19 @@ LRESULT CComboBoxCtrl::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 {
 	HandleDpiChanged();
 	return 0;
+}
+
+HBRUSH CComboBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
+{
+	return HandleCtlColor( pDC, nCtlColor );
+}
+
+HBRUSH CComboBoxCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = HandleCtlColor( pDC, nCtlColor );
+	if( hbr )
+		return hbr;
+	return __super::OnCtlColor( pDC, pWnd, nCtlColor );
 }
 
 LRESULT CComboBoxCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -283,6 +330,7 @@ void CComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 void CComboBoxCtrl::OnCbnDropdown()
 {
+	CHostThemeHelper::ApplyCombo( m_hWnd );
 }
 
 void CComboBoxCtrl::OnCbnCloseup()
@@ -351,4 +399,65 @@ BOOL CComboBoxCtrl::OnEraseBkgnd(CDC* pDC)
 	if( HandleEraseBkgnd( pDC ) )
 		return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+bool CComboBoxCtrl::UseHostOwnerDraw() const
+{
+	return CHostThemeHelper::HostMaps() || !mpTemplate->GetBooleanProperty( Prop::UseVisualStyle );
+}
+
+void CComboBoxCtrl::PaintHostComboChrome( CDC* pDC )
+{
+#if !defined(ODCL_HOST_COLORTHEME)
+	UNREFERENCED_PARAMETER( pDC );
+#else
+	if( !pDC || !m_hWnd )
+		return;
+	COMBOBOXINFO cbi = {0};
+	cbi.cbSize = sizeof( cbi );
+	if( !::GetComboBoxInfo( m_hWnd, &cbi ) )
+		return;
+	const bool bEnabled = (IsWindowEnabled() != FALSE);
+	CHostThemeHelper::PaintComboDropButton( pDC->GetSafeHdc(), cbi.rcButton, bEnabled );
+	CRect rcClient;
+	GetClientRect( &rcClient );
+
+	const DWORD dwStyle = GetStyle();
+	if( (dwStyle & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST
+			&& !(dwStyle & (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE)) )
+	{
+		CAcadColorService* pColorService = GetColorService();
+		const COLORREF crBk = pColorService ? pColorService->GetBackgroundColor() : OdclSysColor( COLOR_WINDOW );
+		const COLORREF crFg = pColorService ? pColorService->GetForegroundColor() : OdclSysColor( COLOR_WINDOWTEXT );
+		CRect rcFace( cbi.rcItem );
+		pDC->FillSolidRect( &rcFace, crBk );
+		CString sText;
+		const int nSel = GetCurSel();
+		if( nSel >= 0 )
+			GetLBText( nSel, sText );
+		else
+			GetWindowText( sText );
+		CFont* pFont = GetFont();
+		CFont* pOldFont = pFont ? pDC->SelectObject( pFont ) : NULL;
+		const COLORREF crOld = pDC->SetTextColor( bEnabled ? crFg : CHostThemeHelper::DisabledTextColor() );
+		const int nOldBk = pDC->SetBkMode( TRANSPARENT );
+		rcFace.DeflateRect( FromDIP( 4 ), 0 );
+		pDC->DrawText( sText, &rcFace, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS );
+		pDC->SetBkMode( nOldBk );
+		pDC->SetTextColor( crOld );
+		if( pOldFont )
+			pDC->SelectObject( pOldFont );
+	}
+	CHostThemeHelper::PaintEtchedRect( pDC->GetSafeHdc(), rcClient );
+	CHostThemeHelper::PaintNcBorder( m_hWnd );
+#endif
+}
+
+void CComboBoxCtrl::OnPaint()
+{
+	Default();
+	if( !UseHostOwnerDraw() )
+		return;
+	CClientDC dc( this );
+	PaintHostComboChrome( &dc );
 }

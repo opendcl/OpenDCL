@@ -4,12 +4,30 @@
 #include "stdafx.h"
 #include "HyperlinkCtrl.h"
 #include "ControlPane.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "Resource.h"
+
+#ifndef COLOR_HOTLIGHT
+#define COLOR_HOTLIGHT 26
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CHyperlinkCtrl
+
+
+static COLORREF LighterHostLinkColor( COLORREF cr )
+{
+	if( !CHostThemeHelper::HostMaps() )
+		return cr;
+	const COLORREF crHot = OdclSysColor( COLOR_HOTLIGHT );
+	return RGB(
+		( GetRValue( cr ) + GetRValue( crHot ) * 2 ) / 3,
+		( GetGValue( cr ) + GetGValue( crHot ) * 2 ) / 3,
+		( GetBValue( cr ) + GetBValue( crHot ) * 2 ) / 3 );
+}
 
 COLORREF CHyperlinkCtrl::g_colorVisited   = RGB(128,0,128);		 // purple
 
@@ -168,6 +186,7 @@ void CHyperlinkCtrl::OnPaint()
 		CRect rcClient;
 		GetClientRect( &rcClient );
 		CtlColor( &dc, CTLCOLOR_STATIC );
+		dc.SetTextColor( LighterHostLinkColor( dc.GetTextColor() ) );
 		dc.SelectObject( &mFont );
 		dc.ExtTextOut( 0, 0, ETO_CLIPPED, &rcClient, sText, NULL );
 	}

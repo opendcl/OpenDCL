@@ -2,6 +2,9 @@
 #include "TextBoxCtrl.h"
 #include "DclControlTemplate.h"
 #include "ControlPane.h"
+#include "ColorService.h"
+#include "HostThemeHelper.h"
+#include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -54,6 +57,15 @@ DWORD CTextBoxCtrl::GetWndStyle() const
 	if( mpTemplate->GetBooleanProperty( Prop::AutoHScroll ) )
 		dwStyle |= ES_AUTOHSCROLL;
 	return dwStyle;
+}
+
+void CTextBoxCtrl::HandleHostThemeChanged()
+{
+	if( !m_hWnd )
+		return;
+	LPCWSTR pszTheme = CHostThemeHelper::ScrollTheme();
+	CHostThemeHelper::Apply( m_hWnd, pszTheme );
+	Invalidate();
 }
 
 void CTextBoxCtrl::HandleDpiChanged()
@@ -298,10 +310,9 @@ HBRUSH CTextBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		return hbrBackground;
 	if( (GetStyle() & ES_READONLY) )
 	{
-		COLORREF crReadOnly = GetSysColor( COLOR_BTNFACE );
+		COLORREF crReadOnly = OdclSysColor( COLOR_BTNFACE );
 		pDC->SetBkColor( crReadOnly );
-		static CBrush mbrReadOnly( crReadOnly );
-		return mbrReadOnly;
+		return OdclCachedSolidBrush( crReadOnly );
 	}
 	return NULL;
 	//return CAcadColorService::GetTransparentBrush();

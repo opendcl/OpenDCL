@@ -19,6 +19,8 @@
 
 #include "stdafx.h"
 #include "RoundSliderCtrl.h"
+#include "ColorService.h"
+#include "Workspace.h"
 
 #include <math.h>
 
@@ -178,7 +180,7 @@ IMPLEMENT_DYNAMIC(CRoundSliderCtrl, CSliderCtrl)
 
 CRoundSliderCtrl::CRoundSliderCtrl()
 {
-	m_strText = "%ld°";
+	m_strText = _T("%ld\x00B0"); // U+00B0 degree sign (source must not embed a raw UTF-8 glyph)
 	m_nKnobRadius = 7;
 	m_nZero = 0;
 	m_bInverted = false;
@@ -186,10 +188,10 @@ CRoundSliderCtrl::CRoundSliderCtrl()
 
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT),sizeof(m_lf),&m_lf);
 	m_font.CreateFontIndirect(&m_lf);
-	m_crText = GetSysColor(COLOR_WINDOWTEXT);
+	m_crText = OdclSysColor(COLOR_WINDOWTEXT);
 
-	m_brKnob.CreateSolidBrush(GetSysColor(COLOR_3DFACE));
-	m_brDial.CreateSolidBrush(GetSysColor(COLOR_3DFACE));
+	m_brKnob.CreateSolidBrush(OdclSysColor(COLOR_3DFACE));
+	m_brDial.CreateSolidBrush(OdclSysColor(COLOR_3DFACE));
 }
 
 CRoundSliderCtrl::~CRoundSliderCtrl()
@@ -269,8 +271,21 @@ BOOL CRoundSliderCtrl::OnEraseBkgnd(CDC* pDC)
 }
 #pragma warning(default:4100)
 
+void CRoundSliderCtrl::RecreateHostBrushes()
+{
+	m_crText = OdclSysColor(COLOR_WINDOWTEXT);
+	if( m_brKnob.m_hObject )
+		m_brKnob.DeleteObject();
+	if( m_brDial.m_hObject )
+		m_brDial.DeleteObject();
+	m_brKnob.CreateSolidBrush(OdclSysColor(COLOR_3DFACE));
+	m_brDial.CreateSolidBrush(OdclSysColor(COLOR_3DFACE));
+}
+
 void CRoundSliderCtrl::OnPaint() 
 {
+	RecreateHostBrushes();
+
 	const int nMin = GetRangeMin();
 	const int nMax = GetRangeMax()+1;
 
@@ -288,11 +303,11 @@ void CRoundSliderCtrl::OnPaint()
 	// Draw (clear) the background
 	CRect rc;
 	GetClientRect(rc);
-	pDC->FillSolidRect(rc, ::GetSysColor(COLOR_BTNFACE));
+	pDC->FillSolidRect(rc, OdclSysColor(COLOR_BTNFACE));
 
 	// Draw the sliders channel
-	DrawCircle(pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DDKSHADOW), ::GetSysColor(COLOR_3DHIGHLIGHT));
-	DrawCircle(pDC, m_ptCenter, nRadius, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DLIGHT));
+	DrawCircle(pDC, m_ptCenter, nRadius--, OdclSysColor(COLOR_3DDKSHADOW), OdclSysColor(COLOR_3DHIGHLIGHT));
+	DrawCircle(pDC, m_ptCenter, nRadius, OdclSysColor(COLOR_3DSHADOW), OdclSysColor(COLOR_3DLIGHT));
 	CBrush * pOldBrush = pDC->SelectObject(CBrush::FromHandle(m_brDial));
 	pDC->Ellipse(m_ptCenter.x - nRadius, m_ptCenter.y + nRadius, m_ptCenter.x + nRadius, m_ptCenter.y - nRadius);
 	pDC->SelectObject(pOldBrush);	
@@ -304,8 +319,8 @@ void CRoundSliderCtrl::OnPaint()
 	const CPoint ptKnobCenter(m_ptCenter.x + int(nRadius * sin(dPos)), m_ptCenter.y - int(nRadius * cos(dPos)));
 	nRadius-=2;
 
-	DrawCircle(pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DHIGHLIGHT), ::GetSysColor(COLOR_3DDKSHADOW));
-	DrawCircle(pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DSHADOW));
+	DrawCircle(pDC, m_ptCenter, nRadius--, OdclSysColor(COLOR_3DHIGHLIGHT), OdclSysColor(COLOR_3DDKSHADOW));
+	DrawCircle(pDC, m_ptCenter, nRadius--, OdclSysColor(COLOR_3DLIGHT), OdclSysColor(COLOR_3DSHADOW));
 	
 	// Draw the knob
 	int nKnobRadius = m_nKnobRadius;
@@ -319,19 +334,19 @@ void CRoundSliderCtrl::OnPaint()
 
 	if(m_bDragging)
 	{
-		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DDKSHADOW), ::GetSysColor(COLOR_3DHIGHLIGHT));
-		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DLIGHT));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, OdclSysColor(COLOR_3DDKSHADOW), OdclSysColor(COLOR_3DHIGHLIGHT));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, OdclSysColor(COLOR_3DSHADOW), OdclSysColor(COLOR_3DLIGHT));
 	}
 	else
 	{
-		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DHIGHLIGHT), ::GetSysColor(COLOR_3DDKSHADOW));
-		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DSHADOW));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, OdclSysColor(COLOR_3DHIGHLIGHT), OdclSysColor(COLOR_3DDKSHADOW));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, OdclSysColor(COLOR_3DLIGHT), OdclSysColor(COLOR_3DSHADOW));
 	}
 
 	// Draw the focus circle on the inside of the knob
 	if(GetFocus() == this)
 	{
-		DrawCircle(pDC, ptKnobCenter, nKnobRadius-2, RGB(0, 0, 0), TRUE);
+		DrawCircle(pDC, ptKnobCenter, nKnobRadius-2, OdclSysColor(COLOR_WINDOWTEXT), TRUE);
 	}
 
 	// Draw the text

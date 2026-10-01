@@ -15,6 +15,8 @@
 class CHtmlCtrl : public CHtmlBrowser, public CDialogControl
 {
 	CAcadColorService mColorService;
+	bool mbAuthorHtmlBg;
+	bool mbAuthorHtmlText;
 
 // Construction
 public:
@@ -28,7 +30,11 @@ public:
 	DWORD GetWndStyle() const override;
 	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 	CAcadColorService* GetColorService() override { return &mColorService; }
+
+protected:
+	void ApplyHostDocumentColors( bool bDetectAuthor );
 
 // Generated message map functions
 protected:

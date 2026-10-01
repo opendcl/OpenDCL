@@ -31,6 +31,7 @@ public:
 	virtual bool IsAutoSized() { return false; }
 	virtual void AutoSize() {}
 	virtual void OnMouseEntered() {}
+	virtual COLORREF GetFillColor() const;
 	void DrawPicture( TPicturePtr, bool bFitToCtrl = false, CDC* pDestDC = NULL );
 	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );

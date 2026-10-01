@@ -181,19 +181,38 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 	std::vector< CTabPageDlg* > rTabPages;
 
 	CRect rectPage = GetUsedArea();
+	TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
 	const TDclFormList& Forms = mpTemplate->GetOwnerProject()->GetDclFormList();
+	TDclFormList children;
+	short nNext = 0;
 	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		if( (*iter)->GetParentForm() == mpTemplate->GetOwnerForm() )
+		if( (*iter)->GetParentForm() != pOwnerForm )
+			continue;
+		children.push_back( *iter );
+		const short nIndex = (*iter)->GetTabIndex();
+		if( nIndex >= 0 && nIndex >= nNext )
+			nNext = static_cast< short >( nIndex + 1 );
+	}
+	for( TDclFormList::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+	{
+		if( (*iter)->GetTabIndex() < 0 )
+			(*iter)->SetTabIndex( nNext++ );
+	}
+	for( TDclFormList::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+	{
+		CTabPageDlg* pNewPage = new CTabPageDlg( *iter, this, rectPage, nId );
+		short nIndex = (*iter)->GetTabIndex();
+		size_t nTabIndex = (nIndex < 0)? rTabPages.size() : static_cast< size_t >( nIndex );
+		if( rTabPages.size() <= nTabIndex )
+			rTabPages.resize( nTabIndex + 1 );
+		if( rTabPages[nTabIndex] )
 		{
-			CTabPageDlg* pNewPage = new CTabPageDlg( (*iter), this, rectPage, nId );
-			size_t nTabIndex = static_cast<size_t>( (*iter)->GetTabIndex() );
-			if( rTabPages.size() <= nTabIndex )
-				rTabPages.resize( nTabIndex + 1 );
-			CTabPageDlg*& pPage = rTabPages[nTabIndex];
-			assert( pPage == NULL ); //duplicate tab index!
-			pPage = pNewPage;
+			nTabIndex = rTabPages.size();
+			rTabPages.resize( nTabIndex + 1 );
+			(*iter)->SetTabIndex( static_cast< short >( nTabIndex ) );
 		}
+		rTabPages[nTabIndex] = pNewPage;
 	}
 	for( std::vector< CTabPageDlg* >::const_iterator iter = rTabPages.begin();
 			 iter != rTabPages.end();

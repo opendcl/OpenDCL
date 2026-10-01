@@ -31,6 +31,10 @@ public:
 	DWORD GetWndStyle() const override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyUseVisualStyle( TPropertyPtr pProp ) override; //Prop::UseVisualStyle
+	void HandleHostThemeChanged() override;
+	BOOL GetItemColors(DRAWITEMSTRUCT& dis, COLORREF& fgColor, COLORREF& bgColor, COLORREF& fillColor) override;
+	template<typename TCombo> friend void OdclAcUiComboHostDrawItem( TCombo*, LPDRAWITEMSTRUCT );
+	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
 
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 
@@ -44,6 +48,8 @@ protected:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	BOOL PreTranslateMessage(MSG* pMsg) override;
 	void PostNcDestroy() override;
+	HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg LRESULT OnModifyContent( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 	afx_msg void OnSetFocus(CWnd* pOldWnd);

@@ -117,6 +117,8 @@ protected:
 	// Windows painting helpers
 protected:
 	BOOL HandleEraseBkgnd( CDC* pDC ) override;
+public:
+	void HandleHostThemeChanged() override;
 
 	// Creation & Property Application
 public:

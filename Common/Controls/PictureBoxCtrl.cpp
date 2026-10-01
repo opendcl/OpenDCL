@@ -172,8 +172,23 @@ bool CPictureBoxCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyBackgroundColor( pProp ) )
 		return false;
+	CPictureBox::Clear();
 	Refresh();
 	return true;
+}
+
+COLORREF CPictureBoxCtrl::GetFillColor() const
+{
+	const CAcadColorService* pColorService = &mColorService;
+	if( pColorService && !pColorService->IsBackgroundNotSet() && !pColorService->IsBackgroundTransparent() )
+		return pColorService->GetBackgroundColor();
+	return OdclSysColor( COLOR_WINDOW );
+}
+
+void CPictureBoxCtrl::HandleHostThemeChanged()
+{
+	CPictureBox::Clear();
+	Refresh();
 }
 
 void CPictureBoxCtrl::SetPictureID(int nPictureID)

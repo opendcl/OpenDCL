@@ -6,6 +6,8 @@
 #include "Resource.h"
 #include "Workspace.h"
 #include "FolderComboBox.h"
+#include "HostThemeHelper.h"
+#include "ColorService.h"
 #include <shellapi.h>
 #include <comdef.h>
 #include <vector>
@@ -593,7 +595,7 @@ void CFolderTreeCtrl::Open()
 	SystemParametersInfo( 0x1004/*SPI_GETCOMBOBOXANIMATION*/, 0, &bComboBoxAnimation, 0 );
 	if( bComboBoxAnimation )
 		pfAnimateWindow = (F_AnimateWindow)GetProcAddress(GetModuleHandle(_T("USER32.DLL")), "AnimateWindow");
-	if( pfAnimateWindow )
+	if( pfAnimateWindow && !CHostThemeHelper::HostMaps() )
 	{
 		bool bDown = true;
 		if( mpFolderCombo )
@@ -771,6 +773,18 @@ BOOL CFolderTreeCtrl::PreTranslateMessage(MSG* pMsg)
 		break;
 	}
 	return __super::PreTranslateMessage(pMsg);
+}
+
+BOOL CFolderTreeCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( CHostThemeHelper::HostMaps() && pDC )
+	{
+		CRect rc;
+		GetClientRect( &rc );
+		pDC->FillSolidRect( &rc, OdclSysColor( COLOR_WINDOW ) );
+		return TRUE;
+	}
+	return __super::OnEraseBkgnd( pDC );
 }
 
 void CFolderTreeCtrl::OnShowWindow(BOOL bShow, UINT nStatus)

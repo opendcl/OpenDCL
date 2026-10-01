@@ -253,6 +253,7 @@ public:
 	DWORD GetWndStyle() const override;
 	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
 	bool ApplyProperty( TPropertyPtr pProp ) override;
+	void HandleHostThemeChanged() override;
 
 public:
 	void SetCurCell( int nRow, int nCol );
@@ -368,4 +369,5 @@ protected:
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseHover(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnHdrCustomDraw( NMHDR* pNMHDR, LRESULT* pResult );
 };

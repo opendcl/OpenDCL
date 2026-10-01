@@ -72,6 +72,7 @@ public:
 protected:
 	virtual const WndTheme& GetFolderComboBoxTheme() const { return mWndTheme; }
 	void OpenTheme();
+	void SyncHostFolderTheme( bool bVisual );
 
 // Implementation
 public:

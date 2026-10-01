@@ -27,6 +27,7 @@ public:
 	bool Create( CWnd* pParentWnd, UINT nID ) override;
 	DWORD GetWndStyle() const override;
 	void HandleDpiChanged() override; //handle relayed WM_DPICHANGED_AFTERPARENT message
+	void HandleHostThemeChanged() override;
 	bool ApplyProperty( TPropertyPtr pProp ) override;
 	bool OnApplyBackgroundColor( TPropertyPtr pProp ) override;
 	CAcadColorService* GetColorService() override { return CFilteredEditCtrl::GetColorService(); }

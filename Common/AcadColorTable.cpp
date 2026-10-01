@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "AcadColorTable.h"
+#include "ColorService.h"
+#include "Workspace.h"
 
 #ifdef _ACADTARGET
 #include "AutoDocLock.h"
@@ -273,7 +275,7 @@ static unsigned char acadcol[256][3] =
 };
 
 
-COLORREF GetRGBColor( long nColorIndex )
+COLORREF CColorService::GetRGBColor( long nColorIndex ) const
 {
 	if( nColorIndex == -22 )
 	{ //model space background
@@ -283,6 +285,12 @@ COLORREF GetRGBColor( long nColorIndex )
 			return RGB(0,0,0);
 		return stColors.dwGfxModelBkColor;
 	#else //_ACADTARGET
+		// BRX has no acedGetCurrentColors. Light stays model-space black so
+		// ACI 7 hatch remains visible. Dark uses COLOR_WINDOW so empty GS
+		// matches CAD chrome instead of a black well with a white GDI corner.
+		const COLORREF crWindow = GetSysColor( COLOR_WINDOW );
+		if( crWindow != ::GetSysColor( COLOR_WINDOW ) )
+			return crWindow;
 		return RGB(0,0,0);
 	#endif //_ACADTARGET
 	}
@@ -329,8 +337,7 @@ COLORREF GetRGBColor( long nColorIndex )
 	return (COLORREF)(nColorIndex & 0x00FFFFFF);
 }
 
-
-COLORREF GetSafeRGBColor( long nColorIndex, const COLORREF& crBackground )
+COLORREF CColorService::GetSafeRGBColor( long nColorIndex, COLORREF crBackground ) const
 {
 	COLORREF crRGB = GetRGBColor( nColorIndex );
 	UINT contrast = (abs(GetRValue( crRGB ) - GetRValue( crBackground )) +
@@ -339,4 +346,19 @@ COLORREF GetSafeRGBColor( long nColorIndex, const COLORREF& crBackground )
 	if( contrast > 0x80 )
 		return crRGB;
 	return (crRGB ^ RGB(255,255,255));
+}
+
+COLORREF GetRGBColor( long nColorIndex )
+{
+	return theWorkspace.GetColorService().GetRGBColor( nColorIndex );
+}
+
+COLORREF GetSafeRGBColor( long nColorIndex, const COLORREF& crBackground )
+{
+	return theWorkspace.GetColorService().GetSafeRGBColor( nColorIndex, crBackground );
+}
+
+COLORREF OdclSysColor( int nIndex )
+{
+	return theWorkspace.GetColorService().GetSysColor( nIndex );
 }

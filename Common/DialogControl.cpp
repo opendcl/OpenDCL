@@ -8,12 +8,14 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
+#include "ColorService.h"
 #include "Workspace.h"
 #include "ToolTips.h"
 #include "UndoManager.h"
 #include "DragDropService.h"
 #include "DialogObject.h"
 #include "ThemeAPI.h"
+#include "HostThemeHelper.h"
 #include <algorithm>
 
 
@@ -67,50 +69,53 @@ void CDialogControl::OnThemeRequested( WndTheme& Theme ) const
 	Theme.Attach( NULL, GetHWnd() );
 }
 
-HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
+COLORREF CDialogControl::GetPaneFaceColor() const
 {
-	if( !mpControlWnd->IsWindowEnabled() )
-		return NULL;
-	CAcadColorService* pColorService = GetColorService();
-	if( !pColorService )
-		return NULL;
-	pDC->SetTextColor( pColorService->GetForegroundColor() );
-	if( pColorService->IsBackgroundNotSet() )
-		return NULL;
-	if( pColorService->IsBackgroundTransparent() )
+	CAcadColorService* pColorService = const_cast< CDialogControl* >( this )->GetColorService();
+	if( pColorService && !pColorService->IsBackgroundNotSet() && !pColorService->IsBackgroundTransparent() )
+		return pColorService->GetBackgroundColor();
+	if( mpControlPane )
 	{
 		CDialogObject* pHostDlg = mpControlPane->GetDialogObject();
 		if( pHostDlg )
 		{
 			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
-			if( pDlgColor )
-			{
-				if( pDlgColor->IsBackgroundNotSet() )
-				{
-					if( !pDlgColor->IsBackgroundTransparent() )
-					{
-						pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
-						pDC->SetBkMode( OPAQUE );
-					}
-					else
-						pDC->SetBkMode( TRANSPARENT );
-					int nDCInfo = pDC->SaveDC();
-					HBRUSH hbrBackground = (HBRUSH)pHostDlg->GetControlWnd()->SendMessage( WM_CTLCOLORDLG, (WPARAM)pDC, (LPARAM)pHostDlg->GetControlWnd()->m_hWnd );
-					if (nDCInfo != 0 )
-						pDC->RestoreDC(nDCInfo);
-					if( hbrBackground )
-						return hbrBackground;
-				}
-				else if( !pDlgColor->IsBackgroundTransparent() )
-				{
-					pDC->SetBkColor( pDlgColor->GetBackgroundColor() );
-					pDC->SetBkMode( OPAQUE );
-					return pDlgColor->GetBackgroundBrush();
-				}
-			}
+			if( pDlgColor && !pDlgColor->IsBackgroundNotSet() && !pDlgColor->IsBackgroundTransparent() )
+				return pDlgColor->GetBackgroundColor();
+			if( CHostThemeHelper::HostMaps() && pHostDlg->GetType() == FrmTabPage )
+				return OdclSysColor( COLOR_3DLIGHT );
 		}
-		pDC->SetBkMode( TRANSPARENT );
+	}
+	return OdclSysColor( COLOR_BTNFACE );
+}
+
+HBRUSH CDialogControl::GetPaneFaceBrush() const
+{
+	return OdclCachedSolidBrush( GetPaneFaceColor() );
+}
+
+HBRUSH CDialogControl::HandleCtlColor( CDC* pDC, UINT nCtlColor )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( !pColorService )
 		return NULL;
+	const bool bEnabled = (mpControlWnd->IsWindowEnabled() != FALSE);
+	pDC->SetTextColor( bEnabled ? pColorService->GetForegroundColor() : CHostThemeHelper::DisabledTextColor() );
+	if( pColorService->IsBackgroundNotSet() )
+		return NULL;
+	if( pColorService->IsBackgroundTransparent() )
+	{
+		const COLORREF crFace = GetPaneFaceColor();
+		pDC->SetBkColor( crFace );
+		pDC->SetBkMode( OPAQUE );
+		CDialogObject* pHostDlg = mpControlPane ? mpControlPane->GetDialogObject() : NULL;
+		if( pHostDlg )
+		{
+			CAcadColorService* pDlgColor = pHostDlg->GetColorService();
+			if( pDlgColor && !pDlgColor->IsBackgroundNotSet() && !pDlgColor->IsBackgroundTransparent() )
+				return pDlgColor->GetBackgroundBrush();
+		}
+		return GetPaneFaceBrush();
 	}
 	pDC->SetBkColor( pColorService->GetBackgroundColor() );
 	pDC->SetBkMode( OPAQUE );
@@ -137,14 +142,24 @@ BOOL CDialogControl::HandleEraseBkgnd( CDC* pDC )
 	}
 	if( !mpControlWnd->IsWindowEnabled() && !GetTheme().IsThemeActive() )
 	{
-		pDC->FillSolidRect( &rcClip, GetSysColor( COLOR_INACTIVEBORDER ) );
+		pDC->FillSolidRect( &rcClip, GetPaneFaceColor() );
 		return TRUE;
 	}
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
 		return FALSE;
 	if( pColorService->IsBackgroundNotSet() )
+	{
+#if defined(ODCL_HOST_COLORTHEME)
+		// Stock erase is light; splitter/layout invalidate flashes gray before dark paint.
+		if( CHostThemeHelper::HostMaps() )
+		{
+			pDC->FillSolidRect( &rcClip, GetPaneFaceColor() );
+			return TRUE;
+		}
+#endif
 		return FALSE;
+	}
 	if( pColorService->IsBackgroundTransparent() )
 	{
 		CWnd* pParent = mpControlWnd->GetParent();
@@ -641,6 +656,7 @@ bool CDialogControl::ApplyPropertiesEnum()
 		ApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	mbEnumProps = false;
 	ApplyPosition();
+	CHostThemeHelper::InstallNcBorderTree( GetHWnd() );
 	return bSuccess;
 }
 
@@ -760,6 +776,7 @@ bool CDialogControl::OnApplyBorderStyle( TPropertyPtr pProp )
 		mpControlWnd->ModifyStyleEx( WS_EX_CLIENTEDGE, WS_EX_STATICEDGE, SWP_FRAMECHANGED );
 		break;
 	}
+	CHostThemeHelper::InstallNcBorderTree( GetHWnd() );
 	OnFrameChanged();
 	return true;
 }
