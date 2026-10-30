@@ -98,6 +98,8 @@ BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_NCHITTEST()
 	ON_WM_NCCALCSIZE()
+	ON_WM_NCACTIVATE()
+	ON_WM_NCPAINT()
 	ON_WM_TIMER()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_WM_ERASEBKGND()
@@ -294,12 +296,44 @@ void CBaseDlg::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
 	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
 
 	// Fold captionless WS_THICKFRAME top NC strip into client.
-	if( !bCalcValidRects || mbHasTitleBar || !mbResizable )
+	if( !bCalcValidRects )
 		return;
+	lpncsp->rgrc[0].top -= GetFoldedTopBorder();
+}
 
+// Height of the top resize border folded into the client area.
+int CBaseDlg::GetFoldedTopBorder() const
+{
+	if( mbHasTitleBar || !mbResizable )
+		return 0;
 	RECT rcFrame = {0};
 	AdjustWindowRectEx( &rcFrame, GetStyle() & ~WS_CAPTION, FALSE, GetExStyle() );
-	lpncsp->rgrc[0].top += rcFrame.top;
+	return -rcFrame.top;
+}
+
+// Default NC painting draws over the folded strip; repaint it as client.
+void CBaseDlg::RepaintFoldedTopBorder()
+{
+	int nBorder = GetFoldedTopBorder();
+	if( nBorder <= 0 || !IsWindowVisible() )
+		return;
+	CRect rcStrip;
+	GetClientRect( &rcStrip );
+	rcStrip.bottom = rcStrip.top + nBorder;
+	RedrawWindow( &rcStrip, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW );
+}
+
+void CBaseDlg::OnNcPaint()
+{
+	__super::OnNcPaint();
+	RepaintFoldedTopBorder();
+}
+
+BOOL CBaseDlg::OnNcActivate(BOOL bActive)
+{
+	BOOL bResult = __super::OnNcActivate( bActive );
+	RepaintFoldedTopBorder();
+	return bResult;
 }
 
 __UINT_LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
