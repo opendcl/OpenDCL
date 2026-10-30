@@ -301,8 +301,9 @@ void CBaseDlg::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
 	lpncsp->rgrc[0].top -= GetFoldedTopBorder();
 }
 
+// Height of the top resize border folded into the client area.
 int CBaseDlg::GetFoldedTopBorder() const
-{ // height of the top resize border that OnNcCalcSize folds into the client area
+{
 	if( mbHasTitleBar || !mbResizable )
 		return 0;
 	RECT rcFrame = {0};
@@ -310,11 +311,9 @@ int CBaseDlg::GetFoldedTopBorder() const
 	return -rcFrame.top;
 }
 
+// Default NC painting draws over the folded strip; repaint it as client.
 void CBaseDlg::RepaintFoldedTopBorder()
 {
-	// The default frame painting (WM_NCPAINT, WM_NCACTIVATE) draws the top resize border
-	// with the stock frame metrics, i.e. over the strip that OnNcCalcSize folded into the
-	// client area, and nothing invalidates the client afterwards (issue #71).
 	int nBorder = GetFoldedTopBorder();
 	if( nBorder <= 0 || !IsWindowVisible() )
 		return;
