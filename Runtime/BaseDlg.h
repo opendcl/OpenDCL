@@ -64,6 +64,10 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
+	afx_msg BOOL OnNcActivate(BOOL bActive);
+	afx_msg void OnNcPaint();
+	int GetFoldedTopBorder() const;
+	void RepaintFoldedTopBorder();
 	void PostNcDestroy() override;
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
